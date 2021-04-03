@@ -26,7 +26,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -37,15 +36,13 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 /**
- * This is the window that pops up when the user double clicks on the sorting
- * table Its also available from the menu if they remove all Sortables.
+ * This is the window that pops up when the user double clicks on the sorting table Its also
+ * available from the menu if they remove all Sortables.
  *
- * The user can choose what Sortables he wants to sort by, sort them into the
- * order he wants to see and then click apply to move his choices onto the
- * sorting table
+ * <p>The user can choose what Sortables he wants to sort by, sort them into the order he wants to
+ * see and then click apply to move his choices onto the sorting table
  *
  * @author Dan
- *
  */
 public class SorterDialog extends FBDialog {
 
@@ -64,7 +61,8 @@ public class SorterDialog extends FBDialog {
         super.setVisible(visible);
 
         if (visible) {
-            ((SorterTableColumnModel) (preview.getColumnModel())).createFrom(MainFrame.getInstance().getSorter());
+            ((SorterTableColumnModel) (preview.getColumnModel()))
+                    .createFrom(MainFrame.getInstance().getSorter());
             setSorterCheckBoxes();
         }
     }
@@ -75,23 +73,28 @@ public class SorterDialog extends FBDialog {
         pack();
         setLocationByPlatform(true);
         setResizable(false);
-        preview.setColumnModel(new SorterTableColumnModel(MainFrame.getInstance().getSorter().getOrder()));
+        preview.setColumnModel(
+                new SorterTableColumnModel(MainFrame.getInstance().getSorter().getOrder()));
     }
 
     class SortableCheckBox extends JCheckBox {
         final Sortables sortable;
 
         SortableCheckBox(Sortables s) {
-            super(s == Sortables.DIVIDER ? edu.umd.cs.findbugs.L10N.getLocalString("sort.divider", "[divider]") : s.toString());
+            super(
+                    s == Sortables.DIVIDER
+                            ? edu.umd.cs.findbugs.L10N.getLocalString("sort.divider", "[divider]")
+                            : s.toString());
             this.sortable = s;
-            addChangeListener(e -> ((SorterTableColumnModel) preview.getColumnModel()).setVisible(sortable, isSelected()));
+            addChangeListener(
+                    e -> ((SorterTableColumnModel) preview.getColumnModel())
+                            .setVisible(sortable, isSelected()));
         }
-
     }
 
     /**
-     * Creates JPanel with checkboxes of different things to sort by. List is:
-     * priority, class, package, category, bugcode, status, and type.
+     * Creates JPanel with checkboxes of different things to sort by. List is: priority, class,
+     * package, category, bugcode, status, and type.
      */
     private JPanel createSorterPane() {
         JPanel insidePanel = new JPanel();
@@ -113,7 +116,8 @@ public class SorterDialog extends FBDialog {
         gbc.gridx = 1;
         gbc.insets = new Insets(2, 5, 2, 5);
         insidePanel.add(new JLabel("<html><h2>1. Choose bug properties"), gbc);
-        insidePanel.add(new CheckBoxList<>(checkBoxSortList.toArray(new JCheckBox[checkBoxSortList.size()])), gbc);
+        insidePanel.add(
+                new CheckBoxList<>(checkBoxSortList.toArray(new JCheckBox[checkBoxSortList.size()])), gbc);
 
         JTable t = new JTable(new DefaultTableModel(0, sortables.length));
         t.setTableHeader(preview);
@@ -122,11 +126,14 @@ public class SorterDialog extends FBDialog {
         insidePanel.add(createAppropriatelySizedScrollPane(t), gbc);
 
         sortApply = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.apply_btn", "Apply"));
-        sortApply.addActionListener(e -> {
-            MainFrame.getInstance().getSorter().createFrom((SorterTableColumnModel) preview.getColumnModel());
-            ((BugTreeModel) MainFrame.getInstance().getTree().getModel()).checkSorter();
-            SorterDialog.this.dispose();
-        });
+        sortApply.addActionListener(
+                e -> {
+                    MainFrame.getInstance()
+                            .getSorter()
+                            .createFrom((SorterTableColumnModel) preview.getColumnModel());
+                    ((BugTreeModel) MainFrame.getInstance().getTree().getModel()).checkSorter();
+                    SorterDialog.this.dispose();
+                });
         gbc.fill = GridBagConstraints.NONE;
         insidePanel.add(sortApply, gbc);
 
@@ -147,10 +154,9 @@ public class SorterDialog extends FBDialog {
     }
 
     /**
-     * Sets the checkboxes in the sorter panel to what is shown in the
-     * MainFrame. This assumes that sorterTableColumnModel will return the list
-     * of which box is checked in the same order as the order that sorter panel
-     * has.
+     * Sets the checkboxes in the sorter panel to what is shown in the MainFrame. This assumes that
+     * sorterTableColumnModel will return the list of which box is checked in the same order as the
+     * order that sorter panel has.
      */
     private void setSorterCheckBoxes() {
 

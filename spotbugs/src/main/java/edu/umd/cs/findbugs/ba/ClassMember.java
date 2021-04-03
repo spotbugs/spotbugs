@@ -18,12 +18,10 @@
  */
 package edu.umd.cs.findbugs.ba;
 
-import java.io.Serializable;
-
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.classfile.FieldOrMethodName;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import java.io.Serializable;
+import javax.annotation.CheckForNull;
 
 /**
  * Common super-interface for class members (fields and methods).
@@ -35,37 +33,25 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 public interface ClassMember extends Serializable, AccessibleEntity, FieldOrMethodName {
 
     /**
-     * Get the full (dotted) name of the class (if the object represents a
-     * class) or the class the entity is defined in (if a field or method).
+     * Get the full (dotted) name of the class (if the object represents a class) or the class the
+     * entity is defined in (if a field or method).
      */
     public @DottedClassName String getClassName();
 
-    /**
-     * Get the (dotted) name of the package in which the entity is defined.
-     */
+    /** Get the (dotted) name of the package in which the entity is defined. */
     public @DottedClassName String getPackageName();
 
-    /**
-     * Get the name of the field/method.
-     */
+    /** Get the name of the field/method. */
     @Override
     public String getName();
 
-    /**
-     * Get the signature representing the field/method's type.
-     */
+    /** Get the signature representing the field/method's type. */
     @Override
     public String getSignature();
 
-    /**
-     * Get the signature representing the field/method's type, including generic
-     * type
-     */
+    /** Get the signature representing the field/method's type, including generic type */
     public @CheckForNull String getSourceSignature();
 
-    /**
-     * Did we find a declaration of this entity?
-     */
+    /** Did we find a declaration of this entity? */
     public boolean isResolved();
-
 }

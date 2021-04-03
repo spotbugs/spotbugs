@@ -19,19 +19,16 @@
 
 package de.tobject.findbugs.util;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nonnull;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaCore;
-
-import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Project utility class.
@@ -47,13 +44,12 @@ public class ProjectUtilities {
     /**
      * Adds a FindBugs nature to a project.
      *
-     * @param project
-     *            The project the nature will be applied to.
-     * @param monitor
-     *            A progress monitor. Must not be null.
+     * @param project The project the nature will be applied to.
+     * @param monitor A progress monitor. Must not be null.
      * @throws CoreException
      */
-    public static void addFindBugsNature(IProject project, IProgressMonitor monitor) throws CoreException {
+    public static void addFindBugsNature(IProject project, IProgressMonitor monitor)
+            throws CoreException {
         if (hasFindBugsNature(project)) {
             return;
         }
@@ -79,24 +75,22 @@ public class ProjectUtilities {
     }
 
     /**
-     * Using the natures name, check whether the current project has FindBugs
-     * nature.
+     * Using the natures name, check whether the current project has FindBugs nature.
      *
-     * @return boolean <code>true</code>, if the FindBugs nature is assigned to
-     *         the project, <code>false</code> otherwise.
+     * @return boolean <code>true</code>, if the FindBugs nature is assigned to the project, <code>
+     *     false</code> otherwise.
      */
     public static boolean hasFindBugsNature(IProject project) {
         try {
             return ProjectUtilities.isJavaProject(project) && project.hasNature(FindbugsPlugin.NATURE_ID);
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error while testing SpotBugs nature for project " + project);
+            FindbugsPlugin.getDefault()
+                    .logException(e, "Error while testing SpotBugs nature for project " + project);
         }
         return false;
     }
 
-    /**
-     * @return a (possibly empty) list of existing and opened projects with the FindBugs nature
-     */
+    /** @return a (possibly empty) list of existing and opened projects with the FindBugs nature */
     @Nonnull
     public static List<IProject> getFindBugsProjects() {
         IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
@@ -112,13 +106,12 @@ public class ProjectUtilities {
     /**
      * Removes the FindBugs nature from a project.
      *
-     * @param project
-     *            The project the nature will be removed from.
-     * @param monitor
-     *            A progress monitor. Must not be null.
+     * @param project The project the nature will be removed from.
+     * @param monitor A progress monitor. Must not be null.
      * @throws CoreException
      */
-    public static void removeFindBugsNature(IProject project, IProgressMonitor monitor) throws CoreException {
+    public static void removeFindBugsNature(IProject project, IProgressMonitor monitor)
+            throws CoreException {
         if (!hasFindBugsNature(project)) {
             return;
         }
@@ -143,5 +136,4 @@ public class ProjectUtilities {
             return false;
         }
     }
-
 }

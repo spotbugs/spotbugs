@@ -18,8 +18,15 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.InnerClassAccess;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.vna.LoadedFieldSet;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import java.util.BitSet;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
@@ -29,31 +36,21 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.InnerClassAccess;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.vna.LoadedFieldSet;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-
 /**
- * Factory to determine which fields are loaded and stored by the instructions
- * in a method, and the overall method. The main purpose is to support efficient
- * redundant load elimination and forward substitution in ValueNumberAnalysis
- * (there is no need to remember stores of fields that are never read, or loads
- * of fields that are only loaded in one location). However, it might be useful
- * for other kinds of analysis.
+ * Factory to determine which fields are loaded and stored by the instructions in a method, and the
+ * overall method. The main purpose is to support efficient redundant load elimination and forward
+ * substitution in ValueNumberAnalysis (there is no need to remember stores of fields that are never
+ * read, or loads of fields that are only loaded in one location). However, it might be useful for
+ * other kinds of analysis.
  *
- * <p>
- * The tricky part is that in addition to fields loaded and stored with
- * get/putfield and get/putstatic, we also try to figure out field accessed
- * through calls to inner-class access methods.
+ * <p>The tricky part is that in addition to fields loaded and stored with get/putfield and
+ * get/putstatic, we also try to figure out field accessed through calls to inner-class access
+ * methods.
  */
 public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
 
     static final BitSet fieldInstructionOpcodeSet = new BitSet();
+
     static {
         fieldInstructionOpcodeSet.set(Const.GETFIELD);
         fieldInstructionOpcodeSet.set(Const.PUTFIELD);
@@ -61,9 +58,7 @@ public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
         fieldInstructionOpcodeSet.set(Const.PUTSTATIC);
     }
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public LoadedFieldSetFactory() {
         super("loaded field set factory", LoadedFieldSet.class);
     }
@@ -76,7 +71,8 @@ public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public LoadedFieldSet analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public LoadedFieldSet analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             return null;

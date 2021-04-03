@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
+import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
+import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -36,25 +40,17 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
-import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
-import edu.umd.cs.findbugs.util.DualKeyHashMap;
-
 /**
- * A FindBugs plugin. A plugin contains executable Detector classes, as well as
- * meta information describing those detectors (such as human-readable detector
- * and bug descriptions).
+ * A FindBugs plugin. A plugin contains executable Detector classes, as well as meta information
+ * describing those detectors (such as human-readable detector and bug descriptions).
  *
  * @see PluginLoader
  * @author David Hovemeyer
  */
 public class Plugin {
-
 
     private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
     static Map<URI, Plugin> allPlugins = new LinkedHashMap<>();
@@ -102,7 +98,9 @@ public class Plugin {
     private final boolean cannotDisable;
 
     static enum EnabledState {
-        PLUGIN_DEFAULT, ENABLED, DISABLED
+        PLUGIN_DEFAULT,
+        ENABLED,
+        DISABLED
     }
 
     private EnabledState enabled;
@@ -110,10 +108,15 @@ public class Plugin {
     /**
      * Constructor. Creates an empty plugin object.
      *
-     * @param pluginId
-     *            the plugin's unique identifier
+     * @param pluginId the plugin's unique identifier
      */
-    public Plugin(String pluginId, String version, Date releaseDate, @Nonnull PluginLoader pluginLoader, boolean enabled, boolean cannotDisable) {
+    public Plugin(
+            String pluginId,
+            String version,
+            Date releaseDate,
+            @Nonnull PluginLoader pluginLoader,
+            boolean enabled,
+            boolean cannotDisable) {
         this.pluginId = pluginId;
         if (version == null) {
             version = "";
@@ -155,8 +158,7 @@ public class Plugin {
     /**
      * Set plugin provider.
      *
-     * @param provider
-     *            the plugin provider
+     * @param provider the plugin provider
      */
     public void setProvider(String provider) {
         this.provider = provider;
@@ -190,8 +192,7 @@ public class Plugin {
     /**
      * Set plugin website.
      *
-     * @param website
-     *            the plugin website
+     * @param website the plugin website
      * @throws URISyntaxException
      */
     public void setWebsite(String website) throws URISyntaxException {
@@ -241,8 +242,7 @@ public class Plugin {
     /**
      * Add a DetectorFactory for a Detector implemented by the Plugin.
      *
-     * @param factory
-     *            the DetectorFactory
+     * @param factory the DetectorFactory
      */
     public void addDetectorFactory(DetectorFactory factory) {
         detectorFactoryList.add(factory);
@@ -292,8 +292,7 @@ public class Plugin {
     /**
      * Add an inter-pass Detector ordering constraint.
      *
-     * @param constraint
-     *            the inter-pass Detector ordering constraint
+     * @param constraint the inter-pass Detector ordering constraint
      */
     public void addInterPassOrderingConstraint(DetectorOrderingConstraint constraint) {
         interPassConstraintList.add(constraint);
@@ -302,8 +301,7 @@ public class Plugin {
     /**
      * Add an intra-pass Detector ordering constraint.
      *
-     * @param constraint
-     *            the intra-pass Detector ordering constraint
+     * @param constraint the intra-pass Detector ordering constraint
      */
     public void addIntraPassOrderingConstraint(DetectorOrderingConstraint constraint) {
         intraPassConstraintList.add(constraint);
@@ -312,8 +310,7 @@ public class Plugin {
     /**
      * Look up a DetectorFactory by short name.
      *
-     * @param shortName
-     *            the short name
+     * @param shortName the short name
      * @return the DetectorFactory
      */
     public DetectorFactory getFactoryByShortName(final String shortName) {
@@ -323,8 +320,7 @@ public class Plugin {
     /**
      * Look up a DetectorFactory by full name.
      *
-     * @param fullName
-     *            the full name
+     * @param fullName the full name
      * @return the DetectorFactory
      */
     public DetectorFactory getFactoryByFullName(final String fullName) {
@@ -340,10 +336,7 @@ public class Plugin {
         return detectorFactoryList;
     }
 
-    /**
-     * Get the set of BugPatterns
-     *
-     */
+    /** Get the set of BugPatterns */
     public Set<BugPattern> getBugPatterns() {
         return bugPatterns;
     }
@@ -375,16 +368,12 @@ public class Plugin {
         return bugCategories.get(id);
     }
 
-    /**
-     * Return an Iterator over the inter-pass Detector ordering constraints.
-     */
+    /** Return an Iterator over the inter-pass Detector ordering constraints. */
     public Iterator<DetectorOrderingConstraint> interPassConstraintIterator() {
         return interPassConstraintList.iterator();
     }
 
-    /**
-     * Return an Iterator over the intra-pass Detector ordering constraints.
-     */
+    /** Return an Iterator over the intra-pass Detector ordering constraints. */
     public Iterator<DetectorOrderingConstraint> intraPassConstraintIterator() {
         return intraPassConstraintList.iterator();
     }
@@ -399,19 +388,19 @@ public class Plugin {
     }
 
     /**
-     * Set the analysis engine registrar class that, when instantiated, can be
-     * used to register the plugin's analysis engines with the analysis cache.
+     * Set the analysis engine registrar class that, when instantiated, can be used to register the
+     * plugin's analysis engines with the analysis cache.
      *
-     * @param engineRegistrarClass
-     *            The engine registrar class to set.
+     * @param engineRegistrarClass The engine registrar class to set.
      */
-    public void setEngineRegistrarClass(Class<? extends IAnalysisEngineRegistrar> engineRegistrarClass) {
+    public void setEngineRegistrarClass(
+            Class<? extends IAnalysisEngineRegistrar> engineRegistrarClass) {
         this.engineRegistrarClass = engineRegistrarClass;
     }
 
     /**
-     * Get the analysis engine registrar class that, when instantiated, can be
-     * used to register the plugin's analysis engines with the analysis cache.
+     * Get the analysis engine registrar class that, when instantiated, can be used to register the
+     * plugin's analysis engines with the analysis cache.
      *
      * @return Returns the engine registrar class.
      */
@@ -444,7 +433,8 @@ public class Plugin {
         return bugRanker;
     }
 
-    <T> void addFindBugsMain(Class<?> mainClass, String cmd, String description, String kind, boolean analysis)
+    <T> void addFindBugsMain(
+            Class<?> mainClass, String cmd, String description, String kind, boolean analysis)
             throws SecurityException, NoSuchMethodException {
         FindBugsMain main = new FindBugsMain(mainClass, cmd, description, kind, analysis);
         mainPlugins.put(cmd, main);
@@ -452,12 +442,10 @@ public class Plugin {
 
     public @CheckForNull FindBugsMain getFindBugsMain(String cmd) {
         return mainPlugins.get(cmd);
-
     }
 
     public Collection<FindBugsMain> getAllFindBugsMain() {
         return mainPlugins.values();
-
     }
 
     <T> void addComponentPlugin(Class<T> componentKind, ComponentPlugin<T> plugin) {
@@ -497,9 +485,7 @@ public class Plugin {
         allPlugins.remove(uri);
     }
 
-    /**
-     * @return a copy of the internal plugins collection
-     */
+    /** @return a copy of the internal plugins collection */
     public static synchronized Collection<Plugin> getAllPlugins() {
         return new ArrayList<>(allPlugins.values());
     }
@@ -512,9 +498,7 @@ public class Plugin {
         return result;
     }
 
-    /**
-     * @return a copy of the internal plugins collection
-     */
+    /** @return a copy of the internal plugins collection */
     public static synchronized Map<URI, Plugin> getAllPluginsMap() {
         return new LinkedHashMap<>(allPlugins);
     }
@@ -530,22 +514,17 @@ public class Plugin {
             } catch (URISyntaxException e) {
                 AnalysisContext.logError("Unable to get URI", e);
             }
-
         }
         return uris;
     }
 
-    /**
-     * @return may return null
-     */
+    /** @return may return null */
     @CheckForNull
     static synchronized Plugin getPlugin(URI uri) {
         return allPlugins.get(uri);
     }
 
-    /**
-     * @return may return null
-     */
+    /** @return may return null */
     @CheckForNull
     static synchronized Plugin putPlugin(URI uri, Plugin plugin) {
         return allPlugins.put(uri, plugin);
@@ -630,10 +609,8 @@ public class Plugin {
     /**
      * Loads the given plugin and enables it for the given project.
      *
-     * @param f
-     *      A non-null jar file of custom plugin.
-     * @param project
-     *      A nullable target project
+     * @param f A non-null jar file of custom plugin.
+     * @param project A nullable target project
      */
     public static Plugin loadCustomPlugin(File f, @CheckForNull Project project)
             throws PluginException {
@@ -646,10 +623,9 @@ public class Plugin {
         return loadCustomPlugin(urlString, project);
     }
 
-    /**
-     * Loads the given plugin and enables it for the given project.
-     */
-    public static Plugin loadCustomPlugin(URL urlString, @CheckForNull Project project) throws PluginException {
+    /** Loads the given plugin and enables it for the given project. */
+    public static Plugin loadCustomPlugin(URL urlString, @CheckForNull Project project)
+            throws PluginException {
         Plugin plugin = addCustomPlugin(urlString);
         if (project != null) {
             project.setPluginStatusTrinary(plugin.getPluginId(), true);
@@ -665,7 +641,8 @@ public class Plugin {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
 
-    public static @CheckForNull Plugin addCustomPlugin(URL u, ClassLoader parent) throws PluginException {
+    public static @CheckForNull Plugin addCustomPlugin(URL u, ClassLoader parent)
+            throws PluginException {
         PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, parent, false, true);
         Plugin plugin = pluginLoader.loadPlugin();
         if (plugin != null) {
@@ -674,7 +651,8 @@ public class Plugin {
         return plugin;
     }
 
-    public static @CheckForNull Plugin addCustomPlugin(URI u, ClassLoader parent) throws PluginException {
+    public static @CheckForNull Plugin addCustomPlugin(URI u, ClassLoader parent)
+            throws PluginException {
         URL url;
         try {
             url = u.toURL();
@@ -695,5 +673,4 @@ public class Plugin {
         }
         DetectorFactoryCollection.instance().unLoadPlugin(plugin);
     }
-
 }

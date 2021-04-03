@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.anttask;
 
 import java.io.File;
-
 import org.apache.tools.ant.BuildException;
 
 /**
@@ -153,5 +152,4 @@ public class MineBugHistoryTask extends AbstractFindBugsTask {
             throw new BuildException("execution of " + getTaskName() + " failed");
         }
     }
-
 }

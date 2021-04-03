@@ -37,5 +37,4 @@ public class AnyTypeMatcher implements TypeMatcher {
     public String toString() {
         return "<any type>";
     }
-
 }

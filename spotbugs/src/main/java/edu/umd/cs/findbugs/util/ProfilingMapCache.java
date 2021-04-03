@@ -21,9 +21,7 @@ package edu.umd.cs.findbugs.util;
 
 import java.util.Map;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class ProfilingMapCache<K, V> extends MapCache<K, V> {
 
     final String name;
@@ -32,15 +30,17 @@ public class ProfilingMapCache<K, V> extends MapCache<K, V> {
         super(maxCapacity);
         this.name = name;
         count = new int[maxCapacity];
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                System.out.println("Profile for map cache " + ProfilingMapCache.this.name);
-                for (int i = 0; i < count.length; i++) {
-                    System.out.printf("%4d %5d%n", i, count[i]);
-                }
-            }
-        });
+        Runtime.getRuntime()
+                .addShutdownHook(
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                System.out.println("Profile for map cache " + ProfilingMapCache.this.name);
+                                for (int i = 0; i < count.length; i++) {
+                                    System.out.printf("%4d %5d%n", i, count[i]);
+                                }
+                            }
+                        });
     }
 
     int[] count;
@@ -53,7 +53,8 @@ public class ProfilingMapCache<K, V> extends MapCache<K, V> {
             if (e.getKey().equals(k)) {
                 count[age]++;
                 if (age > 20) {
-                    new RuntimeException("Reusing value from " + age + " steps ago in " + name).printStackTrace(System.out);
+                    new RuntimeException("Reusing value from " + age + " steps ago in " + name)
+                            .printStackTrace(System.out);
                 }
                 break;
             }

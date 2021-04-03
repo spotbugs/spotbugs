@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.log.Profiler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,15 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.log.Profiler;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class TopologicalSort {
-    final static boolean DEBUG = SystemProperties.getBoolean("tsort.debug");
+    static final boolean DEBUG = SystemProperties.getBoolean("tsort.debug");
 
     public interface OutEdges<E> {
         Collection<E> getOutEdges(E e);
@@ -68,7 +65,6 @@ public class TopologicalSort {
             }
             return result;
         }
-
     }
 
     public static <E> List<E> sortByCallGraph(Collection<E> elements, OutEdges<E> outEdges) {
@@ -113,7 +109,6 @@ public class TopologicalSort {
             this.consider = new LinkedHashSet<>(consider);
             this.outEdges = outEdges;
             this.result = new ArrayList<>(consider.size());
-
         }
 
         OutEdges<E> outEdges;
@@ -154,7 +149,6 @@ public class TopologicalSort {
             }
             this.consider = new LinkedHashSet<>(consider);
             this.outEdges = outEdges;
-
         }
 
         OutEdges<E> outEdges;
@@ -295,6 +289,5 @@ public class TopologicalSort {
             }
             return myScore;
         }
-
     }
 }

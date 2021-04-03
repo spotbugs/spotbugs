@@ -21,9 +21,7 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.util.Comparator;
 
-/**
- * @author Alex Mont
- */
+/** @author Alex Mont */
 public class SortableStringComparator implements Comparator<String> {
 
     final Sortables mySortable;
@@ -36,5 +34,4 @@ public class SortableStringComparator implements Comparator<String> {
     public int compare(String one, String two) {
         return mySortable.compare(one, two);
     }
-
 }

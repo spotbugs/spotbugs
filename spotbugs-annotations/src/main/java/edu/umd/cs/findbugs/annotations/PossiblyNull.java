@@ -23,21 +23,18 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
 import javax.annotation.meta.TypeQualifierNickname;
 import javax.annotation.meta.When;
 
 /**
- * The annotated element should might be null, and uses of the element should
- * check for null.
+ * The annotated element should might be null, and uses of the element should check for null.
  *
- * When this annotation is applied to a method it applies to the method return
- * value.
+ * <p>When this annotation is applied to a method it applies to the method return value.
  *
- * @deprecated - use CheckForNull instead; the name of which more clearly
- *             indicates that not only could the value be null, but that good
- *             coding practice requires that the value be checked for null.
- **/
+ * @deprecated - use CheckForNull instead; the name of which more clearly indicates that not only
+ *     could the value be null, but that good coding practice requires that the value be checked for
+ *     null.
+ */
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
 @Retention(RetentionPolicy.CLASS)
@@ -45,5 +42,4 @@ import javax.annotation.meta.When;
 @TypeQualifierNickname
 @Deprecated
 public @interface PossiblyNull {
-
 }

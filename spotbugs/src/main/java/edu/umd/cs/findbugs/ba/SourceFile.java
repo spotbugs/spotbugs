@@ -26,8 +26,8 @@ import java.io.InputStream;
 import java.net.URI;
 
 /**
- * Cached data for a source file. Contains a map of line numbers to byte
- * offsets, for quick searching of source lines.
+ * Cached data for a source file. Contains a map of line numbers to byte offsets, for quick
+ * searching of source lines.
  *
  * @author David Hovemeyer
  * @see SourceFinder
@@ -37,10 +37,7 @@ public class SourceFile {
         return b & 0xff;
     }
 
-    /**
-     * Helper object to build map of line number to byte offset for a source
-     * file.
-     */
+    /** Helper object to build map of line number to byte offset for a source file. */
     private static class LineNumberMapBuilder {
         private final SourceFile sourceFile;
 
@@ -103,9 +100,8 @@ public class SourceFile {
     /**
      * Constructor.
      *
-     * @param dataSource
-     *            the SourceFileDataSource object which will provide the data of
-     *            the source file
+     * @param dataSource the SourceFileDataSource object which will provide the data of the source
+     *     file
      */
     public SourceFile(SourceFileDataSource dataSource) {
         this.dataSource = dataSource;
@@ -113,16 +109,12 @@ public class SourceFile {
         this.numLines = 0;
     }
 
-    /**
-     * Get the full path name of the source file (with directory).
-     */
+    /** Get the full path name of the source file (with directory). */
     public String getFullFileName() {
         return dataSource.getFullFileName();
     }
 
-    /**
-     * Get the full URI of the source file (with directory).
-     */
+    /** Get the full URI of the source file (with directory). */
     public URI getFullURI() {
         return dataSource.getFullURI();
     }
@@ -130,8 +122,7 @@ public class SourceFile {
     /**
      * Get an InputStream on data.
      *
-     * @return an InputStream on the data in the source file, starting from
-     *         given offset
+     * @return an InputStream on the data in the source file, starting from given offset
      */
     public InputStream getInputStream() throws IOException {
         loadFileData();
@@ -141,10 +132,8 @@ public class SourceFile {
     /**
      * Get an InputStream on data starting at given offset.
      *
-     * @param offset
-     *            the start offset
-     * @return an InputStream on the data in the source file, starting at the
-     *         given offset
+     * @param offset the start offset
+     * @return an InputStream on the data in the source file, starting at the given offset
      */
     public InputStream getInputStreamFromOffset(int offset) throws IOException {
         loadFileData();
@@ -152,11 +141,10 @@ public class SourceFile {
     }
 
     /**
-     * Add a source line byte offset. This method should be called for each line
-     * in the source file, in order.
+     * Add a source line byte offset. This method should be called for each line in the source file,
+     * in order.
      *
-     * @param offset
-     *            the byte offset of the next source line
+     * @param offset the byte offset of the next source line
      */
     public void addLineOffset(int offset) {
         if (numLines >= lineNumberMap.length) {
@@ -171,14 +159,11 @@ public class SourceFile {
     }
 
     /**
-     * Get the byte offset in the data for a source line. Note that lines are
-     * considered to be zero-index, so the first line in the file is numbered
-     * zero.
+     * Get the byte offset in the data for a source line. Note that lines are considered to be
+     * zero-index, so the first line in the file is numbered zero.
      *
-     * @param line
-     *            the line number
-     * @return the byte offset in the file's data for the line, or -1 if the
-     *         line is not valid
+     * @param line the line number
+     * @return the byte offset in the file's data for the line, or -1 if the line is not valid
      */
     public int getLineOffset(int line) {
         try {
@@ -216,14 +201,12 @@ public class SourceFile {
 
             setData(out.toByteArray());
         }
-
     }
 
     /**
      * Set the source file data.
      *
-     * @param data
-     *            the data
+     * @param data the data
      */
     private void setData(byte[] data) {
         this.data = data;

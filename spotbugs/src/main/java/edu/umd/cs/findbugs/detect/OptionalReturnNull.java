@@ -40,9 +40,8 @@ public class OptionalReturnNull extends TypeReturnNull {
 
     @Override
     protected void accumulateBug() {
-        bugAccumulator.accumulateBug(new BugInstance(this, "NP_OPTIONAL_RETURN_NULL",
-                HIGH_PRIORITY).addClassAndMethod(this), this);
+        bugAccumulator.accumulateBug(
+                new BugInstance(this, "NP_OPTIONAL_RETURN_NULL", HIGH_PRIORITY).addClassAndMethod(this),
+                this);
     }
-
-
 }

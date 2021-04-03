@@ -19,22 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Signature;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -58,6 +42,19 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Signature;
 
 public class FindHEmismatch extends OpcodeStackDetector implements StatelessDetector {
 
@@ -145,7 +142,9 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         boolean inheritedEqualsFromAbstractClass = false;
         XMethod inheritedEquals = null;
         if (!hasEqualsObject) {
-            XClass we = Lookup.findImplementor(getXClass(), "equals", "(Ljava/lang/Object;)Z", false, bugReporter);
+            XClass we =
+                    Lookup.findImplementor(
+                            getXClass(), "equals", "(Ljava/lang/Object;)Z", false, bugReporter);
             if (we == null || we.equals(getXClass())) {
                 whereEqual = Values.DOTTED_JAVA_LANG_OBJECT;
             } else {
@@ -175,21 +174,27 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         boolean usesDefaultHashCode = Values.DOTTED_JAVA_LANG_OBJECT.equals(whereHashCode);
         /*
         if (false && (usesDefaultEquals || usesDefaultHashCode)) {
-            try {
-                if (Repository.implementationOf(obj, "java/util/Set") || Repository.implementationOf(obj, "java/util/List")
-                        || Repository.implementationOf(obj, "java/util/Map")) {
-                    // System.out.println(getDottedClassName() + " uses default
-                    // hashCode or equals");
-                }
-            } catch (ClassNotFoundException e) {
-                // e.printStackTrace();
-            }
+        try {
+        if (Repository.implementationOf(obj, "java/util/Set") || Repository.implementationOf(obj, "java/util/List")
+        || Repository.implementationOf(obj, "java/util/Map")) {
+        // System.out.println(getDottedClassName() + " uses default
+        // hashCode or equals");
+        }
+        } catch (ClassNotFoundException e) {
+        // e.printStackTrace();
+        }
         }
          */
 
         if (!hasEqualsObject && !hasEqualsSelf && hasEqualsOther) {
-            BugInstance bug = new BugInstance(this, usesDefaultEquals ? "EQ_OTHER_USE_OBJECT" : "EQ_OTHER_NO_OBJECT",
-                    NORMAL_PRIORITY).addClass(this).addMethod(equalsOtherMethod).addClass(equalsOtherClass);
+            BugInstance bug =
+                    new BugInstance(
+                            this,
+                            usesDefaultEquals ? "EQ_OTHER_USE_OBJECT" : "EQ_OTHER_NO_OBJECT",
+                            NORMAL_PRIORITY)
+                                    .addClass(this)
+                                    .addMethod(equalsOtherMethod)
+                                    .addClass(equalsOtherClass);
             bugReporter.reportBug(bug);
         }
         if (!hasEqualsObject && hasEqualsSelf) {
@@ -204,7 +209,8 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                 }
                 String bugPattern = "EQ_SELF_USE_OBJECT";
 
-                BugInstance bug = new BugInstance(this, bugPattern, priority).addClass(getDottedClassName());
+                BugInstance bug =
+                        new BugInstance(this, bugPattern, priority).addClass(getDottedClassName());
                 if (equalsMethod != null) {
                     bug.addMethod(equalsMethod);
                 }
@@ -223,7 +229,8 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                     bugPattern = "EQ_DONT_DEFINE_EQUALS_FOR_ENUM";
                     priority = HIGH_PRIORITY;
                 }
-                BugInstance bug = new BugInstance(this, bugPattern, priority).addClass(getDottedClassName());
+                BugInstance bug =
+                        new BugInstance(this, bugPattern, priority).addClass(getDottedClassName());
                 if (equalsMethod != null) {
                     bug.addMethod(equalsMethod);
                 }
@@ -240,8 +247,12 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         // System.out.println("hasCompareToSelf: : " + hasCompareToSelf);
 
         if ((hasCompareToObject || hasCompareToSelf) && usesDefaultEquals) {
-            BugInstance bug = new BugInstance(this, "EQ_COMPARETO_USE_OBJECT_EQUALS", obj.isAbstract() ? Priorities.LOW_PRIORITY
-                    : Priorities.NORMAL_PRIORITY).addClass(this);
+            BugInstance bug =
+                    new BugInstance(
+                            this,
+                            "EQ_COMPARETO_USE_OBJECT_EQUALS",
+                            obj.isAbstract() ? Priorities.LOW_PRIORITY : Priorities.NORMAL_PRIORITY)
+                                    .addClass(this);
             if (compareToSelfMethod != null) {
                 bug.addMethod(compareToSelfMethod);
             } else {
@@ -251,8 +262,10 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         }
         if (!hasCompareToObject && !hasCompareToBridgeMethod && hasCompareToSelf) {
             if (!extendsObject) {
-                bugReporter.reportBug(new BugInstance(this, "CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName())
-                        .addMethod(compareToMethod));
+                bugReporter.reportBug(
+                        new BugInstance(this, "CO_SELF_NO_OBJECT", NORMAL_PRIORITY)
+                                .addClass(getDottedClassName())
+                                .addMethod(compareToMethod));
             }
         }
 
@@ -260,18 +273,24 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         if (hasHashCode && !hashCodeIsAbstract && !(hasEqualsObject || hasEqualsSelf)) {
             int priority = LOW_PRIORITY;
             if (usesDefaultEquals) {
-                bugReporter.reportBug(new BugInstance(this, "HE_HASHCODE_USE_OBJECT_EQUALS", priority).addClass(
-                        getDottedClassName()).addMethod(hashCodeMethod));
+                bugReporter.reportBug(
+                        new BugInstance(this, "HE_HASHCODE_USE_OBJECT_EQUALS", priority)
+                                .addClass(getDottedClassName())
+                                .addMethod(hashCodeMethod));
             } else if (!inheritedEqualsIsFinal) {
-                bugReporter.reportBug(new BugInstance(this, "HE_HASHCODE_NO_EQUALS", priority).addClass(getDottedClassName())
-                        .addMethod(hashCodeMethod));
+                bugReporter.reportBug(
+                        new BugInstance(this, "HE_HASHCODE_NO_EQUALS", priority)
+                                .addClass(getDottedClassName())
+                                .addMethod(hashCodeMethod));
             }
         }
         if (equalsObjectIsAbstract) {
             // no errors reported
         } else if (!hasHashCode && (hasEqualsObject || hasEqualsSelf)) {
-            EqualsKindSummary.KindOfEquals equalsKind = AnalysisContext.currentAnalysisContext().getEqualsKindSummary()
-                    .get(new ClassAnnotation(obj.getClassName()));
+            EqualsKindSummary.KindOfEquals equalsKind =
+                    AnalysisContext.currentAnalysisContext()
+                            .getEqualsKindSummary()
+                            .get(new ClassAnnotation(obj.getClassName()));
             if (equalsKind == EqualsKindSummary.KindOfEquals.ALWAYS_FALSE) {
                 return;
             }
@@ -288,7 +307,9 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                 if (!visibleOutsidePackage) {
                     priority++;
                 }
-                BugInstance bug = new BugInstance(this, "HE_EQUALS_USE_HASHCODE", priority).addClass(getDottedClassName());
+                BugInstance bug =
+                        new BugInstance(this, "HE_EQUALS_USE_HASHCODE", priority)
+                                .addClass(getDottedClassName());
                 if (equalsMethod != null) {
                     bug.addMethod(equalsMethod);
                 }
@@ -307,31 +328,46 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                 } else if (obj.isAbstract()) {
                     priority++;
                 }
-                BugInstance bug = new BugInstance(this, "HE_EQUALS_NO_HASHCODE", priority).addClass(getDottedClassName());
+                BugInstance bug =
+                        new BugInstance(this, "HE_EQUALS_NO_HASHCODE", priority).addClass(getDottedClassName());
                 if (equalsMethod != null) {
                     bug.addMethod(equalsMethod);
                 }
                 bugReporter.reportBug(bug);
             }
         }
-        if (!hasHashCode && !hasEqualsObject && !hasEqualsSelf && !usesDefaultEquals && usesDefaultHashCode && !obj.isAbstract()
+        if (!hasHashCode
+                && !hasEqualsObject
+                && !hasEqualsSelf
+                && !usesDefaultEquals
+                && usesDefaultHashCode
+                && !obj.isAbstract()
                 && inheritedEqualsFromAbstractClass) {
-            BugInstance bug = new BugInstance(this, "HE_INHERITS_EQUALS_USE_HASHCODE", NORMAL_PRIORITY)
-                    .addClass(getDottedClassName());
+            BugInstance bug =
+                    new BugInstance(this, "HE_INHERITS_EQUALS_USE_HASHCODE", NORMAL_PRIORITY)
+                            .addClass(getDottedClassName());
             if (equalsMethod != null) {
                 bug.addMethod(equalsMethod);
             }
             bugReporter.reportBug(bug);
         }
-        if (!hasEqualsObject && !hasEqualsSelf && !usesDefaultEquals && !obj.isAbstract() && hasFields && inheritedEquals != null
-                && !inheritedEqualsIsFinal && !inheritedEqualsFromAbstractClass
+        if (!hasEqualsObject
+                && !hasEqualsSelf
+                && !usesDefaultEquals
+                && !obj.isAbstract()
+                && hasFields
+                && inheritedEquals != null
+                && !inheritedEqualsIsFinal
+                && !inheritedEqualsFromAbstractClass
                 && !inheritedEquals.getClassDescriptor().getSimpleName().contains("Abstract")
                 && !"java/lang/Enum".equals(inheritedEquals.getClassDescriptor().getClassName())) {
 
             BugInstance bug = new BugInstance(this, "EQ_DOESNT_OVERRIDE_EQUALS", NORMAL_PRIORITY);
 
-            // create annotation pointing to this class source line 1, otherwise the primary annotation shows parent class
-            SourceLineAnnotation sourceLine = new SourceLineAnnotation(getDottedClassName(), obj.getSourceFileName(), 1, 1, 0, 0);
+            // create annotation pointing to this class source line 1, otherwise the primary annotation
+            // shows parent class
+            SourceLineAnnotation sourceLine =
+                    new SourceLineAnnotation(getDottedClassName(), obj.getSourceFileName(), 1, 1, 0, 0);
             bug.addClass(getDottedClassName()).add(sourceLine);
             bug.addMethod(inheritedEquals).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
             bugReporter.reportBug(bug);
@@ -369,7 +405,6 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         }
         String name = getMethod().getName();
         return "hashCode".equals(name) || "equals".equals(name);
-
     }
 
     public static int opcode(byte code[], int offset) {
@@ -398,10 +433,12 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         String sig = obj.getSignature();
         if ((accessFlags & Const.ACC_ABSTRACT) != 0) {
             if ("equals".equals(name) && sig.equals("(L" + getClassName() + ";)Z")) {
-                bugReporter.reportBug(new BugInstance(this, "EQ_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
+                bugReporter.reportBug(
+                        new BugInstance(this, "EQ_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
                 return;
             } else if ("compareTo".equals(name) && sig.equals("(L" + getClassName() + ";)I")) {
-                bugReporter.reportBug(new BugInstance(this, "CO_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
+                bugReporter.reportBug(
+                        new BugInstance(this, "CO_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
                 return;
             }
         }
@@ -432,9 +469,13 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                             int op6 = opcode(codeBytes, 6);
                             int op7 = opcode(codeBytes, 7);
                             int op8 = opcode(codeBytes, 8);
-                            if ((op0 == Const.ALOAD_0 && op1 == Const.ALOAD_1 || op0 == Const.ALOAD_1 && op1 == Const.ALOAD_0)
-                                    && (op2 == Const.IF_ACMPEQ || op2 == Const.IF_ACMPNE) && (op5 == Const.ICONST_0 || op5 == Const.ICONST_1)
-                                    && op6 == Const.IRETURN && (op7 == Const.ICONST_0 || op7 == Const.ICONST_1) && op8 == Const.IRETURN) {
+                            if ((op0 == Const.ALOAD_0 && op1 == Const.ALOAD_1
+                                    || op0 == Const.ALOAD_1 && op1 == Const.ALOAD_0)
+                                    && (op2 == Const.IF_ACMPEQ || op2 == Const.IF_ACMPNE)
+                                    && (op5 == Const.ICONST_0 || op5 == Const.ICONST_1)
+                                    && op6 == Const.IRETURN
+                                    && (op7 == Const.ICONST_0 || op7 == Const.ICONST_1)
+                                    && op8 == Const.IRETURN) {
                                 equalsMethodIsInstanceOfEquals = true;
                             }
                         } else if (codeBytes.length == 11) {
@@ -445,15 +486,20 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                             int op6 = opcode(codeBytes, 6);
                             int op9 = opcode(codeBytes, 9);
                             int op10 = opcode(codeBytes, 10);
-                            if ((op0 == Const.ALOAD_0 && op1 == Const.ALOAD_1 || op0 == Const.ALOAD_1 && op1 == Const.ALOAD_0)
-                                    && (op2 == Const.IF_ACMPEQ || op2 == Const.IF_ACMPNE) && (op5 == Const.ICONST_0 || op5 == Const.ICONST_1)
-                                    && op6 == Const.GOTO && (op9 == Const.ICONST_0 || op9 == Const.ICONST_1) && op10 == Const.IRETURN) {
+                            if ((op0 == Const.ALOAD_0 && op1 == Const.ALOAD_1
+                                    || op0 == Const.ALOAD_1 && op1 == Const.ALOAD_0)
+                                    && (op2 == Const.IF_ACMPEQ || op2 == Const.IF_ACMPNE)
+                                    && (op5 == Const.ICONST_0 || op5 == Const.ICONST_1)
+                                    && op6 == Const.GOTO
+                                    && (op9 == Const.ICONST_0 || op9 == Const.ICONST_1)
+                                    && op10 == Const.IRETURN) {
                                 equalsMethodIsInstanceOfEquals = true;
                             }
 
                         } else if ((codeBytes.length == 5 && (codeBytes[1] & 0xff) == Const.INSTANCEOF)
-                                || (codeBytes.length == 15 && (codeBytes[1] & 0xff) == Const.INSTANCEOF && (codeBytes[11]
-                                        & 0xff) == Const.INVOKESPECIAL)) {
+                                || (codeBytes.length == 15
+                                        && (codeBytes[1] & 0xff) == Const.INSTANCEOF
+                                        && (codeBytes[11] & 0xff) == Const.INVOKESPECIAL)) {
                             equalsMethodIsInstanceOfEquals = true;
                         }
                     }
@@ -465,14 +511,14 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                 } else {
                     String arg = m.group(1);
                     if (getSuperclassName().equals(arg)) {
-                        JavaClass findSuperImplementor = Lookup.findSuperDefiner(getThisClass(), name, sig, bugReporter);
+                        JavaClass findSuperImplementor =
+                                Lookup.findSuperDefiner(getThisClass(), name, sig, bugReporter);
                         if (findSuperImplementor == null) {
                             hasEqualsOther = true;
                             equalsOtherMethod = MethodAnnotation.fromVisitedMethod(this);
                             equalsOtherClass = DescriptorFactory.createClassDescriptor(arg);
                         }
                     }
-
                 }
             }
         } else if ("compareTo".equals(name) && sig.endsWith(")I") && !obj.isStatic()) {
@@ -504,22 +550,31 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
     public void sawOpcode(int seen) {
         if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) {
             String className = getClassConstantOperand();
-            if ("java/util/Map".equals(className) || "java/util/HashMap".equals(className)
-                    || "java/util/LinkedHashMap".equals(className) || "java/util/concurrent/ConcurrentHashMap".equals(className)
+            if ("java/util/Map".equals(className)
+                    || "java/util/HashMap".equals(className)
+                    || "java/util/LinkedHashMap".equals(className)
+                    || "java/util/concurrent/ConcurrentHashMap".equals(className)
                     || className.contains("Hash")
                             && Subtypes2.instanceOf(ClassName.toDottedClassName(className), "java.util.Map")) {
                 if ("put".equals(getNameConstantOperand())
-                        && "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(getSigConstantOperand())
+                        && "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
+                                .equals(getSigConstantOperand())
                         && stack.getStackDepth() >= 3) {
                     check(1);
-                } else if (("get".equals(getNameConstantOperand()) || "remove".equals(getNameConstantOperand()))
-                        && getSigConstantOperand().startsWith("(Ljava/lang/Object;)") && stack.getStackDepth() >= 2) {
+                } else if (("get".equals(getNameConstantOperand())
+                        || "remove".equals(getNameConstantOperand()))
+                        && getSigConstantOperand().startsWith("(Ljava/lang/Object;)")
+                        && stack.getStackDepth() >= 2) {
                     check(0);
                 }
-            } else if ("java/util/Set".equals(className) || "java/util/HashSet".equals(className) || className.contains("Hash")
-                    && Subtypes2.instanceOf(ClassName.toDottedClassName(className), "java.util.Set")) {
-                if ("add".equals(getNameConstantOperand()) || "contains".equals(getNameConstantOperand())
-                        || "remove".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())
+            } else if ("java/util/Set".equals(className)
+                    || "java/util/HashSet".equals(className)
+                    || className.contains("Hash")
+                            && Subtypes2.instanceOf(ClassName.toDottedClassName(className), "java.util.Set")) {
+                if ("add".equals(getNameConstantOperand())
+                        || "contains".equals(getNameConstantOperand())
+                        || "remove".equals(getNameConstantOperand())
+                                && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())
                                 && stack.getStackDepth() >= 2) {
                     check(0);
                 }
@@ -545,7 +600,8 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         }
         int priority = NORMAL_PRIORITY;
 
-        OpcodeStack.Item collection = stack.getStackItem(PreorderVisitor.getNumberArguments(getSigConstantOperand()));
+        OpcodeStack.Item collection =
+                stack.getStackItem(PreorderVisitor.getNumberArguments(getSigConstantOperand()));
         String collectionSignature = collection.getSignature();
         if (collectionSignature.indexOf("Tree") >= 0
                 || collectionSignature.indexOf("Sorted") >= 0
@@ -556,7 +612,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         if (collectionSignature.indexOf("Hash") >= 0) {
             priority--;
         }
-        if (!AnalysisContext.currentAnalysisContext()/* .getSubtypes() */.isApplicationClass(type)) {
+        if (!AnalysisContext.currentAnalysisContext() /* .getSubtypes() */.isApplicationClass(type)) {
             priority++;
         }
 
@@ -565,8 +621,11 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         }
         potentialBugs.put(
                 type.getClassName(),
-                new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS", priority).addClassAndMethod(this)
-                        .addTypeOfNamedClass(type.getClassName()).describe(TypeAnnotation.UNHASHABLE_ROLE).addCalledMethod(this)
+                new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS", priority)
+                        .addClassAndMethod(this)
+                        .addTypeOfNamedClass(type.getClassName())
+                        .describe(TypeAnnotation.UNHASHABLE_ROLE)
+                        .addCalledMethod(this)
                         .addSourceLine(this));
     }
 
@@ -587,7 +646,6 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
             return m.group(1).replace('/', '.');
         }
         return null;
-
     }
 
     @Override
@@ -622,21 +680,32 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         if (type.isAbstract() || type.isInterface()) {
             priority++;
         }
-        if (!AnalysisContext.currentAnalysisContext()/* .getSubtypes() */.isApplicationClass(type)) {
+        if (!AnalysisContext.currentAnalysisContext() /* .getSubtypes() */.isApplicationClass(type)) {
             priority++;
         }
 
         BugInstance bug = null;
 
         if (visitingField()) {
-            bug = new BugInstance(this, "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS", priority).addClass(this)
-                    .addVisitedField(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
+            bug =
+                    new BugInstance(this, "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS", priority)
+                            .addClass(this)
+                            .addVisitedField(this)
+                            .addTypeOfNamedClass(className)
+                            .describe(TypeAnnotation.UNHASHABLE_ROLE);
         } else if (visitingMethod()) {
-            bug = new BugInstance(this, "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS", priority).addClassAndMethod(this)
-                    .addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
+            bug =
+                    new BugInstance(this, "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS", priority)
+                            .addClassAndMethod(this)
+                            .addTypeOfNamedClass(className)
+                            .describe(TypeAnnotation.UNHASHABLE_ROLE);
         } else {
-            bug = new BugInstance(this, "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS", priority).addClass(this)
-                    .addClass(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
+            bug =
+                    new BugInstance(this, "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS", priority)
+                            .addClass(this)
+                            .addClass(this)
+                            .addTypeOfNamedClass(className)
+                            .describe(TypeAnnotation.UNHASHABLE_ROLE);
         }
         potentialBugs.put(className, bug);
     }
@@ -650,6 +719,5 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                 bugReporter.reportBug(bug);
             }
         }
-
     }
 }

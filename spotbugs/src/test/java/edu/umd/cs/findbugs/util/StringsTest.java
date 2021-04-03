@@ -43,11 +43,19 @@ public class StringsTest {
         // escaping a null string should be safe
         null,
         // an empty string should be safe too
-        "", };
+        "",
+    };
 
-    public static String[] unescapedStrings = { "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007", "a b c \\\\\u0005",
-        "a b c \\\\\\\\u0005", "a b c \\\\\u0005 \\\\\\\\u0013", "\\\\\\",
-        "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007 a b c 1 2 3", null, "", };
+    public static String[] unescapedStrings = {
+        "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007",
+        "a b c \\\\\u0005",
+        "a b c \\\\\\\\u0005",
+        "a b c \\\\\u0005 \\\\\\\\u0013",
+        "\\\\\\",
+        "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007 a b c 1 2 3",
+        null,
+        "",
+    };
 
     @Test
     public void testEscapeXml() {

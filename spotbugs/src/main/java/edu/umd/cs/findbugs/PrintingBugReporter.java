@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.config.CommandLine;
+import edu.umd.cs.findbugs.util.Bag;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,19 +30,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.config.CommandLine;
-import edu.umd.cs.findbugs.util.Bag;
-
-/**
- * A simple BugReporter which simply prints the formatted message to the output
- * stream.
- */
+/** A simple BugReporter which simply prints the formatted message to the output stream. */
 public class PrintingBugReporter extends TextUIBugReporter {
     private final HashSet<BugInstance> seenAlready = new HashSet<>();
 
@@ -80,8 +75,12 @@ public class PrintingBugReporter extends TextUIBugReporter {
             addOption("-summarizeMaxRank", "max rank", "summary bugs with of this rank or less");
             addSwitch("-history", "report first and last versions for each bug");
             addSwitch("-applySuppression", "exclude any bugs that match suppression filters");
-            addSwitchWithOptionalExtraPart("-html", "stylesheet", "Generate HTML output (default stylesheet is default.xsl)");
-            addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]", "specify list of plugin Jar files to load");
+            addSwitchWithOptionalExtraPart(
+                    "-html", "stylesheet", "Generate HTML output (default stylesheet is default.xsl)");
+            addOption(
+                    "-pluginList",
+                    "jar1[" + File.pathSeparator + "jar2...]",
+                    "specify list of plugin Jar files to load");
             addSwitch("-exitcode", "set exit code of process");
         }
 
@@ -126,8 +125,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
                         try {
                             Plugin.loadCustomPlugin(file, getProject());
                         } catch (PluginException e) {
-                            throw new IllegalStateException("Failed to load plugin " +
-                                    "specified by the '-pluginList', file: " + file, e);
+                            throw new IllegalStateException(
+                                    "Failed to load plugin " + "specified by the '-pluginList', file: " + file, e);
                         }
                     }
                 }
@@ -147,9 +146,14 @@ public class PrintingBugReporter extends TextUIBugReporter {
         PrintingBugReporter reporter = new PrintingBugReporter();
         PrintingCommandLine commandLine = reporter.new PrintingCommandLine();
 
-        int argCount = commandLine.parse(args, 0, 2, "Usage: " + PrintingCommandLine.class.getName()
-                + " [options] [<xml results> [<test results>]] ");
-
+        int argCount =
+                commandLine.parse(
+                        args,
+                        0,
+                        2,
+                        "Usage: "
+                                + PrintingCommandLine.class.getName()
+                                + " [options] [<xml results> [<test results>]] ");
 
         if (commandLine.stylesheet != null) {
             // actually do xsl via HTMLBugReporter instead of
@@ -173,7 +177,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
         Bag<String> lowRank = new Bag<>(new TreeMap<String, Integer>());
         for (BugInstance warning : bugCollection.getCollection()) {
-            if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
+            if (!reporter.isApplySuppressions()
+                    || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
                 int rank = warning.getBugRank();
                 BugPattern pattern = warning.getBugPattern();
                 if (rank <= commandLine.maxRank) {
@@ -189,14 +194,14 @@ public class PrintingBugReporter extends TextUIBugReporter {
                     bugsReported = true;
                     lowRank.add(pattern.getCategory());
                 }
-
             }
         }
 
         reporter.finish();
         for (Map.Entry<String, Integer> e : lowRank.entrySet()) {
-            System.out.printf("%4d low ranked %s issues%n", e.getValue(),
-                    I18N.instance().getBugCategoryDescription(e.getKey()));
+            System.out.printf(
+                    "%4d low ranked %s issues%n",
+                    e.getValue(), I18N.instance().getBugCategoryDescription(e.getKey()));
         }
 
         if (commandLine.setExitCode) {
@@ -216,10 +221,10 @@ public class PrintingBugReporter extends TextUIBugReporter {
         } else if (storedException != null) {
             throw storedException;
         }
-
     }
 
-    public static void xslt(String stylesheet, boolean applySuppression, String[] args, int argCount) throws Exception {
+    public static void xslt(String stylesheet, boolean applySuppression, String[] args, int argCount)
+            throws Exception {
         Project proj = new Project();
         HTMLBugReporter reporter = new HTMLBugReporter(proj, stylesheet);
         BugCollection bugCollection = reporter.getBugCollection();

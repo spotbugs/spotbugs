@@ -18,21 +18,20 @@
  */
 package de.tobject.findbugs.properties.test;
 
+import de.tobject.findbugs.properties.FindbugsPropertyPage;
+import de.tobject.findbugs.properties.ReportConfigurationTab;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.TabFolder;
 
-import de.tobject.findbugs.properties.FindbugsPropertyPage;
-import de.tobject.findbugs.properties.ReportConfigurationTab;
-
 /**
- * Test subclass of ReportConfigurationTab that provides methods for testing
- * purposes.
+ * Test subclass of ReportConfigurationTab that provides methods for testing purposes.
  *
  * @author Tomás Pollak
  */
 public class ReportConfigurationTabTestSubclass extends ReportConfigurationTab {
 
-    public ReportConfigurationTabTestSubclass(TabFolder tabFolder, FindbugsPropertyPage page, int style) {
+    public ReportConfigurationTabTestSubclass(
+            TabFolder tabFolder, FindbugsPropertyPage page, int style) {
         super(tabFolder, page, style);
     }
 
@@ -49,5 +48,4 @@ public class ReportConfigurationTabTestSubclass extends ReportConfigurationTab {
         }
         syncSelectedCategories();
     }
-
 }

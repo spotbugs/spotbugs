@@ -19,13 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.LocalVariableTable;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -34,6 +27,12 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 
 public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector {
 
@@ -53,7 +52,6 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
             super.visitJavaClass(obj);
             bugAccumulator.reportAccumulatedBugs();
         }
-
     }
 
     boolean isInnerClass;
@@ -81,7 +79,8 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
                 if (lvt != null) {
                     LocalVariable localVariable = lvt.getLocalVariable(getRegisterOperand(), getNextPC());
                     if (localVariable == null || localVariable.getName().endsWith("$")) {
-                        // iterator() result is stored to the synthetic variable which has no name in LVT or name is suffixed with '$'
+                        // iterator() result is stored to the synthetic variable which has no name in LVT or
+                        // name is suffixed with '$'
                         // Looks like it's for-each cycle like for(Object obj : this)
                         // Do not report such case
                         iteratorBug = null;
@@ -99,9 +98,14 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
         if (!getClassName().equals(getClassConstantOperand())) {
             return;
         }
-        XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(),
-                getSigConstantOperand(), false);
-        if (invokedMethod.isResolved() && invokedMethod.getClassName().equals(getDottedClassConstantOperand())
+        XMethod invokedMethod =
+                XFactory.createXMethod(
+                        getDottedClassConstantOperand(),
+                        getNameConstantOperand(),
+                        getSigConstantOperand(),
+                        false);
+        if (invokedMethod.isResolved()
+                && invokedMethod.getClassName().equals(getDottedClassConstantOperand())
                 || invokedMethod.isSynthetic()) {
             return;
         }
@@ -121,9 +125,11 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
             if (possibleTargetClass.equals(superClassName)) {
                 break;
             }
-            XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(),
-                    getSigConstantOperand(), false);
-            if (alternativeMethod.isResolved() && alternativeMethod.getClassName().equals(possibleTargetClass)) {
+            XMethod alternativeMethod =
+                    XFactory.createXMethod(
+                            possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
+            if (alternativeMethod.isResolved()
+                    && alternativeMethod.getClassName().equals(possibleTargetClass)) {
                 String targetPackage = invokedMethod.getPackageName();
                 String alternativePackage = alternativeMethod.getPackageName();
                 int priority = HIGH_PRIORITY;
@@ -137,10 +143,15 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
                     priority++;
                 }
 
-                BugInstance bug = new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
-                        .addClassAndMethod(this).addMethod(invokedMethod).describe("METHOD_INHERITED")
-                        .addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET");
-                if (invokedMethod.getName().equals("iterator") && invokedMethod.getSignature().equals("()Ljava/util/Iterator;")
+                BugInstance bug =
+                        new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
+                                .addClassAndMethod(this)
+                                .addMethod(invokedMethod)
+                                .describe("METHOD_INHERITED")
+                                .addMethod(alternativeMethod)
+                                .describe("METHOD_ALTERNATIVE_TARGET");
+                if (invokedMethod.getName().equals("iterator")
+                        && invokedMethod.getSignature().equals("()Ljava/util/Iterator;")
                         && Subtypes2.instanceOf(getDottedClassName(), "java.lang.Iterable")) {
                     iteratorBug = bug;
                 } else {

@@ -1,28 +1,27 @@
 package de.tobject.findbugs.reporter;
 
 import java.util.function.LongSupplier;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
- * <p>SpotBugs Eclipse Plugin uses {@link IProgressMonitor#setTaskName(String)} to tell what it is working for.
- * It also updates progress quite frequently, which costs much time to update progress bar.</p>
+ * SpotBugs Eclipse Plugin uses {@link IProgressMonitor#setTaskName(String)} to tell what it is
+ * working for. It also updates progress quite frequently, which costs much time to update progress
+ * bar.
  *
- * <p>Both of them make performance slow, so this class introduces throttling for better performance.</p>
+ * <p>Both of them make performance slow, so this class introduces throttling for better
+ * performance.
  *
  * @author Kengo TODA
  * @version 3.1
  */
 @NotThreadSafe
 class ThrottledProgressMonitor implements IProgressMonitor {
-    /**
-     * Span of throttling, in milliseconds.
-     */
+    /** Span of throttling, in milliseconds. */
     static final int THROTTLE_SPAN = 300;
+
     private static final long NOT_TRIGGERED = Integer.MIN_VALUE;
 
     private final IProgressMonitor delegate;
@@ -31,7 +30,8 @@ class ThrottledProgressMonitor implements IProgressMonitor {
     private long lastWorked = NOT_TRIGGERED;
     private int accumulatedWork;
 
-    ThrottledProgressMonitor(@Nonnull IProgressMonitor delegate, @Nonnull LongSupplier currentTimeMillis) {
+    ThrottledProgressMonitor(
+            @Nonnull IProgressMonitor delegate, @Nonnull LongSupplier currentTimeMillis) {
         Assert.isNotNull(delegate);
         Assert.isNotNull(currentTimeMillis);
 

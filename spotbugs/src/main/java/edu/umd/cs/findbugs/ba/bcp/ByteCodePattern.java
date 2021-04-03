@@ -38,8 +38,7 @@ public class ByteCodePattern {
     /**
      * Add a PatternElement to the end of the pattern.
      *
-     * @param element
-     *            the PatternElement
+     * @param element the PatternElement
      * @return this object
      */
     public ByteCodePattern add(PatternElement element) {
@@ -51,12 +50,10 @@ public class ByteCodePattern {
     }
 
     /**
-     * Add a wildcard to match between 0 and given number of instructions. If
-     * there is already a wildcard at the end of the current pattern, resets its
-     * max value to that given.
+     * Add a wildcard to match between 0 and given number of instructions. If there is already a
+     * wildcard at the end of the current pattern, resets its max value to that given.
      *
-     * @param numWild
-     *            maximum number of instructions to be matched by the wildcard
+     * @param numWild maximum number of instructions to be matched by the wildcard
      */
     public ByteCodePattern addWild(int numWild) {
         Wild wild = isLastWild();
@@ -69,12 +66,11 @@ public class ByteCodePattern {
     }
 
     /**
-     * Set number of inter-element wildcards to create between explicit
-     * PatternElements. By default, no implicit wildcards are created.
+     * Set number of inter-element wildcards to create between explicit PatternElements. By default,
+     * no implicit wildcards are created.
      *
-     * @param numWild
-     *            the number of wildcard instructions which may be matched
-     *            between explicit PatternElements
+     * @param numWild the number of wildcard instructions which may be matched between explicit
+     *     PatternElements
      * @return this object
      */
     public ByteCodePattern setInterElementWild(int numWild) {
@@ -82,19 +78,16 @@ public class ByteCodePattern {
         return this;
     }
 
-    /**
-     * Get the first PatternElement in the pattern.
-     */
+    /** Get the first PatternElement in the pattern. */
     public PatternElement getFirst() {
         return first;
     }
 
     /**
-     * Get a dummy variable name. The name returned will begin with the
-     * <code>'$'</code> character, and will be different than any previous dummy
-     * variable name allocated by this object. Dummy variable names are useful
-     * for creating PatternElements where you don't care whether the value it
-     * uses is the same as one used by another PatternElement.
+     * Get a dummy variable name. The name returned will begin with the <code>'$'</code> character,
+     * and will be different than any previous dummy variable name allocated by this object. Dummy
+     * variable names are useful for creating PatternElements where you don't care whether the value
+     * it uses is the same as one used by another PatternElement.
      */
     public String dummyVariable() {
         StringBuilder buf = new StringBuilder();

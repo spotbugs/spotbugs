@@ -22,14 +22,12 @@ package edu.umd.cs.findbugs.ba;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
 
 /**
- * An interface which Repository class lookup failures are reported to. Some of
- * the analysis classes make use of class hierarchy information. In collecting
- * this information, errors can result because some classes in the hierarchy
- * can't be found; e.g., when the runtime classpath is incomplete. When
- * possible, the analysis classes will be conservative in the event of a lookup
- * failure. However, it is important to report such lookup failures to the user.
- * So, classes that use the Repository should have a callback object to report
- * lookup failures to.
+ * An interface which Repository class lookup failures are reported to. Some of the analysis classes
+ * make use of class hierarchy information. In collecting this information, errors can result
+ * because some classes in the hierarchy can't be found; e.g., when the runtime classpath is
+ * incomplete. When possible, the analysis classes will be conservative in the event of a lookup
+ * failure. However, it is important to report such lookup failures to the user. So, classes that
+ * use the Repository should have a callback object to report lookup failures to.
  *
  * @author David Hovemeyer
  */

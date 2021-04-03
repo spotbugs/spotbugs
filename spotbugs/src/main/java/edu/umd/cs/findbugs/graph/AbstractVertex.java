@@ -33,7 +33,6 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
     private int label;
 
     EdgeType firstIncomingEdge, lastIncomingEdge;
-
     EdgeType firstOutgoingEdge, lastOutgoingEdge;
 
     @Override
@@ -132,5 +131,4 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
         }
         throw new IllegalArgumentException("removing nonexistent edge!");
     }
-
 }

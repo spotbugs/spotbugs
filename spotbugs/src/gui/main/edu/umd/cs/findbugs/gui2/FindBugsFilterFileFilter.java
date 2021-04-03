@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
-
 import javax.swing.filechooser.FileFilter;
 
 public final class FindBugsFilterFileFilter extends FileFilter {
@@ -36,5 +35,4 @@ public final class FindBugsFilterFileFilter extends FileFilter {
     public String getDescription() {
         return "SpotBugs Filter Files (*.xml)";
     }
-
 }

@@ -18,6 +18,17 @@
  */
 package de.tobject.findbugs.view.properties;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.util.Util;
+import de.tobject.findbugs.view.AbstractFindbugsView;
+import de.tobject.findbugs.view.BugExplorerView;
+import de.tobject.findbugs.view.explorer.BugGroup;
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.Plugin;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterFactory;
@@ -41,18 +51,6 @@ import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.util.Util;
-import de.tobject.findbugs.view.AbstractFindbugsView;
-import de.tobject.findbugs.view.BugExplorerView;
-import de.tobject.findbugs.view.explorer.BugGroup;
-import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.Plugin;
 
 public class PropertyPageAdapterFactory implements IAdapterFactory {
 
@@ -191,13 +189,17 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
     public static String getReadableName(Method method) {
         String name = method.getName();
-        return (name.startsWith("get") || name.startsWith("has")) ? name.substring(3)
-                : name.startsWith("is") ? name.substring(2)
-                        : name;
+        return (name.startsWith("get") || name.startsWith("has"))
+                ? name.substring(3)
+                : name.startsWith("is") ? name.substring(2) : name;
     }
 
     static enum PropId {
-        Type, Resource, Bug, Id, CreationTime
+        Type,
+        Resource,
+        Bug,
+        Id,
+        CreationTime
     }
 
     public static class MarkerPropertySource implements IPropertySource {
@@ -282,13 +284,16 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
     @SuppressWarnings("rawtypes")
     public Object getAdapter(Object adaptableObject, Class adapterType) {
         if (adapterType == IPropertySheetPage.class) {
-            if (adaptableObject instanceof BugExplorerView || adaptableObject instanceof AbstractFindbugsView) {
+            if (adaptableObject instanceof BugExplorerView
+                    || adaptableObject instanceof AbstractFindbugsView) {
                 return new BugPropertySheetPage();
             }
         }
         if (adapterType == IPropertySource.class) {
-            if (adaptableObject instanceof BugPattern || adaptableObject instanceof BugInstance
-                    || adaptableObject instanceof DetectorFactory || adaptableObject instanceof Plugin
+            if (adaptableObject instanceof BugPattern
+                    || adaptableObject instanceof BugInstance
+                    || adaptableObject instanceof DetectorFactory
+                    || adaptableObject instanceof Plugin
                     || adaptableObject instanceof BugGroup
                     || adaptableObject instanceof BugAnnotation) {
                 return new PropertySource(adaptableObject);
@@ -312,12 +317,13 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
         private boolean isDisposed;
 
-        static ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
-            @Override
-            public String getContributorId() {
-                return FindbugsPlugin.TREE_VIEW_ID;
-            }
-        };
+        static ITabbedPropertySheetPageContributor contributor =
+                new ITabbedPropertySheetPageContributor() {
+                    @Override
+                    public String getContributorId() {
+                        return FindbugsPlugin.TREE_VIEW_ID;
+                    }
+                };
 
         public BugPropertySheetPage() {
             super(contributor);
@@ -330,7 +336,8 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
             }
             // adapt text selection in java editor to FB marker
             if (part instanceof ITextEditor && selection instanceof ITextSelection) {
-                IMarker marker = MarkerUtil.getMarkerFromEditor((ITextSelection) selection, (ITextEditor) part);
+                IMarker marker =
+                        MarkerUtil.getMarkerFromEditor((ITextSelection) selection, (ITextEditor) part);
                 if (marker != null) {
                     selection = new StructuredSelection(marker);
                 } else {
@@ -346,5 +353,4 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
             super.dispose();
         }
     }
-
 }

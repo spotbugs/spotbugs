@@ -18,6 +18,7 @@
  */
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.charsets.UserTextFile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,10 +28,7 @@ import java.util.Locale;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import javax.swing.JOptionPane;
-
-import edu.umd.cs.findbugs.charsets.UserTextFile;
 
 /**
  * Implementation of the UI callback for command line sessions.
@@ -59,7 +57,8 @@ public class CommandLineUiCallback implements IGuiCallback {
     public int showConfirmDialog(String message, String title, String ok, String cancel) {
         String confirmStr = "Yes (Y) or No (N)?";
 
-        System.out.println(String.format("Confirmation required: %s%n\t%s%n\t%s", title, message, confirmStr));
+        System.out.println(
+                String.format("Confirmation required: %s%n\t%s%n\t%s", title, message, confirmStr));
         String answer = null;
         while (true) {
             try {
@@ -195,6 +194,5 @@ public class CommandLineUiCallback implements IGuiCallback {
     @Override
     public void invokeInGUIThread(Runnable r) {
         throw new UnsupportedOperationException();
-
     }
 }

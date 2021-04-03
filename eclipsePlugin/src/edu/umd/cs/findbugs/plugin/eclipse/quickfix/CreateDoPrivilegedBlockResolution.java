@@ -26,6 +26,9 @@ import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNod
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.jdt.core.dom.Modifier.ModifierKeyword.PUBLIC_KEYWORD;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ImportDeclarationComparator;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Comparator;
@@ -34,9 +37,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.annotation.CheckForNull;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -66,28 +67,22 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ImportDeclarationComparator;
-
 /**
- * A <CODE>ClassLoader</CODE>, which requires a security manager, might be
- * invoked by code that does not have security permissions.In this case the
- * <CODE>ClassLoader</CODE> creation needs to occur inside a
- * <CODE>doPrivileged()</CODE>-Block. The class
- * <CODE>CreateDoPrivilegedBlockResolution</CODE> creates a new
- * <CODE>doPrivileged()</CODE>-Block around the <CODE>ClassLoader</CODE>
+ * A <CODE>ClassLoader</CODE>, which requires a security manager, might be invoked by code that does
+ * not have security permissions.In this case the <CODE>ClassLoader</CODE> creation needs to occur
+ * inside a <CODE>doPrivileged()</CODE>-Block. The class <CODE>CreateDoPrivilegedBlockResolution
+ * </CODE> creates a new <CODE>doPrivileged()</CODE>-Block around the <CODE>ClassLoader</CODE>
  * creation.
  *
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0
  */
 public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
-    private static final String DO_PRIVILEGED_METHOD_NAME = "doPrivileged"; //$NON-NLS-1$
+    private static final String DO_PRIVILEGED_METHOD_NAME = "doPrivileged"; // $NON-NLS-1$
 
     private boolean updateImports = true;
 
@@ -110,11 +105,9 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     }
 
     /**
-     * Returns <CODE>true</CODE> if the imports were updated, otherwise
-     * <CODE>false</CODE>.
+     * Returns <CODE>true</CODE> if the imports were updated, otherwise <CODE>false</CODE>.
      *
-     * @return <CODE>true</CODE> or <CODE>false</CODE>. Default is
-     *         <CODE>true</CODE>.
+     * @return <CODE>true</CODE> or <CODE>false</CODE>. Default is <CODE>true</CODE>.
      */
     public boolean isUpdateImports() {
         return updateImports;
@@ -123,32 +116,27 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     /**
      * Enables or disables the update on the imports.
      *
-     * @param updateImports
-     *            the flag.
+     * @param updateImports the flag.
      */
     public void setUpdateImports(boolean updateImports) {
         this.updateImports = updateImports;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the <CODE>doPrivileged()</CODE>-invocation
-     * is imported statically. This feature should only be used under
-     * source-level 1.5 or higher.
+     * Returns <CODE>true</CODE> if the <CODE>doPrivileged()</CODE>-invocation is imported statically.
+     * This feature should only be used under source-level 1.5 or higher.
      *
-     * @return <CODE>true</CODE> or <CODE>false</CODE>. Default is
-     *         <CODE>false</CODE>.
+     * @return <CODE>true</CODE> or <CODE>false</CODE>. Default is <CODE>false</CODE>.
      */
     public boolean isStaticImport() {
         return staticImport;
     }
 
     /**
-     * Enables or disables static import for the <CODE>doPrivileged()</CODE>
-     * -invocation. This feature should only be used under source-level 1.5 or
-     * higher.
+     * Enables or disables static import for the <CODE>doPrivileged()</CODE> -invocation. This feature
+     * should only be used under source-level 1.5 or higher.
      *
-     * @param staticImport
-     *            the flag.
+     * @param staticImport the flag.
      */
     public void setStaticImport(boolean staticImport) {
         this.staticImport = staticImport;
@@ -169,28 +157,33 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     }
 
     @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
+            throws BugResolutionException {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(workingUnit);
         Assert.isNotNull(bug);
 
-        ClassInstanceCreation classLoaderCreation = findClassLoaderCreation(getASTNode(workingUnit,
-                bug.getPrimarySourceLineAnnotation()));
+        ClassInstanceCreation classLoaderCreation =
+                findClassLoaderCreation(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
         if (classLoaderCreation == null) {
-            throw new BugResolutionException("No matching class loader creation found at the specified source line.");
+            throw new BugResolutionException(
+                    "No matching class loader creation found at the specified source line.");
         }
         updateVariableReferences(rewrite, classLoaderCreation);
-        rewrite.replace(classLoaderCreation, createDoPrivilegedInvocation(rewrite, classLoaderCreation), null);
+        rewrite.replace(
+                classLoaderCreation, createDoPrivilegedInvocation(rewrite, classLoaderCreation), null);
         updateImportDeclarations(rewrite, workingUnit);
     }
 
-    protected void updateVariableReferences(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+    protected void updateVariableReferences(
+            ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(classLoaderCreation);
 
         MethodDeclaration method = findMethodDeclaration(classLoaderCreation);
         if (method != null) {
-            final Set<String> variableReferences = findVariableReferences(classLoaderCreation.arguments());
+            final Set<String> variableReferences =
+                    findVariableReferences(classLoaderCreation.arguments());
             if (!variableReferences.isEmpty()) {
                 updateMethodParams(rewrite, variableReferences, method.parameters());
                 updateLocalVariableDeclarations(rewrite, variableReferences, method.getBody());
@@ -206,35 +199,37 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         for (Object paramObj : params) {
             SingleVariableDeclaration param = (SingleVariableDeclaration) paramObj;
             if (variables.contains(param.getName().getFullyQualifiedName())) {
-                ListRewrite listRewrite = rewrite.getListRewrite(param, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
+                ListRewrite listRewrite =
+                        rewrite.getListRewrite(param, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
                 listRewrite.insertLast(rewrite.getAST().newModifier(ModifierKeyword.FINAL_KEYWORD), null);
             }
         }
     }
 
-    protected void updateLocalVariableDeclarations(final ASTRewrite rewrite, final Set<String> variables, Block block) {
+    protected void updateLocalVariableDeclarations(
+            final ASTRewrite rewrite, final Set<String> variables, Block block) {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(block);
         Assert.isNotNull(variables);
 
         final AST ast = rewrite.getAST();
-        block.accept(new ASTVisitor() {
+        block.accept(
+                new ASTVisitor() {
 
-            @Override
-            public boolean visit(VariableDeclarationFragment fragment) {
-                if (variables.contains(fragment.getName().getFullyQualifiedName())) {
-                    ASTNode parent = fragment.getParent();
-                    if (parent instanceof VariableDeclarationStatement) {
-                        ListRewrite listRewrite = rewrite
-                                .getListRewrite(parent, VariableDeclarationStatement.MODIFIERS2_PROPERTY);
-                        listRewrite.insertLast(ast.newModifier(ModifierKeyword.FINAL_KEYWORD), null);
+                    @Override
+                    public boolean visit(VariableDeclarationFragment fragment) {
+                        if (variables.contains(fragment.getName().getFullyQualifiedName())) {
+                            ASTNode parent = fragment.getParent();
+                            if (parent instanceof VariableDeclarationStatement) {
+                                ListRewrite listRewrite =
+                                        rewrite.getListRewrite(
+                                                parent, VariableDeclarationStatement.MODIFIERS2_PROPERTY);
+                                listRewrite.insertLast(ast.newModifier(ModifierKeyword.FINAL_KEYWORD), null);
+                            }
+                        }
+                        return true;
                     }
-                }
-                return true;
-            }
-
-        });
-
+                });
     }
 
     protected void updateImportDeclarations(ASTRewrite rewrite, CompilationUnit compilationUnit) {
@@ -248,7 +243,8 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
             if (!isStaticImport()) {
                 imports.add(createImportDeclaration(ast, AccessController.class));
             } else {
-                imports.add(createImportDeclaration(ast, AccessController.class, DO_PRIVILEGED_METHOD_NAME));
+                imports.add(
+                        createImportDeclaration(ast, AccessController.class, DO_PRIVILEGED_METHOD_NAME));
             }
             addImports(rewrite, compilationUnit, imports);
         }
@@ -260,7 +256,8 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         return createImportDeclaration(ast, importClass.getName(), false);
     }
 
-    protected ImportDeclaration createImportDeclaration(AST ast, Class<?> importClass, String javaElementName) {
+    protected ImportDeclaration createImportDeclaration(
+            AST ast, Class<?> importClass, String javaElementName) {
         Assert.isNotNull(ast);
         Assert.isNotNull(importClass);
         Assert.isNotNull(javaElementName);
@@ -274,11 +271,13 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         return importDeclaration;
     }
 
-    protected MethodInvocation createDoPrivilegedInvocation(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+    protected MethodInvocation createDoPrivilegedInvocation(
+            ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
         AST ast = rewrite.getAST();
 
         MethodInvocation doPrivilegedInvocation = ast.newMethodInvocation();
-        ClassInstanceCreation privilegedActionCreation = createPrivilegedActionCreation(rewrite, classLoaderCreation);
+        ClassInstanceCreation privilegedActionCreation =
+                createPrivilegedActionCreation(rewrite, classLoaderCreation);
         List<Expression> arguments = checkedList(doPrivilegedInvocation.arguments());
 
         if (!isStaticImport()) {
@@ -296,12 +295,15 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         return doPrivilegedInvocation;
     }
 
-    private ClassInstanceCreation createPrivilegedActionCreation(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+    private ClassInstanceCreation createPrivilegedActionCreation(
+            ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
         AST ast = rewrite.getAST();
 
         ClassInstanceCreation privilegedActionCreation = ast.newClassInstanceCreation();
-        ParameterizedType privilegedActionType = createPrivilegedActionType(rewrite, classLoaderCreation);
-        AnonymousClassDeclaration anonymousClassDeclaration = createAnonymousClassDeclaration(rewrite, classLoaderCreation);
+        ParameterizedType privilegedActionType =
+                createPrivilegedActionType(rewrite, classLoaderCreation);
+        AnonymousClassDeclaration anonymousClassDeclaration =
+                createAnonymousClassDeclaration(rewrite, classLoaderCreation);
 
         privilegedActionCreation.setType(privilegedActionType);
         privilegedActionCreation.setAnonymousClassDeclaration(anonymousClassDeclaration);
@@ -309,7 +311,8 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         return privilegedActionCreation;
     }
 
-    private ParameterizedType createPrivilegedActionType(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+    private ParameterizedType createPrivilegedActionType(
+            ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
         AST ast = rewrite.getAST();
 
         Name privilegedActionName;
@@ -333,20 +336,23 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         return (List<V>) o;
     }
 
-    private AnonymousClassDeclaration createAnonymousClassDeclaration(ASTRewrite rewrite,
-            ClassInstanceCreation classLoaderCreation) {
+    private AnonymousClassDeclaration createAnonymousClassDeclaration(
+            ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
         AST ast = rewrite.getAST();
 
         AnonymousClassDeclaration anonymousClassDeclaration = ast.newAnonymousClassDeclaration();
-        MethodDeclaration runMethodDeclaration = createRunMethodDeclaration(rewrite, classLoaderCreation);
-        List<BodyDeclaration> bodyDeclarations = checkedList(anonymousClassDeclaration.bodyDeclarations());
+        MethodDeclaration runMethodDeclaration =
+                createRunMethodDeclaration(rewrite, classLoaderCreation);
+        List<BodyDeclaration> bodyDeclarations =
+                checkedList(anonymousClassDeclaration.bodyDeclarations());
 
         bodyDeclarations.add(runMethodDeclaration);
 
         return anonymousClassDeclaration;
     }
 
-    private MethodDeclaration createRunMethodDeclaration(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+    private MethodDeclaration createRunMethodDeclaration(
+            ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
         AST ast = rewrite.getAST();
 
         MethodDeclaration methodDeclaration = ast.newMethodDeclaration();
@@ -371,7 +377,8 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         List<Statement> statements = checkedList(methodBody.statements());
 
         statements.add(returnStatement);
-        returnStatement.setExpression((ClassInstanceCreation) rewrite.createCopyTarget(classLoaderCreation));
+        returnStatement.setExpression(
+                (ClassInstanceCreation) rewrite.createCopyTarget(classLoaderCreation));
 
         return methodBody;
     }
@@ -395,17 +402,17 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         final Set<String> refs = new HashSet<>();
         for (Object argumentObj : arguments) {
             Expression argument = (Expression) argumentObj;
-            argument.accept(new ASTVisitor() {
+            argument.accept(
+                    new ASTVisitor() {
 
-                @Override
-                public boolean visit(SimpleName node) {
-                    if (!(node.getParent() instanceof Type)) {
-                        refs.add(node.getFullyQualifiedName());
-                    }
-                    return true;
-                }
-
-            });
+                        @Override
+                        public boolean visit(SimpleName node) {
+                            if (!(node.getParent() instanceof Type)) {
+                                refs.add(node.getFullyQualifiedName());
+                            }
+                            return true;
+                        }
+                    });
         }
         return refs;
     }
@@ -446,5 +453,4 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
             return superclass != null && isClassLoader(superclass);
         }
     }
-
 }

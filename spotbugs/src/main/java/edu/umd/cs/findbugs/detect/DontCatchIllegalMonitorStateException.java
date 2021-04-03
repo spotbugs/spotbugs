@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.classfile.CodeException;
-import org.apache.bcel.classfile.ExceptionTable;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.ExceptionTable;
 
 public class DontCatchIllegalMonitorStateException extends PreorderVisitor implements Detector {
 
@@ -75,10 +73,11 @@ public class DontCatchIllegalMonitorStateException extends PreorderVisitor imple
             }
         }
         if ("java.lang.IllegalMonitorStateException".equals(name)) {
-            bugReporter.reportBug(new BugInstance(this, "IMSE_DONT_CATCH_IMSE", HIGH_PRIORITY).addClassAndMethod(this)
-                    .addSourceLine(this.classContext, this, obj.getHandlerPC()));
+            bugReporter.reportBug(
+                    new BugInstance(this, "IMSE_DONT_CATCH_IMSE", HIGH_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addSourceLine(this.classContext, this, obj.getHandlerPC()));
         }
-
     }
 
     @Override

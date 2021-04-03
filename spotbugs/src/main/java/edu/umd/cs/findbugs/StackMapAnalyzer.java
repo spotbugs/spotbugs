@@ -19,14 +19,17 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.ClassFormatException;
@@ -38,20 +41,11 @@ import org.apache.bcel.classfile.StackMapEntry;
 import org.apache.bcel.classfile.StackMapType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.OpcodeStack.Item;
-import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class StackMapAnalyzer {
 
-
-
-    public static class StackMapAnalysisFactory extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfoFromStackMap> {
+    public static class StackMapAnalysisFactory
+            extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfoFromStackMap> {
         public StackMapAnalysisFactory() {
             super("Jump info for opcode stack from stack map analysis", JumpInfoFromStackMap.class);
         }
@@ -60,24 +54,27 @@ public class StackMapAnalyzer {
         public JumpInfoFromStackMap analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
 
             return getFromStackMap(analysisCache, descriptor);
-
-
         }
     }
 
     static class JumpInfoFromStackMap extends JumpInfo {
 
-
-        JumpInfoFromStackMap(Map<Integer, List<Item>> jumpEntries, Map<Integer, List<Item>> jumpStackEntries, BitSet jumpEntryLocations) {
+        JumpInfoFromStackMap(
+                Map<Integer, List<Item>> jumpEntries,
+                Map<Integer, List<Item>> jumpStackEntries,
+                BitSet jumpEntryLocations) {
             super(jumpEntries, jumpStackEntries, jumpEntryLocations);
         }
-
     }
 
     static final boolean DEBUG = false;
 
     enum StackFrameType {
-        SAME_FRAME, SAME_LOCALS_1_STACK_ITEM_FRAME, CHOP_FRAME, APPEND_FRAME, FULL_FRAME;
+        SAME_FRAME,
+        SAME_LOCALS_1_STACK_ITEM_FRAME,
+        CHOP_FRAME,
+        APPEND_FRAME,
+        FULL_FRAME;
 
         static StackFrameType get(int frame_type) {
             if (frame_type >= Const.SAME_FRAME && frame_type <= Const.SAME_FRAME_MAX) {
@@ -131,7 +128,8 @@ public class StackMapAnalyzer {
         return locals;
     }
 
-    static private @CheckForNull JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
+    private static @CheckForNull JumpInfoFromStackMap getFromStackMap(
+            IAnalysisCache analysisCache, MethodDescriptor descriptor) {
         Method method;
         try {
             method = analysisCache.getMethodAnalysis(Method.class, descriptor);
@@ -185,7 +183,6 @@ public class StackMapAnalyzer {
                 break;
 
             case APPEND_FRAME:
-
                 stack.clear();
                 addLocals(locals, e.getTypesOfLocals());
 
@@ -196,11 +193,10 @@ public class StackMapAnalyzer {
                 addLocals(locals, e.getTypesOfLocals());
                 addStack(stack, e.getTypesOfStackItems());
                 break;
-
             }
             if (DEBUG) {
-                System.out.printf("%4d %2d %2d  %12s %s%n",
-
+                System.out.printf(
+                        "%4d %2d %2d  %12s %s%n",
                         pc, e.getNumberOfLocals(), e.getNumberOfStackItems(), stackFrameType, e);
                 System.out.printf("     %s :: %s%n", stack, locals);
             }
@@ -217,13 +213,11 @@ public class StackMapAnalyzer {
             System.out.println("\n");
         }
         return new JumpInfoFromStackMap(jumpEntries, jumpStackEntries, jumpEntryLocations);
-
     }
 
-    static private Item getItem(StackMapType t) {
+    private static Item getItem(StackMapType t) {
 
         switch (t.getType()) {
-
         case Const.ITEM_Double:
             return Item.typeOnly("D");
         case Const.ITEM_Float:
@@ -251,11 +245,10 @@ public class StackMapAnalyzer {
             return Item.typeOnly(name);
         default:
             throw new IllegalArgumentException("Bad item type: " + t.getType());
-
         }
     }
 
-    static private void addLocals(List<Item> lst, StackMapType[] typesOfStackItems) {
+    private static void addLocals(List<Item> lst, StackMapType[] typesOfStackItems) {
         for (StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
@@ -263,15 +256,12 @@ public class StackMapAnalyzer {
                 lst.add(null);
             }
         }
-
     }
 
-    static private void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
+    private static void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
         for (StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
         }
-
     }
-
 }

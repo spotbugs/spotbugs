@@ -19,20 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.ObjectType;
 
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
-import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-
-/**
- * A StreamFactory for normal java.io streams that are created using NEW
- * instructions.
- */
+/** A StreamFactory for normal java.io streams that are created using NEW instructions. */
 public class IOStreamFactory implements StreamFactory {
     private final ObjectType baseClassType;
 
@@ -49,13 +45,17 @@ public class IOStreamFactory implements StreamFactory {
         this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
         this.uninterestingSubclassTypeList = new ObjectType[uninterestingSubclassList.length];
         for (int i = 0; i < uninterestingSubclassList.length; ++i) {
-            this.uninterestingSubclassTypeList[i] = ObjectTypeFactory.getInstance(uninterestingSubclassList[i]);
+            this.uninterestingSubclassTypeList[i] =
+                    ObjectTypeFactory.getInstance(uninterestingSubclassList[i]);
         }
         this.bugType = bugType;
     }
 
     @Override
-    public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
+    public Stream createStream(
+            Location location,
+            ObjectType type,
+            ConstantPoolGen cpg,
             RepositoryLookupFailureCallback lookupFailureCallback) {
 
         try {
@@ -73,8 +73,9 @@ public class IOStreamFactory implements StreamFactory {
                         break;
                     }
                 }
-                Stream result = new Stream(location, type.getClassName(), baseClassType.getClassName())
-                        .setIgnoreImplicitExceptions(true);
+                Stream result =
+                        new Stream(location, type.getClassName(), baseClassType.getClassName())
+                                .setIgnoreImplicitExceptions(true);
                 if (!isUninteresting) {
                     result.setInteresting(bugType);
                 }

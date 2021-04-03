@@ -25,8 +25,8 @@ import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
- * Java main application to compute defect density for a bug collection (stored
- * as an XML collection)
+ * Java main application to compute defect density for a bug collection (stored as an XML
+ * collection)
  *
  * @author William Pugh
  */
@@ -37,7 +37,6 @@ public class DefectDensity {
             System.out.print("\t");
         }
         System.out.println();
-
     }
 
     public static double density(int bugs, int ncss) {
@@ -65,7 +64,11 @@ public class DefectDensity {
         ProjectStats stats = origCollection.getProjectStats();
         printRow("kind", "name", "density/KNCSS", "bugs", "NCSS");
         double projectDensity = density(stats.getTotalBugs(), stats.getCodeSize());
-        printRow("project", origCollection.getCurrentAppVersion().getReleaseName(), projectDensity, stats.getTotalBugs(),
+        printRow(
+                "project",
+                origCollection.getCurrentAppVersion().getReleaseName(),
+                projectDensity,
+                stats.getTotalBugs(),
                 stats.getCodeSize());
         for (PackageStats p : stats.getPackageStats()) {
             if (p.getTotalBugs() > 4) {
@@ -86,7 +89,5 @@ public class DefectDensity {
                 }
             }
         }
-
     }
-
 }

@@ -19,17 +19,13 @@
 
 package edu.umd.cs.findbugs.ba;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class XMethodParameter implements Comparable<XMethodParameter> {
     /**
      * Create a new Method parameter reference
      *
-     * @param m
-     *            the method of which this is a parameter to
-     * @param p
-     *            the parameter index (0 for first parameter)
+     * @param m the method of which this is a parameter to
+     * @param p the parameter index (0 for first parameter)
      */
     public XMethodParameter(XMethod m, int p) {
         method = m;

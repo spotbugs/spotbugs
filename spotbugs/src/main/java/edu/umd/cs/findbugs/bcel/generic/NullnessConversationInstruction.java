@@ -24,9 +24,7 @@ import org.apache.bcel.generic.ConversionInstruction;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.Visitor;
 
-/** A synthetic instruction that converts a the nullness of a reference to a boolean value.
- *
- */
+/** A synthetic instruction that converts a the nullness of a reference to a boolean value. */
 public abstract class NullnessConversationInstruction extends ConversionInstruction {
 
     protected NullnessConversationInstruction(short opcode) {
@@ -54,10 +52,9 @@ public abstract class NullnessConversationInstruction extends ConversionInstruct
     }
 
     /**
-     * Call corresponding visitor method(s). The order is:
-     * Call visitor methods of implemented interfaces first, then
-     * call methods according to the class hierarchy in descending order,
-     * i.e., the most specific visitXXX() call comes last.
+     * Call corresponding visitor method(s). The order is: Call visitor methods of implemented
+     * interfaces first, then call methods according to the class hierarchy in descending order, i.e.,
+     * the most specific visitXXX() call comes last.
      *
      * @param v Visitor object
      */

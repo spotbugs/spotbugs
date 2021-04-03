@@ -18,19 +18,15 @@
  */
 package de.tobject.findbugs.view.properties;
 
-import org.eclipse.jface.viewers.IFilter;
-
 import de.tobject.findbugs.view.explorer.BugGroup;
 import de.tobject.findbugs.view.explorer.GroupType;
+import org.eclipse.jface.viewers.IFilter;
 
-/**
- * @author Andrei
- */
+/** @author Andrei */
 public class BugPatternFilter implements IFilter {
 
     @Override
     public boolean select(Object toTest) {
         return (toTest instanceof BugGroup) && ((BugGroup) toTest).getType() == GroupType.Pattern;
     }
-
 }

@@ -1,19 +1,16 @@
 /**
- * Find Security Bugs
- * Copyright (c) Philippe Arteau, All rights reserved.
+ * Find Security Bugs Copyright (c) Philippe Arteau, All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3.0 of the License, or (at your option) any later version.
+ * <p>This library is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; either version
+ * 3.0 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * <p>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library.
+ * <p>You should have received a copy of the GNU Lesser General Public License along with this
+ * library.
  */
 package edu.umd.cs.findbugs.test.service;
 
@@ -27,8 +24,7 @@ public class ClassFileLocator {
     private static final String PREFIX = "file:";
 
     /**
-     * @param path
-     *            class name
+     * @param path class name
      * @return Full path to the class file base on class name.
      */
     public String getClassFilePath(String path) {
@@ -45,7 +41,7 @@ public class ClassFileLocator {
     public String getJspFilePath(String path) {
         ClassLoader cl = getClass().getClassLoader();
 
-        //This is subject to change base on the JSP compiler implementation
+        // This is subject to change base on the JSP compiler implementation
         String generatedClassName = path.replaceAll("_", "_005f").replace(".jsp", "_jsp");
         URL url = cl.getResource("jsp/" + generatedClassName + ".class");
         if (url == null) {

@@ -19,9 +19,17 @@
 
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.FindBugsJob;
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.builder.FindBugsWorker;
+import de.tobject.findbugs.builder.ResourceUtils;
+import de.tobject.findbugs.builder.WorkItem;
+import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.view.FindBugsPerspectiveFactory;
+import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -50,16 +58,6 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
-
-import de.tobject.findbugs.FindBugsJob;
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.builder.FindBugsWorker;
-import de.tobject.findbugs.builder.ResourceUtils;
-import de.tobject.findbugs.builder.WorkItem;
-import de.tobject.findbugs.preferences.FindBugsConstants;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.view.FindBugsPerspectiveFactory;
-import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 /**
  * Run FindBugs on the currently selected element(s) in the package explorer.
@@ -107,10 +105,13 @@ public class FindBugsAction implements IObjectActionDelegate {
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IWorkspaceDescription description = workspace.getDescription();
         if (!description.isAutoBuilding() && getClass().equals(FindBugsAction.class)) {
-            boolean confirm = MessageDialog.openConfirm(null, "Project -> 'Build Automatically' disabled",
-                    "You are going to run SpotBugs analysis on a not compiled or partially compiled project.\n\n"
-                            + "To get reliable analysis results, you should make sure that project is compiled first.\n\n"
-                            + "Continue with SpotBugs analysis?");
+            boolean confirm =
+                    MessageDialog.openConfirm(
+                            null,
+                            "Project -> 'Build Automatically' disabled",
+                            "You are going to run SpotBugs analysis on a not compiled or partially compiled project.\n\n"
+                                    + "To get reliable analysis results, you should make sure that project is compiled first.\n\n"
+                                    + "Continue with SpotBugs analysis?");
             if (!confirm) {
                 return;
             }
@@ -156,16 +157,16 @@ public class FindBugsAction implements IObjectActionDelegate {
     }
 
     /**
-     * Run a FindBugs analysis on the given resource, displaying a progress
-     * monitor.
+     * Run a FindBugs analysis on the given resource, displaying a progress monitor.
      *
      * @param part
-     *
-     * @param resources
-     *            The resource to run the analysis on.
+     * @param resources The resource to run the analysis on.
      */
-    protected void work(IWorkbenchPart part, final IResource resource, final List<WorkItem> resources) {
-        FindBugsJob runFindBugs = new StartedFromViewJob("Finding bugs in " + resource.getName() + "...", resource, resources, part);
+    protected void work(
+            IWorkbenchPart part, final IResource resource, final List<WorkItem> resources) {
+        FindBugsJob runFindBugs =
+                new StartedFromViewJob(
+                        "Finding bugs in " + resource.getName() + "...", resource, resources, part);
         runFindBugs.scheduleInteractive();
     }
 
@@ -173,39 +174,50 @@ public class FindBugsAction implements IObjectActionDelegate {
         if (targetPart == null) {
             return;
         }
-        ISelectionProvider selProvider = (ISelectionProvider) targetPart.getAdapter(ISelectionProvider.class);
+        ISelectionProvider selProvider =
+                (ISelectionProvider) targetPart.getAdapter(ISelectionProvider.class);
         if (!(selProvider instanceof TreeViewer)) {
             return;
         }
         final TreeViewer viewer = (TreeViewer) selProvider;
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                if (viewer.getControl().isDisposed()) {
-                    return;
-                }
-                for (WorkItem workItem : resources) {
-                    if (workItem.getMarkerTarget() instanceof IProject) {
-                        // this element has to be refreshed manually, because
-                        // there is no one real
-                        // resource associated with it => no resource change
-                        // notification after
-                        // creating a marker...
-                        viewer.refresh(workItem.getCorespondingJavaElement(), true);
-                    }
-                }
-            }
-        });
+        Display.getDefault()
+                .asyncExec(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                if (viewer.getControl().isDisposed()) {
+                                    return;
+                                }
+                                for (WorkItem workItem : resources) {
+                                    if (workItem.getMarkerTarget() instanceof IProject) {
+                                        // this element has to be refreshed manually, because
+                                        // there is no one real
+                                        // resource associated with it => no resource change
+                                        // notification after
+                                        // creating a marker...
+                                        viewer.refresh(workItem.getCorespondingJavaElement(), true);
+                                    }
+                                }
+                            }
+                        });
     }
 
     protected static void askUserToSwitch(IWorkbenchPart part, int warningsNumber) {
         final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-        String message = "SpotBugs analysis finished, " + warningsNumber
-                + " warnings found.\n\nSwitch to the SpotBugs perspective?";
+        String message =
+                "SpotBugs analysis finished, "
+                        + warningsNumber
+                        + " warnings found.\n\nSwitch to the SpotBugs perspective?";
 
-        MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoCancelQuestion(null, "SpotBugs analysis finished",
-                message, "Remember the choice and do not ask me in the future", false, store,
-                FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
+        MessageDialogWithToggle dialog =
+                MessageDialogWithToggle.openYesNoCancelQuestion(
+                        null,
+                        "SpotBugs analysis finished",
+                        message,
+                        "Remember the choice and do not ask me in the future",
+                        false,
+                        store,
+                        FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
 
         boolean remember = dialog.getToggleState();
         int returnCode = dialog.getReturnCode();
@@ -249,14 +261,15 @@ public class FindBugsAction implements IObjectActionDelegate {
         }
     }
 
-    private final static class StartedFromViewJob extends FindBugsJob {
+    private static final class StartedFromViewJob extends FindBugsJob {
         private final List<WorkItem> resources;
 
         private final IResource resource;
 
         private final IWorkbenchPart targetPart;
 
-        private StartedFromViewJob(String name, IResource resource, List<WorkItem> resources, IWorkbenchPart targetPart) {
+        private StartedFromViewJob(
+                String name, IResource resource, List<WorkItem> resources, IWorkbenchPart targetPart) {
             super(name, resource);
             this.resources = resources;
             this.resource = resource;
@@ -288,24 +301,26 @@ public class FindBugsAction implements IObjectActionDelegate {
                 return;
             }
 
-            Display.getDefault().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    if (isFindBugsPerspectiveActive(targetPart)) {
-                        return;
-                    }
-                    final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-                    final boolean ask = store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
-                    if (ask && !dialogAlreadyShown) {
-                        dialogAlreadyShown = true;
-                        askUserToSwitch(targetPart, allMarkers.length);
-                    } else if (store.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS)) {
-                        switchPerspective(targetPart);
-                    }
-                }
-            });
+            Display.getDefault()
+                    .asyncExec(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (isFindBugsPerspectiveActive(targetPart)) {
+                                        return;
+                                    }
+                                    final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+                                    final boolean ask =
+                                            store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
+                                    if (ask && !dialogAlreadyShown) {
+                                        dialogAlreadyShown = true;
+                                        askUserToSwitch(targetPart, allMarkers.length);
+                                    } else if (store.getBoolean(
+                                            FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS)) {
+                                        switchPerspective(targetPart);
+                                    }
+                                }
+                            });
         }
-
     }
-
 }

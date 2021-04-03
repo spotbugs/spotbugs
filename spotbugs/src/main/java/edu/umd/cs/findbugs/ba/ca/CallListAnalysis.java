@@ -18,15 +18,6 @@
  */
 package edu.umd.cs.findbugs.ba.ca;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-
 import edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
@@ -36,6 +27,13 @@ import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReversePostOrder;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 
 public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
     private final DepthFirstSearch dfs;
@@ -106,7 +104,8 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
     }
 
     @Override
-    public void meetInto(CallList start, Edge edge, CallList result) throws DataflowAnalysisException {
+    public void meetInto(CallList start, Edge edge, CallList result)
+            throws DataflowAnalysisException {
         CallList merge = CallList.merge(start, result);
         result.copyFrom(merge);
     }

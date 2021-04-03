@@ -19,18 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.JavaClass;
-
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.SourceFinder;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * BugReporter to output warnings in Emacs format.
@@ -46,8 +43,10 @@ public class EmacsBugReporter extends TextUIBugReporter {
     @Override
     public void observeClass(ClassDescriptor classDescriptor) {
         try {
-            JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor.toDottedClassName());
-            String sourceFileName = fileNameFor(javaClass.getPackageName(), javaClass.getSourceFileName());
+            JavaClass javaClass =
+                    AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor.toDottedClassName());
+            String sourceFileName =
+                    fileNameFor(javaClass.getPackageName(), javaClass.getSourceFileName());
             sourceFileNameCache.put(javaClass.getClassName(), sourceFileName);
         } catch (ClassNotFoundException e) {
             // Ignore - should not happen
@@ -102,7 +101,8 @@ public class EmacsBugReporter extends TextUIBugReporter {
             outputStream.print(" (H) ");
             break;
         default:
-            throw new IllegalArgumentException("Invalid priority " + bugInstance.getPriority() + " for " + bugInstance);
+            throw new IllegalArgumentException(
+                    "Invalid priority " + bugInstance.getPriority() + " for " + bugInstance);
         }
 
         outputStream.println();
@@ -125,7 +125,6 @@ public class EmacsBugReporter extends TextUIBugReporter {
     public @CheckForNull BugCollection getBugCollection() {
         return null;
     }
-
 }
 
 /*

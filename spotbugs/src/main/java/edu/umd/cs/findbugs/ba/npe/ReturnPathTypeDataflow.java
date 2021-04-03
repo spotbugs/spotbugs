@@ -32,10 +32,8 @@ public class ReturnPathTypeDataflow extends Dataflow<ReturnPathType, ReturnPathT
     /**
      * Constructor.
      *
-     * @param cfg
-     *            CFG of the method being analyzed
-     * @param analysis
-     *            the analysis
+     * @param cfg CFG of the method being analyzed
+     * @param analysis the analysis
      */
     public ReturnPathTypeDataflow(CFG cfg, ReturnPathTypeAnalysis analysis) {
         super(cfg, analysis);

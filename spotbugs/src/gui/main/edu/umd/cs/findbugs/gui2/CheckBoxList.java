@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.gui2;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
@@ -34,7 +33,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * A list of JCheckBoxes! How convenient!
  *
- * Adapted from: http://www.devx.com/tips/Tip/5342
+ * <p>Adapted from: http://www.devx.com/tips/Tip/5342
  *
  * @author Trevor Harmon
  */
@@ -45,18 +44,19 @@ public class CheckBoxList<E> extends JList<E> {
     public CheckBoxList() {
         setCellRenderer(new CellRenderer());
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                int index = locationToIndex(e.getPoint());
+        addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        int index = locationToIndex(e.getPoint());
 
-                if (index != -1) {
-                    JCheckBox checkbox = (JCheckBox) getModel().getElementAt(index);
-                    checkbox.setSelected(!checkbox.isSelected());
-                    repaint();
-                }
-            }
-        });
+                        if (index != -1) {
+                            JCheckBox checkbox = (JCheckBox) getModel().getElementAt(index);
+                            checkbox.setSelected(!checkbox.isSelected());
+                            repaint();
+                        }
+                    }
+                });
 
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
@@ -77,8 +77,8 @@ public class CheckBoxList<E> extends JList<E> {
 
     protected class CellRenderer implements ListCellRenderer<E> {
         @Override
-        public Component getListCellRendererComponent(JList<? extends E> list, E value, int index, boolean isSelected,
-                boolean cellHasFocus) {
+        public Component getListCellRendererComponent(
+                JList<? extends E> list, E value, int index, boolean isSelected, boolean cellHasFocus) {
             JCheckBox checkbox = (JCheckBox) value;
             checkbox.setBackground(isSelected ? getSelectionBackground() : getBackground());
             checkbox.setForeground(isSelected ? getSelectionForeground() : getForeground());
@@ -86,11 +86,9 @@ public class CheckBoxList<E> extends JList<E> {
             checkbox.setFont(getFont());
             checkbox.setFocusPainted(false);
             checkbox.setBorderPainted(true);
-            checkbox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : noFocusBorder);
+            checkbox.setBorder(
+                    isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : noFocusBorder);
             return checkbox;
         }
-
-
-
     }
 }

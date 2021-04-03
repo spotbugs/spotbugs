@@ -19,17 +19,14 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.classfile.Method;
 
 public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, ValueNumberAnalysis> {
     public ValueNumberDataflow(CFG cfg, ValueNumberAnalysis analysis) {
@@ -37,11 +34,10 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
     }
 
     /**
-     * Build map of value numbers to param indices. The first parameter has
-     * index 0, the second has index 1, etc.
+     * Build map of value numbers to param indices. The first parameter has index 0, the second has
+     * index 1, etc.
      *
-     * @param method
-     *            the method analyzed by the ValueNumberAnalysis
+     * @param method the method analyzed by the ValueNumberAnalysis
      * @return the value number to parameter index map
      */
     public Map<ValueNumber, Integer> getValueNumberToParamMap(Method method) {
@@ -49,16 +45,15 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
     }
 
     /**
-     * Build map of value numbers to param indices. The first parameter has
-     * index 0, the second has index 1, etc.
+     * Build map of value numbers to param indices. The first parameter has index 0, the second has
+     * index 1, etc.
      *
-     * @param methodSignature
-     *            signature of the method analyzed by the ValueNumberAnalysis
-     * @param isStatic
-     *            true if the method is static, false if not
+     * @param methodSignature signature of the method analyzed by the ValueNumberAnalysis
+     * @param isStatic true if the method is static, false if not
      * @return the value number to parameter index map
      */
-    public Map<ValueNumber, Integer> getValueNumberToParamMap(String methodSignature, boolean isStatic) {
+    public Map<ValueNumber, Integer> getValueNumberToParamMap(
+            String methodSignature, boolean isStatic) {
         HashMap<ValueNumber, Integer> valueNumberToParamMap = new HashMap<>();
 
         ValueNumberFrame frameAtEntry = getStartFact(getCFG().getEntry());
@@ -74,6 +69,5 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
 
     public @CheckForNull @DottedClassName String getClassName(ValueNumber v) {
         return getAnalysis().getClassName(v);
-
     }
 }

@@ -19,13 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -36,13 +29,18 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
-/**
- * @author Tagir Valeev
- */
+/** @author Tagir Valeev */
 public class FindComparatorProblems extends OpcodeStackDetector {
-    private static final MethodDescriptor FLOAT_DESCRIPTOR = new MethodDescriptor("java/lang/Float", "compare", "(FF)I", true);
-    private static final MethodDescriptor DOUBLE_DESCRIPTOR = new MethodDescriptor("java/lang/Double", "compare", "(DD)I", true);
+    private static final MethodDescriptor FLOAT_DESCRIPTOR =
+            new MethodDescriptor("java/lang/Float", "compare", "(FF)I", true);
+    private static final MethodDescriptor DOUBLE_DESCRIPTOR =
+            new MethodDescriptor("java/lang/Double", "compare", "(DD)I", true);
 
     private boolean isComparator;
     private int lastEmptyStackPC;
@@ -55,8 +53,10 @@ public class FindComparatorProblems extends OpcodeStackDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        boolean comparator = Subtypes2.instanceOf(classContext.getClassDescriptor(), "java.util.Comparator");
-        boolean comparable = Subtypes2.instanceOf(classContext.getClassDescriptor(), "java.lang.Comparable");
+        boolean comparator =
+                Subtypes2.instanceOf(classContext.getClassDescriptor(), "java.util.Comparator");
+        boolean comparable =
+                Subtypes2.instanceOf(classContext.getClassDescriptor(), "java.lang.Comparable");
         isComparator = comparator;
         if (comparator || comparable) {
             super.visitClassContext(classContext);
@@ -66,8 +66,9 @@ public class FindComparatorProblems extends OpcodeStackDetector {
     @Override
     public boolean shouldVisitCode(Code obj) {
         return !getMethodDescriptor().isStatic()
-                && ((isComparator && getMethodName().equals("compare") && getMethodSig().endsWith(")I")) || ((getMethodName()
-                        .equals("compareTo") && getMethodSig().equals("(L" + getClassName() + ";)I"))));
+                && ((isComparator && getMethodName().equals("compare") && getMethodSig().endsWith(")I"))
+                        || ((getMethodName().equals("compareTo")
+                                && getMethodSig().equals("(L" + getClassName() + ";)I"))));
     }
 
     @Override
@@ -83,7 +84,8 @@ public class FindComparatorProblems extends OpcodeStackDetector {
         if (getStack().getStackDepth() == 0) {
             this.lastEmptyStackPC = getPC();
         }
-        if ((seen == Const.DCMPG || seen == Const.DCMPL || seen == Const.FCMPL || seen == Const.FCMPG) && getStack().getStackDepth() == 2) {
+        if ((seen == Const.DCMPG || seen == Const.DCMPL || seen == Const.FCMPL || seen == Const.FCMPG)
+                && getStack().getStackDepth() == 2) {
             int[] startEnd = new int[] { this.lastEmptyStackPC, getPC() };
             for (Iterator<int[]> iterator = twoDoublesInStack.iterator(); iterator.hasNext();) {
                 int[] oldStartEnd = iterator.next();
@@ -91,12 +93,15 @@ public class FindComparatorProblems extends OpcodeStackDetector {
                     Item item1 = getStack().getStackItem(0);
                     Item item2 = getStack().getStackItem(1);
                     accumulator.accumulateBug(
-                            new BugInstance("CO_COMPARETO_INCORRECT_FLOATING", NORMAL_PRIORITY).addClassAndMethod(this)
+                            new BugInstance("CO_COMPARETO_INCORRECT_FLOATING", NORMAL_PRIORITY)
+                                    .addClassAndMethod(this)
                                     .addType(item1.getSignature())
-                                    .addMethod(item1.getSignature().equals("D") ? DOUBLE_DESCRIPTOR : FLOAT_DESCRIPTOR).describe(
-                                            MethodAnnotation.SHOULD_CALL)
+                                    .addMethod(
+                                            item1.getSignature().equals("D") ? DOUBLE_DESCRIPTOR : FLOAT_DESCRIPTOR)
+                                    .describe(MethodAnnotation.SHOULD_CALL)
                                     .addValueSource(item1, this)
-                                    .addValueSource(item2, this), this);
+                                    .addValueSource(item2, this),
+                            this);
                     iterator.remove();
                     return;
                 }
@@ -108,7 +113,9 @@ public class FindComparatorProblems extends OpcodeStackDetector {
             Object o = top.getConstant();
             if (o instanceof Integer && ((Integer) o).intValue() == Integer.MIN_VALUE) {
                 accumulator.accumulateBug(
-                        new BugInstance(this, "CO_COMPARETO_RESULTS_MIN_VALUE", NORMAL_PRIORITY).addClassAndMethod(this), this);
+                        new BugInstance(this, "CO_COMPARETO_RESULTS_MIN_VALUE", NORMAL_PRIORITY)
+                                .addClassAndMethod(this),
+                        this);
             }
         }
     }

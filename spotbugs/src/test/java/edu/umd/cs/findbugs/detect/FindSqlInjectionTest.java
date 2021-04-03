@@ -24,9 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class FindSqlInjectionTest {
 
     @Test

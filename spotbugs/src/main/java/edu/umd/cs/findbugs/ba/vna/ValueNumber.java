@@ -23,15 +23,13 @@ import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
- * <p>A "value number" is a value produced somewhere in a methods. We use value
- * numbers as dataflow values in Frames. When two frame slots have the same
- * value number, then the same value is in both of those slots.
- * </p>
- * <p>
- * Instances of ValueNumbers produced by the same {@link ValueNumberFactory
- * ValueNumberFactory} are unique, so reference equality may be used to
- * determine whether or not two value numbers are the same. In general,
- * ValueNumbers from different factories cannot be compared.</p>
+ * A "value number" is a value produced somewhere in a methods. We use value numbers as dataflow
+ * values in Frames. When two frame slots have the same value number, then the same value is in both
+ * of those slots.
+ *
+ * <p>Instances of ValueNumbers produced by the same {@link ValueNumberFactory ValueNumberFactory}
+ * are unique, so reference equality may be used to determine whether or not two value numbers are
+ * the same. In general, ValueNumbers from different factories cannot be compared.
  *
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
@@ -70,24 +68,25 @@ public class ValueNumber implements Comparable<ValueNumber> {
     }
 
     static {
-        Util.runLogAtShutdown(() -> System.out.println("Value number statistics: " + valueNumbersCreated + " created, " + valueNumbersReused
-                + " reused"));
+        Util.runLogAtShutdown(
+                () -> System.out.println(
+                        "Value number statistics: "
+                                + valueNumbersCreated
+                                + " created, "
+                                + valueNumbersReused
+                                + " reused"));
     }
 
-    /**
-     * The value number.
-     */
+    /** The value number. */
     final int number;
 
     /**
-     * Flags representing meta information about the value. When value numbers are merged,
-     * their flags should be the flags common to both.
+     * Flags representing meta information about the value. When value numbers are merged, their flags
+     * should be the flags common to both.
      */
     final int flags;
 
-    /**
-     * Flag specifying that this value was the return value of a called method.
-     */
+    /** Flag specifying that this value was the return value of a called method. */
     public static final int RETURN_VALUE = 1;
 
     public static final int ARRAY_VALUE = 2;
@@ -101,8 +100,7 @@ public class ValueNumber implements Comparable<ValueNumber> {
     /**
      * Constructor.
      *
-     * @param number
-     *            the value number
+     * @param number the value number
      */
     private ValueNumber(int number) {
         this.number = number;
@@ -154,6 +152,5 @@ public class ValueNumber implements Comparable<ValueNumber> {
             return result;
         }
         return flags - other.flags;
-
     }
 }

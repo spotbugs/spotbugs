@@ -19,14 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.ObjectType;
-
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
  * StreamFactory for stream objects loaded from instance fields.
@@ -39,23 +38,20 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
     private String bugPatternType;
 
     /**
-     * Constructor. By default, Streams created by this factory will not be
-     * marked as interesting. The setBugPatternType() method should be called to
-     * make the factory produce interesting streams.
+     * Constructor. By default, Streams created by this factory will not be marked as interesting. The
+     * setBugPatternType() method should be called to make the factory produce interesting streams.
      *
-     * @param streamBaseClass
-     *            the base class of the streams produced by the factory
+     * @param streamBaseClass the base class of the streams produced by the factory
      */
     public InstanceFieldLoadStreamFactory(String streamBaseClass) {
         this.streamBaseClass = streamBaseClass;
     }
 
     /**
-     * Set the bug pattern type reported for unclosed streams loaded from this
-     * field. This makes the created streams "interesting".
+     * Set the bug pattern type reported for unclosed streams loaded from this field. This makes the
+     * created streams "interesting".
      *
-     * @param bugPatternType
-     *            the bug pattern type
+     * @param bugPatternType the bug pattern type
      */
     public InstanceFieldLoadStreamFactory setBugPatternType(String bugPatternType) {
         this.bugPatternType = bugPatternType;
@@ -63,7 +59,10 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
     }
 
     @Override
-    public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
+    public Stream createStream(
+            Location location,
+            ObjectType type,
+            ConstantPoolGen cpg,
             RepositoryLookupFailureCallback lookupFailureCallback) {
 
         Instruction ins = location.getHandle().getInstruction();

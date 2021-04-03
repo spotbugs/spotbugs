@@ -7,9 +7,7 @@ import org.hamcrest.TypeSafeMatcher;
 
 /**
  * @since ?
- *
- * @param <T>
- *            matcher item type
+ * @param <T> matcher item type
  */
 public final class CountMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
 
@@ -22,19 +20,17 @@ public final class CountMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
     }
 
     /**
-     * Creates a matcher for {@link Iterable}s that only matches if exactly {@code count} items match the specified
-     * {@code matcher}.
+     * Creates a matcher for {@link Iterable}s that only matches if exactly {@code count} items match
+     * the specified {@code matcher}.
      *
-     * @param matcher
-     *            A non-{@code null} matcher that must match exactly {@code count} times.
-     * @param <T>
-     *            matcher item type
-     * @param count
-     *            How many times the {@code matcher} must match.
+     * @param matcher A non-{@code null} matcher that must match exactly {@code count} times.
+     * @param <T> matcher item type
+     * @param count How many times the {@code matcher} must match.
      * @return new matcher instance
      */
     @Factory
-    public static <T> Matcher<Iterable<T>> containsExactly(final int count, final Matcher<T> matcher) {
+    public static <T> Matcher<Iterable<T>> containsExactly(
+            final int count, final Matcher<T> matcher) {
         return new CountMatcher<>(count, matcher);
     }
 
@@ -53,6 +49,9 @@ public final class CountMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
 
     @Override
     public void describeTo(final Description desc) {
-        desc.appendText("Iterable containing exactly ").appendValue(count).appendText(" ").appendDescriptionOf(matcher);
+        desc.appendText("Iterable containing exactly ")
+                .appendValue(count)
+                .appendText(" ")
+                .appendDescriptionOf(matcher);
     }
 }

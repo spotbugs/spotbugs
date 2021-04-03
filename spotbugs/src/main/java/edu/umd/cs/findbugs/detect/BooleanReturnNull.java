@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 
-/**
- * @author alison
- */
+/** @author alison */
 public class BooleanReturnNull extends TypeReturnNull {
 
     public BooleanReturnNull(BugReporter bugReporter) {
@@ -38,8 +36,12 @@ public class BooleanReturnNull extends TypeReturnNull {
 
     @Override
     protected void accumulateBug() {
-        bugAccumulator.accumulateBug(new BugInstance(this, "NP_BOOLEAN_RETURN_NULL",
-                getMethodName().startsWith("is") ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this), this);
+        bugAccumulator.accumulateBug(
+                new BugInstance(
+                        this,
+                        "NP_BOOLEAN_RETURN_NULL",
+                        getMethodName().startsWith("is") ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                                .addClassAndMethod(this),
+                this);
     }
-
 }

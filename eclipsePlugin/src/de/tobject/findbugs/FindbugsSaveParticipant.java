@@ -18,16 +18,14 @@
  */
 package de.tobject.findbugs;
 
+import de.tobject.findbugs.util.ProjectUtilities;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ISaveContext;
 import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.resources.ResourcesPlugin;
 
-import de.tobject.findbugs.util.ProjectUtilities;
-
 /**
- * Callback object responsible for saving the uncomitted state of any
- * FindBugs-enabled projects.
+ * Callback object responsible for saving the uncomitted state of any FindBugs-enabled projects.
  *
  * @author David Hovemeyer
  */
@@ -78,9 +76,9 @@ public class FindbugsSaveParticipant implements ISaveParticipant {
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not save bug collection for project " + project.getName());
+                FindbugsPlugin.getDefault()
+                        .logException(e, "Could not save bug collection for project " + project.getName());
             }
         }
     }
-
 }

@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public interface IClassConstants {
     public static final int MAGIC = 0xCAFEBABE;
 
@@ -82,5 +80,4 @@ public interface IClassConstants {
     public static final int ACC_NATIVE = 0x0100;
 
     public static final int ACC_STRICT = 0x0800;
-
 }

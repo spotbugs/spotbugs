@@ -18,17 +18,15 @@
  */
 package de.tobject.findbugs.quickfix.test;
 
-import java.io.IOException;
-
-import org.eclipse.core.runtime.CoreException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import de.tobject.findbugs.test.AbstractQuickfixTest;
 import de.tobject.findbugs.test.TestScenario;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateAndOddnessCheckResolution;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckResolution;
+import java.io.IOException;
+import org.eclipse.core.runtime.CoreException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * This class tests the quickfix resolutions.
@@ -50,18 +48,23 @@ public class QuickfixTest extends AbstractQuickfixTest {
     public void testChangePublicToProtectedResolution() throws CoreException, IOException {
         enableBugCategory("MALICIOUS_CODE");
 
-        doTestQuickfixResolution("ChangePublicToProtectedResolutionExample.java", "FI_PUBLIC_SHOULD_BE_PROTECTED");
+        doTestQuickfixResolution(
+                "ChangePublicToProtectedResolutionExample.java", "FI_PUBLIC_SHOULD_BE_PROTECTED");
     }
 
     @Test
     public void testCreateAndOddnessCheckResolution() throws CoreException, IOException {
-        doTestQuickfixResolution("CreateAndOddnessCheckResolutionExample.java", CreateAndOddnessCheckResolution.class,
+        doTestQuickfixResolution(
+                "CreateAndOddnessCheckResolutionExample.java",
+                CreateAndOddnessCheckResolution.class,
                 "IM_BAD_CHECK_FOR_ODD");
     }
 
     @Test
     public void testCreateDoPrivilegedBlockResolution() throws CoreException, IOException {
-        doTestQuickfixResolution("CreateDoPrivilegedBlockResolutionExample.java", "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED");
+        doTestQuickfixResolution(
+                "CreateDoPrivilegedBlockResolutionExample.java",
+                "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED");
     }
 
     @Test
@@ -73,8 +76,10 @@ public class QuickfixTest extends AbstractQuickfixTest {
 
     @Test
     public void testCreateRemainderOddnessCheckResolution() throws CoreException, IOException {
-        doTestQuickfixResolution("CreateRemainderOddnessCheckResolutionExample.java",
-                CreateRemainderOddnessCheckResolution.class, "IM_BAD_CHECK_FOR_ODD");
+        doTestQuickfixResolution(
+                "CreateRemainderOddnessCheckResolutionExample.java",
+                CreateRemainderOddnessCheckResolution.class,
+                "IM_BAD_CHECK_FOR_ODD");
     }
 
     @Test
@@ -91,7 +96,8 @@ public class QuickfixTest extends AbstractQuickfixTest {
 
     @Test
     public void testMakeInnerTypeStaticResolution() throws CoreException, IOException {
-        doTestQuickfixResolution("MakeInnerTypeStaticResolutionExample.java", "SIC_INNER_SHOULD_BE_STATIC");
+        doTestQuickfixResolution(
+                "MakeInnerTypeStaticResolutionExample.java", "SIC_INNER_SHOULD_BE_STATIC");
     }
 
     @Test
@@ -120,7 +126,6 @@ public class QuickfixTest extends AbstractQuickfixTest {
         doTestQuickfixResolution("UseEqualsResolutionExample.java", pack.asList());
     }
 
-
     @Test
     public void testUseValueOfResolution() throws CoreException, IOException {
         QuickFixTestPackager pack = new QuickFixTestPackager();
@@ -135,7 +140,4 @@ public class QuickfixTest extends AbstractQuickfixTest {
     protected String getOutputFolderName() {
         return "/quickfixOutput/";
     }
-
-
-
 }

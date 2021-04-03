@@ -19,17 +19,15 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.log.Profiler;
+import javax.annotation.CheckForNull;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 @Deprecated
-public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnotation> implements INullnessAnnotationDatabase {
+public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnotation>
+        implements INullnessAnnotationDatabase {
 
     public NullnessAnnotationDatabase() {
         setAddClassOnly(true);
@@ -45,14 +43,20 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
     @Override
     public boolean parameterMustBeNonNull(XMethod m, int param) {
         if (param == 0) {
-            if ("equals".equals(m.getName()) && "(Ljava/lang/Object;)Z".equals(m.getSignature()) && !m.isStatic()) {
+            if ("equals".equals(m.getName())
+                    && "(Ljava/lang/Object;)Z".equals(m.getSignature())
+                    && !m.isStatic()) {
                 return false;
-            } else if ("main".equals(m.getName()) && "([Ljava/lang/String;)V".equals(m.getSignature()) && m.isStatic()
+            } else if ("main".equals(m.getName())
+                    && "([Ljava/lang/String;)V".equals(m.getSignature())
+                    && m.isStatic()
                     && m.isPublic()) {
                 return true;
             } else if (TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m)) {
                 return true;
-            } else if ("compareTo".equals(m.getName()) && m.getSignature().endsWith(";)Z") && !m.isStatic()) {
+            } else if ("compareTo".equals(m.getName())
+                    && m.getSignature().endsWith(";)Z")
+                    && !m.isStatic()) {
                 return true;
             }
         }
@@ -61,7 +65,6 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
         }
         XMethodParameter xmp = new XMethodParameter(m, param);
         NullnessAnnotation resolvedAnnotation = getResolvedAnnotation(xmp, true);
-
 
         return resolvedAnnotation == NullnessAnnotation.NONNULL;
     }
@@ -80,14 +83,20 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                 // bug code for it
                 int parameterNumber = mp.getParameterNumber();
                 if (parameterNumber == 0) {
-                    if ("equals".equals(m.getName()) && "(Ljava/lang/Object;)Z".equals(m.getSignature()) && !m.isStatic()) {
+                    if ("equals".equals(m.getName())
+                            && "(Ljava/lang/Object;)Z".equals(m.getSignature())
+                            && !m.isStatic()) {
                         return NullnessAnnotation.CHECK_FOR_NULL;
-                    } else if ("main".equals(m.getName()) && "([Ljava/lang/String;)V".equals(m.getSignature()) && m.isStatic()
+                    } else if ("main".equals(m.getName())
+                            && "([Ljava/lang/String;)V".equals(m.getSignature())
+                            && m.isStatic()
                             && m.isPublic()) {
                         return NullnessAnnotation.NONNULL;
                     } else if (TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m)) {
                         return NullnessAnnotation.NONNULL;
-                    } else if ("compareTo".equals(m.getName()) && m.getSignature().endsWith(";)Z") && !m.isStatic()) {
+                    } else if ("compareTo".equals(m.getName())
+                            && m.getSignature().endsWith(";)Z")
+                            && !m.isStatic()) {
                         return NullnessAnnotation.NONNULL;
                     }
                 }
@@ -96,8 +105,10 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                 String name = m.getName();
                 String signature = m.getSignature();
                 if (!m.isStatic()
-                        && ("clone".equals(name) && "()Ljava/lang/Object;".equals(signature) || "toString".equals(name)
-                                && "()Ljava/lang/String;".equals(signature) || m.isPrivate() && "readResolve".equals(name)
+                        && ("clone".equals(name) && "()Ljava/lang/Object;".equals(signature)
+                                || "toString".equals(name) && "()Ljava/lang/String;".equals(signature)
+                                || m.isPrivate()
+                                        && "readResolve".equals(name)
                                         && "()Ljava/lang/Object;".equals(signature))) {
                     NullnessAnnotation result = super.getDirectAnnotation(m);
                     if (result != null) {
@@ -119,30 +130,36 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
         }
     }
 
-
-
     @Override
     public void addDefaultMethodAnnotation(String name, NullnessAnnotation annotation) {
         super.addDefaultMethodAnnotation(name, annotation);
     }
 
     @Override
-    public void addDefaultAnnotation(AnnotationDatabase.Target target, String c, NullnessAnnotation n) {
+    public void addDefaultAnnotation(
+            AnnotationDatabase.Target target, String c, NullnessAnnotation n) {
         super.addDefaultAnnotation(target, c, n);
     }
 
     @Override
-    public void addFieldAnnotation(String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
+    public void addFieldAnnotation(
+            String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
         super.addFieldAnnotation(name, name2, sig, isStatic, annotation);
     }
 
     @Override
-    public void addMethodAnnotation(String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
+    public void addMethodAnnotation(
+            String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
         super.addMethodAnnotation(name, name2, sig, isStatic, annotation);
     }
 
     @Override
-    public void addMethodParameterAnnotation(String name, String name2, String sig, boolean isStatic, int param,
+    public void addMethodParameterAnnotation(
+            String name,
+            String name2,
+            String sig,
+            boolean isStatic,
+            int param,
             NullnessAnnotation annotation) {
         super.addMethodParameterAnnotation(name, name2, sig, isStatic, param, annotation);
     }

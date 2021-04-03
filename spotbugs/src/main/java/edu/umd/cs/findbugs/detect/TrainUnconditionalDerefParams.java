@@ -25,31 +25,34 @@ import edu.umd.cs.findbugs.TrainingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
- * Training pass to find method parameters which are unconditionally
- * dereferenced. We do this by performing a backwards dataflow analysis which
- * sees which params are dereferenced on all non-implicit-exception paths from
- * the CFG entry.
+ * Training pass to find method parameters which are unconditionally dereferenced. We do this by
+ * performing a backwards dataflow analysis which sees which params are dereferenced on all
+ * non-implicit-exception paths from the CFG entry.
  *
  * @author David Hovemeyer
  */
-public class TrainUnconditionalDerefParams extends BuildUnconditionalParamDerefDatabase implements TrainingDetector {
+public class TrainUnconditionalDerefParams extends BuildUnconditionalParamDerefDatabase
+        implements TrainingDetector {
 
     public TrainUnconditionalDerefParams(BugReporter bugReporter) {
     }
 
     @Override
     public void report() {
-        AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-                AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase(),
-                AnalysisContext.UNCONDITIONAL_DEREF_DB_FILENAME, "unconditional deref database");
-        AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-                AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase(),
-                AnalysisContext.NONNULL_RETURN_DB_FILENAME, "nonnull return database");
+        AnalysisContext.currentAnalysisContext()
+                .storePropertyDatabase(
+                        AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase(),
+                        AnalysisContext.UNCONDITIONAL_DEREF_DB_FILENAME,
+                        "unconditional deref database");
+        AnalysisContext.currentAnalysisContext()
+                .storePropertyDatabase(
+                        AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase(),
+                        AnalysisContext.NONNULL_RETURN_DB_FILENAME,
+                        "nonnull return database");
     }
 
     @Override
     protected void reportBug(BugInstance bug) {
         // Ignore it
     }
-
 }

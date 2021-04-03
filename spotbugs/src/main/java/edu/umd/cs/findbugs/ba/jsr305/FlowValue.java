@@ -27,8 +27,10 @@ import javax.annotation.meta.When;
  * @author David Hovemeyer
  */
 public enum FlowValue {
-
-    TOP(0), ALWAYS(Bits.YES), NEVER(Bits.NO), UNKNOWN(Bits.YES | Bits.NO | Bits.UNCERTAIN);
+    TOP(0),
+    ALWAYS(Bits.YES),
+    NEVER(Bits.NO),
+    UNKNOWN(Bits.YES | Bits.NO | Bits.UNCERTAIN);
 
     private interface Bits {
         public static final int YES = 1;
@@ -66,10 +68,17 @@ public enum FlowValue {
     //
     private static final FlowValue[][] mergeMatrix = {
         // TOP ALWAYS NEVER UNKNOWN
-        /* TOP */{ TOP, },
-        /* ALWAYS */{ ALWAYS, ALWAYS, },
-        /* NEVER */{ NEVER, UNKNOWN, NEVER, },
-        /* UNKNOWN */{ UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN }, };
+        /* TOP */ {
+            TOP,
+        },
+        /* ALWAYS */ {
+            ALWAYS, ALWAYS,
+        },
+        /* NEVER */ {
+            NEVER, UNKNOWN, NEVER,
+        },
+        /* UNKNOWN */ { UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN },
+    };
 
     public static final FlowValue meet(FlowValue a, FlowValue b) {
         int aIndex = a.ordinal();
@@ -86,14 +95,13 @@ public enum FlowValue {
 
     /**
      * Determine whether given flow values conflict.
-     * @param forward
-     *            a forwards flow value
-     * @param backward
-     *            a backwards flow value
      *
+     * @param forward a forwards flow value
+     * @param backward a backwards flow value
      * @return true if values conflict, false otherwise
      */
-    public static boolean valuesConflict(boolean strictChecking, FlowValue forward, FlowValue backward) {
+    public static boolean valuesConflict(
+            boolean strictChecking, FlowValue forward, FlowValue backward) {
         if (forward == TOP || backward == TOP || backward == UNKNOWN || forward == backward) {
             return false;
         }
@@ -108,8 +116,7 @@ public enum FlowValue {
     /**
      * Convert a When value to a FlowValue value.
      *
-     * @param when
-     *            a When value
+     * @param when a When value
      * @return the corresponding FlowValue
      */
     public static FlowValue flowValueFromWhen(When when) {
@@ -130,21 +137,19 @@ public enum FlowValue {
     /**
      * Determine whether given backwards FlowValue conflicts with given source.
      *
-     * @param backwardsFlowValue
-     *            a backwards FlowValue
-     * @param source
-     *            SourceSinkInfo object representing a source reached by the
-     *            backwards flow value
-     * @param typeQualifierValue
-     *            TypeQualifierValue being checked
+     * @param backwardsFlowValue a backwards FlowValue
+     * @param source SourceSinkInfo object representing a source reached by the backwards flow value
+     * @param typeQualifierValue TypeQualifierValue being checked
      * @param isIdentity TODO
      * @return true if backwards value conflicts with source, false if not
      */
-    public static boolean backwardsValueConflictsWithSource(FlowValue backwardsFlowValue, SourceSinkInfo source,
-            TypeQualifierValue typeQualifierValue, boolean isIdentity) {
+    public static boolean backwardsValueConflictsWithSource(
+            FlowValue backwardsFlowValue,
+            SourceSinkInfo source,
+            TypeQualifierValue typeQualifierValue,
+            boolean isIdentity) {
 
         When sourceWhen = source.getWhen();
-
 
         if (typeQualifierValue.isStrictQualifier() && !isIdentity) {
             // strict checking
@@ -152,9 +157,10 @@ public enum FlowValue {
                     || (backwardsFlowValue == NEVER && sourceWhen != When.NEVER);
         } else {
             // NOT strict checking
-            return (backwardsFlowValue == ALWAYS && (sourceWhen == When.NEVER || sourceWhen == When.MAYBE))
-                    || (backwardsFlowValue == NEVER && (sourceWhen == When.ALWAYS || sourceWhen == When.MAYBE));
+            return (backwardsFlowValue == ALWAYS
+                    && (sourceWhen == When.NEVER || sourceWhen == When.MAYBE))
+                    || (backwardsFlowValue == NEVER
+                            && (sourceWhen == When.ALWAYS || sourceWhen == When.MAYBE));
         }
     }
-
 }

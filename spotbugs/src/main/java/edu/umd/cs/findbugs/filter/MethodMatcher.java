@@ -19,14 +19,13 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
 public class MethodMatcher extends MemberMatcher implements Matcher {
 

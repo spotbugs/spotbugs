@@ -22,20 +22,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
 
 public class SynchronizedBugReporterTest {
     @Test
     public void testSetErrorVerbosity() {
         AtomicBoolean called = new AtomicBoolean();
-        PrintingBugReporter inner = new PrintingBugReporter() {
-            @Override
-            public void setErrorVerbosity(int level) {
-                assertEquals(level, BugReporter.NORMAL);
-                called.set(true);
-            }
-        };
+        PrintingBugReporter inner =
+                new PrintingBugReporter() {
+                    @Override
+                    public void setErrorVerbosity(int level) {
+                        assertEquals(level, BugReporter.NORMAL);
+                        called.set(true);
+                    }
+                };
         new SynchronizedBugReporter(inner).setErrorVerbosity(BugReporter.NORMAL);
         assertTrue(called.get());
     }

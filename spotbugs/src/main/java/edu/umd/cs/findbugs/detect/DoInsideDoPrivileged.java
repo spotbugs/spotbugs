@@ -19,20 +19,17 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class DoInsideDoPrivileged extends BytecodeScanningDetector {
     BugAccumulator bugAccumulator;
 
@@ -45,8 +42,10 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
     @Override
     public void visit(JavaClass obj) {
 
-        isDoPrivileged = Subtypes2.instanceOf(getDottedClassName(), "java.security.PrivilegedAction")
-                || Subtypes2.instanceOf(getDottedClassName(), "java.security.PrivilegedExceptionAction");
+        isDoPrivileged =
+                Subtypes2.instanceOf(getDottedClassName(), "java.security.PrivilegedAction")
+                        || Subtypes2.instanceOf(
+                                getDottedClassName(), "java.security.PrivilegedExceptionAction");
     }
 
     @Override
@@ -69,24 +68,28 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
         if (seen == Const.INVOKEVIRTUAL && "setAccessible".equals(getNameConstantOperand())) {
             @DottedClassName
             String className = getDottedClassConstantOperand();
-            if ("java.lang.reflect.Field".equals(className) || "java.lang.reflect.Method".equals(className)) {
+            if ("java.lang.reflect.Field".equals(className)
+                    || "java.lang.reflect.Method".equals(className)) {
                 bugAccumulator.accumulateBug(
-                        new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEGED", LOW_PRIORITY).addClassAndMethod(this)
-                                .addCalledMethod(this), this);
+                        new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEGED", LOW_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addCalledMethod(this),
+                        this);
             }
-
         }
         if (seen == Const.NEW) {
             @DottedClassName
             String classOfConstructedClass = getDottedClassConstantOperand();
             if (Subtypes2.instanceOf(classOfConstructedClass, "java.lang.ClassLoader")
-                    && !("main".equals(getMethodName()) && "([Ljava/lang/String;)V".equals(getMethodSig()) && getMethod()
-                            .isStatic())) {
-                bugAccumulator.accumulateBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addClass(classOfConstructedClass), this);
+                    && !("main".equals(getMethodName())
+                            && "([Ljava/lang/String;)V".equals(getMethodSig())
+                            && getMethod().isStatic())) {
+                bugAccumulator.accumulateBug(
+                        new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED", NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addClass(classOfConstructedClass),
+                        this);
             }
         }
-
     }
-
 }

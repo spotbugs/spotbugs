@@ -18,12 +18,11 @@
  */
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
 /**
  * Matcher to select BugInstances with a particular rank or higher.
@@ -41,10 +40,8 @@ public class RankMatcher implements Matcher {
     /**
      * Constructor.
      *
-     * @param rankAsString
-     *            the rank, as a String
-     * @throws NumberFormatException
-     *             if the rank cannot be parsed
+     * @param rankAsString the rank, as a String
+     * @throws NumberFormatException if the rank cannot be parsed
      */
     public RankMatcher(String rankAsString) {
         this.rank = Integer.parseInt(rankAsString);
@@ -71,7 +68,8 @@ public class RankMatcher implements Matcher {
 
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-        XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(rank));
+        XMLAttributeList attributes =
+                new XMLAttributeList().addAttribute("value", Integer.toString(rank));
         if (disabled) {
             attributes.addAttribute("disabled", "true");
         }

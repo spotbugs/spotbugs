@@ -22,14 +22,12 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class NonNullReturnProperty extends AbstractWarningProperty {
     private NonNullReturnProperty(String name, PriorityAdjustment priorityAdjustment) {
         super(name, priorityAdjustment);
     }
 
-    public static final NonNullReturnProperty EXACT_METHOD = new NonNullReturnProperty("EXACT_METHOD",
-            PriorityAdjustment.RAISE_PRIORITY);
+    public static final NonNullReturnProperty EXACT_METHOD =
+            new NonNullReturnProperty("EXACT_METHOD", PriorityAdjustment.RAISE_PRIORITY);
 }

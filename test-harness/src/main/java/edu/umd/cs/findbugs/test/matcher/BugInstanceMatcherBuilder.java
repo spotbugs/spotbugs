@@ -1,36 +1,29 @@
 /**
- * Find Security Bugs
- * Copyright (c) Philippe Arteau, All rights reserved.
+ * Find Security Bugs Copyright (c) Philippe Arteau, All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3.0 of the License, or (at your option) any later version.
+ * <p>This library is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; either version
+ * 3.0 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * <p>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library.
+ * <p>You should have received a copy of the GNU Lesser General Public License along with this
+ * library.
  */
 package edu.umd.cs.findbugs.test.matcher;
 
+import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.test.service.ClassFileLocator;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
-
 import org.sonar.plugins.findbugs.resource.SmapParser;
 
-import edu.umd.cs.findbugs.annotations.Confidence;
-import edu.umd.cs.findbugs.test.service.ClassFileLocator;
-
-/**
- * DSL to build BugInstanceMatcher
- */
+/** DSL to build BugInstanceMatcher */
 public class BugInstanceMatcherBuilder {
 
     private String bugType;
@@ -76,8 +69,7 @@ public class BugInstanceMatcherBuilder {
 
     /**
      * @deprecated Use atJspLine for JSP line mapping
-     * @param lineNumberApprox
-     *            Line to verify accepting an offset of 1
+     * @param lineNumberApprox Line to verify accepting an offset of 1
      * @return this
      */
     @Deprecated
@@ -89,8 +81,7 @@ public class BugInstanceMatcherBuilder {
     /**
      * Define the priority of the detector
      *
-     * @param confidence
-     *            The desired confidence
+     * @param confidence The desired confidence
      * @return this
      */
     public BugInstanceMatcherBuilder withConfidence(Confidence confidence) {
@@ -108,23 +99,30 @@ public class BugInstanceMatcherBuilder {
         return this;
     }
 
-    /**
-     * @return Hamcrest Matcher
-     */
+    /** @return Hamcrest Matcher */
     public BugInstanceMatcher build() {
-        //JSP line to Java source conversion
+        // JSP line to Java source conversion
         List<Integer> multipleChoicesLine = null;
         if (jspLine != null) {
             if (jspFile != null) {
-                //Map JSP lines to Java base on the smap file if available
+                // Map JSP lines to Java base on the smap file if available
                 multipleChoicesLine = mapJspToJavaLine(jspFile, jspLine);
             } else {
                 throw new RuntimeException("JSP file not set.");
             }
         }
 
-        return new BugInstanceMatcher(bugType, className, methodName, fieldName, variableName, lineNumber,
-                lineNumberApprox, confidence, jspFile, multipleChoicesLine);
+        return new BugInstanceMatcher(
+                bugType,
+                className,
+                methodName,
+                fieldName,
+                variableName,
+                lineNumber,
+                lineNumberApprox,
+                confidence,
+                jspFile,
+                multipleChoicesLine);
     }
 
     private static List<Integer> mapJspToJavaLine(final String jspFile, final Integer jspLine) {
@@ -134,8 +132,9 @@ public class BugInstanceMatcherBuilder {
             throw new RuntimeException("SMAP File are missing. (" + smapFile + ")");
         }
         try {
-            //Convert
-            final String contents = new String(Files.readAllBytes(smapFile.toPath()), StandardCharsets.UTF_8);
+            // Convert
+            final String contents =
+                    new String(Files.readAllBytes(smapFile.toPath()), StandardCharsets.UTF_8);
             final SmapParser smapParser = new SmapParser(contents);
             final List<Integer> javaLineNumbers = smapParser.getJavaLineNumbers(jspLine);
             if (javaLineNumbers.isEmpty()) {
@@ -147,5 +146,4 @@ public class BugInstanceMatcherBuilder {
             throw new RuntimeException("Unable to open the smap file.", e);
         }
     }
-
 }

@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
+import static org.junit.Assert.*;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PrintingBugReporter;
 import edu.umd.cs.findbugs.Priorities;
@@ -8,8 +10,6 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class FindNonShortCircuitTest {
     private AnalysisContext ctx;

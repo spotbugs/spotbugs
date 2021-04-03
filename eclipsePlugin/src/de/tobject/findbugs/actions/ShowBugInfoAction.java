@@ -19,6 +19,7 @@
 
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -28,11 +29,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
-/**
- * Show details on a selected FindBugs marker.
- */
+/** Show details on a selected FindBugs marker. */
 public class ShowBugInfoAction implements IObjectActionDelegate, IEditorActionDelegate {
 
     /** The current selection. */
@@ -82,5 +79,4 @@ public class ShowBugInfoAction implements IObjectActionDelegate, IEditorActionDe
     public void setActiveEditor(IAction action, IEditorPart editor) {
         targetPart = editor.getSite().getPart();
     }
-
 }

@@ -22,19 +22,17 @@ package edu.umd.cs.findbugs.gui2;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-
 import org.junit.Test;
 
-/**
- * @author Bill Pugh
- */
+/** @author Bill Pugh */
 public class SaveTypeTest {
 
     private void check(SaveType type, String file) {
         assertEquals(type, SaveType.forFile(new File(file)));
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "DMI_HARDCODED_ABSOLUTE_FILENAME",
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+            value = "DMI_HARDCODED_ABSOLUTE_FILENAME",
             justification = "No actual disk access, just fake paths for testing")
     @Test
     public void testSaveTypes() {

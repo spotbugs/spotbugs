@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,21 +35,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-
 /**
  * Builds the database of string parameters passed from method to method unchanged.
+ *
  * @author Tagir Valeev
  */
 public class BuildStringPassthruGraph extends OpcodeStackDetector implements NonReportingDetector {
@@ -93,39 +92,75 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
                 return false;
             }
             MethodParameter other = (MethodParameter) obj;
-            return Objects.equals(md, other.md)
-                    && parameterNumber == other.parameterNumber;
+            return Objects.equals(md, other.md) && parameterNumber == other.parameterNumber;
         }
     }
 
     public static class StringPassthruDatabase {
-        private static final List<MethodDescriptor> FILENAME_STRING_METHODS = Arrays.asList(
-                new MethodDescriptor("java/io/File", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/File", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/RandomAccessFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
-                new MethodDescriptor("java/nio/file/Paths", "get", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;", true),
-                new MethodDescriptor("java/io/FileReader", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Z)V"),
-                new MethodDescriptor("java/io/FileInputStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/FileOutputStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/FileOutputStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Z)V"),
-                new MethodDescriptor("java/util/Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/util/Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
-                new MethodDescriptor("java/util/Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"),
-                new MethodDescriptor("java/util/jar/JarFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/util/jar/JarFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Z)V"),
-                new MethodDescriptor("java/util/zip/ZipFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/util/zip/ZipFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/nio/charset/Charset;)V"),
-                new MethodDescriptor("java/io/PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"));
+        private static final List<MethodDescriptor> FILENAME_STRING_METHODS =
+                Arrays.asList(
+                        new MethodDescriptor("java/io/File", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/io/File", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/io/RandomAccessFile",
+                                Const.CONSTRUCTOR_NAME,
+                                "(Ljava/lang/String;Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/nio/file/Paths",
+                                "get",
+                                "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;",
+                                true),
+                        new MethodDescriptor(
+                                "java/io/FileReader", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/io/FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/io/FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Z)V"),
+                        new MethodDescriptor(
+                                "java/io/FileInputStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/io/FileOutputStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/io/FileOutputStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Z)V"),
+                        new MethodDescriptor(
+                                "java/util/Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/util/Formatter",
+                                Const.CONSTRUCTOR_NAME,
+                                "(Ljava/lang/String;Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/util/Formatter",
+                                Const.CONSTRUCTOR_NAME,
+                                "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"),
+                        new MethodDescriptor(
+                                "java/util/jar/JarFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/util/jar/JarFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Z)V"),
+                        new MethodDescriptor(
+                                "java/util/zip/ZipFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/util/zip/ZipFile",
+                                Const.CONSTRUCTOR_NAME,
+                                "(Ljava/lang/String;Ljava/nio/charset/Charset;)V"),
+                        new MethodDescriptor(
+                                "java/io/PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/io/PrintStream",
+                                Const.CONSTRUCTOR_NAME,
+                                "(Ljava/lang/String;Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/io/PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                        new MethodDescriptor(
+                                "java/io/PrintWriter",
+                                Const.CONSTRUCTOR_NAME,
+                                "(Ljava/lang/String;Ljava/lang/String;)V"));
 
         private final Map<MethodParameter, Set<MethodParameter>> graph = new HashMap<>();
 
         /**
          * Adds edge to the string passthru graph
+         *
          * @param in callee
          * @param out caller
          */
@@ -153,12 +188,12 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
         }
 
         /**
-         * Returns methods which call directly or indirectly methods from inputs
-         * passing the parameter unchanged
+         * Returns methods which call directly or indirectly methods from inputs passing the parameter
+         * unchanged
          *
-         * @param inputs
-         *            input methods with parameter
-         * @return Map where keys are methods and values are parameter indexes which can be passed to requested methods unchanged
+         * @param inputs input methods with parameter
+         * @return Map where keys are methods and values are parameter indexes which can be passed to
+         *     requested methods unchanged
          */
         public Map<MethodDescriptor, int[]> findLinkedMethods(Set<MethodParameter> inputs) {
             Map<MethodDescriptor, int[]> result = new HashMap<>();
@@ -179,7 +214,9 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
 
         /**
          * Returns methods which parameter is the file name
-         * @return Map where keys are methods and values are parameter indexes which are used as file names
+         *
+         * @return Map where keys are methods and values are parameter indexes which are used as file
+         *     names
          */
         public Map<MethodDescriptor, int[]> getFileNameStringMethods() {
             Set<MethodParameter> fileNameStringMethods = new HashSet<>();

@@ -19,13 +19,9 @@
 
 package edu.umd.cs.findbugs.util;
 
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public class EditDistance {
-    /**
-     *
-     */
+    /** */
     private static final int INSERT_OR_DELETE_COST = 2;
 
     private static int minimum(int a, int b, int c) {
@@ -59,7 +55,6 @@ public class EditDistance {
             return INSERT_OR_DELETE_COST * Math.max(n1, n2);
         }
         return editDistance1(str1, str2);
-
     }
 
     public static int editDistance0(String str1, String str2) {
@@ -78,8 +73,11 @@ public class EditDistance {
 
         for (int i = 1; i <= n1; i++) {
             for (int j = 1; j <= n2; j++) {
-                distance[i][j] = minimum(distance[i - 1][j] + INSERT_OR_DELETE_COST, distance[i][j - 1] + INSERT_OR_DELETE_COST,
-                        distance[i - 1][j - 1] + distance(str1.charAt(i - 1), str2.charAt(j - 1)));
+                distance[i][j] =
+                        minimum(
+                                distance[i - 1][j] + INSERT_OR_DELETE_COST,
+                                distance[i][j - 1] + INSERT_OR_DELETE_COST,
+                                distance[i - 1][j - 1] + distance(str1.charAt(i - 1), str2.charAt(j - 1)));
             }
         }
 
@@ -100,8 +98,11 @@ public class EditDistance {
         for (int i = 1; i <= n1; i++) {
             distance[0] = INSERT_OR_DELETE_COST * i;
             for (int j = 1; j <= n2; j++) {
-                distance[j] = minimum(oldDistance[j] + INSERT_OR_DELETE_COST, distance[j - 1] + INSERT_OR_DELETE_COST,
-                        oldDistance[j - 1] + distance(str1.charAt(i - 1), str2.charAt(j - 1)));
+                distance[j] =
+                        minimum(
+                                oldDistance[j] + INSERT_OR_DELETE_COST,
+                                distance[j - 1] + INSERT_OR_DELETE_COST,
+                                oldDistance[j - 1] + distance(str1.charAt(i - 1), str2.charAt(j - 1)));
             }
             int[] tmp = oldDistance;
             oldDistance = distance;

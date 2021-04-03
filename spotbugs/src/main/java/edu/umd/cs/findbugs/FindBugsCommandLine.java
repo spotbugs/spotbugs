@@ -18,61 +18,52 @@
  */
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
+import edu.umd.cs.findbugs.config.CommandLine;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.StringTokenizer;
-
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
-import edu.umd.cs.findbugs.config.CommandLine;
-
 /**
- * Base class for FindBugs command line classes. Handles all shared
- * switches/options.
+ * Base class for FindBugs command line classes. Handles all shared switches/options.
  *
  * @author David Hovemeyer
  */
 public abstract class FindBugsCommandLine extends CommandLine {
 
-    /**
-     * Analysis settings to configure the analysis effort.
-     */
+    /** Analysis settings to configure the analysis effort. */
     protected AnalysisFeatureSetting[] settingList = FindBugs.DEFAULT_EFFORT;
 
-    /**
-     * Project to analyze.
-     */
+    /** Project to analyze. */
     protected Project project;
 
-    /**
-     * True if project was initialized by loading a project file.
-     */
+    /** True if project was initialized by loading a project file. */
     protected boolean projectLoadedFromFile;
 
-    /**
-     * Constructor. Adds shared options/switches.
-     */
+    /** Constructor. Adds shared options/switches. */
     public FindBugsCommandLine() {
         super();
         project = new Project();
         startOptionGroup("General FindBugs options:");
         addOption("-project", "project", "analyze given project");
         addOption("-home", "home directory", "specify SpotBugs home directory");
-        addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]", "specify list of plugin Jar files to load");
-        addSwitchWithOptionalExtraPart("-effort", "min|less|default|more|max", "set analysis effort level");
+        addOption(
+                "-pluginList",
+                "jar1[" + File.pathSeparator + "jar2...]",
+                "specify list of plugin Jar files to load");
+        addSwitchWithOptionalExtraPart(
+                "-effort", "min|less|default|more|max", "set analysis effort level");
         addSwitch("-adjustExperimental", "lower priority of experimental Bug Patterns");
         addSwitch("-workHard", "ensure analysis effort is at least 'default'");
         addSwitch("-conserveSpace", "same as -effort:min (for backward compatibility)");
     }
 
     /**
-     * Additional constuctor just as hack for decoupling the core package from
-     * gui2 package
+     * Additional constuctor just as hack for decoupling the core package from gui2 package
      *
-     * @param modernGui
-     *            ignored. In any case, gui2 options are added here.
+     * @param modernGui ignored. In any case, gui2 options are added here.
      */
     public FindBugsCommandLine(boolean modernGui) {
         this();
@@ -146,8 +137,8 @@ public abstract class FindBugsCommandLine extends CommandLine {
                     try {
                         Plugin.loadCustomPlugin(file, getProject());
                     } catch (PluginException e) {
-                        throw new IllegalStateException("Failed to load plugin " +
-                                "specified by the '-pluginList', file: " + file, e);
+                        throw new IllegalStateException(
+                                "Failed to load plugin " + "specified by the '-pluginList', file: " + file, e);
                     }
                 }
             }
@@ -161,8 +152,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
     /**
      * Load given project file.
      *
-     * @param arg
-     *            name of project file
+     * @param arg name of project file
      * @throws java.io.IOException
      */
     public void loadProject(String arg) throws IOException {

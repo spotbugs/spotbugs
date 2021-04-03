@@ -18,15 +18,13 @@
  */
 package de.tobject.findbugs.quickfix.test;
 
+import de.tobject.findbugs.test.AbstractQuickfixTest;
+import de.tobject.findbugs.test.TestScenario;
 import java.io.IOException;
-
 import org.eclipse.core.runtime.CoreException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import de.tobject.findbugs.test.AbstractQuickfixTest;
-import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the quickfix resolutions for examples that use JUnit.
@@ -46,7 +44,10 @@ public class QuickfixWithJUnitTest extends AbstractQuickfixTest {
 
     @Test
     public void testCreateSuperCallResolution() throws CoreException, IOException {
-        doTestQuickfixResolution("CreateSuperCallResolutionExample.java", "FI_MISSING_SUPER_CALL", "IJU_SETUP_NO_SUPER",
+        doTestQuickfixResolution(
+                "CreateSuperCallResolutionExample.java",
+                "FI_MISSING_SUPER_CALL",
+                "IJU_SETUP_NO_SUPER",
                 "IJU_TEARDOWN_NO_SUPER");
     }
 

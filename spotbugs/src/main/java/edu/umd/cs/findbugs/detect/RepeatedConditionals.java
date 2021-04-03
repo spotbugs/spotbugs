@@ -19,18 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
-import org.objectweb.asm.Opcodes;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -39,6 +27,16 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.MethodSideEffectStatus;
 import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.NoSideEffectMethodsDatabase;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.generic.BranchInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
+import org.objectweb.asm.Opcodes;
 
 public class RepeatedConditionals extends OpcodeStackDetector {
     BugReporter bugReporter;
@@ -47,7 +45,8 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 
     public RepeatedConditionals(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        this.noSideEffectMethods = Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class);
+        this.noSideEffectMethods =
+                Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class);
         reset();
     }
 
@@ -118,18 +117,24 @@ public class RepeatedConditionals extends OpcodeStackDetector {
                             // first jumps inside second
                             continue;
                         }
-                        boolean identicalCheck = firstTarget.equals(secondTarget) && opcodeAtEndOfFirst == opcodeAtEndOfSecond
-                                || (firstTarget.intValue() == getPC() && opcodeAtEndOfFirst != opcodeAtEndOfSecond);
-                        if (!compareCode(first, endOfFirstSegment, second, endOfSecondSegment, !identicalCheck)) {
+                        boolean identicalCheck =
+                                firstTarget.equals(secondTarget) && opcodeAtEndOfFirst == opcodeAtEndOfSecond
+                                        || (firstTarget.intValue() == getPC()
+                                                && opcodeAtEndOfFirst != opcodeAtEndOfSecond);
+                        if (!compareCode(
+                                first, endOfFirstSegment, second, endOfSecondSegment, !identicalCheck)) {
                             continue;
                         }
-                        SourceLineAnnotation firstSourceLine = SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(),
-                                this, first, endOfFirstSegment - 1);
-                        SourceLineAnnotation secondSourceLine = SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(),
-                                this, second, endOfSecondSegment - 1);
+                        SourceLineAnnotation firstSourceLine =
+                                SourceLineAnnotation.fromVisitedInstructionRange(
+                                        getClassContext(), this, first, endOfFirstSegment - 1);
+                        SourceLineAnnotation secondSourceLine =
+                                SourceLineAnnotation.fromVisitedInstructionRange(
+                                        getClassContext(), this, second, endOfSecondSegment - 1);
 
                         int priority = HIGH_PRIORITY;
-                        if (firstSourceLine.getStartLine() == -1 || firstSourceLine.getStartLine() != secondSourceLine.getEndLine()) {
+                        if (firstSourceLine.getStartLine() == -1
+                                || firstSourceLine.getStartLine() != secondSourceLine.getEndLine()) {
                             priority++;
                         }
                         if (stack.isJumpTarget(second)) {
@@ -140,27 +145,34 @@ public class RepeatedConditionals extends OpcodeStackDetector {
                             priority += 2;
                         }
 
-                        BugInstance bug = new BugInstance(this, "RpC_REPEATED_CONDITIONAL_TEST", priority).addClassAndMethod(this)
-                                .add(firstSourceLine).add(secondSourceLine);
+                        BugInstance bug =
+                                new BugInstance(this, "RpC_REPEATED_CONDITIONAL_TEST", priority)
+                                        .addClassAndMethod(this)
+                                        .add(firstSourceLine)
+                                        .add(secondSourceLine);
                         bugReporter.reportBug(bug);
                     }
                 }
             }
             emptyStackLocations.add(getPC());
             prevOpcodeLocations.add(oldPC);
-
         }
         oldPC = getPC();
     }
 
-    private boolean compareCode(int first, int endOfFirstSegment, int second,
-            int endOfSecondSegment, boolean oppositeChecks) {
+    private boolean compareCode(
+            int first,
+            int endOfFirstSegment,
+            int second,
+            int endOfSecondSegment,
+            boolean oppositeChecks) {
         if (endOfFirstSegment - first != endOfSecondSegment - second) {
             return false;
         }
         MethodGen methodGen = null;
         try {
-            methodGen = Global.getAnalysisCache().getMethodAnalysis(MethodGen.class, getMethodDescriptor());
+            methodGen =
+                    Global.getAnalysisCache().getMethodAnalysis(MethodGen.class, getMethodDescriptor());
         } catch (CheckedAnalysisException e) {
             // Ignore
         }
@@ -188,7 +200,8 @@ public class RepeatedConditionals extends OpcodeStackDetector {
             }
             Instruction firstInstruction = firstHandle.getInstruction();
             Instruction secondInstruction = secondHandle.getInstruction();
-            if (firstInstruction instanceof BranchInstruction && secondInstruction instanceof BranchInstruction) {
+            if (firstInstruction instanceof BranchInstruction
+                    && secondInstruction instanceof BranchInstruction) {
                 int firstOpcode = firstInstruction.getOpcode();
                 int secondOpcode = secondInstruction.getOpcode();
                 if (firstOpcode != secondOpcode) {
@@ -201,7 +214,9 @@ public class RepeatedConditionals extends OpcodeStackDetector {
                         return false;
                     }
                 } else {
-                    if (!((firstTarget >= first && firstTarget <= endOfFirstSegment && firstTarget - first == secondTarget - second)
+                    if (!((firstTarget >= first
+                            && firstTarget <= endOfFirstSegment
+                            && firstTarget - first == secondTarget - second)
                             || firstTarget == secondTarget)) {
                         return false;
                     }
@@ -217,10 +232,18 @@ public class RepeatedConditionals extends OpcodeStackDetector {
     }
 
     private boolean hasSideEffect(int seen) {
-        if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL || seen == Const.INVOKEINTERFACE || seen == Const.INVOKESTATIC) {
-            return noSideEffectMethods.is(getMethodDescriptorOperand(), MethodSideEffectStatus.SE, MethodSideEffectStatus.OBJ);
+        if (seen == Const.INVOKEVIRTUAL
+                || seen == Const.INVOKESPECIAL
+                || seen == Const.INVOKEINTERFACE
+                || seen == Const.INVOKESTATIC) {
+            return noSideEffectMethods.is(
+                    getMethodDescriptorOperand(), MethodSideEffectStatus.SE, MethodSideEffectStatus.OBJ);
         }
-        return isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == Const.INVOKEDYNAMIC || seen == Const.PUTFIELD
+        return isRegisterStore()
+                || isReturn(seen)
+                || isSwitch(seen)
+                || seen == Const.INVOKEDYNAMIC
+                || seen == Const.PUTFIELD
                 || seen == Const.PUTSTATIC;
     }
 
@@ -230,5 +253,4 @@ public class RepeatedConditionals extends OpcodeStackDetector {
         branchTargets.clear();
         oldPC = -1;
     }
-
 }

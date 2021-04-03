@@ -20,11 +20,10 @@
 package edu.umd.cs.findbugs.ba.bcp;
 
 /**
- * The result of matching a single PatternElement against a single instruction.
- * Specifies the PatternElement and the (possibly updated) BindingSet. The
- * reason we need this class is because some kinds of PatternElements, such as
- * MatchAny, may use it to indicate that a child PatternElement was the one that
- * actually matched the instruction.
+ * The result of matching a single PatternElement against a single instruction. Specifies the
+ * PatternElement and the (possibly updated) BindingSet. The reason we need this class is because
+ * some kinds of PatternElements, such as MatchAny, may use it to indicate that a child
+ * PatternElement was the one that actually matched the instruction.
  *
  * @author David Hovemeyer
  * @see PatternElement
@@ -38,28 +37,21 @@ public class MatchResult {
     /**
      * Constructor.
      *
-     * @param patternElement
-     *            the PatternElement that matched the instruction
-     * @param bindingSet
-     *            the possibly updated BindingSet
+     * @param patternElement the PatternElement that matched the instruction
+     * @param bindingSet the possibly updated BindingSet
      */
     public MatchResult(PatternElement patternElement, BindingSet bindingSet) {
         this.patternElement = patternElement;
         this.bindingSet = bindingSet;
     }
 
-    /**
-     * Get the PatternElement.
-     */
+    /** Get the PatternElement. */
     public PatternElement getPatternElement() {
         return patternElement;
     }
 
-    /**
-     * Get the BindingSet.
-     */
+    /** Get the BindingSet. */
     public BindingSet getBindingSet() {
         return bindingSet;
     }
-
 }

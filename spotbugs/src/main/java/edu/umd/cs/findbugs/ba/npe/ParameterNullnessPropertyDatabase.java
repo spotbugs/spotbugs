@@ -24,8 +24,7 @@ import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 
 /**
- * Method property database storing which method parameters might be
- * unconditionally dereferenced.
+ * Method property database storing which method parameters might be unconditionally dereferenced.
  *
  * @author David Hovemeyer
  */
@@ -40,13 +39,15 @@ public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<Pa
      */
 
     @Override
-    protected ParameterProperty decodeProperty(String propStr) throws PropertyDatabaseFormatException {
+    protected ParameterProperty decodeProperty(String propStr)
+            throws PropertyDatabaseFormatException {
         try {
             int unconditionalDerefSet = Integer.parseInt(propStr);
             ParameterProperty prop = new ParameterProperty(unconditionalDerefSet);
             return prop;
         } catch (NumberFormatException e) {
-            throw new PropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
+            throw new PropertyDatabaseFormatException(
+                    "Invalid unconditional deref param set: " + propStr);
         }
     }
 
@@ -62,5 +63,4 @@ public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<Pa
     protected String encodeProperty(ParameterProperty property) {
         return String.valueOf(property.getParamsWithProperty());
     }
-
 }

@@ -22,9 +22,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.ui.navigator.CommonViewer;
 
-/**
- * @author Andrei
- */
+/** @author Andrei */
 public class EmptyGroupsFilter extends ViewerFilter {
 
     public EmptyGroupsFilter() {
@@ -43,5 +41,4 @@ public class EmptyGroupsFilter extends ViewerFilter {
         }
         return true;
     }
-
 }

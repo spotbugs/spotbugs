@@ -22,8 +22,8 @@ package edu.umd.cs.findbugs;
 import java.io.PrintStream;
 
 /**
- * Display FindBugs progress in the terminal window using ASCII codes. We assume
- * that the terminal window is at least 80 characters wide.
+ * Display FindBugs progress in the terminal window using ASCII codes. We assume that the terminal
+ * window is at least 80 characters wide.
  *
  * @author David Hovemeyer
  */
@@ -92,7 +92,10 @@ public class TextUIProgressCallback implements FindBugsProgress {
     }
 
     private void analyzingClasses(int i) {
-        String msg = String.format("Pass %d: Analyzing classes (%d / %d) - %02d%% complete", pass + 1, i, goal, (i * 100) / goal);
+        String msg =
+                String.format(
+                        "Pass %d: Analyzing classes (%d / %d) - %02d%% complete",
+                        pass + 1, i, goal, (i * 100) / goal);
         printMessage(msg);
     }
 
@@ -107,5 +110,4 @@ public class TextUIProgressCallback implements FindBugsProgress {
     public void startArchive(String name) {
         // noop
     }
-
 }

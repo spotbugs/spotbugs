@@ -31,9 +31,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class SourceCharset {
 
     public static final Charset charset;
@@ -61,5 +59,4 @@ public class SourceCharset {
     public static BufferedReader bufferedReader(InputStream in) {
         return new BufferedReader(new InputStreamReader(in, charset));
     }
-
 }

@@ -19,16 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import java.util.TreeSet;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantNameAndType;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -40,10 +30,15 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
+import java.util.TreeSet;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
-/**
- * @author William Pugh
- */
+/** @author William Pugh */
 @Deprecated
 public class ClassParserUsingBCEL implements ClassParserInterface {
 
@@ -55,13 +50,14 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
 
     private final ICodeBaseEntry codeBaseEntry;
 
-    public ClassParserUsingBCEL(JavaClass javaClass, @CheckForNull ClassDescriptor expectedClassDescriptor,
+    public ClassParserUsingBCEL(
+            JavaClass javaClass,
+            @CheckForNull ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.javaClass = javaClass;
         this.slashedClassName = javaClass.getClassName().replace('.', '/');
         this.expectedClassDescriptor = expectedClassDescriptor;
         this.codeBaseEntry = codeBaseEntry;
-
     }
 
     /*
@@ -72,17 +68,21 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
      * .cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
      */
     @Override
-    public void parse(final ClassNameAndSuperclassInfo.Builder builder) throws InvalidClassFileFormatException {
+    public void parse(final ClassNameAndSuperclassInfo.Builder builder)
+            throws InvalidClassFileFormatException {
 
         builder.setCodeBaseEntry(codeBaseEntry);
         builder.setAccessFlags(javaClass.getAccessFlags());
-        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(javaClass.getClassName());
+        ClassDescriptor classDescriptor =
+                DescriptorFactory.createClassDescriptorFromDottedClassName(javaClass.getClassName());
         if (expectedClassDescriptor != null && expectedClassDescriptor.equals(classDescriptor)) {
-            throw new InvalidClassFileFormatException("Expected " + expectedClassDescriptor, classDescriptor, codeBaseEntry);
+            throw new InvalidClassFileFormatException(
+                    "Expected " + expectedClassDescriptor, classDescriptor, codeBaseEntry);
         }
         builder.setClassDescriptor(classDescriptor);
 
-        builder.setSuperclassDescriptor(DescriptorFactory.createClassDescriptorFromDottedClassName(javaClass.getSuperclassName()));
+        builder.setSuperclassDescriptor(
+                DescriptorFactory.createClassDescriptorFromDottedClassName(javaClass.getSuperclassName()));
         String[] allInterfaces = javaClass.getInterfaceNames();
         ClassDescriptor[] allInterfaceDescriptiors;
         if (allInterfaces.length == 0) {
@@ -90,7 +90,8 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
         } else {
             allInterfaceDescriptiors = new ClassDescriptor[allInterfaces.length];
             for (int i = 0; i < allInterfaces.length; i++) {
-                allInterfaceDescriptiors[i] = DescriptorFactory.createClassDescriptorFromDottedClassName(allInterfaces[i]);
+                allInterfaceDescriptiors[i] =
+                        DescriptorFactory.createClassDescriptorFromDottedClassName(allInterfaces[i]);
             }
         }
         builder.setInterfaceDescriptorList(allInterfaceDescriptiors);
@@ -108,30 +109,29 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
         parse((ClassNameAndSuperclassInfo.Builder) builder);
 
         final TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<>();
-        javaClass.accept(new AnnotationVisitor() {
-            @Override
-            public void visit(ConstantClass obj) {
-                @SlashedClassName
-                String className = obj.getBytes(javaClass.getConstantPool());
-                if (className.indexOf('[') >= 0) {
-                    ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
-                } else if (ClassName.isValidClassName(className)) {
-                    referencedClassSet.add(DescriptorFactory.instance().getClassDescriptor(className));
-                }
-            }
+        javaClass.accept(
+                new AnnotationVisitor() {
+                    @Override
+                    public void visit(ConstantClass obj) {
+                        @SlashedClassName
+                        String className = obj.getBytes(javaClass.getConstantPool());
+                        if (className.indexOf('[') >= 0) {
+                            ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
+                        } else if (ClassName.isValidClassName(className)) {
+                            referencedClassSet.add(DescriptorFactory.instance().getClassDescriptor(className));
+                        }
+                    }
 
-            @Override
-            public void visit(ConstantNameAndType obj) {
-                String signature = obj.getSignature(javaClass.getConstantPool());
-                ClassParser.extractReferencedClassesFromSignature(referencedClassSet, signature);
-            }
-        });
-
+                    @Override
+                    public void visit(ConstantNameAndType obj) {
+                        String signature = obj.getSignature(javaClass.getConstantPool());
+                        ClassParser.extractReferencedClassesFromSignature(referencedClassSet, signature);
+                    }
+                });
     }
 
     /**
-     * @param obj
-     *            the field to parse
+     * @param obj the field to parse
      * @return a descriptor for the field
      */
     protected FieldDescriptor parseField(Field obj) {
@@ -139,12 +139,11 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
     }
 
     /**
-     * @param obj
-     *            the method to parse
+     * @param obj the method to parse
      * @return a descriptor for the method
      */
     protected MethodDescriptor parseMethod(Method obj) {
-        return new MethodDescriptor(slashedClassName, obj.getName(), obj.getSignature(), obj.isStatic());
+        return new MethodDescriptor(
+                slashedClassName, obj.getName(), obj.getSignature(), obj.isStatic());
     }
-
 }

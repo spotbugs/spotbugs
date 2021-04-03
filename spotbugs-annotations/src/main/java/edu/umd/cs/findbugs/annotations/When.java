@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 @Deprecated
 public enum When {
-    FIRST, ANYTIME, LAST
-
+    FIRST,
+    ANYTIME,
+    LAST
 }

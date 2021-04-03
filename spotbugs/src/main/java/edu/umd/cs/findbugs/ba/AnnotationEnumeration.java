@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class AnnotationEnumeration<E extends AnnotationEnumeration<E>> implements Comparable<E> {
     private final int index;
 
@@ -50,9 +48,7 @@ public class AnnotationEnumeration<E extends AnnotationEnumeration<E>> implement
         return name;
     }
 
-    /**
-     * @return Returns the index.
-     */
+    /** @return Returns the index. */
     public int getIndex() {
         return index;
     }

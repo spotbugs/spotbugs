@@ -24,16 +24,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import de.tobject.findbugs.reporter.JdtUtils;
+import de.tobject.findbugs.test.AbstractPluginTest;
+import de.tobject.findbugs.test.TestScenario;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import de.tobject.findbugs.reporter.JdtUtils;
-import de.tobject.findbugs.test.AbstractPluginTest;
-import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the JdtUtil class.
@@ -109,5 +108,4 @@ public class JdtUtilTest extends AbstractPluginTest {
         assertTrue(childType.exists());
         assertEquals("", childType.getElementName());
     }
-
 }

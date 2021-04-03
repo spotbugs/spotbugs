@@ -18,11 +18,10 @@
  */
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
 /**
  * Matcher to select BugInstances with a particular confidence.
@@ -40,8 +39,7 @@ public class ConfidenceMatcher implements Matcher {
     /**
      * Constructor.
      *
-     * @param confidenceAsString
-     *            the confidence, as a String
+     * @param confidenceAsString the confidence, as a String
      * @throws FilterException
      */
     public ConfidenceMatcher(String confidenceAsString) {
@@ -69,7 +67,8 @@ public class ConfidenceMatcher implements Matcher {
 
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-        XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(confidence));
+        XMLAttributeList attributes =
+                new XMLAttributeList().addAttribute("value", Integer.toString(confidence));
         if (disabled) {
             attributes.addAttribute("disabled", "true");
         }

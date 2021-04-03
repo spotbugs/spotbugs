@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GotoInstruction;
@@ -32,13 +31,14 @@ import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.Select;
 
 /**
- * Visitor to find all of the targets of an instruction whose InstructionHandle
- * is given. Note that we don't consider exception edges.
+ * Visitor to find all of the targets of an instruction whose InstructionHandle is given. Note that
+ * we don't consider exception edges.
  *
  * @author David Hovemeyer
  * @author Chadd Williams
  */
-public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisitor implements EdgeTypes {
+public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisitor
+        implements EdgeTypes {
 
     private final InstructionHandle handle;
 
@@ -51,11 +51,8 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
     /**
      * Constructor.
      *
-     * @param handle
-     *            the handle of the instruction whose targets should be
-     *            enumerated
-     * @param constPoolGen
-     *            the ConstantPoolGen object for the class
+     * @param handle the handle of the instruction whose targets should be enumerated
+     * @param constPoolGen the ConstantPoolGen object for the class
      */
     public TargetEnumeratingVisitor(InstructionHandle handle, ConstantPoolGen constPoolGen) {
         this.handle = handle;
@@ -66,38 +63,27 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
         handle.getInstruction().accept(this);
     }
 
-    /**
-     * Is the instruction the end of a basic block?
-     */
+    /** Is the instruction the end of a basic block? */
     public boolean isEndOfBasicBlock() {
         return isBranch || isReturn || isThrow || isExit;
     }
 
-    /**
-     * Is the analyzed instruction a method return?
-     */
+    /** Is the analyzed instruction a method return? */
     public boolean instructionIsReturn() {
         return isReturn;
     }
 
-    /**
-     * Is the analyzed instruction an explicit throw?
-     */
+    /** Is the analyzed instruction an explicit throw? */
     public boolean instructionIsThrow() {
         return isThrow;
     }
 
-    /**
-     * Is the analyzed instruction an exit (call to System.exit())?
-     */
+    /** Is the analyzed instruction an exit (call to System.exit())? */
     public boolean instructionIsExit() {
         return isExit;
     }
 
-    /**
-     * Iterate over Target objects representing control flow targets and their
-     * edge types.
-     */
+    /** Iterate over Target objects representing control flow targets and their edge types. */
     public Iterator<Target> targetIterator() {
         return targetList.iterator();
     }
@@ -161,9 +147,10 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
         String methodName = ins.getName(constPoolGen);
         String methodSig = ins.getSignature(constPoolGen);
 
-        if ("java.lang.System".equals(className) && "exit".equals(methodName) && "(I)V".equals(methodSig)) {
+        if ("java.lang.System".equals(className)
+                && "exit".equals(methodName)
+                && "(I)V".equals(methodSig)) {
             isExit = true;
         }
     }
-
 }

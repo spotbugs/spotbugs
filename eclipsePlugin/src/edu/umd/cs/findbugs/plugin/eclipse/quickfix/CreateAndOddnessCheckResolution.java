@@ -32,23 +32,22 @@ import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 
 /**
- * The <CODE>CreateAndOddnessCheckResolution</CODE> is a subclass of the
- * abstract class <CODE>CorrectOddnessCheckResolution</CODE> and creates the
- * proper oddness check <CODE>(x &amp; 2) == 1</CODE>.
+ * The <CODE>CreateAndOddnessCheckResolution</CODE> is a subclass of the abstract class <CODE>
+ * CorrectOddnessCheckResolution</CODE> and creates the proper oddness check <CODE>(x &amp; 2) == 1
+ * </CODE>.
  *
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @version 1.0
  */
 public class CreateAndOddnessCheckResolution extends CorrectOddnessCheckResolution {
 
-    /**
-     * Creates the new <CODE>InfixExpression</CODE> <CODE>(x &amp; 1) == 1</CODE>.
-     */
+    /** Creates the new <CODE>InfixExpression</CODE> <CODE>(x &amp; 1) == 1</CODE>. */
     @Override
-    protected InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression) {
+    protected InfixExpression createCorrectOddnessCheck(
+            ASTRewrite rewrite, Expression numberExpression) {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(numberExpression);
 
@@ -66,7 +65,5 @@ public class CreateAndOddnessCheckResolution extends CorrectOddnessCheckResoluti
         andOddnessCheck.setRightOperand(ast.newNumberLiteral("1"));
 
         return andOddnessCheck;
-
     }
-
 }

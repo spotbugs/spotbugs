@@ -1,12 +1,11 @@
 package edu.umd.cs.findbugs.sarif;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import org.junit.Test;
 
 public class LevelTest {
     @Test

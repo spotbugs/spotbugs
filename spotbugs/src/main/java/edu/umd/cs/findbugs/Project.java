@@ -29,6 +29,17 @@ import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
 import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeFileList;
 import static java.util.Objects.requireNonNull;
 
+import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.ba.URLClassPath;
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,41 +62,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import edu.umd.cs.findbugs.ba.SourceFinder;
-import edu.umd.cs.findbugs.ba.URLClassPath;
-import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.filter.Filter;
-import edu.umd.cs.findbugs.io.IO;
-import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLAttributeList;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLWriteable;
-
 /**
- * <p>A project in the GUI. This consists of some number of Jar files to analyze
- * for bugs, and optionally
- * </p>
+ * A project in the GUI. This consists of some number of Jar files to analyze for bugs, and
+ * optionally
+ *
  * <ul>
- * <li>some number of source directories, for locating the program's source code</li>
- * <li>some number of auxiliary classpath entries, for locating classes
- * referenced by the program which the user doesn't want to analyze</li>
- * <li>some number of boolean options</li>
+ *   <li>some number of source directories, for locating the program's source code
+ *   <li>some number of auxiliary classpath entries, for locating classes referenced by the program
+ *       which the user doesn't want to analyze
+ *   <li>some number of boolean options
  * </ul>
  *
  * @author David Hovemeyer
@@ -97,24 +94,16 @@ public class Project implements XMLWriteable, AutoCloseable {
 
     private String projectName;
 
-    /**
-     * List of jars/directories to analyze
-     */
+    /** List of jars/directories to analyze */
     private List<String> analysisTargets;
 
-    /**
-     * The list of source directories.
-     */
+    /** The list of source directories. */
     private List<String> srcDirList;
 
-    /**
-     * The list of auxiliary classpath entries.
-     */
+    /** The list of auxiliary classpath entries. */
     private List<String> auxClasspathEntryList;
 
-    /**
-     * Flag to indicate that this Project has been modified.
-     */
+    /** Flag to indicate that this Project has been modified. */
     private boolean isModified;
 
     private UserPreferences configuration;
@@ -135,17 +124,13 @@ public class Project implements XMLWriteable, AutoCloseable {
         return configuration;
     }
 
-    /**
-     * @param configuration The configuration to set, non null
-     */
+    /** @param configuration The configuration to set, non null */
     public void setConfiguration(@Nonnull UserPreferences configuration) {
         requireNonNull(configuration);
         this.configuration = configuration;
     }
 
-    /**
-     * StaticConstant used to name anonymous projects.
-     */
+    /** StaticConstant used to name anonymous projects. */
     public static final String UNNAMED_PROJECT = "<<unnamed project>>";
 
     private long timestampForAnalyzedClasses = 0L;
@@ -157,9 +142,7 @@ public class Project implements XMLWriteable, AutoCloseable {
 
     private SourceFinder sourceFinder;
 
-    /**
-     * Create an anonymous project.
-     */
+    /** Create an anonymous project. */
     public Project() {
         enabledPlugins = new HashMap<>();
         configuration = UserPreferences.createDefaultUserPreferences();
@@ -170,9 +153,7 @@ public class Project implements XMLWriteable, AutoCloseable {
         currentWorkingDirectoryList = new ArrayList<>();
     }
 
-    /**
-     * Return an exact copy of this Project.
-     */
+    /** Return an exact copy of this Project. */
     public Project duplicate() {
         Project dup = new Project();
         dup.currentWorkingDirectoryList.addAll(this.currentWorkingDirectoryList);
@@ -196,20 +177,18 @@ public class Project implements XMLWriteable, AutoCloseable {
         return guiCallback != null;
     }
 
-    /**
-     * add information from project2 to this project
-     */
+    /** add information from project2 to this project */
     public void add(Project project2) {
         analysisTargets = appendWithoutDuplicates(analysisTargets, project2.analysisTargets);
         srcDirList = appendWithoutDuplicates(srcDirList, project2.srcDirList);
-        auxClasspathEntryList = appendWithoutDuplicates(auxClasspathEntryList, project2.auxClasspathEntryList);
+        auxClasspathEntryList =
+                appendWithoutDuplicates(auxClasspathEntryList, project2.auxClasspathEntryList);
     }
 
     public static <T> List<T> appendWithoutDuplicates(List<T> lst1, List<T> lst2) {
         LinkedHashSet<T> joined = new LinkedHashSet<>(lst1);
         joined.addAll(lst2);
         return new ArrayList<>(joined);
-
     }
 
     public void setCurrentWorkingDirectory(File f) {
@@ -218,16 +197,12 @@ public class Project implements XMLWriteable, AutoCloseable {
         }
     }
 
-    /**
-     * Return whether or not this Project has unsaved modifications.
-     */
+    /** Return whether or not this Project has unsaved modifications. */
     public boolean isModified() {
         return isModified;
     }
 
-    /**
-     * Set whether or not this Project has unsaved modifications.
-     */
+    /** Set whether or not this Project has unsaved modifications. */
     public void setModified(boolean isModified) {
         this.isModified = isModified;
     }
@@ -235,10 +210,8 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Add a file to the project.
      *
-     * @param fileName
-     *            the file to add
-     * @return true if the file was added, or false if the file was already
-     *         present
+     * @param fileName the file to add
+     * @return true if the file was added, or false if the file was already present
      */
     public boolean addFile(String fileName) {
         return addToListInternal(analysisTargets, makeAbsoluteCWD(fileName));
@@ -247,12 +220,12 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Add a source directory to the project.
      *
-     * @param sourceDir
-     *            The source directory to add. These can be either an absolute path
-     *            or relative to any of the working directories in this project object.
+     * @param sourceDir The source directory to add. These can be either an absolute path or relative
+     *     to any of the working directories in this project object.
      * @return true if the source directory was added or false if it was already present
-     * @deprecated Calling this method repeatedly performs poorly because a SourceFinder is created each time,
-     *              which checks all files for existence each time. Use {@link #addSourceDirs} instead.
+     * @deprecated Calling this method repeatedly performs poorly because a SourceFinder is created
+     *     each time, which checks all files for existence each time. Use {@link #addSourceDirs}
+     *     instead.
      */
     @Deprecated
     public boolean addSourceDir(String sourceDir) {
@@ -262,11 +235,10 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Add source directories to the project.
      *
-     * @param sourceDirs
-     *            The source directories to add. These can be either absolute paths
-     *            or relative to any of the working directories in this project object.
-     * @return true if a source directory was added or false if all source
-     *         directories were already present
+     * @param sourceDirs The source directories to add. These can be either absolute paths or relative
+     *     to any of the working directories in this project object.
+     * @return true if a source directory was added or false if all source directories were already
+     *     present
      */
     public boolean addSourceDirs(Collection<String> sourceDirs) {
         boolean isNew = false;
@@ -288,10 +260,9 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Add a working directory to the project.
      *
-     * @param dirName
-     *            the directory to add
-     * @return true if the working directory was added, or false if the working
-     *         directory was already present
+     * @param dirName the directory to add
+     * @return true if the working directory was added, or false if the working directory was already
+     *     present
      */
     public boolean addWorkingDir(String dirName) {
         if (dirName == null) {
@@ -312,8 +283,7 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Get the given file in the list of project files.
      *
-     * @param num
-     *            the number of the file in the list of project files
+     * @param num the number of the file in the list of project files
      * @return the name of the file
      */
     public String getFile(int num) {
@@ -323,17 +293,14 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Remove file at the given index in the list of project files
      *
-     * @param num
-     *            index of the file to remove in the list of project files
+     * @param num index of the file to remove in the list of project files
      */
     public void removeFile(int num) {
         analysisTargets.remove(num);
         isModified = true;
     }
 
-    /**
-     * Get the list of files, directories, and zip files in the project.
-     */
+    /** Get the list of files, directories, and zip files in the project. */
     public List<String> getFileList() {
         return analysisTargets;
     }
@@ -350,8 +317,7 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Get the given source directory.
      *
-     * @param num
-     *            the number of the source directory
+     * @param num the number of the source directory
      * @return the source directory
      */
     public String getSourceDir(int num) {
@@ -361,8 +327,7 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Remove source directory at given index.
      *
-     * @param num
-     *            index of the source directory to remove
+     * @param num index of the source directory to remove
      */
     public void removeSourceDir(int num) {
         srcDirList.remove(num);
@@ -371,23 +336,17 @@ public class Project implements XMLWriteable, AutoCloseable {
         isModified = true;
     }
 
-    /**
-     * Get project files as an array of Strings.
-     */
+    /** Get project files as an array of Strings. */
     public String[] getFileArray() {
         return analysisTargets.toArray(new String[0]);
     }
 
-    /**
-     * Get source dirs as an array of Strings.
-     */
+    /** Get source dirs as an array of Strings. */
     public String[] getSourceDirArray() {
         return srcDirList.toArray(new String[0]);
     }
 
-    /**
-     * Get the source dir list.
-     */
+    /** Get the source dir list. */
     public List<String> getSourceDirList() {
         return srcDirList;
     }
@@ -395,88 +354,68 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Add an auxiliary classpath entry
      *
-     * @param auxClasspathEntry
-     *            the entry
-     * @return true if the entry was added successfully, or false if the given
-     *         entry is already in the list
+     * @param auxClasspathEntry the entry
+     * @return true if the entry was added successfully, or false if the given entry is already in the
+     *     list
      */
     public boolean addAuxClasspathEntry(String auxClasspathEntry) {
         return addToListInternal(auxClasspathEntryList, makeAbsoluteCWD(auxClasspathEntry));
     }
 
-    /**
-     * Get the number of auxiliary classpath entries.
-     */
+    /** Get the number of auxiliary classpath entries. */
     public int getNumAuxClasspathEntries() {
         return auxClasspathEntryList.size();
     }
 
-    /**
-     * Get the n'th auxiliary classpath entry.
-     */
+    /** Get the n'th auxiliary classpath entry. */
     public String getAuxClasspathEntry(int n) {
         return auxClasspathEntryList.get(n);
     }
 
-    /**
-     * Remove the n'th auxiliary classpath entry.
-     */
+    /** Remove the n'th auxiliary classpath entry. */
     public void removeAuxClasspathEntry(int n) {
         auxClasspathEntryList.remove(n);
         isModified = true;
     }
 
-    /**
-     * Return the list of aux classpath entries.
-     */
+    /** Return the list of aux classpath entries. */
     public List<String> getAuxClasspathEntryList() {
         return auxClasspathEntryList;
     }
 
-    /**
-     * Worklist item for finding implicit classpath entries.
-     */
+    /** Worklist item for finding implicit classpath entries. */
     private static class WorkListItem {
         private final URL url;
 
         /**
          * Constructor.
          *
-         * @param url
-         *            the URL of the Jar or Zip file
+         * @param url the URL of the Jar or Zip file
          */
         public WorkListItem(URL url) {
             this.url = url;
         }
 
-        /**
-         * Get URL of Jar/Zip file.
-         */
+        /** Get URL of Jar/Zip file. */
         public URL getURL() {
             return this.url;
         }
     }
 
-    /**
-     * Worklist for finding implicit classpath entries.
-     */
+    /** Worklist for finding implicit classpath entries. */
     private static class WorkList {
         private static final Logger LOG = LoggerFactory.getLogger(WorkList.class);
         private final LinkedList<WorkListItem> itemList;
 
         private final HashSet<String> addedSet;
 
-        /**
-         * Constructor. Creates an empty worklist.
-         */
+        /** Constructor. Creates an empty worklist. */
         public WorkList() {
             this.itemList = new LinkedList<>();
             this.addedSet = new HashSet<>();
         }
 
-        /**
-         * Create a URL from a filename specified in the project file.
-         */
+        /** Create a URL from a filename specified in the project file. */
         public URL createURL(String fileName) throws MalformedURLException {
             String protocol = URLClassPath.getURLProtocol(fileName);
             if (protocol == null) {
@@ -485,9 +424,7 @@ public class Project implements XMLWriteable, AutoCloseable {
             return new URL(fileName);
         }
 
-        /**
-         * Create a URL of a file relative to another URL.
-         */
+        /** Create a URL of a file relative to another URL. */
         public URL createRelativeURL(URL base, String fileName) throws MalformedURLException {
             return new URL(base, fileName);
         }
@@ -495,11 +432,8 @@ public class Project implements XMLWriteable, AutoCloseable {
         /**
          * Add a worklist item.
          *
-         * @param item
-         *            the WorkListItem representing a zip/jar file to be
-         *            examined
-         * @return true if the item was added, false if not (because it was
-         *         examined already)
+         * @param item the WorkListItem representing a zip/jar file to be examined
+         * @return true if the item was added, false if not (because it was examined already)
          */
         public boolean add(WorkListItem item) {
             LOG.debug("Adding {}", item.getURL());
@@ -512,31 +446,25 @@ public class Project implements XMLWriteable, AutoCloseable {
             return true;
         }
 
-        /**
-         * Return whether or not the worklist is empty.
-         */
+        /** Return whether or not the worklist is empty. */
         public boolean isEmpty() {
             return itemList.isEmpty();
         }
 
-        /**
-         * Get the next item in the worklist.
-         */
+        /** Get the next item in the worklist. */
         public WorkListItem getNextItem() {
             return itemList.removeFirst();
         }
     }
 
     /**
-     * Return the list of implicit classpath entries. The implicit classpath is
-     * computed from the closure of the set of jar files that are referenced by
-     * the <code>"Class-Path"</code> attribute of the manifest of the any jar
-     * file that is part of this project or by the <code>"Class-Path"</code>
-     * attribute of any directly or indirectly referenced jar. The referenced
-     * jar files that exist are the list of implicit classpath entries.
+     * Return the list of implicit classpath entries. The implicit classpath is computed from the
+     * closure of the set of jar files that are referenced by the <code>"Class-Path"</code> attribute
+     * of the manifest of the any jar file that is part of this project or by the <code>"Class-Path"
+     * </code> attribute of any directly or indirectly referenced jar. The referenced jar files that
+     * exist are the list of implicit classpath entries.
      *
-     * @deprecated FindBugs2 and ClassPathBuilder take care of this
-     *             automatically
+     * @deprecated FindBugs2 and ClassPathBuilder take care of this automatically
      */
     @Deprecated
     public List<String> getImplicitClasspathEntryList() {
@@ -565,17 +493,14 @@ public class Project implements XMLWriteable, AutoCloseable {
     }
 
     /**
-     * Examine the manifest of a single zip/jar file for implicit classapth
-     * entries.
+     * Examine the manifest of a single zip/jar file for implicit classapth entries.
      *
-     * @param jarFileURL
-     *            URL of the zip/jar file
-     * @param workList
-     *            worklist of zip/jar files to examine
-     * @param implicitClasspath
-     *            list of implicit classpath entries found
+     * @param jarFileURL URL of the zip/jar file
+     * @param workList worklist of zip/jar files to examine
+     * @param implicitClasspath list of implicit classpath entries found
      */
-    private void processComponentJar(URL jarFileURL, WorkList workList, List<String> implicitClasspath) {
+    private void processComponentJar(
+            URL jarFileURL, WorkList workList, List<String> implicitClasspath) {
         LOG.debug("Processing {}", jarFileURL);
 
         if (!jarFileURL.toString().endsWith(".zip") && !jarFileURL.toString().endsWith(".jar")) {
@@ -621,19 +546,15 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Save the project to an output file.
      *
-     * @param outputFile
-     *            name of output file
-     * @param useRelativePaths
-     *            true if the project should be written using only relative
-     *            paths
-     * @param relativeBase
-     *            if useRelativePaths is true, this file is taken as the base
-     *            directory in terms of which all files should be made relative
-     * @throws IOException
-     *             if an error occurs while writing
+     * @param outputFile name of output file
+     * @param useRelativePaths true if the project should be written using only relative paths
+     * @param relativeBase if useRelativePaths is true, this file is taken as the base directory in
+     *     terms of which all files should be made relative
+     * @throws IOException if an error occurs while writing
      */
     @Deprecated
-    public void write(String outputFile, boolean useRelativePaths, String relativeBase) throws IOException {
+    public void write(String outputFile, boolean useRelativePaths, String relativeBase)
+            throws IOException {
         try (PrintWriter writer = UTF8.printWriter(outputFile)) {
             writer.println(JAR_FILES_KEY);
             for (String jarFile : analysisTargets) {
@@ -669,7 +590,8 @@ public class Project implements XMLWriteable, AutoCloseable {
         isModified = false;
     }
 
-    public static Project readXML(File f) throws IOException, SAXException, ParserConfigurationException {
+    public static Project readXML(File f)
+            throws IOException, SAXException, ParserConfigurationException {
         @SuppressWarnings("resource") // will be closed by caller
         Project project = new Project();
 
@@ -687,10 +609,14 @@ public class Project implements XMLWriteable, AutoCloseable {
 
             SAXParserFactory parserFactory = SAXParserFactory.newInstance();
             parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
-            parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
-            parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
-            parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
+            parserFactory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+            parserFactory.setFeature(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
+            parserFactory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
+            parserFactory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
             SAXParser parser = parserFactory.newSAXParser();
             XMLReader xr = parser.getXMLReader();
 
@@ -724,8 +650,7 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Read Project from named file.
      *
-     * @param argument
-     *            command line argument containing project file name
+     * @param argument command line argument containing project file name
      * @return the Project
      * @throws IOException
      */
@@ -748,20 +673,12 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Read a line from a BufferedReader, ignoring blank lines and comments.
      *
-    private static String getLine(BufferedReader reader) throws IOException {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (!line.equals("") && !line.startsWith("#")) {
-                break;
-            }
-        }
-        return line;
-    }*/
-
-    /**
-     * Convert to a string in a nice (displayable) format.
+     * <p>private static String getLine(BufferedReader reader) throws IOException { String line; while
+     * ((line = reader.readLine()) != null) { line = line.trim(); if (!line.equals("") &&
+     * !line.startsWith("#")) { break; } } return line; }
      */
+
+    /** Convert to a string in a nice (displayable) format. */
     @Override
     public String toString() {
         if (projectName != null) {
@@ -771,8 +688,8 @@ public class Project implements XMLWriteable, AutoCloseable {
     }
 
     /**
-     * Transform a user-entered filename into a proper filename, by adding the
-     * ".fb" file extension if it isn't already present.
+     * Transform a user-entered filename into a proper filename, by adding the ".fb" file extension if
+     * it isn't already present.
      */
     public static String transformFilename(String fileName) {
         if (!fileName.endsWith(".fb")) {
@@ -804,7 +721,10 @@ public class Project implements XMLWriteable, AutoCloseable {
         writeXML(xmlOutput, null, null);
     }
 
-    public void writeXML(XMLOutput xmlOutput, @CheckForNull File destination, @CheckForNull BugCollection bugCollection)
+    public void writeXML(
+            XMLOutput xmlOutput,
+            @CheckForNull File destination,
+            @CheckForNull BugCollection bugCollection)
             throws IOException {
         {
             XMLAttributeList attributeList = new XMLAttributeList();
@@ -818,7 +738,10 @@ public class Project implements XMLWriteable, AutoCloseable {
         if (destination != null) {
             String base = destination.getParent();
             writeElementList(xmlOutput, JAR_ELEMENT_NAME, convertToRelative(analysisTargets, base));
-            writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, convertToRelative(auxClasspathEntryList, base));
+            writeElementList(
+                    xmlOutput,
+                    AUX_CLASSPATH_ENTRY_ELEMENT_NAME,
+                    convertToRelative(auxClasspathEntryList, base));
             writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, convertToRelative(srcDirList, base));
             List<String> cwdStrings = new ArrayList<>();
             for (File file : currentWorkingDirectoryList) {
@@ -856,11 +779,11 @@ public class Project implements XMLWriteable, AutoCloseable {
     }
 
     /**
-     * Hack for whether files are case insensitive. For now, we'll assume that
-     * Windows is the only case insensitive OS. (OpenVMS users, feel free to
-     * submit a patch :-)
+     * Hack for whether files are case insensitive. For now, we'll assume that Windows is the only
+     * case insensitive OS. (OpenVMS users, feel free to submit a patch :-)
      */
-    private static final boolean FILE_IGNORE_CASE = SystemProperties.getProperty("os.name", "unknown").startsWith("Windows");
+    private static final boolean FILE_IGNORE_CASE =
+            SystemProperties.getProperty("os.name", "unknown").startsWith("Windows");
 
     private Iterable<String> convertToRelative(List<String> paths, String base) {
         List<String> newList = new ArrayList<>(paths.size());
@@ -873,8 +796,7 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Converts a full path to a relative path if possible
      *
-     * @param srcFile
-     *            path to convert
+     * @param srcFile path to convert
      * @return the converted filename
      */
     private String convertToRelative(String srcFile, String base) {
@@ -897,7 +819,9 @@ public class Project implements XMLWriteable, AutoCloseable {
             String root = srcFile.substring(0, base.length());
             if (root.equals(base)) {
                 // Strip off the base directory, make relative
-                return "." + SystemProperties.getProperty("file.separator") + srcFile.substring(base.length());
+                return "."
+                        + SystemProperties.getProperty("file.separator")
+                        + srcFile.substring(base.length());
             }
         }
 
@@ -941,48 +865,31 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * Converts a relative path to an absolute path if possible.
      *
-     * @param fileName
-     *            path to convert
+     * @param fileName path to convert
      * @return the converted filename
-     *
-    private String convertToAbsolute(String fileName)  {
-        // At present relative paths are only calculated if the fileName is
-        // below the project file. This need not be the case, and we could use
-        // ..
-        // syntax to move up the tree. (To Be Added)
-    
-        File file = new File(fileName);
-    
-        if (!file.isAbsolute()) {
-            for (File cwd : currentWorkingDirectoryList) {
-                File test = new File(cwd, fileName);
-                if (test.canRead()) {
-                    return test.getAbsolutePath();
-                }
-            }
-            return file.getAbsolutePath();
-        }
-        return fileName;
-    }*/
-
-    /**
-     * Make the given filename absolute relative to the current working
-     * directory.
+     *     <p>private String convertToAbsolute(String fileName) { // At present relative paths are
+     *     only calculated if the fileName is // below the project file. This need not be the case,
+     *     and we could use // .. // syntax to move up the tree. (To Be Added)
+     *     <p>File file = new File(fileName);
+     *     <p>if (!file.isAbsolute()) { for (File cwd : currentWorkingDirectoryList) { File test = new
+     *     File(cwd, fileName); if (test.canRead()) { return test.getAbsolutePath(); } } return
+     *     file.getAbsolutePath(); } return fileName; }
      */
+
+    /** Make the given filename absolute relative to the current working directory. */
     private String makeAbsoluteCWD(String fileName) {
         List<String> candidates = makeAbsoluteCwdCandidates(fileName);
         return candidates.get(0);
     }
 
     /**
-     * Make the given filename absolute relative to the current working
-     * directory candidates.
+     * Make the given filename absolute relative to the current working directory candidates.
      *
-     * If the given filename exists in more than one of the working directories,
-     * a list of these existing absolute paths is returned.
+     * <p>If the given filename exists in more than one of the working directories, a list of these
+     * existing absolute paths is returned.
      *
-     * The returned list is guaranteed to be non-empty. The returned paths might
-     * exist or not exist and might be relative or absolute.
+     * <p>The returned list is guaranteed to be non-empty. The returned paths might exist or not exist
+     * and might be relative or absolute.
      *
      * @return A list of at least one candidate path for the given filename.
      */
@@ -1015,15 +922,12 @@ public class Project implements XMLWriteable, AutoCloseable {
     }
 
     /**
-     * Add a value to given list, making the Project modified if the value is
-     * not already present in the list.
+     * Add a value to given list, making the Project modified if the value is not already present in
+     * the list.
      *
-     * @param list
-     *            the list
-     * @param value
-     *            the value to be added
-     * @return true if the value was not already present in the list, false
-     *         otherwise
+     * @param list the list
+     * @param value the value to be added
+     * @return true if the value was not already present in the list, false otherwise
      */
     private <T> boolean addToListInternal(Collection<T> list, T value) {
         if (!list.contains(value)) {
@@ -1040,14 +944,14 @@ public class Project implements XMLWriteable, AutoCloseable {
      * of the project file.
      *
     private void makeListAbsoluteProject(List<String> list)  {
-        List<String> replace = new LinkedList<String>();
-        for (String fileName : list) {
-            fileName = convertToAbsolute(fileName);
-            replace.add(fileName);
-        }
+    List<String> replace = new LinkedList<String>();
+    for (String fileName : list) {
+    fileName = convertToAbsolute(fileName);
+    replace.add(fileName);
+    }
     
-        list.clear();
-        list.addAll(replace);
+    list.clear();
+    list.addAll(replace);
     }*/
 
     public void setTimestamp(long timestamp) {
@@ -1114,10 +1018,8 @@ public class Project implements XMLWriteable, AutoCloseable {
                     if (a.canRead()) {
                         result.add(a.getAbsolutePath());
                     }
-
                 }
             }
-
         }
         return result;
     }

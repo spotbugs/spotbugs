@@ -20,22 +20,21 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.visitclass.LVTHelper;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.visitclass.LVTHelper;
-
 /**
- * Find occurrences of a instanceof b where it can be determined statically
- * whether this is true or false. This may signal a misunderstanding of the
- * inheritance hierarchy in use, and potential bugs.
+ * Find occurrences of a instanceof b where it can be determined statically whether this is true or
+ * false. This may signal a misunderstanding of the inheritance hierarchy in use, and potential
+ * bugs.
  *
  * @author Dave Brosius
  */
@@ -94,13 +93,16 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
                     if (lv != null) {
                         String objSignature = lv.getSignature();
                         if (objSignature.charAt(0) == 'L') {
-                            objSignature = objSignature.substring(1, objSignature.length() - 1).replace('/', '.');
+                            objSignature =
+                                    objSignature.substring(1, objSignature.length() - 1).replace('/', '.');
                             String clsSignature = getDottedClassConstantOperand();
 
                             if (clsSignature.charAt(0) != '[') {
                                 if (org.apache.bcel.Repository.instanceOf(objSignature, clsSignature)) {
-                                    bugReporter.reportBug(new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
-                                            .addClassAndMethod(this).addSourceLine(this));
+                                    bugReporter.reportBug(
+                                            new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
+                                                    .addClassAndMethod(this)
+                                                    .addSourceLine(this));
                                 }
                             }
                         }
@@ -115,6 +117,5 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
         default:
             break;
         }
-
     }
 }

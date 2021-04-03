@@ -19,27 +19,23 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.lang.annotation.ElementType;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import java.lang.annotation.ElementType;
+import java.util.Collection;
+import java.util.Collections;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.Const;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class UnresolvedXField extends AbstractField {
 
-    protected UnresolvedXField(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
+    protected UnresolvedXField(
+            @DottedClassName String className, String methodName, String methodSig, int accessFlags) {
         super(className, methodName, methodSig, accessFlags);
         if (methodSig.charAt(0) == '(') {
             throw new IllegalArgumentException("Bad signature: " + methodSig);
@@ -50,7 +46,11 @@ public class UnresolvedXField extends AbstractField {
     }
 
     protected UnresolvedXField(FieldDescriptor m) {
-        super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(), m.isStatic() ? Const.ACC_STATIC : 0);
+        super(
+                m.getClassDescriptor().getDottedClassName(),
+                m.getName(),
+                m.getSignature(),
+                m.isStatic() ? Const.ACC_STATIC : 0);
         if (m.getSignature().charAt(0) == '(') {
             throw new IllegalArgumentException("Bad signature: " + m.getSignature());
         }
@@ -69,8 +69,8 @@ public class UnresolvedXField extends AbstractField {
         if (o instanceof XField) {
             return XFactory.compare((XField) this, (XField) o);
         }
-        throw new ClassCastException("Don't know how to compare " + this.getClass().getName() + " to " + o.getClass().getName());
-
+        throw new ClassCastException(
+                "Don't know how to compare " + this.getClass().getName() + " to " + o.getClass().getName());
     }
 
     /*
@@ -117,8 +117,8 @@ public class UnresolvedXField extends AbstractField {
     @Override
     public AnnotatedObject getContainingScope() {
         // TODO Auto-generated method stub
-        return AnalysisContext.currentXFactory().getXClass(
-                DescriptorFactory.createClassDescriptorFromDottedClassName(getClassName()));
+        return AnalysisContext.currentXFactory()
+                .getXClass(DescriptorFactory.createClassDescriptorFromDottedClassName(getClassName()));
     }
 
     /*
@@ -147,5 +147,4 @@ public class UnresolvedXField extends AbstractField {
     public @CheckForNull String getSourceSignature() {
         return null;
     }
-
 }

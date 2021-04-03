@@ -26,15 +26,19 @@ import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 
 /**
- * PostDominatorsAnalysis variant in which implicit exception edges are ignored.
- * Implicit exception edges correspond to undeclared runtime exceptions; thus,
- * this analysis considers only normal control edges and declared exception
- * edges.
+ * PostDominatorsAnalysis variant in which implicit exception edges are ignored. Implicit exception
+ * edges correspond to undeclared runtime exceptions; thus, this analysis considers only normal
+ * control edges and declared exception edges.
  *
  * @author David Hovemeyer
  */
 public class NonImplicitExceptionPostDominatorsAnalysis extends PostDominatorsAnalysis {
-    public NonImplicitExceptionPostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
-        super(cfg, rdfs, dfs, edge -> !edge.isExceptionEdge() || edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG));
+    public NonImplicitExceptionPostDominatorsAnalysis(
+            CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
+        super(
+                cfg,
+                rdfs,
+                dfs,
+                edge -> !edge.isExceptionEdge() || edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG));
     }
 }

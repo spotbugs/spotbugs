@@ -19,6 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.FieldSummary;
+import edu.umd.cs.findbugs.ba.Frame;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.util.Util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,19 +35,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.FieldSummary;
-import edu.umd.cs.findbugs.ba.Frame;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.util.Util;
-
 /**
- * A dataflow value representing a Java stack frame with value number
- * information.
+ * A dataflow value representing a Java stack frame with value number information.
  *
  * @author David Hovemeyer
  * @see ValueNumber
@@ -73,17 +70,17 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     static int reusedMutableMap;
 
     static {
-        Util.runLogAtShutdown(() -> {
-            System.err.println("Getting updatable previously known as:");
-            System.err.println("  " + createdEmptyMap + " created empty map");
-            System.err.println("  " + madeImmutableMutable + " made immutable map mutable");
-            System.err.println("  " + reusedMutableMap + " reused mutable map");
-            System.err.println("Copying map:");
-            System.err.println("  " + constructedUnmodifiableMap + " made mutable map unmodifiable");
-            System.err.println("  " + reusedMap + " reused immutable map");
-            System.err.println();
-
-        });
+        Util.runLogAtShutdown(
+                () -> {
+                    System.err.println("Getting updatable previously known as:");
+                    System.err.println("  " + createdEmptyMap + " created empty map");
+                    System.err.println("  " + madeImmutableMutable + " made immutable map mutable");
+                    System.err.println("  " + reusedMutableMap + " reused mutable map");
+                    System.err.println("Copying map:");
+                    System.err.println("  " + constructedUnmodifiableMap + " made mutable map unmodifiable");
+                    System.err.println("  " + reusedMap + " reused immutable map");
+                    System.err.println();
+                });
     }
 
     public ValueNumberFrame(int numLocals) {
@@ -130,8 +127,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     /**
      * Look for an available load.
      *
-     * @param availableLoad
-     *            the AvailableLoad (reference and field)
+     * @param availableLoad the AvailableLoad (reference and field)
      * @return the value(s) available, or null if no matching entry is found
      */
     public ValueNumber[] getAvailableLoad(AvailableLoad availableLoad) {
@@ -141,10 +137,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     /**
      * Add an available load.
      *
-     * @param availableLoad
-     *            the AvailableLoad (reference and field)
-     * @param value
-     *            the value(s) loaded
+     * @param availableLoad the AvailableLoad (reference and field)
+     * @param value the value(s) loaded
      */
     public void addAvailableLoad(AvailableLoad availableLoad, @Nonnull ValueNumber[] value) {
         Objects.requireNonNull(value);
@@ -153,8 +147,13 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         for (ValueNumber v : value) {
             getUpdateablePreviouslyKnownAs().put(v, availableLoad);
             if (RLE_DEBUG) {
-                System.out.println("Adding available load of " + availableLoad + " for " + v + " to "
-                        + System.identityHashCode(this));
+                System.out.println(
+                        "Adding available load of "
+                                + availableLoad
+                                + " for "
+                                + v
+                                + " to "
+                                + System.identityHashCode(this));
             }
         }
     }
@@ -168,8 +167,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     /**
      * Kill all loads of given field.
      *
-     * @param field
-     *            the field
+     * @param field the field
      */
     public void killLoadsOfField(XField field) {
         if (!REDUNDANT_LOAD_ELIMINATION) {
@@ -188,8 +186,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     }
 
     /**
-     * Kill all loads. This conservatively handles method calls where we don't
-     * really know what fields might be assigned.
+     * Kill all loads. This conservatively handles method calls where we don't really know what fields
+     * might be assigned.
      */
     public void killAllLoads() {
         killAllLoads(false);
@@ -203,8 +201,11 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         HashSet<AvailableLoad> killMe = new HashSet<>();
         for (AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
             XField field = availableLoad.getField();
-            if ((!primitiveOnly || !field.isReferenceType()) && (field.isVolatile() || !field.isFinal()
-                    && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field)))) {
+            if ((!primitiveOnly || !field.isReferenceType())
+                    && (field.isVolatile()
+                            || !field.isFinal()
+                                    && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR
+                                            || fieldSummary.isWrittenOutsideOfConstructor(field)))) {
                 if (RLE_DEBUG) {
                     System.out.println("KILLING load of " + availableLoad + " in " + this);
                 }
@@ -212,7 +213,6 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
             }
         }
         killAvailableLoads(killMe);
-
     }
 
     public void killAllLoadsExceptFor(@CheckForNull ValueNumber v) {
@@ -233,8 +233,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     }
 
     /**
-     * Kill all loads. This conservatively handles method calls where we don't
-     * really know what fields might be assigned.
+     * Kill all loads. This conservatively handles method calls where we don't really know what fields
+     * might be assigned.
      */
     public void killAllLoadsOf(@CheckForNull ValueNumber v) {
         if (!REDUNDANT_LOAD_ELIMINATION) {
@@ -248,7 +248,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
                 continue;
             }
             XField field = availableLoad.getField();
-            if (!field.isFinal() && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field))) {
+            if (!field.isFinal()
+                    && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR
+                            || fieldSummary.isWrittenOutsideOfConstructor(field))) {
                 if (RLE_DEBUG) {
                     System.out.println("Killing load of " + availableLoad + " in " + this);
                 }
@@ -268,7 +270,6 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
             if (fieldsToKill.contains(availableLoad.getField())) {
                 killMe.add(availableLoad);
             }
-
         }
         killAvailableLoads(killMe);
     }
@@ -284,11 +285,11 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
             XField field = availableLoad.getField();
             String fieldPackageName = extractPackageName(field.getClassName());
-            if (packageName.equals(fieldPackageName) && field.isStatic()
+            if (packageName.equals(fieldPackageName)
+                    && field.isStatic()
                     && methodName.toLowerCase().indexOf(field.getName().toLowerCase()) >= 0) {
                 killMe.add(availableLoad);
             }
-
         }
         killAvailableLoads(killMe);
     }
@@ -303,14 +304,19 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         return className.substring(className.lastIndexOf('.') + 1);
     }
 
-    void mergeAvailableLoadSets(ValueNumberFrame other, ValueNumberFactory factory, MergeTree mergeTree) {
+    void mergeAvailableLoadSets(
+            ValueNumberFrame other, ValueNumberFactory factory, MergeTree mergeTree) {
         if (REDUNDANT_LOAD_ELIMINATION) {
             // Merge available load sets.
             // Only loads that are available in both frames
             // remain available. All others are discarded.
             String s = "";
             if (RLE_DEBUG) {
-                s = "Merging " + this.availableLoadMapAsString() + " and " + other.availableLoadMapAsString();
+                s =
+                        "Merging "
+                                + this.availableLoadMapAsString()
+                                + " and "
+                                + other.availableLoadMapAsString();
             }
             boolean changed = false;
             if (other.isBottom()) {
@@ -359,24 +365,39 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
                             }
 
                             if (RLE_DEBUG) {
-                                System.out.println("Creating phi node " + phi + " for " + load + " from " + Arrays.toString(myVN)
-                                        + " x " + Arrays.toString(otherVN) + " in " + System.identityHashCode(this));
+                                System.out.println(
+                                        "Creating phi node "
+                                                + phi
+                                                + " for "
+                                                + load
+                                                + " from "
+                                                + Arrays.toString(myVN)
+                                                + " x "
+                                                + Arrays.toString(otherVN)
+                                                + " in "
+                                                + System.identityHashCode(this));
                             }
                             changed = true;
                             e.setValue(new ValueNumber[] { phi });
                         } else {
                             if (RLE_DEBUG) {
-                                System.out.println("Reusing phi node : " + phi + " for " + load + " from "
-                                        + Arrays.toString(myVN) + " x " + Arrays.toString(otherVN) + " in "
-                                        + System.identityHashCode(this));
+                                System.out.println(
+                                        "Reusing phi node : "
+                                                + phi
+                                                + " for "
+                                                + load
+                                                + " from "
+                                                + Arrays.toString(myVN)
+                                                + " x "
+                                                + Arrays.toString(otherVN)
+                                                + " in "
+                                                + System.identityHashCode(this));
                             }
                             if (myVN.length != 1 || !myVN[0].equals(phi)) {
                                 e.setValue(new ValueNumber[] { phi });
                             }
                         }
-
                     }
-
                 }
             }
             Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = other.getPreviouslyKnownAs();
@@ -433,7 +454,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     private void assignAvailableLoadMap(ValueNumberFrame other) {
         Map<AvailableLoad, ValueNumber[]> availableLoadMapOther = other.getAvailableLoadMap();
         if (availableLoadMapOther instanceof HashMap) {
-            availableLoadMapOther = Collections.<AvailableLoad, ValueNumber[]>unmodifiableMap(availableLoadMapOther);
+            availableLoadMapOther =
+                    Collections.<AvailableLoad, ValueNumber[]>unmodifiableMap(availableLoadMapOther);
             other.setAvailableLoadMap(availableLoadMapOther);
             setAvailableLoadMap(availableLoadMapOther);
             constructedUnmodifiableMap++;
@@ -446,7 +468,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     private void assignPreviouslyKnownAs(ValueNumberFrame other) {
         Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = other.getPreviouslyKnownAs();
         if (previouslyKnownAsOther instanceof HashMap) {
-            previouslyKnownAsOther = Collections.<ValueNumber, AvailableLoad>unmodifiableMap(previouslyKnownAsOther);
+            previouslyKnownAsOther =
+                    Collections.<ValueNumber, AvailableLoad>unmodifiableMap(previouslyKnownAsOther);
             other.setPreviouslyKnownAs(previouslyKnownAsOther);
             setPreviouslyKnownAs(previouslyKnownAsOther);
             constructedUnmodifiableMap++;
@@ -568,9 +591,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         return false;
     }
 
-    /**
-     * @return true if v1 and v2 have a flag in common
-     */
+    /** @return true if v1 and v2 have a flag in common */
     public boolean haveMatchingFlags(ValueNumber v1, ValueNumber v2) {
         int flag1 = v1.getFlags();
         int flag2 = v2.getFlags();

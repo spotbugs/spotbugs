@@ -19,13 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -35,6 +28,11 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import java.util.HashSet;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 
 public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
 
@@ -61,7 +59,6 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
         super.visitAfter(obj);
         nonnullFields.clear();
         nonnullStaticFields.clear();
-
     }
 
     @Override
@@ -81,15 +78,19 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
         if (!f.isReferenceType() || f.isFinal()) {
             return false;
         }
-        NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
-                .getResolvedAnnotation(f, false);
+        NullnessAnnotation annotation =
+                AnalysisContext.currentAnalysisContext()
+                        .getNullnessAnnotationDatabase()
+                        .getResolvedAnnotation(f, false);
         boolean isNonnull = annotation == NullnessAnnotation.NONNULL;
         return isNonnull;
     }
 
     @Override
     public void visit(Code code) {
-        boolean interesting = Const.CONSTRUCTOR_NAME.equals(getMethodName()) || Const.STATIC_INITIALIZER_NAME.equals(getMethodName());
+        boolean interesting =
+                Const.CONSTRUCTOR_NAME.equals(getMethodName())
+                        || Const.STATIC_INITIALIZER_NAME.equals(getMethodName());
         if (!interesting) {
             return;
         }
@@ -112,14 +113,14 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
                     continue;
                 }
 
-                BugInstance b = new BugInstance(this, "NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", priority)
-                        .addClassAndMethod(this).addField(f);
+                BugInstance b =
+                        new BugInstance(this, "NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", priority)
+                                .addClassAndMethod(this)
+                                .addField(f);
                 bugReporter.reportBug(b);
             }
-
         }
         initializedFields.clear();
-
     }
 
     boolean secondaryConstructor;
@@ -133,7 +134,9 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
 
         switch (seen) {
         case Const.INVOKESPECIAL:
-            if (!getMethod().isStatic() && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && isSelfOperation()) {
+            if (!getMethod().isStatic()
+                    && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
+                    && isSelfOperation()) {
                 OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
                 if (invokedOn.isInitialParameter() && invokedOn.getRegisterNumber() == 0) {
                     secondaryConstructor = true;
@@ -174,13 +177,10 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
             break;
         default:
             break;
-
         }
-
     }
 
     public boolean isSelfOperation() {
         return getClassConstantOperand().equals(getClassName());
     }
-
 }

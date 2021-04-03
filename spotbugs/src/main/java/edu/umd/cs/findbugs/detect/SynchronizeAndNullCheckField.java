@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
 
 /*
  * This is a very simply written detector. It checks if there is exactly
@@ -75,7 +74,11 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
             }
             break;
         case 2:
-            if (seen == Const.ASTORE || seen == Const.ASTORE_0 || seen == Const.ASTORE_1 || seen == Const.ASTORE_2 || seen == Const.ASTORE_3) {
+            if (seen == Const.ASTORE
+                    || seen == Const.ASTORE_0
+                    || seen == Const.ASTORE_1
+                    || seen == Const.ASTORE_2
+                    || seen == Const.ASTORE_3) {
                 currState = 3;
             } else {
                 currState = 0;
@@ -98,8 +101,12 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
             break;
         case 5:
             if ((seen == Const.IFNONNULL || seen == Const.IFNULL) && gottenField.equals(syncField)) {
-                BugInstance bug = new BugInstance(this, "NP_SYNC_AND_NULL_CHECK_FIELD", NORMAL_PRIORITY).addClass(this)
-                        .addMethod(this).addField(syncField).addSourceLine(this);
+                BugInstance bug =
+                        new BugInstance(this, "NP_SYNC_AND_NULL_CHECK_FIELD", NORMAL_PRIORITY)
+                                .addClass(this)
+                                .addMethod(this)
+                                .addField(syncField)
+                                .addSourceLine(this);
                 bugReporter.reportBug(bug);
             } else {
                 currState = 0;

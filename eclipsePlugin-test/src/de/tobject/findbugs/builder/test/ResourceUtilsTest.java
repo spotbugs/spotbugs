@@ -22,11 +22,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import de.tobject.findbugs.builder.ResourceUtils;
+import de.tobject.findbugs.builder.WorkItem;
+import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -35,11 +38,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import de.tobject.findbugs.builder.ResourceUtils;
-import de.tobject.findbugs.builder.WorkItem;
-import de.tobject.findbugs.test.AbstractFindBugsTest;
-import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the public methods for ResourceUtils.
@@ -61,42 +59,46 @@ public class ResourceUtilsTest extends AbstractFindBugsTest {
     public void testGetResourcesPerProject_selectedClasses() throws JavaModelException {
         // Select classes A and B
         List<ICompilationUnit> classes = Arrays.asList(getClassA(), getClassB());
-        Map<IProject, List<WorkItem>> resourcesPerProject = ResourceUtils
-                .getResourcesPerProject(new StructuredSelection(classes));
+        Map<IProject, List<WorkItem>> resourcesPerProject =
+                ResourceUtils.getResourcesPerProject(new StructuredSelection(classes));
 
         // We should have project -> [A.java, B.java]
         assertNotNull(resourcesPerProject);
         assertEquals(1, resourcesPerProject.size());
         assertTrue(resourcesPerProject.containsKey(getProject()));
-        List<WorkItem> expectedResources = Arrays.asList(new WorkItem(getClassA()), new WorkItem(getClassB()));
+        List<WorkItem> expectedResources =
+                Arrays.asList(new WorkItem(getClassA()), new WorkItem(getClassB()));
         assertEquals(expectedResources, resourcesPerProject.get(getProject()));
     }
 
     @Test
     public void testGetResourcesPerProject_selectedProject() {
         // Select the project
-        Map<IProject, List<WorkItem>> resourcesPerProject = ResourceUtils.getResourcesPerProject(new StructuredSelection(
-                getProject()));
+        Map<IProject, List<WorkItem>> resourcesPerProject =
+                ResourceUtils.getResourcesPerProject(new StructuredSelection(getProject()));
 
         // We should have project -> [project]
         assertNotNull(resourcesPerProject);
         assertEquals(1, resourcesPerProject.size());
         assertTrue(resourcesPerProject.containsKey(getProject()));
-        assertEquals(Collections.singletonList(new WorkItem(getProject())), resourcesPerProject.get(getProject()));
+        assertEquals(
+                Collections.singletonList(new WorkItem(getProject())),
+                resourcesPerProject.get(getProject()));
     }
 
     @Test
     public void testGetResourcesPerProject_selectedProjectAndClasses() throws JavaModelException {
         // Select project and classes A and B
         List<?> classes = Arrays.asList(getProject(), getClassA(), getClassB());
-        Map<IProject, List<WorkItem>> resourcesPerProject = ResourceUtils
-                .getResourcesPerProject(new StructuredSelection(classes));
+        Map<IProject, List<WorkItem>> resourcesPerProject =
+                ResourceUtils.getResourcesPerProject(new StructuredSelection(classes));
 
         // We should have project -> [project]
         assertNotNull(resourcesPerProject);
         assertEquals(1, resourcesPerProject.size());
         assertTrue(resourcesPerProject.containsKey(getProject()));
-        assertEquals(Collections.singletonList(new WorkItem(getProject())), resourcesPerProject.get(getProject()));
+        assertEquals(
+                Collections.singletonList(new WorkItem(getProject())),
+                resourcesPerProject.get(getProject()));
     }
-
 }

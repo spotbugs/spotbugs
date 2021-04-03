@@ -3,6 +3,11 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
 import static java.util.Objects.requireNonNull;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.ASTNodeNotFoundException;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,10 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -45,17 +48,10 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.markers.WorkbenchMarkerResolution;
 import org.eclipse.ui.views.markers.internal.Util;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.ASTNodeNotFoundException;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
-
 /**
- * This class is the basic Quick Fix resolution for FindBugs. It uses a standard
- * pattern to run the fixes. Subclasses must use the ASTRewrite and the AST to
- * make their changes. They are not responsible for the setup and saving of the
- * changes.
+ * This class is the basic Quick Fix resolution for FindBugs. It uses a standard pattern to run the
+ * fixes. Subclasses must use the ASTRewrite and the AST to make their changes. They are not
+ * responsible for the setup and saving of the changes.
  *
  * @author cchristopher@ebay.com
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
@@ -64,9 +60,10 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public abstract class BugResolution extends WorkbenchMarkerResolution {
 
-    static private final String MISSING_BUG_INSTANCE = "This bug is no longer in the system. "
-            + "The bugs somehow got out of sync with the memory representation. "
-            + "Try running SpotBugs again. If that does not work, check the error log.";
+    private static final String MISSING_BUG_INSTANCE =
+            "This bug is no longer in the system. "
+                    + "The bugs somehow got out of sync with the memory representation. "
+                    + "Try running SpotBugs again. If that does not work, check the error log.";
 
     protected static final String PLACEHOLDER_STRING = "YYY";
 
@@ -82,22 +79,22 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     private final Map<CompilationUnit, ASTRewrite> reusableRewrites = new HashMap<>();
 
-    //to save memory, we cache only one CompilationUnit.  We can do this because we sort multiple Imarkers by their associated resource
+    // to save memory, we cache only one CompilationUnit.  We can do this because we sort multiple
+    // Imarkers by their associated resource
     private ICompilationUnit cachedCompilationUnitKey;
 
     private CompilationUnit cachedCompilationUnit;
 
     protected String customizedLabel;
 
-    /**
-     * Called by reflection!
-     */
+    /** Called by reflection! */
     public BugResolution() {
         label = getClass().getSimpleName();
     }
 
     /**
      * Called on initialization
+     *
      * @param options optional arguments
      */
     public void setOptions(@Nonnull Map<String, String> options) {
@@ -107,13 +104,12 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     /**
      * Returns the short label that briefly describes the change that will be made.
      *
-     * Typically, labels are static and defined in <code>plugin.xml</code>.
-     * For runtime-computed labels, define a base label in plugin.xml using the
-     * <code>PLACEHOLDER_STRING</code> "YYY" where any custom text should go.  Then,
-     * override getLabelFixingVisitor() to scan the code and find the text to replace
-     * the placeholder.
+     * <p>Typically, labels are static and defined in <code>plugin.xml</code>. For runtime-computed
+     * labels, define a base label in plugin.xml using the <code>PLACEHOLDER_STRING</code> "YYY" where
+     * any custom text should go. Then, override getLabelFixingVisitor() to scan the code and find the
+     * text to replace the placeholder.
      *
-     * The visitor is only used to scan once, the result being cached on subsequent visits.
+     * <p>The visitor is only used to scan once, the result being cached on subsequent visits.
      */
     @Override
     @Nonnull
@@ -128,7 +124,6 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         }
         return label;
     }
-
 
     @Nonnull
     private String findLabelReplacement(ASTVisitor labelFixingVisitor) {
@@ -150,10 +145,11 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     /**
-     * Returns an ASTVisitor that also implements CustomLabelVisitor or null
-     * if the label in plugin.xml will suffice.
+     * Returns an ASTVisitor that also implements CustomLabelVisitor or null if the label in
+     * plugin.xml will suffice.
      *
-     * Override this to give a resolution a custom label.
+     * <p>Override this to give a resolution a custom label.
+     *
      * @return
      */
     @CheckForNull
@@ -162,7 +158,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     @CheckForNull
-    protected ASTNode getNodeForMarker(IMarker marker) throws JavaModelException, ASTNodeNotFoundException {
+    protected ASTNode getNodeForMarker(IMarker marker)
+            throws JavaModelException, ASTNodeNotFoundException {
         BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
         if (bug == null) {
             return null;
@@ -224,7 +221,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     @Override
     public void run(IMarker[] markers, IProgressMonitor multipleFixMonitor) {
-        //sort the markers to make the smaller cache work properly
+        // sort the markers to make the smaller cache work properly
         de.tobject.findbugs.util.Util.sortIMarkers(markers);
 
         List<PendingRewrite> pendingRewrites = new ArrayList<>(markers.length);
@@ -236,11 +233,11 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             pendingRewrites.add(resolveWithoutWriting(markers[i]));
         }
         // fully commit all changes
-        //TODO disable automatically running FindBugs during this
+        // TODO disable automatically running FindBugs during this
         for (PendingRewrite pendingRewrite : pendingRewrites) {
             completeRewrite(pendingRewrite);
         }
-        //TODO reenable automatically running FindBugs if appropriate
+        // TODO reenable automatically running FindBugs if appropriate
     }
 
     @CheckForNull
@@ -268,8 +265,12 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             IProject project = marker.getResource().getProject();
             originalUnit = getCompilationUnit(marker);
             if (originalUnit == null) {
-                throw new BugResolutionException("No compilation unit found for marker " + marker.getType() + " ("
-                        + marker.getId() + ')');
+                throw new BugResolutionException(
+                        "No compilation unit found for marker "
+                                + marker.getType()
+                                + " ("
+                                + marker.getId()
+                                + ')');
             }
 
             Document doc = new Document(originalUnit.getBuffer().getContents());
@@ -294,7 +295,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         }
     }
 
-    private CompilationUnit makeOrReuseWorkingCopy(@Nonnull ICompilationUnit originalUnit) throws JavaModelException {
+    private CompilationUnit makeOrReuseWorkingCopy(@Nonnull ICompilationUnit originalUnit)
+            throws JavaModelException {
         if (originalUnit.equals(cachedCompilationUnitKey)) {
             return cachedCompilationUnit;
         }
@@ -302,7 +304,6 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         cachedCompilationUnit = createWorkingCopy(originalUnit);
         cachedCompilationUnitKey = originalUnit;
         return cachedCompilationUnit;
-
     }
 
     private ASTRewrite makeOrReuseRewrite(CompilationUnit workingUnit) {
@@ -321,15 +322,12 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         return rewrite;
     }
 
-
     /**
-     * Runs the <CODE>BugResolution</CODE> on the given <CODE>IMarker</CODE>.
-     * The <CODE>IMarker</CODE> has to be a FindBugs marker. The
-     * <CODE>BugInstance</CODE> associated to the <CODE>IMarker</CODE> will be
-     * repaired. All exceptions are reported to the ErrorLog.
+     * Runs the <CODE>BugResolution</CODE> on the given <CODE>IMarker</CODE>. The <CODE>IMarker</CODE>
+     * has to be a FindBugs marker. The <CODE>BugInstance</CODE> associated to the <CODE>IMarker
+     * </CODE> will be repaired. All exceptions are reported to the ErrorLog.
      *
-     * @param marker
-     *            non null The <CODE>IMarker</CODE> that specifies the bug.
+     * @param marker non null The <CODE>IMarker</CODE> that specifies the bug.
      */
     @Override
     public void run(IMarker marker) {
@@ -343,8 +341,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     /**
-     * This method is used by the test-framework, to catch the thrown exceptions
-     * and report it to the user.
+     * This method is used by the test-framework, to catch the thrown exceptions and report it to the
+     * user.
      *
      * @see #run(IMarker)
      */
@@ -371,24 +369,23 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     /**
-     * Returns if TypeBindings should be resolved. This is a mildly expensive
-     * operation, so if the resolutions don't require knowing about Types,
-     * return false. Otherwise, return true.
+     * Returns if TypeBindings should be resolved. This is a mildly expensive operation, so if the
+     * resolutions don't require knowing about Types, return false. Otherwise, return true.
      *
      * @return
      */
     protected abstract boolean resolveBindings();
 
-    protected abstract void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
+    protected abstract void repairBug(
+            ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
             throws BugResolutionException;
 
     /**
      * Get the compilation unit for the marker.
      *
-     * @param marker
-     *            not null
-     * @return The compilation unit for the marker, or null if the file was not
-     *         accessible or was not a Java file.
+     * @param marker not null
+     * @return The compilation unit for the marker, or null if the file was not accessible or was not
+     *     a Java file.
      */
     @CheckForNull
     protected ICompilationUnit getCompilationUnit(IMarker marker) {
@@ -403,21 +400,22 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     /**
-     * Reports an exception to the user. This method could be overwritten by a
-     * subclass to handle some exceptions individual.
+     * Reports an exception to the user. This method could be overwritten by a subclass to handle some
+     * exceptions individual.
      *
-     * @param e
-     *            not null
+     * @param e not null
      */
     protected void reportException(Exception e) {
         Assert.isNotNull(e);
 
         FindbugsPlugin.getDefault().logException(e, e.getLocalizedMessage());
-        MessageDialog.openError(FindbugsPlugin.getShell(), "BugResolution failed.", e.getLocalizedMessage());
+        MessageDialog.openError(
+                FindbugsPlugin.getShell(), "BugResolution failed.", e.getLocalizedMessage());
     }
 
     @Nonnull
-    protected final CompilationUnit createWorkingCopy(@Nonnull ICompilationUnit unit) throws JavaModelException {
+    protected final CompilationUnit createWorkingCopy(@Nonnull ICompilationUnit unit)
+            throws JavaModelException {
         unit.becomeWorkingCopy(monitor);
         ASTParser parser = createAstParser();
         parser.setSource(unit);
@@ -443,7 +441,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         return parser;
     }
 
-    private IRegion rewriteCompilationUnit(ASTRewrite rewrite, IDocument doc, ICompilationUnit originalUnit)
+    private IRegion rewriteCompilationUnit(
+            ASTRewrite rewrite, IDocument doc, ICompilationUnit originalUnit)
             throws JavaModelException, BadLocationException {
         TextEdit edits = rewrite.rewriteAST(doc, originalUnit.getJavaProject().getOptions(true));
         edits.apply(doc);
@@ -454,8 +453,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     /**
-     * @return the bug type we started to work with (can be different on different resolution instances
-     * if the resolution class supports multiple bug patterns)
+     * @return the bug type we started to work with (can be different on different resolution
+     *     instances if the resolution class supports multiple bug patterns)
      */
     @CheckForNull
     public String getBugPattern() {
@@ -469,30 +468,28 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     /**
      * @return the marker we started to work with (can be different on different resolution instances
-     * if the resolution class supports multiple bug types)
+     *     if the resolution class supports multiple bug types)
      */
     public IMarker getMarker() {
         return currentMarker;
     }
 
-    /**
-     * @param initialMarker the initialMarker to set
-     */
+    /** @param initialMarker the initialMarker to set */
     public void setMarker(IMarker initialMarker) {
         Objects.requireNonNull(initialMarker);
         this.currentMarker = initialMarker;
     }
 
     /**
-     * If getApplicabilityVisitor() is overwritten, this checks
-     * to see if this resolution applies to the code at the given marker.
+     * If getApplicabilityVisitor() is overwritten, this checks to see if this resolution applies to
+     * the code at the given marker.
      *
      * @param marker
      * @return true if this resolution should be visible to the user at the given marker
      */
     public boolean isApplicable(IMarker marker) {
         ASTVisitor prescanVisitor = getApplicabilityVisitor();
-        if (prescanVisitor instanceof ApplicabilityVisitor) { //this has an implicit null check
+        if (prescanVisitor instanceof ApplicabilityVisitor) { // this has an implicit null check
             return findApplicability(prescanVisitor, marker);
         }
         return true;
@@ -503,7 +500,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             ASTNode node = getNodeForMarker(marker);
             if (node != null) {
                 node.accept(prescanVisitor);
-                //this cast is safe because isApplicable checks the type before calling
+                // this cast is safe because isApplicable checks the type before calling
                 return ((ApplicabilityVisitor) prescanVisitor).isApplicable();
             }
             // Catch all exceptions (explicit) so that applicability check won't fail
@@ -516,11 +513,12 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     /**
-     * Returns an ASTVisitor that also implements ApplicabilityVisitor or null
-     * if the resolution will always work as configured.
+     * Returns an ASTVisitor that also implements ApplicabilityVisitor or null if the resolution will
+     * always work as configured.
      *
-     * Override this to basically prescan the code to see if a fix is valid
-     * before offering it to the user.
+     * <p>Override this to basically prescan the code to see if a fix is valid before offering it to
+     * the user.
+     *
      * @return
      */
     protected ASTVisitor getApplicabilityVisitor() {
@@ -537,7 +535,5 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             this.doc = doc;
             this.originalUnit = originalUnit;
         }
-
     }
-
 }

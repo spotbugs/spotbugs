@@ -58,5 +58,4 @@ public class NullIterator<E> implements Iterator<E> {
     public void remove() {
         throw new UnsupportedOperationException();
     }
-
 }

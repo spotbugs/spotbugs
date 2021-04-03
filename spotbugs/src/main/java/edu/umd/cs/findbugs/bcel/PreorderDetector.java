@@ -24,12 +24,11 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * Base class for Detectors which want to perform a preorder traversal of the
- * classfile.
+ * Base class for Detectors which want to perform a preorder traversal of the classfile.
  *
  * @see PreorderVisitor
  */
-abstract public class PreorderDetector extends PreorderVisitor implements Detector {
+public abstract class PreorderDetector extends PreorderVisitor implements Detector {
     private ClassContext classContext;
 
     @Override

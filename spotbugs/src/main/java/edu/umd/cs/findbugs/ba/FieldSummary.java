@@ -19,19 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
@@ -42,6 +29,16 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.detect.UnreadFieldsData;
 import edu.umd.cs.findbugs.util.Util;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import org.apache.bcel.generic.Type;
 
 /**
  * Interprocedural analysis summary
@@ -95,18 +92,18 @@ public class FieldSummary {
         } catch (CheckedAnalysisException e) {
             return false;
         }
-
     }
 
     public void setCalledFromSuperConstructor(ProgramPoint from, XMethod calledFromConstructor) {
-        Set<ProgramPoint> set = selfMethodsCalledFromConstructor.computeIfAbsent(calledFromConstructor,
-                k -> new HashSet<>());
+        Set<ProgramPoint> set =
+                selfMethodsCalledFromConstructor.computeIfAbsent(
+                        calledFromConstructor, k -> new HashSet<>());
         set.add(from);
         callsOverriddenMethodsFromConstructor.add(from.method.getClassDescriptor());
-
     }
 
-    public Set<ProgramPoint> getCalledFromSuperConstructor(ClassDescriptor superClass, XMethod calledFromConstructor) {
+    public Set<ProgramPoint> getCalledFromSuperConstructor(
+            ClassDescriptor superClass, XMethod calledFromConstructor) {
 
         if (!callsOverriddenMethodsFromConstructor.contains(superClass)) {
             return Collections.emptySet();
@@ -126,7 +123,6 @@ public class FieldSummary {
         }
 
         return Collections.emptySet();
-
     }
 
     public void setFieldsWritten(XMethod method, Collection<XField> fields) {
@@ -171,12 +167,13 @@ public class FieldSummary {
 
             Type mergeType = Type.getType(mSignature);
             Type fieldType = Type.getType(fieldOperand.getSignature());
-            IncompatibleTypes check = IncompatibleTypes.getPriorityForAssumingCompatible(mergeType, fieldType, false);
+            IncompatibleTypes check =
+                    IncompatibleTypes.getPriorityForAssumingCompatible(mergeType, fieldType, false);
             if (check.getPriority() <= Priorities.NORMAL_PRIORITY) {
-                AnalysisContext.logError(fieldOperand + " not compatible with " + mergeValue,
+                AnalysisContext.logError(
+                        fieldOperand + " not compatible with " + mergeValue,
                         new IllegalArgumentException(check.toString()));
             }
-
         }
 
         OpcodeStack.Item oldSummary = summary.get(fieldOperand);
@@ -193,10 +190,7 @@ public class FieldSummary {
         }
     }
 
-    /**
-     * @param complete
-     *            The complete to set.
-     */
+    /** @param complete The complete to set. */
     public void setComplete(boolean complete) {
         int fields = 0;
         int removed = 0;
@@ -225,9 +219,7 @@ public class FieldSummary {
         }
     }
 
-    /**
-     * @return Returns the complete.
-     */
+    /** @return Returns the complete. */
     public boolean isComplete() {
         return complete;
     }
@@ -240,12 +232,9 @@ public class FieldSummary {
             return;
         }
         nonVoidSuperConstructorsCalled.put(from, constructorInSuperClass);
-
     }
 
     public @CheckForNull XMethod getSuperCall(XMethod from) {
         return nonVoidSuperConstructorsCalled.get(from);
-
     }
-
 }

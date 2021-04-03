@@ -19,15 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -48,8 +39,16 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.Values;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
-public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implements FirstPassDetector {
+public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector
+        implements FirstPassDetector {
 
     private static final String EQUALS_NAME = "equals";
 
@@ -79,11 +78,27 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     @Override
     public void visit(Code obj) {
-        if (EQUALS_NAME.equals(getMethodName()) && !getMethod().isStatic() && getMethod().isPublic()
+        if (EQUALS_NAME.equals(getMethodName())
+                && !getMethod().isStatic()
+                && getMethod().isPublic()
                 && EQUALS_SIGNATURE.equals(getMethodSig())) {
-            sawCheckedCast = sawSuperEquals = sawInstanceOf = sawGetClass = sawReturnSuper = sawCompare = sawReturnNonSuper = prevWasSuperEquals =
-                    sawGoodEqualsClass = sawBadEqualsClass = dangerDanger = sawInstanceOfSupertype = alwaysTrue = alwaysFalse = sawStaticDelegate =
-                            sawEqualsBuilder = false;
+            sawCheckedCast =
+                    sawSuperEquals =
+                            sawInstanceOf =
+                                    sawGetClass =
+                                            sawReturnSuper =
+                                                    sawCompare =
+                                                            sawReturnNonSuper =
+                                                                    prevWasSuperEquals =
+                                                                            sawGoodEqualsClass =
+                                                                                    sawBadEqualsClass =
+                                                                                            dangerDanger =
+                                                                                                    sawInstanceOfSupertype =
+                                                                                                            alwaysTrue =
+                                                                                                                    alwaysFalse =
+                                                                                                                            sawStaticDelegate =
+                                                                                                                                    sawEqualsBuilder =
+                                                                                                                                            false;
             sawInitialIdentityCheck = obj.getCode().length == 11 || obj.getCode().length == 9;
             equalsCalls = 0;
             super.visit(obj);
@@ -99,11 +114,15 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             } else if (sawInstanceOfSupertype) {
                 kind = EqualsKindSummary.KindOfEquals.INSTANCE_OF_SUPERCLASS_EQUALS;
             } else if (sawInstanceOf) {
-                kind = getThisClass().isAbstract() ? EqualsKindSummary.KindOfEquals.ABSTRACT_INSTANCE_OF
-                        : EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS;
+                kind =
+                        getThisClass().isAbstract()
+                                ? EqualsKindSummary.KindOfEquals.ABSTRACT_INSTANCE_OF
+                                : EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS;
             } else if (sawGetClass && sawGoodEqualsClass) {
-                kind = getThisClass().isAbstract() ? EqualsKindSummary.KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS
-                        : EqualsKindSummary.KindOfEquals.GETCLASS_GOOD_EQUALS;
+                kind =
+                        getThisClass().isAbstract()
+                                ? EqualsKindSummary.KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS
+                                : EqualsKindSummary.KindOfEquals.GETCLASS_GOOD_EQUALS;
             } else if (sawGetClass && sawBadEqualsClass) {
                 kind = EqualsKindSummary.KindOfEquals.GETCLASS_BAD_EQUALS;
             } else if (equalsCalls == 1 || sawStaticDelegate || sawEqualsBuilder) {
@@ -116,8 +135,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 kind = EqualsKindSummary.KindOfEquals.COMPARE_EQUALS;
             } else {
                 if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
-                    bugReporter
-                            .reportBug(new BugInstance(this, "EQ_UNUSUAL", Priorities.NORMAL_PRIORITY).addClassAndMethod(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, "EQ_UNUSUAL", Priorities.NORMAL_PRIORITY)
+                                    .addClassAndMethod(this));
                 }
             }
             ClassAnnotation classAnnotation = new ClassAnnotation(getDottedClassName());
@@ -130,30 +150,28 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
                 ClassDescriptor classDescriptor = getClassDescriptor();
                 try {
-                    Set<ClassDescriptor> subtypes = AnalysisContext.currentAnalysisContext().getSubtypes2()
-                            .getSubtypes(classDescriptor);
+                    Set<ClassDescriptor> subtypes =
+                            AnalysisContext.currentAnalysisContext().getSubtypes2().getSubtypes(classDescriptor);
                     if (subtypes.size() > 1) {
                         classesWithGetClassBasedEquals.put(classDescriptor, subtypes);
                     }
                 } catch (ClassNotFoundException e) {
                     assert true;
                 }
-
             }
             if (kind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS
                     || kind == EqualsKindSummary.KindOfEquals.ABSTRACT_INSTANCE_OF) {
 
                 ClassDescriptor classDescriptor = getClassDescriptor();
                 try {
-                    Set<ClassDescriptor> subtypes = AnalysisContext.currentAnalysisContext().getSubtypes2()
-                            .getSubtypes(classDescriptor);
+                    Set<ClassDescriptor> subtypes =
+                            AnalysisContext.currentAnalysisContext().getSubtypes2().getSubtypes(classDescriptor);
                     if (subtypes.size() > 1) {
                         classesWithInstanceOfBasedEquals.put(classDescriptor, subtypes);
                     }
                 } catch (ClassNotFoundException e) {
                     assert true;
                 }
-
             }
 
             String superClassName = getSuperclassName().replace('/', '.');
@@ -161,7 +179,6 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 parentMap.put(classAnnotation, new ClassAnnotation(superClassName));
             }
             equalsMethod.put(classAnnotation, getMethodDescriptor());
-
         }
         bugAccumulator.reportAccumulatedBugs();
     }
@@ -194,8 +211,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     boolean sawEqualsBuilder;
 
-    private final EnumMap<EqualsKindSummary.KindOfEquals, Integer> count = new EnumMap<>(
-            EqualsKindSummary.KindOfEquals.class);
+    private final EnumMap<EqualsKindSummary.KindOfEquals, Integer> count =
+            new EnumMap<>(EqualsKindSummary.KindOfEquals.class);
 
     private void count(EqualsKindSummary.KindOfEquals k) {
         Integer v = count.get(k);
@@ -215,32 +232,35 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
         if (getPC() == 2
                 && seen == Const.INVOKESTATIC
                 && getCode().getCode().length == 6
-                && (getPrevOpcode(1) == Const.ALOAD_0 && getPrevOpcode(2) == Const.ALOAD_1 || getPrevOpcode(1) == Const.ALOAD_1
-                        && getPrevOpcode(2) == Const.ALOAD_0)) {
+                && (getPrevOpcode(1) == Const.ALOAD_0 && getPrevOpcode(2) == Const.ALOAD_1
+                        || getPrevOpcode(1) == Const.ALOAD_1 && getPrevOpcode(2) == Const.ALOAD_0)) {
             sawStaticDelegate = true;
         }
 
         if ((seen == Const.INVOKESTATIC || seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL)
                 && ("org/apache/commons/lang/builder/EqualsBuilder".equals(getClassConstantOperand())
-                        || "org/apache/commons/lang3/builder/EqualsBuilder".equals(getClassConstantOperand()))) {
+                        || "org/apache/commons/lang3/builder/EqualsBuilder"
+                                .equals(getClassConstantOperand()))) {
             sawEqualsBuilder = true;
         }
 
         if (seen == Const.IRETURN && getPC() == 1 && getPrevOpcode(1) == Const.ICONST_0) {
             alwaysFalse = true;
             if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
-                bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_FALSE", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
-                        .addSourceLine(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, "EQ_ALWAYS_FALSE", Priorities.HIGH_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this));
             }
-
         }
         if (seen == Const.IRETURN && getPC() == 1 && getPrevOpcode(1) == Const.ICONST_1) {
             alwaysTrue = true;
             if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
-                bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_TRUE", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
-                        .addSourceLine(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, "EQ_ALWAYS_TRUE", Priorities.HIGH_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this));
             }
-
         }
         if (seen == Const.IF_ACMPEQ || seen == Const.IF_ACMPNE) {
             checkForComparingClasses();
@@ -248,13 +268,17 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
         if (callToInvoke(seen)) {
             equalsCalls++;
             checkForComparingClasses();
-            if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()) && dangerDanger) {
-                bugReporter.reportBug(new BugInstance(this, "EQ_COMPARING_CLASS_NAMES", Priorities.NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this));
+            if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())
+                    && dangerDanger) {
+                bugReporter.reportBug(
+                        new BugInstance(this, "EQ_COMPARING_CLASS_NAMES", Priorities.NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this));
             }
         }
 
-        if ((seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) && "compare".equals(getNameConstantOperand())
+        if ((seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL)
+                && "compare".equals(getNameConstantOperand())
                 && stack.getStackDepth() >= 2) {
             Item left = stack.getStackItem(1);
             Item right = stack.getStackItem(0);
@@ -264,19 +288,24 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
         }
         dangerDanger = false;
 
-        if (seen == Const.INVOKEVIRTUAL && "java/lang/Class".equals(getClassConstantOperand())
-                && "getName".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())
+        if (seen == Const.INVOKEVIRTUAL
+                && "java/lang/Class".equals(getClassConstantOperand())
+                && "getName".equals(getNameConstantOperand())
+                && "()Ljava/lang/String;".equals(getSigConstantOperand())
                 && stack.getStackDepth() >= 2) {
             Item left = stack.getStackItem(1);
             XMethod leftM = left.getReturnValueOf();
             Item right = stack.getStackItem(0);
             XMethod rightM = right.getReturnValueOf();
-            if (leftM != null && rightM != null && "getName".equals(leftM.getName()) && "getClass".equals(rightM.getName())) {
+            if (leftM != null
+                    && rightM != null
+                    && "getName".equals(leftM.getName())
+                    && "getClass".equals(rightM.getName())) {
                 dangerDanger = true;
             }
-
         }
-        if (seen == Const.INVOKESPECIAL && EQUALS_NAME.equals(getNameConstantOperand())
+        if (seen == Const.INVOKESPECIAL
+                && EQUALS_NAME.equals(getNameConstantOperand())
                 && EQUALS_SIGNATURE.equals(getSigConstantOperand())) {
             sawSuperEquals = prevWasSuperEquals = true;
         } else {
@@ -290,13 +319,17 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             prevWasSuperEquals = false;
         }
 
-        if (seen == Const.INSTANCEOF && stack.getStackDepth() > 0 && stack.getStackItem(0).getRegisterNumber() == 1) {
+        if (seen == Const.INSTANCEOF
+                && stack.getStackDepth() > 0
+                && stack.getStackItem(0).getRegisterNumber() == 1) {
             ClassDescriptor instanceOfCheck = getClassDescriptorOperand();
             if (instanceOfCheck.equals(getClassDescriptor())) {
                 sawInstanceOf = true;
             } else {
                 try {
-                    if (AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(getClassDescriptor(), instanceOfCheck)) {
+                    if (AnalysisContext.currentAnalysisContext()
+                            .getSubtypes2()
+                            .isSubtype(getClassDescriptor(), instanceOfCheck)) {
                         sawInstanceOfSupertype = true;
                     }
                 } catch (ClassNotFoundException e) {
@@ -305,28 +338,34 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
         }
 
-        if (seen == Const.CHECKCAST && stack.getStackDepth() > 0 && stack.getStackItem(0).getRegisterNumber() == 1) {
+        if (seen == Const.CHECKCAST
+                && stack.getStackDepth() > 0
+                && stack.getStackItem(0).getRegisterNumber() == 1) {
             ClassDescriptor castTo = getClassDescriptorOperand();
             if (castTo.equals(getClassDescriptor())) {
                 sawCheckedCast = true;
             }
             try {
-                if (AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(getClassDescriptor(), castTo)) {
+                if (AnalysisContext.currentAnalysisContext()
+                        .getSubtypes2()
+                        .isSubtype(getClassDescriptor(), castTo)) {
                     sawCheckedCast = true;
                 }
             } catch (ClassNotFoundException e) {
                 sawCheckedCast = true;
             }
         }
-        if (seen == Const.INVOKEVIRTUAL && "getClass".equals(getNameConstantOperand())
+        if (seen == Const.INVOKEVIRTUAL
+                && "getClass".equals(getNameConstantOperand())
                 && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
             sawGetClass = true;
         }
-
     }
 
     private boolean callToInvoke(int seen) {
-        if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE || seen == Const.INVOKESPECIAL) {
+        if (seen == Const.INVOKEVIRTUAL
+                || seen == Const.INVOKEINTERFACE
+                || seen == Const.INVOKESPECIAL) {
             return invokesMethodWithEqualLikeName() && EQUALS_SIGNATURE.equals(getSigConstantOperand());
         }
         if (seen == Const.INVOKESTATIC) {
@@ -335,30 +374,28 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
         }
 
         return false;
-
     }
 
     public boolean invokesMethodWithEqualLikeName() {
         return getNameConstantOperand().toLowerCase().indexOf(EQUALS_NAME) >= 0;
     }
 
-    /**
-     *
-     */
+    /** */
     private void checkForComparingClasses() {
         if (stack.getStackDepth() >= 2) {
             Item left = stack.getStackItem(1);
             XMethod leftM = left.getReturnValueOf();
             Item right = stack.getStackItem(0);
             XMethod rightM = right.getReturnValueOf();
-            if ("Ljava/lang/Class;".equals(left.getSignature()) && "Ljava/lang/Class;".equals(right.getSignature())) {
+            if ("Ljava/lang/Class;".equals(left.getSignature())
+                    && "Ljava/lang/Class;".equals(right.getSignature())) {
                 boolean leftMatch = leftM != null && "getClass".equals(leftM.getName());
                 boolean rightMatch = rightM != null && "getClass".equals(rightM.getName());
                 if (leftMatch && rightMatch) {
                     sawGoodEqualsClass = true;
                 } else {
-                    if (getClassName().equals(left.getConstant()) && rightMatch || leftMatch
-                            && getClassName().equals(right.getConstant())) {
+                    if (getClassName().equals(left.getConstant()) && rightMatch
+                            || leftMatch && getClassName().equals(right.getConstant())) {
                         if (getThisClass().isFinal()) {
                             sawGoodEqualsClass = true;
                         } else {
@@ -367,8 +404,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
                                 int priority = Priorities.NORMAL_PRIORITY;
 
-                                BugInstance bug = new BugInstance(this, "EQ_GETCLASS_AND_CLASS_CONSTANT", priority)
-                                        .addClassAndMethod(this);
+                                BugInstance bug =
+                                        new BugInstance(this, "EQ_GETCLASS_AND_CLASS_CONSTANT", priority)
+                                                .addClassAndMethod(this);
 
                                 try {
 
@@ -397,7 +435,6 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                     }
                 }
             }
-
         }
     }
 
@@ -411,9 +448,12 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
             if (childKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS
                     && parentKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS) {
-                bugReporter.reportBug(new BugInstance(this, "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", NORMAL_PRIORITY)
-                        .add(childClass).addMethod(equalsMethod.get(childClass)).addMethod(equalsMethod.get(parentClass))
-                        .describe(MethodAnnotation.METHOD_OVERRIDDEN));
+                bugReporter.reportBug(
+                        new BugInstance(this, "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", NORMAL_PRIORITY)
+                                .add(childClass)
+                                .addMethod(equalsMethod.get(childClass))
+                                .addMethod(equalsMethod.get(parentClass))
+                                .describe(MethodAnnotation.METHOD_OVERRIDDEN));
             }
         }
     }

@@ -19,17 +19,15 @@
 
 package edu.umd.cs.findbugs.xml;
 
+import edu.umd.cs.findbugs.annotations.DischargesObligation;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.util.Strings;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-
 import javax.annotation.WillCloseWhenClosed;
-
-import edu.umd.cs.findbugs.annotations.DischargesObligation;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * Write XML to an output stream.
@@ -57,8 +55,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     /**
      * Constructor.
      *
-     * @param os
-     *            OutputStream to write XML output to
+     * @param os OutputStream to write XML output to
      */
     @SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
     public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os) {
@@ -68,8 +65,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     /**
      * Constructor.
      *
-     * @param writer
-     *            Writer to write XML output to
+     * @param writer Writer to write XML output to
      */
     @SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
     public OutputStreamXMLOutput(@WillCloseWhenClosed Writer writer) {
@@ -79,10 +75,8 @@ public class OutputStreamXMLOutput implements XMLOutput {
     /**
      * Constructor.
      *
-     * @param os
-     *            OutputStream to write XML output to
-     * @param stylesheet
-     *            name of stylesheet
+     * @param os OutputStream to write XML output to
+     * @param stylesheet name of stylesheet
      */
     public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os, String stylesheet) {
         this.out = new OutputStreamWriter(os, StandardCharsets.UTF_8);

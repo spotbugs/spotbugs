@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
@@ -26,13 +29,9 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
 
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-
 /**
- * A PatternElement representing a store to a field. Variables represent the
- * field and the value stored.
+ * A PatternElement representing a store to a field. Variables represent the field and the value
+ * stored.
  *
  * @author David Hovemeyer
  * @see PatternElement
@@ -41,18 +40,21 @@ public class Store extends FieldAccess {
     /**
      * Constructor.
      *
-     * @param fieldVarName
-     *            the name of the field variable
-     * @param valueVarName
-     *            the name of the variable representing the value stored
+     * @param fieldVarName the name of the field variable
+     * @param valueVarName the name of the variable representing the value stored
      */
     public Store(String fieldVarName, String valueVarName) {
         super(fieldVarName, valueVarName);
     }
 
     @Override
-    public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
-            BindingSet bindingSet) throws DataflowAnalysisException {
+    public MatchResult match(
+            InstructionHandle handle,
+            ConstantPoolGen cpg,
+            ValueNumberFrame before,
+            ValueNumberFrame after,
+            BindingSet bindingSet)
+            throws DataflowAnalysisException {
 
         Instruction ins = handle.getInstruction();
         FieldInstruction fieldIns;
@@ -62,11 +64,19 @@ public class Store extends FieldAccess {
         if (ins instanceof PUTFIELD) {
             fieldIns = (PUTFIELD) ins;
             int numSlots = before.getNumSlots();
-            ValueNumber ref = before.getValue(isLongOrDouble(fieldIns, cpg) ? numSlots - 3 : numSlots - 2);
-            field = new FieldVariable(ref, fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
+            ValueNumber ref =
+                    before.getValue(isLongOrDouble(fieldIns, cpg) ? numSlots - 3 : numSlots - 2);
+            field =
+                    new FieldVariable(
+                            ref,
+                            fieldIns.getClassName(cpg),
+                            fieldIns.getFieldName(cpg),
+                            fieldIns.getSignature(cpg));
         } else if (ins instanceof PUTSTATIC) {
             fieldIns = (PUTSTATIC) ins;
-            field = new FieldVariable(fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
+            field =
+                    new FieldVariable(
+                            fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
         } else {
             return null;
         }

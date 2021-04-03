@@ -22,57 +22,39 @@ package edu.umd.cs.findbugs.ba;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
- * Common superinterface for code entities having access flags: classes, fields,
- * and methods.
+ * Common superinterface for code entities having access flags: classes, fields, and methods.
  *
  * @author David Hovemeyer
  */
 public interface AccessibleEntity {
 
-    /**
-     * Get the entity's access flags.
-     */
+    /** Get the entity's access flags. */
     public int getAccessFlags();
 
-    /**
-     * Is the entity static?
-     */
+    /** Is the entity static? */
     public boolean isStatic();
 
-    /**
-     * Is the entity final?
-     */
+    /** Is the entity final? */
     public boolean isFinal();
 
-    /**
-     * Is the entity public?
-     */
+    /** Is the entity public? */
     public boolean isPublic();
 
-    /**
-     * Is the entity protected?
-     */
+    /** Is the entity protected? */
     public boolean isProtected();
 
-    /**
-     * Is the entity private?
-     */
+    /** Is the entity private? */
     public boolean isPrivate();
 
-    /**
-     * Is the entity synthetic?
-     */
+    /** Is the entity synthetic? */
     public boolean isSynthetic();
 
-    /**
-     * Is the entity deprecated?
-     */
+    /** Is the entity deprecated? */
     public boolean isDeprecated();
 
     /**
-     * Get the ClassDescriptor representing the class (if entity is a class) or
-     * the class containing the entity (if a field or method).
+     * Get the ClassDescriptor representing the class (if entity is a class) or the class containing
+     * the entity (if a field or method).
      */
     public ClassDescriptor getClassDescriptor();
-
 }

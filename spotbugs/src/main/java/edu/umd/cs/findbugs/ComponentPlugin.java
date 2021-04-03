@@ -21,16 +21,18 @@ package edu.umd.cs.findbugs;
 
 import java.util.Set;
 
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class ComponentPlugin<T> {
 
-    public ComponentPlugin(Plugin plugin, String id, ClassLoader classLoader,
+    public ComponentPlugin(
+            Plugin plugin,
+            String id,
+            ClassLoader classLoader,
             Class<? extends T> componentClass,
-            PropertyBundle properties, boolean enabledByDefault,
-            String description, String details) {
+            PropertyBundle properties,
+            boolean enabledByDefault,
+            String description,
+            String details) {
         this.plugin = plugin;
         this.id = id;
         int i = id.lastIndexOf('.');
@@ -42,7 +44,6 @@ public class ComponentPlugin<T> {
         this.enabledByDefault = enabledByDefault;
         this.description = description;
         this.details = details;
-
     }
 
     protected final Plugin plugin;
@@ -95,7 +96,8 @@ public class ComponentPlugin<T> {
     public Class<? extends T> getComponentClass() {
         if (!isAvailable()) {
             if (FindBugs.isNoAnalysis()) {
-                throw new IllegalStateException("No analysis set; no component class loaded for " + getPlugin());
+                throw new IllegalStateException(
+                        "No analysis set; no component class loaded for " + getPlugin());
             }
             throw new IllegalStateException("No component class for " + getPlugin());
         }

@@ -19,22 +19,20 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
-import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-
 /**
- * Factory for stream objects of a particular base class type returned by any
- * method. This factory helps us keep track of streams returned by methods; we
- * don't want to report them, but we do want to keep track of whether or not
- * they are closed, to avoid reporting unclosed streams in the same equivalence
- * class.
+ * Factory for stream objects of a particular base class type returned by any method. This factory
+ * helps us keep track of streams returned by methods; we don't want to report them, but we do want
+ * to keep track of whether or not they are closed, to avoid reporting unclosed streams in the same
+ * equivalence class.
  */
 public class AnyMethodReturnValueStreamFactory implements StreamFactory {
     private final ObjectType baseClassType;
@@ -52,7 +50,10 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
     }
 
     @Override
-    public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
+    public Stream createStream(
+            Location location,
+            ObjectType type,
+            ConstantPoolGen cpg,
             RepositoryLookupFailureCallback lookupFailureCallback) {
 
         Instruction ins = location.getHandle().getInstruction();
@@ -63,8 +64,10 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
                     return null;
                 }
 
-                Stream stream = new Stream(location, type.getClassName(), baseClassType.getClassName()).setIsOpenOnCreation(true)
-                        .setIgnoreImplicitExceptions(true);
+                Stream stream =
+                        new Stream(location, type.getClassName(), baseClassType.getClassName())
+                                .setIsOpenOnCreation(true)
+                                .setIgnoreImplicitExceptions(true);
                 if (bugType != null) {
                     stream.setInteresting(bugType);
                 }

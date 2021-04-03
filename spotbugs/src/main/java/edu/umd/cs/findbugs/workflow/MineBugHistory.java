@@ -19,6 +19,13 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import edu.umd.cs.findbugs.AppVersion;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.config.CommandLine;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
@@ -28,26 +35,15 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.AppVersion;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.config.CommandLine;
-
 /**
- * Mine historical information from a BugCollection. The BugCollection should be
- * built using UpdateBugCollection to record the history of analyzing all
- * versions over time.
+ * Mine historical information from a BugCollection. The BugCollection should be built using
+ * UpdateBugCollection to record the history of analyzing all versions over time.
  *
  * @author David Hovemeyer
  * @author William Pugh
  */
 public class MineBugHistory {
-    /**
-     *
-     */
+    /** */
     private static final int WIDTH = 12;
 
     static final int ADDED = 0;
@@ -77,9 +73,7 @@ public class MineBugHistory {
             this.sequence = sequence;
         }
 
-        /**
-         * @return Returns the sequence.
-         */
+        /** @return Returns the sequence. */
         public long getSequence() {
             return sequence;
         }
@@ -165,8 +159,9 @@ public class MineBugHistory {
                 if (bugInstance.getFirstVersion() > i) {
                     continue;
                 }
-                boolean activePrevious = bugInstance.getFirstVersion() < i
-                        && (!bugInstance.isDead() || bugInstance.getLastVersion() >= i - 1);
+                boolean activePrevious =
+                        bugInstance.getFirstVersion() < i
+                                && (!bugInstance.isDead() || bugInstance.getLastVersion() >= i - 1);
                 boolean activeCurrent = !bugInstance.isDead() || bugInstance.getLastVersion() >= i;
 
                 int key = getKey(activePrevious, activeCurrent);
@@ -217,7 +212,8 @@ public class MineBugHistory {
 
             int paddingNeeded = WIDTH - b.length() % WIDTH;
             if (paddingNeeded > 0) {
-                b.append("                                                     ".substring(0, paddingNeeded));
+                b.append(
+                        "                                                     ".substring(0, paddingNeeded));
             }
         }
         int errors = bugCollection.getErrors().size();
@@ -230,7 +226,8 @@ public class MineBugHistory {
 
     /** This is how dump() was implemented up to and including version 0.9.5. */
     public void dumpOriginal(PrintStream out) {
-        out.println("seq\tversion\ttime\tclasses\tNCSS\tadded\tnewCode\tfixed\tremoved\tretained\tdead\tactive");
+        out.println(
+                "seq\tversion\ttime\tclasses\tNCSS\tadded\tnewCode\tfixed\tremoved\tretained\tdead\tactive");
         for (int i = 0; i < versionList.length; ++i) {
             Version version = versionList[i];
             AppVersion appVersion = sequenceToAppVersionMap.get(version.getSequence());
@@ -239,7 +236,10 @@ public class MineBugHistory {
             out.print(appVersion != null ? appVersion.getReleaseName() : "");
             out.print('\t');
             if (formatDates) {
-                out.print("\"" + (appVersion != null ? dateFormat.format(new Date(appVersion.getTimestamp())) : "") + "\"");
+                out.print(
+                        "\""
+                                + (appVersion != null ? dateFormat.format(new Date(appVersion.getTimestamp())) : "")
+                                + "\"");
             } else {
                 out.print(appVersion != null ? appVersion.getTimestamp() / 1000 : 0L);
             }
@@ -271,14 +271,10 @@ public class MineBugHistory {
     /**
      * equivalent to out.print(obj) except it may be padded on the left or right
      *
-     * @param width
-     *            padding will occur if the stringified oxj is shorter than this
-     * @param alignRight
-     *            true to pad on the left, false to pad on the right
-     * @param out
-     *            the PrintStream printed to
-     * @param obj
-     *            the value to print (may be an auto-boxed primitive)
+     * @param width padding will occur if the stringified oxj is shorter than this
+     * @param alignRight true to pad on the left, false to pad on the right
+     * @param out the PrintStream printed to
+     * @param obj the value to print (may be an auto-boxed primitive)
      */
     private static void print(int width, boolean alignRight, PrintStream out, Object obj) {
         String s = String.valueOf(obj);
@@ -293,10 +289,9 @@ public class MineBugHistory {
     }
 
     /**
-     * This implementation of dump() tries to better align columns (when viewed
-     * with a fixed-width font) by padding with spaces instead of using tabs.
-     * Also, timestamps are formatted more tersely (-formatDates option). The
-     * bad news is that it requires a minimum of 112 columns.
+     * This implementation of dump() tries to better align columns (when viewed with a fixed-width
+     * font) by padding with spaces instead of using tabs. Also, timestamps are formatted more tersely
+     * (-formatDates option). The bad news is that it requires a minimum of 112 columns.
      *
      * @see #dumpOriginal(PrintStream)
      */
@@ -402,14 +397,11 @@ public class MineBugHistory {
     }
 
     /**
-     * Get key used to classify the presence and/or absence of a BugInstance in
-     * successive versions in the history.
+     * Get key used to classify the presence and/or absence of a BugInstance in successive versions in
+     * the history.
      *
-     * @param activePrevious
-     *            true if the bug was active in the previous version, false if
-     *            not
-     * @param activeCurrent
-     *            true if the bug is active in the current version, false if not
+     * @param activePrevious true if the bug was active in the previous version, false if not
+     * @param activeCurrent true if the bug is active in the current version, false if not
      * @return the key: one of ADDED, RETAINED, REMOVED, and DEAD
      */
     private int getKey(boolean activePrevious, boolean activeCurrent) {
@@ -458,8 +450,12 @@ public class MineBugHistory {
 
         MineBugHistory mineBugHistory = new MineBugHistory();
         MineBugHistoryCommandLine commandLine = mineBugHistory.new MineBugHistoryCommandLine();
-        int argCount = commandLine.parse(args, 0, 2, "Usage: " + MineBugHistory.class.getName()
-                + " [options] [<xml results> [<history>]] ");
+        int argCount =
+                commandLine.parse(
+                        args,
+                        0,
+                        2,
+                        "Usage: " + MineBugHistory.class.getName() + " [options] [<xml results> [<history>]] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length) {
@@ -480,6 +476,5 @@ public class MineBugHistory {
         } finally {
             out.close();
         }
-
     }
 }

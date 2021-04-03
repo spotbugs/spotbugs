@@ -23,17 +23,15 @@ package edu.umd.cs.findbugs.jaif;
  * Callbacks for parsing an extenal annotation file.
  *
  * @author David Hovemeyer
- * @see <a
- *      href="http://groups.csail.mit.edu/pag/jsr308/annotation-file-utilities/">Annotation
- *      File Utilities/</a>
+ * @see <a href="http://groups.csail.mit.edu/pag/jsr308/annotation-file-utilities/">Annotation File
+ *     Utilities/</a>
  */
 public interface JAIFEvents {
 
     /**
      * Called to indicate the start of a package definition.
      *
-     * @param pkgName
-     *            package name
+     * @param pkgName package name
      */
     void startPackageDefinition(String pkgName);
 
@@ -47,55 +45,46 @@ public interface JAIFEvents {
     /**
      * Called to indicate the start of an annotation.
      *
-     * @param annotationName
-     *            annotation name
+     * @param annotationName annotation name
      */
     void startAnnotation(String annotationName);
 
     /**
      * Called to indicate the end of an annotation.
      *
-     * @param annotationName
-     *            annotation name
+     * @param annotationName annotation name
      */
     void endAnnotation(String annotationName);
 
     /**
      * Called to visit an annotation field.
      *
-     * @param fieldName
-     *            annotation field name
-     * @param constant
-     *            constant value of the annotation field (one of the java.lang
-     *            wrapper types, or a String, or ???)
+     * @param fieldName annotation field name
+     * @param constant constant value of the annotation field (one of the java.lang wrapper types, or
+     *     a String, or ???)
      */
     void annotationField(String fieldName, Object constant);
 
     /**
      * Called to indicate the start of an annotation definition.
      *
-     * @param annotationName
-     *            name of the annotation
-     * @param retention
-     *            retention: one of "visible", "invisible", or "source"
+     * @param annotationName name of the annotation
+     * @param retention retention: one of "visible", "invisible", or "source"
      */
     void startAnnotationDefinition(String annotationName, String retention);
 
     /**
      * Called to indicate the end of an annotation definition.
      *
-     * @param annotationName
-     *            name of the annotation
+     * @param annotationName name of the annotation
      */
     void endAnnotationDefinition(String annotationName);
 
     /**
      * Called to visit an annotation field definition.
      *
-     * @param type
-     *            type of the annotation field (in JVM signature format)
-     * @param fieldName
-     *            name of the annotation field
+     * @param type type of the annotation field (in JVM signature format)
+     * @param fieldName name of the annotation field
      */
     void annotationFieldDefinition(String type, String fieldName);
 }

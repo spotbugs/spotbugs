@@ -20,16 +20,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import org.objectweb.asm.ClassReader;
-
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -43,22 +33,26 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.engine.ClassParserUsingASM;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import org.objectweb.asm.ClassReader;
 
 /**
- * Based on the contents of the application directories/archives in a Project,
- * and a "root" source directory (under which some number of "real" source
- * directories may be located), scan to find the source directories containing
- * the application's source files.
+ * Based on the contents of the application directories/archives in a Project, and a "root" source
+ * directory (under which some number of "real" source directories may be located), scan to find the
+ * source directories containing the application's source files.
  *
  * @author David Hovemeyer
  */
 public class DiscoverSourceDirectories {
     private static boolean DEBUG = SystemProperties.getBoolean("findbugs.dsd.debug");
 
-    /**
-     * Progress callback interface for reporting the progress of source
-     * directory discovery.
-     */
+    /** Progress callback interface for reporting the progress of source directory discovery. */
     public interface Progress extends IClassPathBuilderProgress {
         public void startRecursiveDirectorySearch();
 
@@ -134,7 +128,6 @@ public class DiscoverSourceDirectories {
         @Override
         public void startArchive(String name) {
         }
-
     }
 
     private Project project;
@@ -149,9 +142,7 @@ public class DiscoverSourceDirectories {
 
     private final List<String> discoveredSourceDirectoryList;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public DiscoverSourceDirectories() {
         this.errorLogger = new NoOpErrorLogger();
         this.progress = new NoOpProgress();
@@ -161,42 +152,37 @@ public class DiscoverSourceDirectories {
     /**
      * Set the Project for which we want to find source directories.
      *
-     * @param project
-     *            Project for which we want to find source directories
+     * @param project Project for which we want to find source directories
      */
     public void setProject(Project project) {
         this.project = project;
     }
 
     /**
-     * Set the "root" source directory: we expect all of the actual source
-     * directories to be underneath it.
+     * Set the "root" source directory: we expect all of the actual source directories to be
+     * underneath it.
      *
-     * @param rootSourceDirectory
-     *            the root source directory
+     * @param rootSourceDirectory the root source directory
      */
     public void setRootSourceDirectory(String rootSourceDirectory) {
         this.rootSourceDirectory = rootSourceDirectory;
     }
 
     /**
-     * Set whether or not to scan the project for nested archives (i.e., if
-     * there is a WAR or EAR file that contains jar files inside it.) Default is
-     * false.
+     * Set whether or not to scan the project for nested archives (i.e., if there is a WAR or EAR file
+     * that contains jar files inside it.) Default is false.
      *
-     * @param scanForNestedArchives
-     *            true if nested archives should be scanned, false otherwise
+     * @param scanForNestedArchives true if nested archives should be scanned, false otherwise
      */
     public void setScanForNestedArchives(boolean scanForNestedArchives) {
         this.scanForNestedArchives = scanForNestedArchives;
     }
 
     /**
-     * Set the error logger to use to report errors during scanning. By default,
-     * a no-op error logger is used.
+     * Set the error logger to use to report errors during scanning. By default, a no-op error logger
+     * is used.
      *
-     * @param errorLogger
-     *            error logger to use to report errors during scanning
+     * @param errorLogger error logger to use to report errors during scanning
      */
     public void setErrorLogger(IErrorLogger errorLogger) {
         this.errorLogger = errorLogger;
@@ -205,16 +191,14 @@ public class DiscoverSourceDirectories {
     /**
      * Set the progress callback to which scanning progress should be reported.
      *
-     * @param progress
-     *            the progress callback
+     * @param progress the progress callback
      */
     public void setProgress(Progress progress) {
         this.progress = progress;
     }
 
     /**
-     * Get the list of discovered source directories. These can be added to a
-     * Project.
+     * Get the list of discovered source directories. These can be added to a Project.
      *
      * @return list of discovered source directories.
      */
@@ -237,7 +221,8 @@ public class DiscoverSourceDirectories {
 
         // Find all directories underneath the root source directory
         progress.startRecursiveDirectorySearch();
-        RecursiveFileSearch rfs = new RecursiveFileSearch(rootSourceDirectory, pathname -> pathname.isDirectory());
+        RecursiveFileSearch rfs =
+                new RecursiveFileSearch(rootSourceDirectory, pathname -> pathname.isDirectory());
         rfs.search();
         progress.doneRecursiveDirectorySearch();
         List<String> candidateSourceDirList = rfs.getDirectoriesScanned();
@@ -251,19 +236,21 @@ public class DiscoverSourceDirectories {
 
             // From the application classes, find the full list of
             // fully-qualified source file names.
-            List<String> fullyQualifiedSourceFileNameList = findFullyQualifiedSourceFileNames(builder, classPath);
+            List<String> fullyQualifiedSourceFileNameList =
+                    findFullyQualifiedSourceFileNames(builder, classPath);
 
             // Attempt to find source directories for all source files,
             // and add them to the discoveredSourceDirectoryList
             if (DEBUG) {
                 System.out.println("looking for " + fullyQualifiedSourceFileNameList.size() + " files");
             }
-            findSourceDirectoriesForAllSourceFiles(fullyQualifiedSourceFileNameList, candidateSourceDirList);
+            findSourceDirectoriesForAllSourceFiles(
+                    fullyQualifiedSourceFileNameList, candidateSourceDirList);
         }
     }
 
-    private IClassPath buildClassPath(IClassPathBuilder builder, IClassFactory factory) throws InterruptedException, IOException,
-            CheckedAnalysisException {
+    private IClassPath buildClassPath(IClassPathBuilder builder, IClassFactory factory)
+            throws InterruptedException, IOException, CheckedAnalysisException {
 
         progress.startScanningArchives(project.getFileCount());
 
@@ -284,15 +271,16 @@ public class DiscoverSourceDirectories {
         return classPath;
     }
 
-    private String findFullyQualifiedSourceFileName(IClassPath classPath, ClassDescriptor classDesc) throws IOException,
-            CheckedAnalysisException {
+    private String findFullyQualifiedSourceFileName(IClassPath classPath, ClassDescriptor classDesc)
+            throws IOException, CheckedAnalysisException {
         try {
             // Open and parse the class file to attempt
             // to discover the source file name.
             ICodeBaseEntry codeBaseEntry = classPath.lookupResource(classDesc.toResourceName());
 
-            ClassParserUsingASM classParser = new ClassParserUsingASM(new ClassReader(codeBaseEntry.openResource()), classDesc,
-                    codeBaseEntry);
+            ClassParserUsingASM classParser =
+                    new ClassParserUsingASM(
+                            new ClassReader(codeBaseEntry.openResource()), classDesc, codeBaseEntry);
 
             ClassInfo.Builder classInfoBuilder = new ClassInfo.Builder();
             classParser.parse(classInfoBuilder);
@@ -319,7 +307,8 @@ public class DiscoverSourceDirectories {
         }
     }
 
-    private List<String> findFullyQualifiedSourceFileNames(IClassPathBuilder builder, IClassPath classPath) {
+    private List<String> findFullyQualifiedSourceFileNames(
+            IClassPathBuilder builder, IClassPath classPath) {
 
         List<ClassDescriptor> appClassList = builder.getAppClassList();
 
@@ -329,7 +318,8 @@ public class DiscoverSourceDirectories {
 
         for (ClassDescriptor classDesc : appClassList) {
             try {
-                String fullyQualifiedSourceFileName = findFullyQualifiedSourceFileName(classPath, classDesc);
+                String fullyQualifiedSourceFileName =
+                        findFullyQualifiedSourceFileName(classPath, classDesc);
                 fullyQualifiedSourceFileNameList.add(fullyQualifiedSourceFileName);
             } catch (IOException e) {
                 errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
@@ -343,8 +333,8 @@ public class DiscoverSourceDirectories {
         return fullyQualifiedSourceFileNameList;
     }
 
-    private void findSourceDirectoriesForAllSourceFiles(List<String> fullyQualifiedSourceFileNameList,
-            List<String> candidateSourceDirList) {
+    private void findSourceDirectoriesForAllSourceFiles(
+            List<String> fullyQualifiedSourceFileNameList, List<String> candidateSourceDirList) {
 
         Set<String> sourceDirsFound = new HashSet<>();
 
@@ -372,109 +362,111 @@ public class DiscoverSourceDirectories {
                         sourceDirsFound.add(candidateSourceDir);
                     }
                     break checkCandidateSourceDirs;
-
                 }
             }
         }
     }
 
-    /**
-     * Just for testing.
-     */
-    public static void main(String[] args) throws IOException, CheckedAnalysisException, InterruptedException {
+    /** Just for testing. */
+    public static void main(String[] args)
+            throws IOException, CheckedAnalysisException, InterruptedException {
         if (args.length != 2) {
-            System.err.println("Usage: " + DiscoverSourceDirectories.class.getName() + " <project file> <root source dir>");
+            System.err.println(
+                    "Usage: "
+                            + DiscoverSourceDirectories.class.getName()
+                            + " <project file> <root source dir>");
             System.exit(1);
         }
 
         Project project = Project.readProject(args[0]);
 
-        IErrorLogger errorLogger = new IErrorLogger() {
+        IErrorLogger errorLogger =
+                new IErrorLogger() {
 
-            @Override
-            public void reportMissingClass(ClassNotFoundException ex) {
-                String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
-                if (className != null) {
-                    logError("Missing class: " + className);
-                } else {
-                    logError("Missing class: " + ex);
-                }
-            }
+                    @Override
+                    public void reportMissingClass(ClassNotFoundException ex) {
+                        String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
+                        if (className != null) {
+                            logError("Missing class: " + className);
+                        } else {
+                            logError("Missing class: " + ex);
+                        }
+                    }
 
-            @Override
-            public void reportMissingClass(ClassDescriptor classDescriptor) {
-                logError("Missing class: " + classDescriptor.toDottedClassName());
-            }
+                    @Override
+                    public void reportMissingClass(ClassDescriptor classDescriptor) {
+                        logError("Missing class: " + classDescriptor.toDottedClassName());
+                    }
 
-            @Override
-            public void logError(String message) {
-                System.err.println("Error: " + message);
-            }
+                    @Override
+                    public void logError(String message) {
+                        System.err.println("Error: " + message);
+                    }
 
-            @Override
-            public void logError(String message, Throwable e) {
-                logError(message + ": " + e.getMessage());
-            }
+                    @Override
+                    public void logError(String message, Throwable e) {
+                        logError(message + ": " + e.getMessage());
+                    }
 
-            @Override
-            public void reportSkippedAnalysis(MethodDescriptor method) {
-                logError("Skipped analysis of method " + method.toString());
-            }
+                    @Override
+                    public void reportSkippedAnalysis(MethodDescriptor method) {
+                        logError("Skipped analysis of method " + method.toString());
+                    }
+                };
 
-        };
+        DiscoverSourceDirectories.Progress progress =
+                new DiscoverSourceDirectories.Progress() {
 
-        DiscoverSourceDirectories.Progress progress = new DiscoverSourceDirectories.Progress() {
+                    @Override
+                    public void startRecursiveDirectorySearch() {
+                        System.out.print("Scanning directories...");
+                        System.out.flush();
+                    }
 
-            @Override
-            public void startRecursiveDirectorySearch() {
-                System.out.print("Scanning directories...");
-                System.out.flush();
-            }
+                    @Override
+                    public void doneRecursiveDirectorySearch() {
+                        System.out.println("done");
+                    }
 
-            @Override
-            public void doneRecursiveDirectorySearch() {
-                System.out.println("done");
-            }
+                    @Override
+                    public void startScanningArchives(int numArchivesToScan) {
+                        System.out.print("Scanning " + numArchivesToScan + " archives..");
+                        System.out.flush();
+                    }
 
-            @Override
-            public void startScanningArchives(int numArchivesToScan) {
-                System.out.print("Scanning " + numArchivesToScan + " archives..");
-                System.out.flush();
-            }
+                    @Override
+                    public void doneScanningArchives() {
+                        System.out.println("done");
+                    }
 
-            @Override
-            public void doneScanningArchives() {
-                System.out.println("done");
-            }
+                    @Override
+                    public void startScanningClasses(int numClassesToScan) {
+                        System.out.print("Scanning " + numClassesToScan + " classes...");
+                        System.out.flush();
+                    }
 
-            @Override
-            public void startScanningClasses(int numClassesToScan) {
-                System.out.print("Scanning " + numClassesToScan + " classes...");
-                System.out.flush();
-            }
+                    @Override
+                    public void finishClass() {
+                        System.out.print(".");
+                        System.out.flush();
+                    }
 
-            @Override
-            public void finishClass() {
-                System.out.print(".");
-                System.out.flush();
-            }
+                    @Override
+                    public void doneScanningClasses() {
+                        System.out.println("done");
+                    }
 
-            @Override
-            public void doneScanningClasses() {
-                System.out.println("done");
-            }
+                    @Override
+                    public void finishArchive() {
+                        System.out.print(".");
+                        System.out.flush();
+                    }
 
-            @Override
-            public void finishArchive() {
-                System.out.print(".");
-                System.out.flush();
-            }
-
-            @Override
-            public void startArchive(String name) {
-                // noop
-            }
-        };
+                    @Override
+                    public void startArchive(String name) {
+                        // noop
+                    }
+                };
 
         DiscoverSourceDirectories discoverSourceDirectories = new DiscoverSourceDirectories();
         discoverSourceDirectories.setProject(project);

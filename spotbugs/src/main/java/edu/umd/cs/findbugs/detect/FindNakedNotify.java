@@ -19,14 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 
 //   2:   astore_1
 //   3:   monitorenter
@@ -59,8 +58,10 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
         stage = synchronizedMethod ? 1 : 0;
         super.visit(obj);
         if (synchronizedMethod && stage == 4) {
-            bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
-                    .addSourceLine(this, notifyPC));
+            bugReporter.reportBug(
+                    new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addSourceLine(this, notifyPC));
         }
     }
 
@@ -77,7 +78,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             break;
         case 2:
             if (seen == Const.INVOKEVIRTUAL
-                    && ("notify".equals(getNameConstantOperand()) || "notifyAll".equals(getNameConstantOperand()))
+                    && ("notify".equals(getNameConstantOperand())
+                            || "notifyAll".equals(getNameConstantOperand()))
                     && "()V".equals(getSigConstantOperand())) {
                 stage = 3;
                 notifyPC = getPC();
@@ -90,8 +92,10 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             break;
         case 4:
             if (seen == Const.MONITOREXIT) {
-                bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addSourceLine(this, notifyPC));
+                bugReporter.reportBug(
+                        new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this, notifyPC));
                 stage = 5;
             } else {
                 stage = 0;
@@ -102,6 +106,5 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
         default:
             assert false;
         }
-
     }
 }

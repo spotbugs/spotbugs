@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import edu.umd.cs.findbugs.ba.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,21 +28,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.ba.Path;
-
 /**
- * A dataflow fact used in ObligationAnalysis. It is a set of State objects,
- * plus the additional capability to represent top and bottom elements.
+ * A dataflow fact used in ObligationAnalysis. It is a set of State objects, plus the additional
+ * capability to represent top and bottom elements.
  *
- * <p>
- * Invariant: no StateSet may contain more than one State with the same
- * ObligationSet.
- * </p>
+ * <p>Invariant: no StateSet may contain more than one State with the same ObligationSet.
  *
- * <p>
- * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
- * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
- * </p>
+ * <p>See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011" >Finding and
+ * preventing run-time error handling mistakes</a>, OOPSLA 2004.
  *
  * @author David Hovemeyer
  */
@@ -122,13 +116,10 @@ public class StateSet {
     }
 
     /**
-     * Get the State which has the given ObligationSet. Returns null if there is
-     * no such state.
+     * Get the State which has the given ObligationSet. Returns null if there is no such state.
      *
-     * @param obligationSet
-     *            we want to get the State with this ObligationSet
-     * @return the State with the given ObligationSet, or null if there is no
-     *         such State
+     * @param obligationSet we want to get the State with this ObligationSet
+     * @return the State with the given ObligationSet, or null if there is no such State
      */
     public State getStateWithObligationSet(ObligationSet obligationSet) {
         return stateMap.get(obligationSet);
@@ -152,8 +143,7 @@ public class StateSet {
     /**
      * Make this StateSet an exact copy of the given StateSet.
      *
-     * @param other
-     *            a StateSet; this StateSet will be made identical to it
+     * @param other a StateSet; this StateSet will be made identical to it
      */
     public void copyFrom(StateSet other) {
         this.isTop = other.isTop;
@@ -180,13 +170,11 @@ public class StateSet {
     /**
      * Add an obligation to every State in the StateSet.
      *
-     * @param obligation
-     *            the obligation to add
-     * @param basicBlockId
-     *            the id of the basic block (path component) adding the
-     *            obligation
+     * @param obligation the obligation to add
+     * @param basicBlockId the id of the basic block (path component) adding the obligation
      */
-    public void addObligation(final Obligation obligation, int basicBlockId) throws ObligationAcquiredOrReleasedInLoopException {
+    public void addObligation(final Obligation obligation, int basicBlockId)
+            throws ObligationAcquiredOrReleasedInLoopException {
         Map<ObligationSet, State> updatedStateMap = new HashMap<>();
         if (stateMap.isEmpty()) {
             State s = new State(factory);
@@ -197,7 +185,6 @@ public class StateSet {
                 checkCircularity(state, obligation, basicBlockId);
                 state.getObligationSet().add(obligation);
                 updatedStateMap.put(state.getObligationSet(), state);
-
             }
         }
         replaceMap(updatedStateMap);
@@ -206,11 +193,8 @@ public class StateSet {
     /**
      * Remove an Obligation from every State in the StateSet.
      *
-     * @param obligation
-     *            the obligation to remove
-     * @param basicBlockId
-     *            the id of the basic block (path component) removing the
-     *            obligation
+     * @param obligation the obligation to remove
+     * @param basicBlockId the id of the basic block (path component) removing the obligation
      * @throws ObligationAcquiredOrReleasedInLoopException
      */
     public void deleteObligation(final Obligation obligation, int basicBlockId)
@@ -229,15 +213,11 @@ public class StateSet {
     }
 
     /**
-     * Bail out of the analysis is an obligation is acquired or released in a
-     * loop.
+     * Bail out of the analysis is an obligation is acquired or released in a loop.
      *
-     * @param state
-     *            a State to which an obligation is being added or removed
-     * @param obligation
-     *            the Obligation being added or removed
-     * @param basicBlockId
-     *            the id of the BasicBlock adding or removing the obligation
+     * @param state a State to which an obligation is being added or removed
+     * @param obligation the Obligation being added or removed
+     * @param basicBlockId the id of the BasicBlock adding or removing the obligation
      */
     private void checkCircularity(State state, Obligation obligation, int basicBlockId)
             throws ObligationAcquiredOrReleasedInLoopException {
@@ -249,8 +229,7 @@ public class StateSet {
     /**
      * Replace the map of ObligationSets to States with the given one.
      *
-     * @param stateMap
-     *            enw map of ObligationSets to States
+     * @param stateMap enw map of ObligationSets to States
      */
     public void replaceMap(Map<ObligationSet, State> stateMap) {
         this.stateMap = stateMap;
@@ -259,10 +238,8 @@ public class StateSet {
     /**
      * Get all States that have Paths which are prefixes of the given Path.
      *
-     * @param path
-     *            a Path
-     * @return Collection of States that have Paths which are prefixes of the
-     *         given Path
+     * @param path a Path
+     * @return Collection of States that have Paths which are prefixes of the given Path
      */
     public List<State> getPrefixStates(Path path) {
         List<State> result = new LinkedList<>();
@@ -280,8 +257,10 @@ public class StateSet {
             return false;
         }
         StateSet other = (StateSet) o;
-        return this.isTop == other.isTop && this.isBottom == other.isBottom
-                && this.onExceptionPath == other.onExceptionPath && this.stateMap.equals(other.stateMap);
+        return this.isTop == other.isTop
+                && this.isBottom == other.isBottom
+                && this.onExceptionPath == other.onExceptionPath
+                && this.stateMap.equals(other.stateMap);
     }
 
     @Override
@@ -307,8 +286,8 @@ public class StateSet {
     }
 
     /**
-     * Return a newly allocated Map of ObligationSet to State that may be passed
-     * to applyToAllStatesAndUpdateMap().
+     * Return a newly allocated Map of ObligationSet to State that may be passed to
+     * applyToAllStatesAndUpdateMap().
      */
     public Map<ObligationSet, State> createEmptyMap() {
         return new HashMap<>();

@@ -21,6 +21,13 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.PackageStats.ClassStats;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.log.Profiler;
+import edu.umd.cs.findbugs.workflow.FileBugHash;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,7 +49,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 import javax.xml.transform.Transformer;
@@ -51,21 +57,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import edu.umd.cs.findbugs.PackageStats.ClassStats;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.log.Profiler;
-import edu.umd.cs.findbugs.workflow.FileBugHash;
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLWriteable;
-
-/**
- * Statistics resulting from analyzing a project.
- */
+/** Statistics resulting from analyzing a project. */
 public class ProjectStats implements XMLWriteable, Cloneable {
     private static final String TIMESTAMP_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
 
-    private static final boolean OMIT_PACKAGE_STATS = SystemProperties.getBoolean("findbugs.packagestats.omit");
+    private static final boolean OMIT_PACKAGE_STATS =
+            SystemProperties.getBoolean("findbugs.packagestats.omit");
 
     private final SortedMap<String, PackageStats> packageStatsMap;
 
@@ -106,9 +103,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         return buf.toString();
     }
 
-    /**
-     * Constructor. Creates an empty object.
-     */
+    /** Constructor. Creates an empty object. */
     public ProjectStats() {
         this.packageStatsMap = new TreeMap<>();
         this.totalClasses = 0;
@@ -140,7 +135,6 @@ public class ProjectStats implements XMLWriteable, Cloneable {
             return totalSizeFromPackageStats;
         }
         return totalSize;
-
     }
 
     public int getTotalBugs() {
@@ -154,12 +148,12 @@ public class ProjectStats implements XMLWriteable, Cloneable {
     /**
      * Set the timestamp for this analysis run.
      *
-     * @param timestamp
-     *            the time of the analysis run this ProjectStats represents, as
-     *            previously reported by writeXML.
+     * @param timestamp the time of the analysis run this ProjectStats represents, as previously
+     *     reported by writeXML.
      */
     public void setTimestamp(String timestamp) throws ParseException {
-        this.analysisTimestamp = new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).parse(timestamp);
+        this.analysisTimestamp =
+                new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).parse(timestamp);
     }
 
     public void setTimestamp(long timestamp) {
@@ -170,9 +164,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         this.java_vm_version = vm_version;
     }
 
-    /**
-     * Get the number of classes analyzed.
-     */
+    /** Get the number of classes analyzed. */
     public int getNumClasses() {
         if (totalClassesFromPackageStats > 0) {
             return totalClassesFromPackageStats;
@@ -180,9 +172,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         return totalClasses;
     }
 
-    /**
-     * @return Returns the baseFootprint.
-     */
+    /** @return Returns the baseFootprint. */
     public Footprint getBaseFootprint() {
         return baseFootprint;
     }
@@ -190,38 +180,37 @@ public class ProjectStats implements XMLWriteable, Cloneable {
     /**
      * Report that a class has been analyzed.
      *
-     * @param className
-     *            the full name of the class
-     * @param sourceFile
-     *            TODO
-     * @param isInterface
-     *            true if the class is an interface
-     * @param size
-     *            a normalized class size value; see
-     *            detect/FindBugsSummaryStats.
+     * @param className the full name of the class
+     * @param sourceFile TODO
+     * @param isInterface true if the class is an interface
+     * @param size a normalized class size value; see detect/FindBugsSummaryStats.
      */
-    public void addClass(@DottedClassName String className, @CheckForNull String sourceFile, boolean isInterface, int size) {
+    public void addClass(
+            @DottedClassName String className,
+            @CheckForNull String sourceFile,
+            boolean isInterface,
+            int size) {
         addClass(className, sourceFile, isInterface, size, true);
     }
 
     /**
      * Report that a class has been analyzed.
      *
-     * @param className
-     *            the full name of the class
-     * @param sourceFile
-     *            TODO
-     * @param isInterface
-     *            true if the class is an interface
-     * @param size
-     *            a normalized class size value; see
-     *            detect/FindBugsSummaryStats.
+     * @param className the full name of the class
+     * @param sourceFile TODO
+     * @param isInterface true if the class is an interface
+     * @param size a normalized class size value; see detect/FindBugsSummaryStats.
      * @param updatePackageStats TODO
      */
-    public void addClass(@DottedClassName String className, @CheckForNull String sourceFile, boolean isInterface, int size,
+    public void addClass(
+            @DottedClassName String className,
+            @CheckForNull String sourceFile,
+            boolean isInterface,
+            int size,
             boolean updatePackageStats) {
         if (!hasClassStats) {
-            // totalClasses/totalSize might be set from FindBugsSummary before when parsing XML: reset them
+            // totalClasses/totalSize might be set from FindBugsSummary before when parsing XML: reset
+            // them
             totalClasses = 0;
             totalSize = 0;
         }
@@ -244,8 +233,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
     /**
      * Report that a class has been analyzed.
      *
-     * @param className
-     *            the full name of the class
+     * @param className the full name of the class
      */
     public @CheckForNull ClassStats getClassStats(@DottedClassName String className) {
         if (hasClassStats) {
@@ -262,9 +250,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         return stat.getClassStatsOrNull(className);
     }
 
-    /**
-     * Called when a bug is reported.
-     */
+    /** Called when a bug is reported. */
     public void addBug(BugInstance bug) {
 
         SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
@@ -277,9 +263,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         }
     }
 
-    /**
-     * Clear bug counts
-     */
+    /** Clear bug counts */
     public void clearBugCounts() {
         for (int i = 0; i < totalErrors.length; i++) {
             totalErrors[i] = 0;
@@ -315,7 +299,6 @@ public class ProjectStats implements XMLWriteable, Cloneable {
                     if (!m.lookingAt()) {
                         i.remove();
                     }
-
                 }
             }
         }
@@ -380,21 +363,19 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         fileBugHashes = FileBugHash.compute(bugs);
     }
 
-    /**
-     * Output as XML.
-     */
+    /** Output as XML. */
     @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, true);
     }
 
-    /**
-     * Output as XML.
-     */
+    /** Output as XML. */
     public void writeXML(XMLOutput xmlOutput, boolean withMessages) throws IOException {
         xmlOutput.startTag("FindBugsSummary");
 
-        xmlOutput.addAttribute("timestamp", new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).format(analysisTimestamp));
+        xmlOutput.addAttribute(
+                "timestamp",
+                new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).format(analysisTimestamp));
         xmlOutput.addAttribute("total_classes", String.valueOf(getNumClasses()));
         xmlOutput.addAttribute("referenced_classes", String.valueOf(referencedClasses));
 
@@ -425,7 +406,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         if (peakMemory >= 0) {
             xmlOutput.addAttribute("peak_mbytes", twoPlaces.format(peakMemory / (1024.0 * 1024)));
         }
-        xmlOutput.addAttribute("alloc_mbytes", twoPlaces.format(Runtime.getRuntime().maxMemory() / (1024.0 * 1024)));
+        xmlOutput.addAttribute(
+                "alloc_mbytes", twoPlaces.format(Runtime.getRuntime().maxMemory() / (1024.0 * 1024)));
         long gcTime = delta.getCollectionTime(); // milliseconds
         if (gcTime >= 0) {
             xmlOutput.addAttribute("gc_seconds", twoPlaces.format(gcTime / 1000.0));
@@ -447,7 +429,6 @@ public class ProjectStats implements XMLWriteable, Cloneable {
                     xmlOutput.addAttribute("bugHash", hash);
                 }
                 xmlOutput.stopTag(true);
-
             }
         }
 
@@ -475,12 +456,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
             result.put(sourceFile, fileBugHashes.getHash(sourceFile));
         }
         return result;
-
     }
 
-    /**
-     * Report statistics as an XML document to given output stream.
-     */
+    /** Report statistics as an XML document to given output stream. */
     public void reportSummary(@WillClose OutputStream out) throws IOException {
         XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
         try {
@@ -493,8 +471,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
     /**
      * Transform summary information to HTML.
      *
-     * @param htmlWriter
-     *            the Writer to write the HTML output to
+     * @param htmlWriter the Writer to write the HTML output to
      */
     public void transformSummaryToHTML(Writer htmlWriter) throws IOException, TransformerException {
 
@@ -503,13 +480,15 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
         StreamSource in = new StreamSource(new ByteArrayInputStream(summaryOut.toByteArray()));
         StreamResult out = new StreamResult(htmlWriter);
-        InputStream xslInputStream = this.getClass().getClassLoader().getResourceAsStream("summary.xsl");
+        InputStream xslInputStream =
+                this.getClass().getClassLoader().getResourceAsStream("summary.xsl");
         if (xslInputStream == null) {
             throw new IOException("Could not load summary stylesheet");
         }
         StreamSource xsl = new StreamSource(xslInputStream);
 
-        TransformerFactory tf = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+        TransformerFactory tf =
+                TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
         Transformer transformer = tf.newTransformer(xsl);
         transformer.transform(in, out);
 
@@ -555,9 +534,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         }
     }
 
-    /**
-     * @param stats2
-     */
+    /** @param stats2 */
     public void addStats(ProjectStats stats2) {
         if (totalSize == totalSizeFromPackageStats) {
             totalSizeFromPackageStats += stats2.getCodeSize();
@@ -592,9 +569,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         }
     }
 
-    /**
-     * @param size
-     */
+    /** @param size */
     public void setReferencedClasses(int size) {
         this.referencedClasses = size;
     }
@@ -603,9 +578,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         return this.referencedClasses;
     }
 
-    /**
-     * @return Returns the project profiler instance, never null
-     */
+    /** @return Returns the project profiler instance, never null */
     public Profiler getProfiler() {
         return profiler;
     }

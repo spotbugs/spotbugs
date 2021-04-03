@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.ba.bcp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import org.apache.bcel.generic.InstructionHandle;
 
 public class ByteCodePatternMatch {

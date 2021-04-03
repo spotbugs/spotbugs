@@ -19,7 +19,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
-
 import org.dom4j.DocumentException;
 
 @Deprecated
@@ -53,7 +52,8 @@ public class NewResults {
 
     public static void main(String[] argv) throws Exception {
         if (argv.length != 3) {
-            System.err.println("Usage: " + NewResults.class.getName() + " <orig results> <new results> <output file>");
+            System.err.println(
+                    "Usage: " + NewResults.class.getName() + " <orig results> <new results> <output file>");
             System.exit(1);
         }
 

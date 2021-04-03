@@ -32,9 +32,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class ReturnPathDataflowFactory extends AnalysisFactory<ReturnPathDataflow> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public ReturnPathDataflowFactory() {
         super("return path analysis", ReturnPathDataflow.class);
     }
@@ -47,7 +45,8 @@ public class ReturnPathDataflowFactory extends AnalysisFactory<ReturnPathDataflo
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public ReturnPathDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public ReturnPathDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
         DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
         ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);

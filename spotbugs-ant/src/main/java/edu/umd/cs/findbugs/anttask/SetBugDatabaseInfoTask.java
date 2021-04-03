@@ -181,5 +181,4 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
             throw new BuildException("execution of " + getTaskName() + " failed");
         }
     }
-
 }

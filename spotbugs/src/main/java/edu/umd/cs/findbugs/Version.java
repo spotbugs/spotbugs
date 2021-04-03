@@ -24,29 +24,22 @@ import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
-
 import javax.annotation.CheckForNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Version number and release date information.
- */
+/** Version number and release date information. */
 public class Version {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getName());
+    private static final Logger LOG =
+            LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getName());
 
-    /**
-     * SpotBugs website.
-     */
+    /** SpotBugs website. */
     public static final String WEBSITE = "https://spotbugs.github.io/";
 
     public static final String VERSION_STRING;
 
-    /**
-     * @deprecated Use {@link #VERSION_STRING} instead.
-    */
+    /** @deprecated Use {@link #VERSION_STRING} instead. */
     @Deprecated
     public static final String RELEASE;
 
@@ -60,8 +53,8 @@ public class Version {
         String version = "(Unknown)";
         if (!fromFile) {
             try {
-                final Enumeration<URL> resources = Version.class.getClassLoader()
-                        .getResources("META-INF/MANIFEST.MF");
+                final Enumeration<URL> resources =
+                        Version.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
                 while (resources.hasMoreElements()) {
                     try (final InputStream is = resources.nextElement().openStream()) {
                         final Manifest manifest = new Manifest(is);
@@ -135,17 +128,18 @@ public class Version {
         LOG.error("Usage: {} [(-release|-date|-props|-configuration)]", Version.class.getName());
     }
 
-    /**
-     * @param justPrintConfiguration
-     */
+    /** @param justPrintConfiguration */
     public static void printVersion(boolean justPrintConfiguration) {
         LOG.info("SpotBugs {}", Version.VERSION_STRING);
         if (!justPrintConfiguration) {
             return;
         }
         for (Plugin plugin : Plugin.getAllPlugins()) {
-            LOG.info("Plugin {}, version {}, loaded from {}",
-                    plugin.getPluginId(), plugin.getVersion(), plugin.getPluginLoader().getURL());
+            LOG.info(
+                    "Plugin {}, version {}, loaded from {}",
+                    plugin.getPluginId(),
+                    plugin.getVersion(),
+                    plugin.getPluginLoader().getURL());
             if (plugin.isCorePlugin()) {
                 LOG.info("  is core plugin");
             }

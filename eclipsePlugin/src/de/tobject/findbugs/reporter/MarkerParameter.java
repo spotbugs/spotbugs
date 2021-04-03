@@ -18,15 +18,12 @@
  */
 package de.tobject.findbugs.reporter;
 
-import org.eclipse.core.resources.IMarker;
-
 import de.tobject.findbugs.builder.WorkItem;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import edu.umd.cs.findbugs.BugInstance;
+import org.eclipse.core.resources.IMarker;
 
-/**
- * @author Andrei Loskutov
- */
+/** @author Andrei Loskutov */
 public class MarkerParameter {
 
     public final BugInstance bug;
@@ -37,15 +34,10 @@ public class MarkerParameter {
 
     public final Integer startLine;
 
-    /**
-     * Might be null if marker shouldn't be generated
-     */
+    /** Might be null if marker shouldn't be generated */
     public final String markerType;
 
-    /**
-     * Default value is {@link IMarker#SEVERITY_WARNING}, might be configured by
-     * user
-     */
+    /** Default value is {@link IMarker#SEVERITY_WARNING}, might be configured by user */
     public Integer markerSeverity;
 
     public MarkerParameter(BugInstance bug, WorkItem resource, int startLine, int primaryLine) {
@@ -58,9 +50,7 @@ public class MarkerParameter {
         markerSeverity = Integer.valueOf(IMarker.SEVERITY_WARNING);
     }
 
-    /**
-     * @return null if marker shouldn't be generated
-     */
+    /** @return null if marker shouldn't be generated */
     private String getMarkerType() {
         switch (bug.getBugRankCategory()) {
         case SCARIEST:

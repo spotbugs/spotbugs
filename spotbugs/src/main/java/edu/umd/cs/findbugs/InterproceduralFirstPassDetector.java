@@ -20,12 +20,11 @@
 package edu.umd.cs.findbugs;
 
 /**
- * Detector implementing a slow first pass to collect interprocedural properties
- * for a later detector pass. We assign these a special interface because they
- * are probably too slow to be enabled by default.
+ * Detector implementing a slow first pass to collect interprocedural properties for a later
+ * detector pass. We assign these a special interface because they are probably too slow to be
+ * enabled by default.
  *
  * @author David Hovemeyer
  */
 public interface InterproceduralFirstPassDetector extends NonReportingDetector {
-
 }

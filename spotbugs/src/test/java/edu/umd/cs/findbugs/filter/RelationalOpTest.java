@@ -25,9 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-/**
- * @since 3.1
- */
+/** @since 3.1 */
 public class RelationalOpTest {
 
     @Test

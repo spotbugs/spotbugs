@@ -27,7 +27,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -76,12 +75,10 @@ public class SplashFrame extends JWindow {
 
         pack();
         viewer.animate();
-
     }
 
     public static void main(String[] args) {
         (new SplashFrame()).setVisible(true);
-
     }
 
     @Override
@@ -132,39 +129,42 @@ public class SplashFrame extends JWindow {
                 System.err.println(ie);
                 System.exit(1);
             }
-            animator = new Thread((Runnable) () -> {
-                int deltaX = 1;
+            animator =
+                    new Thread(
+                            (Runnable) () -> {
+                                int deltaX = 1;
 
-                while (true) {
-                    if (Thread.currentThread().isInterrupted()) {
-                        return;
-                    }
+                                while (true) {
+                                    if (Thread.currentThread().isInterrupted()) {
+                                        return;
+                                    }
 
-                    callCount++;
-                    if (callCount == 10) {
-                        swap = !swap;
-                        callCount = 0;
-                    }
+                                    callCount++;
+                                    if (callCount == 10) {
+                                        swap = !swap;
+                                        callCount = 0;
+                                    }
 
-                    xpos += deltaX;
-                    try {
-                        Thread.sleep(20);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
+                                    xpos += deltaX;
+                                    try {
+                                        Thread.sleep(20);
+                                    } catch (InterruptedException e) {
+                                        break;
+                                    }
 
-                    if (xpos > Viewer.this.getSize().width - image.getWidth(null)) {
-                        deltaX = -1;
-                        reverse = !reverse;
-                    }
-                    if (xpos < 0) {
-                        deltaX = 1;
-                        reverse = !reverse;
-                    }
+                                    if (xpos > Viewer.this.getSize().width - image.getWidth(null)) {
+                                        deltaX = -1;
+                                        reverse = !reverse;
+                                    }
+                                    if (xpos < 0) {
+                                        deltaX = 1;
+                                        reverse = !reverse;
+                                    }
 
-                    Viewer.this.repaint();
-                }
-            }, "SpotBugs Splash screen thread");
+                                    Viewer.this.repaint();
+                                }
+                            },
+                            "SpotBugs Splash screen thread");
             animator.setDaemon(true);
             animator.setPriority(Thread.MIN_PRIORITY);
         }

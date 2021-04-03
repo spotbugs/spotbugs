@@ -19,14 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import java.util.HashSet;
-import java.util.Map;
-
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-
 import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -34,17 +26,22 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 import edu.umd.cs.findbugs.util.MultiMap;
+import java.util.HashSet;
+import java.util.Map;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class SelfMethodCalls {
 
-    static private boolean interestingSignature(String signature) {
+    private static boolean interestingSignature(String signature) {
         return !"()V".equals(signature);
     }
 
-    public static <T> MultiMap<T, T> getSelfCalls(final ClassDescriptor classDescriptor, final Map<String, T> methods) {
+    public static <T> MultiMap<T, T> getSelfCalls(
+            final ClassDescriptor classDescriptor, final Map<String, T> methods) {
         final MultiMap<T, T> map = new MultiMap<>(HashSet.class);
 
         FBClassReader reader;
@@ -54,26 +51,30 @@ public class SelfMethodCalls {
             AnalysisContext.logError("Error finding self method calls for " + classDescriptor, e);
             return map;
         }
-        reader.accept(new ClassVisitor(FindBugsASM.ASM_VERSION) {
+        reader.accept(
+                new ClassVisitor(FindBugsASM.ASM_VERSION) {
 
-            @Override
-            public MethodVisitor visitMethod(final int access, final String name, final String desc, String signature,
-                    String[] exceptions) {
-                return new MethodVisitor(FindBugsASM.ASM_VERSION) {
                     @Override
-                    public void visitMethodInsn(int opcode, String owner, String name2, String desc2, boolean itf) {
-                        if (owner.equals(classDescriptor.getClassName()) && interestingSignature(desc2)) {
-                            T from = methods.get(name + desc + ((access & Opcodes.ACC_STATIC) != 0));
-                            T to = methods.get(name2 + desc2 + (opcode == Opcodes.INVOKESTATIC));
-                            map.add(from, to);
-                        }
-
+                    public MethodVisitor visitMethod(
+                            final int access,
+                            final String name,
+                            final String desc,
+                            String signature,
+                            String[] exceptions) {
+                        return new MethodVisitor(FindBugsASM.ASM_VERSION) {
+                            @Override
+                            public void visitMethodInsn(
+                                    int opcode, String owner, String name2, String desc2, boolean itf) {
+                                if (owner.equals(classDescriptor.getClassName()) && interestingSignature(desc2)) {
+                                    T from = methods.get(name + desc + ((access & Opcodes.ACC_STATIC) != 0));
+                                    T to = methods.get(name2 + desc2 + (opcode == Opcodes.INVOKESTATIC));
+                                    map.add(from, to);
+                                }
+                            }
+                        };
                     }
-
-                };
-            }
-
-        }, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+                },
+                ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         return map;
     }
 

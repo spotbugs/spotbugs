@@ -19,46 +19,42 @@
 
 package edu.umd.cs.findbugs.anttask;
 
+import edu.umd.cs.findbugs.ExitCodes;
 import java.io.File;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Ant.Reference;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
-import edu.umd.cs.findbugs.ExitCodes;
-
 /**
  * FindBugsViewerTask.java -- Ant Task to launch the FindBugsFrame
  *
- * To use, create a new task that references the ant task (such as
- * "findbugs-viewer"). Then call this task while passing in parameters to modify
- * it's behaviour. It supports several options that are the same as the findbugs
- * task:
+ * <p>To use, create a new task that references the ant task (such as "findbugs-viewer"). Then call
+ * this task while passing in parameters to modify it's behaviour. It supports several options that
+ * are the same as the findbugs task:
  *
- * -projectFile -debug -jvmargs -home -classpath -pluginList -timeout
+ * <p>-projectFile -debug -jvmargs -home -classpath -pluginList -timeout
  *
- * It also adds some new options:
+ * <p>It also adds some new options:
  *
- * -look: string name representing look and feel. Can be "native", "plastic" or
- * "gtk" -loadbugs: file name of bug report to load
+ * <p>-look: string name representing look and feel. Can be "native", "plastic" or "gtk" -loadbugs:
+ * file name of bug report to load
  *
- * The below is an example of how this could be done in an ant script:
+ * <p>The below is an example of how this could be done in an ant script:
  *
- * {@literal <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="C:\dev\cvs.sourceforge.net\findbugs\lib\findbugs-ant.jar" />}
- * {@literal <taskdef name="findbugs-viewer"
- * classname="edu.umd.cs.findbugs.anttask.FindBugsViewerTask"
+ * <p>{@literal <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+ * classpath="C:\dev\cvs.sourceforge.net\findbugs\lib\findbugs-ant.jar" />} {@literal <taskdef
+ * name="findbugs-viewer" classname="edu.umd.cs.findbugs.anttask.FindBugsViewerTask"
  * classpath="C:\dev\cvs.sourceforge.net\findbugs\lib\findbugs-ant.jar" />}
  *
- * {@literal <property name="findbugs.home" location="C:\dev\cvs.sourceforge.net\findbugs"
- * /> <property name="findbugs.bugReport" location="bcel-fb.xml" />}
+ * <p>{@literal <property name="findbugs.home" location="C:\dev\cvs.sourceforge.net\findbugs" />
+ * <property name="findbugs.bugReport" location="bcel-fb.xml" />}
  *
- * {@literal <target name="findbugs-viewer" depends="jar"> <findbugs-viewer
- * home="${findbugs.home}" look="native" loadbugs="${findbugs.bugReport}"/>
- * </target>}
+ * <p>{@literal <target name="findbugs-viewer" depends="jar"> <findbugs-viewer
+ * home="${findbugs.home}" look="native" loadbugs="${findbugs.bugReport}"/> </target>}
  *
- * Created on March 21, 2006, 12:57 PM
+ * <p>Created on March 21, 2006, 12:57 PM
  *
  * @author Mark McKay, mark@kitfox.com
  */
@@ -94,8 +90,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Sets the file that contains the XML output of a findbugs report.
      *
-     * @param loadbugs
-     *            XML output from a findbugs session
+     * @param loadbugs XML output from a findbugs session
      */
     public void setLoadbugs(File loadbugs) {
         this.loadbugs = loadbugs;
@@ -104,8 +99,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Set the project file
      *
-     * @param projectFile
-     *            project file
+     * @param projectFile project file
      */
     public void setProjectFile(File projectFile) {
         this.projectFile = projectFile;
@@ -114,8 +108,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Set the debug flag
      *
-     * @param flag
-     *            {@code true} to enable debugging
+     * @param flag {@code true} to enable debugging
      */
     public void setDebug(boolean flag) {
         debug = flag;
@@ -124,8 +117,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Set any specific jvm args
      *
-     * @param args
-     *            specific jvm args
+     * @param args specific jvm args
      */
     public void setJvmargs(String args) {
         jvmargs = args;
@@ -134,8 +126,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Set look. One of "native", "gtk" or "plastic"
      *
-     * @param look
-     *            One of "native", "gtk" or "plastic
+     * @param look One of "native", "gtk" or "plastic
      */
     public void setLook(String look) {
         this.look = look;
@@ -144,8 +135,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Set the home directory into which spotbugs was installed
      *
-     * @param homeDir
-     *            home directory into which spotbugs was installed
+     * @param homeDir home directory into which spotbugs was installed
      */
     public void setHome(File homeDir) {
         this.homeDir = homeDir;
@@ -166,8 +156,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Adds a reference to a classpath defined elsewhere.
      *
-     * @param r
-     *            reference to a classpath defined elsewher
+     * @param r reference to a classpath defined elsewher
      */
     public void setClasspathRef(Reference r) {
         createClasspath().setRefid(r);
@@ -176,8 +165,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * the plugin list to use.
      *
-     * @param src
-     *            plugin list to use
+     * @param src plugin list to use
      */
     public void setPluginList(Path src) {
         if (pluginList == null) {
@@ -202,8 +190,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Adds a reference to a plugin list defined elsewhere.
      *
-     * @param r
-     *            reference to a plugin list defined elsewhere
+     * @param r reference to a plugin list defined elsewhere
      */
     public void setPluginListRef(Reference r) {
         createPluginList().setRefid(r);
@@ -212,8 +199,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Set timeout in milliseconds.
      *
-     * @param timeout
-     *            the timeout
+     * @param timeout the timeout
      */
     public void setTimeout(long timeout) {
         this.timeout = timeout;
@@ -222,8 +208,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Add an argument to the JVM used to execute FindBugs.
      *
-     * @param arg
-     *            the argument
+     * @param arg the argument
      */
     private void addArg(String arg) {
         findbugsEngine.createArg().setValue(arg);
@@ -304,5 +289,4 @@ public class FindBugsViewerTask extends Task {
             log("Classes needed for analysis were missing");
         }
     }
-
 }

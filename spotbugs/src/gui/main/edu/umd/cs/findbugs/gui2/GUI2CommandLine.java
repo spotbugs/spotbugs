@@ -19,12 +19,10 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.FindBugsCommandLine;
 import java.io.File;
 import java.io.IOException;
-
 import javax.swing.UIManager;
-
-import edu.umd.cs.findbugs.FindBugsCommandLine;
 
 /**
  * Command line switches/options for GUI2.
@@ -54,7 +52,8 @@ public class GUI2CommandLine extends FindBugsCommandLine {
             System.exit(0);
         } else if ("-d".equals(option) || "--nodock".equals(option)) {
             // For backwards compatibility, keep parsing the flag
-            System.err.println("Flag '" + option + "' is deprecated and will be removed in Spotbugs 4.0.0");
+            System.err.println(
+                    "Flag '" + option + "' is deprecated and will be removed in Spotbugs 4.0.0");
         } else if ("-look".equals(option)) {
             String arg = optionExtraPart;
             String theme = null;

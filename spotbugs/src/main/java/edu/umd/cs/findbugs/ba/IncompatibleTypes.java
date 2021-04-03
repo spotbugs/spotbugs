@@ -19,18 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
-import org.apache.bcel.generic.ArrayType;
-import org.apache.bcel.generic.BasicType;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
@@ -40,20 +28,33 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.util.Values;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import org.apache.bcel.generic.ArrayType;
+import org.apache.bcel.generic.BasicType;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 public class IncompatibleTypes {
-    private static final ObjectType GWT_JAVASCRIPTOBJECT_TYPE = ObjectTypeFactory
-            .getInstance("com.google.gwt.core.client.JavaScriptObject");
+    private static final ObjectType GWT_JAVASCRIPTOBJECT_TYPE =
+            ObjectTypeFactory.getInstance("com.google.gwt.core.client.JavaScriptObject");
 
-    private static final ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance("java.util.Collection");
+    private static final ObjectType COLLECTION_TYPE =
+            ObjectTypeFactory.getInstance("java.util.Collection");
 
     private static final ObjectType MAP_TYPE = ObjectTypeFactory.getInstance("java.util.Map");
 
-    private static final ClassDescriptor LIST_DESCRIPTOR = DescriptorFactory.createClassDescriptor(List.class);
+    private static final ClassDescriptor LIST_DESCRIPTOR =
+            DescriptorFactory.createClassDescriptor(List.class);
 
-    private static final ClassDescriptor MAP_DESCRIPTOR = DescriptorFactory.createClassDescriptor(Map.class);
+    private static final ClassDescriptor MAP_DESCRIPTOR =
+            DescriptorFactory.createClassDescriptor(Map.class);
 
-    private static final ClassDescriptor SET_DESCRIPTOR = DescriptorFactory.createClassDescriptor(Set.class);
+    private static final ClassDescriptor SET_DESCRIPTOR =
+            DescriptorFactory.createClassDescriptor(Set.class);
 
     final int priority;
 
@@ -77,58 +78,68 @@ public class IncompatibleTypes {
         return msg;
     }
 
-    public static final IncompatibleTypes SEEMS_OK = new IncompatibleTypes("Seems OK", Priorities.IGNORE_PRIORITY);
+    public static final IncompatibleTypes SEEMS_OK =
+            new IncompatibleTypes("Seems OK", Priorities.IGNORE_PRIORITY);
 
-    public static final IncompatibleTypes ARRAY_AND_NON_ARRAY = new IncompatibleTypes("Array and non array",
-            Priorities.HIGH_PRIORITY);
+    public static final IncompatibleTypes ARRAY_AND_NON_ARRAY =
+            new IncompatibleTypes("Array and non array", Priorities.HIGH_PRIORITY);
 
-    public static final IncompatibleTypes PRIMATIVE_ARRAY_AND_OTHER_ARRAY = new IncompatibleTypes(
-            "Primitive array and a non-primitive array", Priorities.HIGH_PRIORITY);
+    public static final IncompatibleTypes PRIMATIVE_ARRAY_AND_OTHER_ARRAY =
+            new IncompatibleTypes("Primitive array and a non-primitive array", Priorities.HIGH_PRIORITY);
 
-    public static final IncompatibleTypes INCOMPATIBLE_PRIMATIVE_ARRAYS = new IncompatibleTypes("Incompatible primitive arrays",
-            Priorities.HIGH_PRIORITY);
+    public static final IncompatibleTypes INCOMPATIBLE_PRIMATIVE_ARRAYS =
+            new IncompatibleTypes("Incompatible primitive arrays", Priorities.HIGH_PRIORITY);
 
-    public static final IncompatibleTypes UNCHECKED = new IncompatibleTypes(
-            "Actual compile type time of argument is Object, unchecked", Priorities.IGNORE_PRIORITY);
+    public static final IncompatibleTypes UNCHECKED =
+            new IncompatibleTypes(
+                    "Actual compile type time of argument is Object, unchecked", Priorities.IGNORE_PRIORITY);
 
-    public static final IncompatibleTypes ARRAY_AND_OBJECT = new IncompatibleTypes("Array and Object", Priorities.IGNORE_PRIORITY);
+    public static final IncompatibleTypes ARRAY_AND_OBJECT =
+            new IncompatibleTypes("Array and Object", Priorities.IGNORE_PRIORITY);
 
-    public static final IncompatibleTypes INCOMPATIBLE_CLASSES = new IncompatibleTypes("Incompatible classes",
-            Priorities.HIGH_PRIORITY);
+    public static final IncompatibleTypes INCOMPATIBLE_CLASSES =
+            new IncompatibleTypes("Incompatible classes", Priorities.HIGH_PRIORITY);
 
-    public static final IncompatibleTypes UNRELATED_CLASS_AND_INTERFACE = new IncompatibleTypes("Unrelated class and interface",
-            Priorities.NORMAL_PRIORITY);
+    public static final IncompatibleTypes UNRELATED_CLASS_AND_INTERFACE =
+            new IncompatibleTypes("Unrelated class and interface", Priorities.NORMAL_PRIORITY);
 
-    public static final IncompatibleTypes UNRELATED_FINAL_CLASS_AND_INTERFACE = new IncompatibleTypes(
-            "Unrelated final class and interface", Priorities.HIGH_PRIORITY);
+    public static final IncompatibleTypes UNRELATED_FINAL_CLASS_AND_INTERFACE =
+            new IncompatibleTypes("Unrelated final class and interface", Priorities.HIGH_PRIORITY);
 
-    public static final IncompatibleTypes UNRELATED_INTERFACES = new IncompatibleTypes("Unrelated interfaces",
-            Priorities.NORMAL_PRIORITY);
-    public static final IncompatibleTypes UNRELATED_INTERFACES_WITHOUT_IMPLEMENTATIONS = new IncompatibleTypes(
-            "Unrelated interfaces without implementations",
-            Priorities.LOW_PRIORITY);
+    public static final IncompatibleTypes UNRELATED_INTERFACES =
+            new IncompatibleTypes("Unrelated interfaces", Priorities.NORMAL_PRIORITY);
+    public static final IncompatibleTypes UNRELATED_INTERFACES_WITHOUT_IMPLEMENTATIONS =
+            new IncompatibleTypes(
+                    "Unrelated interfaces without implementations", Priorities.LOW_PRIORITY);
 
-    public static final IncompatibleTypes UNRELATED_UTIL_INTERFACE = new IncompatibleTypes("Unrelated java.util interface",
-            Priorities.HIGH_PRIORITY);
+    public static final IncompatibleTypes UNRELATED_UTIL_INTERFACE =
+            new IncompatibleTypes("Unrelated java.util interface", Priorities.HIGH_PRIORITY);
 
-    public static final IncompatibleTypes UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER = new IncompatibleTypes(
-            "Unrelated types but one type matches type parameter of the other", Priorities.HIGH_PRIORITY);
+    public static final IncompatibleTypes UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER =
+            new IncompatibleTypes(
+                    "Unrelated types but one type matches type parameter of the other",
+                    Priorities.HIGH_PRIORITY);
 
-    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(GenericObjectType genericType, Type plainType) {
-        IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(genericType.getObjectType(), plainType);
+    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(
+            GenericObjectType genericType, Type plainType) {
+        IncompatibleTypes result =
+                IncompatibleTypes.getPriorityForAssumingCompatible(genericType.getObjectType(), plainType);
         List<? extends ReferenceType> parameters = genericType.getParameters();
-        if (result.getPriority() == Priorities.NORMAL_PRIORITY && parameters != null && parameters.contains(plainType)) {
+        if (result.getPriority() == Priorities.NORMAL_PRIORITY
+                && parameters != null
+                && parameters.contains(plainType)) {
             result = UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER;
         }
         return result;
-
     }
 
-    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(Type lhsType, Type rhsType) {
+    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(
+            Type lhsType, Type rhsType) {
         return getPriorityForAssumingCompatible(lhsType, rhsType, false);
     }
 
-    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
+    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(
+            Type expectedType, Type actualType, boolean pointerEquality) {
         if (expectedType.equals(actualType)) {
             return SEEMS_OK;
         }
@@ -171,7 +182,8 @@ public class IncompatibleTypes {
             return SEEMS_OK;
         }
 
-        return getPriorityForAssumingCompatible((ObjectType) expectedType, (ObjectType) actualType, pointerEquality);
+        return getPriorityForAssumingCompatible(
+                (ObjectType) expectedType, (ObjectType) actualType, pointerEquality);
     }
 
     private static IncompatibleTypes getPriorityForAssumingCompatibleWithArray(Type rhsType) {
@@ -185,7 +197,8 @@ public class IncompatibleTypes {
         return ARRAY_AND_NON_ARRAY;
     }
 
-    static @Nonnull XMethod getInvokedMethod(XClass xClass, String name, String sig, boolean isStatic) throws CheckedAnalysisException {
+    static @Nonnull XMethod getInvokedMethod(XClass xClass, String name, String sig, boolean isStatic)
+            throws CheckedAnalysisException {
         IAnalysisCache cache = Global.getAnalysisCache();
         while (true) {
             XMethod result = xClass.findMethod(name, sig, isStatic);
@@ -201,11 +214,10 @@ public class IncompatibleTypes {
             }
             xClass = cache.getClassAnalysis(XClass.class, superclassDescriptor);
         }
-
     }
 
-    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(ObjectType expectedType, ObjectType actualType,
-            boolean pointerEquality) {
+    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(
+            ObjectType expectedType, ObjectType actualType, boolean pointerEquality) {
         if (expectedType.equals(actualType)) {
             return SEEMS_OK;
         }
@@ -220,34 +232,41 @@ public class IncompatibleTypes {
 
         try {
 
-            if (!Hierarchy.isSubtype(expectedType, actualType) && !Hierarchy.isSubtype(actualType, expectedType)) {
+            if (!Hierarchy.isSubtype(expectedType, actualType)
+                    && !Hierarchy.isSubtype(actualType, expectedType)) {
                 if (Hierarchy.isSubtype(expectedType, GWT_JAVASCRIPTOBJECT_TYPE)
                         && Hierarchy.isSubtype(actualType, GWT_JAVASCRIPTOBJECT_TYPE)) {
                     return SEEMS_OK;
                 }
                 // See if the types are related by inheritance.
-                ClassDescriptor lhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(expectedType
-                        .getClassName());
-                ClassDescriptor rhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(actualType
-                        .getClassName());
+                ClassDescriptor lhsDescriptor =
+                        DescriptorFactory.createClassDescriptorFromDottedClassName(expectedType.getClassName());
+                ClassDescriptor rhsDescriptor =
+                        DescriptorFactory.createClassDescriptorFromDottedClassName(actualType.getClassName());
 
                 return getPriorityForAssumingCompatible(pointerEquality, lhsDescriptor, rhsDescriptor);
             }
 
-            if (expectedType instanceof GenericObjectType && actualType instanceof GenericObjectType
-                    && (Hierarchy.isSubtype(expectedType, COLLECTION_TYPE) || Hierarchy.isSubtype(expectedType, MAP_TYPE))) {
-                List<? extends ReferenceType> lhsParameters = ((GenericObjectType) expectedType).getParameters();
-                List<? extends ReferenceType> rhsParameters = ((GenericObjectType) actualType).getParameters();
-                if (lhsParameters != null && rhsParameters != null && lhsParameters.size() == rhsParameters.size()) {
+            if (expectedType instanceof GenericObjectType
+                    && actualType instanceof GenericObjectType
+                    && (Hierarchy.isSubtype(expectedType, COLLECTION_TYPE)
+                            || Hierarchy.isSubtype(expectedType, MAP_TYPE))) {
+                List<? extends ReferenceType> lhsParameters =
+                        ((GenericObjectType) expectedType).getParameters();
+                List<? extends ReferenceType> rhsParameters =
+                        ((GenericObjectType) actualType).getParameters();
+                if (lhsParameters != null
+                        && rhsParameters != null
+                        && lhsParameters.size() == rhsParameters.size()) {
                     for (int i = 0; i < lhsParameters.size(); i++) {
-                        IncompatibleTypes r = getPriorityForAssumingCompatible(lhsParameters.get(i), rhsParameters.get(i),
-                                pointerEquality);
+                        IncompatibleTypes r =
+                                getPriorityForAssumingCompatible(
+                                        lhsParameters.get(i), rhsParameters.get(i), pointerEquality);
                         if (r.getPriority() <= Priorities.NORMAL_PRIORITY) {
                             return r;
                         }
                     }
                 }
-
             }
 
         } catch (ClassNotFoundException e) {
@@ -260,8 +279,9 @@ public class IncompatibleTypes {
         return SEEMS_OK;
     }
 
-    public static IncompatibleTypes getPriorityForAssumingCompatible(boolean pointerEquality, ClassDescriptor lhsDescriptor,
-            ClassDescriptor rhsDescriptor) throws CheckedAnalysisException, ClassNotFoundException {
+    public static IncompatibleTypes getPriorityForAssumingCompatible(
+            boolean pointerEquality, ClassDescriptor lhsDescriptor, ClassDescriptor rhsDescriptor)
+            throws CheckedAnalysisException, ClassNotFoundException {
         if (lhsDescriptor.equals(rhsDescriptor)) {
             return SEEMS_OK;
         }
@@ -285,9 +305,12 @@ public class IncompatibleTypes {
             }
         }
 
-        if ((subtypes2.isSubtype(lhsDescriptor, SET_DESCRIPTOR) && subtypes2.isSubtype(rhsDescriptor, SET_DESCRIPTOR)
-                || subtypes2.isSubtype(lhsDescriptor, MAP_DESCRIPTOR) && subtypes2.isSubtype(rhsDescriptor, MAP_DESCRIPTOR) || subtypes2
-                        .isSubtype(lhsDescriptor, LIST_DESCRIPTOR) && subtypes2.isSubtype(rhsDescriptor, LIST_DESCRIPTOR))) {
+        if ((subtypes2.isSubtype(lhsDescriptor, SET_DESCRIPTOR)
+                && subtypes2.isSubtype(rhsDescriptor, SET_DESCRIPTOR)
+                || subtypes2.isSubtype(lhsDescriptor, MAP_DESCRIPTOR)
+                        && subtypes2.isSubtype(rhsDescriptor, MAP_DESCRIPTOR)
+                || subtypes2.isSubtype(lhsDescriptor, LIST_DESCRIPTOR)
+                        && subtypes2.isSubtype(rhsDescriptor, LIST_DESCRIPTOR))) {
             return SEEMS_OK;
         }
 
@@ -302,11 +325,13 @@ public class IncompatibleTypes {
             // intersection does not contain at least one
             // class,
             // then issue a warning of the appropriate type.
-            Set<ClassDescriptor> commonSubtypes = subtypes2.getTransitiveCommonSubtypes(lhsDescriptor, rhsDescriptor);
+            Set<ClassDescriptor> commonSubtypes =
+                    subtypes2.getTransitiveCommonSubtypes(lhsDescriptor, rhsDescriptor);
 
             if (commonSubtypes.isEmpty()) {
                 if (lhs.isInterface() && rhs.isInterface()) {
-                    if (!subtypes2.hasKnownSubclasses(lhsDescriptor) || !subtypes2.hasKnownSubclasses(rhsDescriptor)) {
+                    if (!subtypes2.hasKnownSubclasses(lhsDescriptor)
+                            || !subtypes2.hasKnownSubclasses(rhsDescriptor)) {
                         return UNRELATED_INTERFACES_WITHOUT_IMPLEMENTATIONS;
                     }
                     return UNRELATED_INTERFACES;
@@ -320,9 +345,7 @@ public class IncompatibleTypes {
                 }
                 return UNRELATED_CLASS_AND_INTERFACE;
             }
-
         }
         return SEEMS_OK;
     }
-
 }

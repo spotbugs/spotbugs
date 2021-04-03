@@ -32,22 +32,20 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
  */
 public abstract class FindBugsAnalysisFeatures {
 
-
     /**
-     * "Relaxed" warning reporting mode. Rather than using hard-coded heuristics
-     * to decide when to suppress a warning, report warnings freely and encode
-     * the heuristics as BugProperties (for consumption by a
-     * machine-learning-based ranking algorithm).
+     * "Relaxed" warning reporting mode. Rather than using hard-coded heuristics to decide when to
+     * suppress a warning, report warnings freely and encode the heuristics as BugProperties (for
+     * consumption by a machine-learning-based ranking algorithm).
      */
-    public static final @AnalysisFeature int RELAXED_REPORTING_MODE = AnalysisFeatures.Builder.build("RELAXED_REPORTING_MODE");
+    public static final @AnalysisFeature int RELAXED_REPORTING_MODE =
+            AnalysisFeatures.Builder.build("RELAXED_REPORTING_MODE");
 
-    /**
-     * Enable interprocedural analysis.
-     */
-    public static final @AnalysisFeature int INTERPROCEDURAL_ANALYSIS = AnalysisFeatures.Builder.build("INTERPROCEDURAL_ANALYSIS");
+    /** Enable interprocedural analysis. */
+    public static final @AnalysisFeature int INTERPROCEDURAL_ANALYSIS =
+            AnalysisFeatures.Builder.build("INTERPROCEDURAL_ANALYSIS");
 
-    public static final @AnalysisFeature int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = AnalysisFeatures.Builder.build(
-            "INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES");
+    public static final @AnalysisFeature int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES =
+            AnalysisFeatures.Builder.build("INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES");
 
     static void setProperty(@AnalysisFeature int property, boolean value) {
         AnalysisContext.currentAnalysisContext().setBoolProperty(property, value);
@@ -60,8 +58,7 @@ public abstract class FindBugsAnalysisFeatures {
     /**
      * Set relaxed reporting mode.
      *
-     * @param relaxedMode
-     *            true if relaxed reporting mode should be enabled, false if not
+     * @param relaxedMode true if relaxed reporting mode should be enabled, false if not
      */
     public static void setRelaxedMode(boolean relaxedMode) {
         setProperty(RELAXED_REPORTING_MODE, relaxedMode);

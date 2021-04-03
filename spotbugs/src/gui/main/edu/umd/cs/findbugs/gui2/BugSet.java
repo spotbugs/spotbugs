@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,32 +35,21 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
-
 /**
- * BugSet is what we use instead of SortedBugCollections. BugSet is somewhat
- * poorly named, in that its actually a HashList of bugs, not a Set of them. (It
- * can't be a set because we need to be able to sort it, also, HashList is great
- * for doing contains and indexOf, its just slow for removing which we never
- * need to do) The power of BugSet is in query. You can query a BugSet with a
- * BugAspects, a list of StringPairs like {@literal <priority,high>},
- * {@literal <designation,unclassified>} and you will get out a new BugSet containing all
- * of the bugs that are both high priority and unclassified. Also, after the
- * first time a query is made, the results will come back instantly on future
- * calls because the old queries are cached. Note that this caching can also
- * lead to issues, problems with the BugTreeModel and the JTree getting out of
- * sync, if there comes a time when the model and tree are out of sync but come
- * back into sync if the tree is rebuilt, say by sorting the column headers, it
- * probably means that resetData needs to be called on the model after doing one
- * of its operations.
+ * BugSet is what we use instead of SortedBugCollections. BugSet is somewhat poorly named, in that
+ * its actually a HashList of bugs, not a Set of them. (It can't be a set because we need to be able
+ * to sort it, also, HashList is great for doing contains and indexOf, its just slow for removing
+ * which we never need to do) The power of BugSet is in query. You can query a BugSet with a
+ * BugAspects, a list of StringPairs like {@literal <priority,high>}, {@literal
+ * <designation,unclassified>} and you will get out a new BugSet containing all of the bugs that are
+ * both high priority and unclassified. Also, after the first time a query is made, the results will
+ * come back instantly on future calls because the old queries are cached. Note that this caching
+ * can also lead to issues, problems with the BugTreeModel and the JTree getting out of sync, if
+ * there comes a time when the model and tree are out of sync but come back into sync if the tree is
+ * rebuilt, say by sorting the column headers, it probably means that resetData needs to be called
+ * on the model after doing one of its operations.
  *
  * @author Dan
- *
  */
 public class BugSet implements Iterable<BugLeafNode> {
 
@@ -69,12 +64,11 @@ public class BugSet implements Iterable<BugLeafNode> {
     private static BugSet mainBugSet = null;
 
     /**
-     * mainBugSet should probably always be the same as the data field in the
-     * current BugTreeModel we haven't run into any issues where it isn't, but
-     * if the two aren't equal using ==, problems might occur. If these problems
-     * do occur, See BugTreeModel.resetData() and perhaps adding a
-     * setAsRootAndCache() to it would fix the issue. This is not done right now
-     * for fear it might be slow.
+     * mainBugSet should probably always be the same as the data field in the current BugTreeModel we
+     * haven't run into any issues where it isn't, but if the two aren't equal using ==, problems
+     * might occur. If these problems do occur, See BugTreeModel.resetData() and perhaps adding a
+     * setAsRootAndCache() to it would fix the issue. This is not done right now for fear it might be
+     * slow.
      */
     public static BugSet getMainBugSet() {
         return mainBugSet;
@@ -83,19 +77,18 @@ public class BugSet implements Iterable<BugLeafNode> {
     /**
      * Gets all the string values out of the bugs in the set
      *
-     * @param s
-     *            The Sortables you want all values for
-     * @return all values of the sortable passed in that occur in this bugset,
-     *         in order based on the sortable's compare method.
+     * @param s The Sortables you want all values for
+     * @return all values of the sortable passed in that occur in this bugset, in order based on the
+     *     sortable's compare method.
      */
     public String[] getAll(Sortables s) {
         return getDistinctValues(s);
     }
 
     /**
-     * Creates a filterable dataset from the set passed in. The first time this
-     * is used is from outside to create the main data list After that BugSet
-     * will create new smaller filtered sets and store them using this method.
+     * Creates a filterable dataset from the set passed in. The first time this is used is from
+     * outside to create the main data list After that BugSet will create new smaller filtered sets
+     * and store them using this method.
      *
      * @param filteredSet
      */
@@ -111,12 +104,11 @@ public class BugSet implements Iterable<BugLeafNode> {
         for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
             mainList.add(new BugLeafNode(i.next()));
         }
-
     }
 
     /**
-     * Sets the BugSet passed in to be the mainBugSet, this should always match
-     * up with the data set in the BugTreeModel
+     * Sets the BugSet passed in to be the mainBugSet, this should always match up with the data set
+     * in the BugTreeModel
      *
      * @param bs
      */
@@ -131,10 +123,9 @@ public class BugSet implements Iterable<BugLeafNode> {
     }
 
     /**
-     * we cache all values of each sortable that appear in the BugSet as we
-     * create it using cacheSortables, this makes it possible to only show
-     * branches that actually have bugs in them, and makes it faster by caching
-     * the results.
+     * we cache all values of each sortable that appear in the BugSet as we create it using
+     * cacheSortables, this makes it possible to only show branches that actually have bugs in them,
+     * and makes it faster by caching the results.
      */
     void cacheSortables() {
         sortablesToStrings = new HashMap<>();
@@ -167,18 +158,13 @@ public class BugSet implements Iterable<BugLeafNode> {
 
             String value = key.getFrom(bug);
             list.add(value);
-
         }
         String result[] = list.toArray(new String[list.size()]);
         Collections.sort(Arrays.asList(result), new SortableStringComparator(key));
         return result;
-
     }
 
-    /**
-     * used to update the status bar in mainframe with the number of bugs that
-     * are filtered out
-     */
+    /** used to update the status bar in mainframe with the number of bugs that are filtered out */
     static int countFilteredBugs() {
         int result = 0;
         for (BugLeafNode bug : getMainBugSet().mainList) {
@@ -204,16 +190,15 @@ public class BugSet implements Iterable<BugLeafNode> {
     }
 
     /**
-     * A String pair has a key and a value. The key is the general category ie:
-     * Type The value is the value ie: Malicious Code.
+     * A String pair has a key and a value. The key is the general category ie: Type The value is the
+     * value ie: Malicious Code.
      *
-     * Query looks through a BugLeafNode set with a keyValuePair to see which
-     * BugLeafNodes inside match the value under the category of key.
+     * <p>Query looks through a BugLeafNode set with a keyValuePair to see which BugLeafNodes inside
+     * match the value under the category of key.
      *
-     * passing in a key of Abbrev and a value of MS should return a new BugSet
-     * with all the Mutable Static bugs in the current set Note also: This query
-     * will only be performed once, and then stored and reused if the same query
-     * is used again.
+     * <p>passing in a key of Abbrev and a value of MS should return a new BugSet with all the Mutable
+     * Static bugs in the current set Note also: This query will only be performed once, and then
+     * stored and reused if the same query is used again.
      */
     BugSet query(SortableValue keyValuePair) {
         if (doneMap.containsKey(keyValuePair)) {
@@ -240,57 +225,61 @@ public class BugSet implements Iterable<BugLeafNode> {
 
         final List<Sortables> order = MainFrame.getInstance().getSorter().getOrderAfterDivider();
 
-        Comparator<BugLeafNode> comparator = new Comparator<BugLeafNode>() {
-            int compare(int one, int two) {
-                if (one > two) {
-                    return 1;
-                } else if (one < two) {
-                    return -1;
-                }
-                return 0;
-            }
+        Comparator<BugLeafNode> comparator =
+                new Comparator<BugLeafNode>() {
+                    int compare(int one, int two) {
+                        if (one > two) {
+                            return 1;
+                        } else if (one < two) {
+                            return -1;
+                        }
+                        return 0;
+                    }
 
-            @Override
-            public int compare(BugLeafNode one, BugLeafNode two) {
-                if (one == two) {
-                    return 0;
-                }
-                int result;
-                for (Sortables i : order) {
-                    result = i.getBugLeafNodeComparator().compare(one, two);
-                    if (result != 0) {
+                    @Override
+                    public int compare(BugLeafNode one, BugLeafNode two) {
+                        if (one == two) {
+                            return 0;
+                        }
+                        int result;
+                        for (Sortables i : order) {
+                            result = i.getBugLeafNodeComparator().compare(one, two);
+                            if (result != 0) {
+                                return result;
+                            }
+                        }
+                        BugInstance bugOne = one.getBug();
+                        BugInstance bugTwo = two.getBug();
+                        result =
+                                bugOne
+                                        .getPrimaryClass()
+                                        .getClassName()
+                                        .compareTo(bugTwo.getPrimaryClass().getClassName());
+                        if (result != 0) {
+                            return result;
+                        }
+                        SourceLineAnnotation oneSource = bugOne.getPrimarySourceLineAnnotation();
+                        SourceLineAnnotation twoSource = bugTwo.getPrimarySourceLineAnnotation();
+                        result = oneSource.getClassName().compareTo(twoSource.getClassName());
+                        if (result != 0) {
+                            return result;
+                        }
+                        result = compare(oneSource.getStartLine(), twoSource.getStartLine());
+                        if (result != 0) {
+                            return result;
+                        }
+                        result = compare(oneSource.getEndLine(), twoSource.getEndLine());
+                        if (result != 0) {
+                            return result;
+                        }
+                        result = compare(oneSource.getStartBytecode(), twoSource.getStartBytecode());
+                        if (result != 0) {
+                            return result;
+                        }
+                        result = compare(oneSource.getEndBytecode(), twoSource.getEndBytecode());
                         return result;
                     }
-                }
-                BugInstance bugOne = one.getBug();
-                BugInstance bugTwo = two.getBug();
-                result = bugOne.getPrimaryClass().getClassName().compareTo(bugTwo.getPrimaryClass().getClassName());
-                if (result != 0) {
-                    return result;
-                }
-                SourceLineAnnotation oneSource = bugOne.getPrimarySourceLineAnnotation();
-                SourceLineAnnotation twoSource = bugTwo.getPrimarySourceLineAnnotation();
-                result = oneSource.getClassName().compareTo(twoSource.getClassName());
-                if (result != 0) {
-                    return result;
-                }
-                result = compare(oneSource.getStartLine(), twoSource.getStartLine());
-                if (result != 0) {
-                    return result;
-                }
-                result = compare(oneSource.getEndLine(), twoSource.getEndLine());
-                if (result != 0) {
-                    return result;
-                }
-                result = compare(oneSource.getStartBytecode(), twoSource.getStartBytecode());
-                if (result != 0) {
-                    return result;
-                }
-                result = compare(oneSource.getEndBytecode(), twoSource.getEndBytecode());
-                return result;
-
-            }
-        };
+                };
         ArrayList<BugLeafNode> copy = new ArrayList<>(mainList);
         Collections.sort(copy, comparator);
         mainList = copy;
@@ -303,19 +292,16 @@ public class BugSet implements Iterable<BugLeafNode> {
                     BugLeafNode nodeJ = mainList.get(j);
                     if (comparator.compare(nodeI, nodeJ) > 0) {
                         throw new AssertionError(
-                                String.format("bug list isn't consistently sorted (%d:%s) vs. (%d:%s)",
+                                String.format(
+                                        "bug list isn't consistently sorted (%d:%s) vs. (%d:%s)",
                                         i, nodeI.getBug().getInstanceHash(), j, nodeJ.getBug().getInstanceHash()));
                     }
                 }
             }
         }
-
-
-
     }
 
     /**
-     *
      * Contains takes a key/value pair
      *
      * @param keyValuePair
@@ -336,9 +322,7 @@ public class BugSet implements Iterable<BugLeafNode> {
         return false;
     }
 
-    /**
-     * Gives you back the BugSet containing all bugs that match your query
-     */
+    /** Gives you back the BugSet containing all bugs that match your query */
     public BugSet query(BugAspects a) {
         BugSet result = this;
         for (SortableValue sp : a) {

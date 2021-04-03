@@ -30,24 +30,21 @@ public interface PathVisitor {
     /**
      * Start to visit the given BasicBlock.
      *
-     * @param basicBlock
-     *            a BasicBlock in the Path being visited
+     * @param basicBlock a BasicBlock in the Path being visited
      */
     public void visitBasicBlock(BasicBlock basicBlock);
 
     /**
      * Visit an InstructionHandle within the BasicBlock currently being visited.
      *
-     * @param handle
-     *            an InstructionHandle within the current BasicBlock
+     * @param handle an InstructionHandle within the current BasicBlock
      */
     public void visitInstructionHandle(InstructionHandle handle);
 
     /**
      * Visit an Edge connecting two BasicBlocks in the Path being visited.
      *
-     * @param edge
-     *            an Edge connecting two BasicBlocks in the Path being visited
+     * @param edge an Edge connecting two BasicBlocks in the Path being visited
      */
     public void visitEdge(Edge edge);
 }

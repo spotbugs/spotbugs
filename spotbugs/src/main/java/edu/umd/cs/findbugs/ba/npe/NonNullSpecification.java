@@ -29,7 +29,9 @@ public class NonNullSpecification {
 
     private final ParameterProperty possiblyNullProperty;
 
-    public NonNullSpecification(JavaClassAndMethod classAndMethod, ParameterProperty nonParamProperty,
+    public NonNullSpecification(
+            JavaClassAndMethod classAndMethod,
+            ParameterProperty nonParamProperty,
             ParameterProperty possiblyNullProperty) {
         this.classAndMethod = classAndMethod;
         this.nonNullProperty = nonParamProperty;

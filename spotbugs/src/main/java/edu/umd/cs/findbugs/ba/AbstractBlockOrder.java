@@ -25,9 +25,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 /**
- * Abstract base class for BlockOrder variants. It allows the subclass to
- * specify just a Comparator for BasicBlocks, and handles the work of doing the
- * sorting and providing Iterators.
+ * Abstract base class for BlockOrder variants. It allows the subclass to specify just a Comparator
+ * for BasicBlocks, and handles the work of doing the sorting and providing Iterators.
  *
  * @see BlockOrder
  */

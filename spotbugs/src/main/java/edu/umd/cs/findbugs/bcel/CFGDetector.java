@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.bcel;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -31,6 +27,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Base class for detectors that analyze CFG (and/or use CFG-based analyses).
@@ -96,13 +95,13 @@ public abstract class CFGDetector implements Detector2 {
     }
 
     /**
-     * Visit the CFG (control flow graph) of a method to be analyzed. Should be
-     * overridded by subclasses.
+     * Visit the CFG (control flow graph) of a method to be analyzed. Should be overridded by
+     * subclasses.
      *
      * @param methodDescriptor
      * @param cfg
      * @throws CheckedAnalysisException
      */
-    protected abstract void visitMethodCFG(MethodDescriptor methodDescriptor, CFG cfg) throws CheckedAnalysisException;
-
+    protected abstract void visitMethodCFG(MethodDescriptor methodDescriptor, CFG cfg)
+            throws CheckedAnalysisException;
 }

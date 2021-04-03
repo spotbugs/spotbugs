@@ -19,15 +19,15 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import org.apache.bcel.Const;
 
 public abstract class AbstractField extends AbstractClassMember implements XField {
 
-    protected AbstractField(@DottedClassName String className, String fieldName, String fieldSig, int accessFlags) {
+    protected AbstractField(
+            @DottedClassName String className, String fieldName, String fieldSig, int accessFlags) {
         super(className, fieldName, fieldSig, accessFlags);
     }
 
@@ -53,7 +53,8 @@ public abstract class AbstractField extends AbstractClassMember implements XFiel
      */
     @Override
     public FieldDescriptor getFieldDescriptor() {
-        return DescriptorFactory.instance().getFieldDescriptor(getClassDescriptor().getClassName(), getName(), getSignature(),
-                isStatic());
+        return DescriptorFactory.instance()
+                .getFieldDescriptor(
+                        getClassDescriptor().getClassName(), getName(), getSignature(), isStatic());
     }
 }

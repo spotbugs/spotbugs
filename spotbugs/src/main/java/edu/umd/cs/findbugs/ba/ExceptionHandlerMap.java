@@ -19,26 +19,22 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.ba.type.TypeMerger;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.annotation.CheckForNull;
-
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.ba.type.TypeMerger;
-
 /**
- * This class provides a convenient way of determining the exception handlers
- * for instructions in a method. Essentially, it's a a map of InstructionHandles
- * to lists of CodeExceptionGen objects. This class also maps instructions which
- * are the start of exception handlers to the CodeExceptionGen object
- * representing the handler.
+ * This class provides a convenient way of determining the exception handlers for instructions in a
+ * method. Essentially, it's a a map of InstructionHandles to lists of CodeExceptionGen objects.
+ * This class also maps instructions which are the start of exception handlers to the
+ * CodeExceptionGen object representing the handler.
  *
  * @author David Hovemeyer
  */
@@ -52,8 +48,7 @@ public class ExceptionHandlerMap {
     /**
      * Constructor.
      *
-     * @param methodGen
-     *            the method to build the map for
+     * @param methodGen the method to build the map for
      */
     public ExceptionHandlerMap(MethodGen methodGen, TypeMerger merger) {
         codeToHandlerMap = new IdentityHashMap<>();
@@ -63,29 +58,25 @@ public class ExceptionHandlerMap {
     }
 
     /**
-     * Get the list of exception handlers (CodeExceptionGen objects) which are
-     * specified to handle exceptions for the instruction whose handle is given.
-     * Note that the handlers in the returned list are <b>in order of
-     * priority</b>, as defined in the method's exception handler table.
+     * Get the list of exception handlers (CodeExceptionGen objects) which are specified to handle
+     * exceptions for the instruction whose handle is given. Note that the handlers in the returned
+     * list are <b>in order of priority</b>, as defined in the method's exception handler table.
      *
-     * @param handle
-     *            the handle of the instruction we want the exception handlers
-     *            for
-     * @return the list of exception handlers, or null if there are no handlers
-     *         registered for the instruction
+     * @param handle the handle of the instruction we want the exception handlers for
+     * @return the list of exception handlers, or null if there are no handlers registered for the
+     *     instruction
      */
     public List<CodeExceptionGen> getHandlerList(InstructionHandle handle) {
         return codeToHandlerMap.get(handle);
     }
 
     /**
-     * If the given instruction is the start of an exception handler, get the
-     * CodeExceptionGen object representing the handler.
+     * If the given instruction is the start of an exception handler, get the CodeExceptionGen object
+     * representing the handler.
      *
-     * @param start
-     *            the instruction
-     * @return the CodeExceptionGen object, or null if the instruction is not
-     *         the start of an exception handler
+     * @param start the instruction
+     * @return the CodeExceptionGen object, or null if the instruction is not the start of an
+     *     exception handler
      */
     public CodeExceptionGen getHandlerForStartInstruction(InstructionHandle start) {
         return startInstructionToHandlerMap.get(start);
@@ -126,7 +117,8 @@ public class ExceptionHandlerMap {
         }
     }
 
-    public static CodeExceptionGen merge(@CheckForNull TypeMerger m, CodeExceptionGen e1, CodeExceptionGen e2) {
+    public static CodeExceptionGen merge(
+            @CheckForNull TypeMerger m, CodeExceptionGen e1, CodeExceptionGen e2) {
         if (e1 == null) {
             return e2;
         }
@@ -142,14 +134,14 @@ public class ExceptionHandlerMap {
         }
         try {
             Type t = m.mergeTypes(e1.getCatchType(), e2.getCatchType());
-            return new CodeExceptionGen(e1.getStartPC(), e1.getEndPC(), e1.getHandlerPC(), (ObjectType) t);
+            return new CodeExceptionGen(
+                    e1.getStartPC(), e1.getEndPC(), e1.getHandlerPC(), (ObjectType) t);
         } catch (DataflowAnalysisException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             return e1;
         }
     }
-
 
     private void addExceptionHandler(CodeExceptionGen exceptionHandler) {
         InstructionHandle handlerPC = exceptionHandler.getHandlerPC();
@@ -161,7 +153,8 @@ public class ExceptionHandlerMap {
     }
 
     private void addHandler(InstructionHandle handle, CodeExceptionGen exceptionHandler) {
-        List<CodeExceptionGen> handlerList = codeToHandlerMap.computeIfAbsent(handle, k -> new LinkedList<>());
+        List<CodeExceptionGen> handlerList =
+                codeToHandlerMap.computeIfAbsent(handle, k -> new LinkedList<>());
         handlerList.add(exceptionHandler);
     }
 }

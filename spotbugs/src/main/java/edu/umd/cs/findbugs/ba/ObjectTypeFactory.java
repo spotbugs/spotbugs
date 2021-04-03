@@ -19,25 +19,22 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.bcel.generic.ObjectType;
-
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.bcel.generic.ObjectType;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class ObjectTypeFactory {
 
-    private static ThreadLocal<Map<String, ObjectType>> instance = new ThreadLocal<Map<String, ObjectType>>() {
-        @Override
-        protected Map<String, ObjectType> initialValue() {
-            return new HashMap<>();
-        }
-    };
+    private static ThreadLocal<Map<String, ObjectType>> instance =
+            new ThreadLocal<Map<String, ObjectType>>() {
+                @Override
+                protected Map<String, ObjectType> initialValue() {
+                    return new HashMap<>();
+                }
+            };
 
     // private Map<String, ObjectType> map = new HashMap<String, ObjectType>();
 
@@ -49,10 +46,10 @@ public class ObjectTypeFactory {
         return getInstance(c.getName());
     }
 
-
     public static ObjectType getInstance(@DottedClassName String s) {
         if (FindBugs.DEBUG && s.startsWith("[")) {
-            throw new IllegalArgumentException("Cannot create an ObjectType to represent an array type: " + s);
+            throw new IllegalArgumentException(
+                    "Cannot create an ObjectType to represent an array type: " + s);
         }
         if (s.endsWith(";")) {
             throw new IllegalArgumentException(s);
@@ -70,5 +67,4 @@ public class ObjectTypeFactory {
         map.put(s, result);
         return result;
     }
-
 }

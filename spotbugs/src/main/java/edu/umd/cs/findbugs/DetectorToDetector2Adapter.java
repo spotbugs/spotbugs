@@ -27,8 +27,8 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
- * An adapter allowing classes implementing the Detector interface to support
- * the new Detector2 interface.
+ * An adapter allowing classes implementing the Detector interface to support the new Detector2
+ * interface.
  *
  * @author David Hovemeyer
  */
@@ -38,8 +38,7 @@ public class DetectorToDetector2Adapter implements Detector2 {
     /**
      * Constructor.
      *
-     * @param detector
-     *            the Detector we want to adapt
+     * @param detector the Detector we want to adapt
      */
     public DetectorToDetector2Adapter(Detector detector) {
         this.detector = detector;

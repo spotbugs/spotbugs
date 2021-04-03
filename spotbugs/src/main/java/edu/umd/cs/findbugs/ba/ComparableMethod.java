@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public interface ComparableMethod extends Comparable<ComparableMethod> {
-
 }

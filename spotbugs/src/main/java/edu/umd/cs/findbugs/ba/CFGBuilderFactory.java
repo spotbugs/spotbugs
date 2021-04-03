@@ -19,18 +19,14 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import javax.annotation.Nonnull;
-
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-
-
 /**
- * Factory object to create CFGBuilders for methods. Using a CFGBuilderFactory
- * is preferable to direct instantiation of CFGBuilders, because it gives us an
- * easy hook for plugging in new CFGBuilder implementations. (CFGs for Java are
- * a little tricky to get right.)
+ * Factory object to create CFGBuilders for methods. Using a CFGBuilderFactory is preferable to
+ * direct instantiation of CFGBuilders, because it gives us an easy hook for plugging in new
+ * CFGBuilder implementations. (CFGs for Java are a little tricky to get right.)
  *
  * @author David Hovemeyer
  * @see CFG
@@ -41,11 +37,11 @@ public class CFGBuilderFactory {
     /**
      * Create a CFGBuilder to build a CFG for given method.
      *
-     * @param methodGen
-     *            the method
+     * @param methodGen the method
      * @return a CFGBuilder for the method
      */
-    public static CFGBuilder create(@Nonnull MethodDescriptor descriptor, @Nonnull MethodGen methodGen) {
+    public static CFGBuilder create(
+            @Nonnull MethodDescriptor descriptor, @Nonnull MethodGen methodGen) {
         return new BetterCFGBuilder2(descriptor, methodGen);
     }
 }

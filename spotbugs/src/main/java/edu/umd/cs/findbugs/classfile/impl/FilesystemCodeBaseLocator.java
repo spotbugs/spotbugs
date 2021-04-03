@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.File;
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Codebase locator for files and directories in the filesystem.
@@ -43,9 +42,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
         this.pathName = pathName;
     }
 
-    /**
-     * @return Returns the pathName.
-     */
+    /** @return Returns the pathName. */
     public String getPathName() {
         return pathName;
     }

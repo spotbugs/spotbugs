@@ -19,9 +19,28 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AssertionMethods;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysisFeatures;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.ANEWARRAY;
 import org.apache.bcel.generic.CHECKCAST;
@@ -44,32 +63,13 @@ import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.OpcodeStack.Item;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.AssertionMethods;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Hierarchy2;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.NullnessAnnotation;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
-import edu.umd.cs.findbugs.ba.type.TypeDataflow;
-import edu.umd.cs.findbugs.ba.type.TypeFrame;
-import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysisFeatures;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-
-public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
+public class IsNullValueFrameModelingVisitor
+        extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
     private static final boolean NO_ASSERT_HACK = SystemProperties.getBoolean("inva.noAssertHack");
 
-    private static final boolean MODEL_NONNULL_RETURN = SystemProperties.getBoolean("fnd.modelNonnullReturn", true);
+    private static final boolean MODEL_NONNULL_RETURN =
+            SystemProperties.getBoolean("fnd.modelNonnullReturn", true);
 
     private final AssertionMethods assertionMethods;
 
@@ -81,8 +81,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
     private int slotContainingNewNullValue;
 
-    public IsNullValueFrameModelingVisitor(ConstantPoolGen cpg, AssertionMethods assertionMethods,
-            ValueNumberDataflow vnaDataflow, TypeDataflow typeDataflow, boolean trackValueNumbers) {
+    public IsNullValueFrameModelingVisitor(
+            ConstantPoolGen cpg,
+            AssertionMethods assertionMethods,
+            ValueNumberDataflow vnaDataflow,
+            TypeDataflow typeDataflow,
+            boolean trackValueNumbers) {
         super(cpg);
         this.assertionMethods = assertionMethods;
         this.vnaDataflow = vnaDataflow;
@@ -122,17 +126,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                     if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
                         e.setValue(IsNullValue.nonReportingNotNullValue());
                     }
-
                 }
             }
         }
-
     }
 
-    /**
-     * @return Returns the slotContainingNewNullValue; or -1 if no new null
-     *         value was produced
-     */
+    /** @return Returns the slotContainingNewNullValue; or -1 if no new null value was produced */
     public int getSlotContainingNewNullValue() {
         return slotContainingNewNullValue;
     }
@@ -170,8 +169,8 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
     }
 
     /**
-     * Handle method invocations. Generally, we want to get rid of null
-     * information following a call to a likely exception thrower or assertion.
+     * Handle method invocations. Generally, we want to get rid of null information following a call
+     * to a likely exception thrower or assertion.
      */
     private void handleInvoke(InvokeInstruction obj) {
         if (obj instanceof INVOKEDYNAMIC) {
@@ -185,8 +184,9 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
         if (trackValueNumbers) {
             try {
                 ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
-                Set<ValueNumber> nonnullParameters = UnconditionalValueDerefAnalysis.checkAllNonNullParams(location, vnaFrame,
-                        cpg, null, null, typeDataflow);
+                Set<ValueNumber> nonnullParameters =
+                        UnconditionalValueDerefAnalysis.checkAllNonNullParams(
+                                location, vnaFrame, cpg, null, null, typeDataflow);
 
                 if (!nonnullParameters.isEmpty()) {
                     IsNullValue kaboom = IsNullValue.noKaboomNonNullValue(location);
@@ -211,7 +211,6 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                             }
                         }
                     }
-
                 }
             } catch (DataflowAnalysisException e) {
                 AnalysisContext.logError("Error looking up nonnull parameters for invoked method", e);
@@ -254,7 +253,6 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
             modelInstruction(obj, getNumWordsConsumed(obj), getNumWordsProduced(obj), result);
             newValueOnTOS();
         }
-
     }
 
     public IsNullValue getReturnValueNullness(XMethod calledMethod) {
@@ -262,16 +260,21 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
         if (IsNullValueAnalysis.DEBUG) {
             System.out.println("Check " + calledMethod + " for null return...");
         }
-        NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
-                .getResolvedAnnotation(calledMethod, false);
-        Boolean alwaysNonNull = AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
-                .getProperty(calledMethod.getMethodDescriptor());
+        NullnessAnnotation annotation =
+                AnalysisContext.currentAnalysisContext()
+                        .getNullnessAnnotationDatabase()
+                        .getResolvedAnnotation(calledMethod, false);
+        Boolean alwaysNonNull =
+                AnalysisContext.currentAnalysisContext()
+                        .getReturnValueNullnessPropertyDatabase()
+                        .getProperty(calledMethod.getMethodDescriptor());
         if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
             if (IsNullValueAnalysis.DEBUG) {
                 System.out.println("Null value returned from " + calledMethod);
             }
-            pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(
-                    calledMethod);
+            pushValue =
+                    IsNullValue.nullOnSimplePathValue()
+                            .markInformationAsComingFromReturnValueOfMethod(calledMethod);
         } else if (annotation == NullnessAnnotation.NULLABLE) {
             pushValue = IsNullValue.nonReportingNotNullValue();
         } else if (annotation == NullnessAnnotation.NONNULL
@@ -280,7 +283,8 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
             if (IsNullValueAnalysis.DEBUG) {
                 System.out.println("NonNull value return from " + calledMethod);
             }
-            pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
+            pushValue =
+                    IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
 
         } else {
             pushValue = IsNullValue.nonReportingNotNullValue();
@@ -288,10 +292,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
         return pushValue;
     }
 
-    /**
-     * Hook indicating that a new (possibly-null) value is on the top of the
-     * stack.
-     */
+    /** Hook indicating that a new (possibly-null) value is on the top of the stack. */
     private void newValueOnTOS() {
         IsNullValueFrame frame = getFrame();
         if (frame.getStackDepth() < 1) {
@@ -361,8 +362,10 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
         XField field = XFactory.createXField(obj, cpg);
 
-        NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
-                .getResolvedAnnotation(field, false);
+        NullnessAnnotation annotation =
+                AnalysisContext.currentAnalysisContext()
+                        .getNullnessAnnotationDatabase()
+                        .getResolvedAnnotation(field, false);
         if (annotation == NullnessAnnotation.NONNULL) {
             modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
             produce(IsNullValue.nonNullValue());
@@ -373,7 +376,6 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
             super.visitGETFIELD(obj);
         }
-
     }
 
     /*
@@ -411,8 +413,10 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
             produce(IsNullValue.nonNullValue());
             return;
         }
-        NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
-                .getResolvedAnnotation(field, false);
+        NullnessAnnotation annotation =
+                AnalysisContext.currentAnalysisContext()
+                        .getNullnessAnnotationDatabase()
+                        .getResolvedAnnotation(field, false);
         if (annotation == NullnessAnnotation.NONNULL) {
             modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
             produce(IsNullValue.nonNullValue());
@@ -426,15 +430,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
     }
 
     /**
-     * Check given Instruction to see if it produces a known value. If so, model
-     * the instruction and return true. Otherwise, do nothing and return false.
-     * Should only be used for instructions that produce a single value on the
-     * top of the stack.
+     * Check given Instruction to see if it produces a known value. If so, model the instruction and
+     * return true. Otherwise, do nothing and return false. Should only be used for instructions that
+     * produce a single value on the top of the stack.
      *
-     * @param obj
-     *            the Instruction the instruction
-     * @return true if the instruction produced a known value and was modeled,
-     *         false otherwise
+     * @param obj the Instruction the instruction
+     * @return true if the instruction produced a known value and was modeled, false otherwise
      */
     private boolean checkForKnownValue(Instruction obj) {
         if (trackValueNumbers) {
@@ -522,5 +523,4 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
     public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
         handleInvoke(obj);
     }
-
 }

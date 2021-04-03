@@ -24,12 +24,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * A simple Graph implementation where the vertex objects store a list of
- * incoming and outgoing edges. The edge link fields are stored in the edge
- * objects, which means a fairly low space overhead.
+ * A simple Graph implementation where the vertex objects store a list of incoming and outgoing
+ * edges. The edge link fields are stored in the edge objects, which means a fairly low space
+ * overhead.
  *
- * <p>
- * The abstract allocateEdge() method must be implemented.
+ * <p>The abstract allocateEdge() method must be implemented.
  *
  * @see Graph
  * @see AbstractEdge
@@ -45,9 +44,7 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
      * ----------------------------------------------------------------------
      */
 
-    /**
-     * Iterator over outgoing edges.
-     */
+    /** Iterator over outgoing edges. */
     private static class OutgoingEdgeIterator<EdgeType extends AbstractEdge<EdgeType, VertexType>, VertexType extends AbstractVertex<EdgeType, VertexType>>
             implements Iterator<EdgeType> {
 
@@ -78,9 +75,7 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
         }
     }
 
-    /**
-     * Iterator over incoming edges.
-     */
+    /** Iterator over incoming edges. */
     private static class IncomingEdgeIterator<EdgeType extends AbstractEdge<EdgeType, VertexType>, VertexType extends AbstractVertex<EdgeType, VertexType>>
             implements Iterator<EdgeType> {
 
@@ -328,5 +323,4 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
      */
 
     protected abstract EdgeType allocateEdge(VertexType source, VertexType target);
-
 }

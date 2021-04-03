@@ -18,11 +18,6 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CompactLocationNumbering;
@@ -38,10 +33,12 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.MethodGen;
 
-/**
- * Abstract factory class for creating analysis objects.
- */
+/** Abstract factory class for creating analysis objects. */
 public abstract class AnalysisFactory<Analysis> implements IMethodAnalysisEngine<Analysis> {
     private final String analysisName;
 
@@ -50,8 +47,7 @@ public abstract class AnalysisFactory<Analysis> implements IMethodAnalysisEngine
     /**
      * Constructor.
      *
-     * @param analysisName
-     *            name of the analysis factory: for diagnostics/debugging
+     * @param analysisName name of the analysis factory: for diagnostics/debugging
      */
     public AnalysisFactory(String analysisName, Class<Analysis> analysisClass) {
         this.analysisName = analysisName;
@@ -89,16 +85,19 @@ public abstract class AnalysisFactory<Analysis> implements IMethodAnalysisEngine
      * ----------------------------------------------------------------------
      */
 
-    protected CFG getCFG(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
+    protected CFG getCFG(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+            throws CheckedAnalysisException {
         return analysisCache.getMethodAnalysis(CFG.class, methodDescriptor);
     }
 
-    protected DepthFirstSearch getDepthFirstSearch(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+    protected DepthFirstSearch getDepthFirstSearch(
+            IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException {
         return analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
     }
 
-    protected ConstantPoolGen getConstantPoolGen(IAnalysisCache analysisCache, ClassDescriptor classDescriptor)
+    protected ConstantPoolGen getConstantPoolGen(
+            IAnalysisCache analysisCache, ClassDescriptor classDescriptor)
             throws CheckedAnalysisException {
         return analysisCache.getClassAnalysis(ConstantPoolGen.class, classDescriptor);
     }
@@ -108,17 +107,20 @@ public abstract class AnalysisFactory<Analysis> implements IMethodAnalysisEngine
         return analysisCache.getMethodAnalysis(MethodGen.class, methodDescriptor);
     }
 
-    protected CompactLocationNumbering getCompactLocationNumbering(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+    protected CompactLocationNumbering getCompactLocationNumbering(
+            IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException {
         return analysisCache.getMethodAnalysis(CompactLocationNumbering.class, methodDescriptor);
     }
 
-    protected ValueNumberDataflow getValueNumberDataflow(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+    protected ValueNumberDataflow getValueNumberDataflow(
+            IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException {
         return analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);
     }
 
-    protected AssertionMethods getAssertionMethods(IAnalysisCache analysisCache, ClassDescriptor classDescriptor)
+    protected AssertionMethods getAssertionMethods(
+            IAnalysisCache analysisCache, ClassDescriptor classDescriptor)
             throws CheckedAnalysisException {
         return analysisCache.getClassAnalysis(AssertionMethods.class, classDescriptor);
     }
@@ -128,31 +130,37 @@ public abstract class AnalysisFactory<Analysis> implements IMethodAnalysisEngine
         return analysisCache.getClassAnalysis(JavaClass.class, classDescriptor);
     }
 
-    protected Method getMethod(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
+    protected Method getMethod(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+            throws CheckedAnalysisException {
         return analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
     }
 
-    protected ReverseDepthFirstSearch getReverseDepthFirstSearch(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+    protected ReverseDepthFirstSearch getReverseDepthFirstSearch(
+            IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException {
         return analysisCache.getMethodAnalysis(ReverseDepthFirstSearch.class, methodDescriptor);
     }
 
-    protected ExceptionSetFactory getExceptionSetFactory(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+    protected ExceptionSetFactory getExceptionSetFactory(
+            IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException {
         return analysisCache.getMethodAnalysis(ExceptionSetFactory.class, methodDescriptor);
     }
 
-    protected IsNullValueDataflow getIsNullValueDataflow(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+    protected IsNullValueDataflow getIsNullValueDataflow(
+            IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException {
         return analysisCache.getMethodAnalysis(IsNullValueDataflow.class, methodDescriptor);
     }
 
-    protected TypeDataflow getTypeDataflow(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+    protected TypeDataflow getTypeDataflow(
+            IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException {
         return analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
     }
 
-    protected LoadedFieldSet getLoadedFieldSet(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+    protected LoadedFieldSet getLoadedFieldSet(
+            IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException {
         return analysisCache.getMethodAnalysis(LoadedFieldSet.class, methodDescriptor);
     }

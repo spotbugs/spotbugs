@@ -18,17 +18,16 @@
  */
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.view.BugExplorerView;
+import de.tobject.findbugs.view.explorer.BugContentProvider;
+import de.tobject.findbugs.view.explorer.BugGroup;
+import de.tobject.findbugs.view.explorer.Grouping;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.navigator.CommonViewer;
-
-import de.tobject.findbugs.view.BugExplorerView;
-import de.tobject.findbugs.view.explorer.BugContentProvider;
-import de.tobject.findbugs.view.explorer.BugGroup;
-import de.tobject.findbugs.view.explorer.Grouping;
 
 public class GoUpAction implements IViewActionDelegate {
     private BugExplorerView navigator;
@@ -78,7 +77,8 @@ public class GoUpAction implements IViewActionDelegate {
             return true;
         }
         if (input instanceof BugGroup) {
-            BugContentProvider provider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
+            BugContentProvider provider =
+                    BugContentProvider.getProvider(navigator.getNavigatorContentService());
             BugGroup bugGroup = (BugGroup) input;
             Grouping grouping = provider.getGrouping();
             if (grouping == null) {
@@ -90,5 +90,4 @@ public class GoUpAction implements IViewActionDelegate {
         }
         return false;
     }
-
 }

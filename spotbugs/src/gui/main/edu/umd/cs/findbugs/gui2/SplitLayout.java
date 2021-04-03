@@ -19,11 +19,11 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.L10N;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -36,11 +36,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
-import edu.umd.cs.findbugs.L10N;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class SplitLayout implements FindBugsLayoutManager {
 
     final MainFrame frame;
@@ -57,9 +53,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     JButton viewSource = new JButton("View in browser");
 
-    /**
-     * @param frame
-     */
+    /** @param frame */
     public SplitLayout(MainFrame frame) {
         this.frame = frame;
     }
@@ -124,20 +118,20 @@ public class SplitLayout implements FindBugsLayoutManager {
         frame.setLayout(new BorderLayout());
         frame.add(mainSPane, BorderLayout.CENTER);
         frame.add(frame.statusBar(), BorderLayout.SOUTH);
-
     }
 
     private void removeSplitPaneBorders(JSplitPane pane) {
-        pane.setUI(new BasicSplitPaneUI() {
-            @Override
-            public BasicSplitPaneDivider createDefaultDivider() {
-                return new BasicSplitPaneDivider(this) {
+        pane.setUI(
+                new BasicSplitPaneUI() {
                     @Override
-                    public void setBorder(Border b) {
+                    public BasicSplitPaneDivider createDefaultDivider() {
+                        return new BasicSplitPaneDivider(this) {
+                            @Override
+                            public void setBorder(Border b) {
+                            }
+                        };
                     }
-                };
-            }
-        });
+                });
         pane.setBorder(new EmptyBorder(3, 3, 3, 3));
     }
 
@@ -148,7 +142,6 @@ public class SplitLayout implements FindBugsLayoutManager {
      */
     @Override
     public void makeSourceVisible() {
-
     }
 
     /*
@@ -173,7 +166,6 @@ public class SplitLayout implements FindBugsLayoutManager {
     @Override
     public void setSourceTitle(String title) {
         sourceTitle.setText(title);
-
     }
 
     /*
@@ -186,5 +178,4 @@ public class SplitLayout implements FindBugsLayoutManager {
     public JComponent getSourceViewComponent() {
         return viewSource;
     }
-
 }

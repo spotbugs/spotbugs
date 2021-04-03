@@ -21,13 +21,12 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
 public class TypeMatcher implements Matcher {
 
@@ -69,7 +68,8 @@ public class TypeMatcher implements Matcher {
 
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-        XMLAttributeList attributes = new XMLAttributeList().addAttribute("descriptor", descriptor.getSpec());
+        XMLAttributeList attributes =
+                new XMLAttributeList().addAttribute("descriptor", descriptor.getSpec());
         if (disabled) {
             attributes.addAttribute("disabled", "true");
         }

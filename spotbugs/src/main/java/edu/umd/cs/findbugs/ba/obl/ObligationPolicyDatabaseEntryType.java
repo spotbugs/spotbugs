@@ -25,13 +25,9 @@ package edu.umd.cs.findbugs.ba.obl;
  * @author David Hovemeyer
  */
 public enum ObligationPolicyDatabaseEntryType {
-    /**
-     * Strong entry - always applied.
-     */
+    /** Strong entry - always applied. */
     STRONG,
 
-    /**
-     * Weak entry - only applied if strict checking is not being performed.
-     */
+    /** Weak entry - only applied if strict checking is not being performed. */
     WEAK;
 }

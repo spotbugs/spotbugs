@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,22 +27,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.regex.Pattern;
-
 import javax.swing.JOptionPane;
 
-import edu.umd.cs.findbugs.SystemProperties;
-
-/**
- *
- */
+/** */
 public class LaunchBrowser {
 
     private static Pattern validExec = Pattern.compile("[a-zA-Z0-9-_/]+");
 
     public static final String execCommand = SystemProperties.getProperty("findbugs.execCommand");
 
-    public static final boolean launchViaExec = execCommand != null && validExec.matcher(execCommand).matches()
-            && "Linux".equals(SystemProperties.getProperty("os.name"));
+    public static final boolean launchViaExec =
+            execCommand != null
+                    && validExec.matcher(execCommand).matches()
+                    && "Linux".equals(SystemProperties.getProperty("os.name"));
 
     private static Object desktopObject;
 
@@ -119,7 +117,8 @@ public class LaunchBrowser {
                 if (exitValue != 0) {
                     launchViaExecFailed = true;
                     if (DEBUG) {
-                        JOptionPane.showMessageDialog(null, "exec browse launch failed with exit code " + exitValue);
+                        JOptionPane.showMessageDialog(
+                                null, "exec browse launch failed with exit code " + exitValue);
                     }
                     return false;
                 }
@@ -140,7 +139,6 @@ public class LaunchBrowser {
             }
         }
         return false;
-
     }
 
     static Process launchViaExec(URL url) throws IOException {
@@ -150,11 +148,10 @@ public class LaunchBrowser {
     }
 
     /**
-     * attempt to show the given URL. will first attempt via the JNLP api, then
-     * will try showViaExec().
+     * attempt to show the given URL. will first attempt via the JNLP api, then will try
+     * showViaExec().
      *
-     * @param url
-     *            the URL
+     * @param url the URL
      * @return true on success
      */
     public static boolean showDocument(URL url) {
@@ -162,5 +159,4 @@ public class LaunchBrowser {
                 || showDocumentViaExec(url)
                 || JavaWebStart.showViaWebStart(url);
     }
-
 }

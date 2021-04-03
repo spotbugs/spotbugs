@@ -56,5 +56,4 @@ public class EnumValue {
         EnumValue other = (EnumValue) obj;
         return this.desc.equals(other.desc) && this.value.equals(other.value);
     }
-
 }

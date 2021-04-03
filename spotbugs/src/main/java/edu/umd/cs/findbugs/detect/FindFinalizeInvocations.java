@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -31,6 +27,9 @@ import edu.umd.cs.findbugs.Lookup;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Values;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 
 public class FindFinalizeInvocations extends BytecodeScanningDetector implements StatelessDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("ffi.debug");
@@ -51,9 +50,12 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
         if (DEBUG) {
             System.out.println("FFI: visiting " + getFullyQualifiedMethodName());
         }
-        if ("finalize".equals(getMethodName()) && "()V".equals(getMethodSig()) && (obj.getAccessFlags() & (Const.ACC_PUBLIC)) != 0) {
-            bugReporter
-                    .reportBug(new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
+        if ("finalize".equals(getMethodName())
+                && "()V".equals(getMethodSig())
+                && (obj.getAccessFlags() & (Const.ACC_PUBLIC)) != 0) {
+            bugReporter.reportBug(
+                    new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY)
+                            .addClassAndMethod(this));
         }
     }
 
@@ -65,34 +67,48 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
         if (!"finalize".equals(getMethodName()) || !"()V".equals(getMethodSig())) {
             return;
         }
-        String overridesFinalizeIn = Lookup.findSuperImplementor(getDottedClassName(), "finalize", "()V", bugReporter);
+        String overridesFinalizeIn =
+                Lookup.findSuperImplementor(getDottedClassName(), "finalize", "()V", bugReporter);
         boolean superHasNoFinalizer = Values.DOTTED_JAVA_LANG_OBJECT.equals(overridesFinalizeIn);
         // System.out.println("superclass: " + superclassName);
         if (obj.getCode().length == 1) {
             if (superHasNoFinalizer) {
                 if (!getMethod().isFinal()) {
-                    bugReporter.reportBug(new BugInstance(this, "FI_EMPTY", NORMAL_PRIORITY).addClassAndMethod(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, "FI_EMPTY", NORMAL_PRIORITY).addClassAndMethod(this));
                 }
             } else {
-                bugReporter.reportBug(new BugInstance(this, "FI_NULLIFY_SUPER", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addClass(overridesFinalizeIn));
+                bugReporter.reportBug(
+                        new BugInstance(this, "FI_NULLIFY_SUPER", NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addClass(overridesFinalizeIn));
             }
         } else if (obj.getCode().length == 5 && sawSuperFinalize) {
-            bugReporter.reportBug(new BugInstance(this, "FI_USELESS", NORMAL_PRIORITY).addClassAndMethod(this));
+            bugReporter.reportBug(
+                    new BugInstance(this, "FI_USELESS", NORMAL_PRIORITY).addClassAndMethod(this));
         } else if (!sawSuperFinalize && !superHasNoFinalizer) {
-            bugReporter.reportBug(new BugInstance(this, "FI_MISSING_SUPER_CALL", NORMAL_PRIORITY).addClassAndMethod(this)
-                    .addClass(overridesFinalizeIn));
+            bugReporter.reportBug(
+                    new BugInstance(this, "FI_MISSING_SUPER_CALL", NORMAL_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addClass(overridesFinalizeIn));
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.INVOKEVIRTUAL && "finalize".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+        if (seen == Const.INVOKEVIRTUAL
+                && "finalize".equals(getNameConstantOperand())
+                && "()V".equals(getSigConstantOperand())) {
             bugAccumulator.accumulateBug(
-                    new BugInstance(this, "FI_EXPLICIT_INVOCATION", "finalize".equals(getMethodName())
-                            && "()V".equals(getMethodSig()) ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this)
-                                    .addCalledMethod(this), this);
-
+                    new BugInstance(
+                            this,
+                            "FI_EXPLICIT_INVOCATION",
+                            "finalize".equals(getMethodName()) && "()V".equals(getMethodSig())
+                                    ? HIGH_PRIORITY
+                                    : NORMAL_PRIORITY)
+                                            .addClassAndMethod(this)
+                                            .addCalledMethod(this),
+                    this);
         }
         if (seen == Const.INVOKESPECIAL && "finalize".equals(getNameConstantOperand())) {
             sawSuperFinalize = true;

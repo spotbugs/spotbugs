@@ -19,28 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.INVOKEDYNAMIC;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.objectweb.asm.Opcodes;
-
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -65,6 +43,25 @@ import edu.umd.cs.findbugs.util.SplitCamelCaseIdentifier;
 import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.objectweb.asm.Opcodes;
 
 /**
  * Factory methods for creating XMethod objects.
@@ -72,7 +69,8 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * @author David Hovemeyer
  */
 public class XFactory {
-    public static final boolean DEBUG_UNRESOLVED = SystemProperties.getBoolean("findbugs.xfactory.debugunresolved");
+    public static final boolean DEBUG_UNRESOLVED =
+            SystemProperties.getBoolean("findbugs.xfactory.debugunresolved");
 
     private final Set<ClassDescriptor> reflectiveClasses = new HashSet<>();
 
@@ -85,7 +83,8 @@ public class XFactory {
     private final Set<XField> emptyArrays = new HashSet<>();
 
     /**
-     * @deprecated This field is not updated by any code in the project. Will be removed in 5.x release.
+     * @deprecated This field is not updated by any code in the project. Will be removed in 5.x
+     *     release.
      */
     @Deprecated
     private final Set<String> calledMethodSignatures = new HashSet<>();
@@ -106,9 +105,7 @@ public class XFactory {
         }
     }
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public XFactory() {
     }
 
@@ -198,13 +195,15 @@ public class XFactory {
             AnalysisContext.reportMissingClass(e.getClassNotFoundException());
             return false;
         } catch (Exception e) {
-            AnalysisContext.logError("Error checking to see if " + m + " is called (" + e.getClass().getCanonicalName() + ")", e);
+            AnalysisContext.logError(
+                    "Error checking to see if " + m + " is called (" + e.getClass().getCanonicalName() + ")",
+                    e);
             return false;
         }
     }
 
-    private boolean isCalledDirectlyOrIndirectly(@CheckForNull ClassDescriptor clazzDescriptor, XMethod m)
-            throws CheckedAnalysisException {
+    private boolean isCalledDirectlyOrIndirectly(
+            @CheckForNull ClassDescriptor clazzDescriptor, XMethod m) throws CheckedAnalysisException {
         if (clazzDescriptor == null) {
             return false;
         }
@@ -224,12 +223,9 @@ public class XFactory {
         }
 
         return false;
-
     }
 
-    /**
-     * @deprecated This method does not work as expected. Will be removed in 5.x release.
-     */
+    /** @deprecated This method does not work as expected. Will be removed in 5.x release. */
     @Deprecated
     public boolean nameAndSignatureIsCalled(XMethod m) {
         return calledMethodSignatures.contains(getDetailedSignature(m));
@@ -244,9 +240,7 @@ public class XFactory {
         return m.isResolved();
     }
 
-    /**
-     * @see DescriptorFactory#canonicalizeString(String)
-     */
+    /** @see DescriptorFactory#canonicalizeString(String) */
     @Deprecated
     public static String canonicalizeString(String s) {
         return s;
@@ -255,13 +249,10 @@ public class XFactory {
     /**
      * Create an XMethod object from a BCEL Method.
      *
-     * @param className
-     *            the class to which the Method belongs
-     * @param method
-     *            the Method
+     * @param className the class to which the Method belongs
+     * @param method the Method
      * @return an XMethod representing the Method
      */
-
     public static XMethod createXMethod(String className, Method method) {
         String methodName = method.getName();
         String methodSig = method.getSignature();
@@ -273,20 +264,18 @@ public class XFactory {
     /*
      * Create a new, never-before-seen, XMethod object and intern it.
      */
-    private static XMethod createXMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
+    private static XMethod createXMethod(
+            @DottedClassName String className, String methodName, String methodSig, int accessFlags) {
         return createXMethod(className, methodName, methodSig, (accessFlags & Const.ACC_STATIC) != 0);
     }
 
     /**
      * Create an XMethod object from a BCEL Method.
      *
-     * @param javaClass
-     *            the class to which the Method belongs
-     * @param method
-     *            the Method
+     * @param javaClass the class to which the Method belongs
+     * @param method the Method
      * @return an XMethod representing the Method
      */
-
     public static XMethod createXMethod(JavaClass javaClass, Method method) {
         if (method == null) {
             throw new NullPointerException("method must not be null");
@@ -311,11 +300,12 @@ public class XFactory {
      * @param isStatic
      * @return the created XMethod
      */
-
-    public static XMethod createXMethodUsingSlashedClassName(@SlashedClassName String className, String methodName,
-            String methodSig, boolean isStatic) {
+    public static XMethod createXMethodUsingSlashedClassName(
+            @SlashedClassName String className, String methodName, String methodSig, boolean isStatic) {
         assertSlashedClassName(className);
-        MethodDescriptor desc = DescriptorFactory.instance().getMethodDescriptor(className, methodName, methodSig, isStatic);
+        MethodDescriptor desc =
+                DescriptorFactory.instance()
+                        .getMethodDescriptor(className, methodName, methodSig, isStatic);
         return createXMethod(desc);
     }
 
@@ -326,11 +316,13 @@ public class XFactory {
      * @param isStatic
      * @return the created XMethod
      */
-
-    public static XMethod createXMethod(@DottedClassName String className, String methodName, String methodSig, boolean isStatic) {
+    public static XMethod createXMethod(
+            @DottedClassName String className, String methodName, String methodSig, boolean isStatic) {
         assertDottedClassName(className);
-        MethodDescriptor desc = DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(className),
-                methodName, methodSig, isStatic);
+        MethodDescriptor desc =
+                DescriptorFactory.instance()
+                        .getMethodDescriptor(
+                                ClassName.toSlashedClassName(className), methodName, methodSig, isStatic);
         return createXMethod(desc);
     }
 
@@ -361,7 +353,6 @@ public class XFactory {
         }
         System.out.printf("XFactory cached methods: %d/%d%n", count, xFactory.methods.size());
         DescriptorFactory.instance().profile();
-
     }
 
     private XMethod resolveXMethod(MethodDescriptor originalDescriptor) {
@@ -372,7 +363,8 @@ public class XFactory {
                 if (m != null) {
                     return m;
                 }
-                XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc.getClassDescriptor());
+                XClass xClass =
+                        Global.getAnalysisCache().getClassAnalysis(XClass.class, desc.getClassDescriptor());
                 if (xClass == null) {
                     break;
                 }
@@ -380,8 +372,13 @@ public class XFactory {
                 if (superClass == null) {
                     break;
                 }
-                desc = DescriptorFactory.instance().getMethodDescriptor(superClass.getClassName(), desc.getName(),
-                        desc.getSignature(), desc.isStatic());
+                desc =
+                        DescriptorFactory.instance()
+                                .getMethodDescriptor(
+                                        superClass.getClassName(),
+                                        desc.getName(),
+                                        desc.getSignature(),
+                                        desc.isStatic());
             }
         } catch (CheckedAnalysisException e) {
             assert true;
@@ -390,16 +387,18 @@ public class XFactory {
         }
         UnresolvedXMethod xmethod = new UnresolvedXMethod(originalDescriptor);
 
+        ObligationPolicyDatabase database =
+                Global.getAnalysisCache().getOptionalDatabase(ObligationPolicyDatabase.class);
 
-        ObligationPolicyDatabase database = Global.getAnalysisCache().getOptionalDatabase(ObligationPolicyDatabase.class);
-
-        if (BuildObligationPolicyDatabase.INFER_CLOSE_METHODS && database != null
+        if (BuildObligationPolicyDatabase.INFER_CLOSE_METHODS
+                && database != null
                 && !xmethod.getClassName().startsWith("java")) {
             boolean methodHasCloseInName = false;
             String methodName = xmethod.getName();
             SplitCamelCaseIdentifier splitter = new SplitCamelCaseIdentifier(methodName);
             methodHasCloseInName = splitter.split().contains("close");
-            Obligation[] paramObligationTypes = database.getFactory().getParameterObligationTypes(xmethod);
+            Obligation[] paramObligationTypes =
+                    database.getFactory().getParameterObligationTypes(xmethod);
 
             for (int i = 0; i < xmethod.getNumParams(); i++) {
                 Obligation obligationType = paramObligationTypes[i];
@@ -409,8 +408,9 @@ public class XFactory {
                 if (methodHasCloseInName) {
                     // Method has "close" in its name.
                     // Assume that it deletes the obligation.
-                    ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod,
-                            obligationType, ObligationPolicyDatabaseEntryType.STRONG);
+                    ObligationPolicyDatabaseEntry entry =
+                            database.addParameterDeletesObligationDatabaseEntry(
+                                    xmethod, obligationType, ObligationPolicyDatabaseEntryType.STRONG);
 
                 } else {
 
@@ -422,22 +422,25 @@ public class XFactory {
                      * obligation. If strict checking is performed, // weak
                      * entries are ignored.
                      */
-                    if (Const.CONSTRUCTOR_NAME.equals(methodName) || methodName.startsWith("access$") || xmethod.isStatic()
+                    if (Const.CONSTRUCTOR_NAME.equals(methodName)
+                            || methodName.startsWith("access$")
+                            || xmethod.isStatic()
                             || methodName.toLowerCase().indexOf("close") >= 0
                             || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) {
-                        ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod,
-                                obligationType, ObligationPolicyDatabaseEntryType.WEAK);
+                        ObligationPolicyDatabaseEntry entry =
+                                database.addParameterDeletesObligationDatabaseEntry(
+                                        xmethod, obligationType, ObligationPolicyDatabaseEntryType.WEAK);
                     }
                 }
             }
-
         }
 
         return xmethod;
     }
 
     public static XMethod createXMethod(MethodAnnotation ma) {
-        return createXMethod(ma.getClassName(), ma.getMethodName(), ma.getMethodSignature(), ma.isStatic());
+        return createXMethod(
+                ma.getClassName(), ma.getMethodName(), ma.getMethodSignature(), ma.isStatic());
     }
 
     /**
@@ -449,10 +452,14 @@ public class XFactory {
      * @param isStatic
      * @return the created XField
      */
-    public static XField createXFieldUsingSlashedClassName(@SlashedClassName String className, String fieldName,
-            String fieldSignature, boolean isStatic) {
-        FieldDescriptor fieldDesc = DescriptorFactory.instance().getFieldDescriptor(className, fieldName, fieldSignature,
-                isStatic);
+    public static XField createXFieldUsingSlashedClassName(
+            @SlashedClassName String className,
+            String fieldName,
+            String fieldSignature,
+            boolean isStatic) {
+        FieldDescriptor fieldDesc =
+                DescriptorFactory.instance()
+                        .getFieldDescriptor(className, fieldName, fieldSignature, isStatic);
 
         return createXField(fieldDesc);
     }
@@ -466,14 +473,20 @@ public class XFactory {
      * @param isStatic
      * @return the created XField
      */
-    public static XField createXField(@DottedClassName String className, String fieldName, String fieldSignature, boolean isStatic) {
-        FieldDescriptor fieldDesc = DescriptorFactory.instance().getFieldDescriptor(ClassName.toSlashedClassName(className),
-                fieldName, fieldSignature, isStatic);
+    public static XField createXField(
+            @DottedClassName String className,
+            String fieldName,
+            String fieldSignature,
+            boolean isStatic) {
+        FieldDescriptor fieldDesc =
+                DescriptorFactory.instance()
+                        .getFieldDescriptor(
+                                ClassName.toSlashedClassName(className), fieldName, fieldSignature, isStatic);
 
         return createXField(fieldDesc);
     }
 
-    public final static boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
+    public static final boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
 
     public static XField createXField(FieldInstruction fieldInstruction, ConstantPoolGen cpg) {
         String className = fieldInstruction.getClassName(cpg);
@@ -481,21 +494,32 @@ public class XFactory {
         String fieldSig = fieldInstruction.getSignature(cpg);
 
         int opcode = fieldInstruction.getOpcode();
-        return createXField(className, fieldName, fieldSig, opcode == Const.GETSTATIC || opcode == Const.PUTSTATIC);
+        return createXField(
+                className, fieldName, fieldSig, opcode == Const.GETSTATIC || opcode == Const.PUTSTATIC);
     }
 
     public static XField createReferencedXField(DismantleBytecode visitor) {
         int seen = visitor.getOpcode();
-        if (seen != Opcodes.GETFIELD && seen != Opcodes.GETSTATIC && seen != Opcodes.PUTFIELD && seen != Opcodes.PUTSTATIC) {
+        if (seen != Opcodes.GETFIELD
+                && seen != Opcodes.GETSTATIC
+                && seen != Opcodes.PUTFIELD
+                && seen != Opcodes.PUTSTATIC) {
             throw new IllegalArgumentException("Not at a field reference");
         }
-        return createXFieldUsingSlashedClassName(visitor.getClassConstantOperand(), visitor.getNameConstantOperand(),
-                visitor.getSigConstantOperand(), visitor.getRefFieldIsStatic());
+        return createXFieldUsingSlashedClassName(
+                visitor.getClassConstantOperand(),
+                visitor.getNameConstantOperand(),
+                visitor.getSigConstantOperand(),
+                visitor.getRefFieldIsStatic());
     }
 
     public static XMethod createReferencedXMethod(DismantleBytecode visitor) {
-        XMethod m = createXMethodUsingSlashedClassName(visitor.getClassConstantOperand(), visitor.getNameConstantOperand(),
-                visitor.getSigConstantOperand(), visitor.getOpcode() == Const.INVOKESTATIC);
+        XMethod m =
+                createXMethodUsingSlashedClassName(
+                        visitor.getClassConstantOperand(),
+                        visitor.getNameConstantOperand(),
+                        visitor.getSigConstantOperand(),
+                        visitor.getOpcode() == Const.INVOKESTATIC);
         return m.resolveAccessMethodForMethod();
     }
 
@@ -510,10 +534,8 @@ public class XFactory {
     /**
      * Create an XField object from a BCEL Field.
      *
-     * @param className
-     *            the name of the Java class containing the field
-     * @param field
-     *            the Field within the JavaClass
+     * @param className the name of the Java class containing the field
+     * @param field the Field within the JavaClass
      * @return the created XField
      */
     public static XField createXField(String className, Field field) {
@@ -526,24 +548,20 @@ public class XFactory {
     }
 
     /**
-     * Get an XField object exactly matching given class, name, and signature.
-     * May return an unresolved object (if the class can't be found, or does not
-     * directly declare named field).
+     * Get an XField object exactly matching given class, name, and signature. May return an
+     * unresolved object (if the class can't be found, or does not directly declare named field).
      *
-     * @param className
-     *            name of class containing the field
-     * @param name
-     *            name of field
-     * @param signature
-     *            field signature
-     * @param isStatic
-     *            field access flags
-     * @return XField exactly matching class name, field name, and field
-     *         signature
+     * @param className name of class containing the field
+     * @param name name of field
+     * @param signature field signature
+     * @param isStatic field access flags
+     * @return XField exactly matching class name, field name, and field signature
      */
-    public static XField getExactXField(@SlashedClassName String className, String name, String signature, boolean isStatic) {
-        FieldDescriptor fieldDesc = DescriptorFactory.instance().getFieldDescriptor(ClassName.toSlashedClassName(className),
-                name, signature, isStatic);
+    public static XField getExactXField(
+            @SlashedClassName String className, String name, String signature, boolean isStatic) {
+        FieldDescriptor fieldDesc =
+                DescriptorFactory.instance()
+                        .getFieldDescriptor(ClassName.toSlashedClassName(className), name, signature, isStatic);
         return getExactXField(fieldDesc);
     }
 
@@ -583,8 +601,10 @@ public class XFactory {
             while (!worklist.isEmpty()) {
                 ClassDescriptor d = worklist.removeFirst();
                 if (!d.equals(originalClassDescriptor)) {
-                    desc = DescriptorFactory.instance().getFieldDescriptor(d.getClassName(), desc.getName(), desc.getSignature(),
-                            desc.isStatic());
+                    desc =
+                            DescriptorFactory.instance()
+                                    .getFieldDescriptor(
+                                            d.getClassName(), desc.getName(), desc.getSignature(), desc.isStatic());
                 }
 
                 XField f = fields.get(desc);
@@ -602,7 +622,6 @@ public class XFactory {
                 if (originalDescriptor.isStatic()) {
                     Collections.addAll(worklist, xClass.getInterfaceDescriptorList());
                 }
-
             }
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Error resolving " + originalDescriptor, e);
@@ -613,10 +632,8 @@ public class XFactory {
     /**
      * Create an XMethod object from an InvokeInstruction.
      *
-     * @param invokeInstruction
-     *            the InvokeInstruction
-     * @param cpg
-     *            ConstantPoolGen from the class containing the instruction
+     * @param invokeInstruction the InvokeInstruction
+     * @param cpg ConstantPoolGen from the class containing the instruction
      * @return XMethod representing the method called by the InvokeInstruction
      */
     public static XMethod createXMethod(InvokeInstruction invokeInstruction, ConstantPoolGen cpg) {
@@ -633,15 +650,14 @@ public class XFactory {
             // className = invokeInstruction.getArgumentTypes(cpg)[0].toString();
             className = Values.DOTTED_JAVA_LANG_OBJECT;
         }
-        return createXMethod(className, methodName, methodSig, invokeInstruction.getOpcode() == Const.INVOKESTATIC);
+        return createXMethod(
+                className, methodName, methodSig, invokeInstruction.getOpcode() == Const.INVOKESTATIC);
     }
 
     /**
-     * Create an XMethod object from the method currently being visited by the
-     * given PreorderVisitor.
+     * Create an XMethod object from the method currently being visited by the given PreorderVisitor.
      *
-     * @param visitor
-     *            the PreorderVisitor
+     * @param visitor the PreorderVisitor
      * @return the XMethod representing the method currently being visited
      */
     public static XMethod createXMethod(PreorderVisitor visitor) {
@@ -652,11 +668,9 @@ public class XFactory {
     }
 
     /**
-     * Create an XField object from the field currently being visited by the
-     * given PreorderVisitor.
+     * Create an XField object from the field currently being visited by the given PreorderVisitor.
      *
-     * @param visitor
-     *            the PreorderVisitor
+     * @param visitor the PreorderVisitor
      * @return the XField representing the method currently being visited
      */
     public static XField createXField(PreorderVisitor visitor) {
@@ -679,13 +693,11 @@ public class XFactory {
     }
 
     /**
-     * Get the XClass object providing information about the class named by the
-     * given ClassDescriptor.
+     * Get the XClass object providing information about the class named by the given ClassDescriptor.
      *
-     * @param classDescriptor
-     *            a ClassDescriptor
-     * @return an XClass object providing information about the class, or null
-     *         if the class cannot be found
+     * @param classDescriptor a ClassDescriptor
+     * @return an XClass object providing information about the class, or null if the class cannot be
+     *     found
      */
     public @CheckForNull XClass getXClass(ClassDescriptor classDescriptor) {
         try {
@@ -697,15 +709,12 @@ public class XFactory {
     }
 
     /**
-     * Compare XMethod or XField object objects.
-     * <em>All methods that implement XMethod or XField should
-     * delegate to this method when implementing compareTo(Object)
-     * if the right-hand object implements XField or XMethod.</em>
+     * Compare XMethod or XField object objects. <em>All methods that implement XMethod or XField
+     * should delegate to this method when implementing compareTo(Object) if the right-hand object
+     * implements XField or XMethod.</em>
      *
-     * @param lhs
-     *            an XMethod or XField
-     * @param rhs
-     *            an XMethod or XField
+     * @param lhs an XMethod or XField
+     * @param rhs an XMethod or XField
      * @return comparison of lhs and rhs
      */
     public static <E extends ClassMember> int compare(E lhs, E rhs) {
@@ -728,5 +737,4 @@ public class XFactory {
 
         return (lhs.isStatic() ? 1 : 0) - (rhs.isStatic() ? 1 : 0);
     }
-
 }

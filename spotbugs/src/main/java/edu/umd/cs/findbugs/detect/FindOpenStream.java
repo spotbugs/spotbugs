@@ -19,22 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantInterfaceMethodref;
-import org.apache.bcel.classfile.ConstantMethodref;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ResourceCollection;
@@ -53,20 +37,35 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.ResourceValueAnalysis;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
 /**
- * A Detector to look for streams that are opened in a method, do not escape the
- * method, and are not closed on all paths out of the method. Note that "stream"
- * is a bit misleading, since we also use the detector to look for database
- * resources that aren't closed.
+ * A Detector to look for streams that are opened in a method, do not escape the method, and are not
+ * closed on all paths out of the method. Note that "stream" is a bit misleading, since we also use
+ * the detector to look for database resources that aren't closed.
  *
  * @author David Hovemeyer
  * @author Agustin Toribio atomo@arrakis.es
  */
-public final class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResourceTracker> implements StatelessDetector {
+public final class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResourceTracker>
+        implements StatelessDetector {
     static final boolean DEBUG = SystemProperties.getBoolean("fos.debug");
 
-    static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS = !SystemProperties.getBoolean("fos.allowWUS");
+    static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS =
+            !SystemProperties.getBoolean("fos.allowWUS");
 
     /*
      * ----------------------------------------------------------------------
@@ -74,19 +73,19 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
      * ----------------------------------------------------------------------
      */
 
-    /**
-     * List of base classes of tracked resources.
-     */
-    static final ObjectType[] streamBaseList = { ObjectTypeFactory.getInstance("java.io.InputStream"),
-        ObjectTypeFactory.getInstance("java.io.OutputStream"), ObjectTypeFactory.getInstance("java.util.zip.ZipFile"),
-        ObjectTypeFactory.getInstance("java.io.Reader"), ObjectTypeFactory.getInstance("java.io.Writer"),
+    /** List of base classes of tracked resources. */
+    static final ObjectType[] streamBaseList = {
+        ObjectTypeFactory.getInstance("java.io.InputStream"),
+        ObjectTypeFactory.getInstance("java.io.OutputStream"),
+        ObjectTypeFactory.getInstance("java.util.zip.ZipFile"),
+        ObjectTypeFactory.getInstance("java.io.Reader"),
+        ObjectTypeFactory.getInstance("java.io.Writer"),
         ObjectTypeFactory.getInstance("java.sql.Connection"),
-        ObjectTypeFactory.getInstance("java.sql.Statement"), ObjectTypeFactory.getInstance("java.sql.ResultSet") };
+        ObjectTypeFactory.getInstance("java.sql.Statement"),
+        ObjectTypeFactory.getInstance("java.sql.ResultSet")
+    };
 
-    /**
-     * StreamFactory objects used to detect resources created within analyzed
-     * methods.
-     */
+    /** StreamFactory objects used to detect resources created within analyzed methods. */
     static final StreamFactory[] streamFactoryList;
 
     static {
@@ -94,68 +93,145 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 
         // Examine InputStreams, OutputStreams, Readers, and Writers,
         // ignoring byte array, char array, and String variants.
-        streamFactoryCollection.add(new IOStreamFactory("java.io.InputStream", new String[] { "java.io.ByteArrayInputStream",
-            "java.io.StringBufferInputStream", "java.io.PipedInputStream" }, "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new IOStreamFactory("java.io.OutputStream", new String[] { "java.io.ByteArrayOutputStream",
-            "java.io.PipedOutputStream" }, "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new IOStreamFactory("java.io.Reader", new String[] { "java.io.StringReader",
-            "java.io.CharArrayReader", "java.io.PipedReader" }, "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new IOStreamFactory("java.io.Writer", new String[] { "java.io.StringWriter",
-            "java.io.CharArrayWriter", "java.io.PipedWriter" }, "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new IOStreamFactory("java.util.zip.ZipFile", new String[0], "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.lang.Class", "getResourceAsStream",
-                "(Ljava/lang/String;)Ljava/io/InputStream;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new IOStreamFactory(
+                        "java.io.InputStream",
+                        new String[] {
+                            "java.io.ByteArrayInputStream",
+                            "java.io.StringBufferInputStream",
+                            "java.io.PipedInputStream"
+                        },
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new IOStreamFactory(
+                        "java.io.OutputStream",
+                        new String[] { "java.io.ByteArrayOutputStream", "java.io.PipedOutputStream" },
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new IOStreamFactory(
+                        "java.io.Reader",
+                        new String[] { "java.io.StringReader", "java.io.CharArrayReader", "java.io.PipedReader" },
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new IOStreamFactory(
+                        "java.io.Writer",
+                        new String[] { "java.io.StringWriter", "java.io.CharArrayWriter", "java.io.PipedWriter" },
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new IOStreamFactory("java.util.zip.ZipFile", new String[0], "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.lang.Class",
+                        "getResourceAsStream",
+                        "(Ljava/lang/String;)Ljava/io/InputStream;",
+                        "OS_OPEN_STREAM"));
 
         // Added support for java.nio.file.Files (since 1.7)
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newInputStream",
-                "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/InputStream;", "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newOutputStream",
-                "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/OutputStream;", "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newByteChannel",
-                "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/nio/channels/SeekableByteChannel;", "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newByteChannel",
-                "(Ljava/nio/file/Path;Ljava/util/Set;[Ljava/nio/file/attribute/FileAttribute;)Ljava/nio/channels/SeekableByteChannel;",
-                "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newDirectoryStream",
-                "(Ljava/nio/file/Path;)Ljava/nio/file/DirectoryStream;", "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newDirectoryStream",
-                "(Ljava/nio/file/Path;Ljava/nio/file/DirectoryStream$Filter;)Ljava/nio/file/DirectoryStream;", "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newDirectoryStream",
-                "(Ljava/nio/file/Path;Ljava/lang/String;)Ljava/nio/file/DirectoryStream;", "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newBufferedReader",
-                "(Ljava/nio/file/Path;Ljava/nio/charset/Charset;)Ljava/io/BufferedReader;", "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newBufferedWriter",
-                "(Ljava/nio/file/Path;Ljava/nio/charset/Charset;[Ljava/nio/file/OpenOption;)Ljava/io/BufferedWriter;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newInputStream",
+                        "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/InputStream;",
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newOutputStream",
+                        "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/OutputStream;",
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newByteChannel",
+                        "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/nio/channels/SeekableByteChannel;",
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newByteChannel",
+                        "(Ljava/nio/file/Path;Ljava/util/Set;[Ljava/nio/file/attribute/FileAttribute;)Ljava/nio/channels/SeekableByteChannel;",
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newDirectoryStream",
+                        "(Ljava/nio/file/Path;)Ljava/nio/file/DirectoryStream;",
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newDirectoryStream",
+                        "(Ljava/nio/file/Path;Ljava/nio/file/DirectoryStream$Filter;)Ljava/nio/file/DirectoryStream;",
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newDirectoryStream",
+                        "(Ljava/nio/file/Path;Ljava/lang/String;)Ljava/nio/file/DirectoryStream;",
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newBufferedReader",
+                        "(Ljava/nio/file/Path;Ljava/nio/charset/Charset;)Ljava/io/BufferedReader;",
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newBufferedWriter",
+                        "(Ljava/nio/file/Path;Ljava/nio/charset/Charset;[Ljava/nio/file/OpenOption;)Ljava/io/BufferedWriter;",
+                        "OS_OPEN_STREAM"));
 
         // java 8
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newBufferedReader",
-                "(Ljava/nio/file/Path;)Ljava/io/BufferedReader;", "OS_OPEN_STREAM"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newBufferedWriter",
-                "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/BufferedWriter;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newBufferedReader",
+                        "(Ljava/nio/file/Path;)Ljava/io/BufferedReader;",
+                        "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.nio.file.Files",
+                        "newBufferedWriter",
+                        "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/BufferedWriter;",
+                        "OS_OPEN_STREAM"));
 
         // Ignore socket input and output streams
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.net.Socket", "getInputStream",
-                "()Ljava/io/InputStream;"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.net.Socket", "getOutputStream",
-                "()Ljava/io/OutputStream;"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.net.Socket", "getInputStream", "()Ljava/io/InputStream;"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.net.Socket", "getOutputStream", "()Ljava/io/OutputStream;"));
 
         // Ignore servlet streams
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletRequest", "getInputStream",
-                "()Ljavax/servlet/ServletInputStream;"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletRequest", "getReader",
-                "()Ljava/io/BufferedReader;"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletResponse", "getOutputStream",
-                "()Ljavax/servlet/ServletOutputStream;"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletResponse", "getWriter",
-                "()Ljava/io/PrintWriter;"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "javax.servlet.ServletRequest",
+                        "getInputStream",
+                        "()Ljavax/servlet/ServletInputStream;"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "javax.servlet.ServletRequest", "getReader", "()Ljava/io/BufferedReader;"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "javax.servlet.ServletResponse",
+                        "getOutputStream",
+                        "()Ljavax/servlet/ServletOutputStream;"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "javax.servlet.ServletResponse", "getWriter", "()Ljava/io/PrintWriter;"));
 
         // Ignore System.{in,out,err}
-        streamFactoryCollection.add(new StaticFieldLoadStreamFactory("java.io.InputStream", "java.lang.System", "in",
-                "Ljava/io/InputStream;"));
-        streamFactoryCollection.add(new StaticFieldLoadStreamFactory("java.io.OutputStream", "java.lang.System", "out",
-                "Ljava/io/PrintStream;"));
-        streamFactoryCollection.add(new StaticFieldLoadStreamFactory("java.io.OutputStream", "java.lang.System", "err",
-                "Ljava/io/PrintStream;"));
+        streamFactoryCollection.add(
+                new StaticFieldLoadStreamFactory(
+                        "java.io.InputStream", "java.lang.System", "in", "Ljava/io/InputStream;"));
+        streamFactoryCollection.add(
+                new StaticFieldLoadStreamFactory(
+                        "java.io.OutputStream", "java.lang.System", "out", "Ljava/io/PrintStream;"));
+        streamFactoryCollection.add(
+                new StaticFieldLoadStreamFactory(
+                        "java.io.OutputStream", "java.lang.System", "err", "Ljava/io/PrintStream;"));
 
         // Ignore input streams loaded from instance fields
         streamFactoryCollection.add(new InstanceFieldLoadStreamFactory("java.io.InputStream"));
@@ -171,55 +247,147 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         streamFactoryCollection.add(new InstanceFieldLoadStreamFactory("java.io.Writer"));
 
         // JDBC objects
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "prepareStatement",
-                "(Ljava/lang/String;)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "prepareStatement",
-                "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "prepareStatement",
-                "(Ljava/lang/String;[I)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "prepareStatement",
-                "(Ljava/lang/String;II)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "prepareStatement",
-                "(Ljava/lang/String;III)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "prepareStatement",
-                "(Ljava/lang/String;[Ljava/lang/String;)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "prepareStatement",
+                        "(Ljava/lang/String;)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "prepareStatement",
+                        "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "prepareStatement",
+                        "(Ljava/lang/String;[I)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "prepareStatement",
+                        "(Ljava/lang/String;II)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "prepareStatement",
+                        "(Ljava/lang/String;III)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "prepareStatement",
+                        "(Ljava/lang/String;[Ljava/lang/String;)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
 
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "prepareCall",
-                "(Ljava/lang/String;)Ljava/sql/CallableStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "prepareCall",
-                "(Ljava/lang/String;II)Ljava/sql/CallableStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "prepareCall",
-                "(Ljava/lang/String;III)Ljava/sql/CallableStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "prepareCall",
+                        "(Ljava/lang/String;)Ljava/sql/CallableStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "prepareCall",
+                        "(Ljava/lang/String;II)Ljava/sql/CallableStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "prepareCall",
+                        "(Ljava/lang/String;III)Ljava/sql/CallableStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
 
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.DriverManager", "getConnection",
-                "(Ljava/lang/String;)Ljava/sql/Connection;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.DriverManager", "getConnection",
-                "(Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.DriverManager", "getConnection",
-                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.sql.DataSource", "getConnection",
-                "()Ljava/sql/Connection;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.sql.DataSource", "getConnection",
-                "(Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;", "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.DriverManager",
+                        "getConnection",
+                        "(Ljava/lang/String;)Ljava/sql/Connection;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.DriverManager",
+                        "getConnection",
+                        "(Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.DriverManager",
+                        "getConnection",
+                        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "javax.sql.DataSource",
+                        "getConnection",
+                        "()Ljava/sql/Connection;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "javax.sql.DataSource",
+                        "getConnection",
+                        "(Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
 
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "createStatement",
-                "()Ljava/sql/Statement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "createStatement",
-                "(II)Ljava/sql/Statement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "createStatement",
-                "(III)Ljava/sql/Statement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "createStatement",
-                "(Ljava/lang/String;)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "createStatement",
-                "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "createStatement",
-                "(Ljava/lang/String;II)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "createStatement",
-                "(Ljava/lang/String;III)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "createStatement",
-                "(Ljava/lang/String;[I)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
-        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "createStatement",
-                "(Ljava/lang/String;[Ljava/lang/String;)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "createStatement",
+                        "()Ljava/sql/Statement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "createStatement",
+                        "(II)Ljava/sql/Statement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "createStatement",
+                        "(III)Ljava/sql/Statement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "createStatement",
+                        "(Ljava/lang/String;)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "createStatement",
+                        "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "createStatement",
+                        "(Ljava/lang/String;II)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "createStatement",
+                        "(Ljava/lang/String;III)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "createStatement",
+                        "(Ljava/lang/String;[I)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(
+                new MethodReturnValueStreamFactory(
+                        "java.sql.Connection",
+                        "createStatement",
+                        "(Ljava/lang/String;[Ljava/lang/String;)Ljava/sql/PreparedStatement;",
+                        "ODR_OPEN_DATABASE_RESOURCE"));
 
         streamFactoryList = streamFactoryCollection.toArray(new StreamFactory[0]);
     }
@@ -281,8 +449,17 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     // create possible resources to be tracked. If we don't see a
     // class containing one of these words, then we don't run the
     // detector on the class.
-    private static final String[] PRESCREEN_CLASS_LIST = { "Stream", "Reader", "Writer", "ZipFile", "JarFile", "DriverManager",
-        "Connection", "Statement", "Files" };
+    private static final String[] PRESCREEN_CLASS_LIST = {
+        "Stream",
+        "Reader",
+        "Writer",
+        "ZipFile",
+        "JarFile",
+        "DriverManager",
+        "Connection",
+        "Statement",
+        "Files"
+    };
 
     /*
      * (non-Javadoc)
@@ -327,7 +504,6 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
                     }
                 }
             }
-
         }
 
         if (sawResourceClass) {
@@ -341,8 +517,10 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         if (bytecodeSet == null) {
             return false;
         }
-        return bytecodeSet.get(Const.NEW) || bytecodeSet.get(Const.INVOKEINTERFACE)
-                || bytecodeSet.get(Const.INVOKESPECIAL) || bytecodeSet.get(Const.INVOKESTATIC)
+        return bytecodeSet.get(Const.NEW)
+                || bytecodeSet.get(Const.INVOKEINTERFACE)
+                || bytecodeSet.get(Const.INVOKESPECIAL)
+                || bytecodeSet.get(Const.INVOKESTATIC)
                 || bytecodeSet.get(Const.INVOKEVIRTUAL);
     }
 
@@ -352,12 +530,18 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     }
 
     public static boolean isMainMethod(Method method) {
-        return method.isStatic() && "main".equals(method.getName()) && "([Ljava/lang/String;)V".equals(method.getSignature());
+        return method.isStatic()
+                && "main".equals(method.getName())
+                && "([Ljava/lang/String;)V".equals(method.getSignature());
     }
 
     @Override
-    public void analyzeMethod(ClassContext classContext, Method method, StreamResourceTracker resourceTracker,
-            ResourceCollection<Stream> resourceCollection) throws CFGBuilderException, DataflowAnalysisException {
+    public void analyzeMethod(
+            ClassContext classContext,
+            Method method,
+            StreamResourceTracker resourceTracker,
+            ResourceCollection<Stream> resourceCollection)
+            throws CFGBuilderException, DataflowAnalysisException {
 
         potentialOpenStreamList.clear();
 
@@ -387,7 +571,8 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
                             // Create a Stream object to represent it.
                             // The Stream will be uninteresting, so it will
                             // inhibit reporting for any stream that wraps it.
-                            Stream paramStream = new Stream(firstLocation, objectType.getClassName(), streamBase.getClassName());
+                            Stream paramStream =
+                                    new Stream(firstLocation, objectType.getClassName(), streamBase.getClassName());
                             paramStream.setIsOpenOnCreation(true);
                             paramStream.setOpenLocation(firstLocation);
                             paramStream.setInstanceParam(local);
@@ -460,36 +645,45 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
                 continue;
             }
 
-            if (IGNORE_WRAPPED_UNINTERESTING_STREAMS && resourceTracker.isUninterestingStreamEscape(stream)) {
+            if (IGNORE_WRAPPED_UNINTERESTING_STREAMS
+                    && resourceTracker.isUninterestingStreamEscape(stream)) {
                 continue;
             }
 
             String sourceFile = javaClass.getSourceFileName();
             String leakClass = stream.getStreamBase();
-            if (isMainMethod(method) && (leakClass.contains("InputStream") || leakClass.contains("Reader"))) {
+            if (isMainMethod(method)
+                    && (leakClass.contains("InputStream") || leakClass.contains("Reader"))) {
                 return;
             }
 
-            bugAccumulator.accumulateBug(new BugInstance(this, pos.bugType, pos.priority)
-                    .addClassAndMethod(methodGen, sourceFile).addTypeOfNamedClass(leakClass)
-                    .describe(TypeAnnotation.CLOSEIT_ROLE), SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
-                            sourceFile, stream.getLocation().getHandle()));
+            bugAccumulator.accumulateBug(
+                    new BugInstance(this, pos.bugType, pos.priority)
+                            .addClassAndMethod(methodGen, sourceFile)
+                            .addTypeOfNamedClass(leakClass)
+                            .describe(TypeAnnotation.CLOSEIT_ROLE),
+                    SourceLineAnnotation.fromVisitedInstruction(
+                            classContext, methodGen, sourceFile, stream.getLocation().getHandle()));
         }
     }
 
     @Override
-    public void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
-            Dataflow<ResourceValueFrame, ResourceValueAnalysis<Stream>> dataflow, Stream stream) {
+    public void inspectResult(
+            ClassContext classContext,
+            MethodGen methodGen,
+            CFG cfg,
+            Dataflow<ResourceValueFrame, ResourceValueAnalysis<Stream>> dataflow,
+            Stream stream) {
 
         if (DEBUG) {
             System.out.printf("Result for %s in %s%n", stream, methodGen);
             dataflow.dumpDataflow(dataflow.getAnalysis());
-
         }
         ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 
         int exitStatus = exitFrame.getStatus();
-        if (exitStatus == ResourceValueFrame.OPEN || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
+        if (exitStatus == ResourceValueFrame.OPEN
+                || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
 
             // FIXME: Stream object should be queried for the
             // priority.

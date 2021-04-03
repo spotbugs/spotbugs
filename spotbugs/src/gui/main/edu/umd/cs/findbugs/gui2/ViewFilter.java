@@ -19,16 +19,13 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.util.regex.Pattern;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.util.regex.Pattern;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class ViewFilter {
 
     public ViewFilter(MainFrame mf) {
@@ -40,7 +37,9 @@ public class ViewFilter {
     }
 
     enum PriorityFilter implements ViewFilterEnum {
-        HIGH_PRIORITY(1, "High priority only"), NORMAL_PRIORITY(2, "High and normal priority"), ALL_BUGS(10, "All bug priorities");
+        HIGH_PRIORITY(1, "High priority only"),
+        NORMAL_PRIORITY(2, "High and normal priority"),
+        ALL_BUGS(10, "All bug priorities");
 
         final int maxPriority;
         final String displayName;
@@ -62,7 +61,10 @@ public class ViewFilter {
     }
 
     enum RankFilter implements ViewFilterEnum {
-        SCARIEST(4, "Scariest"), SCARY(9, "Scary"), TROUBLING(14, "Troubling"), ALL(Integer.MAX_VALUE, "All bug ranks");
+        SCARIEST(4, "Scariest"),
+        SCARY(9, "Scary"),
+        TROUBLING(14, "Troubling"),
+        ALL(Integer.MAX_VALUE, "All bug ranks");
 
         final int maxRank;
 
@@ -86,9 +88,7 @@ public class ViewFilter {
             }
             return displayName;
         }
-
     }
-
 
     final MainFrame mf;
 
@@ -98,8 +98,8 @@ public class ViewFilter {
 
     String[] classSearchStrings;
 
-
-    static final Pattern legalClassSearchString = Pattern.compile("[\\p{javaLowerCase}\\p{javaUpperCase}0-9.$/_]*");
+    static final Pattern legalClassSearchString =
+            Pattern.compile("[\\p{javaLowerCase}\\p{javaUpperCase}0-9.$/_]*");
 
     void setPackagesToDisplay(String value) {
         value = value.replace('/', '.').trim();
@@ -109,7 +109,8 @@ public class ViewFilter {
             String[] parts = value.split("[ ,:]+");
             for (String p : parts) {
                 if (!legalClassSearchString.matcher(p).matches()) {
-                    throw new IllegalArgumentException("Classname filter must be legal Java identifier: " + p);
+                    throw new IllegalArgumentException(
+                            "Classname filter must be legal Java identifier: " + p);
                 }
             }
 
@@ -125,7 +126,6 @@ public class ViewFilter {
     public void setRank(RankFilter rank) {
         this.rank = rank;
         FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
-
     }
 
     public PriorityFilter getPriority() {
@@ -135,7 +135,6 @@ public class ViewFilter {
     public void setPriority(PriorityFilter priority) {
         this.priority = priority;
         FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
-
     }
 
     public String[] getPackagePrefixes() {
@@ -146,12 +145,10 @@ public class ViewFilter {
         return rank.show(mf, b) && priority.show(mf, b);
     }
 
-    /**
-     * @deprecated Use {@link ClassName#matchedPrefixes(String[],String)}
-     *             instead
-     */
+    /** @deprecated Use {@link ClassName#matchedPrefixes(String[],String)} instead */
     @Deprecated
-    public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
+    public static boolean matchedPrefixes(
+            String[] classSearchStrings, @DottedClassName String className) {
         return ClassName.matchedPrefixes(classSearchStrings, className);
     }
 
@@ -159,8 +156,7 @@ public class ViewFilter {
 
         String className = b.getPrimaryClass().getClassName();
 
-        return ClassName.matchedPrefixes(classSearchStrings, className) && showIgnoringPackagePrefixes(b);
-
+        return ClassName.matchedPrefixes(classSearchStrings, className)
+                && showIgnoringPackagePrefixes(b);
     }
-
 }

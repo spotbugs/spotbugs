@@ -21,11 +21,8 @@ package edu.umd.cs.findbugs.gui2;
 
 import javax.swing.filechooser.FileFilter;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 abstract class FindBugsFileFilter extends FileFilter {
 
     abstract SaveType getSaveType();
-
 }

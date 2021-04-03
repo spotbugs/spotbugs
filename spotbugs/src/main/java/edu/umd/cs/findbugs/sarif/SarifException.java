@@ -1,10 +1,9 @@
 package edu.umd.cs.findbugs.sarif;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +14,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317904">3.59 exception object</a>
+ * @see <a
+ *     href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317904">3.59
+ *     exception object</a>
  */
 class SarifException {
     @NonNull
@@ -27,7 +28,11 @@ class SarifException {
     @NonNull
     final List<SarifException> innerExceptions;
 
-    SarifException(@NonNull String kind, @NonNull String message, @NonNull Stack stack, @NonNull List<SarifException> innerExceptions) {
+    SarifException(
+            @NonNull String kind,
+            @NonNull String message,
+            @NonNull Stack stack,
+            @NonNull List<SarifException> innerExceptions) {
         this.kind = Objects.requireNonNull(kind);
         this.message = Objects.requireNonNull(message);
         this.stack = Objects.requireNonNull(stack);
@@ -35,7 +40,10 @@ class SarifException {
     }
 
     @NonNull
-    static SarifException fromThrowable(@NonNull Throwable throwable, @NonNull SourceFinder sourceFinder, @NonNull Map<URI, String> baseToId) {
+    static SarifException fromThrowable(
+            @NonNull Throwable throwable,
+            @NonNull SourceFinder sourceFinder,
+            @NonNull Map<URI, String> baseToId) {
         String message = throwable.getMessage();
         if (message == null) {
             message = "no message given";
@@ -43,11 +51,16 @@ class SarifException {
         List<Throwable> innerThrowables = new ArrayList<>();
         innerThrowables.add(throwable.getCause());
         innerThrowables.addAll(Arrays.asList(throwable.getSuppressed()));
-        List<SarifException> innerExceptions = innerThrowables.stream()
-                .filter(Objects::nonNull)
-                .map(t -> fromThrowable(t, sourceFinder, baseToId))
-                .collect(Collectors.toList());
-        return new SarifException(throwable.getClass().getName(), message, Stack.fromThrowable(throwable, sourceFinder, baseToId), innerExceptions);
+        List<SarifException> innerExceptions =
+                innerThrowables.stream()
+                        .filter(Objects::nonNull)
+                        .map(t -> fromThrowable(t, sourceFinder, baseToId))
+                        .collect(Collectors.toList());
+        return new SarifException(
+                throwable.getClass().getName(),
+                message,
+                Stack.fromThrowable(throwable, sourceFinder, baseToId),
+                innerExceptions);
     }
 
     JsonObject toJsonObject() {

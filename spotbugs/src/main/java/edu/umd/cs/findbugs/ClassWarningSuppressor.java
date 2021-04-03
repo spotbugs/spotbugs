@@ -29,6 +29,5 @@ public class ClassWarningSuppressor extends WarningSuppressor {
         }
 
         return clazz.contains(primaryClassAnnotation);
-
     }
 }

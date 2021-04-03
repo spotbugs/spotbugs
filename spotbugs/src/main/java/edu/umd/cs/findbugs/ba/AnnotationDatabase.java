@@ -19,48 +19,51 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.MapCache;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 /**
- * Database to keep track of annotated fields/methods/classes/etc. for a
- * particular kind of annotation.
+ * Database to keep track of annotated fields/methods/classes/etc. for a particular kind of
+ * annotation.
  *
  * @author William Pugh
  */
 public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<AnnotationEnum>> {
     static final boolean DEBUG = SystemProperties.getBoolean("annotations.debug");
 
-    public static final boolean IGNORE_BUILTIN_ANNOTATIONS = SystemProperties.getBoolean("findbugs.ignoreBuiltinAnnotations");
+    public static final boolean IGNORE_BUILTIN_ANNOTATIONS =
+            SystemProperties.getBoolean("findbugs.ignoreBuiltinAnnotations");
 
     public static enum Target {
-        FIELD, METHOD, PARAMETER, @Deprecated
-        CLASS, ANY
+        FIELD,
+        METHOD,
+        PARAMETER,
+        @Deprecated
+        CLASS,
+        ANY
     }
 
     //    private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
     private final Map<Object, AnnotationEnum> directAnnotations = new HashMap<>();
 
-    private final Map<AnnotationDatabase.Target, Map<String, AnnotationEnum>> defaultAnnotation = new EnumMap<>(AnnotationDatabase.Target.class);
+    private final Map<AnnotationDatabase.Target, Map<String, AnnotationEnum>> defaultAnnotation =
+            new EnumMap<>(AnnotationDatabase.Target.class);
 
     // private Subtypes subtypes;
     public AnnotationDatabase() {
@@ -75,7 +78,6 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
     }
 
     public void loadAuxiliaryAnnotations() {
-
     }
 
     private final Set<AnnotationEnum> seen = new HashSet<>();
@@ -110,7 +112,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         if (o instanceof XMethod) {
             XMethod m = (XMethod) o;
             if (m.getName().startsWith("access$")) {
-                InnerClassAccessMap icam = AnalysisContext.currentAnalysisContext().getInnerClassAccessMap();
+                InnerClassAccessMap icam =
+                        AnalysisContext.currentAnalysisContext().getInnerClassAccessMap();
                 try {
                     InnerClassAccess ica = icam.getInnerClassAccess(m.getClassName(), m.getName());
                     if (ica != null && ica.isLoad()) {
@@ -120,7 +123,6 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                     AnalysisContext.reportMissingClass(e);
                     return null;
                 }
-
             }
         }
         Map<Object, AnnotationEnum> cache;
@@ -224,7 +226,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                         return null;
                     }
                     if (DEBUG) {
-                        System.out.println("looking for default annotations: " + c.getClassName() + " defines " + m);
+                        System.out.println(
+                                "looking for default annotations: " + c.getClassName() + " defines " + m);
                     }
                 } // if not static
             } // associated with method
@@ -237,7 +240,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                 className = (String) o;
                 kind = Target.CLASS;
             } else {
-                throw new IllegalArgumentException("Can't look up annotation for " + o.getClass().getName());
+                throw new IllegalArgumentException(
+                        "Can't look up annotation for " + o.getClass().getName());
             }
 
             // <init> method parameters for inner classes don't inherit default
@@ -252,8 +256,11 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                 return null;
             }
             try {
-                XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                        DescriptorFactory.createClassDescriptorFromDottedClassName(className));
+                XClass c =
+                        Global.getAnalysisCache()
+                                .getClassAnalysis(
+                                        XClass.class,
+                                        DescriptorFactory.createClassDescriptorFromDottedClassName(className));
 
                 if (c != null && c.isSynthetic()) {
                     return null;
@@ -302,7 +309,6 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
             AnalysisContext.reportMissingClass(e);
             return null;
         }
-
     }
 
     public AnnotationEnum getDirectAnnotation(final Object o) {
@@ -311,7 +317,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
     private boolean classDefinesMethod(JavaClass c, XMethod m) {
         for (Method definedMethod : c.getMethods()) {
-            if (definedMethod.getName().equals(m.getName()) && definedMethod.getSignature().equals(m.getSignature())
+            if (definedMethod.getName().equals(m.getName())
+                    && definedMethod.getSignature().equals(m.getSignature())
                     && definedMethod.isStatic() == m.isStatic()) {
                 return true;
             }
@@ -319,13 +326,20 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         return false;
     }
 
-    private AnnotationEnum lookInOverriddenMethod(final Object originalQuery, String classToLookIn, XMethod originalMethod,
+    private AnnotationEnum lookInOverriddenMethod(
+            final Object originalQuery,
+            String classToLookIn,
+            XMethod originalMethod,
             boolean getMinimal) {
         try {
             AnnotationEnum n;
             // Look in supermethod
-            XMethod superMethod = XFactory.createXMethod(classToLookIn, originalMethod.getName(), originalMethod.getSignature(),
-                    originalMethod.isStatic());
+            XMethod superMethod =
+                    XFactory.createXMethod(
+                            classToLookIn,
+                            originalMethod.getName(),
+                            originalMethod.getSignature(),
+                            originalMethod.isStatic());
             if (!superMethod.isResolved()) {
                 return null;
             }
@@ -337,7 +351,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
             if (originalQuery instanceof XMethod) {
                 probe = superMethod;
             } else if (originalQuery instanceof XMethodParameter) {
-                probe = new XMethodParameter(superMethod, ((XMethodParameter) originalQuery).getParameterNumber());
+                probe =
+                        new XMethodParameter(
+                                superMethod, ((XMethodParameter) originalQuery).getParameterNumber());
             } else {
                 throw new IllegalStateException("impossible");
             }
@@ -345,7 +361,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
             n = getResolvedAnnotation(probe, getMinimal);
             return n;
         } catch (RuntimeException e) {
-            AnalysisContext.logError("Exception while looking for annotation of " + originalMethod + "in " + classToLookIn, e);
+            AnalysisContext.logError(
+                    "Exception while looking for annotation of " + originalMethod + "in " + classToLookIn, e);
             return null;
         }
     }
@@ -368,7 +385,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         addDefaultAnnotation(AnnotationDatabase.Target.METHOD, cName, annotation);
     }
 
-    protected void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
+    protected void addFieldAnnotation(
+            String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
         // if (!Subtypes.DO_NOT_USE) {
         // subtypes.addNamedClass(cName);
         // }
@@ -379,11 +397,17 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         addDirectAnnotation(m, annotation);
     }
 
-    protected void addMethodAnnotation(Class<?> clazz, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
+    protected void addMethodAnnotation(
+            Class<?> clazz, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
         addMethodAnnotation(clazz.getName(), mName, mSig, isStatic, annotation);
     }
 
-    protected void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
+    protected void addMethodAnnotation(
+            @DottedClassName String cName,
+            String mName,
+            String mSig,
+            boolean isStatic,
+            AnnotationEnum annotation) {
         if (addClassOnly) {
             return;
         }
@@ -393,19 +417,19 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         }
         /*
         if (false && !m.isResolved()) {
-            System.out.println("Unable to add annotation " + annotation + " to " + m);
-            ClassDescriptor c = DescriptorFactory.createClassDescriptorFromDottedClassName(cName);
-            if (true)
-                try {
-                    XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
-                    if (xClass != null) {
-                        System.out.println("class has methods: ");
-                        for (XMethod m2 : xClass.getXMethods())
-                            System.out.println("  " + m2);
-                    }
-                } catch (CheckedAnalysisException e) {
-                    e.printStackTrace();
-                }
+        System.out.println("Unable to add annotation " + annotation + " to " + m);
+        ClassDescriptor c = DescriptorFactory.createClassDescriptorFromDottedClassName(cName);
+        if (true)
+        try {
+        XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+        if (xClass != null) {
+        System.out.println("class has methods: ");
+        for (XMethod m2 : xClass.getXMethods())
+        System.out.println("  " + m2);
+        }
+        } catch (CheckedAnalysisException e) {
+        e.printStackTrace();
+        }
         }
          */
         addDirectAnnotation(m, annotation);
@@ -416,7 +440,12 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         return true;
     }
 
-    protected void addMethodParameterAnnotation(String cName, String mName, String mSig, boolean isStatic, int param,
+    protected void addMethodParameterAnnotation(
+            String cName,
+            String mName,
+            String mSig,
+            boolean isStatic,
+            int param,
             AnnotationEnum annotation) {
         // if (!Subtypes.DO_NOT_USE) {
         // subtypes.addNamedClass(cName);
@@ -426,14 +455,26 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         }
         SignatureParser parser = new SignatureParser(mSig);
         if (param < 0 || param >= parser.getNumParameters()) {
-            throw new IllegalArgumentException("can't annotation parameter #" + param + " of " + cName + "." + mName + mSig);
+            throw new IllegalArgumentException(
+                    "can't annotation parameter #" + param + " of " + cName + "." + mName + mSig);
         }
         String signature = parser.getParameter(param);
         char firstChar = signature.charAt(0);
         boolean isReference = firstChar == 'L' || firstChar == '[';
         if (onlyAppliesToReferenceParameters(annotation) && !isReference) {
-            AnalysisContext.logError("Can't apply " + annotation + " to parameter " + param + " with signature " + signature
-                    + " of " + cName + "." + mName + " : " + mSig);
+            AnalysisContext.logError(
+                    "Can't apply "
+                            + annotation
+                            + " to parameter "
+                            + param
+                            + " with signature "
+                            + signature
+                            + " of "
+                            + cName
+                            + "."
+                            + mName
+                            + " : "
+                            + mSig);
             return;
         }
         XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);

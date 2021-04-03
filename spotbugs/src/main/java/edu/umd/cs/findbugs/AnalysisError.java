@@ -24,13 +24,13 @@ public class AnalysisError {
 
     private final Throwable exception;
 
-
     @Override
     public int hashCode() {
         int result = 1;
         result = PRIME * result + ((exceptionMessage == null) ? 0 : exceptionMessage.hashCode());
         result = PRIME * result + ((message == null) ? 0 : message.hashCode());
-        result = PRIME * result + ((nestedExceptionMessage == null) ? 0 : nestedExceptionMessage.hashCode());
+        result =
+                PRIME * result + ((nestedExceptionMessage == null) ? 0 : nestedExceptionMessage.hashCode());
         result = PRIME * result + Arrays.hashCode(nestedStackTrace);
         result = PRIME * result + Arrays.hashCode(stackTrace);
         return result;
@@ -55,8 +55,7 @@ public class AnalysisError {
     /**
      * Constructor.
      *
-     * @param message
-     *            message describing the error
+     * @param message message describing the error
      */
     public AnalysisError(String message) {
         this(message, null);
@@ -65,10 +64,8 @@ public class AnalysisError {
     /**
      * Constructor.
      *
-     * @param message
-     *            message describing the error
-     * @param exception
-     *            exception which is the cause of the error
+     * @param message message describing the error
+     * @param exception exception which is the cause of the error
      */
     public AnalysisError(String message, Throwable exception) {
         this.message = message;
@@ -81,7 +78,6 @@ public class AnalysisError {
                 nestedExceptionMessage = initCause.toString();
                 nestedStackTrace = getStackTraceAsStringArray(initCause);
             }
-
         }
     }
 
@@ -98,77 +94,70 @@ public class AnalysisError {
     /**
      * Set the message describing the error.
      *
-     * @param message
-     *            message describing the error
+     * @param message message describing the error
      */
     public void setMessage(String message) {
         this.message = message;
     }
 
-    /**
-     * Get the message describing the error.
-     */
+    /** Get the message describing the error. */
     public String getMessage() {
         return message;
     }
 
     /**
-     * Set the exception message. This is the value returned by calling
-     * toString() on the original exception object.
+     * Set the exception message. This is the value returned by calling toString() on the original
+     * exception object.
      *
-     * @param exceptionMessage
-     *            the exception message
+     * @param exceptionMessage the exception message
      */
     public void setExceptionMessage(String exceptionMessage) {
         this.exceptionMessage = exceptionMessage;
     }
 
     /**
-     * Get the exception message. This is the value returned by calling
-     * toString() on the original exception object.
+     * Get the exception message. This is the value returned by calling toString() on the original
+     * exception object.
      */
     public String getExceptionMessage() {
         return exceptionMessage;
     }
 
     /**
-     * Get the exception message. This is the value returned by calling
-     * toString() on the original exception object.
+     * Get the exception message. This is the value returned by calling toString() on the original
+     * exception object.
      */
     public String getNestedExceptionMessage() {
         return nestedExceptionMessage;
     }
 
     /**
-     * Set the stack trace elements. These are the strings returned by calling
-     * toString() on each StackTraceElement in the original exception.
+     * Set the stack trace elements. These are the strings returned by calling toString() on each
+     * StackTraceElement in the original exception.
      *
-     * @param stackTraceList
-     *            the stack trace elements
+     * @param stackTraceList the stack trace elements
      */
     public void setStackTrace(String[] stackTraceList) {
         stackTrace = stackTraceList;
     }
 
     /**
-     * Get the stack trace elements. These are the strings returned by calling
-     * toString() on each StackTraceElement in the original exception.
+     * Get the stack trace elements. These are the strings returned by calling toString() on each
+     * StackTraceElement in the original exception.
      */
     public String[] getStackTrace() {
         return stackTrace;
     }
 
     /**
-     * Get the stack trace elements. These are the strings returned by calling
-     * toString() on each StackTraceElement in the original exception.
+     * Get the stack trace elements. These are the strings returned by calling toString() on each
+     * StackTraceElement in the original exception.
      */
     public String[] getNestedStackTrace() {
         return nestedStackTrace;
     }
 
-    /**
-     * @return original exception object, or null if no exception was thrown
-     */
+    /** @return original exception object, or null if no exception was thrown */
     public Throwable getException() {
         return exception;
     }

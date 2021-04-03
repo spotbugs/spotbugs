@@ -24,13 +24,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * A search tree callback implementation that builds a list of SearchTrees
- * recording a graph search.
+ * A search tree callback implementation that builds a list of SearchTrees recording a graph search.
  *
  * @see SearchTreeCallback
  * @author David Hovemeyer
  */
-public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>> implements SearchTreeCallback<VertexType> {
+public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>>
+        implements SearchTreeCallback<VertexType> {
 
     private final HashMap<VertexType, SearchTree<VertexType>> searchTreeMap = new HashMap<>();
 
@@ -51,9 +51,7 @@ public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>> imple
         parentTree.addChild(childTree);
     }
 
-    /**
-     * Get an Iterator over the recorded SearchTrees.
-     */
+    /** Get an Iterator over the recorded SearchTrees. */
     public Iterator<SearchTree<VertexType>> searchTreeIterator() {
         return searchTreeList.iterator();
     }

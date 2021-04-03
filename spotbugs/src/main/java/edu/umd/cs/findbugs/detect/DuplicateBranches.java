@@ -19,24 +19,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.GotoInstruction;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.LOOKUPSWITCH;
-import org.apache.bcel.generic.ReturnInstruction;
-import org.apache.bcel.generic.TABLESWITCH;
-import org.apache.bcel.util.ByteSequence;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -48,6 +30,22 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.BranchInstruction;
+import org.apache.bcel.generic.GotoInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.LOOKUPSWITCH;
+import org.apache.bcel.generic.ReturnInstruction;
+import org.apache.bcel.generic.TABLESWITCH;
+import org.apache.bcel.util.ByteSequence;
 
 /**
  * @author Dave Brousius 4/2005 original author
@@ -105,7 +103,6 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
             }
         }
         pendingBugs.clear();
-
     }
 
     private void findIfElseDuplicates(CFG cfg, Method method, BasicBlock bb) {
@@ -140,7 +137,8 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
             return;
         }
 
-        InstructionHandle elseFinishHandle = ((GotoInstruction) thenFinishIns.getInstruction()).getTarget();
+        InstructionHandle elseFinishHandle =
+                ((GotoInstruction) thenFinishIns.getInstruction()).getTarget();
         int elseFinishPos = elseFinishHandle.getPosition();
 
         if (thenFinishPos >= elseStartPos) {
@@ -168,15 +166,16 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
             elseFinishPos = elseLastIns.getPosition();
         }
 
-        pendingBugs.add(new BugInstance(this, "DB_DUPLICATE_BRANCHES", NORMAL_PRIORITY)
-                .addClassAndMethod(classContext.getJavaClass(), method)
-                .addSourceLineRange(classContext, this, thenStartPos, thenFinishPos)
-                .addSourceLineRange(classContext, this, elseStartPos, elseFinishPos));
+        pendingBugs.add(
+                new BugInstance(this, "DB_DUPLICATE_BRANCHES", NORMAL_PRIORITY)
+                        .addClassAndMethod(classContext.getJavaClass(), method)
+                        .addSourceLineRange(classContext, this, thenStartPos, thenFinishPos)
+                        .addSourceLineRange(classContext, this, elseStartPos, elseFinishPos));
     }
 
     /**
-     * Like bb.getFirstInstruction() except that if null is returned it will
-     * follow the FALL_THROUGH_EDGE (if any)
+     * Like bb.getFirstInstruction() except that if null is returned it will follow the
+     * FALL_THROUGH_EDGE (if any)
      */
     private static InstructionHandle getDeepFirstInstruction(CFG cfg, BasicBlock bb) {
         InstructionHandle ih = bb.getFirstInstruction();
@@ -264,14 +263,15 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
 
             BigInteger clauseAsInt = getCodeBytesAsBigInt(method, switchPos, i, endPos);
             updateMap(map, i, clauseAsInt);
-
         }
         for (Collection<Integer> clauses : map.values()) {
             if (clauses.size() > 1) {
-                BugInstance bug = new BugInstance(this, "DB_DUPLICATE_SWITCH_CLAUSES", LOW_PRIORITY).addClassAndMethod(
-                        classContext.getJavaClass(), method);
+                BugInstance bug =
+                        new BugInstance(this, "DB_DUPLICATE_SWITCH_CLAUSES", LOW_PRIORITY)
+                                .addClassAndMethod(classContext.getJavaClass(), method);
                 for (int i : clauses) {
-                    bug.addSourceLineRange(this.classContext, this, switchPos[i], switchPos[i + 1] - 1); // not
+                    bug.addSourceLineRange(
+                            this.classContext, this, switchPos[i], switchPos[i + 1] - 1); // not
                 }
                 // endPos,
                 // but
@@ -282,7 +282,8 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         }
     }
 
-    private void updateMap(HashMap<BigInteger, Collection<Integer>> map, int i, BigInteger clauseAsInt) {
+    private void updateMap(
+            HashMap<BigInteger, Collection<Integer>> map, int i, BigInteger clauseAsInt) {
         Collection<Integer> values = map.computeIfAbsent(clauseAsInt, k -> new LinkedList<>());
 
         values.add(i); // index into the sorted array
@@ -301,8 +302,8 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
     }
 
     /**
-     * determine the end position (exclusive) of the final case by looking at
-     * the gotos at the ends of the other cases
+     * determine the end position (exclusive) of the final case by looking at the gotos at the ends of
+     * the other cases
      */
     private static int getFinalTarget(CFG cfg, int myPos, Collection<InstructionHandle> prevs) {
         int maxGoto = 0;
@@ -373,7 +374,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
             int pos;
             while (sequence.available() > 0 && ((pos = sequence.getIndex()) < end)) {
                 Instruction ins = Instruction.readInstruction(sequence);
-                if ((ins instanceof BranchInstruction) && !(ins instanceof TABLESWITCH) && !(ins instanceof LOOKUPSWITCH)) {
+                if ((ins instanceof BranchInstruction)
+                        && !(ins instanceof TABLESWITCH)
+                        && !(ins instanceof LOOKUPSWITCH)) {
                     BranchInstruction bi = (BranchInstruction) ins;
                     int offset = bi.getIndex();
                     int target = offset + pos;

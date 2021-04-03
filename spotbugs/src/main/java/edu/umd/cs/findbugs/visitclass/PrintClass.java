@@ -26,20 +26,15 @@ import java.util.Enumeration;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class PrintClass {
 
-    /**
-     * @author pugh
-     */
+    /** @author pugh */
     static final class ZipEntryComparator implements Comparator<ZipEntry>, Serializable {
         private static final long serialVersionUID = 1L;
 
@@ -125,7 +120,6 @@ public class PrintClass {
                         continue;
                     }
                     printClass(new ClassParser(z.getInputStream(ze), name));
-
                 }
             }
         } else {
@@ -136,7 +130,6 @@ public class PrintClass {
             }
         }
     }
-
 
     private static void printClass(ClassParser parser) throws IOException {
         JavaClass java_class;
@@ -150,7 +143,6 @@ public class PrintClass {
                 }
             } catch (ClassNotFoundException e) {
                 System.out.println(e.getMessage());
-
             }
             System.out.println();
             return;
@@ -167,9 +159,7 @@ public class PrintClass {
         }
     }
 
-    /**
-     * Dump the disassembled code of all methods in the class.
-     */
+    /** Dump the disassembled code of all methods in the class. */
     public static void printCode(Method[] methods) {
         for (Method m : methods) {
             System.out.println(m);
@@ -177,7 +167,6 @@ public class PrintClass {
             if (code != null) {
                 System.out.println(code);
             }
-
         }
     }
 }

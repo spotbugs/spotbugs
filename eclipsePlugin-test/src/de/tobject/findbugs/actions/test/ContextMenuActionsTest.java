@@ -20,20 +20,18 @@ package de.tobject.findbugs.actions.test;
 
 import static org.junit.Assert.assertTrue;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.actions.ClearMarkersAction;
+import de.tobject.findbugs.actions.FindBugsAction;
+import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
 import java.io.File;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IActionDelegate;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.actions.ClearMarkersAction;
-import de.tobject.findbugs.actions.FindBugsAction;
-import de.tobject.findbugs.test.AbstractFindBugsTest;
-import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the FindBugsAction, SaveXMLAction and LoadXMLAction.

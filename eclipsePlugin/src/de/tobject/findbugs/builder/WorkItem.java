@@ -18,6 +18,11 @@
  */
 package de.tobject.findbugs.builder;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.util.Util;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.util.Archive;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,11 +31,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -47,15 +50,9 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.util.Util;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.util.Archive;
-
 /**
- * An item to work on for FB analysis - this can be entire project or single
- * file or a java element without corresponding resource (like external library)
+ * An item to work on for FB analysis - this can be entire project or single file or a java element
+ * without corresponding resource (like external library)
  *
  * @author Andrei
  */
@@ -150,10 +147,9 @@ public class WorkItem {
         return JavaCore.create(project);
     }
 
-    /**
-     * @return false if no classes was added
-     */
-    private static boolean addClassesForFolder(IFolder folder, Map<IPath, IPath> outLocations, Project fbProject) {
+    /** @return false if no classes was added */
+    private static boolean addClassesForFolder(
+            IFolder folder, Map<IPath, IPath> outLocations, Project fbProject) {
         IPath path = folder.getLocation();
         IPath srcRoot = getMatchingSourceRoot(path, outLocations);
         if (srcRoot == null) {
@@ -168,7 +164,8 @@ public class WorkItem {
         // TODO child directories too. Should add preference???
     }
 
-    private static void addClassesForFile(IFile file, Map<IPath, IPath> outLocations, Project fbProject) {
+    private static void addClassesForFile(
+            IFile file, Map<IPath, IPath> outLocations, Project fbProject) {
         IPath path = file.getLocation();
         IPath srcRoot = getMatchingSourceRoot(path, outLocations);
         if (srcRoot == null) {
@@ -189,21 +186,21 @@ public class WorkItem {
     }
 
     /**
-     * Add secondary types patterns (not nested in the type itself but contained
-     * in the java file)
+     * Add secondary types patterns (not nested in the type itself but contained in the java file)
      *
-     * @param fileName
-     *            java file name (not path!) without .java suffix
-     * @param classNamePattern
-     *            non null pattern for all matching .class file names
-     * @return modified classNamePattern, if there are more then one type
-     *         defined in the java file
+     * @param fileName java file name (not path!) without .java suffix
+     * @param classNamePattern non null pattern for all matching .class file names
+     * @return modified classNamePattern, if there are more then one type defined in the java file
      */
-    private static String addSecondaryTypesToPattern(IFile file, String fileName, String classNamePattern) {
+    private static String addSecondaryTypesToPattern(
+            IFile file, String fileName, String classNamePattern) {
         ICompilationUnit cu = JavaCore.createCompilationUnitFrom(file);
         if (cu == null) {
-            FindbugsPlugin.getDefault().logError(
-                    "NULL compilation unit for " + file + ", FB analysis might  be incomplete for included types");
+            FindbugsPlugin.getDefault()
+                    .logError(
+                            "NULL compilation unit for "
+                                    + file
+                                    + ", FB analysis might  be incomplete for included types");
             return classNamePattern;
         }
         try {
@@ -254,10 +251,9 @@ public class WorkItem {
     }
 
     /**
-     * @return the resource which can be used to attach markers found for this
-     *         item. This resource must exist, and the return value can not be
-     *         null. The return value can be absolutely unrelated to the
-     *         {@link #getCorespondingResource()}.
+     * @return the resource which can be used to attach markers found for this item. This resource
+     *     must exist, and the return value can not be null. The return value can be absolutely
+     *     unrelated to the {@link #getCorespondingResource()}.
      */
     public @Nonnull IResource getMarkerTarget() {
         IResource res = getCorespondingResource();
@@ -274,17 +270,12 @@ public class WorkItem {
         return project;
     }
 
-    /**
-     * @return number of markers which are <b>already</b> reported for given
-     *         work item.
-     */
+    /** @return number of markers which are <b>already</b> reported for given work item. */
     public int getMarkerCount(boolean recursive) {
         return getMarkers(recursive).size();
     }
 
-    /**
-     * @return markers which are <b>already</b> reported for given work item
-     */
+    /** @return markers which are <b>already</b> reported for given work item */
     public Set<IMarker> getMarkers(boolean recursive) {
         IResource res = getCorespondingResource();
         if (res != null) {
@@ -292,7 +283,8 @@ public class WorkItem {
                 // for project, depth_one does not make any sense here
                 recursive = true;
             }
-            IMarker[] markers = MarkerUtil.getMarkers(res, recursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE);
+            IMarker[] markers =
+                    MarkerUtil.getMarkers(res, recursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE);
             return new HashSet<>(Arrays.asList(markers));
         }
         IResource markerTarget = getMarkerTarget();
@@ -300,22 +292,26 @@ public class WorkItem {
             return Collections.emptySet();
         }
         if (!recursive
-                && ((markerTarget.getType() == IResource.PROJECT && (javaElt instanceof IPackageFragmentRoot) || Util
-                        .isClassFile(javaElt)) || (Util.isJavaArchive(markerTarget) && Util.isClassFile(javaElt)))) {
+                && ((markerTarget.getType() == IResource.PROJECT
+                        && (javaElt instanceof IPackageFragmentRoot)
+                        || Util.isClassFile(javaElt))
+                        || (Util.isJavaArchive(markerTarget) && Util.isClassFile(javaElt)))) {
             recursive = true;
         }
-        IMarker[] markers = MarkerUtil.getMarkers(markerTarget, recursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE);
+        IMarker[] markers =
+                MarkerUtil.getMarkers(
+                        markerTarget, recursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE);
         Set<IMarker> forJavaElement = MarkerUtil.findMarkerForJavaElement(javaElt, markers, recursive);
         return forJavaElement;
     }
 
     /**
      * @param srcPath may be null
-     * @param outLocations
-     *            key is the source root, value is output folder
+     * @param outLocations key is the source root, value is output folder
      * @return source root folder matching (parent of) given path, or null
      */
-    private static @Nullable IPath getMatchingSourceRoot(@Nullable IPath srcPath, Map<IPath, IPath> outLocations) {
+    private static @Nullable IPath getMatchingSourceRoot(
+            @Nullable IPath srcPath, Map<IPath, IPath> outLocations) {
         if (srcPath == null) {
             return null;
         }
@@ -338,13 +334,10 @@ public class WorkItem {
     }
 
     /**
-     *
-     * @return full absolute path corresponding to the work item (file or
-     *         directory). If the work item is a part of an archive, it's the
-     *         path to the archive file. If the work item is a project, it's the
-     *         path to the project root. TODO If the work item is an internal
-     *         java element (method, inner class etc), results are undefined
-     *         yet.
+     * @return full absolute path corresponding to the work item (file or directory). If the work item
+     *     is a part of an archive, it's the path to the archive file. If the work item is a project,
+     *     it's the path to the project root. TODO If the work item is an internal java element
+     *     (method, inner class etc), results are undefined yet.
      */
     public @CheckForNull IPath getPath() {
         IResource corespondingResource = getCorespondingResource();
@@ -360,15 +353,13 @@ public class WorkItem {
     public boolean isDirectory() {
         IResource corespondingResource = getCorespondingResource();
         if (corespondingResource != null) {
-            return corespondingResource.getType() == IResource.FOLDER || corespondingResource.getType() == IResource.PROJECT;
+            return corespondingResource.getType() == IResource.FOLDER
+                    || corespondingResource.getType() == IResource.PROJECT;
         }
         return false;
     }
 
-    /**
-     *
-     * @return true if the given element is contained inside archive
-     */
+    /** @return true if the given element is contained inside archive */
     public boolean isFromArchive() {
         IPath path = getPath();
         if (path == null) {
@@ -419,5 +410,4 @@ public class WorkItem {
         }
         return true;
     }
-
 }

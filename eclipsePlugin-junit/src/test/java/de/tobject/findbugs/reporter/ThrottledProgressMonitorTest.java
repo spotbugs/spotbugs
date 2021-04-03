@@ -12,7 +12,8 @@ public class ThrottledProgressMonitorTest {
     public void testSetTaskName() {
         Clock clock = new Clock();
         IProgressMonitor delegate = spy(IProgressMonitor.class);
-        ThrottledProgressMonitor throttled = new ThrottledProgressMonitor(delegate, clock::getCurrentTime);
+        ThrottledProgressMonitor throttled =
+                new ThrottledProgressMonitor(delegate, clock::getCurrentTime);
         throttled.setTaskName("First");
         verify(delegate).setTaskName("First");
 
@@ -29,7 +30,8 @@ public class ThrottledProgressMonitorTest {
     public void testWorked() {
         Clock clock = new Clock();
         IProgressMonitor delegate = spy(IProgressMonitor.class);
-        ThrottledProgressMonitor throttled = new ThrottledProgressMonitor(delegate, clock::getCurrentTime);
+        ThrottledProgressMonitor throttled =
+                new ThrottledProgressMonitor(delegate, clock::getCurrentTime);
         throttled.worked(1);
         verify(delegate).worked(1);
 

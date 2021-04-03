@@ -19,19 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.ElementValue;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -42,6 +29,17 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ElementValue;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 public class FindUninitializedGet extends BytecodeScanningDetector implements StatelessDetector {
     Set<FieldAnnotation> initializedFields = new HashSet<>();
@@ -77,18 +75,17 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
         super.visit(obj);
         FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
         declaredFields.add(f);
-
     }
 
     @Override
-    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitAnnotation(
+            String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
         if (!visitingField()) {
             return;
         }
         if (UnreadFields.isInjectionAttribute(annotationClass)) {
             containerFields.add(FieldAnnotation.fromVisitedField(this));
         }
-
     }
 
     @Override
@@ -97,8 +94,9 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
         initializedFields.clear();
 
         thisOnTOS = false;
-        inConstructor = Const.CONSTRUCTOR_NAME.equals(getMethodName()) && getMethodSig().indexOf(getClassName()) == -1;
-
+        inConstructor =
+                Const.CONSTRUCTOR_NAME.equals(getMethodName())
+                        && getMethodSig().indexOf(getClassName()) == -1;
     }
 
     @Override
@@ -138,22 +136,34 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 
         if (seen == Const.PUTFIELD && getClassConstantOperand().equals(getClassName())) {
             initializedFields.add(FieldAnnotation.fromReferencedField(this));
-        } else if (thisOnTOS && seen == Const.GETFIELD && getClassConstantOperand().equals(getClassName())) {
-            UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
+        } else if (thisOnTOS
+                && seen == Const.GETFIELD
+                && getClassConstantOperand().equals(getClassName())) {
+            UnreadFieldsData unreadFields =
+                    AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
             XField xField = XFactory.createReferencedXField(this);
             FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
             int nextOpcode = 0xff & codeBytes[getPC() + 3];
-            if (nextOpcode != Const.POP && !initializedFields.contains(f) && declaredFields.contains(f) && !containerFields.contains(f)
+            if (nextOpcode != Const.POP
+                    && !initializedFields.contains(f)
+                    && declaredFields.contains(f)
+                    && !containerFields.contains(f)
                     && !unreadFields.isContainerField(xField)) {
                 // System.out.println("Next opcode: " +
                 // Const.getOpcodeName(nextOpcode));
-                LocalVariableAnnotation possibleTarget = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(),
-                        getMethod(), getNameConstantOperand(), xField.getSignature());
+                LocalVariableAnnotation possibleTarget =
+                        LocalVariableAnnotation.findMatchingIgnoredParameter(
+                                getClassContext(), getMethod(), getNameConstantOperand(), xField.getSignature());
                 if (possibleTarget == null) {
-                    possibleTarget = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
-                            getNameConstantOperand(), getSigConstantOperand());
+                    possibleTarget =
+                            LocalVariableAnnotation.findUniqueBestMatchingParameter(
+                                    getClassContext(),
+                                    getMethod(),
+                                    getNameConstantOperand(),
+                                    getSigConstantOperand());
                 }
-                int priority = unreadFields.getReadFields().contains(xField) ? NORMAL_PRIORITY : LOW_PRIORITY;
+                int priority =
+                        unreadFields.getReadFields().contains(xField) ? NORMAL_PRIORITY : LOW_PRIORITY;
                 boolean priorityLoweredBecauseOfIfNonnullTest = false;
                 if (possibleTarget != null) {
                     priority--;
@@ -167,18 +177,24 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
                     }
                 }
 
-                BugInstance bug = new BugInstance(this, "UR_UNINIT_READ", priority).addClassAndMethod(this).addField(f)
-                        .addOptionalAnnotation(possibleTarget).addSourceLine(this);
+                BugInstance bug =
+                        new BugInstance(this, "UR_UNINIT_READ", priority)
+                                .addClassAndMethod(this)
+                                .addField(f)
+                                .addOptionalAnnotation(possibleTarget)
+                                .addSourceLine(this);
                 pendingBugs.add(bug);
                 if (priorityLoweredBecauseOfIfNonnullTest) {
                     uninitializedFieldReadAndCheckedForNonnull = bug;
                 }
                 initializedFields.add(f);
             }
-        } else if ((seen == Const.INVOKESPECIAL && !(Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && !getClassConstantOperand().equals(
-                getClassName())))
-                || (seen == Const.INVOKESTATIC && "doPrivileged".equals(getNameConstantOperand()) && "java/security/AccessController".equals(
-                        getClassConstantOperand()))
+        } else if ((seen == Const.INVOKESPECIAL
+                && !(Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
+                        && !getClassConstantOperand().equals(getClassName())))
+                || (seen == Const.INVOKESTATIC
+                        && "doPrivileged".equals(getNameConstantOperand())
+                        && "java/security/AccessController".equals(getClassConstantOperand()))
                 || (seen == Const.INVOKEVIRTUAL && getClassConstantOperand().equals(getClassName()))
                 || (seen == Const.INVOKEVIRTUAL && "start".equals(getNameConstantOperand()))) {
 

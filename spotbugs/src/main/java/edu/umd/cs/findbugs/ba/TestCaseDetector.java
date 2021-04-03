@@ -23,14 +23,14 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public class TestCaseDetector {
 
-    private static final ClassDescriptor JUNIT4TEST = DescriptorFactory.createClassDescriptor("org/junit/Test");
+    private static final ClassDescriptor JUNIT4TEST =
+            DescriptorFactory.createClassDescriptor("org/junit/Test");
 
-    private static final ClassDescriptor JUNIT3TESTCASE = DescriptorFactory.createClassDescriptor("junit/framework/TestCase");
+    private static final ClassDescriptor JUNIT3TESTCASE =
+            DescriptorFactory.createClassDescriptor("junit/framework/TestCase");
 
     public static boolean likelyTestCase(XMethod m) {
         if (m.getAnnotation(JUNIT4TEST) != null) {
@@ -51,5 +51,4 @@ public class TestCaseDetector {
         }
         return false;
     }
-
 }

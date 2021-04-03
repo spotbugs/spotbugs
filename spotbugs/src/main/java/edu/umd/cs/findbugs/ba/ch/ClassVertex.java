@@ -19,16 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.graph.AbstractVertex;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 /**
- * Vertex class - represents a class or interface in the InheritanceGraph. Edges
- * connect subtypes to supertypes.
+ * Vertex class - represents a class or interface in the InheritanceGraph. Edges connect subtypes to
+ * supertypes.
  *
  * @author David Hovemeyer
  */
@@ -86,91 +85,71 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
     /**
      * Factory method for resolved ClassVertex objects.
      *
-     * @param classDescriptor
-     *            ClassDescriptor naming the class or interface
-     * @param xclass
-     *            object containing information about a class or interface
+     * @param classDescriptor ClassDescriptor naming the class or interface
+     * @param xclass object containing information about a class or interface
      * @return ClassVertex
      */
-    public static ClassVertex createResolvedClassVertex(ClassDescriptor classDescriptor, XClass xclass) {
+    public static ClassVertex createResolvedClassVertex(
+            ClassDescriptor classDescriptor, XClass xclass) {
         return new ClassVertex(classDescriptor, xclass);
     }
 
     /**
      * Factory method for ClassVertex objects representing missing classes.
      *
-     * @param classDescriptor
-     *            ClassDescriptor naming the missing class or interface
-     * @param isInterface
-     *            true if missing class is an interface, false otherwise
+     * @param classDescriptor ClassDescriptor naming the missing class or interface
+     * @param isInterface true if missing class is an interface, false otherwise
      * @return ClassVertex
      */
-    public static ClassVertex createMissingClassVertex(ClassDescriptor classDescriptor, boolean isInterface) {
+    public static ClassVertex createMissingClassVertex(
+            ClassDescriptor classDescriptor, boolean isInterface) {
         return new ClassVertex(classDescriptor, isInterface);
     }
 
-    /**
-     * @return Returns the classDescriptor.
-     */
+    /** @return Returns the classDescriptor. */
     public ClassDescriptor getClassDescriptor() {
         return classDescriptor;
     }
 
-    /**
-     * @return Returns the xClass.
-     */
+    /** @return Returns the xClass. */
     public @Nullable XClass getXClass() {
         return xclass;
     }
 
     /**
-     * Return true if this ClassVertex corresponds to a resolved class, or false
-     * if the class could not be found.
+     * Return true if this ClassVertex corresponds to a resolved class, or false if the class could
+     * not be found.
      */
     public boolean isResolved() {
         return xclass != null;
     }
 
-    /**
-     * @param finished
-     *            The finished to set.
-     */
+    /** @param finished The finished to set. */
     public void setFinished(boolean finished) {
         setFlag(FINISHED, finished);
     }
 
-    /**
-     * @return Returns the finished.
-     */
+    /** @return Returns the finished. */
     public boolean isFinished() {
         return isFlagSet(FINISHED);
     }
 
-    /**
-     * Mark this ClassVertex as representing an application class.
-     */
+    /** Mark this ClassVertex as representing an application class. */
     public void markAsApplicationClass() {
         setFlag(APPLICATION_CLASS, true);
     }
 
-    /**
-     * @return true if this ClassVertex represents an application class, false
-     *         otherwise
-     */
+    /** @return true if this ClassVertex represents an application class, false otherwise */
     public boolean isApplicationClass() {
         return isFlagSet(APPLICATION_CLASS);
     }
 
-    /**
-     * Mark this ClassVertex as representing an interface.
-     */
+    /** Mark this ClassVertex as representing an interface. */
     private void setInterface() {
         setFlag(INTERFACE, true);
     }
 
-    /**
-     * @return true if this ClassVertex represents an interface, false otherwise
-     */
+    /** @return true if this ClassVertex represents an interface, false otherwise */
     public boolean isInterface() {
         return isFlagSet(INTERFACE);
     }
@@ -178,16 +157,13 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
     /**
      * Set the ClassVertex representing the direct superclass.
      *
-     * @param target
-     *            ClassVertex representing the direct superclass.
+     * @param target ClassVertex representing the direct superclass.
      */
     public void setDirectSuperclass(ClassVertex target) {
         this.directSuperclass = target;
     }
 
-    /**
-     * @return Returns the directSuperclass.
-     */
+    /** @return Returns the directSuperclass. */
     public ClassVertex getDirectSuperclass() {
         return directSuperclass;
     }

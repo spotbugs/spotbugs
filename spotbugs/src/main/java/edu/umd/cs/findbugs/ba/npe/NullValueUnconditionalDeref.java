@@ -1,13 +1,12 @@
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.ba.Location;
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.ba.Location;
-
 /**
- * Collected information about a single value number observed at one or more
- * locations to be both definitely-null and unconditionally dereferenced.
+ * Collected information about a single value number observed at one or more locations to be both
+ * definitely-null and unconditionally dereferenced.
  */
 public class NullValueUnconditionalDeref {
     private boolean alwaysOnExceptionPath;
@@ -48,37 +47,27 @@ public class NullValueUnconditionalDeref {
         derefLocationSet.addAll(unconditionalDerefLocationSet);
     }
 
-    /**
-     * @return Returns the derefLocationSet.
-     */
+    /** @return Returns the derefLocationSet. */
     public Set<Location> getDerefLocationSet() {
         return derefLocationSet;
     }
 
-    /**
-     * @return Returns the alwaysOnExceptionPath.
-     */
+    /** @return Returns the alwaysOnExceptionPath. */
     public boolean isAlwaysOnExceptionPath() {
         return alwaysOnExceptionPath;
     }
 
-    /**
-     * @return Returns the alwaysMethodReturnValue.
-     */
+    /** @return Returns the alwaysMethodReturnValue. */
     public boolean isMethodReturnValue() {
         return alwaysMethodReturnValue;
     }
 
-    /**
-     * @return Returns the alwaysMethodReturnValue.
-     */
+    /** @return Returns the alwaysMethodReturnValue. */
     public boolean isReadlineValue() {
         return alwaysReadlineValue;
     }
 
-    /**
-     * @return Returns the alwaysFieldValue.
-     */
+    /** @return Returns the alwaysFieldValue. */
     public boolean isFieldValue() {
         return alwaysFieldValue;
     }

@@ -19,25 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.FieldOrMethod;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Synthetic;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -58,13 +39,30 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.FieldOrMethod;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Synthetic;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 public class SerializableIdiom extends OpcodeStackDetector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("se.debug");
 
-    final static boolean reportTransientFieldOfNonSerializableClass = SystemProperties
-            .getBoolean("reportTransientFieldOfNonSerializableClass");
+    static final boolean reportTransientFieldOfNonSerializableClass =
+            SystemProperties.getBoolean("reportTransientFieldOfNonSerializableClass");
 
     boolean sawSerialVersionUID;
 
@@ -139,7 +137,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
     }
 
     private void flush() {
-        if (!isAbstract && !((sawReadExternal && sawWriteExternal) || (sawReadObject && sawWriteObject))) {
+        if (!isAbstract
+                && !((sawReadExternal && sawWriteExternal) || (sawReadObject && sawWriteObject))) {
             for (BugInstance aFieldWarningList : fieldWarningList) {
                 bugReporter.reportBug(aFieldWarningList);
             }
@@ -232,19 +231,24 @@ public class SerializableIdiom extends OpcodeStackDetector {
         ClassDescriptor superclassDescriptor = getXClass().getSuperclassDescriptor();
         if (superclassDescriptor != null) {
             try {
-                XClass superXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, superclassDescriptor);
+                XClass superXClass =
+                        Global.getAnalysisCache().getClassAnalysis(XClass.class, superclassDescriptor);
                 if (superXClass != null) {
-                    superClassImplementsSerializable = AnalysisContext
-                            .currentAnalysisContext()
-                            .getSubtypes2()
-                            .isSubtype(superXClass.getClassDescriptor(),
-                                    DescriptorFactory.createClassDescriptor(java.io.Serializable.class));
+                    superClassImplementsSerializable =
+                            AnalysisContext.currentAnalysisContext()
+                                    .getSubtypes2()
+                                    .isSubtype(
+                                            superXClass.getClassDescriptor(),
+                                            DescriptorFactory.createClassDescriptor(java.io.Serializable.class));
                     superClassHasVoidConstructor = false;
                     for (XMethod m : superXClass.getXMethods()) {
-                        if (Const.CONSTRUCTOR_NAME.equals(m.getName()) && "()V".equals(m.getSignature()) && !m.isPrivate()) {
+                        if (Const.CONSTRUCTOR_NAME.equals(m.getName())
+                                && "()V".equals(m.getSignature())
+                                && !m.isPrivate()) {
                             superClassHasVoidConstructor = true;
                         }
-                        if ("readObject".equals(m.getName()) && "(Ljava/io/ObjectInputStream;)V".equals(m.getSignature())
+                        if ("readObject".equals(m.getName())
+                                && "(Ljava/io/ObjectInputStream;)V".equals(m.getSignature())
                                 && m.isPrivate()) {
                             superClassHasReadObject = true;
                         }
@@ -262,10 +266,12 @@ public class SerializableIdiom extends OpcodeStackDetector {
         isGUIClass = false;
         isEjbImplClass = Subtypes2.instanceOf(obj, "javax.ejb.SessionBean");
         isJSPClass = Subtypes2.isJSP(obj);
-        isGUIClass = (Subtypes2.instanceOf(obj, "java.lang.Throwable") || Subtypes2.instanceOf(obj, "java.awt.Component")
-                || Subtypes2.instanceOf(obj, "java.awt.Component$AccessibleAWTComponent")
-                || Subtypes2.instanceOf(obj, "java.awt.event.ActionListener") || Subtypes2.instanceOf(obj,
-                        "java.util.EventListener"));
+        isGUIClass =
+                (Subtypes2.instanceOf(obj, "java.lang.Throwable")
+                        || Subtypes2.instanceOf(obj, "java.awt.Component")
+                        || Subtypes2.instanceOf(obj, "java.awt.Component$AccessibleAWTComponent")
+                        || Subtypes2.instanceOf(obj, "java.awt.event.ActionListener")
+                        || Subtypes2.instanceOf(obj, "java.util.EventListener"));
         if (!isGUIClass) {
             JavaClass o = obj;
             while (o != null) {
@@ -279,7 +285,6 @@ public class SerializableIdiom extends OpcodeStackDetector {
                     break;
                 }
             }
-
         }
 
         foundSynthetic = false;
@@ -290,13 +295,15 @@ public class SerializableIdiom extends OpcodeStackDetector {
         if (isSerializable) {
             for (Method m : obj.getMethods()) {
 
-                if ("readObject".equals(m.getName()) && "(Ljava/io/ObjectInputStream;)V".equals(m.getSignature())) {
+                if ("readObject".equals(m.getName())
+                        && "(Ljava/io/ObjectInputStream;)V".equals(m.getSignature())) {
                     sawReadObject = true;
                 } else if ("readResolve".equals(m.getName()) && m.getSignature().startsWith("()")) {
                     sawReadResolve = true;
                 } else if ("readObjectNoData".equals(m.getName()) && "()V".equals(m.getSignature())) {
                     sawReadObject = true;
-                } else if ("writeObject".equals(m.getName()) && "(Ljava/io/ObjectOutputStream;)V".equals(m.getSignature())) {
+                } else if ("writeObject".equals(m.getName())
+                        && "(Ljava/io/ObjectOutputStream;)V".equals(m.getSignature())) {
                     sawWriteObject = true;
                 }
             }
@@ -314,7 +321,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 || sawReadResolve
                 || sawWriteObject
                 || seenTransientField
-                || AnalysisContext.currentAnalysisContext().getUnreadFieldsData()
+                || AnalysisContext.currentAnalysisContext()
+                        .getUnreadFieldsData()
                         .existsStrongEvidenceForIntendedSerialization(this.getClassDescriptor());
     }
 
@@ -335,7 +343,11 @@ public class SerializableIdiom extends OpcodeStackDetector {
             System.out.println("  isEjbImplClass: " + isEjbImplClass);
             System.out.println("  isJSPClass: " + isJSPClass);
         }
-        if (isSerializable && !sawReadObject && !sawReadResolve && seenTransientField && !superClassHasReadObject) {
+        if (isSerializable
+                && !sawReadObject
+                && !sawReadResolve
+                && seenTransientField
+                && !superClassHasReadObject) {
             for (Map.Entry<XField, Integer> e : transientFieldsUpdates.entrySet()) {
 
                 XField fieldX = e.getKey();
@@ -375,20 +387,26 @@ public class SerializableIdiom extends OpcodeStackDetector {
                     // ignore it
                 }
 
-                bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_NOT_RESTORED", priority).addClass(getThisClass())
-                        .addField(fieldX));
-
+                bugReporter.reportBug(
+                        new BugInstance(this, "SE_TRANSIENT_FIELD_NOT_RESTORED", priority)
+                                .addClass(getThisClass())
+                                .addField(fieldX));
             }
-
         }
-        if (isSerializable && !isExternalizable && !superClassHasVoidConstructor && !superClassImplementsSerializable) {
-            int priority = implementsSerializableDirectly || seenTransientField ? HIGH_PRIORITY
-                    : (sawSerialVersionUID ? NORMAL_PRIORITY : LOW_PRIORITY);
+        if (isSerializable
+                && !isExternalizable
+                && !superClassHasVoidConstructor
+                && !superClassImplementsSerializable) {
+            int priority =
+                    implementsSerializableDirectly || seenTransientField
+                            ? HIGH_PRIORITY
+                            : (sawSerialVersionUID ? NORMAL_PRIORITY : LOW_PRIORITY);
             if (isGUIClass || isEjbImplClass || isJSPClass) {
                 priority++;
             }
-            bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR", priority).addClass(getThisClass()
-                    .getClassName()));
+            bugReporter.reportBug(
+                    new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR", priority)
+                            .addClass(getThisClass().getClassName()));
         }
         // Downgrade class-level warnings if it's a GUI or EJB-implementation
         // class.
@@ -398,8 +416,12 @@ public class SerializableIdiom extends OpcodeStackDetector {
         }
 
         if (isExternalizable && !hasPublicVoidConstructor && !isAbstract) {
-            bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION",
-                    directlyImplementsExternalizable ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(getThisClass().getClassName()));
+            bugReporter.reportBug(
+                    new BugInstance(
+                            this,
+                            "SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION",
+                            directlyImplementsExternalizable ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                                    .addClass(getThisClass().getClassName()));
         }
         if (!foundSynthetic) {
             priority++;
@@ -407,13 +429,22 @@ public class SerializableIdiom extends OpcodeStackDetector {
         if (seenTransientField) {
             priority--;
         }
-        if (!isAnonymousInnerClass && !isExternalizable && !isGUIClass && !obj.isAbstract() && isSerializable && !isAbstract
-                && !sawSerialVersionUID && !isEjbImplClass && !isJSPClass) {
-            bugReporter.reportBug(new BugInstance(this, "SE_NO_SERIALVERSIONID", priority).addClass(this));
+        if (!isAnonymousInnerClass
+                && !isExternalizable
+                && !isGUIClass
+                && !obj.isAbstract()
+                && isSerializable
+                && !isAbstract
+                && !sawSerialVersionUID
+                && !isEjbImplClass
+                && !isJSPClass) {
+            bugReporter.reportBug(
+                    new BugInstance(this, "SE_NO_SERIALVERSIONID", priority).addClass(this));
         }
 
         if (writeObjectIsSynchronized && !foundSynchronizedMethods) {
-            bugReporter.reportBug(new BugInstance(this, "WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
+            bugReporter.reportBug(
+                    new BugInstance(this, "WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
         }
     }
 
@@ -422,7 +453,9 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
         int accessFlags = obj.getAccessFlags();
         boolean isSynchronized = (accessFlags & Const.ACC_SYNCHRONIZED) != 0;
-        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && "()V".equals(getMethodSig()) && (accessFlags & Const.ACC_PUBLIC) != 0) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName())
+                && "()V".equals(getMethodSig())
+                && (accessFlags & Const.ACC_PUBLIC) != 0) {
             hasPublicVoidConstructor = true;
         }
         if (!Const.CONSTRUCTOR_NAME.equals(getMethodName()) && isSynthetic(obj)) {
@@ -430,36 +463,47 @@ public class SerializableIdiom extends OpcodeStackDetector {
             // System.out.println(methodName + isSynchronized);
         }
 
-        if ("readExternal".equals(getMethodName()) && "(Ljava/io/ObjectInput;)V".equals(getMethodSig())) {
+        if ("readExternal".equals(getMethodName())
+                && "(Ljava/io/ObjectInput;)V".equals(getMethodSig())) {
             sawReadExternal = true;
             if (DEBUG && !obj.isPrivate()) {
                 System.out.println("Non-private readExternal method in: " + getDottedClassName());
             }
-        } else if ("writeExternal".equals(getMethodName()) && "(Ljava/io/Objectoutput;)V".equals(getMethodSig())) {
+        } else if ("writeExternal".equals(getMethodName())
+                && "(Ljava/io/Objectoutput;)V".equals(getMethodSig())) {
             sawWriteExternal = true;
             if (DEBUG && !obj.isPrivate()) {
                 System.out.println("Non-private writeExternal method in: " + getDottedClassName());
             }
-        } else if ("readResolve".equals(getMethodName()) && getMethodSig().startsWith("()") && isSerializable) {
+        } else if ("readResolve".equals(getMethodName())
+                && getMethodSig().startsWith("()")
+                && isSerializable) {
             sawReadResolve = true;
             if (!"()Ljava/lang/Object;".equals(getMethodSig())) {
-                bugReporter.reportBug(new BugInstance(this, "SE_READ_RESOLVE_MUST_RETURN_OBJECT", HIGH_PRIORITY)
-                        .addClassAndMethod(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, "SE_READ_RESOLVE_MUST_RETURN_OBJECT", HIGH_PRIORITY)
+                                .addClassAndMethod(this));
             } else if (obj.isStatic()) {
-                bugReporter.reportBug(new BugInstance(this, "SE_READ_RESOLVE_IS_STATIC", HIGH_PRIORITY).addClassAndMethod(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, "SE_READ_RESOLVE_IS_STATIC", HIGH_PRIORITY)
+                                .addClassAndMethod(this));
             } else if (obj.isPrivate()) {
                 try {
-                    Set<ClassDescriptor> subtypes = AnalysisContext.currentAnalysisContext().getSubtypes2()
-                            .getSubtypes(getClassDescriptor());
+                    Set<ClassDescriptor> subtypes =
+                            AnalysisContext.currentAnalysisContext()
+                                    .getSubtypes2()
+                                    .getSubtypes(getClassDescriptor());
                     if (subtypes.size() > 1) {
-                        BugInstance bug = new BugInstance(this, "SE_PRIVATE_READ_RESOLVE_NOT_INHERITED", NORMAL_PRIORITY)
-                                .addClassAndMethod(this);
+                        BugInstance bug =
+                                new BugInstance(this, "SE_PRIVATE_READ_RESOLVE_NOT_INHERITED", NORMAL_PRIORITY)
+                                        .addClassAndMethod(this);
                         boolean nasty = false;
                         for (ClassDescriptor subclass : subtypes) {
                             if (!subclass.equals(getClassDescriptor())) {
 
                                 XClass xSub = AnalysisContext.currentXFactory().getXClass(subclass);
-                                if (xSub != null && xSub.findMethod("readResolve", "()Ljava/lang/Object;", false) == null
+                                if (xSub != null
+                                        && xSub.findMethod("readResolve", "()Ljava/lang/Object;", false) == null
                                         && xSub.findMethod("writeReplace", "()Ljava/lang/Object;", false) == null) {
                                     bug.addClass(subclass).describe(ClassAnnotation.SUBCLASS_ROLE);
                                     nasty = true;
@@ -479,35 +523,56 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 }
             }
 
-        } else if ("readObject".equals(getMethodName()) && "(Ljava/io/ObjectInputStream;)V".equals(getMethodSig())
+        } else if ("readObject".equals(getMethodName())
+                && "(Ljava/io/ObjectInputStream;)V".equals(getMethodSig())
                 && isSerializable) {
             sawReadObject = true;
             if (!obj.isPrivate()) {
-                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", isExternalizable ? NORMAL_PRIORITY : HIGH_PRIORITY)
-                        .addClassAndMethod(this));
+                bugReporter.reportBug(
+                        new BugInstance(
+                                this,
+                                "SE_METHOD_MUST_BE_PRIVATE",
+                                isExternalizable ? NORMAL_PRIORITY : HIGH_PRIORITY)
+                                        .addClassAndMethod(this));
             }
 
-        } else if ("readObjectNoData".equals(getMethodName()) && "()V".equals(getMethodSig()) && isSerializable) {
+        } else if ("readObjectNoData".equals(getMethodName())
+                && "()V".equals(getMethodSig())
+                && isSerializable) {
 
             if (!obj.isPrivate()) {
-                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", isExternalizable ? NORMAL_PRIORITY : HIGH_PRIORITY)
-                        .addClassAndMethod(this));
+                bugReporter.reportBug(
+                        new BugInstance(
+                                this,
+                                "SE_METHOD_MUST_BE_PRIVATE",
+                                isExternalizable ? NORMAL_PRIORITY : HIGH_PRIORITY)
+                                        .addClassAndMethod(this));
             }
 
-        } else if ("writeObject".equals(getMethodName()) && "(Ljava/io/ObjectOutputStream;)V".equals(getMethodSig())
+        } else if ("writeObject".equals(getMethodName())
+                && "(Ljava/io/ObjectOutputStream;)V".equals(getMethodSig())
                 && isSerializable) {
             sawWriteObject = true;
             if (!obj.isPrivate()) {
-                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", isExternalizable ? NORMAL_PRIORITY : HIGH_PRIORITY)
-                        .addClassAndMethod(this));
+                bugReporter.reportBug(
+                        new BugInstance(
+                                this,
+                                "SE_METHOD_MUST_BE_PRIVATE",
+                                isExternalizable ? NORMAL_PRIORITY : HIGH_PRIORITY)
+                                        .addClassAndMethod(this));
             }
         }
 
         if (isSynchronized) {
-            if ("readObject".equals(getMethodName()) && "(Ljava/io/ObjectInputStream;)V".equals(getMethodSig()) && isSerializable) {
-                bugReporter.reportBug(new BugInstance(this, "RS_READOBJECT_SYNC", isExternalizable ? LOW_PRIORITY : NORMAL_PRIORITY)
-                        .addClassAndMethod(this));
-            } else if ("writeObject".equals(getMethodName()) && "(Ljava/io/ObjectOutputStream;)V".equals(getMethodSig())
+            if ("readObject".equals(getMethodName())
+                    && "(Ljava/io/ObjectInputStream;)V".equals(getMethodSig())
+                    && isSerializable) {
+                bugReporter.reportBug(
+                        new BugInstance(
+                                this, "RS_READOBJECT_SYNC", isExternalizable ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                        .addClassAndMethod(this));
+            } else if ("writeObject".equals(getMethodName())
+                    && "(Ljava/io/ObjectOutputStream;)V".equals(getMethodSig())
                     && isSerializable) {
                 writeObjectIsSynchronized = true;
             } else {
@@ -515,7 +580,6 @@ public class SerializableIdiom extends OpcodeStackDetector {
             }
         }
         super.visit(obj);
-
     }
 
     boolean isSynthetic(FieldOrMethod obj) {
@@ -546,7 +610,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 // first.isInitialParameter();
                 if (!isPutOfDefaultValue && first.getConstant() != null && !first.isArray()) {
                     Object constant = first.getConstant();
-                    if (constant instanceof Number && ((Number) constant).intValue() == 0 || constant.equals(Boolean.FALSE)) {
+                    if (constant instanceof Number && ((Number) constant).intValue() == 0
+                            || constant.equals(Boolean.FALSE)) {
                         isPutOfDefaultValue = true;
                     }
                 }
@@ -588,9 +653,13 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                     }
                                     int priority = computePriority(isSerializable, bias);
 
-                                    fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_STORE", priority)
-                                            .addClass(getThisClass().getClassName()).addField(f).addType(genSig)
-                                            .describe("TYPE_FOUND").addSourceLine(this));
+                                    fieldWarningList.add(
+                                            new BugInstance(this, "SE_BAD_FIELD_STORE", priority)
+                                                    .addClass(getThisClass().getClassName())
+                                                    .addField(f)
+                                                    .addType(genSig)
+                                                    .describe("TYPE_FOUND")
+                                                    .addSourceLine(this));
                                 }
                             }
                         } catch (ClassNotFoundException e) {
@@ -599,9 +668,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                     }
                 }
             }
-
         }
-
     }
 
     @Override
@@ -616,7 +683,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
         String fieldSig = summary.getSignature();
 
         if (isEjbImplClass) {
-            ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(fieldSig);
+            ClassDescriptor fieldType =
+                    DescriptorFactory.createClassDescriptorFromFieldSignature(fieldSig);
             if (fieldType != null) {
                 if (Subtypes2.instanceOf(fieldType, "javax.ejb.SessionContext")
                         || Subtypes2.instanceOf(fieldType, "javax.transaction.UserTransaction")
@@ -624,9 +692,11 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         || Subtypes2.instanceOf(fieldType, "javax.ejb.EJBObject")
                         || Subtypes2.instanceOf(fieldType, "javax.naming.Context")) {
                     if (testingEnabled && obj.isTransient()) {
-                        bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClass(this)
-                                .addVisitedField(this)
-                                .addString("EJB implementation classes should not have fields of this type"));
+                        bugReporter.reportBug(
+                                new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+                                        .addClass(this)
+                                        .addVisitedField(this)
+                                        .addString("EJB implementation classes should not have fields of this type"));
                     }
                     return;
                 }
@@ -638,13 +708,20 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 seenTransientField = true;
                 transientFieldsUpdates.put(getXField(), 0);
             } else if (reportTransientFieldOfNonSerializableClass) {
-                bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS", NORMAL_PRIORITY)
-                        .addClass(this).addVisitedField(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, "SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS", NORMAL_PRIORITY)
+                                .addClass(this)
+                                .addVisitedField(this));
             }
-        } else if (getClassName().indexOf("ObjectStreamClass") == -1 && isSerializable && !isExternalizable
-                && fieldSig.indexOf('L') >= 0 && !obj.isTransient() && !obj.isStatic()) {
+        } else if (getClassName().indexOf("ObjectStreamClass") == -1
+                && isSerializable
+                && !isExternalizable
+                && fieldSig.indexOf('L') >= 0
+                && !obj.isTransient()
+                && !obj.isStatic()) {
             if (DEBUG) {
-                System.out.println("Examining non-transient field with name: " + getFieldName() + ", sig: " + fieldSig);
+                System.out.println(
+                        "Examining non-transient field with name: " + getFieldName() + ", sig: " + fieldSig);
             }
             XField xfield = getXField();
             Type type = TypeFrameModelingVisitor.getType(xfield);
@@ -660,7 +737,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         fieldsThatMightBeAProblem.put(obj.getName(), xfield);
                     }
                     if (isSerializable < 0.9) {
-                        ReferenceType problemType = DeepSubtypeAnalysis.getLeastSerializableTypeComponent(rtype);
+                        ReferenceType problemType =
+                                DeepSubtypeAnalysis.getLeastSerializableTypeComponent(rtype);
 
                         // Priority is LOW for GUI classes (unless explicitly marked
                         // Serializable),
@@ -685,25 +763,47 @@ public class SerializableIdiom extends OpcodeStackDetector {
                             priority = Math.max(priority, NORMAL_PRIORITY);
                         }
                         if (DEBUG) {
-                            System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName() + " " + obj.getName() + " "
-                                    + isSerializable + " " + implementsSerializableDirectly + " " + sawSerialVersionUID + " "
-                                    + isGUIClass + " " + isEjbImplClass);
+                            System.out.println(
+                                    "SE_BAD_FIELD: "
+                                            + getThisClass().getClassName()
+                                            + " "
+                                            + obj.getName()
+                                            + " "
+                                            + isSerializable
+                                            + " "
+                                            + implementsSerializableDirectly
+                                            + " "
+                                            + sawSerialVersionUID
+                                            + " "
+                                            + isGUIClass
+                                            + " "
+                                            + isEjbImplClass);
                             // Report is queued until after the entire class has been
                             // seen.
                         }
 
                         if ("this$0".equals(obj.getName())) {
-                            fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_INNER_CLASS", priority).addClass(getThisClass()
-                                    .getClassName()));
+                            fieldWarningList.add(
+                                    new BugInstance(this, "SE_BAD_FIELD_INNER_CLASS", priority)
+                                            .addClass(getThisClass().getClassName()));
                         } else if (isSerializable < 0.9) {
-                            fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
-                                    .addClass(getThisClass().getClassName())
-                                    .addField(xfield).addType(problemType)
-                                    .describe("TYPE_FOUND"));
+                            fieldWarningList.add(
+                                    new BugInstance(this, "SE_BAD_FIELD", priority)
+                                            .addClass(getThisClass().getClassName())
+                                            .addField(xfield)
+                                            .addType(problemType)
+                                            .describe("TYPE_FOUND"));
                         }
-                    } else if (!isGUIClass && !isEjbImplClass && !isJSPClass && "this$0".equals(obj.getName())) {
-                        fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS", implementsSerializableDirectly ? NORMAL_PRIORITY
-                                : LOW_PRIORITY).addClass(getThisClass().getClassName()));
+                    } else if (!isGUIClass
+                            && !isEjbImplClass
+                            && !isJSPClass
+                            && "this$0".equals(obj.getName())) {
+                        fieldWarningList.add(
+                                new BugInstance(
+                                        this,
+                                        "SE_INNER_CLASS",
+                                        implementsSerializableDirectly ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                                .addClass(getThisClass().getClassName()));
                     }
                 } catch (ClassNotFoundException e) {
                     if (DEBUG) {
@@ -725,17 +825,23 @@ public class SerializableIdiom extends OpcodeStackDetector {
             return;
         }
         if ((flags & mask) == mask && "I".equals(fieldSig)) {
-            bugReporter.reportBug(new BugInstance(this, "SE_NONLONG_SERIALVERSIONID", LOW_PRIORITY).addClass(this)
-                    .addVisitedField(this));
+            bugReporter.reportBug(
+                    new BugInstance(this, "SE_NONLONG_SERIALVERSIONID", LOW_PRIORITY)
+                            .addClass(this)
+                            .addVisitedField(this));
             sawSerialVersionUID = true;
             return;
         } else if ((flags & Const.ACC_STATIC) == 0) {
-            bugReporter.reportBug(new BugInstance(this, "SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY).addClass(this)
-                    .addVisitedField(this));
+            bugReporter.reportBug(
+                    new BugInstance(this, "SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY)
+                            .addClass(this)
+                            .addVisitedField(this));
             return;
         } else if ((flags & Const.ACC_FINAL) == 0) {
-            bugReporter.reportBug(new BugInstance(this, "SE_NONFINAL_SERIALVERSIONID", NORMAL_PRIORITY).addClass(this)
-                    .addVisitedField(this));
+            bugReporter.reportBug(
+                    new BugInstance(this, "SE_NONFINAL_SERIALVERSIONID", NORMAL_PRIORITY)
+                            .addClass(this)
+                            .addVisitedField(this));
             return;
         }
         sawSerialVersionUID = true;
@@ -753,5 +859,4 @@ public class SerializableIdiom extends OpcodeStackDetector {
         }
         return priority;
     }
-
 }

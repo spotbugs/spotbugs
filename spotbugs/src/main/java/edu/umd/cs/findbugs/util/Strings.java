@@ -23,9 +23,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import org.apache.commons.text.StringEscapeUtils;
-
 
 /**
  * A class for static String utility methods.
@@ -35,22 +33,16 @@ import org.apache.commons.text.StringEscapeUtils;
 public class Strings {
 
     /**
-     * This is intended to be semantically equivalent to
-     * <code>source.replace(find, repl)</code> but also compatible with JDK 1.4.
+     * This is intended to be semantically equivalent to <code>source.replace(find, repl)</code> but
+     * also compatible with JDK 1.4.
      *
-     * @param source
-     *            The String on which to operate
-     * @param find
-     *            The literal substring to be replaced
-     * @param repl
-     *            The literal replacement substring
+     * @param source The String on which to operate
+     * @param find The literal substring to be replaced
+     * @param repl The literal replacement substring
      * @return The resultant String after substitution
-     * @throws NullPointerException
-     *             if any of the arguments are null
-     * @throws IllegalArgumentException
-     *             if <code>find</code> has zero length
-     * @see java.lang.String#replace(CharSequence target, CharSequence
-     *      replacement)
+     * @throws NullPointerException if any of the arguments are null
+     * @throws IllegalArgumentException if <code>find</code> has zero length
+     * @see java.lang.String#replace(CharSequence target, CharSequence replacement)
      */
     @Deprecated
     public static String replace(String source, String find, String repl) {
@@ -58,10 +50,9 @@ public class Strings {
     }
 
     /**
-     * This is intended to be equivalent to <code>Arrays.toString(a)</code> but
-     * also compatible with JDK 1.4. This concatenates the results of calling
-     * String.valueOf() on each element of the array, so this won't work well
-     * for multi-dimensional arrays.
+     * This is intended to be equivalent to <code>Arrays.toString(a)</code> but also compatible with
+     * JDK 1.4. This concatenates the results of calling String.valueOf() on each element of the
+     * array, so this won't work well for multi-dimensional arrays.
      *
      * @see java.lang.String#valueOf(Object)
      * @see java.util.Arrays#toString(Object[])
@@ -75,8 +66,7 @@ public class Strings {
     /**
      * Trim trailing comma from given string.
      *
-     * @param s
-     *            a string
+     * @param s a string
      * @return the same string with trailing comma trimmed (if any)
      */
     public static String trimComma(String s) {
@@ -95,26 +85,29 @@ public class Strings {
     private static final int XML_ALLOWED_LOW_CHARACTER_BOUND = 0x20;
 
     private static boolean isInvalidXMLCharacter(int c) {
-        return (c < XML_ALLOWED_LOW_CHARACTER_BOUND && c >= 0x0
-        // low-value characters allowed by XML 1.0 spec
-        // '\uFFFE' (&#65534;) cannot be deserialized by SAX reader.
-                && c != 0x9 && c != 0xA && c != 0xD)
+        return (c < XML_ALLOWED_LOW_CHARACTER_BOUND
+                && c >= 0x0
+                // low-value characters allowed by XML 1.0 spec
+                // '\uFFFE' (&#65534;) cannot be deserialized by SAX reader.
+                && c != 0x9
+                && c != 0xA
+                && c != 0xD)
                 || c == 0xFFFE;
     }
 
     private static volatile boolean xmlLowValueEscapeStringsInitialized = false;
 
-    private static final String[] xmlLowValueEscapeStrings = new String[XML_ALLOWED_LOW_CHARACTER_BOUND];
+    private static final String[] xmlLowValueEscapeStrings =
+            new String[XML_ALLOWED_LOW_CHARACTER_BOUND];
 
     private static final Object escapeInitLockObject = new Object();
 
     /**
-     * Initializes the map of characters to be escaped and their corresponding
-     * escape sequences. This method will be invoked automatically the first
-     * time a string is escaped/unescaped.
+     * Initializes the map of characters to be escaped and their corresponding escape sequences. This
+     * method will be invoked automatically the first time a string is escaped/unescaped.
      *
-     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">Extensible Markup
-     *      Language (XML) 1.0 (Fifth Edition)</a>
+     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">Extensible Markup Language (XML) 1.0
+     *     (Fifth Edition)</a>
      */
     public static void initializeEscapeMap() {
         if (xmlLowValueEscapeStringsInitialized == true) {
@@ -144,21 +137,17 @@ public class Strings {
     }
 
     /**
-     * Escape XML entities and illegal characters in the given string. This
-     * enhances the functionality of
-     * org.apache.commons.lang.StringEscapeUtils.escapeXml by escaping
-     * low-valued unprintable characters, which are not permitted by the W3C XML
-     * 1.0 specification.
+     * Escape XML entities and illegal characters in the given string. This enhances the functionality
+     * of org.apache.commons.lang.StringEscapeUtils.escapeXml by escaping low-valued unprintable
+     * characters, which are not permitted by the W3C XML 1.0 specification.
      *
-     * @param s
-     *            a string
-     * @return the same string with characters not permitted by the XML
-     *         specification escaped
-     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">Extensible Markup
-     *      Language (XML) 1.0 (Fifth Edition)</a>
+     * @param s a string
+     * @return the same string with characters not permitted by the XML specification escaped
+     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">Extensible Markup Language (XML) 1.0
+     *     (Fifth Edition)</a>
      * @see <a
-     *      href="http://commons.apache.org/lang/api/org/apache/commons/lang/StringEscapeUtils.html#escapeXml(java.lang.String)">org.apache.commons.lang.StringEscapeUtils
-     *      javadoc</a>
+     *     href="http://commons.apache.org/lang/api/org/apache/commons/lang/StringEscapeUtils.html#escapeXml(java.lang.String)">org.apache.commons.lang.StringEscapeUtils
+     *     javadoc</a>
      */
     public static String escapeXml(String s) {
         initializeEscapeMap();
@@ -196,8 +185,8 @@ public class Strings {
     private static final Object unescapeInitLockObject = new Object();
 
     /**
-     * Initialize regular expressions used in unescaping. This method will be
-     * invoked automatically the first time a string is unescaped.
+     * Initialize regular expressions used in unescaping. This method will be invoked automatically
+     * the first time a string is unescaped.
      */
     public static boolean initializeUnescapePattern() {
         if (paternIsInitialized == true) {
@@ -216,8 +205,11 @@ public class Strings {
                  * the pattern is compiled from a final string, so this
                  * exception should never be thrown
                  */
-                System.err.println("Imposible error:  " + "static final regular expression pattern "
-                        + "failed to compile.  Exception:  " + pse.toString());
+                System.err.println(
+                        "Imposible error:  "
+                                + "static final regular expression pattern "
+                                + "failed to compile.  Exception:  "
+                                + pse.toString());
                 return false;
             }
             paternIsInitialized = true;
@@ -226,20 +218,17 @@ public class Strings {
     }
 
     /**
-     * Unescape XML entities and illegal characters in the given string. This
-     * enhances the functionality of
-     * org.apache.commons.lang.StringEscapeUtils.unescapeXml by unescaping
-     * low-valued unprintable characters, which are not permitted by the W3C XML
-     * 1.0 specification.
+     * Unescape XML entities and illegal characters in the given string. This enhances the
+     * functionality of org.apache.commons.lang.StringEscapeUtils.unescapeXml by unescaping low-valued
+     * unprintable characters, which are not permitted by the W3C XML 1.0 specification.
      *
-     * @param s
-     *            a string
+     * @param s a string
      * @return the same string with XML entities/escape sequences unescaped
-     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">Extensible Markup
-     *      Language (XML) 1.0 (Fifth Edition)</a>
+     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">Extensible Markup Language (XML) 1.0
+     *     (Fifth Edition)</a>
      * @see <a
-     *      href="http://commons.apache.org/lang/api/org/apache/commons/lang/StringEscapeUtils.html#unescapeXml(java.lang.String)">org.apache.commons.lang.StringEscapeUtils
-     *      javadoc</a>
+     *     href="http://commons.apache.org/lang/api/org/apache/commons/lang/StringEscapeUtils.html#unescapeXml(java.lang.String)">org.apache.commons.lang.StringEscapeUtils
+     *     javadoc</a>
      */
     public static String unescapeXml(String s) {
 
@@ -275,8 +264,12 @@ public class Strings {
                      * the static regular expression string should guarantee
                      * that this exception is never thrown
                      */
-                    System.err.println("Impossible error: escape sequence '" + digits + "' is not a valid hex number!  "
-                            + "Exception: " + nfe.toString());
+                    System.err.println(
+                            "Impossible error: escape sequence '"
+                                    + digits
+                                    + "' is not a valid hex number!  "
+                                    + "Exception: "
+                                    + nfe.toString());
                     return s;
                 }
                 if (slashes != null && slashes.length() % 2 == 0 && isInvalidXMLCharacter(escapeCode)) {
@@ -301,5 +294,4 @@ public class Strings {
         s = s.replace("\n", "\\n");
         return s;
     }
-
 }

@@ -19,19 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MONITORENTER;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -44,6 +31,17 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MONITORENTER;
+import org.apache.bcel.generic.MethodGen;
 
 public final class FindTwoLockWait implements Detector, StatelessDetector {
 
@@ -103,7 +101,8 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
 
         MethodGen methodGen = classContext.getMethodGen(method);
         CFG cfg = classContext.getCFG(method);
@@ -140,7 +139,8 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
         return lockCount >= 2 && sawWaitOrNotify;
     }
 
-    public void visitLocation(ClassContext classContext, Location location, MethodGen methodGen, LockDataflow dataflow)
+    public void visitLocation(
+            ClassContext classContext, Location location, MethodGen methodGen, LockDataflow dataflow)
             throws DataflowAnalysisException {
         ConstantPoolGen cpg = methodGen.getConstantPool();
 
@@ -149,8 +149,10 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
             if (count > 1) {
                 // A wait with multiple locks held?
                 String sourceFile = javaClass.getSourceFileName();
-                possibleWaitBugs.add(new BugInstance(this, "TLW_TWO_LOCK_WAIT", HIGH_PRIORITY).addClassAndMethod(methodGen,
-                        sourceFile).addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
+                possibleWaitBugs.add(
+                        new BugInstance(this, "TLW_TWO_LOCK_WAIT", HIGH_PRIORITY)
+                                .addClassAndMethod(methodGen, sourceFile)
+                                .addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
             }
         }
         if (Hierarchy.isMonitorNotify(location.getHandle().getInstruction(), cpg)) {
@@ -158,8 +160,9 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
             if (count > 1) {
                 // A notify with multiple locks held?
                 String sourceFile = javaClass.getSourceFileName();
-                possibleNotifyLocations.add(SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile,
-                        location.getHandle()));
+                possibleNotifyLocations.add(
+                        SourceLineAnnotation.fromVisitedInstruction(
+                                classContext, methodGen, sourceFile, location.getHandle()));
             }
         }
     }

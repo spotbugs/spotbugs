@@ -19,21 +19,17 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import edu.umd.cs.findbugs.ba.interproc.FieldPropertyDatabase;
+import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.ba.interproc.FieldPropertyDatabase;
-import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
-import edu.umd.cs.findbugs.classfile.FieldDescriptor;
-
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class FieldStoreTypeDatabase extends FieldPropertyDatabase<FieldStoreType> {
 
     public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
@@ -76,5 +72,4 @@ public class FieldStoreTypeDatabase extends FieldPropertyDatabase<FieldStoreType
         }
         return buf.toString();
     }
-
 }

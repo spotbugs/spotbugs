@@ -22,13 +22,10 @@ package edu.umd.cs.findbugs.io;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Random;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class IOTest {
 
     Random r = new Random();

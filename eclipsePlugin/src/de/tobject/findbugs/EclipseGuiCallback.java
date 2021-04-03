@@ -1,8 +1,7 @@
-/**
- *
- */
+/** */
 package de.tobject.findbugs;
 
+import edu.umd.cs.findbugs.IGuiCallback;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -21,8 +19,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
-
-import edu.umd.cs.findbugs.IGuiCallback;
 
 public class EclipseGuiCallback implements IGuiCallback {
     private final AbstractExecutorService guiExecutor = new EclipseDisplayThreadExecutor();
@@ -53,17 +49,23 @@ public class EclipseGuiCallback implements IGuiCallback {
     @Override
     public String showQuestionDialog(String message, String title, final String defaultValue) {
         final AtomicReference<Text> textBoxRef = new AtomicReference<>();
-        MessageDialog dlg = new MessageDialog(FindbugsPlugin.getShell(), getDialogTitle(title), null, message, MessageDialog.QUESTION,
-                new String[] { "OK", "Cancel" }, 1) {
-            @Override
-            protected Control createCustomArea(Composite parent) {
-                Text text = new Text(parent, SWT.SINGLE);
-                text.setText(defaultValue);
-                textBoxRef.set(text);
-                return text;
-            }
-
-        };
+        MessageDialog dlg =
+                new MessageDialog(
+                        FindbugsPlugin.getShell(),
+                        getDialogTitle(title),
+                        null,
+                        message,
+                        MessageDialog.QUESTION,
+                        new String[] { "OK", "Cancel" },
+                        1) {
+                    @Override
+                    protected Control createCustomArea(Composite parent) {
+                        Text text = new Text(parent, SWT.SINGLE);
+                        text.setText(defaultValue);
+                        textBoxRef.set(text);
+                        return text;
+                    }
+                };
 
         dlg.open();
         return textBoxRef.get().getText();
@@ -76,12 +78,15 @@ public class EclipseGuiCallback implements IGuiCallback {
 
     @Override
     public void showMessageDialog(final String message) {
-        FindbugsPlugin.getShell().getDisplay().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(), message);
-            }
-        });
+        FindbugsPlugin.getShell()
+                .getDisplay()
+                .asyncExec(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(), message);
+                            }
+                        });
     }
 
     @Override
@@ -95,22 +100,33 @@ public class EclipseGuiCallback implements IGuiCallback {
     }
 
     @Override
-    public int showConfirmDialog(final String message, final String title, final String ok, final String cancel) {
+    public int showConfirmDialog(
+            final String message, final String title, final String ok, final String cancel) {
         final AtomicInteger result = new AtomicInteger(-1);
-        FindbugsPlugin.getShell().getDisplay().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                MessageDialog dialog = new MessageDialog(FindbugsPlugin.getShell(), getDialogTitle(title), null, message, MessageDialog.NONE,
-                        new String[] { ok, cancel }, 0) /*
-                                                         * { { // the code below
-                                                         * requires Eclipse 3.5
-                                                         * setShellStyle
-                                                         * (getShellStyle() |
-                                                         * SWT.SHEET); } }
-                                                         */;
-                result.set(dialog.open());
-            }
-        });
+        FindbugsPlugin.getShell()
+                .getDisplay()
+                .syncExec(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                MessageDialog dialog =
+                                        new MessageDialog(
+                                                FindbugsPlugin.getShell(),
+                                                getDialogTitle(title),
+                                                null,
+                                                message,
+                                                MessageDialog.NONE,
+                                                new String[] { ok, cancel },
+                                                0) /*
+                                                    * { { // the code below
+                                                    * requires Eclipse 3.5
+                                                    * setShellStyle
+                                                    * (getShellStyle() |
+                                                    * SWT.SHEET); } }
+                                                    */;
+                                result.set(dialog.open());
+                            }
+                        });
         return result.get();
     }
 
@@ -141,15 +157,17 @@ public class EclipseGuiCallback implements IGuiCallback {
 
     @Override
     public void displayNonmodelMessage(final String title, final String message) {
-        invokeInGUIThread(new Runnable() {
-            @Override
-            public void run() {
-                MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(title), message);
-            }
-        });
+        invokeInGUIThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        MessageDialog.openInformation(
+                                FindbugsPlugin.getShell(), getDialogTitle(title), message);
+                    }
+                });
     }
 
-    private final static class EclipseDisplayThreadExecutor extends AbstractExecutorService {
+    private static final class EclipseDisplayThreadExecutor extends AbstractExecutorService {
         @Override
         public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
             return false;
@@ -180,5 +198,4 @@ public class EclipseGuiCallback implements IGuiCallback {
             Display.getDefault().asyncExec(command);
         }
     }
-
 }

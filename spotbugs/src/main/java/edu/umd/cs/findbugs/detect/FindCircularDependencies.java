@@ -19,19 +19,17 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class FindCircularDependencies extends BytecodeScanningDetector {
     private HashMap<String, Set<String>> dependencyGraph = null;
@@ -52,7 +50,9 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if ((seen == Const.INVOKESPECIAL) || (seen == Const.INVOKESTATIC) || (seen == Const.INVOKEVIRTUAL)) {
+        if ((seen == Const.INVOKESPECIAL)
+                || (seen == Const.INVOKESTATIC)
+                || (seen == Const.INVOKEVIRTUAL)) {
             String refClsName = getClassConstantOperand();
             refClsName = refClsName.replace('/', '.');
             if (refClsName.startsWith("java")) {

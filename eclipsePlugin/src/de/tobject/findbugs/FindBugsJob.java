@@ -18,9 +18,9 @@
  */
 package de.tobject.findbugs;
 
+import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -31,29 +31,30 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
-import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
-
-/**
- * @author Andrei
- */
+/** @author Andrei */
 public abstract class FindBugsJob extends Job {
 
-    private final static Semaphore analysisSem;
+    private static final Semaphore analysisSem;
 
     private static final boolean DEBUG = false;
+
     static {
         analysisSem = new Semaphore(MutexSchedulingRule.MAX_JOBS, true);
 
         // see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=298795
         // we must run this stupid code in the UI thread
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                PlatformUI.getWorkbench().getProgressService().registerIconForFamily(
-                        FindbugsPlugin.getDefault().getImageDescriptor("runFindbugs.png"),
-                        FindbugsPlugin.class);
-            }
-        });
+        Display.getDefault()
+                .asyncExec(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                PlatformUI.getWorkbench()
+                                        .getProgressService()
+                                        .registerIconForFamily(
+                                                FindbugsPlugin.getDefault().getImageDescriptor("runFindbugs.png"),
+                                                FindbugsPlugin.class);
+                            }
+                        });
     }
 
     private final IResource resource;
@@ -94,7 +95,8 @@ public abstract class FindBugsJob extends Job {
         setPriority(Job.INTERACTIVE);
 
         // paranoia
-        if (supportsMulticore() && analysisSem.availablePermits() == 0
+        if (supportsMulticore()
+                && analysisSem.availablePermits() == 0
                 && Job.getJobManager().find(FindbugsPlugin.class).length == 0) {
             analysisSem.release(MutexSchedulingRule.MAX_JOBS);
         }
@@ -113,7 +115,7 @@ public abstract class FindBugsJob extends Job {
         return getName() + " failed";
     }
 
-    abstract protected void runWithProgress(IProgressMonitor monitor) throws CoreException;
+    protected abstract void runWithProgress(IProgressMonitor monitor) throws CoreException;
 
     protected boolean supportsMulticore() {
         return false;
@@ -166,10 +168,11 @@ public abstract class FindBugsJob extends Job {
     /**
      * Acquires an analysis permit unless first cancelled.
      *
-     * @return {@code true} if permit has been acquired, {@code false} if
-     *         cancellation was observed and permit has not been acquired
+     * @return {@code true} if permit has been acquired, {@code false} if cancellation was observed
+     *     and permit has not been acquired
      */
-    private static boolean acquireAnalysisPermitUnlessCancelled(IProgressMonitor monitor) throws InterruptedException {
+    private static boolean acquireAnalysisPermitUnlessCancelled(IProgressMonitor monitor)
+            throws InterruptedException {
         do {
             if (analysisSem.tryAcquire(1, TimeUnit.SECONDS)) {
                 return true;

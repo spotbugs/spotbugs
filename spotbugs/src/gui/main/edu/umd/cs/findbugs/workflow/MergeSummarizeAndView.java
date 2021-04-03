@@ -19,21 +19,6 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.awt.GraphicsEnvironment;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.CheckForNull;
-
-import org.dom4j.DocumentException;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
@@ -46,10 +31,20 @@ import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.launchGUI.LaunchGUI;
+import java.awt.GraphicsEnvironment;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import javax.annotation.CheckForNull;
+import org.dom4j.DocumentException;
 
-/**
- * Compute the union of two sets of bug results, preserving annotations.
- */
+/** Compute the union of two sets of bug results, preserving annotations. */
 public class MergeSummarizeAndView {
 
     public static class MSVOptions {
@@ -77,14 +72,24 @@ public class MergeSummarizeAndView {
 
         public MSVCommandLine(MSVOptions options) {
             this.options = options;
-            addOption("-workingDir", "filename",
+            addOption(
+                    "-workingDir",
+                    "filename",
                     "Comma separated list of current working directory paths, used to resolve relative paths (Jar, AuxClasspathEntry, SrcDir)");
-            addOption("-srcDir", "filename", "Comma separated list of directory paths, used to resolve relative SourceFile paths");
+            addOption(
+                    "-srcDir",
+                    "filename",
+                    "Comma separated list of directory paths, used to resolve relative SourceFile paths");
             addOption("-maxRank", "rank", "maximum rank of issues to show in summary (default 12)");
             addOption("-maxConsideredRank", "rank", "maximum rank of issues to consider (default 14)");
             addOption("-maxAge", "days", "maximum age of issues to show in summary");
-            addOption("-baseline", "date", "issues before this date are considered old (date format is MM/dd/yyyy)");
-            addSwitch("-gui", "display GUI for any warnings. Default: Displays GUI for warnings meeting filtering criteria");
+            addOption(
+                    "-baseline",
+                    "date",
+                    "issues before this date are considered old (date format is MM/dd/yyyy)");
+            addSwitch(
+                    "-gui",
+                    "display GUI for any warnings. Default: Displays GUI for warnings meeting filtering criteria");
         }
 
         /*
@@ -130,7 +135,6 @@ public class MergeSummarizeAndView {
                 throw new IllegalArgumentException("Unknown option : " + option);
             }
         }
-
     }
 
     static {
@@ -138,7 +142,8 @@ public class MergeSummarizeAndView {
         // detector plugins
     }
 
-    static public SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
+    public static SortedBugCollection union(
+            SortedBugCollection origCollection, SortedBugCollection newCollection) {
 
         SortedBugCollection result = origCollection.duplicate();
 
@@ -162,8 +167,14 @@ public class MergeSummarizeAndView {
         final MSVOptions options = new MSVOptions();
         final MSVCommandLine commandLine = new MSVCommandLine(options);
 
-        int argCount = commandLine.parse(argv, 1, Integer.MAX_VALUE, "Usage: " + MergeSummarizeAndView.class.getName()
-                + " [options] [<results1> <results2> ... <resultsn>] ");
+        int argCount =
+                commandLine.parse(
+                        argv,
+                        1,
+                        Integer.MAX_VALUE,
+                        "Usage: "
+                                + MergeSummarizeAndView.class.getName()
+                                + " [options] [<results1> <results2> ... <resultsn>] ");
 
         for (int i = argCount; i < argv.length; i++) {
             options.analysisFiles.add(argv[i]);
@@ -193,45 +204,37 @@ public class MergeSummarizeAndView {
         load();
     }
 
-    /**
-     * @return Returns true if there were bugs that passed all of the cutoffs.
-     */
+    /** @return Returns true if there were bugs that passed all of the cutoffs. */
     public int numScaryBugs() {
         return scaryBugs.getCollection().size();
     }
 
-    /**
-     * @return Returns the bugs that passed all of the cutoffs
-     */
+    /** @return Returns the bugs that passed all of the cutoffs */
     public BugCollection getScaryBugs() {
         return scaryBugs;
     }
 
-    /**
-     * @return Returns all of the merged bugs
-     */
+    /** @return Returns all of the merged bugs */
     public BugCollection getAllBugs() {
         return scaryBugs;
     }
 
-    /**
-     * @return Returns the number of issues classified as harmless
-     */
+    /** @return Returns the number of issues classified as harmless */
     public int getHarmless() {
         return harmless;
     }
 
     /**
-     * @return Returns the number of issues that had a rank higher than the
-     *         maxRank (but not marked as harmless)
+     * @return Returns the number of issues that had a rank higher than the maxRank (but not marked as
+     *     harmless)
      */
     public int getLowConfidence() {
         return numLowConfidence;
     }
 
     /**
-     * @return Returns the number of issues older than the age cutoff (but not
-     *         ranked higher than the maxRank or marked as harmless).
+     * @return Returns the number of issues older than the age cutoff (but not ranked higher than the
+     *     maxRank or marked as harmless).
      */
     public int getTooOld() {
         return tooOld;
@@ -248,8 +251,9 @@ public class MergeSummarizeAndView {
         IGuiCallback cliUiCallback = new CommandLineUiCallback();
         for (String analysisFile : options.analysisFiles) {
             try {
-                SortedBugCollection more = createPreconfiguredBugCollection(options.workingDirList, options.srcDirList,
-                        cliUiCallback);
+                SortedBugCollection more =
+                        createPreconfiguredBugCollection(
+                                options.workingDirList, options.srcDirList, cliUiCallback);
 
                 more.readXML(analysisFile);
                 BugRanker.trimToMaxRank(more, options.maxConsideredRank);
@@ -336,11 +340,10 @@ public class MergeSummarizeAndView {
             return true;
         }
         return false;
-
     }
 
-    static SortedBugCollection createPreconfiguredBugCollection(List<String> workingDirList, List<String> srcDirList,
-            IGuiCallback guiCallback) {
+    static SortedBugCollection createPreconfiguredBugCollection(
+            List<String> workingDirList, List<String> srcDirList, IGuiCallback guiCallback) {
         Project project = new Project();
         for (String cwd : workingDirList) {
             project.addWorkingDir(cwd);
@@ -355,5 +358,4 @@ public class MergeSummarizeAndView {
     }
 
     static final long NOW = System.currentTimeMillis();
-
 }

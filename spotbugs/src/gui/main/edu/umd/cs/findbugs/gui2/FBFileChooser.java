@@ -19,23 +19,20 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
-
-import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * All FileChoosers are FBFileChoosers so font size will work
  *
  * @author Kristin
- *
  */
 public class FBFileChooser extends JFileChooser {
 
@@ -76,7 +73,6 @@ public class FBFileChooser extends JFileChooser {
     public void addNotify() {
         super.addNotify();
         setFontSize(Driver.getFontSize());
-
     }
 
     private static void workAroundJFileChooserBug() {
@@ -142,6 +138,7 @@ public class FBFileChooser extends JFileChooser {
 
         setAccessory(accessory);
 
-        showHiddenFileCheckBox.addActionListener(ae -> setFileHidingEnabled(!showHiddenFileCheckBox.isSelected()));
+        showHiddenFileCheckBox.addActionListener(
+                ae -> setFileHidingEnabled(!showHiddenFileCheckBox.isSelected()));
     }
 }

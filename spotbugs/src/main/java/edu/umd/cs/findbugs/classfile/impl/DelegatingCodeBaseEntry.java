@@ -19,19 +19,17 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Implementation of ICodeBaseEntry that delegates to another codebase entry.
- * This is needed for codebase entries in nested zipfiles, which are implemented
- * using a private zipfile codebase.
+ * Implementation of ICodeBaseEntry that delegates to another codebase entry. This is needed for
+ * codebase entries in nested zipfiles, which are implemented using a private zipfile codebase.
  *
  * @author David Hovemeyer
  */
@@ -91,7 +89,8 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
     @Override
-    public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
+    public ClassDescriptor getClassDescriptor()
+            throws ResourceNotFoundException, InvalidClassFileFormatException {
         return delegateCodeBaseEntry.getClassDescriptor();
     }
 

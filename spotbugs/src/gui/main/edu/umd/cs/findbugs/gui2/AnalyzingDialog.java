@@ -19,12 +19,14 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.FindBugsProgress;
+import edu.umd.cs.findbugs.Project;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.annotation.Nonnull;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -33,16 +35,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.FindBugsProgress;
-import edu.umd.cs.findbugs.Project;
-
-
 @SuppressWarnings("serial")
 // Note: Don't remove the final, if anyone extends this class, bad things could
 // happen, since a thread is started in this class's constructor.
 /**
- *Creating an instance of this class runs a FindBugs analysis, and pops up a nice progress window
+ * Creating an instance of this class runs a FindBugs analysis, and pops up a nice progress window
  */
 public final class AnalyzingDialog extends FBDialog implements FindBugsProgress {
     private volatile boolean analysisFinished = false;
@@ -65,43 +62,38 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
     private final JButton cancelButton;
 
     public static void show(@Nonnull final Project project) {
-        AnalysisCallback callback = new AnalysisCallback() {
-            @Override
-            public void analysisFinished(BugCollection results) {
-                MainFrame instance = MainFrame.getInstance();
-                assert results.getProject() == project;
-                instance.setBugCollection(results);
-                try {
-                    instance.releaseDisplayWait();
-                } catch (Exception e) {
-                    Logger.getLogger(AnalyzingDialog.class.getName()).log(Level.FINE, "", e);
-                }
-            }
+        AnalysisCallback callback =
+                new AnalysisCallback() {
+                    @Override
+                    public void analysisFinished(BugCollection results) {
+                        MainFrame instance = MainFrame.getInstance();
+                        assert results.getProject() == project;
+                        instance.setBugCollection(results);
+                        try {
+                            instance.releaseDisplayWait();
+                        } catch (Exception e) {
+                            Logger.getLogger(AnalyzingDialog.class.getName()).log(Level.FINE, "", e);
+                        }
+                    }
 
-            @Override
-            public void analysisInterrupted() {
-                MainFrame instance = MainFrame.getInstance();
-                instance.updateProjectAndBugCollection(null);
-                instance.releaseDisplayWait();
-            }
-        };
+                    @Override
+                    public void analysisInterrupted() {
+                        MainFrame instance = MainFrame.getInstance();
+                        instance.updateProjectAndBugCollection(null);
+                        instance.releaseDisplayWait();
+                    }
+                };
         show(project, callback, false);
-
     }
 
     /**
-     *
-     * @param project
-     *            The Project to analyze
-     * @param callback
-     *            contains what to do if the analysis is interrupted and what to
-     *            do if it finishes normally
-     * @param joinThread
-     *            Whether or not this constructor should return before the
-     *            analysis is complete. If true, the constructor does not return
-     *            until the analysis is either finished or interrupted.
+     * @param project The Project to analyze
+     * @param callback contains what to do if the analysis is interrupted and what to do if it
+     *     finishes normally
+     * @param joinThread Whether or not this constructor should return before the analysis is
+     *     complete. If true, the constructor does not return until the analysis is either finished or
+     *     interrupted.
      */
-
     public static void show(@Nonnull Project project, AnalysisCallback callback, boolean joinThread) {
         AnalyzingDialog dialog = new AnalyzingDialog(project, callback, joinThread);
         MainFrame.getInstance().acquireDisplayWait();
@@ -120,19 +112,13 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         }
     }
 
-
-
     /**
-     *
-     * @param project
-     *            The Project to analyze
-     * @param callback
-     *            contains what to do if the analysis is interrupted and what to
-     *            do if it finishes normally
-     * @param joinThread
-     *            Whether or not this constructor should return before the
-     *            analysis is complete. If true, the constructor does not return
-     *            until the analysis is either finished or interrupted.
+     * @param project The Project to analyze
+     * @param callback contains what to do if the analysis is interrupted and what to do if it
+     *     finishes normally
+     * @param joinThread Whether or not this constructor should return before the analysis is
+     *     complete. If true, the constructor does not return until the analysis is either finished or
+     *     interrupted.
      */
     private AnalyzingDialog(@Nonnull Project project, AnalysisCallback callback, boolean joinThread) {
         if (project == null) {
@@ -146,34 +132,40 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
         cancelButton.addActionListener(evt -> cancel());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent evt) {
-                cancel();
-            }
-        });
+        addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent evt) {
+                        cancel();
+                    }
+                });
 
-        SwingUtilities.invokeLater(() -> {
-            setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-            add(statusLabel);
-            add(progressBar);
-            add(cancelButton);
-            statusLabel.setAlignmentX(CENTER_ALIGNMENT);
-            progressBar.setAlignmentX(CENTER_ALIGNMENT);
-            cancelButton.setAlignmentX(CENTER_ALIGNMENT);
-            pack();
-            setSize(300, getHeight());
-            setLocationRelativeTo(MainFrame.getInstance());
-            setResizable(false);
-            setModal(true);// Why was this set to false before?
-            try {
-                setVisible(true);
-            } catch (Throwable e) {
-                AnalyzingDialog.this.project.getGuiCallback().showMessageDialog("ERROR DURING ANALYSIS:\n\n"
-                        + e.getClass().getSimpleName() + ": " + e.getMessage());
-            }
-        });
-
+        SwingUtilities.invokeLater(
+                () -> {
+                    setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+                    add(statusLabel);
+                    add(progressBar);
+                    add(cancelButton);
+                    statusLabel.setAlignmentX(CENTER_ALIGNMENT);
+                    progressBar.setAlignmentX(CENTER_ALIGNMENT);
+                    cancelButton.setAlignmentX(CENTER_ALIGNMENT);
+                    pack();
+                    setSize(300, getHeight());
+                    setLocationRelativeTo(MainFrame.getInstance());
+                    setResizable(false);
+                    setModal(true); // Why was this set to false before?
+                    try {
+                        setVisible(true);
+                    } catch (Throwable e) {
+                        AnalyzingDialog.this.project
+                                .getGuiCallback()
+                                .showMessageDialog(
+                                        "ERROR DURING ANALYSIS:\n\n"
+                                                + e.getClass().getSimpleName()
+                                                + ": "
+                                                + e.getMessage());
+                    }
+                });
     }
 
     private void cancel() {
@@ -191,20 +183,22 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
 
     private void incrementCount() {
         count++;
-        SwingUtilities.invokeLater(() -> {
-            progressBar.setString(count + "/" + goal);
-            progressBar.setValue(count);
-        });
+        SwingUtilities.invokeLater(
+                () -> {
+                    progressBar.setString(count + "/" + goal);
+                    progressBar.setValue(count);
+                });
     }
 
     private void updateCount(final int count, final int goal) {
         this.count = count;
         this.goal = goal;
-        SwingUtilities.invokeLater(() -> {
-            progressBar.setString(count + "/" + goal);
-            progressBar.setValue(count);
-            progressBar.setMaximum(goal);
-        });
+        SwingUtilities.invokeLater(
+                () -> {
+                    progressBar.setString(count + "/" + goal);
+                    progressBar.setValue(count);
+                    progressBar.setMaximum(goal);
+                });
     }
 
     @Override
@@ -219,12 +213,16 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
 
     @Override
     public void finishPerClassAnalysis() {
-        updateStage(edu.umd.cs.findbugs.L10N.getLocalString("progress.finishing_analysis", "Finishing analysis..."));
+        updateStage(
+                edu.umd.cs.findbugs.L10N.getLocalString(
+                        "progress.finishing_analysis", "Finishing analysis..."));
     }
 
     @Override
     public void reportNumberOfArchives(int numArchives) {
-        updateStage(edu.umd.cs.findbugs.L10N.getLocalString("progress.scanning_archives", "Scanning archives..."));
+        updateStage(
+                edu.umd.cs.findbugs.L10N.getLocalString(
+                        "progress.scanning_archives", "Scanning archives..."));
         updateCount(0, numArchives);
     }
 
@@ -233,7 +231,9 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
     @Override
     public void startAnalysis(int numClasses) {
         pass++;
-        String localString = edu.umd.cs.findbugs.L10N.getLocalString("progress.analyzing_classes", "Analyzing classes...");
+        String localString =
+                edu.umd.cs.findbugs.L10N.getLocalString(
+                        "progress.analyzing_classes", "Analyzing classes...");
         updateStage(localString + ", pass " + pass + "/" + classesPerPass.length);
         updateCount(0, numClasses);
     }
@@ -261,15 +261,18 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 // cancel button handler does this already.
                 return;
             } catch (IOException e) {
-                Logger.getLogger(AnalyzingDialog.class.getName()).log(Level.WARNING, "IO Error while performing analysis", e);
+                Logger.getLogger(AnalyzingDialog.class.getName())
+                        .log(Level.WARNING, "IO Error while performing analysis", e);
                 callback.analysisInterrupted();
                 scheduleDialogCleanup();
-                scheduleErrorDialog("Analysis failed", e.getClass().getSimpleName() + ": " + e.getMessage());
+                scheduleErrorDialog(
+                        "Analysis failed", e.getClass().getSimpleName() + ": " + e.getMessage());
                 return;
             } catch (Throwable e) {
                 callback.analysisInterrupted();
                 scheduleDialogCleanup();
-                scheduleErrorDialog("Analysis failed", e.getClass().getSimpleName() + ": " + e.getMessage());
+                scheduleErrorDialog(
+                        "Analysis failed", e.getClass().getSimpleName() + ": " + e.getMessage());
                 return;
             }
 
@@ -285,7 +288,9 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         }
 
         private void scheduleErrorDialog(final String title, final String message) {
-            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainFrame.getInstance(), message, title, JOptionPane.ERROR_MESSAGE));
+            SwingUtilities.invokeLater(
+                    () -> JOptionPane.showMessageDialog(
+                            MainFrame.getInstance(), message, title, JOptionPane.ERROR_MESSAGE));
         }
     }
 
@@ -299,7 +304,6 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
     @Override
     public void predictPassCount(int[] classesPerPass) {
         this.classesPerPass = classesPerPass;
-
     }
 
     @Override

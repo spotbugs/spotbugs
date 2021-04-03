@@ -19,16 +19,16 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.npe.DerefFinder;
 import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.classfile.Method;
 
-public class UsagesRequiringNonNullValuesFactory extends AnalysisFactory<UsagesRequiringNonNullValues> {
+public class UsagesRequiringNonNullValuesFactory
+        extends AnalysisFactory<UsagesRequiringNonNullValues> {
 
     public UsagesRequiringNonNullValuesFactory() {
         super("Dereference factory", UsagesRequiringNonNullValues.class);
@@ -42,10 +42,11 @@ public class UsagesRequiringNonNullValuesFactory extends AnalysisFactory<UsagesR
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public UsagesRequiringNonNullValues analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
-            throws CheckedAnalysisException {
+    public UsagesRequiringNonNullValues analyze(
+            IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         // ClassContext classContext = getClassContext(jclass);
-        ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, descriptor.getClassDescriptor());
+        ClassContext classContext =
+                analysisCache.getClassAnalysis(ClassContext.class, descriptor.getClassDescriptor());
         Method method = getMethod(analysisCache, descriptor);
         return DerefFinder.getAnalysis(classContext, method);
     }

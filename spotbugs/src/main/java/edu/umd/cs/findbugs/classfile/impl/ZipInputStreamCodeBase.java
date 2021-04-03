@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
+import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
+import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.util.Archive;
+import edu.umd.cs.findbugs.util.MapCache;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,20 +33,13 @@ import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
-import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
-import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
-import edu.umd.cs.findbugs.io.IO;
-import edu.umd.cs.findbugs.util.Archive;
-import edu.umd.cs.findbugs.util.MapCache;
-
 /**
  * Implementation of ICodeBase to read from a zip file or jar file.
  *
  * @author David Hovemeyer
  */
 public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
-    final static boolean DEBUG = false;
+    static final boolean DEBUG = false;
 
     final File file;
 
@@ -51,11 +50,9 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
     /**
      * Constructor.
      *
-     * @param codeBaseLocator
-     *            the codebase locator for this codebase
-     * @param file
-     *            the File containing the zip file (may be a temp file if the
-     *            codebase was copied from a nested zipfile in another codebase)
+     * @param codeBaseLocator the codebase locator for this codebase
+     * @param file the File containing the zip file (may be a temp file if the codebase was copied
+     *     from a nested zipfile in another codebase)
      */
     public ZipInputStreamCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
         super(codeBaseLocator);
@@ -72,21 +69,20 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
             while ((ze = zis.getNextEntry()) != null) {
                 String name = ze.getName();
                 if (!ze.isDirectory()
-                        && ("META-INF/MANIFEST.MF".equals(name) || name.endsWith(".class") || Archive.isArchiveFileName(
-                                name))) {
+                        && ("META-INF/MANIFEST.MF".equals(name)
+                                || name.endsWith(".class")
+                                || Archive.isArchiveFileName(name))) {
                     entries.add(name);
                     if ("META-INF/MANIFEST.MF".equals(name)) {
                         map.put(name, build(zis, ze));
                     }
                 }
                 zis.closeEntry();
-
             }
         }
         if (DEBUG) {
             System.out.println("Done with zip input stream " + file);
         }
-
     }
 
     /*
@@ -209,7 +205,6 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
                 throw new RuntimeException("Failure getting next entry in " + file, e);
             }
         }
-
     }
 
     @Override
@@ -234,7 +229,6 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
      */
     @Override
     public void close() {
-
     }
 
     /*

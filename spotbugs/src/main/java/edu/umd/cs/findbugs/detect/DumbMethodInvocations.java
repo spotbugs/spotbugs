@@ -1,16 +1,5 @@
 package edu.umd.cs.findbugs.detect;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -30,11 +19,19 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.detect.BuildStringPassthruGraph.MethodParameter;
 import edu.umd.cs.findbugs.detect.BuildStringPassthruGraph.StringPassthruDatabase;
+import java.io.File;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
 
 public class DumbMethodInvocations implements Detector {
     private static final MethodDescriptor STRING_SUBSTRING =
             new MethodDescriptor("java/lang/String", "substring", "(I)Ljava/lang/String;");
-
 
     private final BugReporter bugReporter;
 
@@ -47,11 +44,19 @@ public class DumbMethodInvocations implements Detector {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
 
-        StringPassthruDatabase database = Global.getAnalysisCache().getDatabase(StringPassthruDatabase.class);
+        StringPassthruDatabase database =
+                Global.getAnalysisCache().getDatabase(StringPassthruDatabase.class);
         allFileNameStringMethods = database.getFileNameStringMethods();
-        allDatabasePasswordMethods = database.findLinkedMethods(Collections.singleton(new MethodParameter(new MethodDescriptor(
-                "java/sql/DriverManager", "getConnection",
-                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;", true), 2)));
+        allDatabasePasswordMethods =
+                database.findLinkedMethods(
+                        Collections.singleton(
+                                new MethodParameter(
+                                        new MethodDescriptor(
+                                                "java/sql/DriverManager",
+                                                "getConnection",
+                                                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;",
+                                                true),
+                                        2)));
     }
 
     @Override
@@ -80,7 +85,8 @@ public class DumbMethodInvocations implements Detector {
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);
         ConstantDataflow constantDataflow = classContext.getConstantDataflow(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -111,13 +117,22 @@ public class DumbMethodInvocations implements Detector {
                     if (operandValue.isConstantString()) {
                         String password = operandValue.getConstantString();
                         if (password.length() == 0) {
-                            bugAccumulator.accumulateBug(new BugInstance(this, "DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
-                                    .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
+                            bugAccumulator.accumulateBug(
+                                    new BugInstance(this, "DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
+                                            .addClassAndMethod(methodGen, sourceFile),
+                                    classContext,
+                                    methodGen,
+                                    sourceFile,
+                                    location);
                         } else {
-                            bugAccumulator.accumulateBug(new BugInstance(this, "DMI_CONSTANT_DB_PASSWORD", NORMAL_PRIORITY)
-                                    .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
+                            bugAccumulator.accumulateBug(
+                                    new BugInstance(this, "DMI_CONSTANT_DB_PASSWORD", NORMAL_PRIORITY)
+                                            .addClassAndMethod(methodGen, sourceFile),
+                                    classContext,
+                                    methodGen,
+                                    sourceFile,
+                                    location);
                         }
-
                     }
                 }
             }
@@ -130,8 +145,13 @@ public class DumbMethodInvocations implements Detector {
                 }
                 int v = operandValue.getConstantInt();
                 if (v == 0) {
-                    bugAccumulator.accumulateBug(new BugInstance(this, "DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
-                            .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
+                    bugAccumulator.accumulateBug(
+                            new BugInstance(this, "DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
+                                    .addClassAndMethod(methodGen, sourceFile),
+                            classContext,
+                            methodGen,
+                            sourceFile,
+                            location);
                 }
 
             } else if (allFileNameStringMethods.containsKey(md)) {
@@ -142,7 +162,9 @@ public class DumbMethodInvocations implements Detector {
                         continue;
                     }
                     String v = operandValue.getConstantString();
-                    if (isAbsoluteFileName(v) && !v.startsWith("/etc/") && !v.startsWith("/dev/")
+                    if (isAbsoluteFileName(v)
+                            && !v.startsWith("/etc/")
+                            && !v.startsWith("/dev/")
                             && !v.startsWith("/proc")) {
                         int priority = NORMAL_PRIORITY;
                         if (v.startsWith("/tmp")) {
@@ -150,14 +172,18 @@ public class DumbMethodInvocations implements Detector {
                         } else if (v.indexOf("/home") >= 0) {
                             priority = HIGH_PRIORITY;
                         }
-                        bugAccumulator.accumulateBug(new BugInstance(this, "DMI_HARDCODED_ABSOLUTE_FILENAME", priority)
-                                .addClassAndMethod(methodGen, sourceFile).addString(v).describe("FILE_NAME"), classContext,
-                                methodGen, sourceFile, location);
+                        bugAccumulator.accumulateBug(
+                                new BugInstance(this, "DMI_HARDCODED_ABSOLUTE_FILENAME", priority)
+                                        .addClassAndMethod(methodGen, sourceFile)
+                                        .addString(v)
+                                        .describe("FILE_NAME"),
+                                classContext,
+                                methodGen,
+                                sourceFile,
+                                location);
                     }
                 }
-
             }
-
         }
     }
 
@@ -174,7 +200,8 @@ public class DumbMethodInvocations implements Detector {
         }
         if (v.length() >= 2 && v.charAt(1) == ':') {
             char driveletter = v.charAt(0);
-            if ((driveletter >= 'A' && driveletter <= 'Z') || (driveletter >= 'a' && driveletter <= 'z')) {
+            if ((driveletter >= 'A' && driveletter <= 'Z')
+                    || (driveletter >= 'a' && driveletter <= 'z')) {
                 return true;
             }
         }
@@ -189,5 +216,4 @@ public class DumbMethodInvocations implements Detector {
     @Override
     public void report() {
     }
-
 }

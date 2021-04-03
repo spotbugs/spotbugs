@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.xml;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import org.dom4j.Branch;
 import org.dom4j.Element;
 
@@ -38,9 +37,7 @@ public class Dom4JXMLOutput implements XMLOutput {
     /**
      * Constructor.
      *
-     * @param topLevel
-     *            the Document or Element that is the root of the tree to be
-     *            built
+     * @param topLevel the Document or Element that is the root of the tree to be built
      */
     public Dom4JXMLOutput(Branch topLevel) {
         this.stack = new LinkedList<>();
@@ -120,13 +117,10 @@ public class Dom4JXMLOutput implements XMLOutput {
     }
 
     /**
-     * Add a list of Strings to document as elements with given tag name to the
-     * tree.
+     * Add a list of Strings to document as elements with given tag name to the tree.
      *
-     * @param tagName
-     *            the tag name
-     * @param listValues
-     *            Collection of String values to add
+     * @param tagName the tag name
+     * @param listValues Collection of String values to add
      */
     public void writeElementList(String tagName, Collection<String> listValues) {
         for (String listValue : listValues) {
@@ -139,8 +133,7 @@ public class Dom4JXMLOutput implements XMLOutput {
     /**
      * Add given object to the tree.
      *
-     * @param obj
-     *            the object
+     * @param obj the object
      */
     public void write(XMLWriteable obj) {
         try {
@@ -153,8 +146,7 @@ public class Dom4JXMLOutput implements XMLOutput {
     /**
      * Add a Collection of XMLWriteable objects to the tree.
      *
-     * @param collection
-     *            Collection of XMLWriteable objects
+     * @param collection Collection of XMLWriteable objects
      */
     public void writeCollection(Collection<? extends XMLWriteable> collection) {
         for (XMLWriteable obj : collection) {

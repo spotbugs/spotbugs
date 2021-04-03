@@ -19,19 +19,17 @@
 
 package edu.umd.cs.findbugs.jaif;
 
+import edu.umd.cs.findbugs.charsets.UTF8;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Locale;
-
-import edu.umd.cs.findbugs.charsets.UTF8;
 
 /**
  * Parse an external annotation file.
  *
  * @author David Hovemeyer
- * @see <a
- *      href="http://groups.csail.mit.edu/pag/jsr308/annotation-file-utilities/">Annotation
- *      File Utilities/</a>
+ * @see <a href="http://groups.csail.mit.edu/pag/jsr308/annotation-file-utilities/">Annotation File
+ *     Utilities/</a>
  */
 public class JAIFParser {
     private final JAIFScanner scanner;
@@ -62,7 +60,8 @@ public class JAIFParser {
     private JAIFToken expect(JAIFTokenKind kind) throws IOException, JAIFSyntaxException {
         JAIFToken t = scanner.nextToken();
         if (t.kind != kind) {
-            throw new JAIFSyntaxException(this, "Unexpected token " + t + " (was expecting a `" + kind.toString() + "' token)");
+            throw new JAIFSyntaxException(
+                    this, "Unexpected token " + t + " (was expecting a `" + kind.toString() + "' token)");
         }
         return t;
     }
@@ -91,7 +90,10 @@ public class JAIFParser {
         }
 
         if (nlCount < 1) {
-            String msg = (t == null) ? "Unexpected end of file" : "Unexpected token " + t + " (was expecting <newline>)";
+            String msg =
+                    (t == null)
+                            ? "Unexpected end of file"
+                            : "Unexpected token " + t + " (was expecting <newline>)";
             throw new JAIFSyntaxException(this, msg);
         }
     }
@@ -128,7 +130,7 @@ public class JAIFParser {
     private String readType() throws IOException, JAIFSyntaxException {
         StringBuilder buf = new StringBuilder();
 
-        /*JAIFToken t = */expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
+        /*JAIFToken t = */ expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
 
         //        if (t.lexeme.equals("enum")) {
         //
@@ -319,7 +321,8 @@ public class JAIFParser {
         return buf.toString();
     }
 
-    private void parseAnnotationDefinitionOrClassDefinition() throws IOException, JAIFSyntaxException {
+    private void parseAnnotationDefinitionOrClassDefinition()
+            throws IOException, JAIFSyntaxException {
         JAIFToken t = scanner.peekToken();
 
         if ("annotation".equals(t.lexeme)) {
@@ -327,7 +330,8 @@ public class JAIFParser {
         } else if ("class".equals(t.lexeme)) {
             parseClassDefinition();
         } else {
-            throw new JAIFSyntaxException(this, "Unexpected token " + t + " (expected `annotation' or `class')");
+            throw new JAIFSyntaxException(
+                    this, "Unexpected token " + t + " (expected `annotation' or `class')");
         }
     }
 
@@ -363,7 +367,6 @@ public class JAIFParser {
     }
 
     private void parseClassDefinition() {
-
     }
 
     public static void main(String[] args) throws Exception {
@@ -372,44 +375,45 @@ public class JAIFParser {
             System.exit(1);
         }
 
-        JAIFEvents callback = new JAIFEvents() {
-            @Override
-            public void annotationField(String fieldName, Object constant) {
-                System.out.println("    " + fieldName + "=" + constant);
-            }
+        JAIFEvents callback =
+                new JAIFEvents() {
+                    @Override
+                    public void annotationField(String fieldName, Object constant) {
+                        System.out.println("    " + fieldName + "=" + constant);
+                    }
 
-            @Override
-            public void endAnnotation(String annotationName) {
-            }
+                    @Override
+                    public void endAnnotation(String annotationName) {
+                    }
 
-            @Override
-            public void endPackageDefinition(String pkgName) {
-            }
+                    @Override
+                    public void endPackageDefinition(String pkgName) {
+                    }
 
-            @Override
-            public void startAnnotation(String annotationName) {
-                System.out.println("  annotation " + annotationName);
-            }
+                    @Override
+                    public void startAnnotation(String annotationName) {
+                        System.out.println("  annotation " + annotationName);
+                    }
 
-            @Override
-            public void startPackageDefinition(String pkgName) {
-                System.out.println("package " + pkgName);
-            }
+                    @Override
+                    public void startPackageDefinition(String pkgName) {
+                        System.out.println("package " + pkgName);
+                    }
 
-            @Override
-            public void startAnnotationDefinition(String annotationName, String retention) {
-                System.out.println("  annotation " + annotationName + " " + retention);
-            }
+                    @Override
+                    public void startAnnotationDefinition(String annotationName, String retention) {
+                        System.out.println("  annotation " + annotationName + " " + retention);
+                    }
 
-            @Override
-            public void endAnnotationDefinition(String annotationName) {
-            }
+                    @Override
+                    public void endAnnotationDefinition(String annotationName) {
+                    }
 
-            @Override
-            public void annotationFieldDefinition(String type, String fieldName) {
-                System.out.println("    " + type + " " + fieldName);
-            }
-        };
+                    @Override
+                    public void annotationFieldDefinition(String type, String fieldName) {
+                        System.out.println("    " + type + " " + fieldName);
+                    }
+                };
 
         JAIFParser parser = new JAIFParser(UTF8.fileReader(args[0]), callback);
         parser.parse();

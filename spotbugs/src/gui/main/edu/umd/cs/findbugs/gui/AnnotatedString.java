@@ -26,27 +26,25 @@
 
 package edu.umd.cs.findbugs.gui;
 
+import edu.umd.cs.findbugs.L10N;
+import edu.umd.cs.findbugs.SystemProperties;
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
-
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import edu.umd.cs.findbugs.L10N;
-import edu.umd.cs.findbugs.SystemProperties;
-
 /**
  * Class to handle Strings annotated with embedded mnemonics
  *
- * Note: Since the human interface guidelines for Mac OS X say never to use
- * mnemonics, this class behaves as if no mnemonics are set when run on Mac OS
- * X.
+ * <p>Note: Since the human interface guidelines for Mac OS X say never to use mnemonics, this class
+ * behaves as if no mnemonics are set when run on Mac OS X.
  */
 public class AnnotatedString {
 
-    private static final boolean MAC_OS_X = SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
+    private static final boolean MAC_OS_X =
+            SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
 
     private final String myAnnotatedString;
 
@@ -79,11 +77,10 @@ public class AnnotatedString {
     }
 
     /**
-     * Return the appropriate mnemonic character for this string. If no mnemonic
-     * should be displayed, KeyEvent.VK_UNDEFINED is returned.
+     * Return the appropriate mnemonic character for this string. If no mnemonic should be displayed,
+     * KeyEvent.VK_UNDEFINED is returned.
      *
-     * @return the Mnemonic character, or VK_UNDEFINED if no mnemonic should be
-     *         set
+     * @return the Mnemonic character, or VK_UNDEFINED if no mnemonic should be set
      */
     public int getMnemonic() {
         int mnemonic = KeyEvent.VK_UNDEFINED;
@@ -97,8 +94,8 @@ public class AnnotatedString {
     }
 
     /**
-     * @return the index in the plain string at which the mnemonic should be
-     *         displayed, or -1 if no mnemonic should be set
+     * @return the index in the plain string at which the mnemonic should be displayed, or -1 if no
+     *     mnemonic should be set
      */
     public int getMnemonicIndex() {
         int index = -1;
@@ -121,7 +118,8 @@ public class AnnotatedString {
         button.setDisplayedMnemonicIndex(as.getMnemonicIndex());
         frame.getContentPane().add(button);
 
-        System.out.println("\"" + s + "\" \"" + as + "\" '" + as.getMnemonic() + "' " + as.getMnemonicIndex());
+        System.out.println(
+                "\"" + s + "\" \"" + as + "\" '" + as.getMnemonic() + "' " + as.getMnemonicIndex());
     }
 
     public static void main(String[] args) {
@@ -143,29 +141,25 @@ public class AnnotatedString {
         addButton(frame, "Cat & Dog");
         addButton(frame, "Cat && Dog");
 
-        SwingUtilities.invokeLater(() -> {
-            frame.pack();
-            frame.setVisible(true);
-        });
-
+        SwingUtilities.invokeLater(
+                () -> {
+                    frame.pack();
+                    frame.setVisible(true);
+                });
     }
 
     /**
-     * Localise the given AbstractButton, setting the text and optionally
-     * mnemonic Note that AbstractButton includes menus and menu items.
+     * Localise the given AbstractButton, setting the text and optionally mnemonic Note that
+     * AbstractButton includes menus and menu items.
      *
-     * @param button
-     *            The button to localise
-     * @param key
-     *            The key to look up in resource bundle
-     * @param defaultString
-     *            default String to use if key not found
-     * @param setMnemonic
-     *            whether or not to set the mnemonic. According to Sun's
-     *            guidelines, default/cancel buttons should not have mnemonics
-     *            but instead should use Return/Escape
+     * @param button The button to localise
+     * @param key The key to look up in resource bundle
+     * @param defaultString default String to use if key not found
+     * @param setMnemonic whether or not to set the mnemonic. According to Sun's guidelines,
+     *     default/cancel buttons should not have mnemonics but instead should use Return/Escape
      */
-    public static void localiseButton(AbstractButton button, String key, String defaultString, boolean setMnemonic) {
+    public static void localiseButton(
+            AbstractButton button, String key, String defaultString, boolean setMnemonic) {
         AnnotatedString as = new AnnotatedString(L10N.getLocalString(key, defaultString));
         button.setText(as.toString());
         int mnemonic;

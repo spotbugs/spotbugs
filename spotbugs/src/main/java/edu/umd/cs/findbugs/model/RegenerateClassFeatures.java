@@ -19,22 +19,19 @@
 
 package edu.umd.cs.findbugs.model;
 
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.SortedBugCollection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.SortedBugCollection;
-
 /**
- * Repopulate a BugCollection with class features from the classes in a
- * specified jar file.
+ * Repopulate a BugCollection with class features from the classes in a specified jar file.
  *
  * @author David Hovemeyer
  */
@@ -50,7 +47,6 @@ public class RegenerateClassFeatures {
 
     public RegenerateClassFeatures execute() throws IOException {
         bugCollection.clearClassFeatures();
-
 
         ArrayList<JavaClass> classList = new ArrayList<>();
 
@@ -81,16 +77,15 @@ public class RegenerateClassFeatures {
         return this;
     }
 
-    /**
-     * @return Returns the bugCollection.
-     */
+    /** @return Returns the bugCollection. */
     public BugCollection getBugCollection() {
         return bugCollection;
     }
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.println("Usage: " + RegenerateClassFeatures.class.getName() + " <bug collection> <jar file>");
+            System.err.println(
+                    "Usage: " + RegenerateClassFeatures.class.getName() + " <bug collection> <jar file>");
             System.exit(1);
         }
 

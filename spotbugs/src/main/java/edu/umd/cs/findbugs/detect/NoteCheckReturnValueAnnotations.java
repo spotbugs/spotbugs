@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
+import org.apache.bcel.classfile.JavaClass;
 
-/**
- * Scan classes for @CheckReturnValue annotations
- */
-public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationDatabase implements Detector, NonReportingDetector {
+/** Scan classes for @CheckReturnValue annotations */
+public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationDatabase
+        implements Detector, NonReportingDetector {
 
     public NoteCheckReturnValueAnnotations(BugReporter bugReporter) {
     }

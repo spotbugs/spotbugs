@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.*;
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import edu.umd.cs.findbugs.RecursiveFileSearch;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
+import java.io.*;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
- * IScannableCodeBase implementation to read resources from a filesystem
- * directory.
+ * IScannableCodeBase implementation to read resources from a filesystem directory.
  *
  * @author David Hovemeyer
  */
@@ -79,10 +77,8 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
     /**
      * Constructor.
      *
-     * @param codeBaseLocator
-     *            the codebase locator for this codebase
-     * @param directory
-     *            the filesystem directory
+     * @param codeBaseLocator the codebase locator for this codebase
+     * @param directory the filesystem directory
      */
     public DirectoryCodeBase(ICodeBaseLocator codeBaseLocator, File directory) {
         super(codeBaseLocator);
@@ -154,9 +150,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
         return new BufferedInputStream(new FileInputStream(path));
     }
 
-    /**
-     * Get the full path of given resource.
-     */
+    /** Get the full path of given resource. */
     File getFullPathOfResource(String resourceName) {
         return new File(directory, resourceName);
     }
@@ -164,10 +158,8 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
     /**
      * Get the resource name given a full filename.
      *
-     * @param fileName
-     *            the full filename (which must be inside the directory)
-     * @return the resource name (i.e., the filename with the directory stripped
-     *         off)
+     * @param fileName the full filename (which must be inside the directory)
+     * @return the resource name (i.e., the filename with the directory stripped off)
      */
     String getResourceName(String fileName) {
         // FIXME: there is probably a more robust way to do this

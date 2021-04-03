@@ -21,13 +21,13 @@
  */
 package de.tobject.findbugs.reporter;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -37,8 +37,6 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-
-import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Utility to find right JDT Java types for anonymous classes
@@ -55,7 +53,7 @@ public class JdtUtils {
 
         private final boolean is50OrHigher;
 
-        private final Map/* <IJavaElement,Integer> */<IType, Integer> map;
+        private final Map /* <IJavaElement,Integer> */<IType, Integer> map;
 
         /**
          * @param javaElement
@@ -69,8 +67,8 @@ public class JdtUtils {
         }
 
         /**
-         * Very simple comparison based on init/not init block decision and then
-         * on the source code position
+         * Very simple comparison based on init/not init block decision and then on the source code
+         * position
          */
         private int compare50(IType m1, IType m2) {
 
@@ -90,16 +88,12 @@ public class JdtUtils {
         }
 
         /**
-         * If "deep" is the same, then source order win. 1) from instance init
-         * 2) from deepest inner from instance init (deepest first) 3) from
-         * static init 4) from deepest inner from static init (deepest first) 5)
-         * from deepest inner (deepest first) 7) regular anon classes from main
-         * class
-         *
+         * If "deep" is the same, then source order win. 1) from instance init 2) from deepest inner
+         * from instance init (deepest first) 3) from static init 4) from deepest inner from static init
+         * (deepest first) 5) from deepest inner (deepest first) 7) regular anon classes from main class
          * <br>
-         * Note, that nested inner anon. classes which do not have different
-         * non-anon. inner class ancestors, are compiled in they nesting order,
-         * opposite to rule 2)
+         * Note, that nested inner anon. classes which do not have different non-anon. inner class
+         * ancestors, are compiled in they nesting order, opposite to rule 2)
          *
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
@@ -171,7 +165,8 @@ public class JdtUtils {
                 //                    System.out.println("Using cache");
                 //                }
             } else {
-                compilePrio = getAnonCompilePriority(anonType, firstAncestor, topAncestorType, is50OrHigher);
+                compilePrio =
+                        getAnonCompilePriority(anonType, firstAncestor, topAncestorType, is50OrHigher);
                 map.put(anonType, Integer.valueOf(compilePrio));
                 //                if (Reporter.DEBUG) {
                 //                    System.out.println("Calculating value!");
@@ -186,10 +181,8 @@ public class JdtUtils {
         /**
          * First source occurrence wins.
          *
-         * @param o1
-         *            should be IType
-         * @param o2
-         *            should be IType
+         * @param o1 should be IType
+         * @param o2 should be IType
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
         @Override
@@ -215,8 +208,8 @@ public class JdtUtils {
 
     /**
      * @param javaElt
-     * @return true, if corresponding java project has compiler setting to
-     *         generate bytecode for jdk 1.5 and above
+     * @return true, if corresponding java project has compiler setting to generate bytecode for jdk
+     *     1.5 and above
      */
     private static boolean is50OrHigher(IJavaElement javaElt) {
         IJavaProject project = javaElt.getJavaProject();
@@ -247,11 +240,9 @@ public class JdtUtils {
     }
 
     /**
-     * Get the anonymous inner class with given parent type and class number
-     * (like Hello$5.class)
+     * Get the anonymous inner class with given parent type and class number (like Hello$5.class)
      *
-     * @param parentType
-     *            the parent of anon. type
+     * @param parentType the parent of anon. type
      * @return may return null, if we cannot find such anonymous class
      */
     public static IType findAnonymous(IType parentType, String name) {
@@ -300,16 +291,15 @@ public class JdtUtils {
     }
 
     /**
-     * Traverses down the children tree of this parent and collect all child
-     * anon. classes
+     * Traverses down the children tree of this parent and collect all child anon. classes
      *
      * @param list
      * @param parent
-     * @param allowNested
-     *            true to search in IType child elements too
+     * @param allowNested true to search in IType child elements too
      * @throws JavaModelException
      */
-    private static void collectAllAnonymous(List<IType> list, IParent parent, boolean allowNested) throws JavaModelException {
+    private static void collectAllAnonymous(List<IType> list, IParent parent, boolean allowNested)
+            throws JavaModelException {
         IJavaElement[] children = parent.getChildren();
         for (int i = 0; i < children.length; i++) {
             IJavaElement childElem = children[i];
@@ -325,15 +315,16 @@ public class JdtUtils {
     }
 
     /**
-     * Sort given anonymous classes in order like java compiler would generate
-     * output classes, in context of given anonymous type
+     * Sort given anonymous classes in order like java compiler would generate output classes, in
+     * context of given anonymous type
      *
      * @param anonymous
      */
     private static void sortAnonymous(List<IType> anonymous, IType anonType) {
         SourceOffsetComparator sourceComparator = new SourceOffsetComparator();
 
-        final AnonymClassComparator classComparator = new AnonymClassComparator(anonType, sourceComparator);
+        final AnonymClassComparator classComparator =
+                new AnonymClassComparator(anonType, sourceComparator);
         Collections.sort(anonymous, classComparator);
 
         //        if (Reporter.DEBUG) {
@@ -343,30 +334,33 @@ public class JdtUtils {
 
     /*
     private static void debugCompilePrio(final AnonymClassComparator classComparator) {
-        final Map<IType, Integer> map = classComparator.map;
-        Comparator<IType> prioComp = new Comparator<IType>() {
+    final Map<IType, Integer> map = classComparator.map;
+    Comparator<IType> prioComp = new Comparator<IType>() {
     
-            @Override
-            public int compare(IType e1, IType e2) {
-                int result = map.get(e2).compareTo(map.get(e1));
-                if (result == 0) {
-                    return e1.toString().compareTo(e2.toString());
-                }
-                return result;
-            }
+    @Override
+    public int compare(IType e1, IType e2) {
+    int result = map.get(e2).compareTo(map.get(e1));
+    if (result == 0) {
+    return e1.toString().compareTo(e2.toString());
+    }
+    return result;
+    }
     
-        };
+    };
     
-        List<IType> keys = new ArrayList<IType>(map.keySet());
-        Collections.sort(keys, prioComp);
-        for (Iterator<IType> iterator = keys.iterator(); iterator.hasNext();) {
-            Object key = iterator.next();
-            System.out.println(map.get(key) + " : " + key);
-        }
+    List<IType> keys = new ArrayList<IType>(map.keySet());
+    Collections.sort(keys, prioComp);
+    for (Iterator<IType> iterator = keys.iterator(); iterator.hasNext();) {
+    Object key = iterator.next();
+    System.out.println(map.get(key) + " : " + key);
+    }
     }
     */
 
-    private static int getAnonCompilePriority(IJavaElement elt, IJavaElement firstAncestor, IJavaElement topAncestor,
+    private static int getAnonCompilePriority(
+            IJavaElement elt,
+            IJavaElement firstAncestor,
+            IJavaElement topAncestor,
             boolean is50OrHigher) {
         if (is50OrHigher) {
             return getAnonCompilePriority50(elt, firstAncestor, topAncestor);
@@ -377,7 +371,7 @@ public class JdtUtils {
         // get rid of children from local types
         if (topAncestor != firstNonAnon && isLocal(firstNonAnon)) {
             return 5; // local anon. types have same prio as anon. from regular
-                      // code
+            // code
         }
 
         IJavaElement initBlock = getLastAncestor(elt, IJavaElement.INITIALIZER);
@@ -385,12 +379,13 @@ public class JdtUtils {
         if (initBlock != null) {
             if (isAnyParentLocal(firstAncestor, topAncestor)) {
                 return 5; // init blocks from local types have same prio as
-                          // regular
+                // regular
             }
             if (firstAncestor == topAncestor) {
                 return 10; // instance init from top level type has top prio
             }
-            if ( /* firstNonAnon != topAncestor && */!isStatic((IMember) firstNonAnon)) {
+            if (
+            /* firstNonAnon != topAncestor && */ !isStatic((IMember) firstNonAnon)) {
                 return 8; // init blocks from non static types have top 2 prio
             }
             return 7; // init blocks from static classes
@@ -408,20 +403,17 @@ public class JdtUtils {
     }
 
     /**
-     * 1) from instance init 2) from deepest inner from instance init (deepest
-     * first) 3) from static init 4) from deepest inner from static init
-     * (deepest first) 5) from deepest inner (deepest first) 6) regular anon
-     * classes from main class
-     *
-     * <br>
-     * Note, that nested inner anon. classes which do not have different
-     * non-anon. inner class ancestors, are compiled in they nesting order,
-     * opposite to rule 2)
+     * 1) from instance init 2) from deepest inner from instance init (deepest first) 3) from static
+     * init 4) from deepest inner from static init (deepest first) 5) from deepest inner (deepest
+     * first) 6) regular anon classes from main class <br>
+     * Note, that nested inner anon. classes which do not have different non-anon. inner class
+     * ancestors, are compiled in they nesting order, opposite to rule 2)
      *
      * @param javaElement
      * @return priority - lesser mean wil be compiled later, a value > 0
      */
-    private static int getAnonCompilePriority50(IJavaElement javaElement, IJavaElement firstAncestor, IJavaElement topAncestor) {
+    private static int getAnonCompilePriority50(
+            IJavaElement javaElement, IJavaElement firstAncestor, IJavaElement topAncestor) {
 
         // search for initializer block
         IJavaElement initBlock = getLastAncestor(javaElement, IJavaElement.INITIALIZER);
@@ -453,7 +445,8 @@ public class JdtUtils {
      * @param javaElement
      * @return first non-anonymous ancestor
      */
-    private static IJavaElement getFirstNonAnonymous(IJavaElement javaElement, IJavaElement topAncestor) {
+    private static IJavaElement getFirstNonAnonymous(
+            IJavaElement javaElement, IJavaElement topAncestor) {
         if (javaElement.getElementType() == IJavaElement.TYPE && !isAnonymousType(javaElement)) {
             return javaElement;
         }
@@ -486,8 +479,8 @@ public class JdtUtils {
 
     /**
      * @param javaElement
-     * @return distance to given ancestor, 0 if it is the same, -1 if ancestor
-     *         with type IJavaElement.TYPE does not exist
+     * @return distance to given ancestor, 0 if it is the same, -1 if ancestor with type
+     *     IJavaElement.TYPE does not exist
      */
     private static int getTopAncestorDistance(IJavaElement javaElement, IJavaElement topAncestor) {
         if (topAncestor == javaElement) {
@@ -516,8 +509,7 @@ public class JdtUtils {
     }
 
     /**
-     * @param type
-     *            should be inner type.
+     * @param type should be inner type.
      * @return true, if given element is a type defined in the initializer block
      */
     private static boolean isFromInitBlock(IType type) {
@@ -526,10 +518,8 @@ public class JdtUtils {
     }
 
     /**
-     * @param innerType
-     *            should be inner type.
-     * @return true, if given element is inner class from initializer block or
-     *         method body
+     * @param innerType should be inner type.
+     * @return true, if given element is inner class from initializer block or method body
      */
     private static boolean isLocal(IJavaElement innerType) {
         try {
@@ -552,8 +542,7 @@ public class JdtUtils {
 
     /**
      * @param elt
-     * @return true, if given element is inner class from initializer block or
-     *         method body
+     * @return true, if given element is inner class from initializer block or method body
      */
     private static boolean isAnyParentLocal(IJavaElement elt, IJavaElement topParent) {
         if (isLocal(elt)) {

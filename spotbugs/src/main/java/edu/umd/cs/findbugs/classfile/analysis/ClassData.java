@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 /**
  * The data (bytes) of a class.
@@ -40,10 +39,8 @@ public class ClassData {
     /**
      * Constructor.
      *
-     * @param classDescriptor
-     *            descriptor for the class
-     * @param data
-     *            the data (bytes) for a class
+     * @param classDescriptor descriptor for the class
+     * @param data the data (bytes) for a class
      */
     public ClassData(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry, byte[] data) {
         this.classDescriptor = classDescriptor;
@@ -51,23 +48,17 @@ public class ClassData {
         this.data = data;
     }
 
-    /**
-     * @return Returns the ClassDescriptor.
-     */
+    /** @return Returns the ClassDescriptor. */
     public ClassDescriptor getClassDescriptor() {
         return classDescriptor;
     }
 
-    /**
-     * @return Returns the codeBaseEntry.
-     */
+    /** @return Returns the codeBaseEntry. */
     public ICodeBaseEntry getCodeBaseEntry() {
         return codeBaseEntry;
     }
 
-    /**
-     * @return Returns the data.
-     */
+    /** @return Returns the data. */
     public byte[] getData() {
         return data;
     }
@@ -80,7 +71,6 @@ public class ClassData {
     public InputStream getInputStream() {
         return new ByteArrayInputStream(data);
     }
-
 
     @Override
     public String toString() {

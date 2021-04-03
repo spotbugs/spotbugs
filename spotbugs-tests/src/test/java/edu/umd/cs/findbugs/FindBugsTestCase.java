@@ -19,49 +19,210 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.config.UserPreferences;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import edu.umd.cs.findbugs.config.UserPreferences;
 import junit.framework.TestCase;
 
 /**
- * Abstract base class for TestCase classes that need to run in the context of a
- * FindBugs2 object doing a full execution. Ensures that things like
- * AnalysisCache, AnalysisContext, etc. are fully initialized.
+ * Abstract base class for TestCase classes that need to run in the context of a FindBugs2 object
+ * doing a full execution. Ensures that things like AnalysisCache, AnalysisContext, etc. are fully
+ * initialized.
  *
- * <p>
- * Is this mock objects? Or is this just a hack? Probably the latter :-)
+ * <p>Is this mock objects? Or is this just a hack? Probably the latter :-)
  *
  * @author David Hovemeyer
  */
 public abstract class FindBugsTestCase extends TestCase {
-    /**
-     * Data of an empty class in the default package called "Empty".
-     */
-    public static final byte[] EMPTY_CLASS_DATA = { (byte) 0xca, (byte) 0xfe, (byte) 0xba, (byte) 0xbe, (byte) 0x00, (byte) 0x00,
-        (byte) 0x00, (byte) 0x32, (byte) 0x00, (byte) 0x0d, (byte) 0x0a, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x0a,
-        (byte) 0x07, (byte) 0x00, (byte) 0x0b, (byte) 0x07, (byte) 0x00, (byte) 0x0c, (byte) 0x01, (byte) 0x00, (byte) 0x06,
-        (byte) 0x3c, (byte) 0x69, (byte) 0x6e, (byte) 0x69, (byte) 0x74, (byte) 0x3e, (byte) 0x01, (byte) 0x00, (byte) 0x03,
-        (byte) 0x28, (byte) 0x29, (byte) 0x56, (byte) 0x01, (byte) 0x00, (byte) 0x04, (byte) 0x43, (byte) 0x6f, (byte) 0x64,
-        (byte) 0x65, (byte) 0x01, (byte) 0x00, (byte) 0x0f, (byte) 0x4c, (byte) 0x69, (byte) 0x6e, (byte) 0x65, (byte) 0x4e,
-        (byte) 0x75, (byte) 0x6d, (byte) 0x62, (byte) 0x65, (byte) 0x72, (byte) 0x54, (byte) 0x61, (byte) 0x62, (byte) 0x6c,
-        (byte) 0x65, (byte) 0x01, (byte) 0x00, (byte) 0x0a, (byte) 0x53, (byte) 0x6f, (byte) 0x75, (byte) 0x72, (byte) 0x63,
-        (byte) 0x65, (byte) 0x46, (byte) 0x69, (byte) 0x6c, (byte) 0x65, (byte) 0x01, (byte) 0x00, (byte) 0x0a, (byte) 0x45,
-        (byte) 0x6d, (byte) 0x70, (byte) 0x74, (byte) 0x79, (byte) 0x2e, (byte) 0x6a, (byte) 0x61, (byte) 0x76, (byte) 0x61,
-        (byte) 0x0c, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x05, (byte) 0x01, (byte) 0x00, (byte) 0x05, (byte) 0x45,
-        (byte) 0x6d, (byte) 0x70, (byte) 0x74, (byte) 0x79, (byte) 0x01, (byte) 0x00, (byte) 0x10, (byte) 0x6a, (byte) 0x61,
-        (byte) 0x76, (byte) 0x61, (byte) 0x2f, (byte) 0x6c, (byte) 0x61, (byte) 0x6e, (byte) 0x67, (byte) 0x2f, (byte) 0x4f,
-        (byte) 0x62, (byte) 0x6a, (byte) 0x65, (byte) 0x63, (byte) 0x74, (byte) 0x00, (byte) 0x21, (byte) 0x00, (byte) 0x02,
-        (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00,
-        (byte) 0x01, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x05, (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x06,
-        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x1d, (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x01, (byte) 0x00,
-        (byte) 0x00, (byte) 0x00, (byte) 0x05, (byte) 0x2a, (byte) 0xb7, (byte) 0x00, (byte) 0x01, (byte) 0xb1, (byte) 0x00,
-        (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x07, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x06,
-        (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x01, (byte) 0x00,
-        (byte) 0x08, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x09, };
+    /** Data of an empty class in the default package called "Empty". */
+    public static final byte[] EMPTY_CLASS_DATA = {
+        (byte) 0xca,
+        (byte) 0xfe,
+        (byte) 0xba,
+        (byte) 0xbe,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x32,
+        (byte) 0x00,
+        (byte) 0x0d,
+        (byte) 0x0a,
+        (byte) 0x00,
+        (byte) 0x03,
+        (byte) 0x00,
+        (byte) 0x0a,
+        (byte) 0x07,
+        (byte) 0x00,
+        (byte) 0x0b,
+        (byte) 0x07,
+        (byte) 0x00,
+        (byte) 0x0c,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x06,
+        (byte) 0x3c,
+        (byte) 0x69,
+        (byte) 0x6e,
+        (byte) 0x69,
+        (byte) 0x74,
+        (byte) 0x3e,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x03,
+        (byte) 0x28,
+        (byte) 0x29,
+        (byte) 0x56,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x04,
+        (byte) 0x43,
+        (byte) 0x6f,
+        (byte) 0x64,
+        (byte) 0x65,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x0f,
+        (byte) 0x4c,
+        (byte) 0x69,
+        (byte) 0x6e,
+        (byte) 0x65,
+        (byte) 0x4e,
+        (byte) 0x75,
+        (byte) 0x6d,
+        (byte) 0x62,
+        (byte) 0x65,
+        (byte) 0x72,
+        (byte) 0x54,
+        (byte) 0x61,
+        (byte) 0x62,
+        (byte) 0x6c,
+        (byte) 0x65,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x0a,
+        (byte) 0x53,
+        (byte) 0x6f,
+        (byte) 0x75,
+        (byte) 0x72,
+        (byte) 0x63,
+        (byte) 0x65,
+        (byte) 0x46,
+        (byte) 0x69,
+        (byte) 0x6c,
+        (byte) 0x65,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x0a,
+        (byte) 0x45,
+        (byte) 0x6d,
+        (byte) 0x70,
+        (byte) 0x74,
+        (byte) 0x79,
+        (byte) 0x2e,
+        (byte) 0x6a,
+        (byte) 0x61,
+        (byte) 0x76,
+        (byte) 0x61,
+        (byte) 0x0c,
+        (byte) 0x00,
+        (byte) 0x04,
+        (byte) 0x00,
+        (byte) 0x05,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x05,
+        (byte) 0x45,
+        (byte) 0x6d,
+        (byte) 0x70,
+        (byte) 0x74,
+        (byte) 0x79,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x10,
+        (byte) 0x6a,
+        (byte) 0x61,
+        (byte) 0x76,
+        (byte) 0x61,
+        (byte) 0x2f,
+        (byte) 0x6c,
+        (byte) 0x61,
+        (byte) 0x6e,
+        (byte) 0x67,
+        (byte) 0x2f,
+        (byte) 0x4f,
+        (byte) 0x62,
+        (byte) 0x6a,
+        (byte) 0x65,
+        (byte) 0x63,
+        (byte) 0x74,
+        (byte) 0x00,
+        (byte) 0x21,
+        (byte) 0x00,
+        (byte) 0x02,
+        (byte) 0x00,
+        (byte) 0x03,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x04,
+        (byte) 0x00,
+        (byte) 0x05,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x06,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x1d,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x05,
+        (byte) 0x2a,
+        (byte) 0xb7,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0xb1,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x07,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x06,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x08,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x02,
+        (byte) 0x00,
+        (byte) 0x09,
+    };
 
     private static final class TestRunnerThread extends Thread {
         private final RunnableWithExceptions runnable;
@@ -72,9 +233,7 @@ public abstract class FindBugsTestCase extends TestCase {
             this.runnable = runnable;
         }
 
-        /**
-         * @return Returns the detectorAdapter.
-         */
+        /** @return Returns the detectorAdapter. */
         public JUnitDetectorAdapter getDetectorAdapter() {
             return detectorAdapter;
         }
@@ -121,13 +280,21 @@ public abstract class FindBugsTestCase extends TestCase {
 
                 engine.setProject(project);
                 PluginLoader fakeLoader = new PluginLoader(true, tmpfile.toURL());
-                Plugin fakePlugin = new Plugin("edu.umd.cs.findbugs.fakeplugin", null, null, fakeLoader, true, false);
+                Plugin fakePlugin =
+                        new Plugin("edu.umd.cs.findbugs.fakeplugin", null, null, fakeLoader, true, false);
 
                 DetectorFactoryCollection dfc = new DetectorFactoryCollection(fakePlugin);
                 DetectorFactoryCollection.resetInstance(dfc);
 
-                DetectorFactory detectorFactory = new DetectorFactory(fakePlugin, JUnitDetectorAdapter.class.getName(),
-                        JUnitDetectorAdapter.class, true, "fast", "", "");
+                DetectorFactory detectorFactory =
+                        new DetectorFactory(
+                                fakePlugin,
+                                JUnitDetectorAdapter.class.getName(),
+                                JUnitDetectorAdapter.class,
+                                true,
+                                "fast",
+                                "",
+                                "");
                 fakePlugin.addDetectorFactory(detectorFactory);
                 dfc.registerDetector(detectorFactory);
                 if (!dfc.factoryIterator().hasNext() || fakePlugin.getDetectorFactories().isEmpty()) {
@@ -155,7 +322,6 @@ public abstract class FindBugsTestCase extends TestCase {
                 }
                 deleteAndLog(tmpdir);
                 DetectorFactoryCollection.resetInstance(null);
-
             }
         }
 
@@ -182,13 +348,10 @@ public abstract class FindBugsTestCase extends TestCase {
     }
 
     /**
-     * Execute some JUnit test code inside a Detector2 class running inside a
-     * FindBugs2 analysis run. In theory, any code legal in a FindBugs detector
-     * should work.
+     * Execute some JUnit test code inside a Detector2 class running inside a FindBugs2 analysis run.
+     * In theory, any code legal in a FindBugs detector should work.
      *
-     * @param runnable
-     *            a RunnableWithExceptions object whose run() method has some
-     *            JUnit test code
+     * @param runnable a RunnableWithExceptions object whose run() method has some JUnit test code
      * @throws Exception
      */
     protected void executeFindBugsTest(final RunnableWithExceptions runnable) throws Exception {

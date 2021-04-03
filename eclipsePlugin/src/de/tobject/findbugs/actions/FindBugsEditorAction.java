@@ -19,16 +19,14 @@
 
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.builder.WorkItem;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
-
-import de.tobject.findbugs.builder.WorkItem;
 
 /**
  * Run FindBugs on the currently selected element(s) in the package explorer.
@@ -58,5 +56,4 @@ public class FindBugsEditorAction extends FindBugsAction implements IEditorActio
             work(currentEditor, file, list);
         }
     }
-
 }

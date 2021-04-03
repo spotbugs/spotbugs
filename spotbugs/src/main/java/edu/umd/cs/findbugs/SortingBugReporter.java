@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-
 /**
- * A BugReporter which stores all of the reported bug instances, and sorts them
- * by class name before printing them.
+ * A BugReporter which stores all of the reported bug instances, and sorts them by class name before
+ * printing them.
  */
 public class SortingBugReporter extends TextUIBugReporter {
     private final SortedBugCollection bugCollection = new SortedBugCollection();

@@ -24,9 +24,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class GuiUtil {
 
     public static void addOkAndCancelButtons(JPanel panel, JButton ok, JButton cancel) {
@@ -45,5 +43,4 @@ public class GuiUtil {
             panel.add(Box.createHorizontalStrut(5));
         }
     }
-
 }

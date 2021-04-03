@@ -21,9 +21,7 @@ package edu.umd.cs.findbugs.classfile;
 
 import edu.umd.cs.findbugs.BugReporter;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public interface IClassFactory {
 
     public IClassPath createClassPath();

@@ -21,24 +21,19 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.ba.ClassContext;
 
-/**
- * The interface which all bug pattern detectors must implement.
- */
+/** The interface which all bug pattern detectors must implement. */
 public interface Detector extends Priorities {
 
     /**
-     * Visit the ClassContext for a class which should be analyzed for instances
-     * of bug patterns.
+     * Visit the ClassContext for a class which should be analyzed for instances of bug patterns.
      *
-     * @param classContext
-     *            the ClassContext
+     * @param classContext the ClassContext
      */
     public void visitClassContext(ClassContext classContext);
 
     /**
-     * This method is called after all classes to be visited. It should be used
-     * by any detectors which accumulate information over all visited classes to
-     * generate results.
+     * This method is called after all classes to be visited. It should be used by any detectors which
+     * accumulate information over all visited classes to generate results.
      */
     public void report();
 }

@@ -19,18 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEDYNAMIC;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -44,13 +32,24 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 
 /**
  * Abstract base class for type qualifier dataflow analyses.
  *
  * @author David Hovemeyer
  */
-public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnalysis<TypeQualifierValueSet> {
+public abstract class TypeQualifierDataflowAnalysis
+        extends AbstractDataflowAnalysis<TypeQualifierValueSet> {
 
     static String primitiveType(String simpleClass) {
         if ("Integer".equals(simpleClass)) {
@@ -88,7 +87,6 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
         return true;
     }
 
-
     static final boolean DEBUG_VERBOSE = SystemProperties.getBoolean("ctq.dataflow.debug.verbose");
 
     protected final XMethod xmethod;
@@ -106,19 +104,17 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
     /**
      * Constructor.
      *
-     * @param xmethod
-     *            XMethod object containing information about the method being
-     *            analyzed
-     * @param cfg
-     *            the control-flow graph (CFG) of the method being analyzed
-     * @param vnaDataflow
-     *            ValueNumberDataflow for the method
-     * @param cpg
-     *            the constant pool being built up
-     * @param typeQualifierValue
-     *            the TypeQualifierValue we want the dataflow analysis to check
+     * @param xmethod XMethod object containing information about the method being analyzed
+     * @param cfg the control-flow graph (CFG) of the method being analyzed
+     * @param vnaDataflow ValueNumberDataflow for the method
+     * @param cpg the constant pool being built up
+     * @param typeQualifierValue the TypeQualifierValue we want the dataflow analysis to check
      */
-    public TypeQualifierDataflowAnalysis(XMethod xmethod, CFG cfg, ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg,
+    public TypeQualifierDataflowAnalysis(
+            XMethod xmethod,
+            CFG cfg,
+            ValueNumberDataflow vnaDataflow,
+            ConstantPoolGen cpg,
             TypeQualifierValue<?> typeQualifierValue) {
         this.xmethod = xmethod;
         this.cfg = cfg;
@@ -200,7 +196,8 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      * edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
      */
     @Override
-    public void meetInto(TypeQualifierValueSet fact, Edge edge, TypeQualifierValueSet result) throws DataflowAnalysisException {
+    public void meetInto(TypeQualifierValueSet fact, Edge edge, TypeQualifierValueSet result)
+            throws DataflowAnalysisException {
         if (fact.isTop() || result.isBottom()) {
             // result does not change
             return;
@@ -260,8 +257,11 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
             if (!targetVN.equals(sourceVN) && targetVN.hasFlag(ValueNumber.PHI_NODE)) {
                 // targetVN is a phi result
                 if (DEBUG_VERBOSE) {
-                    System.out.println("Phi node: " + fact.valueNumberToString(sourceVN) + " -> "
-                            + fact.valueNumberToString(targetVN));
+                    System.out.println(
+                            "Phi node: "
+                                    + fact.valueNumberToString(sourceVN)
+                                    + " -> "
+                                    + fact.valueNumberToString(targetVN));
                 }
                 propagateAcrossPhiNode(fact, sourceVN, targetVN);
                 if (DEBUG_VERBOSE) {
@@ -272,7 +272,8 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
         }
     }
 
-    protected abstract void propagateAcrossPhiNode(TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN);
+    protected abstract void propagateAcrossPhiNode(
+            TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN);
 
     /**
      * This method must be called before the dataflow analysis is executed.
@@ -282,18 +283,16 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
     public abstract void registerSourceSinkLocations() throws DataflowAnalysisException;
 
     protected void registerSourceSink(SourceSinkInfo sourceSinkInfo) {
-        Set<SourceSinkInfo> set = sourceSinkMap.computeIfAbsent(sourceSinkInfo.getLocation(), k -> new HashSet<>());
+        Set<SourceSinkInfo> set =
+                sourceSinkMap.computeIfAbsent(sourceSinkInfo.getLocation(), k -> new HashSet<>());
         set.add(sourceSinkInfo);
     }
 
     /**
-     * Get the set of SourceSinkInfo objects representing sources/sinks at a
-     * given Location.
+     * Get the set of SourceSinkInfo objects representing sources/sinks at a given Location.
      *
-     * @param location
-     *            a Location
-     * @return Set of SourceSinkInfo objects representing sources/sinks at the
-     *         Location
+     * @param location a Location
+     * @return Set of SourceSinkInfo objects representing sources/sinks at the Location
      */
     public Set<SourceSinkInfo> getSourceSinkInfoSet(Location location) {
         Set<SourceSinkInfo> result = sourceSinkMap.get(location);
@@ -309,7 +308,8 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      * edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
      */
     @Override
-    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeQualifierValueSet fact)
+    public void transferInstruction(
+            InstructionHandle handle, BasicBlock basicBlock, TypeQualifierValueSet fact)
             throws DataflowAnalysisException {
         if (!fact.isValid()) {
             return;
@@ -340,7 +340,11 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
         Set<SourceSinkInfo> sourceSinkSet = sourceSinkMap.get(location);
         if (sourceSinkSet != null) {
             if (DEBUG_VERBOSE) {
-                System.out.println("Modeling source/sink at " + location.toCompactString() + ": " + sourceSinkSet.toString());
+                System.out.println(
+                        "Modeling source/sink at "
+                                + location.toCompactString()
+                                + ": "
+                                + sourceSinkSet.toString());
             }
             for (SourceSinkInfo sourceSinkInfo : sourceSinkSet) {
                 fact.modelSourceSink(sourceSinkInfo);

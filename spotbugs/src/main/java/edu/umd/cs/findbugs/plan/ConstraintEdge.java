@@ -22,8 +22,7 @@ package edu.umd.cs.findbugs.plan;
 import edu.umd.cs.findbugs.graph.AbstractEdge;
 
 /**
- * Edge in a ConstraintGraph. Edges flow from earlier detectors to later
- * detectors.
+ * Edge in a ConstraintGraph. Edges flow from earlier detectors to later detectors.
  *
  * @see ConstraintGraph
  * @see DetectorNode
@@ -36,10 +35,8 @@ public class ConstraintEdge extends AbstractEdge<ConstraintEdge, DetectorNode> {
     /**
      * Constructor.
      *
-     * @param source
-     *            the source vertex (earlier Detector)
-     * @param target
-     *            the target vertex (later Detector)
+     * @param source the source vertex (earlier Detector)
+     * @param target the target vertex (later Detector)
      */
     public ConstraintEdge(DetectorNode source, DetectorNode target) {
         super(source, target);
@@ -48,21 +45,18 @@ public class ConstraintEdge extends AbstractEdge<ConstraintEdge, DetectorNode> {
     /**
      * Set the DetectorOrderingConstraint that created this edge.
      *
-     * @param constraint
-     *            the DetectorOrderingConstraint that created this edge
+     * @param constraint the DetectorOrderingConstraint that created this edge
      */
     public void setConstraint(DetectorOrderingConstraint constraint) {
         this.constraint = constraint;
     }
 
     /**
-     * Determine whether or not this ConstraintEdge resulted from an ordering
-     * constraint having a single detector as its source (earlier detector). Such
-     * constraints automatically enable the source (earlier) detector if the
-     * target (later) detector is enabled.
+     * Determine whether or not this ConstraintEdge resulted from an ordering constraint having a
+     * single detector as its source (earlier detector). Such constraints automatically enable the
+     * source (earlier) detector if the target (later) detector is enabled.
      *
-     * @return true if this edge has a single detector as its source (earlier
-     *         detector)
+     * @return true if this edge has a single detector as its source (earlier detector)
      */
     public boolean isSingleSource() {
         return constraint.isSingleSource();

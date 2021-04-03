@@ -19,20 +19,18 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import javax.annotation.CheckForNull;
-
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-
 /**
- * A PatternElement is an element of a ByteCodePattern. It potentially matches
- * some number of bytecode instructions.
+ * A PatternElement is an element of a ByteCodePattern. It potentially matches some number of
+ * bytecode instructions.
  */
 public abstract class PatternElement {
     private static final Logger LOG = LoggerFactory.getLogger(PatternElement.class);
@@ -47,16 +45,12 @@ public abstract class PatternElement {
 
     private boolean allowTrailingEdges = true;
 
-    /**
-     * Get the next PatternElement.
-     */
+    /** Get the next PatternElement. */
     public PatternElement getNext() {
         return next;
     }
 
-    /**
-     * Set the next PatternElement.
-     */
+    /** Set the next PatternElement. */
     public void setNext(PatternElement patternElement) {
         this.next = patternElement;
     }
@@ -64,8 +58,7 @@ public abstract class PatternElement {
     /**
      * Set a label for this PatternElement.
      *
-     * @param label
-     *            the label
+     * @param label the label
      * @return this object
      */
     public PatternElement label(String label) {
@@ -83,8 +76,8 @@ public abstract class PatternElement {
     }
 
     /**
-     * Set the label of another pattern element whose first matched instruction
-     * must dominate the instruction(s) matched by this element.
+     * Set the label of another pattern element whose first matched instruction must dominate the
+     * instruction(s) matched by this element.
      */
     public PatternElement dominatedBy(String dominatedBy) {
         this.dominatedBy = dominatedBy;
@@ -92,38 +85,32 @@ public abstract class PatternElement {
     }
 
     /**
-     * Get the label of the pattern element whose first matched instruction must
-     * dominate the instruction(s) matched by this element.
+     * Get the label of the pattern element whose first matched instruction must dominate the
+     * instruction(s) matched by this element.
      */
     public String getDominatedBy() {
         return dominatedBy;
     }
 
-    /**
-     * Set the index. This is just for debugging.
-     */
+    /** Set the index. This is just for debugging. */
     public void setIndex(int index) {
         this.index = index;
     }
 
     /**
-     * Set whether or not this PatternElement allows trailing edges to be
-     * matched. By default, trailing edges may be matched. When this value is
-     * set to false, it ensures that the successor instruction must be in the
-     * same basic block.
+     * Set whether or not this PatternElement allows trailing edges to be matched. By default,
+     * trailing edges may be matched. When this value is set to false, it ensures that the successor
+     * instruction must be in the same basic block.
      *
-     * @param allowTrailingEdges
-     *            true if trailing edges may be matched, false if trailing edges
-     *            will never be matched
+     * @param allowTrailingEdges true if trailing edges may be matched, false if trailing edges will
+     *     never be matched
      */
     public PatternElement setAllowTrailingEdges(boolean allowTrailingEdges) {
         this.allowTrailingEdges = allowTrailingEdges;
         return this;
     }
 
-    /**
-     * Return whether or not this PatternElement may match trailing edges.
-     */
+    /** Return whether or not this PatternElement may match trailing edges. */
     public boolean allowTrailingEdges() {
         return allowTrailingEdges;
     }
@@ -131,10 +118,8 @@ public abstract class PatternElement {
     /**
      * Look up a variable definition in given BindingSet.
      *
-     * @param varName
-     *            the name of the variable
-     * @param bindingSet
-     *            the BindingSet to look in
+     * @param varName the name of the variable
+     * @param bindingSet the BindingSet to look in
      * @return the Variable, or null if no Variable is bound to the name
      */
     public static Variable lookup(String varName, BindingSet bindingSet) {
@@ -146,66 +131,60 @@ public abstract class PatternElement {
     }
 
     /**
-     * Return whether or not this element matches the given instruction with the
-     * given Bindings in effect.
+     * Return whether or not this element matches the given instruction with the given Bindings in
+     * effect.
      *
-     * @param handle
-     *            the instruction
-     * @param cpg
-     *            the ConstantPoolGen from the method
-     * @param before
-     *            the ValueNumberFrame representing values in the Java stack
-     *            frame just before the execution of the instruction
-     * @param after
-     *            the ValueNumberFrame representing values in the Java stack
-     *            frame just after the execution of the instruction
-     * @param bindingSet
-     *            the set of Bindings
-     * @return if the match is successful, returns a MatchResult with the
-     *         PatternElement and BindingSet; if the match is not successful,
-     *         returns null
+     * @param handle the instruction
+     * @param cpg the ConstantPoolGen from the method
+     * @param before the ValueNumberFrame representing values in the Java stack frame just before the
+     *     execution of the instruction
+     * @param after the ValueNumberFrame representing values in the Java stack frame just after the
+     *     execution of the instruction
+     * @param bindingSet the set of Bindings
+     * @return if the match is successful, returns a MatchResult with the PatternElement and
+     *     BindingSet; if the match is not successful, returns null
      */
-    public abstract @CheckForNull MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
-            BindingSet bindingSet) throws DataflowAnalysisException;
+    public abstract @CheckForNull MatchResult match(
+            InstructionHandle handle,
+            ConstantPoolGen cpg,
+            ValueNumberFrame before,
+            ValueNumberFrame after,
+            BindingSet bindingSet)
+            throws DataflowAnalysisException;
 
     /**
      * Return whether or not it is acceptable to take the given branch.
      *
-     * @param edge
-     *            the Edge representing the branch
-     * @param source
-     *            the source instruction of the branch
+     * @param edge the Edge representing the branch
+     * @param source the source instruction of the branch
      * @return true if the Edge is acceptable, false if not
      */
     public abstract boolean acceptBranch(Edge edge, InstructionHandle source);
 
     /**
-     * Return the minimum number of instructions this PatternElement must match
-     * in the ByteCodePattern.
+     * Return the minimum number of instructions this PatternElement must match in the
+     * ByteCodePattern.
      */
     public abstract int minOccur();
 
     /**
-     * Return the maximum number of instructions this PatternElement must match
-     * in the ByteCodePattern.
+     * Return the maximum number of instructions this PatternElement must match in the
+     * ByteCodePattern.
      */
     public abstract int maxOccur();
 
     /**
-     * Add a variable definition to the given BindingSet, or if there is an
-     * existing definition, make sure it is consistent with the new definition.
+     * Add a variable definition to the given BindingSet, or if there is an existing definition, make
+     * sure it is consistent with the new definition.
      *
-     * @param varName
-     *            the name of the variable
-     * @param variable
-     *            the Variable which should be added or checked for consistency
-     * @param bindingSet
-     *            the existing set of bindings
-     * @return the updated BindingSet (if the variable is consistent with the
-     *         previous bindings), or null if the new variable is inconsistent
-     *         with the previous bindings
+     * @param varName the name of the variable
+     * @param variable the Variable which should be added or checked for consistency
+     * @param bindingSet the existing set of bindings
+     * @return the updated BindingSet (if the variable is consistent with the previous bindings), or
+     *     null if the new variable is inconsistent with the previous bindings
      */
-    protected static BindingSet addOrCheckDefinition(String varName, Variable variable, BindingSet bindingSet) {
+    protected static BindingSet addOrCheckDefinition(
+            String varName, Variable variable, BindingSet bindingSet) {
         Variable existingVariable = lookup(varName, bindingSet);
         if (existingVariable == null) {
             bindingSet = new BindingSet(new Binding(varName, variable), bindingSet);

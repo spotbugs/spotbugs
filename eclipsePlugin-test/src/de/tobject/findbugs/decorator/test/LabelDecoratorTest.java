@@ -20,15 +20,14 @@ package de.tobject.findbugs.decorator.test;
 
 import static org.junit.Assert.assertEquals;
 
+import de.tobject.findbugs.decorators.ResourceBugCountDecorator;
+import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.JavaModelException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import de.tobject.findbugs.decorators.ResourceBugCountDecorator;
-import de.tobject.findbugs.test.AbstractFindBugsTest;
-import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the ResourceBugCountDecorator.
@@ -96,5 +95,4 @@ public class LabelDecoratorTest extends AbstractFindBugsTest {
         // Currently class 'B' has all the reported visible bugs
         return getVisibleBugsCount();
     }
-
 }

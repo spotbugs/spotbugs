@@ -18,20 +18,17 @@
  */
 package edu.umd.cs.findbugs.props;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.CheckReturnValue;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.Priorities;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.CheckReturnValue;
 
 /**
- * A Set of WarningProperty objects, each with an optional attribute Object. A
- * WarningPropertySet is useful for collecting heuristics to use in the
- * determination of whether or not a warning is a false positive, or what the
- * warning's priority should be.
+ * A Set of WarningProperty objects, each with an optional attribute Object. A WarningPropertySet is
+ * useful for collecting heuristics to use in the determination of whether or not a warning is a
+ * false positive, or what the warning's priority should be.
  *
  * @author David Hovemeyer
  */
@@ -56,9 +53,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
         return buf.toString();
     }
 
-    /**
-     * Constructor Creates empty object.
-     */
+    /** Constructor Creates empty object. */
     public WarningPropertySet() {
         this.map = new HashMap<>();
     }
@@ -73,11 +68,10 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     }
 
     /**
-     * Add a warning property to the set. The warning implicitly has the boolean
-     * value "true" as its attribute.
+     * Add a warning property to the set. The warning implicitly has the boolean value "true" as its
+     * attribute.
      *
-     * @param prop
-     *            the WarningProperty
+     * @param prop the WarningProperty
      * @return this object
      */
     public WarningPropertySet<T> addProperty(T prop) {
@@ -88,8 +82,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     /**
      * Remove a warning property from the set.
      *
-     * @param prop
-     *            the WarningProperty
+     * @param prop the WarningProperty
      * @return this object
      */
     public WarningPropertySet<T> removeProperty(T prop) {
@@ -100,10 +93,8 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     /**
      * Add a warning property and its attribute value.
      *
-     * @param prop
-     *            the WarningProperty
-     * @param value
-     *            the attribute value
+     * @param prop the WarningProperty
+     * @param value the attribute value
      * @return this object
      */
     public WarningPropertySet<T> setProperty(T prop, String value) {
@@ -114,10 +105,8 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     /**
      * Add a warning property and its attribute value.
      *
-     * @param prop
-     *            the WarningProperty
-     * @param value
-     *            the attribute value
+     * @param prop the WarningProperty
+     * @param value the attribute value
      */
     public void setProperty(T prop, Boolean value) {
         map.put(prop, value);
@@ -126,8 +115,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     /**
      * Return whether or not the set contains the given WarningProperty.
      *
-     * @param prop
-     *            the WarningProperty
+     * @param prop the WarningProperty
      * @return true if the set contains the WarningProperty, false if not
      */
     public @CheckReturnValue boolean containsProperty(T prop) {
@@ -135,15 +123,12 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     }
 
     /**
-     * Check whether or not the given WarningProperty has the given attribute
-     * value.
+     * Check whether or not the given WarningProperty has the given attribute value.
      *
-     * @param prop
-     *            the WarningProperty
-     * @param value
-     *            the attribute value
-     * @return true if the set contains the WarningProperty and has an attribute
-     *         equal to the one given, false otherwise
+     * @param prop the WarningProperty
+     * @param value the attribute value
+     * @return true if the set contains the WarningProperty and has an attribute equal to the one
+     *     given, false otherwise
      */
     public boolean checkProperty(T prop, Object value) {
         Object attribute = getProperty(prop);
@@ -151,24 +136,22 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     }
 
     /**
-     * Get the value of the attribute for the given WarningProperty. Returns
-     * null if the set does not contain the WarningProperty.
+     * Get the value of the attribute for the given WarningProperty. Returns null if the set does not
+     * contain the WarningProperty.
      *
-     * @param prop
-     *            the WarningProperty
-     * @return the WarningProperty's attribute value, or null if the set does
-     *         not contain the WarningProperty
+     * @param prop the WarningProperty
+     * @return the WarningProperty's attribute value, or null if the set does not contain the
+     *     WarningProperty
      */
     public Object getProperty(T prop) {
         return map.get(prop);
     }
 
     /**
-     * Use the PriorityAdjustments specified by the set's WarningProperty
-     * elements to compute a warning priority from the given base priority.
+     * Use the PriorityAdjustments specified by the set's WarningProperty elements to compute a
+     * warning priority from the given base priority.
      *
-     * @param basePriority
-     *            the base priority
+     * @param basePriority the base priority
      * @return the computed warning priority
      */
     public int computePriority(int basePriority) {
@@ -217,7 +200,6 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
                 } else {
                     throw new IllegalStateException("Unknown priority " + adj);
                 }
-
             }
 
             if (peggedHigh && !falsePositive) {
@@ -252,13 +234,10 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     }
 
     /**
-     * Determine whether or not a warning with given priority is expected to be
-     * a false positive.
+     * Determine whether or not a warning with given priority is expected to be a false positive.
      *
-     * @param priority
-     *            the priority
-     * @return true if the warning is expected to be a false positive, false if
-     *         not
+     * @param priority the priority
+     * @return true if the warning is expected to be a false positive, false if not
      */
     public boolean isFalsePositive(int priority) {
         return priority > Priorities.EXP_PRIORITY;
@@ -267,8 +246,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     /**
      * Decorate given BugInstance with properties.
      *
-     * @param bugInstance
-     *            the BugInstance
+     * @param bugInstance the BugInstance
      */
     public void decorateBugInstance(BugInstance bugInstance) {
         int priority = computePriority(bugInstance.getPriority());

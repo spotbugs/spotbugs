@@ -3,6 +3,9 @@
  */
 package de.tobject.findbugs.classify;
 
+import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugProperty;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -19,10 +22,6 @@ import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
 
-import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugProperty;
-
 /**
  * Pulldown menu action for classifying warning severity.
  *
@@ -36,7 +35,9 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
 
     private BugInstance bugInstance;
 
-    private static final String[] SEVERITY_LABEL_LIST = { "1 (Least Severe)", "2", "3", "4", "5 (Most Severe)" };
+    private static final String[] SEVERITY_LABEL_LIST = {
+        "1 (Least Severe)", "2", "3", "4", "5 (Most Severe)"
+    };
 
     /*
      * (non-Javadoc)
@@ -67,37 +68,38 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
     }
 
     /**
-     * Fill the drop-down menu. We allow the user to choose a severity from 1
-     * (least severe) to 5 (most severe). Default is 3.
+     * Fill the drop-down menu. We allow the user to choose a severity from 1 (least severe) to 5
+     * (most severe). Default is 3.
      */
     private void fillMenu() {
         // Create a selection listener to handle when the
         // user selects a warning severity.
-        SelectionListener menuItemSelectionListener = new SelectionAdapter() {
-            /*
-             * (non-Javadoc)
-             *
-             * @see
-             * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse
-             * .swt.events.SelectionEvent)
-             */
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Widget w = e.widget;
-                int index;
-                for (index = 0; index < severityItemList.length; ++index) {
-                    if (w == severityItemList[index]) {
-                        break;
-                    }
-                }
+        SelectionListener menuItemSelectionListener =
+                new SelectionAdapter() {
+                    /*
+                     * (non-Javadoc)
+                     *
+                     * @see
+                     * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse
+                     * .swt.events.SelectionEvent)
+                     */
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        Widget w = e.widget;
+                        int index;
+                        for (index = 0; index < severityItemList.length; ++index) {
+                            if (w == severityItemList[index]) {
+                                break;
+                            }
+                        }
 
-                if (index < severityItemList.length) {
-                    if (bugInstance != null) {
-                        bugInstance.setProperty(BugProperty.SEVERITY, String.valueOf(index + 1));
+                        if (index < severityItemList.length) {
+                            if (bugInstance != null) {
+                                bugInstance.setProperty(BugProperty.SEVERITY, String.valueOf(index + 1));
+                            }
+                        }
                     }
-                }
-            }
-        };
+                };
 
         severityItemList = new MenuItem[SEVERITY_LABEL_LIST.length];
         for (int i = 0; i < SEVERITY_LABEL_LIST.length; ++i) {
@@ -109,24 +111,23 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
         }
 
         // Keep menu in sync with current BugInstance.
-        menu.addMenuListener(new MenuAdapter() {
-            /*
-             * (non-Javadoc)
-             *
-             * @see
-             * org.eclipse.swt.events.MenuAdapter#menuShown(org.eclipse.swt.
-             * events.MenuEvent)
-             */
-            @Override
-            public void menuShown(MenuEvent e) {
-                syncMenu();
-            }
-        });
+        menu.addMenuListener(
+                new MenuAdapter() {
+                    /*
+                     * (non-Javadoc)
+                     *
+                     * @see
+                     * org.eclipse.swt.events.MenuAdapter#menuShown(org.eclipse.swt.
+                     * events.MenuEvent)
+                     */
+                    @Override
+                    public void menuShown(MenuEvent e) {
+                        syncMenu();
+                    }
+                });
     }
 
-    /**
-     * Synchronize the menu with the current BugInstance.
-     */
+    /** Synchronize the menu with the current BugInstance. */
     private void syncMenu() {
         if (bugInstance != null) {
             BugProperty severityProperty = bugInstance.lookupProperty(BugProperty.SEVERITY);
@@ -155,8 +156,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
     /**
      * Set the menu to given severity level.
      *
-     * @param severity
-     *            the severity level (1..5)
+     * @param severity the severity level (1..5)
      */
     private void selectSeverity(int severity) {
         // Severity is 1-based, but the menu item list is 0-based
@@ -172,9 +172,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
     /**
      * Reset menu items so they are unchecked.
      *
-     * @param enable
-     *            true if menu items should be enabled, false if they should be
-     *            disabled
+     * @param enable true if menu items should be enabled, false if they should be disabled
      */
     private void resetMenuItems(boolean enable) {
         for (int i = 0; i < severityItemList.length; ++i) {
@@ -235,5 +233,4 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
         }
         bugInstance = MarkerUtil.findBugInstanceForMarker(marker);
     }
-
 }

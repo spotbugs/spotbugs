@@ -20,17 +20,15 @@
 package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Method;
-
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 @ParametersAreNonnullByDefault
 public class FindBugsMain implements Comparable<FindBugsMain> {
 
-    public FindBugsMain(Class<?> mainClass, String cmd, String description, String kind, boolean analysis)
+    public FindBugsMain(
+            Class<?> mainClass, String cmd, String description, String kind, boolean analysis)
             throws SecurityException, NoSuchMethodException {
         this.mainClass = mainClass;
         mainMethod = mainClass.getMethod("main", String[].class);
@@ -66,7 +64,6 @@ public class FindBugsMain implements Comparable<FindBugsMain> {
             return result;
         }
         return cmd.compareTo(that.cmd);
-
     }
 
     @Override
@@ -82,5 +79,4 @@ public class FindBugsMain implements Comparable<FindBugsMain> {
     public int hashCode() {
         return kind.hashCode() + cmd.hashCode();
     }
-
 }

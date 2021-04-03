@@ -22,67 +22,43 @@ package edu.umd.cs.findbugs;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class AnalysisOptions {
-    /**
-     *
-     */
+    /** */
     public boolean relaxedReportingMode;
 
-    /**
-     *
-     */
+    /** */
     public boolean abridgedMessages;
 
-    /**
-     *
-     */
+    /** */
     public String trainingInputDir;
 
-    /**
-     *
-     */
+    /** */
     public String trainingOutputDir;
 
-    /**
-     *
-     */
+    /** */
     public String sourceInfoFileName;
 
-    /**
-     *
-     */
+    /** */
     public AnalysisFeatureSetting[] analysisFeatureSettingList;
 
-    /**
-     *
-     */
+    /** */
     public boolean scanNestedArchives;
 
-    /**
-     *
-     */
+    /** */
     public boolean applySuppression;
 
-    /**
-     *
-     */
+    /** */
     public boolean mergeSimilarWarnings;
 
-    /**
-     *
-     */
+    /** */
     public boolean noClassOk;
 
     String releaseName;
 
     String projectName;
 
-    /**
-     *
-     */
+    /** */
     public AnalysisOptions(boolean mergeSimilarWarnings) {
         this.mergeSimilarWarnings = mergeSimilarWarnings;
     }

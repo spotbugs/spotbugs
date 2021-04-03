@@ -27,15 +27,17 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @see CFG
  * @author David Hovemeyer
  */
-@SuppressFBWarnings(value = "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS", justification = "Would have to break APIs to fix this properly")
-public class DepthFirstSearch extends edu.umd.cs.findbugs.graph.DepthFirstSearch<CFG, Edge, BasicBlock> {
+@SuppressFBWarnings(
+        value = "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS",
+        justification = "Would have to break APIs to fix this properly")
+public class DepthFirstSearch
+        extends edu.umd.cs.findbugs.graph.DepthFirstSearch<CFG, Edge, BasicBlock> {
     private BasicBlock firstRoot;
 
     /**
      * Constructor.
      *
-     * @param cfg
-     *            the CFG to perform the depth first search on
+     * @param cfg the CFG to perform the depth first search on
      */
     public DepthFirstSearch(CFG cfg) {
         super(cfg);

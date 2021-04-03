@@ -3,8 +3,10 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getMethodDeclaration;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 import java.util.List;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CastExpression;
@@ -23,16 +25,12 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
-
 /**
- * Returning a reference to a mutable object is not recommended. The class
- * <CODE>CreateMutableCloneResolution</CODE> returns a new copy of the object.
+ * Returning a reference to a mutable object is not recommended. The class <CODE>
+ * CreateMutableCloneResolution</CODE> returns a new copy of the object.
  *
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#EI_EXPOSE_REP">EI_EXPOSE_REP</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#EI_EXPOSE_REP">EI_EXPOSE_REP</a>
  */
 public class CreateMutableCloneResolution extends BugResolution {
 
@@ -42,14 +40,14 @@ public class CreateMutableCloneResolution extends BugResolution {
     }
 
     @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
+            throws BugResolutionException {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(workingUnit);
         Assert.isNotNull(bug);
 
         TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
         MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
-
 
         FieldAnnotation primaryField = bug.getPrimaryField();
         if (primaryField == null) {
@@ -65,7 +63,8 @@ public class CreateMutableCloneResolution extends BugResolution {
                 if (retEx instanceof SimpleName && ((SimpleName) retEx).getIdentifier().equals(fieldName)) {
                     original = (SimpleName) retEx;
                     break;
-                } else if (retEx instanceof FieldAccess && isThisFieldAccess((FieldAccess) retEx, fieldName)) {
+                } else if (retEx instanceof FieldAccess
+                        && isThisFieldAccess((FieldAccess) retEx, fieldName)) {
                     original = ((FieldAccess) retEx).getName();
                     break;
                 }
@@ -79,14 +78,11 @@ public class CreateMutableCloneResolution extends BugResolution {
         // set up the clone part
         MethodInvocation cloneInvoke = invokeClone(workingUnit, original);
 
-
-
         // cast the result to the right type
         CastExpression castRet = workingUnit.getAST().newCastExpression();
         castRet.setExpression(cloneInvoke);
         Type retType = (Type) ASTNode.copySubtree(castRet.getAST(), method.getReturnType2());
         castRet.setType(retType);
-
 
         ConditionalExpression conditionalExpression = workingUnit.getAST().newConditionalExpression();
         conditionalExpression.setElseExpression(castRet);
@@ -101,7 +97,6 @@ public class CreateMutableCloneResolution extends BugResolution {
         conditionalExpression.setExpression(nullTest);
 
         rewrite.replace(original, conditionalExpression, null);
-
     }
 
     /**
@@ -119,7 +114,7 @@ public class CreateMutableCloneResolution extends BugResolution {
     }
 
     private boolean isThisFieldAccess(FieldAccess access, String fieldName) {
-        return (access.getExpression() instanceof ThisExpression) && access.getName().getIdentifier().equals(fieldName);
+        return (access.getExpression() instanceof ThisExpression)
+                && access.getName().getIdentifier().equals(fieldName);
     }
-
 }

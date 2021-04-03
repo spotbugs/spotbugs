@@ -43,34 +43,58 @@ import edu.umd.cs.findbugs.classfile.analysis.MethodInfo.MethodInfoDatabase;
 /**
  * Register BCEL-framework analysis engines.
  *
- * <p>
- * <b>NOTE</b>: the database factories will only work with
- * AnalysisCacheToAnalysisContextAdapter, not with LegacyAnalysisContext.
- * However, that's ok since the databases for BCEL-based analyses are only ever
- * accessed through the AnalysisContext.
- * </p>
+ * <p><b>NOTE</b>: the database factories will only work with AnalysisCacheToAnalysisContextAdapter,
+ * not with LegacyAnalysisContext. However, that's ok since the databases for BCEL-based analyses
+ * are only ever accessed through the AnalysisContext.
  *
  * @author David Hovemeyer
  */
 public class EngineRegistrar implements IAnalysisEngineRegistrar {
-    private static final IClassAnalysisEngine<?>[] classAnalysisEngineList = { new ClassContextClassAnalysisEngine(),
-        new JavaClassAnalysisEngine(), new ConstantPoolGenFactory(),
+    private static final IClassAnalysisEngine<?>[] classAnalysisEngineList = {
+        new ClassContextClassAnalysisEngine(),
+        new JavaClassAnalysisEngine(),
+        new ConstantPoolGenFactory(),
         // new AssignedFieldMapFactory(),
-        new AssertionMethodsFactory(), };
+        new AssertionMethodsFactory(),
+    };
 
-    private static final IMethodAnalysisEngine<?>[] methodAnalysisEngineList = { new MethodFactory(), new MethodGenFactory(),
-        new CFGFactory(), new UsagesRequiringNonNullValuesFactory(), new ValueNumberDataflowFactory(),
-        new IsNullValueDataflowFactory(), new TypeDataflowFactory(), new DepthFirstSearchFactory(),
-        new ReverseDepthFirstSearchFactory(), new UnpackedCodeFactory(), new LockDataflowFactory(), new LockCheckerFactory(),
-        new ReturnPathDataflowFactory(), new DominatorsAnalysisFactory(), new NonExceptionPostdominatorsAnalysisFactory(),
-        new NonImplicitExceptionPostDominatorsAnalysisFactory(), new ExceptionSetFactoryFactory(),
-        new ParameterSignatureListFactory(), new ConstantDataflowFactory(), new LoadDataflowFactory(),
-        new StoreDataflowFactory(), new LoadedFieldSetFactory(), new LiveLocalStoreDataflowFactory(),
-        new BlockTypeAnalysisFactory(), new CallListDataflowFactory(), new UnconditionalValueDerefDataflowFactory(),
-        new CompactLocationNumberingFactory(), new ReturnPathTypeDataflowFactory(),
-        new ForwardTypeQualifierDataflowFactoryFactory(), new BackwardTypeQualifierDataflowFactoryFactory(),
-        new OpcodeStack.JumpInfoFactory(), new StackMapAnalysisFactory(), new ObligationDataflowFactory(),
-        new ValueRangeAnalysisFactory(), new FinallyDuplicatesInfoFactory() };
+    private static final IMethodAnalysisEngine<?>[] methodAnalysisEngineList = {
+        new MethodFactory(),
+        new MethodGenFactory(),
+        new CFGFactory(),
+        new UsagesRequiringNonNullValuesFactory(),
+        new ValueNumberDataflowFactory(),
+        new IsNullValueDataflowFactory(),
+        new TypeDataflowFactory(),
+        new DepthFirstSearchFactory(),
+        new ReverseDepthFirstSearchFactory(),
+        new UnpackedCodeFactory(),
+        new LockDataflowFactory(),
+        new LockCheckerFactory(),
+        new ReturnPathDataflowFactory(),
+        new DominatorsAnalysisFactory(),
+        new NonExceptionPostdominatorsAnalysisFactory(),
+        new NonImplicitExceptionPostDominatorsAnalysisFactory(),
+        new ExceptionSetFactoryFactory(),
+        new ParameterSignatureListFactory(),
+        new ConstantDataflowFactory(),
+        new LoadDataflowFactory(),
+        new StoreDataflowFactory(),
+        new LoadedFieldSetFactory(),
+        new LiveLocalStoreDataflowFactory(),
+        new BlockTypeAnalysisFactory(),
+        new CallListDataflowFactory(),
+        new UnconditionalValueDerefDataflowFactory(),
+        new CompactLocationNumberingFactory(),
+        new ReturnPathTypeDataflowFactory(),
+        new ForwardTypeQualifierDataflowFactoryFactory(),
+        new BackwardTypeQualifierDataflowFactoryFactory(),
+        new OpcodeStack.JumpInfoFactory(),
+        new StackMapAnalysisFactory(),
+        new ObligationDataflowFactory(),
+        new ValueRangeAnalysisFactory(),
+        new FinallyDuplicatesInfoFactory()
+    };
 
     private static final IDatabaseFactory<?>[] databaseFactoryList = {
         // new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),
@@ -113,5 +137,4 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
         // ReflectionDatabaseFactory<Subtypes>(Subtypes.class).registerWith(analysisCache);
         // }
     }
-
 }

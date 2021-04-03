@@ -17,18 +17,6 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.dom4j.DocumentException;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -38,19 +26,26 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.Filter;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.dom4j.DocumentException;
 
 /**
- * Java main application to compute update a historical bug collection with
- * results from another build/analysis.
+ * Java main application to compute update a historical bug collection with results from another
+ * build/analysis.
  *
  * @author William Pugh
  */
-
 public class SetBugDatabaseInfo {
 
-    /**
-     *
-     */
+    /** */
     private static final String USAGE = "Usage: <cmd> " + " [options] [<oldData> [<newData>]]";
 
     static class SetInfoCommandLine extends CommandLine {
@@ -85,16 +80,26 @@ public class SetBugDatabaseInfo {
             addOption("-projectName", "name", "set name for project");
             addOption("-timestamp", "when", "set timestamp for (last) revision");
             addSwitch("-resetSource", "remove all source search paths");
-            addSwitch("-resetProject", "remove all source search paths, analysis and auxiliary classpath entries");
+            addSwitch(
+                    "-resetProject",
+                    "remove all source search paths, analysis and auxiliary classpath entries");
             addOption("-source", "directory", "Add this directory to the source search path");
             addSwitch("-purgeStats", "purge/delete information about sizes of analyzed class files");
-            addSwitch("-purgeClassStats", "purge/delete information about sizes of analyzed class files, but retain class stats");
+            addSwitch(
+                    "-purgeClassStats",
+                    "purge/delete information about sizes of analyzed class files, but retain class stats");
             addSwitch("-purgeMissingClasses", "purge list of missing classes");
-            addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
-            addOption("-suppress", "filter file", "Suppress warnings matched by this file (replaces previous suppressions)");
-            addOption("-lastVersion", "version", "Trim the history to just include just the specified version");
+            addOption(
+                    "-findSource",
+                    "directory",
+                    "Find and add all relevant source directions contained within this directory");
+            addOption(
+                    "-suppress",
+                    "filter file",
+                    "Suppress warnings matched by this file (replaces previous suppressions)");
+            addOption(
+                    "-lastVersion", "version", "Trim the history to just include just the specified version");
             addSwitch("-withMessages", "Add bug descriptions");
-
         }
 
         @Override
@@ -114,7 +119,6 @@ public class SetBugDatabaseInfo {
             } else {
                 throw new IllegalArgumentException("no option " + option);
             }
-
         }
 
         @Override
@@ -136,9 +140,7 @@ public class SetBugDatabaseInfo {
             } else {
                 throw new IllegalArgumentException("Can't handle option " + option);
             }
-
         }
-
     }
 
     public static void main(String[] args) throws IOException, DocumentException {
@@ -194,8 +196,9 @@ public class SetBugDatabaseInfo {
             origCollection.clearMissingClasses();
         }
         if (commandLine.lastVersion != null) {
-            long last = edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(origCollection,
-                    commandLine.lastVersion, true);
+            long last =
+                    edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(
+                            origCollection, commandLine.lastVersion, true);
             if (last < origCollection.getSequenceNumber()) {
                 String name = origCollection.getAppVersionFromSequenceNumber(last).getReleaseName();
                 long timestamp = origCollection.getAppVersionFromSequenceNumber(last).getTimestamp();
@@ -203,7 +206,6 @@ public class SetBugDatabaseInfo {
                 origCollection.setTimestamp(timestamp);
                 origCollection.trimAppVersions(last);
             }
-
         }
 
         Map<String, Set<String>> missingFiles = new HashMap<>();
@@ -211,8 +213,10 @@ public class SetBugDatabaseInfo {
             sourceSearcher = new SourceSearcher(project);
             for (BugInstance bug : origCollection.getCollection()) {
                 SourceLineAnnotation src = bug.getPrimarySourceLineAnnotation();
-                if (!sourceSearcher.sourceNotFound.contains(src.getClassName()) && !sourceSearcher.findSource(src)) {
-                    Set<String> paths = missingFiles.computeIfAbsent(src.getSourceFile(), k -> new HashSet<>());
+                if (!sourceSearcher.sourceNotFound.contains(src.getClassName())
+                        && !sourceSearcher.findSource(src)) {
+                    Set<String> paths =
+                            missingFiles.computeIfAbsent(src.getSourceFile(), k -> new HashSet<>());
                     String fullPath = fullPath(src);
                     // System.out.println("Missing " + fullPath);
                     paths.add(fullPath);
@@ -230,11 +234,9 @@ public class SetBugDatabaseInfo {
                             if (path.endsWith(sourcePath)) {
                                 String dir = path.substring(0, path.length() - sourcePath.length());
                                 foundPaths.add(dir);
-
                             }
                         }
                     }
-
                 }
             }
 
@@ -255,7 +257,6 @@ public class SetBugDatabaseInfo {
                     System.out.println("Found " + dir);
                 }
             }
-
         }
 
         if (argCount < args.length) {
@@ -263,13 +264,13 @@ public class SetBugDatabaseInfo {
         } else {
             origCollection.writeXML(System.out);
         }
-
     }
 
     static String fullPath(SourceLineAnnotation src) {
-        return src.getPackageName().replace('.', File.separatorChar) + File.separatorChar + src.getSourceFile();
+        return src.getPackageName().replace('.', File.separatorChar)
+                + File.separatorChar
+                + src.getSourceFile();
     }
 
     static SourceSearcher sourceSearcher;
-
 }

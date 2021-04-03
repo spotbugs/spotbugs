@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.SourceFile;
+import edu.umd.cs.findbugs.charsets.SourceCharset;
+import edu.umd.cs.findbugs.sourceViewer.JavaSourceDocument;
 import java.awt.Color;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
@@ -28,19 +34,11 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
 import javax.annotation.Nonnull;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.StyledDocument;
-
-import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.ba.SourceFile;
-import edu.umd.cs.findbugs.charsets.SourceCharset;
-import edu.umd.cs.findbugs.sourceViewer.JavaSourceDocument;
 
 public final class SourceCodeDisplay implements Runnable {
     final MainFrame frame;
@@ -67,7 +65,6 @@ public final class SourceCodeDisplay implements Runnable {
         t.setDaemon(true);
         t.start();
     }
-
 
     static class DisplayMe {
         public DisplayMe(BugInstance bug, SourceLineAnnotation source) {
@@ -104,7 +101,9 @@ public final class SourceCodeDisplay implements Runnable {
             }
             try {
                 InputStream in = sourceFile.getInputStream();
-                result = new JavaSourceDocument(source.getClassName(), SourceCharset.bufferedReader(in), sourceFile);
+                result =
+                        new JavaSourceDocument(
+                                source.getClassName(), SourceCharset.bufferedReader(in), sourceFile);
             } catch (Exception e) {
                 result = JavaSourceDocument.UNKNOWNSOURCE;
                 Debug.println(e); // e.printStackTrace();
@@ -114,7 +113,6 @@ public final class SourceCodeDisplay implements Runnable {
         } catch (Exception e) {
             Debug.println(e); // e.printStackTrace();
             return JavaSourceDocument.UNKNOWNSOURCE;
-
         }
     }
 
@@ -165,15 +163,14 @@ public final class SourceCodeDisplay implements Runnable {
         }
     }
 
-
     private final class DisplayBug implements Runnable {
 
         private final SourceLineAnnotation mySourceLine;
         private final JavaSourceDocument src;
         private final BugInstance myBug;
 
-
-        private DisplayBug(JavaSourceDocument src, BugInstance myBug, SourceLineAnnotation mySourceLine) {
+        private DisplayBug(
+                JavaSourceDocument src, BugInstance myBug, SourceLineAnnotation mySourceLine) {
             this.mySourceLine = mySourceLine;
             this.src = src;
             this.myBug = myBug;
@@ -222,7 +219,8 @@ public final class SourceCodeDisplay implements Runnable {
      * @param src
      * @param sourceAnnotation
      */
-    private void highlight(JavaSourceDocument src, SourceLineAnnotation sourceAnnotation, Color color) {
+    private void highlight(
+            JavaSourceDocument src, SourceLineAnnotation sourceAnnotation, Color color) {
 
         int startLine = sourceAnnotation.getStartLine();
         if (startLine == -1) {
@@ -230,8 +228,11 @@ public final class SourceCodeDisplay implements Runnable {
         }
         String sourceFile = sourceAnnotation.getSourcePath();
         String sourceFile2 = src.getSourceFile().getFullFileName();
-        if (!java.io.File.separator.equals(String.valueOf(SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR))) {
-            sourceFile2 = sourceFile2.replace(java.io.File.separatorChar, SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR);
+        if (!java.io.File.separator.equals(
+                String.valueOf(SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR))) {
+            sourceFile2 =
+                    sourceFile2.replace(
+                            java.io.File.separatorChar, SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR);
         }
         if (!sourceFile2.endsWith(sourceFile)) {
             return;
@@ -337,6 +338,5 @@ public final class SourceCodeDisplay implements Runnable {
 
     public void showLine(int line) {
         frame.getSourceCodeTextPane().scrollLineToVisible(line);
-
     }
 }

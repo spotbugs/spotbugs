@@ -24,15 +24,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.filter.NotMatcher;
+import org.junit.Test;
 
-/**
- * @author Graham Allan (grundlefleck@gmail.com)
- */
+/** @author Graham Allan (grundlefleck@gmail.com) */
 public class FilterFactoryTest {
 
     @Test

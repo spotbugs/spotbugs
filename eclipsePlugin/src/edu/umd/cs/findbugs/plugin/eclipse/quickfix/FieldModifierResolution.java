@@ -3,6 +3,8 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getFieldDeclaration;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -12,15 +14,12 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
-
 /**
- * The <CODE>FieldModifierResolution</CODE> provides a resolution to replace the
- * <CODE>modifier</CODE> of a <CODE>field</CODE>.
+ * The <CODE>FieldModifierResolution</CODE> provides a resolution to replace the <CODE>modifier
+ * </CODE> of a <CODE>field</CODE>.
  *
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#MS_SHOULD_BE_FINAL">MS_SHOULD_BE_FINAL</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#MS_SHOULD_BE_FINAL">MS_SHOULD_BE_FINAL</a>
  */
 public abstract class FieldModifierResolution extends BugResolution {
 
@@ -30,7 +29,8 @@ public abstract class FieldModifierResolution extends BugResolution {
     }
 
     @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
+            throws BugResolutionException {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(workingUnit);
         Assert.isNotNull(bug);
@@ -45,5 +45,4 @@ public abstract class FieldModifierResolution extends BugResolution {
     }
 
     public abstract ModifierKeyword getModifierToAdd();
-
 }

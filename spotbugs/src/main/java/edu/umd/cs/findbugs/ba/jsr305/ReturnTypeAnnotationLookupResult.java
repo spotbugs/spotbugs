@@ -20,8 +20,8 @@
 package edu.umd.cs.findbugs.ba.jsr305;
 
 /**
- * TypeQualifierAnnotationLookupResult summarizing TypeQualifierAnnotation(s)
- * relevant for a method return type.
+ * TypeQualifierAnnotationLookupResult summarizing TypeQualifierAnnotation(s) relevant for a method
+ * return type.
  *
  * @author David Hovemeyer
  */

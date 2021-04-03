@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import java.util.Objects;
-import javax.annotation.meta.When;
-
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import java.util.Objects;
+import javax.annotation.meta.When;
 
 /**
  * Information about a source or sink in the type qualifier dataflow analysis.
@@ -52,15 +51,10 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
     /**
      * Constructor.
      *
-     * @param type
-     *            type of the source or sink
-     * @param location
-     *            Location of the source or sink
-     * @param vn
-     *            the ValueNumber of the annotated value
-     * @param when
-     *            the When value used (explicitly or implicitly) to annotate
-     *            this source or sink
+     * @param type type of the source or sink
+     * @param location Location of the source or sink
+     * @param vn the ValueNumber of the annotated value
+     * @param when the When value used (explicitly or implicitly) to annotate this source or sink
      */
     public SourceSinkInfo(SourceSinkType type, Location location, ValueNumber vn, When when) {
         this.type = type;
@@ -69,87 +63,67 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
         this.when = when;
     }
 
-    /**
-     * @return Returns the type.
-     */
+    /** @return Returns the type. */
     public SourceSinkType getType() {
         return type;
     }
 
-    /**
-     * @return Returns the location.
-     */
+    /** @return Returns the location. */
     public Location getLocation() {
         return location;
     }
 
-    /**
-     * @return Returns the ValueNumber.
-     */
+    /** @return Returns the ValueNumber. */
     public ValueNumber getValueNumber() {
         return vn;
     }
 
-    /**
-     * @return Returns the when.
-     */
+    /** @return Returns the when. */
     public When getWhen() {
         return when;
     }
 
-    /**
-     * @param parameter
-     *            The parameter to set.
-     */
+    /** @param parameter The parameter to set. */
     public void setParameter(int parameter) {
         this.parameter = parameter;
     }
 
     /**
-     * @param parameter
-     *            The parameter to set.
-     * @param local
-     *            The local to set.
+     * @param parameter The parameter to set.
+     * @param local The local to set.
      */
     public void setParameterAndLocal(int parameter, int local) {
         this.parameter = parameter;
         this.local = local;
     }
 
-    /**
-     * @return Returns the parameter.
-     */
+    /** @return Returns the parameter. */
     public int getParameter() {
         return parameter;
     }
 
-    /**
-     * @return Returns the local.
-     */
+    /** @return Returns the local. */
     public int getLocal() {
         return local;
     }
 
     /**
-     * Set the SourceSinkInfo as having been created based on the results of
-     * type qualifiers computed for a called method (and not explicitly
-     * annotating the called method).
+     * Set the SourceSinkInfo as having been created based on the results of type qualifiers computed
+     * for a called method (and not explicitly annotating the called method).
      *
-     * @param interproc
-     *            true if the SourceSinkInfo results from computed type
-     *            qualifiers for a called method, false otherwise
+     * @param interproc true if the SourceSinkInfo results from computed type qualifiers for a called
+     *     method, false otherwise
      */
     public void setInterproc(boolean interproc) {
         this.interproc = interproc;
     }
 
     /**
-     * Return whether or not the SourceSinkInfo was created based on the results
-     * of type qualifiers computed for a called method (and not explicitly
-     * annotating the called method).
+     * Return whether or not the SourceSinkInfo was created based on the results of type qualifiers
+     * computed for a called method (and not explicitly annotating the called method).
      *
-     * @return true if the SourceSinkInfo results from computed type qualifiers
-     *         for a called method, false otherwise
+     * @return true if the SourceSinkInfo results from computed type qualifiers for a called method,
+     *     false otherwise
      */
     public boolean getInterproc() {
         return interproc;
@@ -213,6 +187,13 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
      */
     @Override
     public String toString() {
-        return type.toString() + "@" + location.toCompactString() + "[vn=" + vn.getNumber() + ",when=" + when + "]";
+        return type.toString()
+                + "@"
+                + location.toCompactString()
+                + "[vn="
+                + vn.getNumber()
+                + ",when="
+                + when
+                + "]";
     }
 }

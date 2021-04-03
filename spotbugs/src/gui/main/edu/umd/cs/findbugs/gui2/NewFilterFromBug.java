@@ -19,27 +19,22 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.filter.Matcher;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import edu.umd.cs.findbugs.filter.Matcher;
-
-
-/**
- * Allows you to make a new Filter by right clicking (control clicking) on a bug
- * in the tree
- */
+/** Allows you to make a new Filter by right clicking (control clicking) on a bug in the tree */
 @SuppressWarnings("serial")
 public class NewFilterFromBug extends FBDialog {
 
     private static final List<NewFilterFromBug> listOfAllFrames = new ArrayList<>();
 
-    public NewFilterFromBug(final FilterFromBugPicker filterFromBugPicker, final ApplyNewFilter applyNewFilter) {
+    public NewFilterFromBug(
+            final FilterFromBugPicker filterFromBugPicker, final ApplyNewFilter applyNewFilter) {
         this.setModal(true);
         listOfAllFrames.add(this);
         setLayout(new BorderLayout());
@@ -52,12 +47,14 @@ public class NewFilterFromBug extends FBDialog {
         JPanel south = new JPanel();
         JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
 
-        okButton.addActionListener(evt -> {
-            Matcher matcherFromSelection = filterFromBugPicker.makeMatcherFromSelection();
-            applyNewFilter.fromMatcher(matcherFromSelection);
-            closeDialog();
-        });
-        JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
+        okButton.addActionListener(
+                evt -> {
+                    Matcher matcherFromSelection = filterFromBugPicker.makeMatcherFromSelection();
+                    applyNewFilter.fromMatcher(matcherFromSelection);
+                    closeDialog();
+                });
+        JButton cancelButton =
+                new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
         cancelButton.addActionListener(evt -> closeDialog());
         GuiUtil.addOkAndCancelButtons(south, okButton, cancelButton);
         add(south, BorderLayout.SOUTH);

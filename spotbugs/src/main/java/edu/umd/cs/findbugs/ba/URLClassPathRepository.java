@@ -22,26 +22,24 @@
  */
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.util.ClassPath;
 import org.apache.bcel.util.Repository;
 
-import edu.umd.cs.findbugs.SystemProperties;
-
 /**
- * BCEL Repository implementation that uses an URLClassPath to find classes.
- * This class has two specific improvements over BCEL's SyntheticRepository
- * class:
+ * BCEL Repository implementation that uses an URLClassPath to find classes. This class has two
+ * specific improvements over BCEL's SyntheticRepository class:
+ *
  * <ol>
- * <li>Classpath elements may be added at any time, not just when the object is
- * created.
- * <li>Classpath elements can be URLs. This allows repository lookups to find
- * classes via http URLs, jar URLs, etc.
+ *   <li>Classpath elements may be added at any time, not just when the object is created.
+ *   <li>Classpath elements can be URLs. This allows repository lookups to find classes via http
+ *       URLs, jar URLs, etc.
  * </ol>
+ *
  * FindBugs requires and uses both of these capabilities.
  *
  * @author David Hovemeyer
@@ -60,9 +58,7 @@ public class URLClassPathRepository implements Repository {
         this.urlClassPath = new URLClassPath();
     }
 
-    /**
-     * Clear the repository and close all underlying resources.
-     */
+    /** Clear the repository and close all underlying resources. */
     public void destroy() {
         nameToClassMap.clear();
         urlClassPath.close();
@@ -74,8 +70,7 @@ public class URLClassPathRepository implements Repository {
     /**
      * Add a filename or URL to the classpath.
      *
-     * @param fileName
-     *            filename or URL of classpath entry to add
+     * @param fileName filename or URL of classpath entry to add
      * @throws IOException
      */
     public void addURL(String fileName) throws IOException {

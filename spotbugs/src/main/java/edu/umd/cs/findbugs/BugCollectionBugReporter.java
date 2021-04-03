@@ -19,15 +19,13 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.PrintWriter;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import java.io.PrintWriter;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 public class BugCollectionBugReporter extends TextUIBugReporter implements Debug {
     private final SortedBugCollection bugCollection;
@@ -126,11 +124,10 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
     }
 
     /**
-     * Emit one line of the error message report. By default, error messages are
-     * printed to System.err. Subclasses may override.
+     * Emit one line of the error message report. By default, error messages are printed to
+     * System.err. Subclasses may override.
      *
-     * @param line
-     *            one line of the error report
+     * @param line one line of the error report
      */
     @Override
     protected void emitLine(String line) {
@@ -141,6 +138,4 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
         line = line.replaceAll("\t", "  ");
         writer.println(line);
     }
-
-
 }

@@ -19,23 +19,22 @@
 
 package edu.umd.cs.findbugs.ba.interproc;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.io.IOException;
+import java.io.Writer;
+import org.apache.bcel.Const;
 
 /**
  * Interprocedural field property database.
  *
  * @author David Hovemeyer
  */
-public abstract class FieldPropertyDatabase<Property> extends PropertyDatabase<FieldDescriptor, Property> {
+public abstract class FieldPropertyDatabase<Property>
+        extends PropertyDatabase<FieldDescriptor, Property> {
 
     /*
      * (non-Javadoc)
@@ -61,8 +60,12 @@ public abstract class FieldPropertyDatabase<Property> extends PropertyDatabase<F
             throw new PropertyDatabaseFormatException("Invalid field access flags: " + tuple[3]);
         }
 
-        return DescriptorFactory.instance().getFieldDescriptor(ClassName.toSlashedClassName(className), fieldName, signature,
-                (accessFlags & Const.ACC_STATIC) != 0);
+        return DescriptorFactory.instance()
+                .getFieldDescriptor(
+                        ClassName.toSlashedClassName(className),
+                        fieldName,
+                        signature,
+                        (accessFlags & Const.ACC_STATIC) != 0);
     }
 
     /*
@@ -85,5 +88,4 @@ public abstract class FieldPropertyDatabase<Property> extends PropertyDatabase<F
         int flags = xField.getAccessFlags() & 0xf;
         writer.write(String.valueOf(flags));
     }
-
 }

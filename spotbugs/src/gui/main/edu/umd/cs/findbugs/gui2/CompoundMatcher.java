@@ -19,16 +19,14 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.io.IOException;
-import java.util.HashSet;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
+import java.util.HashSet;
 
 /**
- * Holds a bunch of matchers, and only matches a bug if all the submatchers
- * match it. Matchetymatch.
+ * Holds a bunch of matchers, and only matches a bug if all the submatchers match it. Matchetymatch.
  */
 @Deprecated
 public class CompoundMatcher extends HashSet<Matcher> implements Matcher {

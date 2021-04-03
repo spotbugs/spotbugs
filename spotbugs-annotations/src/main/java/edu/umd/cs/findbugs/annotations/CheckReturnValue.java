@@ -25,10 +25,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is used to denote a method whose return value should always
- * be checked when invoking the method.
+ * This annotation is used to denote a method whose return value should always be checked when
+ * invoking the method.
  *
- * The checker treats this annotation as inherited by overriding methods.
+ * <p>The checker treats this annotation as inherited by overriding methods.
  */
 @Documented
 @Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
@@ -40,8 +40,6 @@ public @interface CheckReturnValue {
 
     Confidence confidence() default Confidence.MEDIUM;
 
-    /**
-     * A textual explanation of why the return value should be checked
-     */
+    /** A textual explanation of why the return value should be checked */
     String explanation() default "";
 }

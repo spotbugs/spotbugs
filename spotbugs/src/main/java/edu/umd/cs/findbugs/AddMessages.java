@@ -19,24 +19,21 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.xml.XMLUtil;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import edu.umd.cs.findbugs.xml.XMLUtil;
-
 /**
- * Add human-readable messages to a dom4j tree containing FindBugs XML output.
- * This transformation makes it easier to generate reports (such as HTML) from
- * the XML.
+ * Add human-readable messages to a dom4j tree containing FindBugs XML output. This transformation
+ * makes it easier to generate reports (such as HTML) from the XML.
  *
  * @see BugCollection
  * @author David Hovemeyer
@@ -49,21 +46,18 @@ public class AddMessages {
     /**
      * Constructor.
      *
-     * @param bugCollection
-     *            the BugCollection the dom4j was generated from
-     * @param document
-     *            the dom4j tree
+     * @param bugCollection the BugCollection the dom4j was generated from
+     * @param document the dom4j tree
      */
     public AddMessages(BugCollection bugCollection, Document document) {
         this.bugCollection = bugCollection;
         this.document = document;
     }
 
-    /**
-     * Add messages to the dom4j tree.
-     */
+    /** Add messages to the dom4j tree. */
     public void execute() {
-        Iterator<?> elementIter = XMLUtil.selectNodes(document, "/BugCollection/BugInstance").iterator();
+        Iterator<?> elementIter =
+                XMLUtil.selectNodes(document, "/BugCollection/BugInstance").iterator();
         Iterator<BugInstance> bugInstanceIter = bugCollection.iterator();
 
         Set<String> bugTypeSet = new HashSet<>();
@@ -108,8 +102,7 @@ public class AddMessages {
     /**
      * Add BugCategory elements.
      *
-     * @param bugCategorySet
-     *            all bug categories referenced in the BugCollection
+     * @param bugCategorySet all bug categories referenced in the BugCollection
      */
     private void addBugCategories(Set<String> bugCategorySet) {
         Element root = document.getRootElement();
@@ -138,8 +131,7 @@ public class AddMessages {
     /**
      * Add BugCode elements.
      *
-     * @param bugCodeSet
-     *            all bug codes (abbrevs) referenced in the BugCollection
+     * @param bugCodeSet all bug codes (abbrevs) referenced in the BugCollection
      */
     private void addBugCodes(Set<String> bugCodeSet) {
         Element root = document.getRootElement();
@@ -159,7 +151,9 @@ public class AddMessages {
                 continue;
             }
             Element details = root.addElement("BugPattern");
-            details.addAttribute("type", bugType).addAttribute("abbrev", bugPattern.getAbbrev())
+            details
+                    .addAttribute("type", bugType)
+                    .addAttribute("abbrev", bugPattern.getAbbrev())
                     .addAttribute("category", bugPattern.getCategory());
             details.addElement("ShortDescription").addText(bugPattern.getShortDescription());
             details.addElement("Details").addCDATA(bugPattern.getDetailText());
@@ -169,7 +163,8 @@ public class AddMessages {
     @SuppressFBWarnings("DM_EXIT")
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.println("Usage: " + AddMessages.class.getName() + " <input collection> <output collection>");
+            System.err.println(
+                    "Usage: " + AddMessages.class.getName() + " <input collection> <output collection>");
             System.exit(1);
         }
 
@@ -188,8 +183,10 @@ public class AddMessages {
         AddMessages addMessages = new AddMessages(inputCollection, document);
         addMessages.execute();
 
-        XMLWriter writer = new XMLWriter(new BufferedOutputStream(new FileOutputStream(outputFile)),
-                OutputFormat.createPrettyPrint());
+        XMLWriter writer =
+                new XMLWriter(
+                        new BufferedOutputStream(new FileOutputStream(outputFile)),
+                        OutputFormat.createPrettyPrint());
         writer.write(document);
         writer.close();
     }

@@ -19,6 +19,17 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.log.Profiler;
+import edu.umd.cs.findbugs.model.ClassFeatureSet;
+import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -50,7 +61,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
@@ -59,7 +69,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.TransformerException;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -68,29 +77,17 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.MissingClassException;
-import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.log.Profiler;
-import edu.umd.cs.findbugs.model.ClassFeatureSet;
-import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLAttributeList;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutputUtil;
-
 /**
- * An implementation of {@link BugCollection} that keeps the BugInstances sorted
- * by class (using the native comparison ordering of BugInstance's compareTo()
- * method as a tie-breaker).
+ * An implementation of {@link BugCollection} that keeps the BugInstances sorted by class (using the
+ * native comparison ordering of BugInstance's compareTo() method as a tie-breaker).
  *
  * @see BugInstance
  * @author David Hovemeyer
  */
 public class SortedBugCollection implements BugCollection {
 
-    private static final boolean REPORT_SUMMARY_HTML = SystemProperties.getBoolean("findbugs.report.SummaryHTML");
+    private static final boolean REPORT_SUMMARY_HTML =
+            SystemProperties.getBoolean("findbugs.report.SummaryHTML");
 
     long analysisTimestamp = System.currentTimeMillis();
 
@@ -131,21 +128,14 @@ public class SortedBugCollection implements BugCollection {
 
     private boolean preciseHashOccurrenceNumbersAvailable = false;
 
-    /**
-     * Sequence number of the most-recently analyzed version of the code.
-     */
+    /** Sequence number of the most-recently analyzed version of the code. */
     private long sequence;
 
-    /**
-     * Release name of the analyzed application.
-     */
+    /** Release name of the analyzed application. */
     private String releaseName;
 
-    /**
-     * Current timestamp for the code being analyzed
-     */
+    /** Current timestamp for the code being analyzed */
     private long timestamp;
-
 
     public long getTimeStartedLoading() {
         return timeStartedLoading;
@@ -163,7 +153,6 @@ public class SortedBugCollection implements BugCollection {
     public Project getProject() {
         return project;
     }
-
 
     @Override
     public boolean isApplySuppressions() {
@@ -186,11 +175,10 @@ public class SortedBugCollection implements BugCollection {
     }
 
     /**
-     * Add a Collection of BugInstances to this BugCollection object. This just
-     * calls add(BugInstance) for each instance in the input collection.
+     * Add a Collection of BugInstances to this BugCollection object. This just calls add(BugInstance)
+     * for each instance in the input collection.
      *
-     * @param collection
-     *            the Collection of BugInstances to add
+     * @param collection the Collection of BugInstances to add
      */
     public void addAll(Collection<BugInstance> collection) {
         for (BugInstance bug : collection) {
@@ -201,11 +189,9 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Add a Collection of BugInstances to this BugCollection object.
      *
-     * @param collection
-     *            the Collection of BugInstances to add
-     * @param updateActiveTime
-     *            true if active time of added BugInstances should be updated to
-     *            match collection: false if not
+     * @param collection the Collection of BugInstances to add
+     * @param updateActiveTime true if active time of added BugInstances should be updated to match
+     *     collection: false if not
      */
     public void addAll(Collection<BugInstance> collection, boolean updateActiveTime) {
         for (BugInstance warning : collection) {
@@ -214,46 +200,42 @@ public class SortedBugCollection implements BugCollection {
     }
 
     /**
-     * Add a BugInstance to this BugCollection. This just calls add(bugInstance,
-     * true).
+     * Add a BugInstance to this BugCollection. This just calls add(bugInstance, true).
      *
-     * @param bugInstance
-     *            the BugInstance
-     * @return true if the BugInstance was added, or false if a matching
-     *         BugInstance was already in the BugCollection
+     * @param bugInstance the BugInstance
+     * @return true if the BugInstance was added, or false if a matching BugInstance was already in
+     *     the BugCollection
      */
     @Override
     public boolean add(BugInstance bugInstance) {
-        return add(bugInstance,
-                bugInstance.getFirstVersion() == 0L && bugInstance.getLastVersion() == 0L);
+        return add(
+                bugInstance, bugInstance.getFirstVersion() == 0L && bugInstance.getLastVersion() == 0L);
     }
 
     /**
      * Add an analysis error.
      *
-     * @param message
-     *            the error message
+     * @param message the error message
      */
     @Override
     public void addError(String message) {
         addError(message, null);
     }
 
-    /**
-     * Get the current AppVersion.
-     */
+    /** Get the current AppVersion. */
     @Override
     public AppVersion getCurrentAppVersion() {
-        return new AppVersion(getSequenceNumber()).setReleaseName(getReleaseName()).setTimestamp(getTimestamp())
-                .setNumClasses(getProjectStats().getNumClasses()).setCodeSize(getProjectStats().getCodeSize());
+        return new AppVersion(getSequenceNumber())
+                .setReleaseName(getReleaseName())
+                .setTimestamp(getTimestamp())
+                .setNumClasses(getProjectStats().getNumClasses())
+                .setCodeSize(getProjectStats().getCodeSize());
     }
 
     /**
-     * Read XML data from given file into this object, populating given Project
-     * as a side effect.
+     * Read XML data from given file into this object, populating given Project as a side effect.
      *
-     * @param fileName
-     *            name of the file to read
+     * @param fileName name of the file to read
      */
     @Override
     public void readXML(String fileName) throws IOException, DocumentException {
@@ -261,11 +243,9 @@ public class SortedBugCollection implements BugCollection {
     }
 
     /**
-     * Read XML data from given file into this object, populating given Project
-     * as a side effect.
+     * Read XML data from given file into this object, populating given Project as a side effect.
      *
-     * @param file
-     *            the file
+     * @param file the file
      */
     public void readXML(File file) throws IOException, DocumentException {
         project.setCurrentWorkingDirectory(file.getParentFile());
@@ -299,12 +279,10 @@ public class SortedBugCollection implements BugCollection {
     }
 
     /**
-     * Read XML data from given input stream into this object, populating the
-     * Project as a side effect. An attempt will be made to close the input
-     * stream (even if an exception is thrown).
+     * Read XML data from given input stream into this object, populating the Project as a side
+     * effect. An attempt will be made to close the input stream (even if an exception is thrown).
      *
-     * @param in
-     *            the InputStream
+     * @param in the InputStream
      */
     public void readXML(@WillClose InputStream in, File base) throws IOException, DocumentException {
         try {
@@ -328,7 +306,8 @@ public class SortedBugCollection implements BugCollection {
         doReadXML(reader, null);
     }
 
-    private void doReadXML(@WillClose InputStream in, @CheckForNull File base) throws IOException, DocumentException {
+    private void doReadXML(@WillClose InputStream in, @CheckForNull File base)
+            throws IOException, DocumentException {
         try {
             checkInputStream(in);
             Reader reader = Util.getReader(in);
@@ -342,7 +321,8 @@ public class SortedBugCollection implements BugCollection {
         }
     }
 
-    private void doReadXML(@WillClose Reader reader, @CheckForNull File base) throws IOException, DocumentException {
+    private void doReadXML(@WillClose Reader reader, @CheckForNull File base)
+            throws IOException, DocumentException {
         timeStartedLoading = System.currentTimeMillis();
 
         SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, base);
@@ -354,10 +334,14 @@ public class SortedBugCollection implements BugCollection {
             try {
                 SAXParserFactory parserFactory = SAXParserFactory.newInstance();
                 parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-                parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
-                parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
-                parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
-                parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
+                parserFactory.setFeature(
+                        "http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+                parserFactory.setFeature(
+                        "http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
+                parserFactory.setFeature(
+                        "http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
+                parserFactory.setFeature(
+                        "http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
                 SAXParser parser = parserFactory.newSAXParser();
                 xr = parser.getXMLReader();
             } catch (SAXException | ParserConfigurationException e) {
@@ -370,10 +354,17 @@ public class SortedBugCollection implements BugCollection {
             xr.parse(new InputSource(reader));
         } catch (SAXParseException e) {
             if (base != null) {
-                throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber() + " of "
-                        + base, e);
+                throw new DocumentException(
+                        "Parse error at line "
+                                + e.getLineNumber()
+                                + " : "
+                                + e.getColumnNumber()
+                                + " of "
+                                + base,
+                        e);
             }
-            throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber(), e);
+            throw new DocumentException(
+                    "Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber(), e);
         } catch (SAXException e) {
             // FIXME: throw SAXException from method?
             if (base != null) {
@@ -390,7 +381,6 @@ public class SortedBugCollection implements BugCollection {
         project.setModified(false);
     }
 
-
     @Override
     public void writeXML(OutputStream out) throws IOException {
         writeXML(UTF8.writer(out));
@@ -399,8 +389,7 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Write this BugCollection to a file as XML.
      *
-     * @param fileName
-     *            the file to write to
+     * @param fileName the file to write to
      */
     @Override
     public void writeXML(String fileName) throws IOException {
@@ -414,8 +403,7 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Write this BugCollection to a file as XML.
      *
-     * @param file
-     *            the file to write to
+     * @param file the file to write to
      */
     public void writeXML(File file) throws IOException {
         OutputStream out = new FileOutputStream(file);
@@ -448,11 +436,10 @@ public class SortedBugCollection implements BugCollection {
     }
 
     /**
-     * Write the BugCollection to given output stream as XML. The output stream
-     * will be closed, even if an exception is thrown.
+     * Write the BugCollection to given output stream as XML. The output stream will be closed, even
+     * if an exception is thrown.
      *
-     * @param out
-     *            the OutputStream to write to
+     * @param out the OutputStream to write to
      */
     @Override
     public void writeXML(@WillClose Writer out) throws IOException {
@@ -460,7 +447,6 @@ public class SortedBugCollection implements BugCollection {
         bugsPopulated();
         XMLOutput xmlOutput;
         // if (project == null) throw new NullPointerException("No project");
-
 
         xmlOutput = new OutputStreamXMLOutput(out);
 
@@ -472,7 +458,8 @@ public class SortedBugCollection implements BugCollection {
         xmlOutput.beginDocument();
         xmlOutput.openTag(
                 ROOT_ELEMENT_NAME,
-                new XMLAttributeList().addAttribute("version", analysisVersion)
+                new XMLAttributeList()
+                        .addAttribute("version", analysisVersion)
                         .addAttribute("sequence", String.valueOf(getSequenceNumber()))
                         .addAttribute("timestamp", String.valueOf(getTimestamp()))
                         .addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
@@ -506,16 +493,12 @@ public class SortedBugCollection implements BugCollection {
     }
 
     /**
-     * Write the BugCollection to an XMLOutput object. The finish() method of
-     * the XMLOutput object is guaranteed to be called.
+     * Write the BugCollection to an XMLOutput object. The finish() method of the XMLOutput object is
+     * guaranteed to be called.
      *
-     * <p>
-     * To write the SummaryHTML element, set property
-     * findbugs.report.SummaryHTML to "true".
-     * </p>
+     * <p>To write the SummaryHTML element, set property findbugs.report.SummaryHTML to "true".
      *
-     * @param xmlOutput
-     *            the XMLOutput object
+     * @param xmlOutput the XMLOutput object
      */
     @Override
     public void writeXML(@WillClose XMLOutput xmlOutput) throws IOException {
@@ -532,7 +515,6 @@ public class SortedBugCollection implements BugCollection {
                     } else {
                         commonBase = commonBase.substring(0, commonPrefix(commonBase, s));
                     }
-
                 }
                 if (commonBase != null && commonBase.length() > 0) {
                     if (commonBase.indexOf("/./") > 0) {
@@ -793,7 +775,8 @@ public class SortedBugCollection implements BugCollection {
 
         in.reset();
 
-        try (BufferedReader reader = new BufferedReader(Util.getReader(new ByteArrayInputStream(buf)))) {
+        try (BufferedReader reader =
+                new BufferedReader(Util.getReader(new ByteArrayInputStream(buf)))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("<BugCollection")) {
@@ -806,13 +789,11 @@ public class SortedBugCollection implements BugCollection {
     }
 
     /**
-     * Clone all of the BugInstance objects in the source Collection and add
-     * them to the destination Collection.
+     * Clone all of the BugInstance objects in the source Collection and add them to the destination
+     * Collection.
      *
-     * @param dest
-     *            the destination Collection
-     * @param source
-     *            the source Collection
+     * @param dest the destination Collection
+     * @param source the source Collection
      */
     public static void cloneAll(Collection<BugInstance> dest, Collection<BugInstance> source) {
         for (BugInstance obj : source) {
@@ -876,7 +857,8 @@ public class SortedBugCollection implements BugCollection {
             return 0;
         }
 
-        public static final MultiversionBugInstanceComparator instance = new MultiversionBugInstanceComparator();
+        public static final MultiversionBugInstanceComparator instance =
+                new MultiversionBugInstanceComparator();
     }
 
     public SortedBugCollection(Project project) {
@@ -888,16 +870,12 @@ public class SortedBugCollection implements BugCollection {
         this.readXML(f);
     }
 
-    /**
-     * Constructor. Creates an empty object.
-     */
+    /** Constructor. Creates an empty object. */
     public SortedBugCollection() {
         this(new ProjectStats());
     }
 
-    /**
-     * Constructor. Creates an empty object.
-     */
+    /** Constructor. Creates an empty object. */
     public SortedBugCollection(Comparator<BugInstance> comparator) {
         this(new ProjectStats(), comparator);
     }
@@ -905,8 +883,7 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Constructor. Creates an empty object given an existing ProjectStats.
      *
-     * @param projectStats
-     *            the ProjectStats
+     * @param projectStats the ProjectStats
      */
     public SortedBugCollection(ProjectStats projectStats) {
         this(projectStats, MultiversionBugInstanceComparator.instance);
@@ -919,16 +896,15 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Constructor. Creates an empty object given an existing ProjectStats.
      *
-     * @param projectStats
-     *            the ProjectStats
-     * @param comparator
-     *            to use for sorting bug instances
+     * @param projectStats the ProjectStats
+     * @param comparator to use for sorting bug instances
      */
     public SortedBugCollection(ProjectStats projectStats, Comparator<BugInstance> comparator) {
         this(projectStats, comparator, new Project());
     }
 
-    public SortedBugCollection(ProjectStats projectStats, Comparator<BugInstance> comparator, Project project) {
+    public SortedBugCollection(
+            ProjectStats projectStats, Comparator<BugInstance> comparator, Project project) {
         this.projectStats = projectStats;
         this.comparator = comparator;
         this.project = project;
@@ -946,7 +922,8 @@ public class SortedBugCollection implements BugCollection {
     @Override
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
         if (bugsPopulated) {
-            AnalysisContext.logError("Bug collection marked as populated, but bugs added",
+            AnalysisContext.logError(
+                    "Bug collection marked as populated, but bugs added",
                     new RuntimeException("Bug collection marked as populated, but bugs added"));
             bugsPopulated = false;
         }
@@ -993,7 +970,8 @@ public class SortedBugCollection implements BugCollection {
             return;
         }
         if (exception instanceof edu.umd.cs.findbugs.classfile.MissingClassException) {
-            edu.umd.cs.findbugs.classfile.MissingClassException e = (edu.umd.cs.findbugs.classfile.MissingClassException) exception;
+            edu.umd.cs.findbugs.classfile.MissingClassException e =
+                    (edu.umd.cs.findbugs.classfile.MissingClassException) exception;
             addMissingClass(AbstractBugReporter.getMissingClassName(e.toClassNotFoundException()));
             return;
         }
@@ -1078,8 +1056,9 @@ public class SortedBugCollection implements BugCollection {
         return null;
     }
 
-    /** Returns whether this bug collection contains results from multiple analysis runs,
-     * either of different version of the software or from different versions of FindBugs.
+    /**
+     * Returns whether this bug collection contains results from multiple analysis runs, either of
+     * different version of the software or from different versions of FindBugs.
      */
     @Override
     public boolean isMultiversion() {
@@ -1234,7 +1213,8 @@ public class SortedBugCollection implements BugCollection {
     @Override
     public BugInstance findBug(String instanceHash, String bugType, int lineNumber) {
         for (BugInstance bug : bugSet) {
-            if (bug.getInstanceHash().equals(instanceHash) && bug.getBugPattern().getType().equals(bugType)
+            if (bug.getInstanceHash().equals(instanceHash)
+                    && bug.getBugPattern().getType().equals(bugType)
                     && bug.getPrimarySourceLineAnnotation().getStartLine() == lineNumber) {
                 return bug;
             }
@@ -1286,7 +1266,6 @@ public class SortedBugCollection implements BugCollection {
                 if (u.getPath().endsWith(".gz")) {
                     return new GZIPInputStream(in);
                 }
-
             }
         } catch (IOException e) {
             assert true;

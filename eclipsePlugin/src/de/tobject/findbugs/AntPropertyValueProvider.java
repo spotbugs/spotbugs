@@ -12,5 +12,4 @@ public class AntPropertyValueProvider implements IAntPropertyValueProvider {
         }
         throw new IllegalArgumentException("No property " + antPropertyName);
     }
-
 }

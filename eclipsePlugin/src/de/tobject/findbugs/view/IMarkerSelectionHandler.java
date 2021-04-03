@@ -23,15 +23,11 @@ import org.eclipse.ui.IWorkbenchPart;
 
 public interface IMarkerSelectionHandler {
     /**
-     * @param thePart
-     *            non null part in which the marker was selected
-     * @param marker
-     *            may be null or existing FindBugs marker
+     * @param thePart non null part in which the marker was selected
+     * @param marker may be null or existing FindBugs marker
      */
     void markerSelected(IWorkbenchPart thePart, IMarker marker);
 
-    /**
-     * @return true if the handler part is visible to user
-     */
+    /** @return true if the handler part is visible to user */
     boolean isVisible();
 }

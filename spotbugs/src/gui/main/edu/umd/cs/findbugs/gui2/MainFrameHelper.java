@@ -1,14 +1,12 @@
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.gui.AnnotatedString;
 import java.awt.Toolkit;
-
 import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
-
-import edu.umd.cs.findbugs.gui.AnnotatedString;
 
 public class MainFrameHelper {
     public static JButton newButton(String key, String name) {
@@ -22,14 +20,12 @@ public class MainFrameHelper {
         AnnotatedString.localiseButton(m, key, string, false);
         m.setMnemonic(vkF);
         return m;
-
     }
 
     public static JMenuItem newJMenuItem(String key, String string) {
         JMenuItem m = new JMenuItem();
         AnnotatedString.localiseButton(m, key, string, true);
         return m;
-
     }
 
     public static JMenu newJMenu(String key, String string) {
@@ -55,8 +51,9 @@ public class MainFrameHelper {
             return;
         }
 
-        item.setAccelerator(KeyStroke.getKeyStroke(keystroke, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
-                | additionalMask));
+        item.setAccelerator(
+                KeyStroke.getKeyStroke(
+                        keystroke, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | additionalMask));
     }
 
     public static void attachAcceleratorKeyNoCtrl(JMenuItem item, int keyEvent) {

@@ -1,12 +1,11 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.xml.XMLOutput;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class VersionInsensitiveBugComparatorTest {
     static class MyBugAnnotation implements BugAnnotation {
@@ -52,13 +51,12 @@ public class VersionInsensitiveBugComparatorTest {
         }
 
         @Override
-        public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
-
+        public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary)
+                throws IOException {
         }
 
         @Override
         public void writeXML(XMLOutput xmlOutput) throws IOException {
-
         }
 
         public String toString() {

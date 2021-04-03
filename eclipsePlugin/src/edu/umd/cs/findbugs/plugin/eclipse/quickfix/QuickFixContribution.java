@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-
 import javax.annotation.Nonnull;
 
 public class QuickFixContribution {
@@ -39,8 +38,12 @@ public class QuickFixContribution {
 
     final Map<String, String> args;
 
-    public QuickFixContribution(@Nonnull String clazzFqn, @Nonnull String label, @Nonnull String pattern,
-            @Nonnull Set<String> args, @Nonnull Callable<BugResolution> producer) {
+    public QuickFixContribution(
+            @Nonnull String clazzFqn,
+            @Nonnull String label,
+            @Nonnull String pattern,
+            @Nonnull Set<String> args,
+            @Nonnull Callable<BugResolution> producer) {
         this.clazzFqn = clazzFqn;
         this.label = label;
         this.pattern = pattern;
@@ -101,5 +104,4 @@ public class QuickFixContribution {
         }
         return true;
     }
-
 }

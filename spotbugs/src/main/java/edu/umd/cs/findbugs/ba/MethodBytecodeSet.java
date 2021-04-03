@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
-
 import org.apache.bcel.Const;
 
 /**
@@ -39,5 +38,4 @@ public class MethodBytecodeSet extends BitSet {
         buf.append("]");
         return buf.toString();
     }
-
 }

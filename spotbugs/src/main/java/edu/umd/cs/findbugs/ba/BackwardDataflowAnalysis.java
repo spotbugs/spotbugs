@@ -20,8 +20,8 @@
 package edu.umd.cs.findbugs.ba;
 
 /**
- * Abstract base class for backward dataflow analyses. Provides convenient
- * implementations for isForwards() and getBlockOrder() methods.
+ * Abstract base class for backward dataflow analyses. Provides convenient implementations for
+ * isForwards() and getBlockOrder() methods.
  *
  * @author David Hovemeyer
  * @see Dataflow

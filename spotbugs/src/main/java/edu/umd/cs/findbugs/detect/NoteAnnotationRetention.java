@@ -19,12 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Map;
-
-import org.apache.bcel.classfile.ElementValue;
-import org.apache.bcel.classfile.EnumElementValue;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FirstPassDetector;
@@ -33,8 +27,13 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
+import java.util.Map;
+import org.apache.bcel.classfile.ElementValue;
+import org.apache.bcel.classfile.EnumElementValue;
+import org.apache.bcel.classfile.JavaClass;
 
-public class NoteAnnotationRetention extends AnnotationVisitor implements Detector, NonReportingDetector, FirstPassDetector {
+public class NoteAnnotationRetention extends AnnotationVisitor
+        implements Detector, NonReportingDetector, FirstPassDetector {
 
     private boolean runtimeRetention;
 
@@ -42,7 +41,8 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
     }
 
     @Override
-    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitAnnotation(
+            String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
 
         if (!"java.lang.annotation.Retention".equals(annotationClass)) {
             return;
@@ -63,11 +63,11 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
     public void visitAfter(JavaClass obj) {
         for (String i : obj.getInterfaceNames()) {
             if ("java.lang.annotation.Annotation".equals(i)) {
-                AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase()
+                AnalysisContext.currentAnalysisContext()
+                        .getAnnotationRetentionDatabase()
                         .setRuntimeRetention(getDottedClassName(), runtimeRetention);
             }
         }
-
     }
 
     @Override
@@ -76,12 +76,9 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
         if (!BCELUtil.preTiger(javaClass)) {
             javaClass.accept(this);
         }
-
     }
 
     @Override
     public void report() {
-
     }
-
 }

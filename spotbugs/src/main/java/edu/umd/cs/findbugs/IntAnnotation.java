@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-
-import edu.umd.cs.findbugs.xml.XMLAttributeList;
-import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Bug annotation class for integer values.
@@ -41,9 +40,7 @@ public class IntAnnotation implements BugAnnotation {
 
     private String description;
 
-    /**
-     *
-     */
+    /** */
     public static final String INT_SYNC_PERCENT = "INT_SYNC_PERCENT";
 
     public static final String INT_OCCURRENCES = "INT_OCCURRENCES";
@@ -64,8 +61,7 @@ public class IntAnnotation implements BugAnnotation {
     /**
      * Constructor.
      *
-     * @param value
-     *            the integer value
+     * @param value the integer value
      */
     public IntAnnotation(int value) {
         this.value = value;
@@ -190,8 +186,10 @@ public class IntAnnotation implements BugAnnotation {
     }
 
     @Override
-    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
-        XMLAttributeList attributeList = new XMLAttributeList().addAttribute("value", String.valueOf(value));
+    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary)
+            throws IOException {
+        XMLAttributeList attributeList =
+                new XMLAttributeList().addAttribute("value", String.valueOf(value));
 
         String role = getDescription();
         if (!DEFAULT_ROLE.equals(role)) {

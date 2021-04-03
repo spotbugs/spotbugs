@@ -23,10 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-/**
- * @author pugh
- */
-
+/** @author pugh */
 public class GetNumberArgumentsTest {
 
     static String[] simpleTypes = "I J B C D F I S Z".split(" ");

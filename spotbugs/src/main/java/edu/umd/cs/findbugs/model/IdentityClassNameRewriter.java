@@ -41,9 +41,7 @@ public class IdentityClassNameRewriter implements ClassNameRewriter, Serializabl
         return theInstance;
     }
 
-    /**
-     * @see edu.umd.cs.findbugs.model.ClassNameRewriter#rewriteClassName(java.lang.String)
-     */
+    /** @see edu.umd.cs.findbugs.model.ClassNameRewriter#rewriteClassName(java.lang.String) */
     @Override
     public String rewriteClassName(String className) {
         if (className.indexOf('+') >= 0) {
@@ -51,5 +49,4 @@ public class IdentityClassNameRewriter implements ClassNameRewriter, Serializabl
         }
         return className;
     }
-
 }

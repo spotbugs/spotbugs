@@ -20,14 +20,11 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class MethodHashTest {
 
     byte[] hash;
@@ -58,7 +55,8 @@ public class MethodHashTest {
         greaterHash = new byte[] { 0x06, 0x05, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF };
         lesserHash = new byte[] { 0x06, 0x03, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF };
         shorterHash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE };
-        longerHash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF, (byte) 0x01 };
+        longerHash =
+                new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF, (byte) 0x01 };
     }
 
     @Test

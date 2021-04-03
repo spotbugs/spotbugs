@@ -18,8 +18,15 @@
  */
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.view.explorer.BugContentProvider;
+import de.tobject.findbugs.view.explorer.BugGroup;
+import edu.umd.cs.findbugs.BugCode;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
 import java.util.Set;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -30,15 +37,6 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.preferences.FindBugsConstants;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.view.explorer.BugContentProvider;
-import de.tobject.findbugs.view.explorer.BugGroup;
-import edu.umd.cs.findbugs.BugCode;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugPattern;
 
 public class FilterPatternAction implements IObjectActionDelegate {
 
@@ -74,11 +72,14 @@ public class FilterPatternAction implements IObjectActionDelegate {
         String ids = FindBugsConstants.encodeIds(sortedIds);
         final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
         store.setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER, ids);
-        BugContentProvider provider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
+        BugContentProvider provider =
+                BugContentProvider.getProvider(navigator.getNavigatorContentService());
         if (!provider.isBugFilterActive()) {
-            MessageDialog.openWarning(null, "Toggle Filter", "Filtering by pattern or type id is currently not enabled!\n"
-                    + "To enable it, please select \"Toggle Filters...->Bugs by Id\" filter!");
-
+            MessageDialog.openWarning(
+                    null,
+                    "Toggle Filter",
+                    "Filtering by pattern or type id is currently not enabled!\n"
+                            + "To enable it, please select \"Toggle Filters...->Bugs by Id\" filter!");
         }
         provider.refreshFilters();
         CommonViewer viewer = navigator.getCommonViewer();
@@ -142,5 +143,4 @@ public class FilterPatternAction implements IObjectActionDelegate {
         data = ((BugGroup) firstElement).getData();
         action.setEnabled(data != null);
     }
-
 }

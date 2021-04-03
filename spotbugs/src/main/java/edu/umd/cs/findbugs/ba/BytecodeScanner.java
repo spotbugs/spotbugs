@@ -19,30 +19,25 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import org.apache.bcel.Const;
 
-import edu.umd.cs.findbugs.SystemProperties;
-
 /**
- * Scan the raw bytecodes of a method. This is useful in order to find out
- * quickly whether or not a method uses particular instructions.
+ * Scan the raw bytecodes of a method. This is useful in order to find out quickly whether or not a
+ * method uses particular instructions.
  *
  * @author David Hovemeyer
  */
 public class BytecodeScanner {
     private static final boolean DEBUG = SystemProperties.getBoolean("bs.debug");
 
-    /**
-     * Callback interface to report scanned instructions.
-     */
+    /** Callback interface to report scanned instructions. */
     public interface Callback {
         /**
          * Called to indicate that a particular bytecode has been scanned.
          *
-         * @param opcode
-         *            the opcode of the instruction
-         * @param index
-         *            the bytecode offset of the instruction
+         * @param opcode the opcode of the instruction
+         * @param index the bytecode offset of the instruction
          */
         public void handleInstruction(int opcode, int index);
     }
@@ -50,8 +45,7 @@ public class BytecodeScanner {
     /**
      * Convert the unsigned value of a byte into a short.
      *
-     * @param value
-     *            the byte
+     * @param value the byte
      * @return the byte's unsigned value as a short
      */
     private static short unsignedValueOf(byte value) {
@@ -68,13 +62,13 @@ public class BytecodeScanner {
     /**
      * Extract an int from bytes at the given offset in the array.
      *
-     * @param arr
-     *            the array
-     * @param offset
-     *            the offset in the array
+     * @param arr the array
+     * @param offset the offset in the array
      */
     private static int extractInt(byte[] arr, int offset) {
-        return ((arr[offset] & 0xFF) << 24) | ((arr[offset + 1] & 0xFF) << 16) | ((arr[offset + 2] & 0xFF) << 8)
+        return ((arr[offset] & 0xFF) << 24)
+                | ((arr[offset + 1] & 0xFF) << 16)
+                | ((arr[offset + 2] & 0xFF) << 8)
                 | (arr[offset + 3] & 0xFF);
     }
 
@@ -83,10 +77,8 @@ public class BytecodeScanner {
     /**
      * Scan the raw bytecodes of a method.
      *
-     * @param instructionList
-     *            the bytecodes
-     * @param callback
-     *            the callback object
+     * @param instructionList the bytecodes
+     * @param callback the callback object
      */
     public void scan(byte[] instructionList, Callback callback) {
 
@@ -358,7 +350,8 @@ public class BytecodeScanner {
                 int high = extractInt(instructionList, offset + 8);
                 int tableSize = (high - low) + 1;
                 if (DEBUG) {
-                    System.out.println("tableswitch: low=" + low + ", high=" + high + ", tableSize=" + tableSize);
+                    System.out.println(
+                            "tableswitch: low=" + low + ", high=" + high + ", tableSize=" + tableSize);
                 }
 
                 // Skip to next instruction.
@@ -399,7 +392,6 @@ public class BytecodeScanner {
             if (index < 0) {
                 throw new IllegalStateException("index=" + index + ", opcode=" + opcode);
             }
-
         }
     }
 }

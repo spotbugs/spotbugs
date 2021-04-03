@@ -1,5 +1,16 @@
 package edu.umd.cs.findbugs.test;
 
+import edu.umd.cs.findbugs.BugCollectionBugReporter;
+import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.PluginException;
+import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,29 +31,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import edu.umd.cs.findbugs.BugCollectionBugReporter;
-import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FindBugs2;
-import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.PluginException;
-import edu.umd.cs.findbugs.Priorities;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.annotations.CheckReturnValue;
-import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
-
 /**
- * <p>
- * This class runs analysis with SpotBugs. The target class files and
- * auxClasspathEntries should be specified before you invoke {@link #run(Path...)}
- * method.
- * </p>
+ * This class runs analysis with SpotBugs. The target class files and auxClasspathEntries should be
+ * specified before you invoke {@link #run(Path...)} method.
  *
  * @since 3.1
  */
@@ -51,8 +46,9 @@ public class AnalysisRunner {
     private final List<Path> auxClasspathEntries = new ArrayList<>();
 
     /**
-     * SpotBugs stores relation between plugin-id and {@link Plugin} instance in a static field ({@code Plugin.allPlugins}),
-     * so we need to store Plugin information in static field too, to avoid duplicated plugin loading.
+     * SpotBugs stores relation between plugin-id and {@link Plugin} instance in a static field
+     * ({@code Plugin.allPlugins}), so we need to store Plugin information in static field too, to
+     * avoid duplicated plugin loading.
      */
     @Nullable
     private static final File PLUGIN_JAR;
@@ -86,10 +82,12 @@ public class AnalysisRunner {
     public BugCollectionBugReporter run(Path... files) {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
-        try (FindBugs2 engine = new FindBugs2(); Project project = createProject(files)) {
+        try (FindBugs2 engine = new FindBugs2();
+                Project project = createProject(files)) {
             engine.setProject(project);
 
-            final DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection.instance();
+            final DetectorFactoryCollection detectorFactoryCollection =
+                    DetectorFactoryCollection.instance();
             engine.setDetectorFactoryCollection(detectorFactoryCollection);
 
             BugCollectionBugReporter bugReporter = new BugCollectionBugReporter(project);
@@ -109,8 +107,7 @@ public class AnalysisRunner {
             }
             if (!bugReporter.getQueuedErrors().isEmpty()) {
                 bugReporter.reportQueuedErrors();
-                throw new AssertionError(
-                        "Analysis failed with exception. Check stderr for detail.");
+                throw new AssertionError("Analysis failed with exception. Check stderr for detail.");
             }
             return bugReporter;
         }
@@ -139,9 +136,8 @@ public class AnalysisRunner {
     }
 
     /**
-     * Create a jar file which contains all resource files. This is necessary to
-     * let {@link Plugin#loadCustomPlugin(File, Project)} load custom plugin to
-     * test.
+     * Create a jar file which contains all resource files. This is necessary to let {@link
+     * Plugin#loadCustomPlugin(File, Project)} load custom plugin to test.
      *
      * @return a {@link File} instance which represent generated jar file
      * @throws IOException
@@ -165,20 +161,23 @@ public class AnalysisRunner {
             Path resourceRoot = Paths.get(uri).getParent();
 
             byte[] data = new byte[4 * 1024];
-            Files.walkFileTree(resourceRoot, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    String name = resourceRoot.relativize(file).toString();
-                    jar.putNextEntry(new ZipEntry(name));
-                    try (InputStream input = Files.newInputStream(file, StandardOpenOption.READ)) {
-                        int len;
-                        while ((len = input.read(data)) > 0) {
-                            jar.write(data, 0, len);
+            Files.walkFileTree(
+                    resourceRoot,
+                    new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                                throws IOException {
+                            String name = resourceRoot.relativize(file).toString();
+                            jar.putNextEntry(new ZipEntry(name));
+                            try (InputStream input = Files.newInputStream(file, StandardOpenOption.READ)) {
+                                int len;
+                                while ((len = input.read(data)) > 0) {
+                                    jar.write(data, 0, len);
+                                }
+                            }
+                            return FileVisitResult.CONTINUE;
                         }
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
+                    });
         }
         return tempJar.toFile();
     }

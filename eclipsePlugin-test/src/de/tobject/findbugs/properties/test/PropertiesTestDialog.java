@@ -67,5 +67,4 @@ public class PropertiesTestDialog extends Dialog {
         page.createControl(composite);
         return composite;
     }
-
 }

@@ -19,24 +19,25 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.L10N;
+import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
-import edu.umd.cs.findbugs.L10N;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-
 /**
- * Why this wasn't just called Filter is still somewhat of a mystery.
- * FilterMatchers are Filters, pass in a StringPair like Priority, High and all
- * the high priority bugs disappear, Its that easy.
+ * Why this wasn't just called Filter is still somewhat of a mystery. FilterMatchers are Filters,
+ * pass in a StringPair like Priority, High and all the high priority bugs disappear, Its that easy.
  */
 @Deprecated
 public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMatcher> {
     enum FilterWhere {
-        FILTER_EXACTLY, FILTER_AT_OR_AFTER, FILTER_AT_OR_BEFORE, FILTER_ALL_BUT
+        FILTER_EXACTLY,
+        FILTER_AT_OR_AFTER,
+        FILTER_AT_OR_BEFORE,
+        FILTER_ALL_BUT
     }
 
     private static final long serialVersionUID = -4859486064351510016L;
@@ -131,9 +132,12 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder(30)
-                .append(filterBy).append(' ')
-                .append(L10N.getLocalString("dlg.is", "is")).append(' ');
+        StringBuilder result =
+                new StringBuilder(30)
+                        .append(filterBy)
+                        .append(' ')
+                        .append(L10N.getLocalString("dlg.is", "is"))
+                        .append(' ');
         switch (mode) {
         case FILTER_EXACTLY:
             result.append(L10N.getLocalString("mode.equal_to", "equal to"));

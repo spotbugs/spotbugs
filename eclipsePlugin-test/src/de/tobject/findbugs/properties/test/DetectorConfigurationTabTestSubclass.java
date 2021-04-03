@@ -18,22 +18,21 @@
  */
 package de.tobject.findbugs.properties.test;
 
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TableItem;
-
 import de.tobject.findbugs.properties.DetectorConfigurationTab;
 import de.tobject.findbugs.properties.FindbugsPropertyPage;
 import edu.umd.cs.findbugs.DetectorFactory;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TableItem;
 
 /**
- * Test subclass of DetectorConfigurationTab that provides methods for testing
- * purposes.
+ * Test subclass of DetectorConfigurationTab that provides methods for testing purposes.
  *
  * @author Tomás Pollak
  */
 public class DetectorConfigurationTabTestSubclass extends DetectorConfigurationTab {
 
-    public DetectorConfigurationTabTestSubclass(TabFolder tabFolder, FindbugsPropertyPage page, int style) {
+    public DetectorConfigurationTabTestSubclass(
+            TabFolder tabFolder, FindbugsPropertyPage page, int style) {
         super(tabFolder, page, style);
     }
 

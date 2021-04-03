@@ -31,34 +31,31 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public interface IsNullValueAnalysisFeatures {
 
-    /**
-     * Do not downgrade "null on simple path" values to "null on complex path"
-     * on control splits.
-     */
-    public static final boolean NO_SPLIT_DOWNGRADE_NSP = SystemProperties.getBoolean("inva.noSplitDowngradeNSP");
+    /** Do not downgrade "null on simple path" values to "null on complex path" on control splits. */
+    public static final boolean NO_SPLIT_DOWNGRADE_NSP =
+            SystemProperties.getBoolean("inva.noSplitDowngradeNSP");
+
+    /** Don't consider switch default cases as exception paths. */
+    public static final boolean NO_SWITCH_DEFAULT_AS_EXCEPTION =
+            SystemProperties.getBoolean("inva.noSwitchDefaultAsException");
 
     /**
-     * Don't consider switch default cases as exception paths.
-     */
-    public static final boolean NO_SWITCH_DEFAULT_AS_EXCEPTION = SystemProperties.getBoolean("inva.noSwitchDefaultAsException");
-
-    /**
-     * Keep track of an extra branch, so we can distinguish conditionally-null
-     * values with two branches from conditionally-null values with three or
-     * more branches.
+     * Keep track of an extra branch, so we can distinguish conditionally-null values with two
+     * branches from conditionally-null values with three or more branches.
      */
     public static final boolean NCP_EXTRA_BRANCH = SystemProperties.getBoolean("inva.ncpExtraBranch");
 
     /**
-     * If this property is true, then we assume parameters and return values can
-     * be null (but aren't definitely null).
+     * If this property is true, then we assume parameters and return values can be null (but aren't
+     * definitely null).
      */
-    public static final boolean UNKNOWN_VALUES_ARE_NSP = SystemProperties.getBoolean("findbugs.nullderef.assumensp");
+    public static final boolean UNKNOWN_VALUES_ARE_NSP =
+            SystemProperties.getBoolean("findbugs.nullderef.assumensp");
 
     /**
-     * If this property is true, then resolution of nullness annotations is
-     * based on JSR-305 type qualifiers rather than an AnnotationDatabase.
+     * If this property is true, then resolution of nullness annotations is based on JSR-305 type
+     * qualifiers rather than an AnnotationDatabase.
      */
-    public static final boolean USE_TYPE_QUALIFIERS = true; // SystemProperties.getBoolean("findbugs.npe.tq");
-
+    public static final boolean USE_TYPE_QUALIFIERS =
+            true; // SystemProperties.getBoolean("findbugs.npe.tq");
 }

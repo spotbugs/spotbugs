@@ -22,8 +22,8 @@
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception;
 
 /**
- * A subclass of this class is used in the <CODE>ASTUtil</CODE> to indicate that
- * a specific <CODE>ASTNode</CODE> couldn't be found.
+ * A subclass of this class is used in the <CODE>ASTUtil</CODE> to indicate that a specific <CODE>
+ * ASTNode</CODE> couldn't be found.
  *
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
@@ -48,5 +48,4 @@ public class ASTNodeNotFoundException extends BugResolutionException {
     public ASTNodeNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

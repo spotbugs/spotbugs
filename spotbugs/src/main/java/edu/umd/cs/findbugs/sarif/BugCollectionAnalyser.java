@@ -1,14 +1,13 @@
 package edu.umd.cs.findbugs.sarif;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
-
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,20 +22,19 @@ class BugCollectionAnalyser {
     @NonNull
     private final List<List<Placeholder>> indexToPlaceholders = new ArrayList<>();
 
-    /**
-     * Map baseURI to uriBaseId. e.g. {@code "/user/ubuntu/github/spotbugs/" -> "8736793520"}
-     */
+    /** Map baseURI to uriBaseId. e.g. {@code "/user/ubuntu/github/spotbugs/" -> "8736793520"} */
     @NonNull
     private final Map<URI, String> baseToId = new HashMap<>();
 
     BugCollectionAnalyser(@NonNull BugCollection bugCollection) {
         SourceFinder sourceFinder = bugCollection.getProject().getSourceFinder();
-        bugCollection.forEach(bug -> {
-            String type = bug.getType();
-            int index = typeToIndex.computeIfAbsent(type, t -> processRule(bug.getBugPattern()));
+        bugCollection.forEach(
+                bug -> {
+                    String type = bug.getType();
+                    int index = typeToIndex.computeIfAbsent(type, t -> processRule(bug.getBugPattern()));
 
-            processResult(index, bug, sourceFinder);
-        });
+                    processResult(index, bug, sourceFinder);
+                });
     }
 
     JsonArray getRules() {
@@ -54,22 +52,26 @@ class BugCollectionAnalyser {
     @NonNull
     JsonObject getOriginalUriBaseIds() {
         JsonObject result = new JsonObject();
-        baseToId.forEach((uri, uriBaseId) -> {
-            JsonObject uriJson = new JsonObject();
-            uriJson.addProperty("uri", uri.toString());
-            result.add(uriBaseId, uriJson);
-        });
+        baseToId.forEach(
+                (uri, uriBaseId) -> {
+                    JsonObject uriJson = new JsonObject();
+                    uriJson.addProperty("uri", uri.toString());
+                    result.add(uriBaseId, uriJson);
+                });
         return result;
     }
 
     private void processResult(int index, BugInstance bug, SourceFinder sourceFinder) {
-        List<String> arguments = indexToPlaceholders.get(index).stream()
-                .map(placeholder -> placeholder.toArgument(bug.getAnnotations(), bug.getPrimaryClass()))
-                .collect(Collectors.toList());
+        List<String> arguments =
+                indexToPlaceholders.get(index).stream()
+                        .map(placeholder -> placeholder.toArgument(bug.getAnnotations(), bug.getPrimaryClass()))
+                        .collect(Collectors.toList());
         List<Location> locations = new ArrayList<>();
         Location.fromBugInstance(bug, sourceFinder, baseToId).ifPresent(locations::add);
         int bugRank = BugRanker.findRank(bug);
-        Result result = new Result(bug.getType(), index, new Message(arguments), locations, Level.fromBugRank(bugRank));
+        Result result =
+                new Result(
+                        bug.getType(), index, new Message(arguments), locations, Level.fromBugRank(bugRank));
         results.add(result);
     }
 
@@ -79,11 +81,13 @@ class BugCollectionAnalyser {
 
         List<Placeholder> placeholders = new ArrayList<>();
         MessageFormat formatter = new MessageFormat(bugPattern.getLongDescription());
-        String formattedMessage = formatter.format((Integer index, String key) -> {
-            int indexOfPlaceholder = placeholders.size();
-            placeholders.add(new Placeholder(index, key));
-            return String.format("{%d}", indexOfPlaceholder);
-        });
+        String formattedMessage =
+                formatter.format(
+                        (Integer index, String key) -> {
+                            int indexOfPlaceholder = placeholders.size();
+                            placeholders.add(new Placeholder(index, key));
+                            return String.format("{%d}", indexOfPlaceholder);
+                        });
         Rule rule = Rule.fromBugPattern(bugPattern, formattedMessage);
         rules.add(rule);
         indexToPlaceholders.add(placeholders);

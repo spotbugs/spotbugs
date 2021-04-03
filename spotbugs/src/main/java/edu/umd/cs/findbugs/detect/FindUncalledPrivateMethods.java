@@ -19,10 +19,18 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.NestedAccessUtil;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Constant;
@@ -35,20 +43,9 @@ import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.NestedAccessUtil;
-
-/**
- * Detector to find private methods that are never called.
- */
-public class FindUncalledPrivateMethods extends BytecodeScanningDetector implements StatelessDetector {
+/** Detector to find private methods that are never called. */
+public class FindUncalledPrivateMethods extends BytecodeScanningDetector
+        implements StatelessDetector {
     private final BugReporter bugReporter;
 
     private String className;
@@ -68,12 +65,17 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         }
         super.visitMethod(obj);
         String methodName = getMethodName();
-        if (!"writeReplace".equals(methodName) && !"readResolve".equals(methodName)
-                && !"readObject".equals(methodName) && !"readObjectNoData".equals(methodName)
+        if (!"writeReplace".equals(methodName)
+                && !"readResolve".equals(methodName)
+                && !"readObject".equals(methodName)
+                && !"readObjectNoData".equals(methodName)
                 && !"writeObject".equals(methodName)
-                && methodName.indexOf("debug") == -1 && methodName.indexOf("Debug") == -1
-                && methodName.indexOf("trace") == -1 && methodName.indexOf("Trace") == -1
-                && !Const.CONSTRUCTOR_NAME.equals(methodName) && !Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
+                && methodName.indexOf("debug") == -1
+                && methodName.indexOf("Debug") == -1
+                && methodName.indexOf("trace") == -1
+                && methodName.indexOf("Trace") == -1
+                && !Const.CONSTRUCTOR_NAME.equals(methodName)
+                && !Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
             for (AnnotationEntry a : obj.getAnnotationEntries()) {
                 String typeName = a.getAnnotationType();
                 if ("Ljavax/annotation/PostConstruct;".equals(typeName)
@@ -93,8 +95,12 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         case Const.INVOKESTATIC:
             if (getDottedClassConstantOperand().equals(className)) {
                 String className = getDottedClassConstantOperand();
-                MethodAnnotation called = new MethodAnnotation(className, getNameConstantOperand(), getSigConstantOperand(),
-                        seen == Const.INVOKESTATIC);
+                MethodAnnotation called =
+                        new MethodAnnotation(
+                                className,
+                                getNameConstantOperand(),
+                                getSigConstantOperand(),
+                                seen == Const.INVOKESTATIC);
                 calledMethods.add(called);
                 calledMethodNames.add(getNameConstantOperand().toLowerCase());
             }
@@ -114,7 +120,6 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         String[] parts = className.split("[$+.]");
         String simpleClassName = parts[parts.length - 1];
 
-
         if (NestedAccessUtil.supportsNestedAccess(javaClass)) {
             checkForNestedAccess(classContext, javaClass);
         }
@@ -126,12 +131,19 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                 if (kind >= 5 && kind <= 9) {
                     Constant ref = cp.getConstant(((ConstantMethodHandle) constant).getReferenceIndex());
                     if (ref instanceof ConstantCP) {
-                        String className = cp.getConstantString(((ConstantCP) ref).getClassIndex(), Const.CONSTANT_Class);
-                        ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(((ConstantCP) ref).getNameAndTypeIndex());
+                        String className =
+                                cp.getConstantString(((ConstantCP) ref).getClassIndex(), Const.CONSTANT_Class);
+                        ConstantNameAndType nameAndType =
+                                (ConstantNameAndType) cp.getConstant(((ConstantCP) ref).getNameAndTypeIndex());
                         String name = ((ConstantUtf8) cp.getConstant(nameAndType.getNameIndex())).getBytes();
-                        String signature = ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
-                        MethodAnnotation called = new MethodAnnotation(ClassName.toDottedClassName(className), name, signature,
-                                kind == 6 /* invokestatic */);
+                        String signature =
+                                ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                        MethodAnnotation called =
+                                new MethodAnnotation(
+                                        ClassName.toDottedClassName(className),
+                                        name,
+                                        signature,
+                                        kind == 6 /* invokestatic */);
                         calledMethods.add(called);
                         calledMethodNames.add(name.toLowerCase());
                     }
@@ -153,7 +165,10 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
             if (methodName.length() > 1 && calledMethodNames.contains(methodName.toLowerCase())) {
                 priority = NORMAL_PRIORITY;
             }
-            BugInstance bugInstance = new BugInstance(this, "UPM_UNCALLED_PRIVATE_METHOD", priority).addClass(this).addMethod(m);
+            BugInstance bugInstance =
+                    new BugInstance(this, "UPM_UNCALLED_PRIVATE_METHOD", priority)
+                            .addClass(this)
+                            .addMethod(m);
             bugReporter.reportBug(bugInstance);
         }
 
@@ -179,11 +194,13 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                 for (Constant constant : nestMemberClass.getConstantPool().getConstantPool()) {
                     if (constant instanceof ConstantMethodref) {
                         ConstantMethodref ref = (ConstantMethodref) constant;
-                        ConstantNameAndType nt = (ConstantNameAndType) cp.getConstant(ref.getNameAndTypeIndex());
-                        String name = ((ConstantUtf8) cp.getConstant(nt.getNameIndex(), Const.CONSTANT_Utf8))
-                                .getBytes();
-                        String signature = ((ConstantUtf8) cp.getConstant(nt.getSignatureIndex(), Const.CONSTANT_Utf8))
-                                .getBytes();
+                        ConstantNameAndType nt =
+                                (ConstantNameAndType) cp.getConstant(ref.getNameAndTypeIndex());
+                        String name =
+                                ((ConstantUtf8) cp.getConstant(nt.getNameIndex(), Const.CONSTANT_Utf8)).getBytes();
+                        String signature =
+                                ((ConstantUtf8) cp.getConstant(nt.getSignatureIndex(), Const.CONSTANT_Utf8))
+                                        .getBytes();
                         /*
                          * We don't check if the method is static, since that is not relevant for the actual error
                          * reporting. Called methods are removed from "definedPrivateMethods" via their hash code, which
@@ -192,8 +209,9 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                          */
                         boolean isStatic = false;
                         String nestMemberClassName = getClassName(nestMemberClass, ref.getClassIndex());
-                        MethodAnnotation called = new MethodAnnotation(ClassName.toDottedClassName(nestMemberClassName),
-                                name, signature, isStatic);
+                        MethodAnnotation called =
+                                new MethodAnnotation(
+                                        ClassName.toDottedClassName(nestMemberClassName), name, signature, isStatic);
                         calledMethods.add(called);
                         calledMethodNames.add(name.toLowerCase());
                     }

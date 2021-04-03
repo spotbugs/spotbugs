@@ -1,15 +1,18 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Object which represents result object in {@code run.results} property. (§3.14.23)
- * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317638">3.27 result object</a>
+ *
+ * @see <a
+ *     href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317638">3.27
+ *     result object</a>
  */
 final class Result {
     final String ruleId;
@@ -19,7 +22,12 @@ final class Result {
     @NonNull
     final Level level;
 
-    Result(@NonNull String ruleId, int ruleIndex, Message message, List<Location> locations, @NonNull Level level) {
+    Result(
+            @NonNull String ruleId,
+            int ruleIndex,
+            Message message,
+            List<Location> locations,
+            @NonNull Level level) {
         this.ruleId = Objects.requireNonNull(ruleId);
         this.ruleIndex = ruleIndex;
         this.message = Objects.requireNonNull(message);

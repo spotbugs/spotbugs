@@ -19,18 +19,17 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
+import org.apache.bcel.classfile.JavaClass;
 
 /**
- * Adapter to produce the ClassContext for a given class. This is
- * backwards-compatibility for the BCEL-based analysis framework.
+ * Adapter to produce the ClassContext for a given class. This is backwards-compatibility for the
+ * BCEL-based analysis framework.
  *
  * @author David Hovemeyer
  */
@@ -44,10 +43,12 @@ public class ClassContextClassAnalysisEngine extends RecomputableClassAnalysisEn
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public ClassContext analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public ClassContext analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor)
+            throws CheckedAnalysisException {
 
         JavaClass javaClass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
-        ClassContext classContext = new ClassContext(javaClass, AnalysisContext.currentAnalysisContext());
+        ClassContext classContext =
+                new ClassContext(javaClass, AnalysisContext.currentAnalysisContext());
         return classContext;
     }
 
@@ -62,5 +63,4 @@ public class ClassContextClassAnalysisEngine extends RecomputableClassAnalysisEn
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(ClassContext.class, this);
     }
-
 }

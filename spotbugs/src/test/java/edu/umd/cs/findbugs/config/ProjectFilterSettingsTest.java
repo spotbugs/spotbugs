@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs.config;
 
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Priorities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.Priorities;
 
 public class ProjectFilterSettingsTest {
 
@@ -59,7 +58,6 @@ public class ProjectFilterSettingsTest {
         changed4.setMinPriority("High");
         changed4.removeCategory("MALICIOUS_CODE");
         changed4.addCategory("FAKE_CATEGORY");
-
     }
 
     @Test
@@ -133,11 +131,13 @@ public class ProjectFilterSettingsTest {
 
     @Test
     public void testEncodeDecode() {
-        ProjectFilterSettings copyOfPlain = ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
+        ProjectFilterSettings copyOfPlain =
+                ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
         ProjectFilterSettings.hiddenFromEncodedString(copyOfPlain, plain.hiddenToEncodedString());
         Assert.assertEquals(plain, copyOfPlain);
 
-        ProjectFilterSettings copyOfChanged4 = ProjectFilterSettings.fromEncodedString(changed4.toEncodedString());
+        ProjectFilterSettings copyOfChanged4 =
+                ProjectFilterSettings.fromEncodedString(changed4.toEncodedString());
         ProjectFilterSettings.hiddenFromEncodedString(copyOfChanged4, changed4.hiddenToEncodedString());
         Assert.assertEquals(changed4, copyOfChanged4);
     }
@@ -151,7 +151,8 @@ public class ProjectFilterSettingsTest {
 
         Assert.assertFalse(plain.equals(otherPlain));
 
-        ProjectFilterSettings copyOfPlain = ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
+        ProjectFilterSettings copyOfPlain =
+                ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
 
         Assert.assertTrue(copyOfPlain.displayFalseWarnings());
         Assert.assertEquals(copyOfPlain, plain);

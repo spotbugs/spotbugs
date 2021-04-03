@@ -18,12 +18,14 @@
  */
 package de.tobject.findbugs.properties;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.builder.FindBugsWorker;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -44,13 +46,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.builder.FindBugsWorker;
-import edu.umd.cs.findbugs.config.UserPreferences;
-
-/**
- * @author Andrei Loskutov
- */
+/** @author Andrei Loskutov */
 public class FilterFilesTab extends Composite {
 
     private final FindbugsPropertyPage propertyPage;
@@ -83,7 +79,8 @@ public class FilterFilesTab extends Composite {
 
         private final FilterKind kind;
 
-        protected FilterProvider(TableViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
+        protected FilterProvider(
+                TableViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
             super(viewer, propertyPage);
             this.kind = kind;
             setFilters(propertyPage.getCurrentUserPreferences());
@@ -133,7 +130,9 @@ public class FilterFilesTab extends Composite {
         @Override
         protected void configureDialog(FileDialog dialog) {
             dialog.setFilterExtensions(new String[] { "*.xml" });
-            dialog.setText(FindbugsPlugin.getDefault().getMessage(kind.propertyName) + ": select xml file(s) containing filters");
+            dialog.setText(
+                    FindbugsPlugin.getDefault().getMessage(kind.propertyName)
+                            + ": select xml file(s) containing filters");
         }
     }
 
@@ -143,20 +142,22 @@ public class FilterFilesTab extends Composite {
         setLayout(new GridLayout(2, true));
 
         Link label = new Link(this, SWT.NONE);
-        label.setText("Filter files may be used to include or exclude bug detection for particular classes and methods.\n"
-                + "<a href=\"http://spotbugs.readthedocs.io/en/latest/filter.html\">Details...</a>\n");
+        label.setText(
+                "Filter files may be used to include or exclude bug detection for particular classes and methods.\n"
+                        + "<a href=\"http://spotbugs.readthedocs.io/en/latest/filter.html\">Details...</a>\n");
 
-        label.addSelectionListener(new SelectionListener() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Program.launch(e.text);
-            }
+        label.addSelectionListener(
+                new SelectionListener() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        Program.launch(e.text);
+                    }
 
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-                // noop
-            }
-        });
+                    @Override
+                    public void widgetDefaultSelected(SelectionEvent e) {
+                        // noop
+                    }
+                });
         label.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false, 2, 1));
 
         TabItem tabDetector = new TabItem(parent, SWT.NONE);
@@ -165,7 +166,8 @@ public class FilterFilesTab extends Composite {
         tabDetector.setToolTipText("Configure external bug reporting filters");
 
         ManagePathsWidget incl = new ManagePathsWidget(this);
-        CheckboxTableViewer viewer = incl.createViewer(getMessage(FilterKind.INCLUDE.propertyName), null, true);
+        CheckboxTableViewer viewer =
+                incl.createViewer(getMessage(FilterKind.INCLUDE.propertyName), null, true);
         filterIncl = createFilterProvider(viewer, FilterKind.INCLUDE, page);
         incl.createButtonsArea(filterIncl);
 
@@ -175,9 +177,12 @@ public class FilterFilesTab extends Composite {
         excl.createButtonsArea(filterExcl);
 
         ManagePathsWidget excl2 = new ManagePathsWidget(this);
-        viewer = excl2.createViewer(getMessage(FilterKind.EXCLUDE_BUGS.propertyName),
-                "You can include past SpotBugs result XML files here to exclude those bugs from analysis. "
-                        + "<a href=\"http://spotbugs.readthedocs.io/en/latest/filter.html\">Details...</a>", true);
+        viewer =
+                excl2.createViewer(
+                        getMessage(FilterKind.EXCLUDE_BUGS.propertyName),
+                        "You can include past SpotBugs result XML files here to exclude those bugs from analysis. "
+                                + "<a href=\"http://spotbugs.readthedocs.io/en/latest/filter.html\">Details...</a>",
+                        true);
         filterExclBugs = createFilterProvider(viewer, FilterKind.EXCLUDE_BUGS, page);
         excl2.createButtonsArea(filterExclBugs);
 
@@ -194,22 +199,23 @@ public class FilterFilesTab extends Composite {
     /**
      * Helper method to shorten message access
      *
-     * @param key
-     *            a message key
+     * @param key a message key
      * @return requested message
      */
     protected static String getMessage(String key) {
         return FindbugsPlugin.getDefault().getMessage(key);
     }
 
-    protected FilterProvider createFilterProvider(TableViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
+    protected FilterProvider createFilterProvider(
+            TableViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
         FilterProvider filterProvider = new FilterProvider(viewer, kind, propertyPage);
-        filterProvider.addListener(new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                refreshTables();
-            }
-        });
+        filterProvider.addListener(
+                new Listener() {
+                    @Override
+                    public void handleEvent(Event event) {
+                        refreshTables();
+                    }
+                });
         return filterProvider;
     }
 

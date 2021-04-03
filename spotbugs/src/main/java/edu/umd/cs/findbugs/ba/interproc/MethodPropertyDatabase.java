@@ -18,24 +18,23 @@
  */
 package edu.umd.cs.findbugs.ba.interproc;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.io.IOException;
+import java.io.Writer;
+import org.apache.bcel.Const;
 
 /**
- * A MethodPropertyDatabase keeps track of properties of methods. This is useful
- * for implementing interprocedural analyses.
+ * A MethodPropertyDatabase keeps track of properties of methods. This is useful for implementing
+ * interprocedural analyses.
  *
  * @author David Hovemeyer
  */
-public abstract class MethodPropertyDatabase<Property> extends PropertyDatabase<MethodDescriptor, Property> {
+public abstract class MethodPropertyDatabase<Property>
+        extends PropertyDatabase<MethodDescriptor, Property> {
 
     @Override
     protected MethodDescriptor parseKey(String methodStr) throws PropertyDatabaseFormatException {
@@ -53,8 +52,12 @@ public abstract class MethodPropertyDatabase<Property> extends PropertyDatabase<
             String className = tuple[0];
             String methodName = tuple[1];
             String methodSig = tuple[2];
-            return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(className), methodName,
-                    methodSig, (accessFlags & Const.ACC_STATIC) != 0);
+            return DescriptorFactory.instance()
+                    .getMethodDescriptor(
+                            ClassName.toSlashedClassName(className),
+                            methodName,
+                            methodSig,
+                            (accessFlags & Const.ACC_STATIC) != 0);
 
         } catch (NumberFormatException e) {
             return null;

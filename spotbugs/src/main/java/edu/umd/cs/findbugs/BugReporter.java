@@ -19,85 +19,66 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.classfile.IClassObserver;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-import edu.umd.cs.findbugs.classfile.IClassObserver;
-
 /**
- * Generic interface for bug reporter objects. A BugReporter accumulates all of
- * the information reported by the analysis, which includes bug reports, and
- * also auxiliary information such as analysis errors, missing classes, and
- * class to source file mapping.
+ * Generic interface for bug reporter objects. A BugReporter accumulates all of the information
+ * reported by the analysis, which includes bug reports, and also auxiliary information such as
+ * analysis errors, missing classes, and class to source file mapping.
  *
  * @author David Hovemeyer
  */
 public interface BugReporter extends RepositoryLookupFailureCallback, IClassObserver {
 
-    /**
-     * Silent error-reporting verbosity level.
-     */
+    /** Silent error-reporting verbosity level. */
     public static final int SILENT = 0;
 
-    /**
-     * Normal error-reporting verbosity level.
-     */
+    /** Normal error-reporting verbosity level. */
     public static final int NORMAL = 1;
 
     /**
      * Set the error-reporting verbosity level.
      *
-     * @param level
-     *            the verbosity level
+     * @param level the verbosity level
      */
     public void setErrorVerbosity(int level);
 
     /**
      * Set the priority threshold.
      *
-     * @param threshold
-     *            bug instances must be at least as important as this priority
-     *            to be reported
+     * @param threshold bug instances must be at least as important as this priority to be reported
      */
     public void setPriorityThreshold(int threshold);
 
     /**
-     * Report a bug. The implementation may report the bug immediately, or queue
-     * it for later.
+     * Report a bug. The implementation may report the bug immediately, or queue it for later.
      *
-     * @param bugInstance
-     *            object describing the bug instance
+     * @param bugInstance object describing the bug instance
      */
     public void reportBug(@Nonnull BugInstance bugInstance);
 
     /**
-     * Finish reporting bugs. If any bug reports have been queued, calling this
-     * method will flush them.
+     * Finish reporting bugs. If any bug reports have been queued, calling this method will flush
+     * them.
      */
     public void finish();
 
-    /**
-     * Report any accumulated error messages.
-     */
+    /** Report any accumulated error messages. */
     public void reportQueuedErrors();
 
     /**
      * Add an observer.
      *
-     * @param observer
-     *            the observer
+     * @param observer the observer
      */
     public void addObserver(BugReporterObserver observer);
 
-    /**
-     * Get ProjectStats object used to store statistics about the overall
-     * project being analyzed.
-     */
+    /** Get ProjectStats object used to store statistics about the overall project being analyzed. */
     public ProjectStats getProjectStats();
 
-    /**
-     * Get the bug collection (if any) associated with this bug reporter
-     */
+    /** Get the bug collection (if any) associated with this bug reporter */
     public @CheckForNull BugCollection getBugCollection();
 }

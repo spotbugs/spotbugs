@@ -24,10 +24,10 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getMethodDeclaration;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 import java.util.Map;
-
 import javax.annotation.Nonnull;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.Block;
@@ -40,20 +40,17 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
-
 /**
- * Some methods should implement a specific <CODE>super</CODE>-call for a clean
- * execution of the code. The <CODE>CreateSuperCallResolution</CODE> creates a
- * new <CODE>super</CODE>-call for these methods.
+ * Some methods should implement a specific <CODE>super</CODE>-call for a clean execution of the
+ * code. The <CODE>CreateSuperCallResolution</CODE> creates a new <CODE>super</CODE>-call for these
+ * methods.
  *
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_MISSING_SUPER_CALL">FI_MISSING_SUPER_CALL</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_MISSING_SUPER_CALL">FI_MISSING_SUPER_CALL</a>
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IJU_SETUP_NO_SUPER">IJU_SETUP_NO_SUPER</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#IJU_SETUP_NO_SUPER">IJU_SETUP_NO_SUPER</a>
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IJU_TEARDOWN_NO_SUPER">IJU_TEARDOWN_NO_SUPER</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#IJU_TEARDOWN_NO_SUPER">IJU_TEARDOWN_NO_SUPER</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>
@@ -69,6 +66,7 @@ public class CreateSuperCallResolution extends BugResolution {
 
     /**
      * Called on initialization
+     *
      * @param options optional arguments
      */
     @Override
@@ -81,7 +79,8 @@ public class CreateSuperCallResolution extends BugResolution {
     }
 
     @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
+            throws BugResolutionException {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(workingUnit);
         Assert.isNotNull(bug);
@@ -102,7 +101,8 @@ public class CreateSuperCallResolution extends BugResolution {
         }
     }
 
-    protected SuperMethodInvocation createSuperMethodInvocation(ASTRewrite rewrite, MethodDeclaration method) {
+    protected SuperMethodInvocation createSuperMethodInvocation(
+            ASTRewrite rewrite, MethodDeclaration method) {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(method);
 
@@ -118,5 +118,4 @@ public class CreateSuperCallResolution extends BugResolution {
     protected boolean resolveBindings() {
         return true;
     }
-
 }

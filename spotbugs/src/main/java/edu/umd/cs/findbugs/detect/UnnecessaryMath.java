@@ -20,10 +20,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -31,16 +35,10 @@ import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantLong;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.ClassContext;
-
 /**
- * Find occurrences of Math using constants, where the result of the calculation
- * can be determined statically. Replacing the math formula with the constant
- * performs better, and sometimes is more accurate.
+ * Find occurrences of Math using constants, where the result of the calculation can be determined
+ * statically. Replacing the math formula with the constant performs better, and sometimes is more
+ * accurate.
  *
  * @author Dave Brosius
  */
@@ -56,56 +54,59 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
     private double constValue;
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-    private static final Set<String> zeroMethods = new HashSet<String>() {
-        {
-            add("acos");
-            add("asin");
-            add("atan");
-            add("atan2");
-            add("cbrt");
-            add("cos");
-            add("cosh");
-            add("exp");
-            add("expm1");
-            add("log");
-            add("log10");
-            add("pow");
-            add("sin");
-            add("sinh");
-            add("sqrt");
-            add("tan");
-            add("tanh");
-            add("toDegrees");
-            add("toRadians");
-        }
-    };
+    private static final Set<String> zeroMethods =
+            new HashSet<String>() {
+                {
+                    add("acos");
+                    add("asin");
+                    add("atan");
+                    add("atan2");
+                    add("cbrt");
+                    add("cos");
+                    add("cosh");
+                    add("exp");
+                    add("expm1");
+                    add("log");
+                    add("log10");
+                    add("pow");
+                    add("sin");
+                    add("sinh");
+                    add("sqrt");
+                    add("tan");
+                    add("tanh");
+                    add("toDegrees");
+                    add("toRadians");
+                }
+            };
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-    private static final Set<String> oneMethods = new HashSet<String>() {
-        {
-            add("acos");
-            add("asin");
-            add("atan");
-            add("cbrt");
-            add("exp");
-            add("log");
-            add("log10");
-            add("pow");
-            add("sqrt");
-            add("toDegrees");
-        }
-    };
+    private static final Set<String> oneMethods =
+            new HashSet<String>() {
+                {
+                    add("acos");
+                    add("asin");
+                    add("atan");
+                    add("cbrt");
+                    add("exp");
+                    add("log");
+                    add("log10");
+                    add("pow");
+                    add("sqrt");
+                    add("toDegrees");
+                }
+            };
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-    private static final Set<String> anyMethods = new HashSet<String>() {
-        {
-            add("abs");
-            add("ceil");
-            add("floor");
-            add("rint");
-            add("round");
-        }
-    };
+    private static final Set<String> anyMethods =
+            new HashSet<String>() {
+                {
+                    add("abs");
+                    add("ceil");
+                    add("floor");
+                    add("rint");
+                    add("round");
+                }
+            };
 
     public UnnecessaryMath(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -113,7 +114,8 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if (hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/lang/Math"))) {
+        if (hasInterestingClass(
+                classContext.getJavaClass().getConstantPool(), Collections.singleton("java/lang/Math"))) {
             super.visitClassContext(classContext);
         }
     }
@@ -156,9 +158,12 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
                     String methodName = getNameConstantOperand();
 
                     if (((constValue == 0.0) && zeroMethods.contains(methodName))
-                            || ((constValue == 1.0) && oneMethods.contains(methodName)) || (anyMethods.contains(methodName))) {
-                        bugReporter.reportBug(new BugInstance(this, "UM_UNNECESSARY_MATH", LOW_PRIORITY).addClassAndMethod(this)
-                                .addSourceLine(this));
+                            || ((constValue == 1.0) && oneMethods.contains(methodName))
+                            || (anyMethods.contains(methodName))) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, "UM_UNNECESSARY_MATH", LOW_PRIORITY)
+                                        .addClassAndMethod(this)
+                                        .addSourceLine(this));
                     }
                 }
             }

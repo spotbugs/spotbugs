@@ -26,8 +26,9 @@ import static java.lang.Integer.parseInt;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.EQUALS;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.REMAINDER;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 import javax.annotation.CheckForNull;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -38,17 +39,13 @@ import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
-
 /**
- * The code <CODE>x % 2 == 1</CODE> to check if a value is odd won't work for
- * negative numbers. The <CODE>CorrectOddnessCheckResolution</CODE> provides a
- * resolution to replace this bad check by an <CODE>expression</CODE> that works
- * also for negative numbers.
+ * The code <CODE>x % 2 == 1</CODE> to check if a value is odd won't work for negative numbers. The
+ * <CODE>CorrectOddnessCheckResolution</CODE> provides a resolution to replace this bad check by an
+ * <CODE>expression</CODE> that works also for negative numbers.
  *
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @version 1.0
@@ -61,14 +58,17 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
     }
 
     @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
+            throws BugResolutionException {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(workingUnit);
         Assert.isNotNull(bug);
 
-        InfixExpression oddnessCheck = findOddnessCheck(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
+        InfixExpression oddnessCheck =
+                findOddnessCheck(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
         if (oddnessCheck == null) {
-            throw new BugResolutionException("No matching oddness check found at the specified source line.");
+            throw new BugResolutionException(
+                    "No matching oddness check found at the specified source line.");
         }
         Expression numberExpression = findNumberExpression(oddnessCheck);
         if (numberExpression == null) {
@@ -93,12 +93,12 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
     }
 
     /**
-     * Creates and returns a correct <CODE>expression</CODE> that checks if a
-     * value is odd or not.
+     * Creates and returns a correct <CODE>expression</CODE> that checks if a value is odd or not.
      *
      * @return the correct <CODE>InfixExpression</CODE>.
      */
-    protected abstract InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression);
+    protected abstract InfixExpression createCorrectOddnessCheck(
+            ASTRewrite rewrite, Expression numberExpression);
 
     protected static boolean isOddnessCheck(InfixExpression oddnessCheck) {
         if (EQUALS.equals(oddnessCheck.getOperator())) {
@@ -145,7 +145,6 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
         public InfixExpression getOddnessCheck() {
             return oddnessCheck;
         }
-
     }
 
     protected static class NumberExpressionFinder extends ASTVisitor {
@@ -166,7 +165,5 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
         public Expression getNumberExpression() {
             return numberExpression;
         }
-
     }
-
 }

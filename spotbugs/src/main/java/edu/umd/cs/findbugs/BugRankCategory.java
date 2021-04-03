@@ -28,13 +28,15 @@ import javax.annotation.Nonnull;
  * @see edu.umd.cs.findbugs.annotations.Confidence
  */
 public enum BugRankCategory {
-
-    SCARIEST(4), SCARY(9), TROUBLING(14), OF_CONCERN(BugRanker.VISIBLE_RANK_MAX);
+    SCARIEST(4),
+    SCARY(9),
+    TROUBLING(14),
+    OF_CONCERN(BugRanker.VISIBLE_RANK_MAX);
 
     public final int maxRank;
 
     @Nonnull
-    static public BugRankCategory getRank(int rank) {
+    public static BugRankCategory getRank(int rank) {
         for (BugRankCategory c : values()) {
             if (rank <= c.maxRank) {
                 return c;

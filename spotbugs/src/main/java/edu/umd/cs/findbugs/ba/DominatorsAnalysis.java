@@ -32,12 +32,9 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
     /**
      * Constructor.
      *
-     * @param cfg
-     *            the CFG to compute dominator relationships for
-     * @param dfs
-     *            the DepthFirstSearch on the CFG
-     * @param ignoreExceptionEdges
-     *            true if exception edges should be ignored
+     * @param cfg the CFG to compute dominator relationships for
+     * @param dfs the DepthFirstSearch on the CFG
+     * @param ignoreExceptionEdges true if exception edges should be ignored
      */
     public DominatorsAnalysis(CFG cfg, DepthFirstSearch dfs, boolean ignoreExceptionEdges) {
         super(cfg, ignoreExceptionEdges);

@@ -33,6 +33,9 @@
 
 package edu.umd.cs.findbugs.io;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.util.Util;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -46,29 +49,26 @@ import java.io.Writer;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 
-import edu.umd.cs.findbugs.annotations.CheckReturnValue;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.util.Util;
-
 public class IO {
-    static ThreadLocal<byte[]> myByteBuf = new ThreadLocal<byte[]>() {
-        @Override
-        protected byte[] initialValue() {
-            return new byte[4096];
-        }
-    };
+    static ThreadLocal<byte[]> myByteBuf =
+            new ThreadLocal<byte[]>() {
+                @Override
+                protected byte[] initialValue() {
+                    return new byte[4096];
+                }
+            };
 
-    static ThreadLocal<char[]> myCharBuf = new ThreadLocal<char[]>() {
-        @Override
-        protected char[] initialValue() {
-            return new char[4096];
-        }
-    };
+    static ThreadLocal<char[]> myCharBuf =
+            new ThreadLocal<char[]>() {
+                @Override
+                protected char[] initialValue() {
+                    return new char[4096];
+                }
+            };
 
     public static byte[] readAll(@WillClose InputStream in) throws IOException {
         try {
@@ -82,11 +82,9 @@ public class IO {
 
     static byte[] copyOf(byte[] original, int newLength) {
         byte[] copy = new byte[newLength];
-        System.arraycopy(original, 0, copy, 0,
-                Math.min(original.length, newLength));
+        System.arraycopy(original, 0, copy, 0, Math.min(original.length, newLength));
         return copy;
     }
-
 
     public static byte[] readAll(@WillClose InputStream in, int size) throws IOException {
         try {
@@ -124,7 +122,8 @@ public class IO {
         return w.toString();
     }
 
-    public static long copy(@WillNotClose InputStream in, @WillNotClose OutputStream out) throws IOException {
+    public static long copy(@WillNotClose InputStream in, @WillNotClose OutputStream out)
+            throws IOException {
         return copy(in, out, Long.MAX_VALUE);
     }
 
@@ -132,8 +131,8 @@ public class IO {
         return copy(in, out, Long.MAX_VALUE);
     }
 
-    public static long copy(@WillNotClose InputStream in, @WillNotClose OutputStream out, long maxBytes)
-
+    public static long copy(
+            @WillNotClose InputStream in, @WillNotClose OutputStream out, long maxBytes)
             throws IOException {
         long total = 0;
 
@@ -150,9 +149,8 @@ public class IO {
         return total;
     }
 
-    public static long copy(Reader in, Writer out, long maxChars)
+    public static long copy(Reader in, Writer out, long maxChars) throws IOException {
 
-            throws IOException {
         long total = 0;
 
         int sz;
@@ -167,10 +165,7 @@ public class IO {
         return total;
     }
 
-    /**
-     * Close given AutoCloseable instance, ignoring any resulting exception.
-     *
-     */
+    /** Close given AutoCloseable instance, ignoring any resulting exception. */
     public static void close(@CheckForNull AutoCloseable c) {
         if (c == null) {
             return;
@@ -183,10 +178,7 @@ public class IO {
         }
     }
 
-    /**
-     * Close given Closeable instance, ignoring any resulting exception.
-     *
-     */
+    /** Close given Closeable instance, ignoring any resulting exception. */
     public static void close(@CheckForNull Closeable c) {
         close((AutoCloseable) c);
     }
@@ -194,9 +186,7 @@ public class IO {
     /**
      * Close given InputStream, ignoring any resulting exception.
      *
-     * @param inputStream
-     *            the InputStream to close; may be null (in which case nothing
-     *            happens)
+     * @param inputStream the InputStream to close; may be null (in which case nothing happens)
      */
     public static void close(@CheckForNull InputStream inputStream) {
         if (inputStream == null) {
@@ -213,9 +203,7 @@ public class IO {
     /**
      * Close given OutputStream, ignoring any resulting exception.
      *
-     * @param outputStream
-     *            the OutputStream to close; may be null (in which case nothing
-     *            happens)
+     * @param outputStream the OutputStream to close; may be null (in which case nothing happens)
      */
     public static void close(@CheckForNull OutputStream outputStream) {
         if (outputStream == null) {
@@ -230,17 +218,13 @@ public class IO {
     }
 
     /**
-     * Provide a skip fully method. Either skips the requested number of bytes
-     * or throws an IOException;
+     * Provide a skip fully method. Either skips the requested number of bytes or throws an
+     * IOException;
      *
-     * @param in
-     *            The input stream on which to perform the skip
-     * @param bytes
-     *            Number of bytes to skip
-     * @throws EOFException
-     *             if we reach EOF and still need to skip more bytes
-     * @throws IOException
-     *             if in.skip throws an IOException
+     * @param in The input stream on which to perform the skip
+     * @param bytes Number of bytes to skip
+     * @throws EOFException if we reach EOF and still need to skip more bytes
+     * @throws IOException if in.skip throws an IOException
      */
     public static void skipFully(InputStream in, long bytes) throws IOException {
         if (bytes < 0) {
@@ -254,7 +238,6 @@ public class IO {
             }
             remaining -= skipped;
         }
-
     }
 
     public static boolean verifyURL(URL u) {
@@ -270,19 +253,16 @@ public class IO {
             int firstByte = i.read();
             i.close();
             return firstByte >= 0;
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         } finally {
             Util.closeSilently(i);
         }
-
     }
 
     /**
-     * When URL Connection uses cache, it may keep file handler. This method open connection without caching to avoid
-     * file handler leak.
+     * When URL Connection uses cache, it may keep file handler. This method open connection without
+     * caching to avoid file handler leak.
      *
      * @return opened {@link URLConnection} which does not use cache to load data
      * @see <a href="https://github.com/spotbugs/spotbugs/issues/589">related GitHub issue</a>
@@ -298,8 +278,8 @@ public class IO {
     }
 
     /**
-     * When URL Connection uses cache, it may keep file handler. This method open connection without caching to avoid
-     * file handler leak.
+     * When URL Connection uses cache, it may keep file handler. This method open connection without
+     * caching to avoid file handler leak.
      *
      * @return opened {@link URLConnection} which does not use cache to load data
      * @see <a href="https://github.com/spotbugs/spotbugs/issues/589">related GitHub issue</a>
@@ -309,5 +289,4 @@ public class IO {
     public static InputStream openNonCachedStream(@NonNull URL u) throws IOException {
         return openNonCachedConnection(u).getInputStream();
     }
-
 }

@@ -28,8 +28,14 @@ package edu.umd.cs.findbugs.ba.jsr305;
  */
 public enum SourceSinkType {
     // Source types
-    PARAMETER, RETURN_VALUE_OF_CALLED_METHOD, FIELD_LOAD, CONSTANT_VALUE, OTHER,
+    PARAMETER,
+    RETURN_VALUE_OF_CALLED_METHOD,
+    FIELD_LOAD,
+    CONSTANT_VALUE,
+    OTHER,
 
     // Sink types
-    ARGUMENT_TO_CALLED_METHOD, RETURN_VALUE, FIELD_STORE
+    ARGUMENT_TO_CALLED_METHOD,
+    RETURN_VALUE,
+    FIELD_STORE
 }

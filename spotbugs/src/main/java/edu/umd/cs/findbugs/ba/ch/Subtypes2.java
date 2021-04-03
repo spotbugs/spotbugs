@@ -19,27 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ArrayType;
-import org.apache.bcel.generic.BasicType;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
@@ -51,20 +30,40 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Values;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ArrayType;
+import org.apache.bcel.generic.BasicType;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 /**
- * Class for performing class hierarchy queries. Does <em>not</em> require
- * JavaClass objects to be in memory. Instead, uses XClass objects.
+ * Class for performing class hierarchy queries. Does <em>not</em> require JavaClass objects to be
+ * in memory. Instead, uses XClass objects.
  *
  * @author David Hovemeyer
  */
 @javax.annotation.ParametersAreNonnullByDefault
 public class Subtypes2 {
-    public static final boolean ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES = true; // SystemProperties.getBoolean("findbugs.subtypes2.superclass");
+    public static final boolean ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES =
+            true; // SystemProperties.getBoolean("findbugs.subtypes2.superclass");
 
     public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.subtypes2.debug");
 
-    public static final boolean DEBUG_QUERIES = SystemProperties.getBoolean("findbugs.subtypes2.debugqueries");
+    public static final boolean DEBUG_QUERIES =
+            SystemProperties.getBoolean("findbugs.subtypes2.debugqueries");
 
     private final InheritanceGraph graph;
 
@@ -82,9 +81,7 @@ public class Subtypes2 {
 
     private final ObjectType CLONEABLE;
 
-    /**
-     * Object to record the results of a supertype search.
-     */
+    /** Object to record the results of a supertype search. */
     private static class SupertypeQueryResults {
         private final Set<ClassDescriptor> supertypeSet = new HashSet<>(4);
 
@@ -98,7 +95,8 @@ public class Subtypes2 {
             this.encounteredMissingClasses = encounteredMissingClasses;
         }
 
-        public boolean containsType(ClassDescriptor possibleSupertypeClassDescriptor) throws ClassNotFoundException {
+        public boolean containsType(ClassDescriptor possibleSupertypeClassDescriptor)
+                throws ClassNotFoundException {
             if (supertypeSet.contains(possibleSupertypeClassDescriptor)) {
                 return true;
             } else if (!encounteredMissingClasses) {
@@ -111,9 +109,7 @@ public class Subtypes2 {
         }
     }
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public Subtypes2() {
         this.graph = new InheritanceGraph();
         this.classDescriptorToVertexMap = new HashMap<>();
@@ -125,28 +121,24 @@ public class Subtypes2 {
         this.firstCommonSuperclassQueryCache = new DualKeyHashMap<>();
     }
 
-    /**
-     * @return Returns the graph.
-     */
+    /** @return Returns the graph. */
     public InheritanceGraph getGraph() {
         return graph;
     }
 
-    final static ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance(Collection.class);
-    final static ObjectType MAP_TYPE = ObjectTypeFactory.getInstance(Map.class);
+    static final ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance(Collection.class);
+    static final ObjectType MAP_TYPE = ObjectTypeFactory.getInstance(Map.class);
 
-    static public boolean isCollection(ReferenceType target) throws ClassNotFoundException {
+    public static boolean isCollection(ReferenceType target) throws ClassNotFoundException {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         return subtypes2.isSubtype(target, COLLECTION_TYPE);
     }
 
     /** A collection, a map, or some other container */
-    static public boolean isContainer(ReferenceType target) throws ClassNotFoundException {
+    public static boolean isContainer(ReferenceType target) throws ClassNotFoundException {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-        return subtypes2.isSubtype(target, COLLECTION_TYPE)
-                || subtypes2.isSubtype(target, MAP_TYPE);
+        return subtypes2.isSubtype(target, COLLECTION_TYPE) || subtypes2.isSubtype(target, MAP_TYPE);
     }
-
 
     public static boolean isJSP(JavaClass javaClass) {
         @DottedClassName
@@ -171,10 +163,13 @@ public class Subtypes2 {
                 || Subtypes2.instanceOf(className, " org.apache.jasper.runtime.JspSourceDependent");
     }
 
-    public static boolean instanceOf(@DottedClassName String dottedSubtype, @DottedClassName String dottedSupertype) {
+    public static boolean instanceOf(
+            @DottedClassName String dottedSubtype, @DottedClassName String dottedSupertype) {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-        ClassDescriptor subDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSubtype);
-        ClassDescriptor superDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSupertype);
+        ClassDescriptor subDescriptor =
+                DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSubtype);
+        ClassDescriptor superDescriptor =
+                DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSupertype);
         try {
             return subtypes2.isSubtype(subDescriptor, superDescriptor);
         } catch (ClassNotFoundException e) {
@@ -187,9 +182,11 @@ public class Subtypes2 {
         return instanceOf(subDescriptor, c.getName());
     }
 
-    public static boolean instanceOf(ClassDescriptor subDescriptor, @DottedClassName String dottedSupertype) {
+    public static boolean instanceOf(
+            ClassDescriptor subDescriptor, @DottedClassName String dottedSupertype) {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-        ClassDescriptor superDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSupertype);
+        ClassDescriptor superDescriptor =
+                DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSupertype);
         try {
             return subtypes2.isSubtype(subDescriptor, superDescriptor);
         } catch (ClassNotFoundException e) {
@@ -199,15 +196,18 @@ public class Subtypes2 {
     }
 
     public static boolean instanceOf(JavaClass subtype, @DottedClassName String dottedSupertype) {
-        if (subtype.getClassName().equals(dottedSupertype) || subtype.getSuperclassName().equals(dottedSupertype)) {
+        if (subtype.getClassName().equals(dottedSupertype)
+                || subtype.getSuperclassName().equals(dottedSupertype)) {
             return true;
         }
-        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(subtype.getSuperclassName()) && subtype.getInterfaceIndices().length == 0) {
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(subtype.getSuperclassName())
+                && subtype.getInterfaceIndices().length == 0) {
             return false;
         }
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         ClassDescriptor subDescriptor = DescriptorFactory.createClassDescriptor(subtype);
-        ClassDescriptor superDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSupertype);
+        ClassDescriptor superDescriptor =
+                DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSupertype);
         try {
             return subtypes2.isSubtype(subDescriptor, superDescriptor);
         } catch (ClassNotFoundException e) {
@@ -217,11 +217,9 @@ public class Subtypes2 {
     }
 
     /**
-     * Add an application class, and its transitive supertypes, to the
-     * inheritance graph.
+     * Add an application class, and its transitive supertypes, to the inheritance graph.
      *
-     * @param appXClass
-     *            application XClass to add to the inheritance graph
+     * @param appXClass application XClass to add to the inheritance graph
      */
     public void addApplicationClass(XClass appXClass) {
         for (XMethod m : appXClass.getXMethods()) {
@@ -231,7 +229,6 @@ public class Subtypes2 {
         }
         ClassVertex vertex = addClassAndGetClassVertex(appXClass);
         vertex.markAsApplicationClass();
-
     }
 
     public boolean isApplicationClass(ClassDescriptor descriptor) {
@@ -245,11 +242,9 @@ public class Subtypes2 {
     }
 
     /**
-     * Add a class or interface, and its transitive supertypes, to the
-     * inheritance graph.
+     * Add a class or interface, and its transitive supertypes, to the inheritance graph.
      *
-     * @param xclass
-     *            XClass to add to the inheritance graph
+     * @param xclass XClass to add to the inheritance graph
      */
     public void addClass(XClass xclass) {
         addClassAndGetClassVertex(xclass);
@@ -258,8 +253,7 @@ public class Subtypes2 {
     /**
      * Add an XClass and all of its supertypes to the InheritanceGraph.
      *
-     * @param xclass
-     *            an XClass
+     * @param xclass an XClass
      * @return the ClassVertex representing the class in the InheritanceGraph
      */
     private ClassVertex addClassAndGetClassVertex(XClass xclass) {
@@ -308,25 +302,22 @@ public class Subtypes2 {
         if (vertex.isInterface()) {
             // There is no need to add additional worklist nodes because
             // java/lang/Object has no supertypes.
-            addInheritanceEdge(vertex, DescriptorFactory.instance().getClassDescriptor("java/lang/Object"), false, null);
+            addInheritanceEdge(
+                    vertex, DescriptorFactory.instance().getClassDescriptor("java/lang/Object"), false, null);
         }
     }
 
     /**
-     * Determine whether or not a given ReferenceType is a subtype of another.
-     * Throws ClassNotFoundException if the question cannot be answered
-     * definitively due to a missing class.
+     * Determine whether or not a given ReferenceType is a subtype of another. Throws
+     * ClassNotFoundException if the question cannot be answered definitively due to a missing class.
      *
-     * @param type
-     *            a ReferenceType
-     * @param possibleSupertype
-     *            another Reference type
-     * @return true if <code>type</code> is a subtype of
-     *         <code>possibleSupertype</code>, false if not
-     * @throws ClassNotFoundException
-     *             if a missing class prevents a definitive answer
+     * @param type a ReferenceType
+     * @param possibleSupertype another Reference type
+     * @return true if <code>type</code> is a subtype of <code>possibleSupertype</code>, false if not
+     * @throws ClassNotFoundException if a missing class prevents a definitive answer
      */
-    public boolean isSubtype(ReferenceType type, ReferenceType possibleSupertype) throws ClassNotFoundException {
+    public boolean isSubtype(ReferenceType type, ReferenceType possibleSupertype)
+            throws ClassNotFoundException {
 
         // Eliminate some easy cases
         if (type.equals(possibleSupertype)) {
@@ -381,8 +372,10 @@ public class Subtypes2 {
             // If dimensions differ, see if element types are compatible.
             if (typeAsArrayType.getDimensions() > possibleSupertypeAsArrayType.getDimensions()) {
                 return isSubtype(
-                        new ArrayType(typeBasicType, typeAsArrayType.getDimensions()
-                                - possibleSupertypeAsArrayType.getDimensions()), (ObjectType) possibleSupertypeBasicType);
+                        new ArrayType(
+                                typeBasicType,
+                                typeAsArrayType.getDimensions() - possibleSupertypeAsArrayType.getDimensions()),
+                        (ObjectType) possibleSupertypeBasicType);
             }
 
             // type's base type must be a subtype of possibleSupertype's base
@@ -404,7 +397,8 @@ public class Subtypes2 {
     ClassDescriptor prevSubDesc, prevSuperDesc;
     boolean prevResult;
 
-    public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor superDesc) throws ClassNotFoundException {
+    public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor superDesc)
+            throws ClassNotFoundException {
         if (subDesc == prevSubDesc && prevSuperDesc == superDesc) {
             return prevResult;
         }
@@ -414,7 +408,8 @@ public class Subtypes2 {
         return prevResult;
     }
 
-    public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor... superDesc) throws ClassNotFoundException {
+    public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor... superDesc)
+            throws ClassNotFoundException {
         for (ClassDescriptor s : superDesc) {
             if (subDesc.equals(s)) {
                 return true;
@@ -438,7 +433,8 @@ public class Subtypes2 {
         return false;
     }
 
-    public boolean isSubtype0(ClassDescriptor subDesc, ClassDescriptor superDesc) throws ClassNotFoundException {
+    public boolean isSubtype0(ClassDescriptor subDesc, ClassDescriptor superDesc)
+            throws ClassNotFoundException {
         assert subDesc != null;
         assert superDesc != null;
         if (subDesc.equals(superDesc)) {
@@ -481,12 +477,12 @@ public class Subtypes2 {
 
         /*
         if (false) {
-            if (subName.equals("java/lang/Error") && superName.equals("java/lang/RuntimeException")) {
-                System.out.println("huh");
-            }
-            System.out.println("sub: " + subDesc);
-            System.out.println("SUP: " + superDesc);
-            System.out.println("CHECK: " + subDesc + " " + superDesc);
+        if (subName.equals("java/lang/Error") && superName.equals("java/lang/RuntimeException")) {
+        System.out.println("huh");
+        }
+        System.out.println("sub: " + subDesc);
+        System.out.println("SUP: " + superDesc);
+        System.out.println("CHECK: " + subDesc + " " + superDesc);
         }
          */
         SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(subDesc);
@@ -495,20 +491,16 @@ public class Subtypes2 {
     }
 
     /**
-     * Determine whether or not a given ObjectType is a subtype of another.
-     * Throws ClassNotFoundException if the question cannot be answered
-     * definitively due to a missing class.
+     * Determine whether or not a given ObjectType is a subtype of another. Throws
+     * ClassNotFoundException if the question cannot be answered definitively due to a missing class.
      *
-     * @param type
-     *            a ReferenceType
-     * @param possibleSupertype
-     *            another Reference type
-     * @return true if <code>type</code> is a subtype of
-     *         <code>possibleSupertype</code>, false if not
-     * @throws ClassNotFoundException
-     *             if a missing class prevents a definitive answer
+     * @param type a ReferenceType
+     * @param possibleSupertype another Reference type
+     * @return true if <code>type</code> is a subtype of <code>possibleSupertype</code>, false if not
+     * @throws ClassNotFoundException if a missing class prevents a definitive answer
      */
-    public boolean isSubtype(ObjectType type, ObjectType possibleSupertype) throws ClassNotFoundException {
+    public boolean isSubtype(ObjectType type, ObjectType possibleSupertype)
+            throws ClassNotFoundException {
         if (DEBUG_QUERIES) {
             System.out.println("isSubtype: check " + type + " subtype of " + possibleSupertype);
         }
@@ -520,32 +512,29 @@ public class Subtypes2 {
             return true;
         }
         ClassDescriptor typeClassDescriptor = DescriptorFactory.getClassDescriptor(type);
-        ClassDescriptor possibleSuperclassClassDescriptor = DescriptorFactory.getClassDescriptor(possibleSupertype);
+        ClassDescriptor possibleSuperclassClassDescriptor =
+                DescriptorFactory.getClassDescriptor(possibleSupertype);
 
         return isSubtype(typeClassDescriptor, possibleSuperclassClassDescriptor);
     }
 
     /**
-     * Get the first common superclass of the given reference types. Note that
-     * an interface type is never returned unless <code>a</code> and
-     * <code>b</code> are the same type. Otherwise, we try to return as accurate
-     * a type as possible. This method is used as the meet operator in
-     * TypeDataflowAnalysis, and is intended to follow (more or less) the JVM
-     * bytecode verifier semantics.
+     * Get the first common superclass of the given reference types. Note that an interface type is
+     * never returned unless <code>a</code> and <code>b</code> are the same type. Otherwise, we try to
+     * return as accurate a type as possible. This method is used as the meet operator in
+     * TypeDataflowAnalysis, and is intended to follow (more or less) the JVM bytecode verifier
+     * semantics.
      *
-     * <p>
-     * This method should be used in preference to the
-     * getFirstCommonSuperclass() method in {@link ReferenceType}.
-     * </p>
+     * <p>This method should be used in preference to the getFirstCommonSuperclass() method in {@link
+     * ReferenceType}.
      *
-     * @param a
-     *            a ReferenceType
-     * @param b
-     *            another ReferenceType
+     * @param a a ReferenceType
+     * @param b another ReferenceType
      * @return the first common superclass of <code>a</code> and <code>b</code>
      * @throws ClassNotFoundException
      */
-    public ReferenceType getFirstCommonSuperclass(ReferenceType a, ReferenceType b) throws ClassNotFoundException {
+    public ReferenceType getFirstCommonSuperclass(ReferenceType a, ReferenceType b)
+            throws ClassNotFoundException {
         // Easy case: same types
         if (a.equals(b)) {
             return a;
@@ -559,8 +548,8 @@ public class Subtypes2 {
         return answer;
     }
 
-    private ReferenceType computeFirstCommonSuperclassOfReferenceTypes(ReferenceType a, ReferenceType b)
-            throws ClassNotFoundException {
+    private ReferenceType computeFirstCommonSuperclassOfReferenceTypes(
+            ReferenceType a, ReferenceType b) throws ClassNotFoundException {
         boolean aIsArrayType = (a instanceof ArrayType);
         boolean bIsArrayType = (b instanceof ArrayType);
 
@@ -591,15 +580,13 @@ public class Subtypes2 {
     /**
      * Get first common supertype of arrays with the same number of dimensions.
      *
-     * @param aArrType
-     *            an ArrayType
-     * @param bArrType
-     *            another ArrayType with the same number of dimensions
+     * @param aArrType an ArrayType
+     * @param bArrType another ArrayType with the same number of dimensions
      * @return first common supertype
      * @throws ClassNotFoundException
      */
-    private ReferenceType computeFirstCommonSuperclassOfSameDimensionArrays(ArrayType aArrType, ArrayType bArrType)
-            throws ClassNotFoundException {
+    private ReferenceType computeFirstCommonSuperclassOfSameDimensionArrays(
+            ArrayType aArrType, ArrayType bArrType) throws ClassNotFoundException {
         assert aArrType.getDimensions() == bArrType.getDimensions();
 
         Type aBaseType = aArrType.getBasicType();
@@ -628,22 +615,21 @@ public class Subtypes2 {
             // same.
             // We just need to find the first common supertype of base types
             // and return a new ArrayType using that base type.
-            ObjectType firstCommonBaseType = getFirstCommonSuperclass((ObjectType) aBaseType, (ObjectType) bBaseType);
+            ObjectType firstCommonBaseType =
+                    getFirstCommonSuperclass((ObjectType) aBaseType, (ObjectType) bBaseType);
             return new ArrayType(firstCommonBaseType, aArrType.getDimensions());
         }
     }
 
     /**
-     * Get the first common superclass of arrays with different numbers of
-     * dimensions.
+     * Get the first common superclass of arrays with different numbers of dimensions.
      *
-     * @param aArrType
-     *            an ArrayType
-     * @param bArrType
-     *            another ArrayType
+     * @param aArrType an ArrayType
+     * @param bArrType another ArrayType
      * @return ReferenceType representing first common superclass
      */
-    private ReferenceType computeFirstCommonSuperclassOfDifferentDimensionArrays(ArrayType aArrType, ArrayType bArrType) {
+    private ReferenceType computeFirstCommonSuperclassOfDifferentDimensionArrays(
+            ArrayType aArrType, ArrayType bArrType) {
         assert aArrType.getDimensions() != bArrType.getDimensions();
 
         boolean aBaseTypeIsPrimitive = (aArrType.getBasicType() instanceof BasicType);
@@ -678,31 +664,28 @@ public class Subtypes2 {
             // Since the arrays have different numbers of dimensions, the
             // f.c.s. will have Object as its base type.
             // E.g., f.c.s. of Cat[] and Dog[][] is Object[]
-            return new ArrayType(Type.OBJECT, Math.min(aArrType.getDimensions(), bArrType.getDimensions()));
+            return new ArrayType(
+                    Type.OBJECT, Math.min(aArrType.getDimensions(), bArrType.getDimensions()));
         }
     }
 
     /**
-     * Get the first common superclass of the given object types. Note that an
-     * interface type is never returned unless <code>a</code> and <code>b</code>
-     * are the same type. Otherwise, we try to return as accurate a type as
-     * possible. This method is used as the meet operator in
-     * TypeDataflowAnalysis, and is intended to follow (more or less) the JVM
-     * bytecode verifier semantics.
+     * Get the first common superclass of the given object types. Note that an interface type is never
+     * returned unless <code>a</code> and <code>b</code> are the same type. Otherwise, we try to
+     * return as accurate a type as possible. This method is used as the meet operator in
+     * TypeDataflowAnalysis, and is intended to follow (more or less) the JVM bytecode verifier
+     * semantics.
      *
-     * <p>
-     * This method should be used in preference to the
-     * getFirstCommonSuperclass() method in {@link ReferenceType}.
-     * </p>
+     * <p>This method should be used in preference to the getFirstCommonSuperclass() method in {@link
+     * ReferenceType}.
      *
-     * @param a
-     *            an ObjectType
-     * @param b
-     *            another ObjectType
+     * @param a an ObjectType
+     * @param b another ObjectType
      * @return the first common superclass of <code>a</code> and <code>b</code>
      * @throws ClassNotFoundException
      */
-    public ObjectType getFirstCommonSuperclass(ObjectType a, ObjectType b) throws ClassNotFoundException {
+    public ObjectType getFirstCommonSuperclass(ObjectType a, ObjectType b)
+            throws ClassNotFoundException {
         // Easy case
         if (a.equals(b)) {
             return a;
@@ -717,7 +700,8 @@ public class Subtypes2 {
         return firstCommonSupertype;
     }
 
-    private ObjectType computeFirstCommonSuperclassOfObjectTypes(ObjectType a, ObjectType b) throws ClassNotFoundException {
+    private ObjectType computeFirstCommonSuperclassOfObjectTypes(ObjectType a, ObjectType b)
+            throws ClassNotFoundException {
         ObjectType firstCommonSupertype;
         ClassDescriptor aDesc = DescriptorFactory.getClassDescriptor(a);
         ClassDescriptor bDesc = DescriptorFactory.getClassDescriptor(b);
@@ -754,8 +738,9 @@ public class Subtypes2 {
         if (lastCommonInBackwardsSearch == null) {
             firstCommonSupertype = Type.OBJECT;
         } else {
-            firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor()
-                    .toDottedClassName());
+            firstCommonSupertype =
+                    ObjectTypeFactory.getInstance(
+                            lastCommonInBackwardsSearch.getClassDescriptor().toDottedClassName());
         }
         if (firstCommonSupertype.equals(Type.OBJECT)) {
             // see if we can't do better
@@ -763,7 +748,8 @@ public class Subtypes2 {
             aSuperTypes.retainAll(bSuperTypes);
             aSuperTypes.remove(objDesc);
             for (ClassDescriptor c : aSuperTypes) {
-                if (c.getPackageName().equals(aDesc.getPackageName()) || c.getPackageName().equals(bDesc.getPackageName())) {
+                if (c.getPackageName().equals(aDesc.getPackageName())
+                        || c.getPackageName().equals(bDesc.getPackageName())) {
                     return ObjectTypeFactory.getInstance(c.toDottedClassName());
                 }
             }
@@ -776,7 +762,8 @@ public class Subtypes2 {
         return firstCommonSupertype;
     }
 
-    private void putFirstCommonSuperclassQueryCache(ReferenceType a, ReferenceType b, ReferenceType answer) {
+    private void putFirstCommonSuperclassQueryCache(
+            ReferenceType a, ReferenceType b, ReferenceType answer) {
         if (a.getSignature().compareTo(b.getSignature()) > 0) {
             ReferenceType tmp = a;
             a = b;
@@ -795,15 +782,15 @@ public class Subtypes2 {
     }
 
     /**
-     * Get list of all superclasses of class represented by given class vertex,
-     * in order, including the class itself (which is trivially its own
-     * superclass as far as "first common superclass" queries are concerned.)
+     * Get list of all superclasses of class represented by given class vertex, in order, including
+     * the class itself (which is trivially its own superclass as far as "first common superclass"
+     * queries are concerned.)
      *
-     * @param vertex
-     *            a ClassVertex
+     * @param vertex a ClassVertex
      * @return list of all superclass vertices in order
      */
-    private ArrayList<ClassVertex> getAllSuperclassVertices(ClassVertex vertex) throws ClassNotFoundException {
+    private ArrayList<ClassVertex> getAllSuperclassVertices(ClassVertex vertex)
+            throws ClassNotFoundException {
         ArrayList<ClassVertex> result = new ArrayList<>();
         ClassVertex cur = vertex;
         while (cur != null) {
@@ -817,15 +804,14 @@ public class Subtypes2 {
     }
 
     /**
-     * Get known subtypes of given class. The set returned <em>DOES</em> include
-     * the class itself.
+     * Get known subtypes of given class. The set returned <em>DOES</em> include the class itself.
      *
-     * @param classDescriptor
-     *            ClassDescriptor naming a class
+     * @param classDescriptor ClassDescriptor naming a class
      * @return Set of ClassDescriptors which are the known subtypes of the class
      * @throws ClassNotFoundException
      */
-    public Set<ClassDescriptor> getSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    public Set<ClassDescriptor> getSubtypes(ClassDescriptor classDescriptor)
+            throws ClassNotFoundException {
         Set<ClassDescriptor> result = subtypeSetMap.get(classDescriptor);
         if (result == null) {
             result = computeKnownSubtypes(classDescriptor);
@@ -837,8 +823,7 @@ public class Subtypes2 {
     /**
      * Determine whether or not the given class has any known subtypes.
      *
-     * @param classDescriptor
-     *            ClassDescriptor naming a class
+     * @param classDescriptor ClassDescriptor naming a class
      * @return true if the class has subtypes, false if it has no subtypes
      * @throws ClassNotFoundException
      */
@@ -853,12 +838,12 @@ public class Subtypes2 {
     /**
      * Get known subtypes of given class.
      *
-     * @param classDescriptor
-     *            ClassDescriptor naming a class
+     * @param classDescriptor ClassDescriptor naming a class
      * @return Set of ClassDescriptors which are the known subtypes of the class
      * @throws ClassNotFoundException
      */
-    public Set<ClassDescriptor> getDirectSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    public Set<ClassDescriptor> getDirectSubtypes(ClassDescriptor classDescriptor)
+            throws ClassNotFoundException {
 
         ClassVertex startVertex = resolveClassVertex(classDescriptor);
 
@@ -875,14 +860,13 @@ public class Subtypes2 {
     /**
      * Get the set of common subtypes of the two given classes.
      *
-     * @param classDescriptor1
-     *            a ClassDescriptor naming a class
-     * @param classDescriptor2
-     *            a ClassDescriptor naming another class
+     * @param classDescriptor1 a ClassDescriptor naming a class
+     * @param classDescriptor2 a ClassDescriptor naming another class
      * @return Set containing all common transitive subtypes of the two classes
      * @throws ClassNotFoundException
      */
-    public Set<ClassDescriptor> getTransitiveCommonSubtypes(ClassDescriptor classDescriptor1, ClassDescriptor classDescriptor2)
+    public Set<ClassDescriptor> getTransitiveCommonSubtypes(
+            ClassDescriptor classDescriptor1, ClassDescriptor classDescriptor2)
             throws ClassNotFoundException {
         Set<ClassDescriptor> subtypes1 = getSubtypes(classDescriptor1);
         Set<ClassDescriptor> result = new HashSet<>(subtypes1);
@@ -890,7 +874,6 @@ public class Subtypes2 {
         result.retainAll(subtypes2);
         return result;
     }
-
 
     /**
      * Get Collection of all XClass objects (resolved classes) seen so far.
@@ -901,10 +884,7 @@ public class Subtypes2 {
         return Collections.<XClass>unmodifiableCollection(xclassSet);
     }
 
-    /**
-     * An in-progress traversal of one path from a class or interface to
-     * java.lang.Object.
-     */
+    /** An in-progress traversal of one path from a class or interface to java.lang.Object. */
     private static class SupertypeTraversalPath {
         ClassVertex next;
 
@@ -943,23 +923,18 @@ public class Subtypes2 {
             dup.setNext(next);
             return dup;
         }
-
     }
 
     /**
-     * Starting at the class or interface named by the given ClassDescriptor,
-     * traverse the inheritance graph, exploring all paths from the class or
-     * interface to java.lang.Object.
+     * Starting at the class or interface named by the given ClassDescriptor, traverse the inheritance
+     * graph, exploring all paths from the class or interface to java.lang.Object.
      *
-     * @param start
-     *            ClassDescriptor naming the class where the traversal should
-     *            start
-     * @param visitor
-     *            an InheritanceGraphVisitor
-     * @throws ClassNotFoundException
-     *             if the start vertex cannot be resolved
+     * @param start ClassDescriptor naming the class where the traversal should start
+     * @param visitor an InheritanceGraphVisitor
+     * @throws ClassNotFoundException if the start vertex cannot be resolved
      */
-    public void traverseSupertypes(ClassDescriptor start, InheritanceGraphVisitor visitor) throws ClassNotFoundException {
+    public void traverseSupertypes(ClassDescriptor start, InheritanceGraphVisitor visitor)
+            throws ClassNotFoundException {
         LinkedList<SupertypeTraversalPath> workList = new LinkedList<>();
 
         ClassVertex startVertex = resolveClassVertex(start);
@@ -984,7 +959,8 @@ public class Subtypes2 {
 
             // Advance to direct superclass
             ClassDescriptor superclassDescriptor = vertex.getXClass().getSuperclassDescriptor();
-            if (superclassDescriptor != null && traverseEdge(vertex, superclassDescriptor, false, visitor)) {
+            if (superclassDescriptor != null
+                    && traverseEdge(vertex, superclassDescriptor, false, visitor)) {
                 addToWorkList(workList, cur, superclassDescriptor);
             }
 
@@ -998,24 +974,22 @@ public class Subtypes2 {
     }
 
     /**
-     * Starting at the class or interface named by the given ClassDescriptor,
-     * traverse the inheritance graph depth first, visiting each class only
-     * once. This is much faster than traversing all paths in certain circumstances.
+     * Starting at the class or interface named by the given ClassDescriptor, traverse the inheritance
+     * graph depth first, visiting each class only once. This is much faster than traversing all paths
+     * in certain circumstances.
      *
-     * @param start
-     *            ClassDescriptor naming the class where the traversal should
-     *            start
-     * @param visitor
-     *            an InheritanceGraphVisitor
-     * @throws ClassNotFoundException
-     *             if the start vertex cannot be resolved
+     * @param start ClassDescriptor naming the class where the traversal should start
+     * @param visitor an InheritanceGraphVisitor
+     * @throws ClassNotFoundException if the start vertex cannot be resolved
      */
-    public void traverseSupertypesDepthFirst(ClassDescriptor start, SupertypeTraversalVisitor visitor) throws ClassNotFoundException {
+    public void traverseSupertypesDepthFirst(ClassDescriptor start, SupertypeTraversalVisitor visitor)
+            throws ClassNotFoundException {
         this.traverseSupertypesDepthFirstHelper(start, visitor, new HashSet<ClassDescriptor>());
     }
 
-    private void traverseSupertypesDepthFirstHelper(ClassDescriptor cur, SupertypeTraversalVisitor visitor,
-            Set<ClassDescriptor> seen) throws ClassNotFoundException {
+    private void traverseSupertypesDepthFirstHelper(
+            ClassDescriptor cur, SupertypeTraversalVisitor visitor, Set<ClassDescriptor> seen)
+            throws ClassNotFoundException {
 
         if (seen.contains(cur)) {
             return;
@@ -1046,7 +1020,9 @@ public class Subtypes2 {
         }
     }
 
-    private void addToWorkList(LinkedList<SupertypeTraversalPath> workList, SupertypeTraversalPath curPath,
+    private void addToWorkList(
+            LinkedList<SupertypeTraversalPath> workList,
+            SupertypeTraversalPath curPath,
             ClassDescriptor supertypeDescriptor) {
         ClassVertex vertex = classDescriptorToVertexMap.get(supertypeDescriptor);
 
@@ -1062,7 +1038,10 @@ public class Subtypes2 {
         workList.addLast(newPath);
     }
 
-    private boolean traverseEdge(ClassVertex vertex, @CheckForNull ClassDescriptor supertypeDescriptor, boolean isInterfaceEdge,
+    private boolean traverseEdge(
+            ClassVertex vertex,
+            @CheckForNull ClassDescriptor supertypeDescriptor,
+            boolean isInterfaceEdge,
             InheritanceGraphVisitor visitor) {
         if (supertypeDescriptor == null) {
             // We reached java.lang.Object
@@ -1079,18 +1058,21 @@ public class Subtypes2 {
         }
         assert supertypeVertex != null;
 
-        return visitor.visitEdge(vertex.getClassDescriptor(), vertex.getXClass(), supertypeDescriptor,
+        return visitor.visitEdge(
+                vertex.getClassDescriptor(),
+                vertex.getXClass(),
+                supertypeDescriptor,
                 supertypeVertex.getXClass());
     }
 
     /**
      * Compute set of known subtypes of class named by given ClassDescriptor.
      *
-     * @param classDescriptor
-     *            a ClassDescriptor
+     * @param classDescriptor a ClassDescriptor
      * @throws ClassNotFoundException
      */
-    private Set<ClassDescriptor> computeKnownSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    private Set<ClassDescriptor> computeKnownSubtypes(ClassDescriptor classDescriptor)
+            throws ClassNotFoundException {
         LinkedList<ClassVertex> workList = new LinkedList<>();
 
         ClassVertex startVertex = resolveClassVertex(classDescriptor);
@@ -1119,7 +1101,6 @@ public class Subtypes2 {
 
         return new HashSet<>(result);
     }
-
 
     public boolean hasKnownSubclasses(ClassDescriptor classDescriptor) throws ClassNotFoundException {
 
@@ -1158,7 +1139,8 @@ public class Subtypes2 {
         return false;
     }
 
-    private Set<ClassDescriptor> computeKnownSupertypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    private Set<ClassDescriptor> computeKnownSupertypes(ClassDescriptor classDescriptor)
+            throws ClassNotFoundException {
         LinkedList<ClassVertex> workList = new LinkedList<>();
 
         ClassVertex startVertex = resolveClassVertex(classDescriptor);
@@ -1189,11 +1171,9 @@ public class Subtypes2 {
     }
 
     /**
-     * Look up or compute the SupertypeQueryResults for class named by given
-     * ClassDescriptor.
+     * Look up or compute the SupertypeQueryResults for class named by given ClassDescriptor.
      *
-     * @param classDescriptor
-     *            a ClassDescriptor
+     * @param classDescriptor a ClassDescriptor
      * @return SupertypeQueryResults for the class named by the ClassDescriptor
      */
     public SupertypeQueryResults getSupertypeQueryResults(ClassDescriptor classDescriptor) {
@@ -1208,8 +1188,7 @@ public class Subtypes2 {
     /**
      * Compute supertypes for class named by given ClassDescriptor.
      *
-     * @param classDescriptor
-     *            a ClassDescriptor
+     * @param classDescriptor a ClassDescriptor
      * @return SupertypeQueryResults containing known supertypes of the class
      */
     private SupertypeQueryResults computeSupertypes(ClassDescriptor classDescriptor) // throws
@@ -1235,12 +1214,15 @@ public class Subtypes2 {
             supertypeSet.addSupertype(vertex.getClassDescriptor());
             if (vertex.isResolved()) {
                 if (DEBUG_QUERIES) {
-                    System.out.println("  Adding supertype " + vertex.getClassDescriptor().toDottedClassName());
+                    System.out.println(
+                            "  Adding supertype " + vertex.getClassDescriptor().toDottedClassName());
                 }
             } else {
                 if (DEBUG_QUERIES) {
-                    System.out.println("  Encountered unresolved class " + vertex.getClassDescriptor().toDottedClassName()
-                            + " in supertype query");
+                    System.out.println(
+                            "  Encountered unresolved class "
+                                    + vertex.getClassDescriptor().toDottedClassName()
+                                    + " in supertype query");
                 }
                 supertypeSet.setEncounteredMissingClasses(true);
             }
@@ -1256,17 +1238,14 @@ public class Subtypes2 {
     }
 
     /**
-     * Resolve a class named by given ClassDescriptor and return its resolved
-     * ClassVertex.
+     * Resolve a class named by given ClassDescriptor and return its resolved ClassVertex.
      *
-     * @param classDescriptor
-     *            a ClassDescriptor
-     * @return resolved ClassVertex representing the class in the
-     *         InheritanceGraph
-     * @throws ClassNotFoundException
-     *             if the class named by the ClassDescriptor does not exist
+     * @param classDescriptor a ClassDescriptor
+     * @return resolved ClassVertex representing the class in the InheritanceGraph
+     * @throws ClassNotFoundException if the class named by the ClassDescriptor does not exist
      */
-    private ClassVertex resolveClassVertex(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    private ClassVertex resolveClassVertex(ClassDescriptor classDescriptor)
+            throws ClassNotFoundException {
         ClassVertex typeVertex = optionallyResolveClassVertex(classDescriptor);
 
         if (!typeVertex.isResolved()) {
@@ -1299,14 +1278,11 @@ public class Subtypes2 {
     }
 
     /**
-     * Add supertype edges to the InheritanceGraph for given ClassVertex. If any
-     * direct supertypes have not been processed, add them to the worklist.
+     * Add supertype edges to the InheritanceGraph for given ClassVertex. If any direct supertypes
+     * have not been processed, add them to the worklist.
      *
-     * @param vertex
-     *            a ClassVertex whose supertype edges need to be added
-     * @param workList
-     *            work list of ClassVertexes that need to have their supertype
-     *            edges added
+     * @param vertex a ClassVertex whose supertype edges need to be added
+     * @param workList work list of ClassVertexes that need to have their supertype edges added
      */
     private void addSupertypeEdges(ClassVertex vertex, LinkedList<XClass> workList) {
         XClass xclass = vertex.getXClass();
@@ -1326,17 +1302,16 @@ public class Subtypes2 {
     /**
      * Add supertype edge to the InheritanceGraph.
      *
-     * @param vertex
-     *            source ClassVertex (subtype)
-     * @param superclassDescriptor
-     *            ClassDescriptor of a direct supertype
-     * @param isInterfaceEdge
-     *            true if supertype is (as far as we know) an interface
-     * @param workList
-     *            work list of ClassVertexes that need to have their supertype
-     *            edges added (null if no further work will be generated)
+     * @param vertex source ClassVertex (subtype)
+     * @param superclassDescriptor ClassDescriptor of a direct supertype
+     * @param isInterfaceEdge true if supertype is (as far as we know) an interface
+     * @param workList work list of ClassVertexes that need to have their supertype edges added (null
+     *     if no further work will be generated)
      */
-    private void addInheritanceEdge(ClassVertex vertex, ClassDescriptor superclassDescriptor, boolean isInterfaceEdge,
+    private void addInheritanceEdge(
+            ClassVertex vertex,
+            ClassDescriptor superclassDescriptor,
+            boolean isInterfaceEdge,
             @CheckForNull LinkedList<XClass> workList) {
         if (superclassDescriptor == null) {
             return;
@@ -1354,7 +1329,8 @@ public class Subtypes2 {
                 superclassVertex = addClassVertexForMissingClass(superclassDescriptor, isInterfaceEdge);
             } else {
                 // Haven't seen this class before.
-                superclassVertex = ClassVertex.createResolvedClassVertex(superclassDescriptor, superclassXClass);
+                superclassVertex =
+                        ClassVertex.createResolvedClassVertex(superclassDescriptor, superclassXClass);
                 addVertexToGraph(superclassDescriptor, superclassVertex);
 
                 if (workList != null) {
@@ -1367,8 +1343,11 @@ public class Subtypes2 {
 
         if (graph.lookupEdge(vertex, superclassVertex) == null) {
             if (DEBUG) {
-                System.out.println("  Add edge " + vertex.getClassDescriptor().toDottedClassName() + " -> "
-                        + superclassDescriptor.toDottedClassName());
+                System.out.println(
+                        "  Add edge "
+                                + vertex.getClassDescriptor().toDottedClassName()
+                                + " -> "
+                                + superclassDescriptor.toDottedClassName());
             }
             graph.createEdge(vertex, superclassVertex);
         }
@@ -1377,13 +1356,14 @@ public class Subtypes2 {
     /**
      * Add a ClassVertex representing a missing class.
      *
-     * @param missingClassDescriptor
-     *            ClassDescriptor naming a missing class
+     * @param missingClassDescriptor ClassDescriptor naming a missing class
      * @param isInterfaceEdge
      * @return the ClassVertex representing the missing class
      */
-    private ClassVertex addClassVertexForMissingClass(ClassDescriptor missingClassDescriptor, boolean isInterfaceEdge) {
-        ClassVertex missingClassVertex = ClassVertex.createMissingClassVertex(missingClassDescriptor, isInterfaceEdge);
+    private ClassVertex addClassVertexForMissingClass(
+            ClassDescriptor missingClassDescriptor, boolean isInterfaceEdge) {
+        ClassVertex missingClassVertex =
+                ClassVertex.createMissingClassVertex(missingClassDescriptor, isInterfaceEdge);
         missingClassVertex.setFinished(true);
         addVertexToGraph(missingClassDescriptor, missingClassVertex);
 

@@ -22,15 +22,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.Method;
 
 public class FinalizerNullsFields extends BytecodeScanningDetector {
 
@@ -62,7 +61,6 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 
     @Override
     public void visit(Field obj) {
-
     }
 
     @Override
@@ -74,7 +72,9 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
             super.visit(obj);
             bugAccumulator.reportAccumulatedBugs();
             if (!sawAnythingElse && sawFieldNulling) {
-                BugInstance bug = new BugInstance(this, "FI_FINALIZER_ONLY_NULLS_FIELDS", HIGH_PRIORITY).addClassAndMethod(this);
+                BugInstance bug =
+                        new BugInstance(this, "FI_FINALIZER_ONLY_NULLS_FIELDS", HIGH_PRIORITY)
+                                .addClassAndMethod(this);
                 bugReporter.reportBug(bug);
             }
         }
@@ -88,8 +88,10 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
             state++;
         } else if (state == 2 && seen == Const.PUTFIELD) {
             bugAccumulator.accumulateBug(
-                    new BugInstance(this, "FI_FINALIZER_NULLS_FIELDS", NORMAL_PRIORITY).addClassAndMethod(this)
-                            .addReferencedField(this), this);
+                    new BugInstance(this, "FI_FINALIZER_NULLS_FIELDS", NORMAL_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addReferencedField(this),
+                    this);
             sawFieldNulling = true;
             state = 0;
         } else if (seen == Const.RETURN) {

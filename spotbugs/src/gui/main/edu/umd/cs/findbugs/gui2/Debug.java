@@ -20,11 +20,9 @@
 package edu.umd.cs.findbugs.gui2;
 
 /**
- * For debugging purposes only... Make sure DEBUG is set to false before you
- * release a new version.
+ * For debugging purposes only... Make sure DEBUG is set to false before you release a new version.
  *
  * @author Dan
- *
  */
 public class Debug {
     public static void println(Object s) {
@@ -46,6 +44,5 @@ public class Debug {
     }
 
     public static void main(String[] args) {
-
     }
 }

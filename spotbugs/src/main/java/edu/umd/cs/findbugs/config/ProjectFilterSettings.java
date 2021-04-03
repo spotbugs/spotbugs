@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs.config;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugProperty;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,18 +33,10 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.BugProperty;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.Priorities;
-import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
-
 /**
- * Settings for user filtering of warnings for a project. This includes
- * selecting particular bug categories to view, as well as a minimum warning
- * priority. Includes support for encoding these settings as a String, which can
- * easily be stored as a persistent project property in Eclipse.
+ * Settings for user filtering of warnings for a project. This includes selecting particular bug
+ * categories to view, as well as a minimum warning priority. Includes support for encoding these
+ * settings as a String, which can easily be stored as a persistent project property in Eclipse.
  *
  * @see BugInstance
  * @author David Hovemeyer
@@ -63,6 +61,7 @@ public class ProjectFilterSettings implements Cloneable {
     /** Map of priority level names to their numeric values. */
     @StaticConstant
     private static Map<String, Integer> priorityNameToValueMap = new HashMap<>();
+
     static {
         priorityNameToValueMap.put(HIGH_PRIORITY, (Priorities.HIGH_PRIORITY));
         priorityNameToValueMap.put(MEDIUM_PRIORITY, (Priorities.NORMAL_PRIORITY));
@@ -70,16 +69,10 @@ public class ProjectFilterSettings implements Cloneable {
         priorityNameToValueMap.put(EXPERIMENTAL_PRIORITY, (Priorities.EXP_PRIORITY));
     }
 
-    /**
-     * The character used for delimiting whole fields in filter settings encoded
-     * as strings
-     */
+    /** The character used for delimiting whole fields in filter settings encoded as strings */
     private static final char FIELD_DELIMITER = '|';
 
-    /**
-     * The character used for delimiting list items in filter settings encoded
-     * as strings
-     */
+    /** The character used for delimiting list items in filter settings encoded as strings */
     private static final String LISTITEM_DELIMITER = ",";
 
     private static final int DEFAULT_MIN_RANK = 15;
@@ -100,8 +93,7 @@ public class ProjectFilterSettings implements Cloneable {
     private boolean displayFalseWarnings;
 
     /**
-     * Constructor. This is not meant to be called directly; use one of the
-     * factory methods instead.
+     * Constructor. This is not meant to be called directly; use one of the factory methods instead.
      */
     private ProjectFilterSettings() {
         DetectorFactoryCollection.instance(); // ensure detectors loaded
@@ -109,7 +101,8 @@ public class ProjectFilterSettings implements Cloneable {
         // initially all known bug categories are active
         // using SortedSet to allow better revision control on saved sorted
         // properties
-        this.activeBugCategorySet = new TreeSet<>(DetectorFactoryCollection.instance().getBugCategories());
+        this.activeBugCategorySet =
+                new TreeSet<>(DetectorFactoryCollection.instance().getBugCategories());
         this.hiddenBugCategorySet = new HashSet<>();
         activeBugCategorySet.remove("NOISE");
         hiddenBugCategorySet.add("NOISE");
@@ -127,8 +120,8 @@ public class ProjectFilterSettings implements Cloneable {
     }
 
     /**
-     * Factory method to create a default ProjectFilterSettings object. Uses the
-     * default warning priority threshold, and enables all bug categories.
+     * Factory method to create a default ProjectFilterSettings object. Uses the default warning
+     * priority threshold, and enables all bug categories.
      *
      * @return a default ProjectFilterSettings object
      */
@@ -144,8 +137,7 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * Create ProjectFilterSettings from an encoded string.
      *
-     * @param s
-     *            the encoded string
+     * @param s the encoded string
      * @return the ProjectFilterSettings
      */
     public static ProjectFilterSettings fromEncodedString(String s) {
@@ -219,19 +211,14 @@ public class ProjectFilterSettings implements Cloneable {
         //        }
 
         return result;
-
     }
 
     /**
-     * set the hidden bug categories on the specifed ProjectFilterSettings from
-     * an encoded string
+     * set the hidden bug categories on the specifed ProjectFilterSettings from an encoded string
      *
-     * @param result
-     *            the ProjectFilterSettings from which to remove bug categories
-     * @param s
-     *            the encoded string
-     * @see ProjectFilterSettings#hiddenFromEncodedString(ProjectFilterSettings,
-     *      String)
+     * @param result the ProjectFilterSettings from which to remove bug categories
+     * @param s the encoded string
+     * @see ProjectFilterSettings#hiddenFromEncodedString(ProjectFilterSettings, String)
      */
     public static void hiddenFromEncodedString(ProjectFilterSettings result, String s) {
 
@@ -249,15 +236,12 @@ public class ProjectFilterSettings implements Cloneable {
                 result.removeCategory(category);
             }
         }
-
     }
 
     /**
-     * Return whether or not a warning should be displayed, according to the
-     * project filter settings.
+     * Return whether or not a warning should be displayed, according to the project filter settings.
      *
-     * @param bugInstance
-     *            the warning
+     * @param bugInstance the warning
      * @return true if the warning should be displayed, false if not
      */
     public boolean displayWarning(BugInstance bugInstance) {
@@ -282,7 +266,8 @@ public class ProjectFilterSettings implements Cloneable {
         }
 
         if (!displayFalseWarnings) {
-            boolean isFalseWarning = !Boolean.valueOf(bugInstance.getProperty(BugProperty.IS_BUG, "true")).booleanValue();
+            boolean isFalseWarning =
+                    !Boolean.valueOf(bugInstance.getProperty(BugProperty.IS_BUG, "true")).booleanValue();
             if (isFalseWarning) {
                 return false;
             }
@@ -294,8 +279,7 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * Set minimum warning priority threshold.
      *
-     * @param minPriority
-     *            the priority threshold: one of "High", "Medium", or "Low"
+     * @param minPriority the priority threshold: one of "High", "Medium", or "Low"
      */
     public void setMinPriority(String minPriority) {
         this.minPriority = minPriority;
@@ -309,14 +293,12 @@ public class ProjectFilterSettings implements Cloneable {
         }
 
         this.minPriorityAsInt = value.intValue();
-
     }
 
     /**
      * Get the minimum warning priority threshold.
      *
-     * @return minimum warning priority threshold: one of "High", "Medium", or
-     *         "Low"
+     * @return minimum warning priority threshold: one of "High", "Medium", or "Low"
      */
     public String getMinPriority() {
         return this.minPriority;
@@ -334,8 +316,7 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * Add a bug category to the set of categories to be displayed.
      *
-     * @param category
-     *            the bug category: e.g., "CORRECTNESS"
+     * @param category the bug category: e.g., "CORRECTNESS"
      */
     public void addCategory(String category) {
         this.hiddenBugCategorySet.remove(category);
@@ -345,8 +326,7 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * Remove a bug category from the set of categories to be displayed.
      *
-     * @param category
-     *            the bug category: e.g., "CORRECTNESS"
+     * @param category the bug category: e.g., "CORRECTNESS"
      */
     public void removeCategory(String category) {
         this.hiddenBugCategorySet.add(category);
@@ -354,8 +334,7 @@ public class ProjectFilterSettings implements Cloneable {
     }
 
     /**
-     * Clear all bug categories from the hidden list. So the effect is to enable
-     * all bug categories.
+     * Clear all bug categories from the hidden list. So the effect is to enable all bug categories.
      */
     public void clearAllCategories() {
         this.activeBugCategorySet.addAll(hiddenBugCategorySet);
@@ -363,11 +342,9 @@ public class ProjectFilterSettings implements Cloneable {
     }
 
     /**
-     * Returns false if the given category is hidden in the project filter
-     * settings.
+     * Returns false if the given category is hidden in the project filter settings.
      *
-     * @param category
-     *            the category
+     * @param category the category
      * @return false if the category is hidden, true if not
      */
     public boolean containsCategory(String category) {
@@ -378,8 +355,8 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * Return set of active (enabled) bug categories.
      *
-     * Note that bug categories that are not explicity hidden will appear active
-     * even if they are not members of this set.
+     * <p>Note that bug categories that are not explicity hidden will appear active even if they are
+     * not members of this set.
      *
      * @return the set of active categories
      */
@@ -390,8 +367,7 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * Set whether or not false warnings should be displayed.
      *
-     * @param displayFalseWarnings
-     *            true if false warnings should be displayed, false if not
+     * @param displayFalseWarnings true if false warnings should be displayed, false if not
      */
     public void setDisplayFalseWarnings(boolean displayFalseWarnings) {
         this.displayFalseWarnings = displayFalseWarnings;
@@ -445,7 +421,6 @@ public class ProjectFilterSettings implements Cloneable {
             if (i.hasNext()) {
                 buf.append(LISTITEM_DELIMITER);
             }
-
         }
 
         // Whether to display false warnings
@@ -508,7 +483,6 @@ public class ProjectFilterSettings implements Cloneable {
             // Should not happen!
             throw new AssertionError(e);
         }
-
     }
 
     /*
@@ -518,12 +492,13 @@ public class ProjectFilterSettings implements Cloneable {
      */
     @Override
     public int hashCode() {
-        return minPriority.hashCode() + minRank + 1009 * hiddenBugCategorySet.hashCode() + (displayFalseWarnings ? 7919 : 0);
+        return minPriority.hashCode()
+                + minRank
+                + 1009 * hiddenBugCategorySet.hashCode()
+                + (displayFalseWarnings ? 7919 : 0);
     }
 
-    /**
-     * Convert an integer warning priority threshold value to a String.
-     */
+    /** Convert an integer warning priority threshold value to a String. */
     public static String getIntPriorityAsString(int prio) {
         String minPriority;
         switch (prio) {

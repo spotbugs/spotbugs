@@ -19,32 +19,26 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.CheckForNull;
 
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-
 /**
- * Factory for ValueNumbers. A single Factory must be used to create all of the
- * ValueNumbers for a method.
+ * Factory for ValueNumbers. A single Factory must be used to create all of the ValueNumbers for a
+ * method.
  *
  * @author David Hovemeyer
  * @see ValueNumber
  */
 public class ValueNumberFactory {
-    /**
-     * Store all allocated value numbers.
-     */
+    /** Store all allocated value numbers. */
     private ArrayList<ValueNumber> allocatedValueList = new ArrayList<>();
 
     private final HashMap<String, ValueNumber> classObjectValueMap = new HashMap<>();
 
-    /**
-     * Create a fresh (unique) value number.
-     */
+    /** Create a fresh (unique) value number. */
     public ValueNumber createFreshValue() {
         ValueNumber result = ValueNumber.createValueNumber(getNumValuesAllocated());
         allocatedValueList.add(result);
@@ -57,9 +51,7 @@ public class ValueNumberFactory {
         return result;
     }
 
-    /**
-     * Return a previously allocated value.
-     */
+    /** Return a previously allocated value. */
     public ValueNumber forNumber(int number) {
         if (number >= getNumValuesAllocated()) {
             throw new IllegalArgumentException("Value " + number + " has not been allocated");
@@ -67,9 +59,7 @@ public class ValueNumberFactory {
         return allocatedValueList.get(number);
     }
 
-    /**
-     * Get the number of values which have been created.
-     */
+    /** Get the number of values which have been created. */
     public int getNumValuesAllocated() {
         return allocatedValueList.size();
     }
@@ -77,10 +67,8 @@ public class ValueNumberFactory {
     /**
      * Compact the value numbers produced by this factory.
      *
-     * @param map
-     *            array mapping old numbers to new numbers
-     * @param numValuesAllocated
-     *            the number of values allocated in the new numbering
+     * @param map array mapping old numbers to new numbers
+     * @param numValuesAllocated the number of values allocated in the new numbering
      */
     @Deprecated
     public void compact(int[] map, int numValuesAllocated) {
@@ -90,8 +78,7 @@ public class ValueNumberFactory {
     /**
      * Get the ValueNumber for given class's Class object.
      *
-     * @param className
-     *            the class
+     * @param className the class
      */
     public ValueNumber getClassObjectValue(@DottedClassName String className) {
         // assert className.indexOf('.') == -1;
@@ -116,5 +103,4 @@ public class ValueNumberFactory {
         }
         return null;
     }
-
 }

@@ -18,13 +18,12 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.heap.LoadAnalysis;
 import edu.umd.cs.findbugs.ba.heap.LoadDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Analysis engine to produce LoadDataflow objects for analyzed methods.
@@ -32,9 +31,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class LoadDataflowFactory extends AnalysisFactory<LoadDataflow> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public LoadDataflowFactory() {
         super("field load analysis", LoadDataflow.class);
     }
@@ -47,13 +44,16 @@ public class LoadDataflowFactory extends AnalysisFactory<LoadDataflow> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public LoadDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public LoadDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             return null;
         }
-        LoadAnalysis analysis = new LoadAnalysis(getDepthFirstSearch(analysisCache, descriptor), getConstantPoolGen(
-                analysisCache, descriptor.getClassDescriptor()));
+        LoadAnalysis analysis =
+                new LoadAnalysis(
+                        getDepthFirstSearch(analysisCache, descriptor),
+                        getConstantPoolGen(analysisCache, descriptor.getClassDescriptor()));
         LoadDataflow dataflow = new LoadDataflow(getCFG(analysisCache, descriptor), analysis);
         dataflow.execute();
         return dataflow;

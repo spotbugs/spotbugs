@@ -19,38 +19,35 @@
 
 package edu.umd.cs.findbugs;
 
-import javax.annotation.Nonnull;
-
 import edu.umd.cs.findbugs.util.HTML;
-
 import java.net.URI;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
 /**
- * A BugPattern object collects all of the metadata for a particular species of
- * BugInstance. Specifically, it stores the human-readable text for displaying a
- * bug instance. BugPatterns derive from the BugPattern elements in the
- * "findbugs.xml" and "messages.xml" found in a FindBugs plugin.
+ * A BugPattern object collects all of the metadata for a particular species of BugInstance.
+ * Specifically, it stores the human-readable text for displaying a bug instance. BugPatterns derive
+ * from the BugPattern elements in the "findbugs.xml" and "messages.xml" found in a FindBugs plugin.
  *
  * @author David Hovemeyer
  * @see BugInstance
  */
 public class BugPattern implements Comparable<BugPattern> {
-    final private String type;
+    private final String type;
 
-    final private String abbrev;
+    private final String abbrev;
 
-    final private String category;
+    private final String category;
 
-    final private boolean experimental;
+    private final boolean experimental;
 
-    final private String shortDescription;
+    private final String shortDescription;
 
-    final private String longDescription;
+    private final String longDescription;
 
-    final private String detailText;
+    private final String detailText;
 
-    final private String url;
+    private final String url;
 
     final int cweid;
 
@@ -61,26 +58,26 @@ public class BugPattern implements Comparable<BugPattern> {
     /**
      * Constructor.
      *
-     * @param type
-     *            the type (species) of BugInstance
-     * @param abbrev
-     *            the abbreviation or "bug code"; see {@link BugCode}
-     * @param category
-     *            the category
-     * @param experimental
-     *            true if the bug pattern is experimental
-     * @param shortDescription
-     *            short one-line description of the bug species
-     * @param longDescription
-     *            longer one-line description; may contain placeholders for use
-     *            by {@link FindBugsMessageFormat} to format BugAnnotations
-     * @param detailText
-     *            HTML text containing a full description of the bug species
-     * @param bugsUrl
-     *            URL of web-page containing bug descriptions or null if there's no such page.
+     * @param type the type (species) of BugInstance
+     * @param abbrev the abbreviation or "bug code"; see {@link BugCode}
+     * @param category the category
+     * @param experimental true if the bug pattern is experimental
+     * @param shortDescription short one-line description of the bug species
+     * @param longDescription longer one-line description; may contain placeholders for use by {@link
+     *     FindBugsMessageFormat} to format BugAnnotations
+     * @param detailText HTML text containing a full description of the bug species
+     * @param bugsUrl URL of web-page containing bug descriptions or null if there's no such page.
      */
-    public BugPattern(String type, String abbrev, String category, boolean experimental, String shortDescription,
-            String longDescription, String detailText, String bugsUrl, int cweid) {
+    public BugPattern(
+            String type,
+            String abbrev,
+            String category,
+            boolean experimental,
+            String shortDescription,
+            String longDescription,
+            String detailText,
+            String bugsUrl,
+            int cweid) {
 
         this.type = type;
         this.abbrev = abbrev.intern();
@@ -93,38 +90,37 @@ public class BugPattern implements Comparable<BugPattern> {
         this.url = bugsUrl;
     }
 
-    static final BugPattern REALLY_UNKNOWN = new BugPattern("REALLY_UNKNOWN", "TEST", "CORRECTNESS", false,
-            "Unknown warning; core bug patterns not found", "Unknown warning BUG_PATTERN in {1}; core bug patterns not found",
-            "<p>A warning was recorded, but SpotBugs can't find the description of this bug pattern "
-                    + "and so can't describe it. This should occur only in cases of a bug in SpotBugs or its configuration, "
-                    + "or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded. "
-                    + "</p>", null, 0);
+    static final BugPattern REALLY_UNKNOWN =
+            new BugPattern(
+                    "REALLY_UNKNOWN",
+                    "TEST",
+                    "CORRECTNESS",
+                    false,
+                    "Unknown warning; core bug patterns not found",
+                    "Unknown warning BUG_PATTERN in {1}; core bug patterns not found",
+                    "<p>A warning was recorded, but SpotBugs can't find the description of this bug pattern "
+                            + "and so can't describe it. This should occur only in cases of a bug in SpotBugs or its configuration, "
+                            + "or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded. "
+                            + "</p>",
+                    null,
+                    0);
 
-    /**
-     * Get the BugPattern
-     */
+    /** Get the BugPattern */
     public String getType() {
         return type;
     }
 
-    /**
-     * Get the BugKind
-     */
+    /** Get the BugKind */
     public String getAbbrev() {
         return abbrev;
     }
 
-    /**
-     * Get the BugCode
-     */
+    /** Get the BugCode */
     public @Nonnull BugCode getBugCode() {
         return DetectorFactoryCollection.instance().getBugCode(abbrev);
-
     }
 
-    /**
-     * Get the BugCategory
-     */
+    /** Get the BugCategory */
     public String getCategory() {
         return category;
     }
@@ -149,49 +145,36 @@ public class BugPattern implements Comparable<BugPattern> {
         return categoryAbbrev;
     }
 
-    /**
-     * Is the bug pattern experimental?
-     */
+    /** Is the bug pattern experimental? */
     public boolean isExperimental() {
         return experimental;
     }
 
-    /**
-     * Get the short description.
-     */
+    /** Get the short description. */
     public String getShortDescription() {
         return shortDescription;
     }
 
-    /**
-     * Get the long description.
-     */
+    /** Get the long description. */
     public String getLongDescription() {
         return longDescription;
     }
 
-    /**
-     * Get the HTML detail text describing the bug.
-     */
+    /** Get the HTML detail text describing the bug. */
     public String getDetailText() {
         return detailText;
     }
 
-    /**
-     * Get the Plain text describing the bug.
-     */
+    /** Get the Plain text describing the bug. */
     public String getDetailPlainText() {
         try {
             return HTML.convertHtmlSnippetToText(detailText);
         } catch (Exception e) {
             return detailText;
-
         }
     }
 
-    /**
-     * Get the detail text as a complete HTML document.
-     */
+    /** Get the detail text as a complete HTML document. */
     public String getDetailHTML() {
         return getDetailHTML(getDetailText());
     }
@@ -208,7 +191,6 @@ public class BugPattern implements Comparable<BugPattern> {
         buf.append(detailText);
         buf.append("</BODY></HTML>\n");
         return buf.toString();
-
     }
 
     public String wrapInDescriptionLink(String text) {
@@ -245,9 +227,7 @@ public class BugPattern implements Comparable<BugPattern> {
         return type.equals(other.type);
     }
 
-    /**
-     * @return Returns the cweid.
-     */
+    /** @return Returns the cweid. */
     public int getCWEid() {
         return cweid;
     }
@@ -260,17 +240,15 @@ public class BugPattern implements Comparable<BugPattern> {
     /**
      * The method is not public to disallow modification of this attribute
      *
-     * @param deprecated
-     *            true if this bug pattern is not used anymore and exists for
-     *            backward compatibility only
+     * @param deprecated true if this bug pattern is not used anymore and exists for backward
+     *     compatibility only
      */
-    /* package protected */void setDeprecated(boolean deprecated) {
+    /* package protected */ void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
     }
 
     /**
-     * @return true if this bug pattern is not used anymore and exists for
-     *         backward compatibility only
+     * @return true if this bug pattern is not used anymore and exists for backward compatibility only
      */
     public boolean isDeprecated() {
         return deprecated;

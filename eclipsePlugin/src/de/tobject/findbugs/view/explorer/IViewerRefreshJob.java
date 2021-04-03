@@ -25,5 +25,4 @@ interface IViewerRefreshJob {
     boolean cancel();
 
     void schedule(long delay);
-
 }

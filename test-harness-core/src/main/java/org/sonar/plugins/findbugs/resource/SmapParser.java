@@ -1,5 +1,6 @@
 package org.sonar.plugins.findbugs.resource;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,52 +12,44 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
- * This class is a highly modified version of Michael Schierl's "SmapParser.java".
- * It was test with Jetty and WebLogic SMAP.
+ * This class is a highly modified version of Michael Schierl's "SmapParser.java". It was test with
+ * Jetty and WebLogic SMAP.
  *
- * =======
+ * <p>=======
  *
- * SmapParser.java - Parse source debug extensions and
- * enhance stack traces.
+ * <p>SmapParser.java - Parse source debug extensions and enhance stack traces.
  *
- * Copyright (c) 2012 Michael Schierl
+ * <p>Copyright (c) 2012 Michael Schierl
  *
- * All rights reserved.
+ * <p>All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
+ * <p>Redistribution and use in source and binary forms, with or without modification, are permitted
+ * provided that the following conditions are met:
  *
- * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
+ * <p>- Redistributions of source code must retain the above copyright notice, this list of
+ * conditions and the following disclaimer.
  *
- * - Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in the
- *   documentation and/or other materials provided with the distribution.
+ * <p>- Redistributions in binary form must reproduce the above copyright notice, this list of
+ * conditions and the following disclaimer in the documentation and/or other materials provided with
+ * the distribution.
  *
- * - Neither name of the copyright holders nor the names of its
- *   contributors may be used to endorse or promote products derived from
- *   this software without specific prior written permission.
+ * <p>- Neither name of the copyright holders nor the names of its contributors may be used to
+ * endorse or promote products derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND THE CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR THE CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * <p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND THE CONTRIBUTORS "AS IS" AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS OR THE CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
  *
+ * <p>Utility class to parse Source Debug Extensions and enhance stack traces.
  *
- * Utility class to parse Source Debug Extensions and enhance stack traces.
- *
- * Note that only the first stratum is parsed and used.
+ * <p>Note that only the first stratum is parsed and used.
  *
  * @author Michael Schierl
  */
@@ -66,7 +59,8 @@ public class SmapParser {
     private final Map<Integer, FileInfo> fileinfo = new HashMap<>();
     private final Map<Integer, int[]> java2jsp = new HashMap<>();
 
-    private static final Pattern LINE_INFO_PATTERN = Pattern.compile("([0-9]+)(?:#([0-9]+))?(?:,([0-9]+))?:([0-9]+)(?:,([0-9]+))?");
+    private static final Pattern LINE_INFO_PATTERN =
+            Pattern.compile("([0-9]+)(?:#([0-9]+))?(?:,([0-9]+))?:([0-9]+)(?:,([0-9]+))?");
 
     private static String getLine(BufferedReader reader) throws IOException {
         String s = reader.readLine();
@@ -76,22 +70,25 @@ public class SmapParser {
         return s;
     }
 
-    @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "To keep backward compatibility")
+    @SuppressFBWarnings(
+            value = "DM_DEFAULT_ENCODING",
+            justification = "To keep backward compatibility")
     public SmapParser(String smap) throws IOException {
-        //BufferedReader is use to support multiple types of line return
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(smap.getBytes())));
+        // BufferedReader is use to support multiple types of line return
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(new ByteArrayInputStream(smap.getBytes())));
 
-        String header = getLine(reader); //SMAP
-        javaFilename = getLine(reader); //*****.java
-        String jsp = getLine(reader); //JSP or alternative script
-        String stratum = getLine(reader); //*S JSP
-        String f = getLine(reader); //*F
+        String header = getLine(reader); // SMAP
+        javaFilename = getLine(reader); // *****.java
+        String jsp = getLine(reader); // JSP or alternative script
+        String stratum = getLine(reader); // *S JSP
+        String f = getLine(reader); // *F
 
         if (!header.equals("SMAP") || !stratum.startsWith("*S ") || !f.equals("*F")) {
             throw new IllegalArgumentException("Unexpected SMAP file format");
         }
 
-        //Parse the file info section (*F)
+        // Parse the file info section (*F)
         String line;
         while ((line = getLine(reader)) != null && !line.equals("*L")) {
             String path = null;
@@ -106,7 +103,7 @@ public class SmapParser {
             fileinfo.put(fileNum, new FileInfo(name, path == null ? name : path));
         }
 
-        //Parse the line number mapping section (*L)
+        // Parse the line number mapping section (*L)
         int lastLFI = 0;
         while ((line = getLine(reader)) != null && !line.equals("*E")) {
 
@@ -186,6 +183,5 @@ public class SmapParser {
             this.line = line;
             this.isPrimaryFile = isPrimaryFile;
         }
-
     }
 }

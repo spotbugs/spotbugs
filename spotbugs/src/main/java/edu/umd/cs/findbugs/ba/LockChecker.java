@@ -19,28 +19,23 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.BitSet;
-import java.util.HashMap;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import java.util.BitSet;
+import java.util.HashMap;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
 
 /**
- * Front-end for LockDataflow that can avoid doing unnecessary work (e.g.,
- * actually performing the lock dataflow) if the method analyzed does not
- * contain explicit monitorenter/monitorexit instructions.
+ * Front-end for LockDataflow that can avoid doing unnecessary work (e.g., actually performing the
+ * lock dataflow) if the method analyzed does not contain explicit monitorenter/monitorexit
+ * instructions.
  *
- * <p>
- * Note that because LockSets use value numbers, ValueNumberAnalysis must be
- * performed for all methods that are synchronized or contain explicit
- * monitorenter/monitorexit instructions.
- * </p>
+ * <p>Note that because LockSets use value numbers, ValueNumberAnalysis must be performed for all
+ * methods that are synchronized or contain explicit monitorenter/monitorexit instructions.
  *
  * @see LockSet
  * @see LockDataflow
@@ -58,9 +53,7 @@ public class LockChecker {
 
     private final HashMap<Location, LockSet> cache;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public LockChecker(MethodDescriptor methodDescriptor) {
         this.cache = new HashMap<>();
         this.methodDescriptor = methodDescriptor;
@@ -73,8 +66,9 @@ public class LockChecker {
      */
     public void execute() throws CheckedAnalysisException {
         method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
-        ClassContext classContext = Global.getAnalysisCache().getClassAnalysis(ClassContext.class,
-                methodDescriptor.getClassDescriptor());
+        ClassContext classContext =
+                Global.getAnalysisCache()
+                        .getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
 
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
         if (bytecodeSet == null) {
@@ -93,8 +87,7 @@ public class LockChecker {
     /**
      * Get LockSet at given Location.
      *
-     * @param location
-     *            the Location
+     * @param location the Location
      * @return the LockSet at that Location
      * @throws DataflowAnalysisException
      */

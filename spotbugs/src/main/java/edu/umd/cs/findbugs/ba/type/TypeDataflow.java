@@ -19,15 +19,13 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import java.util.Collection;
-
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
+import java.util.Collection;
+import javax.annotation.CheckForNull;
 
 public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
     public static class LocationAndFactPair {

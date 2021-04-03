@@ -20,8 +20,7 @@
 package edu.umd.cs.findbugs.plan;
 
 /**
- * An ordering constraint which must be taken into account when Detectors are
- * run.
+ * An ordering constraint which must be taken into account when Detectors are run.
  *
  * @see edu.umd.cs.findbugs.Plugin
  * @see edu.umd.cs.findbugs.plan.ExecutionPlan
@@ -34,29 +33,27 @@ public class DetectorOrderingConstraint {
 
     private boolean singleSource;
 
-    public DetectorOrderingConstraint(DetectorFactorySelector earlier, DetectorFactorySelector later) {
+    public DetectorOrderingConstraint(
+            DetectorFactorySelector earlier, DetectorFactorySelector later) {
         this.earlier = earlier;
         this.later = later;
     }
 
     /**
-     * Set whether or not this ordering constraint resulted from an ordering
-     * constraint having a single detector as its source (earlier detector). Such
-     * constraints automatically enable the source (earlier) detector if the
-     * target (later) detector is enabled.
+     * Set whether or not this ordering constraint resulted from an ordering constraint having a
+     * single detector as its source (earlier detector). Such constraints automatically enable the
+     * source (earlier) detector if the target (later) detector is enabled.
      */
     public void setSingleSource(boolean singleSource) {
         this.singleSource = singleSource;
     }
 
     /**
-     * Determine whether or not this ordering constraint resulted from an
-     * ordering constraint having a single detector as its source (earlier
-     * detector). Such constraints automatically enable the source (earlier)
-     * detector if the target (later) detector is enabled.
+     * Determine whether or not this ordering constraint resulted from an ordering constraint having a
+     * single detector as its source (earlier detector). Such constraints automatically enable the
+     * source (earlier) detector if the target (later) detector is enabled.
      *
-     * @return true if this edge has a single detector as its source (earlier
-     *         detector)
+     * @return true if this edge has a single detector as its source (earlier detector)
      */
     public boolean isSingleSource() {
         return singleSource;

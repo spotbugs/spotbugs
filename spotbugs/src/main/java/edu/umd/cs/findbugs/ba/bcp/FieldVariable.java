@@ -19,9 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import javax.annotation.Nullable;
-
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import javax.annotation.Nullable;
 
 public class FieldVariable implements Variable {
     private final ValueNumber ref;
@@ -35,12 +34,9 @@ public class FieldVariable implements Variable {
     /**
      * Constructor for static fields.
      *
-     * @param className
-     *            the class name
-     * @param fieldName
-     *            the field name
-     * @param fieldSig
-     *            the field signature
+     * @param className the class name
+     * @param fieldName the field name
+     * @param fieldSig the field signature
      */
     public FieldVariable(String className, String fieldName, String fieldSig) {
         this(null, className, fieldName, fieldSig);
@@ -49,46 +45,35 @@ public class FieldVariable implements Variable {
     /**
      * Constructor for instance fields.
      *
-     * @param ref
-     *            ValueNumber of the object reference
-     * @param className
-     *            the class name
-     * @param fieldName
-     *            the field name
-     * @param fieldSig
-     *            the field signature
+     * @param ref ValueNumber of the object reference
+     * @param className the class name
+     * @param fieldName the field name
+     * @param fieldSig the field signature
      */
-    public FieldVariable(@Nullable ValueNumber ref, String className, String fieldName, String fieldSig) {
+    public FieldVariable(
+            @Nullable ValueNumber ref, String className, String fieldName, String fieldSig) {
         this.ref = ref;
         this.className = className;
         this.fieldName = fieldName;
         this.fieldSig = fieldSig;
     }
 
-    /**
-     * Return whether or not this is a static field.
-     */
+    /** Return whether or not this is a static field. */
     public boolean isStatic() {
         return ref == null;
     }
 
-    /**
-     * Get the class name.
-     */
+    /** Get the class name. */
     public String getClassName() {
         return className;
     }
 
-    /**
-     * Get the field name.
-     */
+    /** Get the field name. */
     public String getFieldName() {
         return fieldName;
     }
 
-    /**
-     * Get the field signature.
-     */
+    /** Get the field signature. */
     public String getFieldSig() {
         return fieldSig;
     }
@@ -102,8 +87,10 @@ public class FieldVariable implements Variable {
         if (isStatic() != otherField.isStatic()) {
             return false;
         }
-        return (ref == null || ref.equals(otherField.ref)) && className.equals(otherField.className)
-                && fieldName.equals(otherField.fieldName) && fieldSig.equals(otherField.fieldSig);
+        return (ref == null || ref.equals(otherField.ref))
+                && className.equals(otherField.className)
+                && fieldName.equals(otherField.fieldName)
+                && fieldSig.equals(otherField.fieldSig);
     }
 
     @Override

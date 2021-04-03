@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.FindBugs;
@@ -28,6 +26,7 @@ import edu.umd.cs.findbugs.Obfuscate;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import java.io.IOException;
 
 public class ObfuscateBugs {
     BugCollection bugCollection;
@@ -72,14 +71,15 @@ public class ObfuscateBugs {
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
             throw new IllegalArgumentException("Unknown option : " + option);
         }
-
     }
 
     public static void main(String[] args) throws Exception {
         FindBugs.setNoAnalysis();
         CommandLine commandLine = new CommandLine();
 
-        int argCount = commandLine.parse(args, 0, 2, "Usage: " + ObfuscateBugs.class.getName() + " [options] [<xml results>] ");
+        int argCount =
+                commandLine.parse(
+                        args, 0, 2, "Usage: " + ObfuscateBugs.class.getName() + " [options] [<xml results>] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length) {
@@ -106,8 +106,6 @@ public class ObfuscateBugs {
             results.writeXML(System.out);
         } else {
             results.writeXML(args[argCount++]);
-
         }
-
     }
 }

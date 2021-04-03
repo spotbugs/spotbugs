@@ -19,18 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
@@ -39,6 +27,15 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.visitclass.Util;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import javax.annotation.Nonnull;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class InfiniteLoop extends OpcodeStackDetector {
 
@@ -131,7 +128,8 @@ public class InfiniteLoop extends OpcodeStackDetector {
                 return false;
             }
             BackwardsBranch that = (BackwardsBranch) o;
-            return this.invariantRegisters.equals(that.invariantRegisters) && this.numLastUpdates == that.numLastUpdates;
+            return this.invariantRegisters.equals(that.invariantRegisters)
+                    && this.numLastUpdates == that.numLastUpdates;
         }
     }
 
@@ -157,7 +155,6 @@ public class InfiniteLoop extends OpcodeStackDetector {
             ForwardConditionalBranch that = (ForwardConditionalBranch) o;
             return this.item0.sameValue(that.item0) && this.item1.sameValue(that.item1);
         }
-
     }
 
     BugReporter bugReporter;
@@ -220,44 +217,66 @@ public class InfiniteLoop extends OpcodeStackDetector {
             }
             ForwardConditionalBranch fcb = myForwardBranches.get(0);
             for (Jump fj : forwardJumps) {
-                if (fcb.from != fj.from && myBackwardsReach < fj.from && fj.from < bb.from && bb.from < fj.to) {
+                if (fcb.from != fj.from
+                        && myBackwardsReach < fj.from
+                        && fj.from < bb.from
+                        && bb.from < fj.to) {
                     continue backwardBranchLoop;
                 }
             }
 
             if (isConstant(fcb.item0, bb) && isConstant(fcb.item1, bb)) {
-                SourceLineAnnotation loopBottom = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.from);
+                SourceLineAnnotation loopBottom =
+                        SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.from);
                 int loopBottomLine = loopBottom.getStartLine();
-                SourceLineAnnotation loopTop = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.to);
+                SourceLineAnnotation loopTop =
+                        SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.to);
                 int loopTopLine = loopTop.getStartLine();
-                BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP", HIGH_PRIORITY).addClassAndMethod(this)
-                        .addSourceLine(this, fcb.from).addSourceLine(loopBottom)
-                        .describe(SourceLineAnnotation.DESCRIPTION_LOOP_BOTTOM);
+                BugInstance bug =
+                        new BugInstance(this, "IL_INFINITE_LOOP", HIGH_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this, fcb.from)
+                                .addSourceLine(loopBottom)
+                                .describe(SourceLineAnnotation.DESCRIPTION_LOOP_BOTTOM);
                 int reg0 = fcb.item0.getRegisterNumber();
                 boolean reg0Invariant = true;
                 if (reg0 >= 0 && fcb.item0.getConstant() == null) {
                     reg0Invariant = !isRegModified(reg0, myBackwardsReach, bb.from);
-                    SourceLineAnnotation lastChange = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this,
-                            constantSince(fcb.item0));
+                    SourceLineAnnotation lastChange =
+                            SourceLineAnnotation.fromVisitedInstruction(
+                                    getClassContext(), this, constantSince(fcb.item0));
                     int lastChangeLine = lastChange.getEndLine();
-                    if (loopBottomLine != -1 && lastChangeLine != -1 && loopTopLine != -1 && loopTopLine <= lastChangeLine
+                    if (loopBottomLine != -1
+                            && lastChangeLine != -1
+                            && loopTopLine != -1
+                            && loopTopLine <= lastChangeLine
                             && lastChangeLine < loopBottomLine) {
                         continue backwardBranchLoop;
                     }
-                    bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from))
-                            .addSourceLine(lastChange).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
+                    bug.add(
+                            LocalVariableAnnotation.getLocalVariableAnnotation(
+                                    getMethod(), reg0, fcb.from, bb.from))
+                            .addSourceLine(lastChange)
+                            .describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
                 }
                 int reg1 = fcb.item1.getRegisterNumber();
                 if (reg1 >= 0 && reg1 != reg0 && fcb.item1.getConstant() == null) {
-                    SourceLineAnnotation lastChange = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this,
-                            constantSince(fcb.item1));
+                    SourceLineAnnotation lastChange =
+                            SourceLineAnnotation.fromVisitedInstruction(
+                                    getClassContext(), this, constantSince(fcb.item1));
                     int lastChangeLine = lastChange.getEndLine();
-                    if (loopBottomLine != -1 && lastChangeLine != -1 && loopTopLine != -1 && loopTopLine <= lastChangeLine
+                    if (loopBottomLine != -1
+                            && lastChangeLine != -1
+                            && loopTopLine != -1
+                            && loopTopLine <= lastChangeLine
                             && lastChangeLine < loopBottomLine) {
                         continue backwardBranchLoop;
                     }
-                    bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from))
-                            .addSourceLine(lastChange).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
+                    bug.add(
+                            LocalVariableAnnotation.getLocalVariableAnnotation(
+                                    getMethod(), reg1, fcb.from, bb.from))
+                            .addSourceLine(lastChange)
+                            .describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
                 }
                 boolean reg1Invariant = true;
                 if (reg1 >= 0) {
@@ -267,12 +286,10 @@ public class InfiniteLoop extends OpcodeStackDetector {
                     bugReporter.reportBug(bug);
                 }
             }
-
         }
         if (DEBUG) {
             System.out.println();
         }
-
     }
 
     private boolean isConstant(Item item0, BackwardsBranch bb) {
@@ -311,11 +328,11 @@ public class InfiniteLoop extends OpcodeStackDetector {
                 if (false) {
                     int target = getBranchTarget();
                     if (getFurthestJump(target) > getPC())
-                        break;
+                  break;
                     if (getMethodName().equals("run") || getMethodName().equals("main"))
-                        break;
+                  break;
                     BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP", LOW_PRIORITY).addClassAndMethod(this)
-                            .addSourceLine(this, getPC());
+                .addSourceLine(this, getPC());
                     reportPossibleBug(bug);
                 }
                  */
@@ -336,12 +353,14 @@ public class InfiniteLoop extends OpcodeStackDetector {
         case Const.TABLESWITCH: {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             if (getDefaultSwitchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC()
-                        + getDefaultSwitchOffset()));
+                forwardConditionalBranches.add(
+                        new ForwardConditionalBranch(
+                                item0, item0, getPC(), getPC() + getDefaultSwitchOffset()));
             }
             for (int offset : getSwitchOffsets()) {
                 if (offset > 0) {
-                    forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC() + offset));
+                    forwardConditionalBranches.add(
+                            new ForwardConditionalBranch(item0, item0, getPC(), getPC() + offset));
                 }
             }
             break;
@@ -358,7 +377,8 @@ public class InfiniteLoop extends OpcodeStackDetector {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), target));
+                forwardConditionalBranches.add(
+                        new ForwardConditionalBranch(item0, item0, getPC(), target));
                 break;
             }
             if (getFurthestJump(target) > getPC()) {
@@ -367,17 +387,20 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
             if (constantSince(item0, target)) {
                 int since0 = constantSince(item0);
-                BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP", HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
-                        this, getPC());
+                BugInstance bug =
+                        new BugInstance(this, "IL_INFINITE_LOOP", HIGH_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this, getPC());
                 int reg0 = item0.getRegisterNumber();
                 if (reg0 >= 0) {
-                    bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target))
+                    bug.add(
+                            LocalVariableAnnotation.getLocalVariableAnnotation(
+                                    getMethod(), reg0, getPC(), target))
                             .addSourceLine(this, since0);
                 }
                 if (reg0 < 0 || !isRegModified(reg0, target, getPC())) {
                     reportPossibleBug(bug);
                 }
-
             }
         }
             break;
@@ -394,7 +417,8 @@ public class InfiniteLoop extends OpcodeStackDetector {
             OpcodeStack.Item item1 = stack.getStackItem(1);
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target));
+                forwardConditionalBranches.add(
+                        new ForwardConditionalBranch(item0, item1, getPC(), target));
                 break;
             }
             if (getFurthestJump(target) > getPC()) {
@@ -404,31 +428,33 @@ public class InfiniteLoop extends OpcodeStackDetector {
             if (constantSince(item0, target) && constantSince(item1, target)) {
                 // int since0 = constantSince(item0);
                 // int since1 = constantSince(item1);
-                BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP", HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
-                        this, getPC());
+                BugInstance bug =
+                        new BugInstance(this, "IL_INFINITE_LOOP", HIGH_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this, getPC());
                 int reg0 = item0.getRegisterNumber();
                 if (reg0 >= 0) {
-                    bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target));
+                    bug.add(
+                            LocalVariableAnnotation.getLocalVariableAnnotation(
+                                    getMethod(), reg0, getPC(), target));
                 }
                 int reg1 = item1.getRegisterNumber();
                 if (reg1 >= 0) {
-                    bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, getPC(), target));
+                    bug.add(
+                            LocalVariableAnnotation.getLocalVariableAnnotation(
+                                    getMethod(), reg1, getPC(), target));
                 }
 
                 reportPossibleBug(bug);
             }
-
         }
             break;
         default:
             break;
         }
-
     }
 
-    /**
-     *
-     */
+    /** */
     private void addBackwardsReach() {
         if (getBranchOffset() >= 0) {
             return;
@@ -475,16 +501,18 @@ public class InfiniteLoop extends OpcodeStackDetector {
             return stack.getLastUpdate(reg);
         }
         return Integer.MAX_VALUE;
-
     }
 
     void reportPossibleBug(BugInstance bug) {
-        int catchSize = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getCode(), "java/io/EOFException", getPC());
+        int catchSize =
+                Util.getSizeOfSurroundingTryBlock(
+                        getConstantPool(), getCode(), "java/io/EOFException", getPC());
         if (catchSize < Integer.MAX_VALUE) {
             bug.lowerPriorityALot();
         } else {
-            catchSize = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getCode(), "java/lang/NoSuchElementException",
-                    getPC());
+            catchSize =
+                    Util.getSizeOfSurroundingTryBlock(
+                            getConstantPool(), getCode(), "java/lang/NoSuchElementException", getPC());
             if (catchSize < Integer.MAX_VALUE) {
                 bug.lowerPriorityALot();
             } else {

@@ -21,26 +21,23 @@ package edu.umd.cs.findbugs.ba.jsr305;
 
 import java.lang.annotation.Annotation;
 import java.security.Permission;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
 
 final class ValidationSecurityManager extends SecurityManager {
 
-
     static final ValidationSecurityManager INSTANCE = new ValidationSecurityManager();
-    final static ValidatorClassLoader VALIDATOR_LOADER = ValidatorClassLoader.INSTANCE;
-
+    static final ValidatorClassLoader VALIDATOR_LOADER = ValidatorClassLoader.INSTANCE;
 
     static {
         if (TypeQualifierValue.DEBUG_CLASSLOADING) {
             new RuntimeException("Creating ValidationSecurityManager #").printStackTrace();
         }
-
     }
 
-    public static <A extends Annotation> When sandboxedValidation(A proxy, TypeQualifierValidator<A> v, @CheckForNull Object constantValue) {
+    public static <A extends Annotation> When sandboxedValidation(
+            A proxy, TypeQualifierValidator<A> v, @CheckForNull Object constantValue) {
         if (performingValidation.get()) {
             throw new IllegalStateException("recursive validation");
         }
@@ -70,34 +67,38 @@ final class ValidationSecurityManager extends SecurityManager {
             if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 System.out.println("Validation finished in thread " + Thread.currentThread().getName());
             }
-
         }
     }
-
 
     @Override
     public void checkPermission(Permission perm) {
         if (TypeQualifierValue.DEBUG_CLASSLOADING) {
-            System.out.println("Checking for " + perm + " permission in thread " + Thread.currentThread().getName());
+            System.out.println(
+                    "Checking for " + perm + " permission in thread " + Thread.currentThread().getName());
         }
         if (performingValidation.get() && inValidation()) {
-            SecurityException e = new SecurityException("No permissions granted while performing JSR-305 validation");
+            SecurityException e =
+                    new SecurityException("No permissions granted while performing JSR-305 validation");
             if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 e.printStackTrace(System.out);
             }
             throw e;
         }
-
     }
 
     @Override
     public void checkPermission(Permission perm, Object context) {
         if (TypeQualifierValue.DEBUG_CLASSLOADING) {
-            System.out.println("Checking for " + perm + " permission with content in thread " + Thread.currentThread().getName());
+            System.out.println(
+                    "Checking for "
+                            + perm
+                            + " permission with content in thread "
+                            + Thread.currentThread().getName());
         }
 
         if (performingValidation.get() && inValidation()) {
-            SecurityException e = new SecurityException("No permissions granted while performing JSR-305 validation");
+            SecurityException e =
+                    new SecurityException("No permissions granted while performing JSR-305 validation");
             if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 e.printStackTrace(System.out);
             }
@@ -118,13 +119,11 @@ final class ValidationSecurityManager extends SecurityManager {
         return false;
     }
 
-    private static final ThreadLocal<Boolean> performingValidation = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return Boolean.FALSE;
-        }
-
-    };
-
-
+    private static final ThreadLocal<Boolean> performingValidation =
+            new ThreadLocal<Boolean>() {
+                @Override
+                protected Boolean initialValue() {
+                    return Boolean.FALSE;
+                }
+            };
 }

@@ -14,9 +14,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class DominatorsAnalysisFactory extends AnalysisFactory<DominatorsAnalysis> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public DominatorsAnalysisFactory() {
         super("non-exception dominators analysis", DominatorsAnalysis.class);
     }
@@ -29,12 +27,12 @@ public class DominatorsAnalysisFactory extends AnalysisFactory<DominatorsAnalysi
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public DominatorsAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public DominatorsAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
         DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
         DominatorsAnalysis analysis = new DominatorsAnalysis(cfg, dfs, true);
-        Dataflow<java.util.BitSet, DominatorsAnalysis> dataflow = new Dataflow<>(cfg,
-                analysis);
+        Dataflow<java.util.BitSet, DominatorsAnalysis> dataflow = new Dataflow<>(cfg, analysis);
         dataflow.execute();
         return analysis;
     }

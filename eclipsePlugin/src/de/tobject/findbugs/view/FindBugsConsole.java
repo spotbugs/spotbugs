@@ -18,6 +18,7 @@
  */
 package de.tobject.findbugs.view;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -37,11 +38,7 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.part.IPageBookViewPage;
 import org.eclipse.ui.themes.ITheme;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
-/**
- * @author Andrei
- */
+/** @author Andrei */
 public class FindBugsConsole extends MessageConsole implements IPropertyChangeListener {
     private static final String CONSOLE_FONT = "findBugsEclipsePlugin.consoleFont";
     static FindBugsConsole console;
@@ -50,8 +47,11 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
 
     private static class RemoveAction extends Action {
         public RemoveAction() {
-            super("Close SpotBugs console", PlatformUI.getWorkbench().getSharedImages()
-                    .getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+            super(
+                    "Close SpotBugs console",
+                    PlatformUI.getWorkbench()
+                            .getSharedImages()
+                            .getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
         }
 
         @Override
@@ -66,7 +66,6 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
 
     private FindBugsConsole(String name, ImageDescriptor imageDescriptor, boolean autoLifecycle) {
         super(name, imageDescriptor, autoLifecycle);
-
     }
 
     @Override
@@ -88,12 +87,15 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
 
     private void setConsoleFont() {
         if (Display.getCurrent() == null) {
-            PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    setConsoleFont();
-                }
-            });
+            PlatformUI.getWorkbench()
+                    .getDisplay()
+                    .asyncExec(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    setConsoleFont();
+                                }
+                            });
         } else {
             ITheme theme = PlatformUI.getWorkbench().getThemeManager().getCurrentTheme();
             Font font = theme.getFontRegistry().get(CONSOLE_FONT);
@@ -107,7 +109,6 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
         public void openConsole() {
             showConsole();
         }
-
     }
 
     public static FindBugsConsole showConsole() {
@@ -121,8 +122,11 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
                 }
             }
         } else {
-            console = new FindBugsConsole("SpotBugs",
-                    FindbugsPlugin.getDefault().getImageDescriptor(AbstractFindbugsView.PERSPECTIVE_IMG), true);
+            console =
+                    new FindBugsConsole(
+                            "SpotBugs",
+                            FindbugsPlugin.getDefault().getImageDescriptor(AbstractFindbugsView.PERSPECTIVE_IMG),
+                            true);
         }
         if (!exists) {
             manager.addConsoles(new IConsole[] { console });

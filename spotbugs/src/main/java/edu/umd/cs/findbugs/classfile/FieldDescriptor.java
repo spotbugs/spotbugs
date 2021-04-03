@@ -32,22 +32,27 @@ public class FieldDescriptor extends FieldOrMethodDescriptor implements Comparab
     /**
      * Constructor.
      *
-     * @param className
-     *            the name of the class the field belongs to
-     * @param fieldName
-     *            the name of the field
-     * @param fieldSignature
-     *            the field signature (type)
-     * @param isStatic
-     *            true if field is static, false if not
+     * @param className the name of the class the field belongs to
+     * @param fieldName the name of the field
+     * @param fieldSignature the field signature (type)
+     * @param isStatic true if field is static, false if not
      */
-    public FieldDescriptor(@SlashedClassName String className, String fieldName, String fieldSignature, boolean isStatic) {
+    public FieldDescriptor(
+            @SlashedClassName String className,
+            String fieldName,
+            String fieldSignature,
+            boolean isStatic) {
         super(className, fieldName, fieldSignature, isStatic);
     }
 
     @Override
     public String toString() {
-        return (isStatic() ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + getName() + " " + getSignature();
+        return (isStatic() ? "static " : "")
+                + getClassDescriptor().getDottedClassName()
+                + "."
+                + getName()
+                + " "
+                + getSignature();
     }
 
     @Override
@@ -62,5 +67,4 @@ public class FieldDescriptor extends FieldOrMethodDescriptor implements Comparab
         }
         return false;
     }
-
 }

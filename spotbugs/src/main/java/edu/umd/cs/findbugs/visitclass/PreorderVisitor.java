@@ -19,12 +19,30 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
+import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationDefault;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -62,36 +80,15 @@ import org.apache.bcel.classfile.ParameterAnnotations;
 import org.apache.bcel.classfile.StackMap;
 import org.apache.bcel.classfile.StackMapEntry;
 
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.FieldDescriptor;
-import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
-import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
-import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-
 /**
- * <p>Interface to make the use of a visitor pattern programming style possible.
- * I.e. a class that implements this interface can traverse the contents of a
- * Java class just by calling the `accept' method which all classes have.
- * </p>
- * <p>Implemented by wish of <A HREF="http://www.inf.fu-berlin.de/~bokowski">Boris
- * Bokowski</A>.</p>
- * <p>
- * If don't like it, blame him. If you do like it thank me 8-)
- * </p>
+ * Interface to make the use of a visitor pattern programming style possible. I.e. a class that
+ * implements this interface can traverse the contents of a Java class just by calling the `accept'
+ * method which all classes have.
+ *
+ * <p>Implemented by wish of <A HREF="http://www.inf.fu-berlin.de/~bokowski">Boris Bokowski</A>.
+ *
+ * <p>If don't like it, blame him. If you do like it thank me 8-)
+ *
  * @author <A HREF="http://www.inf.fu-berlin.de/~dahm">M. Dahm</A>
  * @version 970819
  */
@@ -256,8 +253,7 @@ public class PreorderVisitor extends BetterVisitor {
     /**
      * Called after visiting a code attribute
      *
-     * @param obj
-     *            Code that was just visited
+     * @param obj Code that was just visited
      */
     public void visitAfter(Code obj) {
     }
@@ -284,7 +280,8 @@ public class PreorderVisitor extends BetterVisitor {
         this.field = field;
         try {
             fieldName = fieldSig = dottedFieldSig = fullyQualifiedFieldName = null;
-            thisFieldInfo = (FieldInfo) thisClassInfo.findField(getFieldName(), getFieldSig(), field.isStatic());
+            thisFieldInfo =
+                    (FieldInfo) thisClassInfo.findField(getFieldName(), getFieldSig(), field.isStatic());
             assert thisFieldInfo != null : "Can't get field info for " + getFullyQualifiedFieldName();
             fieldIsStatic = field.isStatic();
             field.accept(this);
@@ -307,7 +304,8 @@ public class PreorderVisitor extends BetterVisitor {
         try {
             this.method = method;
             methodName = methodSig = dottedMethodSig = fullyQualifiedMethodName = null;
-            thisMethodInfo = (MethodInfo) thisClassInfo.findMethod(getMethodName(), getMethodSig(), method.isStatic());
+            thisMethodInfo =
+                    (MethodInfo) thisClassInfo.findMethod(getMethodName(), getMethodSig(), method.isStatic());
             assert thisMethodInfo != null : "Can't get method info for " + getFullyQualifiedMethodName();
             this.method.accept(this);
             Attribute[] attributes = method.getAttributes();
@@ -328,7 +326,6 @@ public class PreorderVisitor extends BetterVisitor {
         return method.isStatic()
                 && "main".equals(getMethodName())
                 && "([Ljava/lang/String;)V".equals(getMethodSig());
-
     }
 
     // Extra classes (i.e. leaves in this context)
@@ -349,7 +346,6 @@ public class PreorderVisitor extends BetterVisitor {
     }
 
     boolean visitMethodsInCallOrder;
-
 
     protected boolean isVisitMethodsInCallOrder() {
         return visitMethodsInCallOrder;
@@ -479,10 +475,7 @@ public class PreorderVisitor extends BetterVisitor {
         return constantPool;
     }
 
-    /**
-     * Get the slash-formatted class name for the current or most recently
-     * visited class
-     */
+    /** Get the slash-formatted class name for the current or most recently visited class */
     public @SlashedClassName String getClassName() {
         return className;
     }
@@ -492,10 +485,7 @@ public class PreorderVisitor extends BetterVisitor {
         return dottedClassName;
     }
 
-    /**
-     * Get the (slash-formatted?) package name for the current or most recently
-     * visited class
-     */
+    /** Get the (slash-formatted?) package name for the current or most recently visited class */
     public String getPackageName() {
         return packageName;
     }
@@ -505,18 +495,12 @@ public class PreorderVisitor extends BetterVisitor {
         return sourceFile;
     }
 
-    /**
-     * Get the slash-formatted superclass name for the current or most recently
-     * visited class
-     */
+    /** Get the slash-formatted superclass name for the current or most recently visited class */
     public @SlashedClassName String getSuperclassName() {
         return superclassName;
     }
 
-    /**
-     * Get the dotted superclass name for the current or most recently visited
-     * class
-     */
+    /** Get the dotted superclass name for the current or most recently visited class */
     public @DottedClassName String getDottedSuperclassName() {
         return dottedSuperclassName;
     }
@@ -529,29 +513,32 @@ public class PreorderVisitor extends BetterVisitor {
     /** If currently visiting a method, get the method's fully qualified name */
     public String getFullyQualifiedMethodName() {
         if (!visitingMethod) {
-            throw new IllegalStateException("getFullyQualifiedMethodName called while not visiting method");
+            throw new IllegalStateException(
+                    "getFullyQualifiedMethodName called while not visiting method");
         }
         if (fullyQualifiedMethodName == null) {
             getMethodName();
             getDottedMethodSig();
-            StringBuilder ref = new StringBuilder(5 + dottedClassName.length() + methodName.length() + dottedMethodSig.length());
+            StringBuilder ref =
+                    new StringBuilder(
+                            5 + dottedClassName.length() + methodName.length() + dottedMethodSig.length());
 
-            ref.append(dottedClassName).append(".").append(methodName).append(" : ").append(dottedMethodSig);
+            ref.append(dottedClassName)
+                    .append(".")
+                    .append(methodName)
+                    .append(" : ")
+                    .append(dottedMethodSig);
             fullyQualifiedMethodName = ref.toString();
         }
         return fullyQualifiedMethodName;
     }
 
-    /**
-     * is the visitor currently visiting a method?
-     */
+    /** is the visitor currently visiting a method? */
     public boolean visitingMethod() {
         return visitingMethod;
     }
 
-    /**
-     * is the visitor currently visiting a field?
-     */
+    /** is the visitor currently visiting a field? */
     public boolean visitingField() {
         return visitingField;
     }
@@ -619,30 +606,35 @@ public class PreorderVisitor extends BetterVisitor {
                 break;
             }
         }
-
     }
 
     /**
-     * Returns true if given constant pool probably has a reference to any of supplied methods
-     * Useful to exclude from analysis uninteresting classes
+     * Returns true if given constant pool probably has a reference to any of supplied methods Useful
+     * to exclude from analysis uninteresting classes
+     *
      * @param cp constant pool
      * @param methods methods collection
      * @return true if method is found
      */
-    public static boolean hasInterestingMethod(ConstantPool cp, Collection<MethodDescriptor> methods) {
+    public static boolean hasInterestingMethod(
+            ConstantPool cp, Collection<MethodDescriptor> methods) {
         for (Constant c : cp.getConstantPool()) {
             if (c instanceof ConstantMethodref || c instanceof ConstantInterfaceMethodref) {
                 ConstantCP desc = (ConstantCP) c;
-                ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
+                ConstantNameAndType nameAndType =
+                        (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
                 String className = cp.getConstantString(desc.getClassIndex(), Const.CONSTANT_Class);
                 String name = ((ConstantUtf8) cp.getConstant(nameAndType.getNameIndex())).getBytes();
-                String signature = ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                String signature =
+                        ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
                 // We don't know whether method is static thus cannot use equals
                 int hash = FieldOrMethodDescriptor.getNameSigHashCode(name, signature);
                 for (MethodDescriptor method : methods) {
                     if (method.getNameSigHashCode() == hash
-                            && (method.getSlashedClassName().isEmpty() || method.getSlashedClassName().equals(className))
-                            && method.getName().equals(name) && method.getSignature().equals(signature)) {
+                            && (method.getSlashedClassName().isEmpty()
+                                    || method.getSlashedClassName().equals(className))
+                            && method.getName().equals(name)
+                            && method.getSignature().equals(signature)) {
                         return true;
                     }
                 }
@@ -654,7 +646,8 @@ public class PreorderVisitor extends BetterVisitor {
     public static boolean hasInterestingClass(ConstantPool cp, Collection<String> classes) {
         for (Constant c : cp.getConstantPool()) {
             if (c instanceof ConstantClass) {
-                String className = ((ConstantUtf8) cp.getConstant(((ConstantClass) c).getNameIndex())).getBytes();
+                String className =
+                        ((ConstantUtf8) cp.getConstant(((ConstantClass) c).getNameIndex())).getBytes();
                 if (classes.contains(className)) {
                     return true;
                 }
@@ -667,10 +660,7 @@ public class PreorderVisitor extends BetterVisitor {
         return getNumberArguments(getMethodSig());
     }
 
-    /**
-     * If currently visiting a method, get the method's slash-formatted
-     * signature
-     */
+    /** If currently visiting a method, get the method's slash-formatted signature */
     public String getMethodSig() {
         if (!visitingMethod) {
             throw new IllegalStateException("getMethodSig called while not visiting method");
@@ -749,9 +739,18 @@ public class PreorderVisitor extends BetterVisitor {
     @Override
     public String toString() {
         if (visitingMethod) {
-            return this.getClass().getSimpleName() + " analyzing " + getClassName() + "." + getMethodName() + getMethodSig();
+            return this.getClass().getSimpleName()
+                    + " analyzing "
+                    + getClassName()
+                    + "."
+                    + getMethodName()
+                    + getMethodSig();
         } else if (visitingField) {
-            return this.getClass().getSimpleName() + " analyzing " + getClassName() + "." + getFieldName();
+            return this.getClass().getSimpleName()
+                    + " analyzing "
+                    + getClassName()
+                    + "."
+                    + getFieldName();
         }
         return this.getClass().getSimpleName() + " analyzing " + getClassName();
     }

@@ -21,13 +21,11 @@ package edu.umd.cs.findbugs.util;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.apache.bcel.classfile.JavaClass;
 
 /**
- * Provide a HashMap that can only grow to a specified maximum capacity, with
- * entries discarded using a LRU policy to keep the size of the HashMap within
- * that bound.
+ * Provide a HashMap that can only grow to a specified maximum capacity, with entries discarded
+ * using a LRU policy to keep the size of the HashMap within that bound.
  *
  * @author pugh
  */
@@ -39,13 +37,11 @@ public class MapCache<K, V> extends LinkedHashMap<K, V> {
     /**
      * Create a new MapCache
      *
-     * @param maxCapacity
-     *            - maximum number of entries in the map
+     * @param maxCapacity - maximum number of entries in the map
      */
     public MapCache(int maxCapacity) {
         super(4 * maxCapacity / 3 + 5, 0.75f, true);
         this.maxCapacity = maxCapacity;
-
     }
 
     @Override
@@ -56,5 +52,4 @@ public class MapCache<K, V> extends LinkedHashMap<K, V> {
         }
         return result;
     }
-
 }

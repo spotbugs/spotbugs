@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,11 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public class FractionalMultiset<K> {
     final Map<K, Double> map;
 
@@ -75,7 +72,6 @@ public class FractionalMultiset<K> {
             } else {
                 e.setValue(e.getValue() / count);
             }
-
         }
     }
 
@@ -88,8 +84,10 @@ public class FractionalMultiset<K> {
         TreeSet<Map.Entry<K, Double>> result = new TreeSet<>(new DecreasingOrderEntryComparator<K>());
         result.addAll(map.entrySet());
         if (result.size() != map.size()) {
-            throw new IllegalStateException("Map " + map.getClass().getSimpleName()
-                    + " reuses Map.Entry objects; entrySet can't be passed to addAll");
+            throw new IllegalStateException(
+                    "Map "
+                            + map.getClass().getSimpleName()
+                            + " reuses Map.Entry objects; entrySet can't be passed to addAll");
         }
         return result;
     }
@@ -99,12 +97,13 @@ public class FractionalMultiset<K> {
         TreeSet<Map.Entry<K, Double>> result = new TreeSet<>(new DecreasingOrderEntryComparator<K>());
         result.addAll(map.entrySet());
         if (result.size() != map.size()) {
-            throw new IllegalStateException("Map " + map.getClass().getSimpleName()
-                    + " reuses Map.Entry objects; entrySet can't be passed to addAll");
+            throw new IllegalStateException(
+                    "Map "
+                            + map.getClass().getSimpleName()
+                            + " reuses Map.Entry objects; entrySet can't be passed to addAll");
         }
         return result;
     }
-
 
     private static <E> int compareValues(Entry<E, Double> o1, Entry<E, Double> o2) {
         double c1 = o1.getValue();
@@ -118,18 +117,19 @@ public class FractionalMultiset<K> {
         return System.identityHashCode(o1.getKey()) - System.identityHashCode(o2.getKey());
     }
 
-    static class DecreasingOrderEntryComparator<E> implements Comparator<Map.Entry<E, Double>>, Serializable {
+    static class DecreasingOrderEntryComparator<E>
+            implements Comparator<Map.Entry<E, Double>>, Serializable {
         @Override
         public int compare(Entry<E, Double> o1, Entry<E, Double> o2) {
             return compareValues(o1, o2);
         }
     }
 
-    static class IncreasingOrderEntryComparator<E> implements Comparator<Map.Entry<E, Double>>, Serializable {
+    static class IncreasingOrderEntryComparator<E>
+            implements Comparator<Map.Entry<E, Double>>, Serializable {
         @Override
         public int compare(Entry<E, Double> o1, Entry<E, Double> o2) {
             return -compareValues(o1, o2);
         }
     }
-
 }

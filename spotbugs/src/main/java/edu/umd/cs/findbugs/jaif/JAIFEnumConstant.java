@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.jaif;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class JAIFEnumConstant {
     private final String name;
 
@@ -29,9 +27,7 @@ public class JAIFEnumConstant {
         this.name = name;
     }
 
-    /**
-     * @return Returns the name.
-     */
+    /** @return Returns the name. */
     public String getName() {
         return name;
     }

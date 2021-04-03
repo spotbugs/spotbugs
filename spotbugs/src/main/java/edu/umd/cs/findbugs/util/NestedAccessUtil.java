@@ -18,12 +18,11 @@
  */
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.ConstantPool;
@@ -31,26 +30,26 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.NestHost;
 import org.apache.bcel.classfile.NestMembers;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-
 /**
  * Provides checks to support JEP 181, improved nested member access.
  *
- * <p>
- * In short, JEP 181 defines "nest mates", "nest host" and "nest members" attributes in compiled files. Access rules are
- * relaxed to allow private member access between nest mates. This removes the need for the compiler to generate
- * synthetic accessors. Extra attributes are added to the separate .class files to let the compiler know which classes
- * are nested in which class.
- * </p>
+ * <p>In short, JEP 181 defines "nest mates", "nest host" and "nest members" attributes in compiled
+ * files. Access rules are relaxed to allow private member access between nest mates. This removes
+ * the need for the compiler to generate synthetic accessors. Extra attributes are added to the
+ * separate .class files to let the compiler know which classes are nested in which class.
  * <b>Summary</b> of terminology for JEP 181 and the added attributes:
+ *
  * <ol>
- * <li>The "nest host" is the top level class that contains nested classes, i.e. the class that corresponds to the
- * source file</li>
- * <li>The "nest members" are the nested classes in the nest host.</li>
- * <li>The "nest" consists of the nest host and the nest members.</li>
- * <li>A "nest mate" is a class within the nest, "nest mates" can access each others private members.</li>
- * <li>The nest host class has an attribute {@code NestMembers} which lists the qualified names of nested classes.</li>
- * <li>A nested class has an attribute {@code NestHost} which lists the qualified name of the nest host.</li>
+ *   <li>The "nest host" is the top level class that contains nested classes, i.e. the class that
+ *       corresponds to the source file
+ *   <li>The "nest members" are the nested classes in the nest host.
+ *   <li>The "nest" consists of the nest host and the nest members.
+ *   <li>A "nest mate" is a class within the nest, "nest mates" can access each others private
+ *       members.
+ *   <li>The nest host class has an attribute {@code NestMembers} which lists the qualified names of
+ *       nested classes.
+ *   <li>A nested class has an attribute {@code NestHost} which lists the qualified name of the nest
+ *       host.
  * </ol>
  *
  * @see "https://openjdk.java.net/jeps/181"
@@ -62,9 +61,9 @@ public class NestedAccessUtil {
     /**
      * Checks if the specified class is a nested class or defines nested classes.
      *
-     * @param javaClass
-     *            The class for which to check.
-     * @return {@code true} if the specified class is a nested class or defines nested class, {@code false} otherwise.
+     * @param javaClass The class for which to check.
+     * @return {@code true} if the specified class is a nested class or defines nested class, {@code
+     *     false} otherwise.
      */
     public static boolean hasNest(JavaClass javaClass) {
         if (supportsNestedAccess(javaClass)) {
@@ -83,10 +82,8 @@ public class NestedAccessUtil {
     /**
      * Checks whether the specified class supports nested access as per JEP 181.
      *
-     * @param javaClass
-     *            The class for which to check.
+     * @param javaClass The class for which to check.
      * @return {@code true} if the specified class supports nested access as per JEP 181.
-     *
      * @see NestedAccessUtil
      */
     public static boolean supportsNestedAccess(JavaClass javaClass) {
@@ -96,22 +93,19 @@ public class NestedAccessUtil {
     /**
      * Retrieves the qualified class names of all nest mates of the specified class.
      *
-     * @param javaClass
-     *            The class for which qualified class names of nest mates are retrieved.
-     * @param analysisContext
-     *            The analysis context, used to look-up a nest host class if required.
-     * @return The qualified class name of all nest mates. If the specified class is not a nested class or does not have
-     *         nested classes, an empty list is returned.
-     * @throws ClassNotFoundException
-     *             If a nest host class was looked-up but could not be found.
-     *
+     * @param javaClass The class for which qualified class names of nest mates are retrieved.
+     * @param analysisContext The analysis context, used to look-up a nest host class if required.
+     * @return The qualified class name of all nest mates. If the specified class is not a nested
+     *     class or does not have nested classes, an empty list is returned.
+     * @throws ClassNotFoundException If a nest host class was looked-up but could not be found.
      * @see NestedAccessUtil
      */
-    public static List<String> getNestMateClassNames(JavaClass javaClass, AnalysisContext analysisContext)
-            throws ClassNotFoundException {
+    public static List<String> getNestMateClassNames(
+            JavaClass javaClass, AnalysisContext analysisContext) throws ClassNotFoundException {
         List<String> nestMateClassNames = new ArrayList<>();
 
-        // check if the specified class is a nest member, if so retrieve all nest members from the nest host
+        // check if the specified class is a nest member, if so retrieve all nest members from the nest
+        // host
         String nestHostClassName = getHostClassName(javaClass);
         if (nestHostClassName != null) {
             JavaClass nestedHostClass = analysisContext.lookupClass(nestHostClassName);
@@ -121,7 +115,8 @@ public class NestedAccessUtil {
                 nestMateClassNames.add(nestHostClassName);
             }
         } else {
-            // check if the specified class is a nest host, if so retrieve the nest members from the specified class.
+            // check if the specified class is a nest host, if so retrieve the nest members from the
+            // specified class.
             String[] nestMemberClassNames = getNestMemberClassNames(javaClass);
             if (nestMemberClassNames != null) {
                 nestMateClassNames.addAll(Arrays.asList(nestMemberClassNames));
@@ -173,7 +168,8 @@ public class NestedAccessUtil {
                 NestHost nestHostAttribute = (NestHost) attribute;
                 int targetHostClassIndex = nestHostAttribute.getHostClassIndex();
                 ConstantPool constantPool = nestHostAttribute.getConstantPool();
-                String nestHostClassName = constantPool.getConstantString(targetHostClassIndex, Const.CONSTANT_Class);
+                String nestHostClassName =
+                        constantPool.getConstantString(targetHostClassIndex, Const.CONSTANT_Class);
                 return nestHostClassName;
             }
         }

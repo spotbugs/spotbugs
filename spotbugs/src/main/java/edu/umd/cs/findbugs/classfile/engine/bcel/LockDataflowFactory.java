@@ -18,8 +18,6 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.LockAnalysis;
@@ -29,6 +27,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Analysis engine to produce LockDataflow objects for analyzed methods.
@@ -36,9 +35,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class LockDataflowFactory extends AnalysisFactory<LockDataflow> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public LockDataflowFactory() {
         super("lock set analysis", LockDataflow.class);
     }
@@ -51,7 +48,8 @@ public class LockDataflowFactory extends AnalysisFactory<LockDataflow> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public LockDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public LockDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             throw new MethodUnprofitableException(descriptor);
@@ -64,6 +62,5 @@ public class LockDataflowFactory extends AnalysisFactory<LockDataflow> {
         LockDataflow dataflow = new LockDataflow(cfg, analysis);
         dataflow.execute();
         return dataflow;
-
     }
 }

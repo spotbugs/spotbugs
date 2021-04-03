@@ -20,9 +20,12 @@ package de.tobject.findbugs.actions.test;
 
 import static org.junit.Assert.assertEquals;
 
+import de.tobject.findbugs.actions.GroupByAction;
+import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
+import de.tobject.findbugs.view.explorer.GroupType;
 import java.util.Arrays;
 import java.util.List;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -30,11 +33,6 @@ import org.eclipse.ui.PartInitException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import de.tobject.findbugs.actions.GroupByAction;
-import de.tobject.findbugs.test.AbstractFindBugsTest;
-import de.tobject.findbugs.test.TestScenario;
-import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * This class tests the GroupByAction.
@@ -58,14 +56,17 @@ public class GroupByActionTest extends AbstractFindBugsTest {
     private static final String PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID =
             "findBugsEclipsePlugin.toggleGrouping.Confidence.Category.Project.PatternType.Pattern.Marker";
 
-    private static final String PRIORITY_PROJECT_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Confidence.Project.Pattern.Marker";
+    private static final String PRIORITY_PROJECT_PATTERN_MARKER_ID =
+            "findBugsEclipsePlugin.toggleGrouping.Confidence.Project.Pattern.Marker";
 
     private static final String PROJECT_PRIORITY_CATEGORY_PATTERN_TYPE_PATTERN_MARKER_ID =
             "findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Category.PatternType.Pattern.Marker";
 
-    private static final String PROJECT_PRIORITY_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Pattern.Marker";
+    private static final String PROJECT_PRIORITY_PATTERN_MARKER_ID =
+            "findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Pattern.Marker";
 
-    private static final String PROJECT_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Pattern.Marker";
+    private static final String PROJECT_PATTERN_MARKER_ID =
+            "findBugsEclipsePlugin.toggleGrouping.Project.Pattern.Marker";
 
     private GroupByAction action;
 
@@ -85,26 +86,41 @@ public class GroupByActionTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAction_Priority_Category_Project_Package_Class_PatternType_Pattern_Marker() throws PartInitException {
+    public void testAction_Priority_Category_Project_Package_Class_PatternType_Pattern_Marker()
+            throws PartInitException {
         runAction(PRIORITY_CATEGORY_PROJECT_PACKAGE_CLASS_PATTERN_TYPE_PATTERN_MARKER_ID);
 
-        assertExpectedGroupTypes(GroupType.Confidence, GroupType.Category, GroupType.Project, GroupType.Package, GroupType.Class,
-                GroupType.PatternType, GroupType.Pattern, GroupType.Marker);
+        assertExpectedGroupTypes(
+                GroupType.Confidence,
+                GroupType.Category,
+                GroupType.Project,
+                GroupType.Package,
+                GroupType.Class,
+                GroupType.PatternType,
+                GroupType.Pattern,
+                GroupType.Marker);
     }
 
     @Test
-    public void testAction_Priority_Category_Project_PatternType_Pattern_Marker() throws PartInitException {
+    public void testAction_Priority_Category_Project_PatternType_Pattern_Marker()
+            throws PartInitException {
         runAction(PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID);
 
-        assertExpectedGroupTypes(GroupType.Confidence, GroupType.Category, GroupType.Project, GroupType.PatternType,
-                GroupType.Pattern, GroupType.Marker);
+        assertExpectedGroupTypes(
+                GroupType.Confidence,
+                GroupType.Category,
+                GroupType.Project,
+                GroupType.PatternType,
+                GroupType.Pattern,
+                GroupType.Marker);
     }
 
     @Test
     public void testAction_Priority_Project_Pattern_Marker() throws PartInitException {
         runAction(PRIORITY_PROJECT_PATTERN_MARKER_ID);
 
-        assertExpectedGroupTypes(GroupType.Confidence, GroupType.Project, GroupType.Pattern, GroupType.Marker);
+        assertExpectedGroupTypes(
+                GroupType.Confidence, GroupType.Project, GroupType.Pattern, GroupType.Marker);
     }
 
     @Test
@@ -115,18 +131,25 @@ public class GroupByActionTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAction_Project_Priority_Category_PatternType_Pattern_Marker() throws PartInitException {
+    public void testAction_Project_Priority_Category_PatternType_Pattern_Marker()
+            throws PartInitException {
         runAction(PROJECT_PRIORITY_CATEGORY_PATTERN_TYPE_PATTERN_MARKER_ID);
 
-        assertExpectedGroupTypes(GroupType.Project, GroupType.Confidence, GroupType.Category, GroupType.PatternType,
-                GroupType.Pattern, GroupType.Marker);
+        assertExpectedGroupTypes(
+                GroupType.Project,
+                GroupType.Confidence,
+                GroupType.Category,
+                GroupType.PatternType,
+                GroupType.Pattern,
+                GroupType.Marker);
     }
 
     @Test
     public void testAction_Project_Priority_Pattern_Marker() throws PartInitException {
         runAction(PROJECT_PRIORITY_PATTERN_MARKER_ID);
 
-        assertExpectedGroupTypes(GroupType.Project, GroupType.Confidence, GroupType.Pattern, GroupType.Marker);
+        assertExpectedGroupTypes(
+                GroupType.Project, GroupType.Confidence, GroupType.Pattern, GroupType.Marker);
     }
 
     private void assertExpectedGroupTypes(GroupType... expectedTypes) throws PartInitException {

@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.util;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
-/**
- * a class holding common constants used throughout FindBugs
- */
+/** a class holding common constants used throughout FindBugs */
 public final class Values {
 
     public static final String SIG_GENERIC_TEMPLATE = "T";
@@ -43,16 +41,21 @@ public final class Values {
     public static final String DOTTED_JAVA_LANG_THROWABLE = "java.lang.Throwable";
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_EXCEPTION = "java.lang.Exception";
+
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_RUNTIMEEXCEPTION = "java.lang.RuntimeException";
+
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_ERROR = "java.lang.Error";
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_INTEGER = "java.lang.Integer";
+
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_STRINGBUILDER = "java.lang.StringBuilder";
+
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_STRINGBUFFER = "java.lang.StringBuffer";
+
     @DottedClassName
     public static final String DOTTED_JAVA_IO_FILE = "java.io.File";
     @DottedClassName
@@ -62,18 +65,23 @@ public final class Values {
     public static final String SLASHED_JAVA_LANG_OBJECT = "java/lang/Object";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRING = "java/lang/String";
+
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRINGBUILDER = "java/lang/StringBuilder";
+
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRINGBUFFER = "java/lang/StringBuffer";
+
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_CLASS = "java/lang/Class";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_THROWABLE = "java/lang/Throwable";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_EXCEPTION = "java/lang/Exception";
+
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_RUNTIMEEXCEPTION = "java/lang/RuntimeException";
+
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_ERROR = "java/lang/Error";
     @SlashedClassName
@@ -92,10 +100,13 @@ public final class Values {
     public static final String SLASHED_JAVA_LANG_CHARACTER = "java/lang/Character";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_BOOLEAN = "java/lang/Boolean";
+
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_COMPARATOR = "java/util/Comparator";
+
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_COLLECTION = "java/util/Collection";
+
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_LIST = "java/util/List";
     @SlashedClassName

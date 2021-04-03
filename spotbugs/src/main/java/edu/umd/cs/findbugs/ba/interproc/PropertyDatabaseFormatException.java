@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.interproc;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class PropertyDatabaseFormatException extends Exception {
     private static final long serialVersionUID = 1L;
 

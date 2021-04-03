@@ -18,18 +18,16 @@
  */
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
-/**
- * Matcher to select BugInstances with a particular last version.
- */
+/** Matcher to select BugInstances with a particular last version. */
 public class LastVersionMatcher extends VersionMatcher implements Matcher {
 
-    public final static LastVersionMatcher DEAD_BUG_MATCHER = new LastVersionMatcher(-1, RelationalOp.NEQ);
+    public static final LastVersionMatcher DEAD_BUG_MATCHER =
+            new LastVersionMatcher(-1, RelationalOp.NEQ);
 
     public LastVersionMatcher(String versionAsString, String relOpAsString) {
         this(Long.parseLong(versionAsString), RelationalOp.byName(relOpAsString));
@@ -50,8 +48,10 @@ public class LastVersionMatcher extends VersionMatcher implements Matcher {
 
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-        XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Long.toString(version)).addAttribute("relOp",
-                relOp.getName());
+        XMLAttributeList attributes =
+                new XMLAttributeList()
+                        .addAttribute("value", Long.toString(version))
+                        .addAttribute("relOp", relOp.getName());
         if (disabled) {
             attributes.addAttribute("disabled", "true");
         }

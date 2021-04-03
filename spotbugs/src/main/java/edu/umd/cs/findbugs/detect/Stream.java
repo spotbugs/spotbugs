@@ -19,6 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.ResourceCreationPoint;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.ba.ResourceValue;
+import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
@@ -28,26 +35,16 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
-import edu.umd.cs.findbugs.ResourceCreationPoint;
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-import edu.umd.cs.findbugs.ba.ResourceValue;
-import edu.umd.cs.findbugs.ba.ResourceValueFrame;
-
 /**
- * <p>A Stream object marks the location in the code where a stream is created. It
- * also is responsible for determining some aspects of how the stream state is
- * tracked by the ResourceValueAnalysis, such as when the stream is opened or
- * closed, and whether implicit exception edges are significant.
- * </p>
- * <p>
- * TODO: change streamClass and streamBase to ObjectType
- * </p>
- * <p>
- * TODO: isStreamOpen() and isStreamClose() should probably be abstract, so we
- * can customize how they work for different kinds of streams</p>
+ * A Stream object marks the location in the code where a stream is created. It also is responsible
+ * for determining some aspects of how the stream state is tracked by the ResourceValueAnalysis,
+ * such as when the stream is opened or closed, and whether implicit exception edges are
+ * significant.
+ *
+ * <p>TODO: change streamClass and streamBase to ObjectType
+ *
+ * <p>TODO: isStreamOpen() and isStreamClose() should probably be abstract, so we can customize how
+ * they work for different kinds of streams
  */
 public class Stream extends ResourceCreationPoint implements Comparable<Stream> {
     private final String streamBase;
@@ -72,17 +69,13 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
     }
 
     /**
-     * Constructor. By default, Stream objects are marked as uninteresting.
-     * setInteresting("BUG_TYPE") must be called explicitly to mark the Stream
-     * as interesting.
+     * Constructor. By default, Stream objects are marked as uninteresting. setInteresting("BUG_TYPE")
+     * must be called explicitly to mark the Stream as interesting.
      *
-     * @param location
-     *            where the stream is created
-     * @param streamClass
-     *            type of Stream
-     * @param streamBase
-     *            highest class in the class hierarchy through which stream's
-     *            close() method could be called
+     * @param location where the stream is created
+     * @param streamClass type of Stream
+     * @param streamBase highest class in the class hierarchy through which stream's close() method
+     *     could be called
      */
     public Stream(Location location, String streamClass, String streamBase) {
         super(location, streamClass);
@@ -94,9 +87,8 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
     /**
      * Mark this Stream as interesting.
      *
-     * @param bugType
-     *            the bug type that should be reported if the stream is not
-     *            closed on all paths out of the method
+     * @param bugType the bug type that should be reported if the stream is not closed on all paths
+     *     out of the method
      */
     public Stream setInteresting(String bugType) {
         this.isUninteresting = false;
@@ -105,9 +97,8 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
     }
 
     /**
-     * Mark whether or not implicit exception edges should be ignored by
-     * ResourceValueAnalysis when determining whether or not stream is closed on
-     * all paths out of method.
+     * Mark whether or not implicit exception edges should be ignored by ResourceValueAnalysis when
+     * determining whether or not stream is closed on all paths out of method.
      */
     public Stream setIgnoreImplicitExceptions(boolean enable) {
         ignoreImplicitExceptions = enable;
@@ -115,8 +106,8 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
     }
 
     /**
-     * Mark whether or not Stream is open as soon as it is created, or whether a
-     * later method or constructor must explicitly open it.
+     * Mark whether or not Stream is open as soon as it is created, or whether a later method or
+     * constructor must explicitly open it.
      */
     public Stream setIsOpenOnCreation(boolean enable) {
         isOpenOnCreation = enable;
@@ -126,16 +117,13 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
     /**
      * Set the number of the parameter which passes the stream instance.
      *
-     * @param instanceParam
-     *            number of the parameter passing the stream instance
+     * @param instanceParam number of the parameter passing the stream instance
      */
     public void setInstanceParam(int instanceParam) {
         this.instanceParam = instanceParam;
     }
 
-    /**
-     * Set this Stream has having been closed on all paths out of the method.
-     */
+    /** Set this Stream has having been closed on all paths out of the method. */
     public void setClosed() {
         isClosed = true;
     }
@@ -172,15 +160,16 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
         return bugType;
     }
 
-    /**
-     * Return whether or not the Stream is closed on all paths out of the
-     * method.
-     */
+    /** Return whether or not the Stream is closed on all paths out of the method. */
     public boolean isClosed() {
         return isClosed;
     }
 
-    public boolean isStreamOpen(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, ResourceValueFrame frame) {
+    public boolean isStreamOpen(
+            BasicBlock basicBlock,
+            InstructionHandle handle,
+            ConstantPoolGen cpg,
+            ResourceValueFrame frame) {
         if (isOpenOnCreation) {
             return false;
         }
@@ -193,11 +182,13 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
         // Does this instruction open the stream?
         INVOKESPECIAL inv = (INVOKESPECIAL) ins;
 
-        return frame.isValid() && getInstanceValue(frame, inv, cpg).isInstance()
+        return frame.isValid()
+                && getInstanceValue(frame, inv, cpg).isInstance()
                 && matchMethod(inv, cpg, this.getResourceClass(), Const.CONSTRUCTOR_NAME);
     }
 
-    public static boolean mightCloseStream(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
+    public static boolean mightCloseStream(
+            BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
 
         Instruction ins = handle.getInstruction();
 
@@ -211,13 +202,16 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
             // even though it's the same instance.)
 
             return "close".equals(inv.getName(cpg)) && "()V".equals(inv.getSignature(cpg));
-
         }
 
         return false;
     }
 
-    public boolean isStreamClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, ResourceValueFrame frame,
+    public boolean isStreamClose(
+            BasicBlock basicBlock,
+            InstructionHandle handle,
+            ConstantPoolGen cpg,
+            ResourceValueFrame frame,
             RepositoryLookupFailureCallback lookupFailureCallback) {
         if (!mightCloseStream(basicBlock, handle, cpg)) {
             return false;
@@ -259,10 +253,12 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
     }
 
     private boolean relatedType(String classClosed) throws ClassNotFoundException {
-        return Hierarchy.isSubtype(classClosed, streamBase) || Hierarchy.isSubtype(streamBase, classClosed);
+        return Hierarchy.isSubtype(classClosed, streamBase)
+                || Hierarchy.isSubtype(streamBase, classClosed);
     }
 
-    private ResourceValue getInstanceValue(ResourceValueFrame frame, InvokeInstruction inv, ConstantPoolGen cpg) {
+    private ResourceValue getInstanceValue(
+            ResourceValueFrame frame, InvokeInstruction inv, ConstantPoolGen cpg) {
         int numConsumed = inv.consumeStack(cpg);
         if (numConsumed == Const.UNPREDICTABLE) {
             throw new IllegalStateException();
@@ -270,13 +266,17 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
         return frame.getValue(frame.getNumSlots() - numConsumed);
     }
 
-    private boolean matchMethod(InvokeInstruction inv, ConstantPoolGen cpg, String className, String methodName) {
+    private boolean matchMethod(
+            InvokeInstruction inv, ConstantPoolGen cpg, String className, String methodName) {
         return inv.getClassName(cpg).equals(className) && inv.getName(cpg).equals(methodName);
     }
 
     @Override
     public int hashCode() {
-        return getLocation().hashCode() + 3 * streamBase.hashCode() + 7 * getResourceClass().hashCode() + 11 * instanceParam;
+        return getLocation().hashCode()
+                + 3 * streamBase.hashCode()
+                + 7 * getResourceClass().hashCode()
+                + 11 * instanceParam;
     }
 
     @Override

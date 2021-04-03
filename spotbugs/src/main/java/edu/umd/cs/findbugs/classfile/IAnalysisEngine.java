@@ -28,20 +28,17 @@ public interface IAnalysisEngine<DescriptorType, ResultType> {
     /**
      * Perform an analysis on class or method named by given descriptor.
      *
-     * @param analysisCache
-     *            the analysis cache
-     * @param descriptor
-     *            the descriptor of the class or method to be analyzed
+     * @param analysisCache the analysis cache
+     * @param descriptor the descriptor of the class or method to be analyzed
      * @return the result of the analysis of the class or method
      */
-    public ResultType analyze(IAnalysisCache analysisCache, DescriptorType descriptor) throws CheckedAnalysisException;
+    public ResultType analyze(IAnalysisCache analysisCache, DescriptorType descriptor)
+            throws CheckedAnalysisException;
 
     /**
      * Register the analysis engine with given analysis cache.
      *
-     * @param analysisCache
-     *            the analysis cache
+     * @param analysisCache the analysis cache
      */
     public void registerWith(IAnalysisCache analysisCache);
-
 }

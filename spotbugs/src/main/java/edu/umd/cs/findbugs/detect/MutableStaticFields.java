@@ -19,20 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -44,24 +30,59 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 public class MutableStaticFields extends BytecodeScanningDetector {
-    private static final Set<String> COLLECTION_SUPERCLASSES = new HashSet<>(Arrays.asList("java/util/Collection",
-            "java/util/List", "java/util/Set", "java/util/Map", "java/util/AbstractList", "java/util/SortedSet",
-            "java/util/SortedMap", "java/util/NavigableMap", "java/util/Dictionary"));
+    private static final Set<String> COLLECTION_SUPERCLASSES =
+            new HashSet<>(
+                    Arrays.asList(
+                            "java/util/Collection",
+                            "java/util/List",
+                            "java/util/Set",
+                            "java/util/Map",
+                            "java/util/AbstractList",
+                            "java/util/SortedSet",
+                            "java/util/SortedMap",
+                            "java/util/NavigableMap",
+                            "java/util/Dictionary"));
 
-    private static final Set<String> MUTABLE_COLLECTION_CLASSES = new HashSet<>(Arrays.asList("java/util/ArrayList",
-            "java/util/HashSet", "java/util/HashMap", "java/util/Hashtable", "java/util/IdentityHashMap",
-            "java/util/LinkedHashSet", "java/util/LinkedList", "java/util/LinkedHashMap", "java/util/TreeSet",
-            "java/util/TreeMap", "java/util/Properties"));
+    private static final Set<String> MUTABLE_COLLECTION_CLASSES =
+            new HashSet<>(
+                    Arrays.asList(
+                            "java/util/ArrayList",
+                            "java/util/HashSet",
+                            "java/util/HashMap",
+                            "java/util/Hashtable",
+                            "java/util/IdentityHashMap",
+                            "java/util/LinkedHashSet",
+                            "java/util/LinkedList",
+                            "java/util/LinkedHashMap",
+                            "java/util/TreeSet",
+                            "java/util/TreeMap",
+                            "java/util/Properties"));
 
     private static enum AllowedParameter {
-        NONE, EMPTY_ARRAY
+        NONE,
+        EMPTY_ARRAY
     }
 
-    private static final Map<String, Map<String, AllowedParameter>> MUTABLE_COLLECTION_METHODS = new HashMap<>();
+    private static final Map<String, Map<String, AllowedParameter>> MUTABLE_COLLECTION_METHODS =
+            new HashMap<>();
+
     static {
-        MUTABLE_COLLECTION_METHODS.put("java/util/Arrays", Collections.singletonMap("asList", AllowedParameter.EMPTY_ARRAY));
+        MUTABLE_COLLECTION_METHODS.put(
+                "java/util/Arrays", Collections.singletonMap("asList", AllowedParameter.EMPTY_ARRAY));
         Map<String, AllowedParameter> listsMap = new HashMap<>();
         listsMap.put("newArrayList", AllowedParameter.NONE);
         listsMap.put("newLinkedList", AllowedParameter.NONE);
@@ -81,10 +102,11 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     }
 
     static boolean mutableSignature(String sig) {
-        return sig.equals("Ljava/util/Hashtable;") || sig.equals("Ljava/util/Date;") ||
-                sig.equals("Ljava/sql/Date;") ||
-                sig.equals("Ljava/sql/Timestamp;") ||
-                sig.charAt(0) == '[';
+        return sig.equals("Ljava/util/Hashtable;")
+                || sig.equals("Ljava/util/Date;")
+                || sig.equals("Ljava/sql/Date;")
+                || sig.equals("Ljava/sql/Timestamp;")
+                || sig.charAt(0) == '[';
     }
 
     LinkedList<XField> seen = new LinkedList<>();
@@ -122,10 +144,9 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
 
     /**
-     * Eclipse uses reflection to initialize NLS message bundles. Classes which
-     * using this mechanism are usually extending org.eclipse.osgi.util.NLS class
-     * and contains lots of public static String fields which are used as
-     * message Constants. Unfortunately these fields cannot be final, so FB
+     * Eclipse uses reflection to initialize NLS message bundles. Classes which using this mechanism
+     * are usually extending org.eclipse.osgi.util.NLS class and contains lots of public static String
+     * fields which are used as message Constants. Unfortunately these fields cannot be final, so FB
      * reports tons of warnings for such Eclipse classes.
      */
     private boolean isEclipseNLS;
@@ -169,7 +190,6 @@ public class MutableStaticFields extends BytecodeScanningDetector {
         switch (seen) {
         case Const.GETSTATIC:
         case Const.PUTSTATIC:
-
             XField xField = getXFieldOperand();
             if (xField == null) {
                 break;
@@ -178,10 +198,16 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 break;
             }
 
-            boolean samePackage = packageName.equals(extractPackage(xField.getFieldDescriptor().getSlashedClassName()));
-            boolean initOnly = seen == Const.GETSTATIC || getClassName().equals(getClassConstantOperand()) && inStaticInitializer;
-            boolean safeValue = seen == Const.GETSTATIC || emptyArrayOnTOS
-                    || AnalysisContext.currentXFactory().isEmptyArrayField(xField) || !mutableSignature(getSigConstantOperand());
+            boolean samePackage =
+                    packageName.equals(extractPackage(xField.getFieldDescriptor().getSlashedClassName()));
+            boolean initOnly =
+                    seen == Const.GETSTATIC
+                            || getClassName().equals(getClassConstantOperand()) && inStaticInitializer;
+            boolean safeValue =
+                    seen == Const.GETSTATIC
+                            || emptyArrayOnTOS
+                            || AnalysisContext.currentXFactory().isEmptyArrayField(xField)
+                            || !mutableSignature(getSigConstantOperand());
 
             if (seen == Const.GETSTATIC) {
                 readAnywhere.add(xField);
@@ -227,7 +253,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             emptyArrayOnTOS = false;
             return;
         case Const.INVOKESPECIAL:
-            if (inStaticInitializer && Const.CONSTRUCTOR_NAME.equals(getMethodDescriptorOperand().getName())) {
+            if (inStaticInitializer
+                    && Const.CONSTRUCTOR_NAME.equals(getMethodDescriptorOperand().getName())) {
                 ClassDescriptor classDescriptor = getClassDescriptorOperand();
                 if (MUTABLE_COLLECTION_CLASSES.contains(classDescriptor.getClassName())) {
                     mutableCollectionJustCreated = true;
@@ -245,8 +272,9 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                             && MUTABLE_COLLECTION_CLASSES.contains(superclassDescriptor.getClassName())) {
                         mutableCollectionJustCreated = true;
                         for (XMethod xMethod : xClass.getXMethods()) {
-                            if (xMethod != null && !Const.CONSTRUCTOR_NAME.equals(xMethod.getName()) && !Const.STATIC_INITIALIZER_NAME.equals(xMethod
-                                    .getName())) {
+                            if (xMethod != null
+                                    && !Const.CONSTRUCTOR_NAME.equals(xMethod.getName())
+                                    && !Const.STATIC_INITIALIZER_NAME.equals(xMethod.getName())) {
                                 mutableCollectionJustCreated = false;
                                 break;
                             }
@@ -260,8 +288,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             break;
         case Const.INVOKESTATIC:
             if (inStaticInitializer) {
-                Map<String, AllowedParameter> methods = MUTABLE_COLLECTION_METHODS.get(getMethodDescriptorOperand()
-                        .getSlashedClassName());
+                Map<String, AllowedParameter> methods =
+                        MUTABLE_COLLECTION_METHODS.get(getMethodDescriptorOperand().getSlashedClassName());
                 if (methods != null) {
                     String name = getMethodDescriptorOperand().getName();
                     AllowedParameter allowedParameter = methods.get(name);
@@ -282,7 +310,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     private boolean isCollection(String signature) {
         if (signature.startsWith("L") && signature.endsWith(";")) {
             String fieldClass = signature.substring(1, signature.length() - 1);
-            return COLLECTION_SUPERCLASSES.contains(fieldClass) || MUTABLE_COLLECTION_CLASSES.contains(fieldClass);
+            return COLLECTION_SUPERCLASSES.contains(fieldClass)
+                    || MUTABLE_COLLECTION_CLASSES.contains(fieldClass);
         }
         return false;
     }
@@ -350,7 +379,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             boolean movedOutofInterface = false;
 
             try {
-                XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, f.getClassDescriptor());
+                XClass xClass =
+                        Global.getAnalysisCache().getClassAnalysis(XClass.class, f.getClassDescriptor());
                 movedOutofInterface = couldBePackage && xClass.isInterface();
             } catch (CheckedAnalysisException e) {
                 assert true;
@@ -359,7 +389,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             boolean isArray = fieldSig.charAt(0) == '[' && unsafeValue.contains(f);
             boolean isReadAnywhere = readAnywhere.contains(f);
             //            if (false) {
-            //                System.out.println(className + "." + fieldName + " : " + fieldSig + "\t" + isHashtable + "\t" + isArray);
+            //                System.out.println(className + "." + fieldName + " : " + fieldSig + "\t" +
+            // isHashtable + "\t" + isArray);
             //            }
 
             String bugType;
@@ -408,7 +439,6 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 bug.addSourceLine(firstPC);
             }
             bugReporter.reportBug(bug);
-
         }
     }
 }

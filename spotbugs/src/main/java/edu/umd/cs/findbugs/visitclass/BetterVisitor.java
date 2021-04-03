@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.visitclass;
 
 import java.io.PrintStream;
-
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -67,10 +66,9 @@ import org.apache.bcel.classfile.Visitor;
 public abstract class BetterVisitor implements Visitor {
 
     /**
-     * clone() is overridden to change access control from protected to public.
-     * Originally we compelled subclasses not to throw
-     * CloneNotSupportedException, but that was unfriendly to some third-parties
-     * with existing code.
+     * clone() is overridden to change access control from protected to public. Originally we
+     * compelled subclasses not to throw CloneNotSupportedException, but that was unfriendly to some
+     * third-parties with existing code.
      */
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -383,5 +381,4 @@ public abstract class BetterVisitor implements Visitor {
 
     public void report(PrintStream out) {
     }
-
 }

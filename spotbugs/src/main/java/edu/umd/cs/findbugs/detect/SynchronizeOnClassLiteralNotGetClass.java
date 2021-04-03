@@ -19,11 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -31,6 +26,9 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
 
@@ -107,7 +105,8 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
             }
             break;
         case 1:
-            if (seen == Const.INVOKEVIRTUAL && "getClass".equals(getNameConstantOperand())
+            if (seen == Const.INVOKEVIRTUAL
+                    && "getClass".equals(getNameConstantOperand())
                     && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
                 state = 2;
             } else {
@@ -130,8 +129,10 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
             break;
         case 4:
             if (seen == Const.MONITORENTER) {
-                pendingBug = new BugInstance(this, "WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this);
+                pendingBug =
+                        new BugInstance(this, "WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL", NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this);
             }
             state = 0;
             seenGetStatic = seenPutStatic = false;
@@ -140,5 +141,4 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
             break;
         }
     }
-
 }

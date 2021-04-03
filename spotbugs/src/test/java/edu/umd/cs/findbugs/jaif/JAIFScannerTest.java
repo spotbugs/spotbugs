@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.jaif;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringReader;
-
 import org.junit.Test;
 
 public class JAIFScannerTest {
@@ -72,7 +71,8 @@ public class JAIFScannerTest {
 
     @Test
     public void testScanIdentifier() throws Exception {
-        JAIFScanner scanner = getScanner("  \t  \t\t@foobar Baz123   ( Boing Boing) @Yum@Yum __123  $plotz");
+        JAIFScanner scanner =
+                getScanner("  \t  \t\t@foobar Baz123   ( Boing Boing) @Yum@Yum __123  $plotz");
 
         checkToken(scanner, "@foobar", JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
         checkToken(scanner, "Baz123", JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
@@ -146,7 +146,9 @@ public class JAIFScannerTest {
 
     @Test
     public void testScanStringLiteral() throws Exception {
-        JAIFScanner scanner = getScanner("\"hello\"    \"foobie bletch\"  \"\\\"\"  \"\\\\\\6\\45\\037\"  \"\\b\\t\\f\\n\"  ");
+        JAIFScanner scanner =
+                getScanner(
+                        "\"hello\"    \"foobie bletch\"  \"\\\"\"  \"\\\\\\6\\45\\037\"  \"\\b\\t\\f\\n\"  ");
 
         checkToken(scanner, "\"hello\"", JAIFTokenKind.STRING_LITERAL);
         checkToken(scanner, "\"foobie bletch\"", JAIFTokenKind.STRING_LITERAL);

@@ -19,19 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.IFNE;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -55,19 +42,27 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.IFNE;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 /**
- * Analysis engine to produce CFG (control flow graph) objects for an analyzed
- * method.
+ * Analysis engine to produce CFG (control flow graph) objects for an analyzed method.
  *
  * @author David Hovemeyer
  */
 public class CFGFactory extends AnalysisFactory<CFG> {
     private static final boolean DEBUG_CFG = SystemProperties.getBoolean("classContext.debugCFG");
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public CFGFactory() {
         super("control flow graph factory", CFG.class);
     }
@@ -80,14 +75,18 @@ public class CFGFactory extends AnalysisFactory<CFG> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public CFG analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public CFG analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         // Construct the CFG in its raw form
         MethodGen methodGen = analysisCache.getMethodAnalysis(MethodGen.class, descriptor);
         if (methodGen == null) {
-            JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor.getClassDescriptor());
+            JavaClass jclass =
+                    analysisCache.getClassAnalysis(JavaClass.class, descriptor.getClassDescriptor());
             Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
             JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(jclass, method);
-            AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportSkippedAnalysis(descriptor);
+            AnalysisContext.currentAnalysisContext()
+                    .getLookupFailureCallback()
+                    .reportSkippedAnalysis(descriptor);
             throw new MethodUnprofitableException(javaClassAndMethod);
         }
         CFGBuilder cfgBuilder = CFGBuilderFactory.create(descriptor, methodGen);
@@ -108,11 +107,13 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 
         // System.out.println("CC: getting refined CFG for " + methodId);
         if (CFGFactory.DEBUG_CFG) {
-            String methodId = methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature();
+            String methodId =
+                    methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature();
             System.out.println("CC: getting refined CFG for " + methodId);
         }
         if (ClassContext.DEBUG) {
-            String methodId = methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature();
+            String methodId =
+                    methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature();
             System.out.println("ClassContext: request to prune " + methodId);
         }
 
@@ -152,22 +153,26 @@ public class CFGFactory extends AnalysisFactory<CFG> {
         }
         cfg.setFlag(CFG.PRUNED_FAILED_ASSERTION_EDGES);
 
-        final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = AnalysisContext.currentAnalysisContext().getBoolProperty(
-                AnalysisFeatures.ACCURATE_EXCEPTIONS);
+        final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES =
+                AnalysisContext.currentAnalysisContext()
+                        .getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS);
 
         if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(CFG.PRUNED_INFEASIBLE_EXCEPTIONS)) {
             try {
                 TypeDataflow typeDataflow = analysisCache.getMethodAnalysis(TypeDataflow.class, descriptor);
                 // Exception edge pruning based on ExceptionSets.
                 // Note: this is quite slow.
-                PruneInfeasibleExceptionEdges pruner = new PruneInfeasibleExceptionEdges(cfg, methodGen, typeDataflow);
+                PruneInfeasibleExceptionEdges pruner =
+                        new PruneInfeasibleExceptionEdges(cfg, methodGen, typeDataflow);
                 pruner.execute();
                 changed = changed || pruner.wasCFGModified();
             } catch (MissingClassException e) {
-                AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
+                AnalysisContext.currentAnalysisContext()
+                        .getLookupFailureCallback()
                         .reportMissingClass(e.getClassNotFoundException());
             } catch (DataflowAnalysisException e) {
-                AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
+                AnalysisContext.currentAnalysisContext()
+                        .getLookupFailureCallback()
                         .logError("unable to extract type analysis", e);
             } catch (ClassNotFoundException e) {
                 AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
@@ -175,26 +180,37 @@ public class CFGFactory extends AnalysisFactory<CFG> {
         }
         cfg.setFlag(CFG.PRUNED_INFEASIBLE_EXCEPTIONS);
 
-        final boolean PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES = !AnalysisContext.currentAnalysisContext().getBoolProperty(
-                AnalysisFeatures.CONSERVE_SPACE);
+        final boolean PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES =
+                !AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.CONSERVE_SPACE);
 
-        if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES && !cfg.isFlagSet(CFG.PRUNED_UNCONDITIONAL_THROWERS)) {
+        if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES
+                && !cfg.isFlagSet(CFG.PRUNED_UNCONDITIONAL_THROWERS)) {
             try {
-                JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor.getClassDescriptor());
+                JavaClass jclass =
+                        analysisCache.getClassAnalysis(JavaClass.class, descriptor.getClassDescriptor());
                 Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
-                ConstantPoolGen cpg = analysisCache.getClassAnalysis(ConstantPoolGen.class, descriptor.getClassDescriptor());
+                ConstantPoolGen cpg =
+                        analysisCache.getClassAnalysis(ConstantPoolGen.class, descriptor.getClassDescriptor());
                 TypeDataflow typeDataflow = analysisCache.getMethodAnalysis(TypeDataflow.class, descriptor);
 
-                PruneUnconditionalExceptionThrowerEdges pruner = new PruneUnconditionalExceptionThrowerEdges(jclass, method,
-                        methodGen, cfg, cpg, typeDataflow, AnalysisContext.currentAnalysisContext());
+                PruneUnconditionalExceptionThrowerEdges pruner =
+                        new PruneUnconditionalExceptionThrowerEdges(
+                                jclass,
+                                method,
+                                methodGen,
+                                cfg,
+                                cpg,
+                                typeDataflow,
+                                AnalysisContext.currentAnalysisContext());
                 pruner.execute();
                 if (pruner.wasCFGModified()) {
                     changed = true;
-
                 }
             } catch (DataflowAnalysisException e) {
-                AnalysisContext.logError("Error pruning normal return edges for unconditionally throwing methods for "
-                        + descriptor, e);
+                AnalysisContext.logError(
+                        "Error pruning normal return edges for unconditionally throwing methods for "
+                                + descriptor,
+                        e);
             }
         }
         cfg.setFlag(CFG.PRUNED_UNCONDITIONAL_THROWERS);

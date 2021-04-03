@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.util.ClassPathUtil;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -36,17 +37,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 
-import edu.umd.cs.findbugs.util.ClassPathUtil;
-
 /**
- * The DetectorFactoryCollection stores all of the DetectorFactory objects used
- * to create the Detectors which implement the various analyses. It is a
- * singleton class.
+ * The DetectorFactoryCollection stores all of the DetectorFactory objects used to create the
+ * Detectors which implement the various analyses. It is a singleton class.
  *
  * @author David Hovemeyer
  * @see DetectorFactory
@@ -84,7 +81,9 @@ public class DetectorFactoryCollection {
         this(true, true, enabled, enabled);
     }
 
-    private DetectorFactoryCollection(boolean loadCore, boolean forceLoad,
+    private DetectorFactoryCollection(
+            boolean loadCore,
+            boolean forceLoad,
             @Nonnull Collection<Plugin> pluginsToLoad,
             @Nonnull Collection<Plugin> enabledPlugins) {
         if (loadCore) {
@@ -110,11 +109,10 @@ public class DetectorFactoryCollection {
 
     /**
      * Reset the factory singleton.
-     * <p>
-     * <b>Implementation note:</b> This method is public for tests only!
      *
-     * @param instance
-     *            use null to clear the instance
+     * <p><b>Implementation note:</b> This method is public for tests only!
+     *
+     * @param instance use null to clear the instance
      */
     public static void resetInstance(@CheckForNull DetectorFactoryCollection instance) {
         synchronized (lock) {
@@ -123,8 +121,8 @@ public class DetectorFactoryCollection {
     }
 
     /**
-     * Get the single instance of DetectorFactoryCollection, which knows each and every
-     * loaded plugin, independently of it's enablement
+     * Get the single instance of DetectorFactoryCollection, which knows each and every loaded plugin,
+     * independently of it's enablement
      */
     public static DetectorFactoryCollection instance() {
         synchronized (lock) {
@@ -152,7 +150,12 @@ public class DetectorFactoryCollection {
                         }
                         Plugin oldP = globalOptionsSetter.get(key);
                         throw new RuntimeException(
-                                "Incompatible global options for " + key + "; conflict between " + oldP.getPluginId() + " and " + p.getPluginId());
+                                "Incompatible global options for "
+                                        + key
+                                        + "; conflict between "
+                                        + oldP.getPluginId()
+                                        + " and "
+                                        + p.getPluginId());
                     }
                     globalOptions.put(key, value);
                     globalOptionsSetter.put(key, p);
@@ -161,16 +164,12 @@ public class DetectorFactoryCollection {
         }
     }
 
-    /**
-     * Return an Iterator over all available Plugin objects.
-     */
+    /** Return an Iterator over all available Plugin objects. */
     public Iterator<Plugin> pluginIterator() {
         return pluginByIdMap.values().iterator();
     }
 
-    /**
-     * Return an Collection of all available Plugin objects.
-     */
+    /** Return an Collection of all available Plugin objects. */
     public Collection<Plugin> plugins() {
         return pluginByIdMap.values();
     }
@@ -183,30 +182,22 @@ public class DetectorFactoryCollection {
         return corePlugin;
     }
 
-
     /**
      * Get a Plugin by its unique id.
      *
-     * @param pluginId
-     *            the unique id
+     * @param pluginId the unique id
      * @return the Plugin with that id, or null if no such Plugin is found
      */
     public Plugin getPluginById(String pluginId) {
         return pluginByIdMap.get(pluginId);
     }
 
-    /**
-     * Return an Iterator over the DetectorFactory objects for all registered
-     * Detectors.
-     */
+    /** Return an Iterator over the DetectorFactory objects for all registered Detectors. */
     public Iterator<DetectorFactory> factoryIterator() {
         return factoryList.iterator();
     }
 
-    /**
-     * Return an Iterable over the DetectorFactory objects for all registered
-     * Detectors.
-     */
+    /** Return an Iterable over the DetectorFactory objects for all registered Detectors. */
     public Iterable<DetectorFactory> getFactories() {
         return factoryList;
     }
@@ -243,10 +234,8 @@ public class DetectorFactoryCollection {
     /**
      * Look up a DetectorFactory by its short name.
      *
-     * @param name
-     *            the short name
-     * @return the DetectorFactory, or null if there is no factory with that
-     *         short name
+     * @param name the short name
+     * @return the DetectorFactory, or null if there is no factory with that short name
      */
     public DetectorFactory getFactory(String name) {
         return factoriesByName.get(name);
@@ -255,18 +244,14 @@ public class DetectorFactoryCollection {
     /**
      * Look up a DetectorFactory by its class name.
      *
-     * @param className
-     *            the class name
-     * @return the DetectoryFactory, or null if there is no factory with that
-     *         class name
+     * @param className the class name
+     * @return the DetectoryFactory, or null if there is no factory with that class name
      */
     public DetectorFactory getFactoryByClassName(String className) {
         return factoriesByDetectorClassName.get(className);
     }
 
-    /**
-     * Register a DetectorFactory.
-     */
+    /** Register a DetectorFactory. */
     void registerDetector(DetectorFactory factory) {
         if (FindBugs.DEBUG) {
             System.out.println("Registering detector: " + factory.getFullName());
@@ -275,8 +260,9 @@ public class DetectorFactoryCollection {
         if (!factoryList.contains(factory)) {
             factoryList.add(factory);
         } else {
-            LOGGER.log(Level.WARNING, "Trying to add already registered factory: " + factory +
-                    ", " + factory.getPlugin());
+            LOGGER.log(
+                    Level.WARNING,
+                    "Trying to add already registered factory: " + factory + ", " + factory.getPlugin());
         }
         factoriesByName.put(detectorName, factory);
         factoriesByDetectorClassName.put(factory.getFullName(), factory);
@@ -292,19 +278,21 @@ public class DetectorFactoryCollection {
         factoriesByDetectorClassName.remove(factory.getFullName());
     }
 
-
     /**
-     * See if the location of ${spotbugs.home} can be inferred from the location
-     * of findbugs.jar in the classpath.
+     * See if the location of ${spotbugs.home} can be inferred from the location of findbugs.jar in
+     * the classpath.
      *
      * @return inferred ${spotbugs.home}, or null if we can't figure it out
      */
     private static String inferSpotBugsHome() {
-        Pattern[] findbugsJarNames = { Pattern.compile("spotbugs\\.jar$"), };
+        Pattern[] findbugsJarNames = {
+            Pattern.compile("spotbugs\\.jar$"),
+        };
 
         for (Pattern jarNamePattern : findbugsJarNames) {
-            String findbugsJarCodeBase = ClassPathUtil.findCodeBaseInClassPath(jarNamePattern,
-                    SystemProperties.getProperty("java.class.path"));
+            String findbugsJarCodeBase =
+                    ClassPathUtil.findCodeBaseInClassPath(
+                            jarNamePattern, SystemProperties.getProperty("java.class.path"));
             if (findbugsJarCodeBase != null) {
                 File findbugsJar = new File(findbugsJarCodeBase);
                 File libDir = findbugsJar.getParentFile();
@@ -332,7 +320,6 @@ public class DetectorFactoryCollection {
             }
         }
         return null;
-
     }
 
     public static String getFindBugsHome() {
@@ -345,7 +332,6 @@ public class DetectorFactoryCollection {
             homeDir = inferSpotBugsHome();
         }
         return homeDir;
-
     }
 
     @CheckForNull
@@ -416,13 +402,11 @@ public class DetectorFactoryCollection {
     }
 
     /**
-     * Set the metadata for a bug category. If the category's metadata has
-     * already been set, this does nothing.
-     * @param bc
-     *            the BugCategory object holding the metadata for the category
+     * Set the metadata for a bug category. If the category's metadata has already been set, this does
+     * nothing.
      *
-     * @return false if the category's metadata has already been set, true
-     *         otherwise
+     * @param bc the BugCategory object holding the metadata for the category
+     * @return false if the category's metadata has already been set, true otherwise
      */
     public boolean registerBugCategory(BugCategory bc) {
         String category = bc.getCategory();
@@ -442,8 +426,7 @@ public class DetectorFactoryCollection {
     /**
      * Register a BugPattern.
      *
-     * @param bugPattern
-     *            the BugPattern
+     * @param bugPattern the BugPattern
      */
     public void registerBugPattern(BugPattern bugPattern) {
         bugPatternMap.put(bugPattern.getType(), bugPattern);
@@ -453,16 +436,12 @@ public class DetectorFactoryCollection {
         bugPatternMap.remove(bugPattern.getType());
     }
 
-    /**
-     * Get an Iterator over all registered bug patterns.
-     */
+    /** Get an Iterator over all registered bug patterns. */
     public Iterator<BugPattern> bugPatternIterator() {
         return bugPatternMap.values().iterator();
     }
 
-    /**
-     * Get an Iterator over all registered bug patterns.
-     */
+    /** Get an Iterator over all registered bug patterns. */
     public Collection<BugPattern> getBugPatterns() {
         return bugPatternMap.values();
     }
@@ -470,8 +449,7 @@ public class DetectorFactoryCollection {
     /**
      * Look up bug pattern.
      *
-     * @param bugType
-     *            the bug type for the bug pattern
+     * @param bugType the bug type for the bug pattern
      * @return the BugPattern, or null if it can't be found
      */
     public @CheckForNull BugPattern lookupBugPattern(String bugType) {
@@ -494,13 +472,11 @@ public class DetectorFactoryCollection {
     }
 
     /**
-     * Get a description for given "bug type". FIXME: this is referred to
-     * elsewhere as the "bug code" or "bug abbrev". Should make the terminology
-     * consistent everywhere. In this case, the bug type refers to the short
-     * prefix code prepended to the long and short bug messages.
+     * Get a description for given "bug type". FIXME: this is referred to elsewhere as the "bug code"
+     * or "bug abbrev". Should make the terminology consistent everywhere. In this case, the bug type
+     * refers to the short prefix code prepended to the long and short bug messages.
      *
-     * @param shortBugType
-     *            the short bug type code
+     * @param shortBugType the short bug type code
      * @return the description of that short bug type code means
      */
     public @Nonnull BugCode getBugCode(String shortBugType) {
@@ -520,11 +496,10 @@ public class DetectorFactoryCollection {
     }
 
     /**
-     * Get the BugCategory object for a category key. Returns null if no
-     * BugCategory object can be found.
+     * Get the BugCategory object for a category key. Returns null if no BugCategory object can be
+     * found.
      *
-     * @param category
-     *            the category key
+     * @param category the category key
      * @return the BugCategory object (may be null)
      */
     public BugCategory getBugCategory(String category) {
@@ -532,10 +507,10 @@ public class DetectorFactoryCollection {
     }
 
     /**
-     * Get a Collection containing all known bug category keys. E.g.,
-     * "CORRECTNESS", "MT_CORRECTNESS", "PERFORMANCE", etc.
+     * Get a Collection containing all known bug category keys. E.g., "CORRECTNESS", "MT_CORRECTNESS",
+     * "PERFORMANCE", etc.
      *
-     * Excludes hidden bug categories
+     * <p>Excludes hidden bug categories
      *
      * @return Collection of bug category keys.
      */

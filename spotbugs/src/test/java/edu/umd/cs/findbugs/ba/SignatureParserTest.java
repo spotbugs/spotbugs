@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
-
 import org.junit.Assert;
 import org.junit.Test;
 

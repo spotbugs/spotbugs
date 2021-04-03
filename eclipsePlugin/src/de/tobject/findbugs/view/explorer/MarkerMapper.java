@@ -21,45 +21,38 @@ package de.tobject.findbugs.view.explorer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 
-/**
- *
- * @param <Identifier>
- *            the specific identifier of given marker inside the given group
- *            type
- */
+/** @param <Identifier> the specific identifier of given marker inside the given group type */
 abstract class MarkerMapper<Identifier> {
 
-    /**
-     * there is no mapping possible for current mapping type
-     */
-    public static final MarkerMapper<Void> NO_MAPPING = new MarkerMapper<Void>() {
+    /** there is no mapping possible for current mapping type */
+    public static final MarkerMapper<Void> NO_MAPPING =
+            new MarkerMapper<Void>() {
 
-        @Override
-        void setType(GroupType type) {
-            throw new IllegalStateException("Setting the type not allowed");
-        }
+                @Override
+                void setType(GroupType type) {
+                    throw new IllegalStateException("Setting the type not allowed");
+                }
 
-        @Override
-        Void getIdentifier(IMarker marker) {
-            return null;
-        }
+                @Override
+                Void getIdentifier(IMarker marker) {
+                    return null;
+                }
 
-        @Override
-        GroupType getType() {
-            return GroupType.Undefined;
-        }
+                @Override
+                GroupType getType() {
+                    return GroupType.Undefined;
+                }
 
-        @Override
-        String getShortDescription(Void id) {
-            return "Undefined";
-        }
+                @Override
+                String getShortDescription(Void id) {
+                    return "Undefined";
+                }
 
-        @Override
-        String getDebugDescription(IMarker marker) {
-            return getShortDescription(null);
-        }
-
-    };
+                @Override
+                String getDebugDescription(IMarker marker) {
+                    return getShortDescription(null);
+                }
+            };
 
     private GroupType type;
 
@@ -78,10 +71,9 @@ abstract class MarkerMapper<Identifier> {
     }
 
     /**
-     * @param marker
-     *            non null marker
-     * @return the specific identifier for given marker for the current mapping
-     *         type, or null if the mapping cannot be created
+     * @param marker non null marker
+     * @return the specific identifier for given marker for the current mapping type, or null if the
+     *     mapping cannot be created
      */
     abstract Identifier getIdentifier(IMarker marker);
 

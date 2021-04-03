@@ -18,21 +18,19 @@
  */
 package de.tobject.findbugs.util;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
-
-import org.eclipse.core.runtime.Assert;
-
 import edu.umd.cs.findbugs.annotations.DischargesObligation;
 import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLAttributeList.NameValuePair;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
+import org.eclipse.core.runtime.Assert;
 
 /**
  * Write XML or plain text to an output stream.
@@ -54,10 +52,8 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
     /**
      * Constructor.
      *
-     * @param os
-     *            OutputStream to write XML output to
-     * @param plainText
-     *            to use plain text instead of xml
+     * @param os OutputStream to write XML output to
+     * @param plainText to use plain text instead of xml
      */
     public ConfigurableXmlOutputStream(OutputStream os, boolean plainText) {
         this.plainText = plainText;

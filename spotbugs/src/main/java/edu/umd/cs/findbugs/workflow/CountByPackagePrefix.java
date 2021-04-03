@@ -17,31 +17,26 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.dom4j.DocumentException;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
+import org.dom4j.DocumentException;
 
 /**
- * Java main application to compute update a historical bug collection with
- * results from another build/analysis.
+ * Java main application to compute update a historical bug collection with results from another
+ * build/analysis.
  *
  * @author William Pugh
  */
-
 public class CountByPackagePrefix {
 
-    /**
-     *
-     */
+    /** */
     private static final String USAGE = "Usage: <cmd> " + " <prefixLength> [<bugs.xml>]";
 
     public static void main(String[] args) throws IOException, DocumentException {
@@ -63,7 +58,8 @@ public class CountByPackagePrefix {
         Map<String, Integer> ncss = new TreeMap<>();
 
         for (BugInstance b : origCollection.getCollection()) {
-            String prefix = ClassName.extractPackagePrefix(b.getPrimaryClass().getPackageName(), prefixLength);
+            String prefix =
+                    ClassName.extractPackagePrefix(b.getPrimaryClass().getPackageName(), prefixLength);
             Integer v = map.get(prefix);
             if (v == null) {
                 map.put(prefix, 1);
@@ -80,7 +76,6 @@ public class CountByPackagePrefix {
             } else {
                 ncss.put(prefix, v + ps.size());
             }
-
         }
         for (Map.Entry<String, Integer> e : map.entrySet()) {
             String prefix = e.getKey();
@@ -100,6 +95,5 @@ public class CountByPackagePrefix {
                 System.out.printf("%4d %4d %4d %s%n", density, warnings, v / 1000, prefix);
             }
         }
-
     }
 }

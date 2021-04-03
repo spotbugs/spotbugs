@@ -18,25 +18,23 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantDouble;
-import org.apache.bcel.classfile.ConstantFloat;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantFloat;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.JavaClass;
 
 public class FindRoughConstants extends BytecodeScanningDetector {
 
@@ -96,14 +94,15 @@ public class FindRoughConstants extends BytecodeScanningDetector {
         }
     }
 
-    private static final BadConstant[] badConstants = new BadConstant[] {
-        new BadConstant(Math.PI, 1, "Math.PI", HIGH_PRIORITY),
-        new BadConstant(Math.PI, 1 / 2.0, "Math.PI/2", NORMAL_PRIORITY),
-        new BadConstant(Math.PI, 1 / 3.0, "Math.PI/3", LOW_PRIORITY),
-        new BadConstant(Math.PI, 1 / 4.0, "Math.PI/4", LOW_PRIORITY),
-        new BadConstant(Math.PI, 2, "2*Math.PI", NORMAL_PRIORITY),
-        new BadConstant(Math.E, 1, "Math.E", LOW_PRIORITY)
-    };
+    private static final BadConstant[] badConstants =
+            new BadConstant[] {
+                new BadConstant(Math.PI, 1, "Math.PI", HIGH_PRIORITY),
+                new BadConstant(Math.PI, 1 / 2.0, "Math.PI/2", NORMAL_PRIORITY),
+                new BadConstant(Math.PI, 1 / 3.0, "Math.PI/3", LOW_PRIORITY),
+                new BadConstant(Math.PI, 1 / 4.0, "Math.PI/4", LOW_PRIORITY),
+                new BadConstant(Math.PI, 2, "2*Math.PI", NORMAL_PRIORITY),
+                new BadConstant(Math.E, 1, "Math.E", LOW_PRIORITY)
+            };
 
     private final BugAccumulator bugAccumulator;
 
@@ -142,8 +141,8 @@ public class FindRoughConstants extends BytecodeScanningDetector {
         if (seen == Const.INVOKESTATIC && lastBug != null) {
             if (getNextOpcode() == Const.AASTORE
                     && getNameConstantOperand().equals("valueOf")
-                    && (getClassConstantOperand().equals("java/lang/Double") || getClassConstantOperand().equals(
-                            "java/lang/Float"))) {
+                    && (getClassConstantOperand().equals("java/lang/Double")
+                            || getClassConstantOperand().equals("java/lang/Float"))) {
                 lastBug = ((BugInstance) lastBug.clone());
                 lastBug.setPriority(lastPriority + 1);
                 bugAccumulator.forgetLastBug();
@@ -189,7 +188,9 @@ public class FindRoughConstants extends BytecodeScanningDetector {
             return IGNORE_PRIORITY;
         }
         if (badConstant.equalPrefix(constValue)) {
-            return diff > 1e-4 ? badConstant.basePriority + 1 : diff < 1e-6 ? badConstant.basePriority - 1 : badConstant.basePriority;
+            return diff > 1e-4
+                    ? badConstant.basePriority + 1
+                    : diff < 1e-6 ? badConstant.basePriority - 1 : badConstant.basePriority;
         }
         if (diff > 1e-7) {
             return IGNORE_PRIORITY;
@@ -209,8 +210,11 @@ public class FindRoughConstants extends BytecodeScanningDetector {
             }
             if (priority < IGNORE_PRIORITY) {
                 lastPriority = priority;
-                lastBug = new BugInstance(this, "CNT_ROUGH_CONSTANT_VALUE", priority).addClassAndMethod(this)
-                        .addString(constValue.toString()).addString(badConstant.replacement);
+                lastBug =
+                        new BugInstance(this, "CNT_ROUGH_CONSTANT_VALUE", priority)
+                                .addClassAndMethod(this)
+                                .addString(constValue.toString())
+                                .addString(badConstant.replacement);
                 bugAccumulator.accumulateBug(lastBug, this);
                 return;
             }

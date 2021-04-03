@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
 public class LocalMatcher implements Matcher {
     private final NameMatch name;
@@ -45,8 +44,7 @@ public class LocalMatcher implements Matcher {
     @Override
     public boolean match(BugInstance bugInstance) {
         LocalVariableAnnotation localAnnotation = bugInstance.getPrimaryLocalVariableAnnotation();
-        return localAnnotation != null
-                && name.match(localAnnotation.getName());
+        return localAnnotation != null && name.match(localAnnotation.getName());
     }
 
     @Override

@@ -19,10 +19,7 @@
 
 package edu.umd.cs.findbugs.asm;
 
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public abstract class AbstractFBMethodVisitor extends FBMethodVisitor {
 
     public AbstractFBMethodVisitor() {
@@ -39,5 +36,4 @@ public abstract class AbstractFBMethodVisitor extends FBMethodVisitor {
     public int getPC() {
         return pc;
     }
-
 }

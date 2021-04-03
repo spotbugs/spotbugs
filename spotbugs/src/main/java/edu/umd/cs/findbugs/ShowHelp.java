@@ -51,7 +51,6 @@ public class ShowHelp {
         //        FindBugs.showCommandLineOptions();
         System.out.println();
         showGeneralOptions();
-
     }
 
     public static void showSynopsis() {
@@ -64,6 +63,5 @@ public class ShowHelp {
         System.out.println("  -jvmArgs args    Pass args to JVM");
         System.out.println("  -maxHeap size    Maximum Java heap size in megabytes (default=768)");
         System.out.println("  -javahome <dir>  Specify location of JRE");
-
     }
 }

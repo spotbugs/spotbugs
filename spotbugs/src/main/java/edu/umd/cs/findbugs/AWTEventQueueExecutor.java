@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import javax.swing.SwingUtilities;
 
 public class AWTEventQueueExecutor extends AbstractExecutorService {

@@ -19,6 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,27 +36,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.XMethod;
-
 public class InitializationChain extends BytecodeScanningDetector {
     Set<String> requires = new TreeSet<>();
 
     Map<String, Set<String>> classRequires = new TreeMap<>();
-
-
 
     private final BugReporter bugReporter;
 
@@ -90,14 +86,12 @@ public class InitializationChain extends BytecodeScanningDetector {
             } else if (Const.CONSTRUCTOR_NAME.equals(name)) {
                 visitOrder.add(m);
             }
-
         }
         if (staticInitializer != null) {
             visitOrder.add(staticInitializer);
         }
         return visitOrder;
     }
-
 
     @Override
     public void visit(Code obj) {
@@ -129,7 +123,6 @@ public class InitializationChain extends BytecodeScanningDetector {
         constructorsInvokedInStaticInitializer.clear();
         invocationInfo.clear();
         lastInvocation = null;
-
     }
 
     @Override
@@ -144,17 +137,16 @@ public class InitializationChain extends BytecodeScanningDetector {
             return;
         }
 
-        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && getClassConstantOperand().equals(
-                getClassName())) {
+        if (seen == Const.INVOKESPECIAL
+                && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
+                && getClassConstantOperand().equals(getClassName())) {
 
             XMethod m = getXMethodOperand();
             Set<XField> read = staticFieldsRead.get(m);
             if (constructorsInvokedInStaticInitializer.add(m) && read != null && !read.isEmpty()) {
                 lastInvocation = new InvocationInfo(m, getPC());
                 invocationInfo.add(lastInvocation);
-
             }
-
         }
         if (seen == Const.PUTSTATIC && getClassConstantOperand().equals(getClassName())) {
             XField f = getXFieldOperand();
@@ -166,20 +158,26 @@ public class InitializationChain extends BytecodeScanningDetector {
                     Set<XField> fields = staticFieldsRead.get(i.constructor);
                     if (fields != null && fields.contains(f)) {
                         warningGiven.add(f);
-                        BugInstance bug = new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY).addClassAndMethod(this);
+                        BugInstance bug =
+                                new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
+                                        .addClassAndMethod(this);
                         if (i.field != null) {
                             bug.addField(i.field).describe(FieldAnnotation.STORED_ROLE);
                         }
                         bug.addMethod(i.constructor).describe(MethodAnnotation.METHOD_CONSTRUCTOR);
-                        bug.addReferencedField(this).describe(FieldAnnotation.VALUE_OF_ROLE).addSourceLine(this, i.pc);
+                        bug.addReferencedField(this)
+                                .describe(FieldAnnotation.VALUE_OF_ROLE)
+                                .addSourceLine(this, i.pc);
                         bugReporter.reportBug(bug);
                         break;
-
                     }
                 }
             }
 
-        } else if (seen == Const.PUTSTATIC || seen == Const.GETSTATIC || seen == Const.INVOKESTATIC || seen == Const.NEW) {
+        } else if (seen == Const.PUTSTATIC
+                || seen == Const.GETSTATIC
+                || seen == Const.INVOKESTATIC
+                || seen == Const.NEW) {
             if (getPC() + 6 < codeBytes.length) {
                 requires.add(getDottedClassConstantOperand());
             }
@@ -234,11 +232,12 @@ public class InitializationChain extends BytecodeScanningDetector {
                 }
                 Set<String> s = classRequires.get(needs);
                 if (s != null && s.contains(c) && c.compareTo(needs) < 0) {
-                    bugReporter.reportBug(new BugInstance(this, "IC_INIT_CIRCULARITY", NORMAL_PRIORITY).addClass(c).addClass(
-                            needs));
+                    bugReporter.reportBug(
+                            new BugInstance(this, "IC_INIT_CIRCULARITY", NORMAL_PRIORITY)
+                                    .addClass(c)
+                                    .addClass(needs));
                 }
             }
         }
     }
-
 }

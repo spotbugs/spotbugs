@@ -18,11 +18,35 @@
  */
 package de.tobject.findbugs.view;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.util.EditorUtil;
+import de.tobject.findbugs.util.Util;
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugCategory;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugRankCategory;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.TypeAnnotation;
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -72,36 +96,7 @@ import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.ide.IDE;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.util.EditorUtil;
-import de.tobject.findbugs.util.Util;
-import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugCategory;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.BugRankCategory;
-import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.TypeAnnotation;
-import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-
-/**
- * @author Andrei
- *
- */
+/** @author Andrei */
 public class BugInfoView extends AbstractFindbugsView {
 
     private Browser browser;
@@ -109,7 +104,6 @@ public class BugInfoView extends AbstractFindbugsView {
     private Composite rootComposite;
 
     private BugPattern pattern;
-
 
     private String oldText;
 
@@ -137,18 +131,19 @@ public class BugInfoView extends AbstractFindbugsView {
 
     public BugInfoView() {
         super();
-        expansionListener = new IExpansionListener() {
-            @Override
-            public void expansionStateChanging(ExpansionEvent e) {
-                // noop
-            }
+        expansionListener =
+                new IExpansionListener() {
+                    @Override
+                    public void expansionStateChanging(ExpansionEvent e) {
+                        // noop
+                    }
 
-            @Override
-            public void expansionStateChanged(ExpansionEvent e) {
-                rootComposite.layout(true, true);
-                rootComposite.redraw();
-            }
-        };
+                    @Override
+                    public void expansionStateChanged(ExpansionEvent e) {
+                        rootComposite.layout(true, true);
+                        rootComposite.redraw();
+                    }
+                };
     }
 
     @Override
@@ -189,52 +184,57 @@ public class BugInfoView extends AbstractFindbugsView {
             browser = new Browser(parent, SWT.NO_BACKGROUND);
             browser.setLayoutData(data);
             browser.setBackground(parent.getBackground());
-            browser.addOpenWindowListener(new OpenWindowListener() {
-                @Override
-                public void open(WindowEvent event) {
-                    event.required = true; // Cancel opening of new windows
-                }
-            });
-            browser.addLocationListener(new LocationListener() {
-                @Override
-                public void changed(LocationEvent event) {
-                    // ignore
-                }
+            browser.addOpenWindowListener(
+                    new OpenWindowListener() {
+                        @Override
+                        public void open(WindowEvent event) {
+                            event.required = true; // Cancel opening of new windows
+                        }
+                    });
+            browser.addLocationListener(
+                    new LocationListener() {
+                        @Override
+                        public void changed(LocationEvent event) {
+                            // ignore
+                        }
 
-                @Override
-                public void changing(LocationEvent event) {
-                    // fix for SWT code on Won32 platform: it uses "about:blank"
-                    // before
-                    // set any non-null url. We ignore this url
-                    if (allowUrlChange || "about:blank".equals(event.location)) {
-                        return;
-                    }
-                    // disallow changing of property view content
-                    event.doit = false;
-                    // for any external url clicked by user we should leave
-                    // property view
-                    openBrowserInEditor(event);
-                }
-            });
+                        @Override
+                        public void changing(LocationEvent event) {
+                            // fix for SWT code on Won32 platform: it uses "about:blank"
+                            // before
+                            // set any non-null url. We ignore this url
+                            if (allowUrlChange || "about:blank".equals(event.location)) {
+                                return;
+                            }
+                            // disallow changing of property view content
+                            event.doit = false;
+                            // for any external url clicked by user we should leave
+                            // property view
+                            openBrowserInEditor(event);
+                        }
+                    });
         } catch (SWTError e) {
             FindbugsPlugin plugin = FindbugsPlugin.getDefault();
-            plugin.logException(new RuntimeException(e.getMessage(), e),
+            plugin.logException(
+                    new RuntimeException(e.getMessage(), e),
                     "Could not create org.eclipse.swt.widgets.Composite.Browser");
-
         }
     }
 
     private void createAnnotationList(Composite parent) {
-        ExpandableComposite exp = new ExpandableComposite(parent, SWT.NONE,
-                ExpandableComposite.TREE_NODE
-                        | ExpandableComposite.COMPACT
-                        | ExpandableComposite.EXPANDED
-        //                | ExpandableComposite.NO_TITLE
-        //                | ExpandableComposite.FOCUS_TITLE
-        //                | ExpandableComposite.TITLE_BAR
-        //                | ExpandableComposite.LEFT_TEXT_CLIENT_ALIGNMENT
-        //| ExpandableComposite.LEFT_TEXT_CLIENT_ALIGNMENT
-        );
+        ExpandableComposite exp =
+                new ExpandableComposite(
+                        parent,
+                        SWT.NONE,
+                        ExpandableComposite.TREE_NODE
+                                | ExpandableComposite.COMPACT
+                                | ExpandableComposite.EXPANDED
+                //                | ExpandableComposite.NO_TITLE
+                //                | ExpandableComposite.FOCUS_TITLE
+                //                | ExpandableComposite.TITLE_BAR
+                //                | ExpandableComposite.LEFT_TEXT_CLIENT_ALIGNMENT
+                // | ExpandableComposite.LEFT_TEXT_CLIENT_ALIGNMENT
+                );
         exp.addExpansionListener(expansionListener);
         exp.setText("Navigation");
         annotationList = new List(exp, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
@@ -245,34 +245,41 @@ public class BugInfoView extends AbstractFindbugsView {
         exp.setBackground(parent.getBackground());
         exp.setFont(JFaceResources.getDialogFont());
         annotationList.setFont(JFaceResources.getDialogFont());
-        annotationList.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent evnt) {
-                selectInEditor(false);
-            }
-        });
-        annotationList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseDoubleClick(MouseEvent e) {
-                selectInEditor(true);
-            }
-        });
+        annotationList.addSelectionListener(
+                new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent evnt) {
+                        selectInEditor(false);
+                    }
+                });
+        annotationList.addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseDoubleClick(MouseEvent e) {
+                        selectInEditor(true);
+                    }
+                });
         final Menu menu = new Menu(annotationList);
         final MenuItem item = new MenuItem(menu, SWT.PUSH);
-        item.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_COPY));
+        item.setImage(
+                PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_COPY));
         item.setText("Copy To Clipboard");
-        item.addListener(SWT.Selection, new Listener() {
-            @Override
-            public void handleEvent(Event e) {
-                copyInfoToClipboard();
-            }
-        });
-        menu.addListener(SWT.Show, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                item.setEnabled(bug != null);
-            }
-        });
+        item.addListener(
+                SWT.Selection,
+                new Listener() {
+                    @Override
+                    public void handleEvent(Event e) {
+                        copyInfoToClipboard();
+                    }
+                });
+        menu.addListener(
+                SWT.Show,
+                new Listener() {
+                    @Override
+                    public void handleEvent(Event event) {
+                        item.setEnabled(bug != null);
+                    }
+                });
         annotationList.setToolTipText("Click on lines or methods to go to them");
         annotationList.setMenu(menu);
         annotationList.pack(true);
@@ -292,7 +299,6 @@ public class BugInfoView extends AbstractFindbugsView {
         }
         oldText = html;
     }
-
 
     private String getHtml() {
         if (pattern == null) {
@@ -317,7 +323,8 @@ public class BugInfoView extends AbstractFindbugsView {
         text.append(getPatternDetails());
         addXmlOutput(text);
         addDetectorInfo(text);
-        String html = "<b>Bug</b>: " + toSafeHtml(bug.getMessageWithoutPrefix()) + "<br>\n" + text.toString();
+        String html =
+                "<b>Bug</b>: " + toSafeHtml(bug.getMessageWithoutPrefix()) + "<br>\n" + text.toString();
         return html;
     }
 
@@ -367,7 +374,8 @@ public class BugInfoView extends AbstractFindbugsView {
         sb.append(pattern.getType());
         sb.append("\n<br><b>Type</b>: ").append(pattern.getAbbrev()).append(", <b>Category</b>: ");
         sb.append(pattern.getCategory());
-        BugCategory category = DetectorFactoryCollection.instance().getBugCategory(pattern.getCategory());
+        BugCategory category =
+                DetectorFactoryCollection.instance().getBugCategory(pattern.getCategory());
         if (category != null) {
             sb.append(" (");
             sb.append(category.getShortDescription());
@@ -407,7 +415,10 @@ public class BugInfoView extends AbstractFindbugsView {
     @Override
     public void dispose() {
         if (selectionListener != null) {
-            getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(selectionListener);
+            getSite()
+                    .getWorkbenchWindow()
+                    .getSelectionService()
+                    .removeSelectionListener(selectionListener);
             selectionListener = null;
         }
         if (rootComposite != null && !rootComposite.isDisposed()) {
@@ -463,7 +474,6 @@ public class BugInfoView extends AbstractFindbugsView {
         }
         return null;
     }
-
 
     private void showAnnotation(IEditorPart activeEditor) {
         if (showingAnnotation) {
@@ -571,7 +581,6 @@ public class BugInfoView extends AbstractFindbugsView {
         SignatureParser parser = new SignatureParser(mma.getMethodSignature());
         String[] arguments = parser.getArguments();
 
-
         nextMethod: for (IMethod m : type.getMethods()) {
             if (!m.getElementName().equals(name)) {
                 continue nextMethod;
@@ -658,14 +667,15 @@ public class BugInfoView extends AbstractFindbugsView {
                     input = activeEditor.getEditorInput();
                 }
             } catch (PartInitException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not open editor for " + bug.getMessage());
+                FindbugsPlugin.getDefault()
+                        .logException(e, "Could not open editor for " + bug.getMessage());
             } catch (CoreException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not open editor for " + bug.getMessage());
+                FindbugsPlugin.getDefault()
+                        .logException(e, "Could not open editor for " + bug.getMessage());
             }
         }
         if (matchInput(input)) {
             showAnnotation(activeEditor);
-
         }
     }
 
@@ -701,8 +711,7 @@ public class BugInfoView extends AbstractFindbugsView {
             return;
         }
         if (file != null) {
-            setContentDescription(file.getName() +
-                    ": " + marker.getAttribute(IMarker.LINE_NUMBER, 0));
+            setContentDescription(file.getName() + ": " + marker.getAttribute(IMarker.LINE_NUMBER, 0));
         } else {
             setContentDescription("");
         }
@@ -739,6 +748,4 @@ public class BugInfoView extends AbstractFindbugsView {
             rootComposite.layout(true, true);
         }
     }
-
-
 }

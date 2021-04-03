@@ -1,9 +1,9 @@
 package de.tobject.findbugs;
 
+import edu.umd.cs.findbugs.Version;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -12,15 +12,14 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.osgi.framework.Bundle;
 
-import edu.umd.cs.findbugs.Version;
-
 public class AnnotationClasspathInitializer extends ClasspathVariableInitializer {
 
     private static final String FINDBUGS_ANNOTATIONS = "FINDBUGS_ANNOTATIONS";
 
     private static final String JSR305_ANNOTATIONS = "JSR305_ANNOTATIONS";
 
-    private static final String FINDBUGS_LIBRARY = "/lib/spotbugs-annotations-" + Version.VERSION_STRING + ".jar";
+    private static final String FINDBUGS_LIBRARY =
+            "/lib/spotbugs-annotations-" + Version.VERSION_STRING + ".jar";
 
     private static final String JSR305_LIBRARY = "/lib/jsr305-3.0.1.jar";
 
@@ -71,5 +70,4 @@ public class AnnotationClasspathInitializer extends ClasspathVariableInitializer
         }
         return fullPath;
     }
-
 }

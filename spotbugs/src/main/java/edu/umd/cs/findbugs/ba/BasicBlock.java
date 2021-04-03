@@ -19,19 +19,16 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.ba.type.TypeMerger;
+import edu.umd.cs.findbugs.graph.AbstractVertex;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
-
-import edu.umd.cs.findbugs.ba.type.TypeMerger;
-import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 /**
  * Simple basic block abstraction for BCEL.
@@ -47,9 +44,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
      * ----------------------------------------------------------------------
      */
 
-    /**
-     * Set of instruction opcodes that have an implicit null check.
-     */
+    /** Set of instruction opcodes that have an implicit null check. */
     private static final BitSet nullCheckInstructionSet = new BitSet();
 
     static {
@@ -108,9 +103,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
      * ----------------------------------------------------------------------
      */
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public BasicBlock() {
         this.firstInstruction = null;
         this.lastInstruction = null;
@@ -147,16 +140,13 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     /**
      * Set the instruction for which this block is the ETB.
      *
-     * @param exceptionThrower
-     *            the instruction
+     * @param exceptionThrower the instruction
      */
     public void setExceptionThrower(InstructionHandle exceptionThrower) {
         this.exceptionThrower = exceptionThrower;
     }
 
-    /**
-     * Return whether or not this block is an exception thrower.
-     */
+    /** Return whether or not this block is an exception thrower. */
     public boolean isExceptionThrower() {
         return exceptionThrower != null;
     }
@@ -164,16 +154,13 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     /**
      * Get the instruction for which this block is an exception thrower.
      *
-     * @return the instruction, or null if this block is not an exception
-     *         thrower
+     * @return the instruction, or null if this block is not an exception thrower
      */
     public InstructionHandle getExceptionThrower() {
         return exceptionThrower;
     }
 
-    /**
-     * Return whether or not this block is a null check.
-     */
+    /** Return whether or not this block is a null check. */
     public boolean isNullCheck() {
         // Null check blocks must be exception throwers,
         // and are always empty. (The only kind of non-empty
@@ -185,16 +172,12 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         return nullCheckInstructionSet.get(opcode);
     }
 
-    /**
-     * Get the first instruction in the basic block.
-     */
+    /** Get the first instruction in the basic block. */
     public InstructionHandle getFirstInstruction() {
         return firstInstruction;
     }
 
-    /**
-     * Get the last instruction in the basic block.
-     */
+    /** Get the last instruction in the basic block. */
     public InstructionHandle getLastInstruction() {
         return lastInstruction;
     }
@@ -202,10 +185,8 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     /**
      * Get the successor of given instruction within the basic block.
      *
-     * @param handle
-     *            the instruction
-     * @return the instruction's successor, or null if the instruction is the
-     *         last in the basic block
+     * @param handle the instruction
+     * @return the instruction's successor, or null if the instruction is the last in the basic block
      */
     public @CheckForNull InstructionHandle getSuccessorOf(InstructionHandle handle) {
         if (VERIFY_INTEGRITY && !containsInstruction(handle)) {
@@ -217,10 +198,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     /**
      * Get the predecessor of given instruction within the basic block.
      *
-     * @param handle
-     *            the instruction
-     * @return the instruction's predecessor, or null if the instruction is the
-     *         first in the basic block
+     * @param handle the instruction
+     * @return the instruction's predecessor, or null if the instruction is the first in the basic
+     *     block
      */
     public InstructionHandle getPredecessorOf(InstructionHandle handle) {
         if (VERIFY_INTEGRITY && !containsInstruction(handle)) {
@@ -232,8 +212,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     /**
      * Add an InstructionHandle to the basic block.
      *
-     * @param handle
-     *            the InstructionHandle
+     * @param handle the InstructionHandle
      */
     public void addInstruction(InstructionHandle handle) {
         if (firstInstruction == null) {
@@ -247,10 +226,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     }
 
     /**
-     * A forward Iterator over the instructions of a basic block. The
-     * duplicate() method can be used to make an exact copy of this iterator.
-     * Calling next() on the duplicate will not affect the original, and vice
-     * versa.
+     * A forward Iterator over the instructions of a basic block. The duplicate() method can be used
+     * to make an exact copy of this iterator. Calling next() on the duplicate will not affect the
+     * original, and vice versa.
      */
     public class InstructionIterator implements Iterator<InstructionHandle> {
         private InstructionHandle next;
@@ -324,16 +302,12 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         }
     }
 
-    /**
-     * Get an Iterator over the instructions in the basic block.
-     */
+    /** Get an Iterator over the instructions in the basic block. */
     public InstructionIterator instructionIterator() {
         return new InstructionIterator(firstInstruction, lastInstruction);
     }
 
-    /**
-     * A reverse Iterator over the instructions in a basic block.
-     */
+    /** A reverse Iterator over the instructions in a basic block. */
     private static class InstructionReverseIterator implements Iterator<InstructionHandle> {
         private InstructionHandle next;
         private final InstructionHandle first;
@@ -365,16 +339,14 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     }
 
     /**
-     * Get an Iterator over the instructions in the basic block in reverse
-     * order. This is useful for backwards dataflow analyses.
+     * Get an Iterator over the instructions in the basic block in reverse order. This is useful for
+     * backwards dataflow analyses.
      */
     public Iterator<InstructionHandle> instructionReverseIterator() {
         return new InstructionReverseIterator(lastInstruction, firstInstruction);
     }
 
-    /**
-     * Return true if there are no Instructions in this basic block.
-     */
+    /** Return true if there are no Instructions in this basic block. */
     public boolean isEmpty() {
         return firstInstruction == null;
     }
@@ -387,16 +359,14 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         return firstInstruction.getPosition();
     }
 
-    /**
-     * Is this block an exception handler?
-     */
+    /** Is this block an exception handler? */
     public boolean isExceptionHandler() {
         return exceptionGen != null;
     }
 
     /**
-     * Get CodeExceptionGen object; returns null if this basic block is not the
-     * entry point of an exception handler.
+     * Get CodeExceptionGen object; returns null if this basic block is not the entry point of an
+     * exception handler.
      *
      * @return the CodeExceptionGen object, or null
      */
@@ -405,11 +375,10 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     }
 
     /**
-     * Set the CodeExceptionGen object. Marks this basic block as the entry
-     * point of an exception handler.
+     * Set the CodeExceptionGen object. Marks this basic block as the entry point of an exception
+     * handler.
      *
-     * @param exceptionGen
-     *            the CodeExceptionGen object for the block
+     * @param exceptionGen the CodeExceptionGen object for the block
      */
     public void setExceptionGen(@Nullable TypeMerger m, CodeExceptionGen exceptionGen) {
         if (this.exceptionGen != null) {
@@ -422,8 +391,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     /**
      * Return whether or not the basic block contains the given instruction.
      *
-     * @param handle
-     *            the instruction
+     * @param handle the instruction
      * @return true if the block contains the instruction, false otherwise
      */
     public boolean containsInstruction(InstructionHandle handle) {
@@ -437,13 +405,10 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     }
 
     /**
-     * Return whether or not the basic block contains the instruction with the
-     * given bytecode offset.
+     * Return whether or not the basic block contains the instruction with the given bytecode offset.
      *
-     * @param offset
-     *            the bytecode offset
-     * @return true if the block contains an instruction with the given offset,
-     *         false if it does not
+     * @param offset the bytecode offset
+     * @return true if the block contains an instruction with the given offset, false if it does not
      */
     public boolean containsInstructionWithOffset(int offset) {
         Iterator<InstructionHandle> i = instructionIterator();
@@ -455,17 +420,12 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         return false;
     }
 
-    /**
-     * @return Returns the numNonExceptionSuccessors.
-     */
+    /** @return Returns the numNonExceptionSuccessors. */
     int getNumNonExceptionSuccessors() {
         return numNonExceptionSuccessors;
     }
 
-    /**
-     * @param numNonExceptionSuccessors
-     *            The numNonExceptionSuccessors to set.
-     */
+    /** @param numNonExceptionSuccessors The numNonExceptionSuccessors to set. */
     void setNumNonExceptionSuccessors(int numNonExceptionSuccessors) {
         this.numNonExceptionSuccessors = numNonExceptionSuccessors;
     }

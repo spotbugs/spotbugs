@@ -24,12 +24,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 import org.dom4j.Document;
 import org.dom4j.io.DocumentSource;
 
@@ -60,7 +58,8 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
             xsl.setSystemId(stylesheet);
 
             // Create a transformer using the stylesheet
-            TransformerFactory factory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+            TransformerFactory factory =
+                    TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
             Transformer transformer = factory.newTransformer(xsl);
 
             // Source document is the XML generated from the BugCollection

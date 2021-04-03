@@ -19,15 +19,15 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
-public class QuestionableBooleanAssignment extends BytecodeScanningDetector implements StatelessDetector {
+public class QuestionableBooleanAssignment extends BytecodeScanningDetector
+        implements StatelessDetector {
     public static final int SEEN_NOTHING = 0;
 
     public static final int SEEN_ICONST_0_OR_1 = 1;
@@ -87,8 +87,10 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 
             case SEEN_ISTORE:
                 if (seen == Const.IFEQ || seen == Const.IFNE) {
-                    bug = new BugInstance(this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", HIGH_PRIORITY).addClassAndMethod(this)
-                            .addSourceLine(this);
+                    bug =
+                            new BugInstance(this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", HIGH_PRIORITY)
+                                    .addClassAndMethod(this)
+                                    .addSourceLine(this);
                     state = SEEN_IF;
                 } else {
                     state = SEEN_NOTHING;

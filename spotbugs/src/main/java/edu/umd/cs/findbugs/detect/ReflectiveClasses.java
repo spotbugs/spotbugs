@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -29,14 +27,14 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import org.apache.bcel.Const;
 
-/**
- * Detector to find private methods that are never called.
- */
+/** Detector to find private methods that are never called. */
 public class ReflectiveClasses extends BytecodeScanningDetector implements NonReportingDetector {
 
     public ReflectiveClasses(BugReporter bugReporter) {
-        AnalysisContext.currentXFactory().addReflectiveClasses(DescriptorFactory.createClassDescriptor(java.lang.System.class));
+        AnalysisContext.currentXFactory()
+                .addReflectiveClasses(DescriptorFactory.createClassDescriptor(java.lang.System.class));
     }
 
     String constantString;
@@ -59,11 +57,11 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements NonRe
         if (seen == Const.INVOKESTATIC) {
             // System.out.println(getClassConstantOperand()+ "." +
             // getNameConstantOperand());
-            if (constantString != null && "java/lang/Class".equals(getClassConstantOperand())
+            if (constantString != null
+                    && "java/lang/Class".equals(getClassConstantOperand())
                     && "forName".equals(getNameConstantOperand())) {
                 process(ClassName.toSlashedClassName(constantString));
             }
-
         }
         constantString = null;
     }

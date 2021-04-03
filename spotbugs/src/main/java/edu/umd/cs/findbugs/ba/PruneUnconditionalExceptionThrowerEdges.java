@@ -19,12 +19,16 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -37,19 +41,14 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.type.TypeDataflow;
-import edu.umd.cs.findbugs.ba.type.TypeFrame;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.Global;
-
 public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
     private static final boolean DEBUG = SystemProperties.getBoolean("cfg.prune.throwers.debug");
 
-    private static final boolean DEBUG_DIFFERENCES = SystemProperties.getBoolean("cfg.prune.throwers.differences.debug");
+    private static final boolean DEBUG_DIFFERENCES =
+            SystemProperties.getBoolean("cfg.prune.throwers.differences.debug");
 
-    private static final String UNCONDITIONAL_THROWER_METHOD_NAMES = SystemProperties.getProperty(
-            "findbugs.unconditionalThrower", " ").replace(',', '|');
+    private static final String UNCONDITIONAL_THROWER_METHOD_NAMES =
+            SystemProperties.getProperty("findbugs.unconditionalThrower", " ").replace(',', '|');
 
     private final MethodGen methodGen;
 
@@ -66,6 +65,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
     private static final Pattern unconditionalThrowerPattern;
 
     private static final BitSet RETURN_OPCODE_SET = new BitSet();
+
     static {
         RETURN_OPCODE_SET.set(Const.ARETURN);
         RETURN_OPCODE_SET.set(Const.IRETURN);
@@ -81,14 +81,21 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
                 System.out.println(p.matcher("showInvalidPage").matches());
             }
         } catch (RuntimeException e) {
-            AnalysisContext.logError("Error compiling unconditional thrower pattern " + UNCONDITIONAL_THROWER_METHOD_NAMES, e);
+            AnalysisContext.logError(
+                    "Error compiling unconditional thrower pattern " + UNCONDITIONAL_THROWER_METHOD_NAMES, e);
             p = Pattern.compile(" ");
         }
         unconditionalThrowerPattern = p;
     }
 
-    public PruneUnconditionalExceptionThrowerEdges(/* ClassContext classContext, */JavaClass javaClass, Method method,
-            MethodGen methodGen, CFG cfg, ConstantPoolGen cpg, TypeDataflow typeDataflow, AnalysisContext analysisContext) {
+    public PruneUnconditionalExceptionThrowerEdges(
+            /* ClassContext classContext, */ JavaClass javaClass,
+            Method method,
+            MethodGen methodGen,
+            CFG cfg,
+            ConstantPoolGen cpg,
+            TypeDataflow typeDataflow,
+            AnalysisContext analysisContext) {
         // this.classContext = classContext;
         this.methodGen = methodGen;
         this.cfg = cfg;
@@ -107,8 +114,9 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
         // TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
         if (DEBUG) {
-            System.out.println("PruneUnconditionalExceptionThrowerEdges: examining "
-                    + SignatureConverter.convertMethodSignature(methodGen));
+            System.out.println(
+                    "PruneUnconditionalExceptionThrowerEdges: examining "
+                            + SignatureConverter.convertMethodSignature(methodGen));
         }
 
         for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
@@ -150,7 +158,8 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
             } else {
                 String className = inv.getClassName(cpg);
                 if (DEBUG) {
-                    System.out.println("\tlooking up method for " + instructionHandle + " : " + primaryXMethod);
+                    System.out.println(
+                            "\tlooking up method for " + instructionHandle + " : " + primaryXMethod);
                 }
 
                 Location loc = new Location(instructionHandle, basicBlock);
@@ -163,8 +172,10 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
                         continue;
                     }
                     String methodSig = inv.getSignature(cpg);
-                    if (!methodSig.endsWith("V") && !methodSig.endsWith("Exception;")
-                            && !methodSig.endsWith("Error;") && !methodSig.endsWith(")Ljava/lang/Object;")) {
+                    if (!methodSig.endsWith("V")
+                            && !methodSig.endsWith("Exception;")
+                            && !methodSig.endsWith("Error;")
+                            && !methodSig.endsWith(")Ljava/lang/Object;")) {
                         continue;
                     }
 
@@ -181,8 +192,9 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
                             if (!(xMethod.isFinal() || xMethod.isStatic() || xMethod.isPrivate())) {
                                 try {
                                     isExact = false;
-                                    XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                                            xMethod.getClassDescriptor());
+                                    XClass xClass =
+                                            Global.getAnalysisCache()
+                                                    .getClassAnalysis(XClass.class, xMethod.getClassDescriptor());
                                     if (xClass.isAbstract()) {
                                         continue;
                                     }
@@ -200,7 +212,6 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
                                 System.out.println("Found non thrower");
                             }
                         }
-
                     }
                 } catch (ClassNotFoundException e) {
                     analysisContext.getLookupFailureCallback().reportMissingClass(e);
@@ -221,7 +232,6 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
                     deletedEdgeSet.add(fallThrough);
                 }
             }
-
         }
 
         if (!deletedEdgeSet.isEmpty()) {
@@ -232,7 +242,6 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
             // Remove all edges marked for deletion
             for (Edge edge : deletedEdgeSet) {
                 cfg.removeEdge(edge);
-
             }
         }
     }
@@ -246,11 +255,11 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
      * @param javaClass
      * @param method
      * @return true if method unconditionally throws
-     * @deprecated Use {@link #doesMethodUnconditionallyThrowException(XMethod)}
-     *             instead
+     * @deprecated Use {@link #doesMethodUnconditionallyThrowException(XMethod)} instead
      */
     @Deprecated
-    static public Boolean doesMethodUnconditionallyThrowException(XMethod xMethod, JavaClass javaClass, Method method) {
+    public static Boolean doesMethodUnconditionallyThrowException(
+            XMethod xMethod, JavaClass javaClass, Method method) {
         return doesMethodUnconditionallyThrowException(xMethod);
     }
 
@@ -258,7 +267,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
      * @param xMethod
      * @return true if method unconditionally throws
      */
-    static public boolean doesMethodUnconditionallyThrowException(XMethod xMethod) {
+    public static boolean doesMethodUnconditionallyThrowException(XMethod xMethod) {
         return xMethod.isUnconditionalThrower();
     }
 

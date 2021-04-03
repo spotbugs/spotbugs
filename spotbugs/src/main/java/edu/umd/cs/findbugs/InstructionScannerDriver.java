@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import org.apache.bcel.generic.InstructionHandle;
-
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.Edge;
+import java.util.Iterator;
+import java.util.LinkedList;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
- * Drive an InstructionScannerGenerator over the instructions of a simple path.
- * The generator will create scanners at certain instructions. Each instruction
- * and edge is fed to all scanners so created.
+ * Drive an InstructionScannerGenerator over the instructions of a simple path. The generator will
+ * create scanners at certain instructions. Each instruction and edge is fed to all scanners so
+ * created.
  */
 public class InstructionScannerDriver {
     private final Iterator<Edge> edgeIter;
@@ -42,8 +40,7 @@ public class InstructionScannerDriver {
     /**
      * Constructor.
      *
-     * @param edgeIter
-     *            iterator over Edges specifying path to be scanned
+     * @param edgeIter iterator over Edges specifying path to be scanned
      */
     public InstructionScannerDriver(Iterator<Edge> edgeIter) {
         this.edgeIter = edgeIter;
@@ -51,12 +48,10 @@ public class InstructionScannerDriver {
     }
 
     /**
-     * Execute by driving the InstructionScannerGenerator over all instructions.
-     * Each generated InstructionScanner is driven over all instructions and
-     * edges.
+     * Execute by driving the InstructionScannerGenerator over all instructions. Each generated
+     * InstructionScanner is driven over all instructions and edges.
      *
-     * @param generator
-     *            the InstructionScannerGenerator
+     * @param generator the InstructionScannerGenerator
      */
     public void execute(InstructionScannerGenerator generator) {
         // Pump the instructions in the path through the generator and all

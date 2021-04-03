@@ -23,8 +23,8 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 /**
- * These are the leaves of the tree, note that coloring is not done here, it is
- * done in BugRenderer This class is basically just a wrapper for BugInstance
+ * These are the leaves of the tree, note that coloring is not done here, it is done in BugRenderer
+ * This class is basically just a wrapper for BugInstance
  */
 
 // only thing of note is the equals method, which purposefully uses == since

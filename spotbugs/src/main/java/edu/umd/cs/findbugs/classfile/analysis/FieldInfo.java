@@ -19,16 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
-import java.lang.annotation.ElementType;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.Const;
-import org.objectweb.asm.Opcodes;
-
 import edu.umd.cs.findbugs.ba.ComparableField;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -45,15 +35,20 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
+import java.lang.annotation.ElementType;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.Const;
+import org.objectweb.asm.Opcodes;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class FieldInfo extends FieldDescriptor implements XField {
 
     public static final FieldInfo[] EMPTY_ARRAY = new FieldInfo[0];
 
-    static public class Builder {
+    public static class Builder {
         final int accessFlags;
 
         final String className, fieldName, fieldSignature;
@@ -62,7 +57,11 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
         final Map<ClassDescriptor, AnnotationValue> fieldAnnotations = new HashMap<>(3);
 
-        public Builder(@SlashedClassName String className, String fieldName, String fieldSignature, int accessFlags) {
+        public Builder(
+                @SlashedClassName String className,
+                String fieldName,
+                String fieldSignature,
+                int accessFlags) {
             this.className = className;
             this.fieldName = fieldName;
             this.fieldSignature = fieldSignature;
@@ -79,7 +78,14 @@ public class FieldInfo extends FieldDescriptor implements XField {
         }
 
         public FieldInfo build() {
-            return new FieldInfo(className, fieldName, fieldSignature, fieldSourceSignature, accessFlags, fieldAnnotations, true);
+            return new FieldInfo(
+                    className,
+                    fieldName,
+                    fieldSignature,
+                    fieldSourceSignature,
+                    accessFlags,
+                    fieldAnnotations,
+                    true);
         }
     }
 
@@ -91,9 +97,13 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     final boolean isResolved;
 
-
-    private FieldInfo(@SlashedClassName String className, String fieldName, String fieldSignature,
-            @CheckForNull String fieldSourceSignature, int accessFlags, Map<ClassDescriptor, AnnotationValue> fieldAnnotations,
+    private FieldInfo(
+            @SlashedClassName String className,
+            String fieldName,
+            String fieldSignature,
+            @CheckForNull String fieldSourceSignature,
+            int accessFlags,
+            Map<ClassDescriptor, AnnotationValue> fieldAnnotations,
             boolean isResolved) {
         super(className, fieldName, fieldSignature, (accessFlags & Const.ACC_STATIC) != 0);
         this.accessFlags = accessFlags | (fieldName.startsWith("this$") ? Const.ACC_FINAL : 0);
@@ -153,7 +163,8 @@ public class FieldInfo extends FieldDescriptor implements XField {
             return XFactory.compare((XField) this, (XField) rhs);
         }
 
-        throw new ClassCastException("Can't compare a " + this.getClass().getName() + " to a " + rhs.getClass().getName());
+        throw new ClassCastException(
+                "Can't compare a " + this.getClass().getName() + " to a " + rhs.getClass().getName());
     }
 
     /*
@@ -262,17 +273,14 @@ public class FieldInfo extends FieldDescriptor implements XField {
     }
 
     /**
-     * Destructively add an annotation. We do this for "built-in" annotations
-     * that might not be directly evident in the code. It's not a great idea in
-     * general, but we can get away with it as long as it's done early enough
-     * (i.e., before anyone asks what annotations this field has.)
+     * Destructively add an annotation. We do this for "built-in" annotations that might not be
+     * directly evident in the code. It's not a great idea in general, but we can get away with it as
+     * long as it's done early enough (i.e., before anyone asks what annotations this field has.)
      *
-     * @param annotationValue
-     *            an AnnotationValue representing a field annotation
+     * @param annotationValue an AnnotationValue representing a field annotation
      */
     public void addAnnotation(AnnotationValue annotationValue) {
-        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<>(
-                fieldAnnotations);
+        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<>(fieldAnnotations);
         updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
         fieldAnnotations = updatedAnnotations;
         TypeQualifierApplications.updateAnnotations(this);
@@ -289,27 +297,30 @@ public class FieldInfo extends FieldDescriptor implements XField {
     }
 
     /**
-     * Create a FieldInfo object to represent an unresolved field.
-     * <em>Don't call this directly - use XFactory instead.</em>
+     * Create a FieldInfo object to represent an unresolved field. <em>Don't call this directly - use
+     * XFactory instead.</em>
      *
-     * @param className
-     *            name of class containing the field
-     * @param name
-     *            name of field
-     * @param signature
-     *            field signature
-     * @param isStatic
-     *            true if field is static, false otherwise
+     * @param className name of class containing the field
+     * @param name name of field
+     * @param signature field signature
+     * @param isStatic true if field is static, false otherwise
      * @return FieldInfo object representing the unresolved field
      */
-    public static FieldInfo createUnresolvedFieldInfo(String className, String name, String signature, boolean isStatic) {
+    public static FieldInfo createUnresolvedFieldInfo(
+            String className, String name, String signature, boolean isStatic) {
         className = ClassName.toSlashedClassName(className);
-        return new FieldInfo(className, name, signature, null, // without seeing
+        return new FieldInfo(
+                className,
+                name,
+                signature,
+                null, // without seeing
                 // the definition
                 // we don't know
                 // if it has a
                 // generic type
-                isStatic ? Const.ACC_STATIC : 0, new HashMap<ClassDescriptor, AnnotationValue>(), false);
+                isStatic ? Const.ACC_STATIC : 0,
+                new HashMap<ClassDescriptor, AnnotationValue>(),
+                false);
     }
 
     @Override

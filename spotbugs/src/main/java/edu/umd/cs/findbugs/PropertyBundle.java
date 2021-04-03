@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.io.IO;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,18 +30,14 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.io.IO;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class PropertyBundle {
 
     private final Properties properties;
 
     class Rewriter {
-        private final String urlRewritePatternString = getOSDependentProperty("findbugs.urlRewritePattern");
+        private final String urlRewritePatternString =
+                getOSDependentProperty("findbugs.urlRewritePattern");
 
         private final Pattern urlRewritePattern;
 
@@ -93,7 +91,8 @@ public class PropertyBundle {
             return;
         }
 
-        try (InputStream in = new ByteArrayInputStream(contents.getBytes(StandardCharsets.ISO_8859_1))) {
+        try (InputStream in =
+                new ByteArrayInputStream(contents.getBytes(StandardCharsets.ISO_8859_1))) {
             properties.load(in);
         } catch (IOException e) {
             AnalysisContext.logError("Unable to load properties from " + contents, e);
@@ -121,8 +120,8 @@ public class PropertyBundle {
     }
 
     /**
-     * Get boolean property, returning false if a security manager prevents us
-     * from accessing system properties
+     * Get boolean property, returning false if a security manager prevents us from accessing system
+     * properties
      *
      * @return true if the property exists and is set to true
      */
@@ -149,10 +148,8 @@ public class PropertyBundle {
     }
 
     /**
-     * @param name
-     *            property name
-     * @param defaultValue
-     *            default value
+     * @param name property name
+     * @param defaultValue default value
      * @return the int value (or defaultValue if the property does not exist)
      */
     public int getInt(String name, int defaultValue) {
@@ -168,8 +165,7 @@ public class PropertyBundle {
     }
 
     /**
-     * @param name
-     *            property name
+     * @param name property name
      * @return string value (or null if the property does not exist)
      */
     public String getOSDependentProperty(String name) {
@@ -182,8 +178,7 @@ public class PropertyBundle {
     }
 
     /**
-     * @param name
-     *            property name
+     * @param name property name
      * @return string value (or null if the property does not exist)
      */
     public String getProperty(String name) {
@@ -196,7 +191,6 @@ public class PropertyBundle {
         } catch (Exception e) {
             return null;
         }
-
     }
 
     public void setProperty(String name, String value) {
@@ -209,10 +203,8 @@ public class PropertyBundle {
     }
 
     /**
-     * @param name
-     *            property name
-     * @param defaultValue
-     *            default value
+     * @param name property name
+     * @param defaultValue default value
      * @return string value (or defaultValue if the property does not exist)
      */
     public String getProperty(String name, String defaultValue) {
@@ -234,5 +226,4 @@ public class PropertyBundle {
         String result = String.format(getRewriter().urlRewriteFormat, m.group(1));
         return result;
     }
-
 }

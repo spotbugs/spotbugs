@@ -18,11 +18,11 @@
  */
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IProject;
@@ -44,8 +44,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
 public class OpenXMLResultsAction extends FindBugsAction {
 
     @Override
@@ -60,8 +58,10 @@ public class OpenXMLResultsAction extends FindBugsAction {
         }
         IPath filePath = FindbugsPlugin.getBugCollectionFile(project);
         if (!filePath.toFile().exists()) {
-            MessageDialog.openInformation(null, "Open XML results", "No SpotBugs analysis results available for project '"
-                    + project.getName() + "'!");
+            MessageDialog.openInformation(
+                    null,
+                    "Open XML results",
+                    "No SpotBugs analysis results available for project '" + project.getName() + "'!");
             return;
         }
         openEditor(filePath.toFile());
@@ -86,7 +86,8 @@ public class OpenXMLResultsAction extends FindBugsAction {
     private static String getEditorId(File file) {
         IWorkbench workbench = PlatformUI.getWorkbench();
         IEditorRegistry editorRegistry = workbench.getEditorRegistry();
-        IEditorDescriptor descriptor = editorRegistry.getDefaultEditor(file.getName(), getContentType(file));
+        IEditorDescriptor descriptor =
+                editorRegistry.getDefaultEditor(file.getName(), getContentType(file));
         if (descriptor != null) {
             return descriptor.getId();
         }
@@ -115,5 +116,4 @@ public class OpenXMLResultsAction extends FindBugsAction {
             }
         }
     }
-
 }

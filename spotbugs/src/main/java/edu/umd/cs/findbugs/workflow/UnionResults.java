@@ -19,11 +19,6 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.IOException;
-import java.util.HashSet;
-
-import org.dom4j.DocumentException;
-
 import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -32,10 +27,11 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.CommandLine;
+import java.io.IOException;
+import java.util.HashSet;
+import org.dom4j.DocumentException;
 
-/**
- * Compute the union of two sets of bug results, preserving annotations.
- */
+/** Compute the union of two sets of bug results, preserving annotations. */
 public class UnionResults {
 
     static class UnionResultsCommandLine extends CommandLine {
@@ -79,7 +75,6 @@ public class UnionResults {
                 throw new IllegalArgumentException("Unknown option : " + option);
             }
         }
-
     }
 
     static {
@@ -87,13 +82,15 @@ public class UnionResults {
         // detector plugins
     }
 
-    static public SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
+    public static SortedBugCollection union(
+            SortedBugCollection origCollection, SortedBugCollection newCollection) {
         SortedBugCollection result = origCollection.duplicate();
         merge(null, result, newCollection);
         return result;
     }
 
-    static public void merge(HashSet<String> hashes, SortedBugCollection into, SortedBugCollection from) {
+    public static void merge(
+            HashSet<String> hashes, SortedBugCollection into, SortedBugCollection from) {
 
         for (BugInstance bugInstance : from.getCollection()) {
             if (hashes == null || hashes.add(bugInstance.getInstanceHash())) {
@@ -120,8 +117,14 @@ public class UnionResults {
         FindBugs.setNoAnalysis();
         final UnionResultsCommandLine commandLine = new UnionResultsCommandLine();
 
-        int argCount = commandLine.parse(argv, 2, Integer.MAX_VALUE, "Usage: " + UnionResults.class.getName()
-                + " [options] [<results1> <results2> ... <resultsn>] ");
+        int argCount =
+                commandLine.parse(
+                        argv,
+                        2,
+                        Integer.MAX_VALUE,
+                        "Usage: "
+                                + UnionResults.class.getName()
+                                + " [options] [<results1> <results2> ... <resultsn>] ");
 
         SortedBugCollection results = null;
         HashSet<String> hashes = new HashSet<>();
@@ -156,5 +159,4 @@ public class UnionResults {
             results.writeXML(commandLine.outputFile);
         }
     }
-
 }

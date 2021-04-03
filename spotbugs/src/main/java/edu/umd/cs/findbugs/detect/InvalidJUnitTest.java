@@ -21,11 +21,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -37,6 +32,10 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 public class InvalidJUnitTest extends BytecodeScanningDetector {
 
@@ -70,7 +69,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
             }
             if ((jClass.getAccessFlags() & Const.ACC_ABSTRACT) == 0) {
                 if (!hasTestMethods(jClass)) {
-                    bugReporter.reportBug(new BugInstance(this, "IJU_NO_TESTS", LOW_PRIORITY).addClass(jClass));
+                    bugReporter.reportBug(
+                            new BugInstance(this, "IJU_NO_TESTS", LOW_PRIORITY).addClass(jClass));
                 }
             }
             directChildOfTestCase = "junit.framework.TestCase".equals(jClass.getSuperclassName());
@@ -78,7 +78,6 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         }
-
     }
 
     private boolean isJunit3TestCase(XClass jClass) throws ClassNotFoundException {
@@ -103,7 +102,6 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
         } catch (CheckedAnalysisException e) {
             return false;
         }
-
     }
 
     private boolean hasTestMethods(JavaClass jClass) {
@@ -136,9 +134,11 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
     /** is there a JUnit3TestSuite */
     private boolean hasSuite(Method[] methods) {
         for (Method m : methods) {
-            if (m.getName().equals("suite") && m.isPublic() && m.isStatic()
-            // && m.getReturnType().equals(junit.framework.Test.class)
-            // && m.getArgumentTypes().length == 0
+            if (m.getName().equals("suite")
+                    && m.isPublic()
+                    && m.isStatic()
+                    // && m.getReturnType().equals(junit.framework.Test.class)
+                    // && m.getArgumentTypes().length == 0
                     && m.getSignature().equals("()Ljunit/framework/Test;")) {
                 return true;
             }
@@ -147,9 +147,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
     }
 
     /**
-     * Check whether or not this detector should be enabled. The detector is
-     * disabled if the TestCase class cannot be found (meaning we don't have
-     * junit.jar on the aux classpath).
+     * Check whether or not this detector should be enabled. The detector is disabled if the TestCase
+     * class cannot be found (meaning we don't have junit.jar on the aux classpath).
      *
      * @return true if it should be enabled, false if not
      */
@@ -160,16 +159,17 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
     @Override
     public void visit(Method obj) {
         if (getMethodName().equals("suite") && !obj.isStatic()) {
-            bugReporter.reportBug(new BugInstance(this, "IJU_SUITE_NOT_STATIC", NORMAL_PRIORITY).addClassAndMethod(this));
+            bugReporter.reportBug(
+                    new BugInstance(this, "IJU_SUITE_NOT_STATIC", NORMAL_PRIORITY).addClassAndMethod(this));
         }
 
         if (getMethodName().equals("suite") && obj.getSignature().startsWith("()") && obj.isStatic()) {
-            if ((!obj.getSignature().equals("()Ljunit/framework/Test;") && !obj.getSignature().equals(
-                    "()Ljunit/framework/TestSuite;"))
+            if ((!obj.getSignature().equals("()Ljunit/framework/Test;")
+                    && !obj.getSignature().equals("()Ljunit/framework/TestSuite;"))
                     || !obj.isPublic()) {
-                bugReporter.reportBug(new BugInstance(this, "IJU_BAD_SUITE_METHOD", NORMAL_PRIORITY).addClassAndMethod(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, "IJU_BAD_SUITE_METHOD", NORMAL_PRIORITY).addClassAndMethod(this));
             }
-
         }
     }
 
@@ -177,14 +177,17 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 
     @Override
     public void visit(Code obj) {
-        if (!directChildOfTestCase && (getMethodName().equals("setUp") || getMethodName().equals("tearDown"))
-                && !getMethod().isPrivate() && getMethodSig().equals("()V")) {
+        if (!directChildOfTestCase
+                && (getMethodName().equals("setUp") || getMethodName().equals("tearDown"))
+                && !getMethod().isPrivate()
+                && getMethodSig().equals("()V")) {
             sawSuperCall = false;
             super.visit(obj);
             if (sawSuperCall) {
                 return;
             }
-            JavaClass we = Lookup.findSuperImplementor(getThisClass(), getMethodName(), "()V", bugReporter);
+            JavaClass we =
+                    Lookup.findSuperImplementor(getThisClass(), getMethodName(), "()V", bugReporter);
             if (we != null && !we.getClassName().equals("junit.framework.TestCase")) {
                 // OK, got a bug
                 int offset = 0;
@@ -194,9 +197,17 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
                 Method superMethod = Lookup.findImplementation(we, getMethodName(), "()V");
                 Code superCode = superMethod.getCode();
                 if (superCode != null && superCode.getCode().length > 3) {
-                    bugReporter.reportBug(new BugInstance(this, getMethodName().equals("setUp") ? "IJU_SETUP_NO_SUPER"
-                            : "IJU_TEARDOWN_NO_SUPER", NORMAL_PRIORITY).addClassAndMethod(this).addMethod(we, superMethod)
-                                    .describe(MethodAnnotation.METHOD_OVERRIDDEN).addSourceLine(this, offset));
+                    bugReporter.reportBug(
+                            new BugInstance(
+                                    this,
+                                    getMethodName().equals("setUp")
+                                            ? "IJU_SETUP_NO_SUPER"
+                                            : "IJU_TEARDOWN_NO_SUPER",
+                                    NORMAL_PRIORITY)
+                                            .addClassAndMethod(this)
+                                            .addMethod(we, superMethod)
+                                            .describe(MethodAnnotation.METHOD_OVERRIDDEN)
+                                            .addSourceLine(this, offset));
                 }
             }
         }
@@ -212,7 +223,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
             break;
 
         case SEEN_ALOAD_0:
-            if ((seen == Const.INVOKESPECIAL) && (getNameConstantOperand().equals(getMethodName()))
+            if ((seen == Const.INVOKESPECIAL)
+                    && (getNameConstantOperand().equals(getMethodName()))
                     && (getSigConstantOperand().equals("()V"))) {
                 sawSuperCall = true;
             }

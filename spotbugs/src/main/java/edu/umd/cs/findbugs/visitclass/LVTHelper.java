@@ -21,26 +21,20 @@
 package edu.umd.cs.findbugs.visitclass;
 
 import javax.annotation.Nonnull;
-
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 
-
-/**
- * Eases access to a BCEL LocalVariable object
- */
+/** Eases access to a BCEL LocalVariable object */
 public class LVTHelper {
     /**
      * returns the local variable at an index int the scope of PC
      *
-     * @param lvt
-     *            the local variable table
-     * @param index
-     *            the variable index
-     * @param pc
-     *            the PC where the variable is used
+     * @param lvt the local variable table
+     * @param index the variable index
+     * @param pc the PC where the variable is used
      */
-    public static LocalVariable getLocalVariableAtPC(@Nonnull LocalVariableTable lvt, int index, int pc) {
+    public static LocalVariable getLocalVariableAtPC(
+            @Nonnull LocalVariableTable lvt, int index, int pc) {
         int length = lvt.getTableLength();
         LocalVariable[] lvs = lvt.getLocalVariableTable();
 

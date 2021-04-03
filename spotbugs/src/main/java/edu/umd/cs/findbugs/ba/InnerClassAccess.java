@@ -30,7 +30,8 @@ public class InnerClassAccess {
 
     private final boolean isLoad;
 
-    public InnerClassAccess(String methodName, String methodSig, @Nonnull XField field, boolean isLoad) {
+    public InnerClassAccess(
+            String methodName, String methodSig, @Nonnull XField field, boolean isLoad) {
         this.methodName = methodName;
         this.methodSig = methodSig;
         this.field = field;

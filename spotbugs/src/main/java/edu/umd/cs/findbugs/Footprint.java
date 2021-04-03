@@ -27,17 +27,15 @@ import java.util.List;
 /**
  * Class to maintain a snapshot of a processes's time and memory usage.
  *
- * This uses some JDK 1.5 APIs so must be careful that it doesn't cause any harm
- * when run from 1.4.
+ * <p>This uses some JDK 1.5 APIs so must be careful that it doesn't cause any harm when run from
+ * 1.4.
  *
  * @see FindBugs
  * @author Brian Cole
  */
 public class Footprint {
 
-    /**
-     *
-     */
+    /** */
     private static final int NOCLASSDEF_ERROR = -9;
 
     private static final int CLASSCAST_ERROR = -8;
@@ -69,7 +67,8 @@ public class Footprint {
         }
         // leave peakMem alone
         if (collectionTime >= 0) {
-            collectionTime = (base.collectionTime >= 0) ? collectionTime - base.collectionTime : base.collectionTime;
+            collectionTime =
+                    (base.collectionTime >= 0) ? collectionTime - base.collectionTime : base.collectionTime;
         }
     }
 
@@ -140,9 +139,8 @@ public class Footprint {
     // -------- begin static inner classes --------
 
     /**
-     * Wrapper so that possible NoClassDefFoundError can be caught.
-     * Instantiating this class will throw a NoClassDefFoundError on JDK 1.4 and
-     * earlier.
+     * Wrapper so that possible NoClassDefFoundError can be caught. Instantiating this class will
+     * throw a NoClassDefFoundError on JDK 1.4 and earlier.
      */
     public static class MemoryBeanWrapper {
         List<MemoryPoolMXBean> mlist = ManagementFactory.getMemoryPoolMXBeans();
@@ -163,7 +161,8 @@ public class Footprint {
                     if (memUsage != null) {
                         sum += memUsage.getUsed(); // or getCommitted()
                         // System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
-                        // System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+", Memory usage="+mpBean.getPeakUsage());
+                        // System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+",
+                        // Memory usage="+mpBean.getPeakUsage());
                     }
                 } catch (RuntimeException e) {
                     assert true;
@@ -176,21 +175,22 @@ public class Footprint {
     }
 
     /**
-     * Wrapper so that possible NoClassDefFoundError can be caught.
-     * Instantiating this class will throw a NoClassDefFoundError on JDK 1.4 and
-     * earlier, or will throw a ClassCastException on a 1.5-compliant non-sun
-     * JRE where the osBean is not a sunBean. (If compiled by Eclipse,
+     * Wrapper so that possible NoClassDefFoundError can be caught. Instantiating this class will
+     * throw a NoClassDefFoundError on JDK 1.4 and earlier, or will throw a ClassCastException on a
+     * 1.5-compliant non-sun JRE where the osBean is not a sunBean. (If compiled by Eclipse,
      * instantiating it will throw an unsubclassed java.lang.Error.)
      */
     public static class OperatingSystemBeanWrapper {
-        java.lang.management.OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        java.lang.management.OperatingSystemMXBean osBean =
+                ManagementFactory.getOperatingSystemMXBean();
 
         // next line compiles fine with sun JDK 1.5 but the eclipse compiler may
         // complain "The type
         // OperatingSystemMXBean is not accessible due to restriction on
         // required library classes.jar"
         // depending on the contents of the .classpath file.
-        com.sun.management.OperatingSystemMXBean sunBean = (com.sun.management.OperatingSystemMXBean) osBean;
+        com.sun.management.OperatingSystemMXBean sunBean =
+                (com.sun.management.OperatingSystemMXBean) osBean;
 
         public long getProcessCpuTime() {
             return sunBean.getProcessCpuTime();
@@ -198,9 +198,8 @@ public class Footprint {
     }
 
     /**
-     * Wrapper so that possible NoClassDefFoundError can be caught.
-     * Instantiating this class will throw a NoClassDefFoundError on JDK 1.4 and
-     * earlier.
+     * Wrapper so that possible NoClassDefFoundError can be caught. Instantiating this class will
+     * throw a NoClassDefFoundError on JDK 1.4 and earlier.
      */
     public static class CollectionBeanWrapper {
         List<GarbageCollectorMXBean> clist = ManagementFactory.getGarbageCollectorMXBeans();
@@ -213,5 +212,4 @@ public class Footprint {
             return sum;
         }
     }
-
 }

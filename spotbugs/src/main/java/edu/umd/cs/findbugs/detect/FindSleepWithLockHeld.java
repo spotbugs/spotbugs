@@ -18,16 +18,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-import java.util.Iterator;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.Instruction;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -39,6 +29,14 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.LockSet;
+import java.util.BitSet;
+import java.util.Iterator;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
+import org.apache.bcel.generic.Instruction;
 
 /**
  * Find calls to Thread.sleep() made with a lock held.
@@ -92,7 +90,8 @@ public class FindSleepWithLockHeld implements Detector {
         return bytecodeSet.get(Const.INVOKESTATIC);
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         // System.out.println("Checking " + method);
 
         CFG cfg = classContext.getCFG(method);
@@ -115,8 +114,11 @@ public class FindSleepWithLockHeld implements Detector {
             LockSet lockSet = lockDataflow.getFactAtLocation(location);
             if (lockSet.getNumLockedObjects() > 0) {
                 bugAccumulator.accumulateBug(
-                        new BugInstance(this, "SWL_SLEEP_WITH_LOCK_HELD", NORMAL_PRIORITY).addClassAndMethod(
-                                classContext.getJavaClass(), method), classContext, method, location);
+                        new BugInstance(this, "SWL_SLEEP_WITH_LOCK_HELD", NORMAL_PRIORITY)
+                                .addClassAndMethod(classContext.getJavaClass(), method),
+                        classContext,
+                        method,
+                        location);
             }
         }
         bugAccumulator.reportAccumulatedBugs();
@@ -136,5 +138,4 @@ public class FindSleepWithLockHeld implements Detector {
     @Override
     public void report() {
     }
-
 }

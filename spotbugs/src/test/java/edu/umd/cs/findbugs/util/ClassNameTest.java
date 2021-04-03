@@ -19,16 +19,13 @@
 
 package edu.umd.cs.findbugs.util;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
+import org.junit.Test;
 
-import static org.junit.Assert.*;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class ClassNameTest {
 
     @Test
@@ -36,8 +33,12 @@ public class ClassNameTest {
         assertEquals("", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 0));
         assertEquals("org", ClassName.extractPackagePrefix("org", 1));
         assertEquals("org.apache.ant", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 3));
-        assertEquals("org.apache.ant.subpkg.sub2", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 5));
-        assertEquals("org.apache.ant.subpkg.sub2", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 6));
+        assertEquals(
+                "org.apache.ant.subpkg.sub2",
+                ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 5));
+        assertEquals(
+                "org.apache.ant.subpkg.sub2",
+                ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 6));
     }
 
     @Test
@@ -70,28 +71,29 @@ public class ClassNameTest {
 
     @Test
     public void testMatchedPrefix() {
-        List<String[]> negativeCases = Arrays.asList(
-                new String[] { "foobar" },
-                new String[] { "" },
-                new String[] { "testObject" });
+        List<String[]> negativeCases =
+                Arrays.asList(new String[] { "foobar" }, new String[] { "" }, new String[] { "testObject" });
 
         for (String[] searchString : negativeCases) {
-            assertFalse("com.text.TestClass should not be matched by " + Arrays.toString(searchString),
+            assertFalse(
+                    "com.text.TestClass should not be matched by " + Arrays.toString(searchString),
                     ClassName.matchedPrefixes(searchString, "com.test.TestClass"));
         }
 
-        List<String[]> positiveCases = Arrays.asList(
-                new String[] {},
-                null,
-                new String[] { "TestClass" },
-                new String[] { "testclass" },
-                new String[] { "testclass" },
-                new String[] { "testClass" },
-                new String[] { "tetGlass" },
-                new String[] { "bastClass" });
+        List<String[]> positiveCases =
+                Arrays.asList(
+                        new String[] {},
+                        null,
+                        new String[] { "TestClass" },
+                        new String[] { "testclass" },
+                        new String[] { "testclass" },
+                        new String[] { "testClass" },
+                        new String[] { "tetGlass" },
+                        new String[] { "bastClass" });
 
         for (String[] searchString : positiveCases) {
-            assertTrue("com.text.TestClass should be matched by " + Arrays.toString(searchString),
+            assertTrue(
+                    "com.text.TestClass should be matched by " + Arrays.toString(searchString),
                     ClassName.matchedPrefixes(searchString, "com.test.TestClass"));
         }
     }

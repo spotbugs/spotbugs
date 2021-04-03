@@ -24,9 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class MultiMap<K, V> {
     final Class<? extends Collection<V>> containerClass;
 
@@ -93,5 +91,4 @@ public class MultiMap<K, V> {
     public Map<K, Collection<V>> asMap() {
         return map;
     }
-
 }

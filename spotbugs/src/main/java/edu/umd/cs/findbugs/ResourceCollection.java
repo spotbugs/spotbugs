@@ -19,25 +19,24 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.Location;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.ba.Location;
-
 /**
- * A ResourceCollection defines all of the resources created and used in a
- * particular method. It serves two related purposes:
+ * A ResourceCollection defines all of the resources created and used in a particular method. It
+ * serves two related purposes:
+ *
  * <ol>
- * <li>Define all of the resources which exist in the method, and
- * <li>Record where resources created in the method are created
+ *   <li>Define all of the resources which exist in the method, and
+ *   <li>Record where resources created in the method are created
  * </ol>
- * <p>
- * This distinction is important because some resources which exist in the
- * method aren't created in the method: for example, resources passed in as
- * parameters.
+ *
+ * <p>This distinction is important because some resources which exist in the method aren't created
+ * in the method: for example, resources passed in as parameters.
  *
  * @author David Hovemeyer
  */
@@ -46,21 +45,17 @@ public class ResourceCollection<Resource> {
 
     private final Map<Location, Resource> locationToResourceMap;
 
-    /**
-     * Constructor. Creates empty collection.
-     */
+    /** Constructor. Creates empty collection. */
     public ResourceCollection() {
         this.resourceList = new LinkedList<>();
         this.locationToResourceMap = new HashMap<>();
     }
 
     /**
-     * Add a preexisting resource. That is, one that is not created within the
-     * analyzed method. Resources passed to the method as parameters fall into
-     * this category.
+     * Add a preexisting resource. That is, one that is not created within the analyzed method.
+     * Resources passed to the method as parameters fall into this category.
      *
-     * @param resource
-     *            the preexisting resource
+     * @param resource the preexisting resource
      */
     public void addPreexistingResource(Resource resource) {
         resourceList.add(resource);
@@ -69,26 +64,22 @@ public class ResourceCollection<Resource> {
     /**
      * Add a resource created within the analyzed method.
      *
-     * @param location
-     *            the location
-     * @param resource
-     *            the resource created at that location
+     * @param location the location
+     * @param resource the resource created at that location
      */
     public void addCreatedResource(Location location, Resource resource) {
         resourceList.add(resource);
         locationToResourceMap.put(location, resource);
     }
 
-    /**
-     * Return whether or not there are any resources in the collection.
-     */
+    /** Return whether or not there are any resources in the collection. */
     public boolean isEmpty() {
         return resourceList.isEmpty();
     }
 
     /**
-     * Get an Iterator over all resources in the method. This includes both
-     * preexisting and created resources.
+     * Get an Iterator over all resources in the method. This includes both preexisting and created
+     * resources.
      */
     public Iterator<Resource> resourceIterator() {
         return resourceList.iterator();
@@ -97,10 +88,9 @@ public class ResourceCollection<Resource> {
     /**
      * Get the resource that is created at given location.
      *
-     * @param location
-     *            the Location
-     * @return the Resource created at that location, or null if no resource is
-     *         created at the location
+     * @param location the Location
+     * @return the Resource created at that location, or null if no resource is created at the
+     *     location
      */
     public Resource getCreatedResource(Location location) {
         return locationToResourceMap.get(location);

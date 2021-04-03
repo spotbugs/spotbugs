@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
-
 import org.apache.bcel.generic.InstructionHandle;
 
 /**
@@ -39,9 +38,7 @@ public class Path {
 
     private int cachedHashCode;
 
-    /**
-     * Constructor. Creates an empty Path.
-     */
+    /** Constructor. Creates an empty Path. */
     public Path() {
         this.blockIdList = new int[DEFAULT_CAPACITY];
         this.length = 0;
@@ -51,8 +48,7 @@ public class Path {
     /**
      * Append given BasicBlock id to the path.
      *
-     * @param id
-     *            a BasicBlock id (label)
+     * @param id a BasicBlock id (label)
      */
     public void append(int id) {
         grow(length);
@@ -62,11 +58,9 @@ public class Path {
     }
 
     /**
-     * Determine whether or not the id of the given BasicBlock appears anywhere
-     * in the path.
+     * Determine whether or not the id of the given BasicBlock appears anywhere in the path.
      *
-     * @param blockId
-     *            the id (label) of a BasicBlock
+     * @param blockId the id (label) of a BasicBlock
      * @return true if the BasicBlock's id appears in the path, false if not
      */
     public boolean hasComponent(int blockId) {
@@ -81,8 +75,7 @@ public class Path {
     /**
      * Get the BasicBlock id at the given index in the path.
      *
-     * @param index
-     *            an index in the Path (0 is the first component)
+     * @param index an index in the Path (0 is the first component)
      * @return the id of the BasicBlock at the given index
      */
     public int getBlockIdAt(int index) {
@@ -113,8 +106,7 @@ public class Path {
     /**
      * Make this Path identical to the given one.
      *
-     * @param other
-     *            a Path to which this object should be made identical
+     * @param other a Path to which this object should be made identical
      */
     public void copyFrom(Path other) {
         grow(other.length - 1);
@@ -126,10 +118,8 @@ public class Path {
     /**
      * Accept a PathVisitor.
      *
-     * @param cfg
-     *            the control flow graph
-     * @param visitor
-     *            a PathVisitor
+     * @param cfg the control flow graph
+     * @param visitor a PathVisitor
      */
     public void acceptVisitor(CFG cfg, PathVisitor visitor) {
         if (getLength() > 0) {
@@ -139,21 +129,15 @@ public class Path {
     }
 
     /**
-     * Accept a PathVisitor, starting from a given BasicBlock and
-     * InstructionHandle.
+     * Accept a PathVisitor, starting from a given BasicBlock and InstructionHandle.
      *
-     * @param cfg
-     *            the control flow graph
-     * @param visitor
-     *            a PathVisitor
-     * @param startBlock
-     *            BasicBlock where traversal should start
-     * @param startHandle
-     *            InstructionHandle within the start block where traversal
-     *            should start
+     * @param cfg the control flow graph
+     * @param visitor a PathVisitor
+     * @param startBlock BasicBlock where traversal should start
+     * @param startHandle InstructionHandle within the start block where traversal should start
      */
-    public void acceptVisitorStartingFromLocation(CFG cfg, PathVisitor visitor, BasicBlock startBlock,
-            InstructionHandle startHandle) {
+    public void acceptVisitorStartingFromLocation(
+            CFG cfg, PathVisitor visitor, BasicBlock startBlock, InstructionHandle startHandle) {
         // Find the start block in the path
         int index;
         for (index = 0; index < getLength(); index++) {
@@ -207,8 +191,7 @@ public class Path {
     /**
      * Determine whether or not given Path is a prefix of this one.
      *
-     * @param path
-     *            another Path
+     * @param path another Path
      * @return true if this Path is a prefix of the other Path, false otherwise
      */
     public boolean isPrefixOf(Path path) {
@@ -256,7 +239,8 @@ public class Path {
         return true;
     }
 
-    private static final String SYMBOLS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()";
+    private static final String SYMBOLS =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()";
 
     @Override
     public String toString() {

@@ -24,13 +24,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Denotes a static field that is initialized to a constant value and then never changes.
- * OK to share between analysis runs.
- *
+ * Denotes a static field that is initialized to a constant value and then never changes. OK to
+ * share between analysis runs.
  */
-
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface StaticConstant {
-
 }

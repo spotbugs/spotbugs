@@ -49,7 +49,8 @@ public class Call {
             return false;
         }
         Call other = (Call) obj;
-        return this.className.equals(other.className) && this.methodName.equals(other.methodName)
+        return this.className.equals(other.className)
+                && this.methodName.equals(other.methodName)
                 && this.methodSig.equals(other.methodSig);
     }
 

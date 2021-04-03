@@ -1,9 +1,22 @@
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.MissingClassException;
+import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.NestedAccessUtil;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Constant;
@@ -20,28 +33,12 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.ba.ch.Subtypes2;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.MissingClassException;
-import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.NestedAccessUtil;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
-
 public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
     private final BugReporter bugReporter;
 
     public ResolveAllReferences(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-
     }
 
     Set<String> defined;
@@ -58,12 +55,14 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
             for (XClass c : allClasses) {
                 try {
-                    JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, c.getClassDescriptor());
+                    JavaClass jclass =
+                            analysisCache.getClassAnalysis(JavaClass.class, c.getClassDescriptor());
                     addAllDefinitions(jclass);
                 } catch (MissingClassException e) {
                     bugReporter.reportMissingClass(e.getClassDescriptor());
                 } catch (CheckedAnalysisException e) {
-                    bugReporter.logError("Could not find class " + c.getClassDescriptor().toDottedClassName(), e);
+                    bugReporter.logError(
+                            "Could not find class " + c.getClassDescriptor().toDottedClassName(), e);
                 }
             }
             // System.out.println("Done Computing: " +
@@ -74,7 +73,6 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
-
     }
 
     @Override
@@ -107,16 +105,23 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
         return ClassName.extractClassName(name).replace('/', '.');
     }
 
-    private String getMemberName(JavaClass c, String className, int memberNameIndex, int signatureIndex) {
-        return className + "." + ((ConstantUtf8) c.getConstantPool().getConstant(memberNameIndex, Const.CONSTANT_Utf8)).getBytes()
-                + " : " + ((ConstantUtf8) c.getConstantPool().getConstant(signatureIndex, Const.CONSTANT_Utf8)).getBytes();
+    private String getMemberName(
+            JavaClass c, String className, int memberNameIndex, int signatureIndex) {
+        return className
+                + "."
+                + ((ConstantUtf8) c.getConstantPool().getConstant(memberNameIndex, Const.CONSTANT_Utf8))
+                        .getBytes()
+                + " : "
+                + ((ConstantUtf8) c.getConstantPool().getConstant(signatureIndex, Const.CONSTANT_Utf8))
+                        .getBytes();
     }
 
     private String getMemberName(String className, String memberName, String signature) {
         return className.replace('/', '.') + "." + memberName + " : " + signature;
     }
 
-    private boolean find(JavaClass target, String name, String signature) throws ClassNotFoundException {
+    private boolean find(JavaClass target, String name, String signature)
+            throws ClassNotFoundException {
         if (target == null) {
             return false;
         }
@@ -148,8 +153,10 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
             if (co instanceof ConstantClass) {
                 String ref = getClassName(obj, i);
                 if ((ref.startsWith("java") || ref.startsWith("org.w3c.dom")) && !defined.contains(ref)) {
-                    bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY).addClass(obj)
-                            .addString(ref));
+                    bugReporter.reportBug(
+                            new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
+                                    .addClass(obj)
+                                    .addString(ref));
                 }
 
             } else if (co instanceof ConstantFieldref) {
@@ -168,23 +175,26 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
                     continue checkConstant;
                 }
                 ConstantNameAndType nt = (ConstantNameAndType) cp.getConstant(co2.getNameAndTypeIndex());
-                String name = ((ConstantUtf8) obj.getConstantPool().getConstant(nt.getNameIndex(), Const.CONSTANT_Utf8)).getBytes();
-                String signature = ((ConstantUtf8) obj.getConstantPool().getConstant(nt.getSignatureIndex(), Const.CONSTANT_Utf8))
-                        .getBytes();
+                String name =
+                        ((ConstantUtf8) obj.getConstantPool().getConstant(nt.getNameIndex(), Const.CONSTANT_Utf8))
+                                .getBytes();
+                String signature =
+                        ((ConstantUtf8) obj.getConstantPool().getConstant(nt.getSignatureIndex(), Const.CONSTANT_Utf8))
+                                .getBytes();
 
                 try {
                     JavaClass target = Repository.lookupClass(className);
                     if (!find(target, name, signature)) {
-                        bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY).addClass(obj)
-                                .addString(getMemberName(target.getClassName(), name, signature)));
+                        bugReporter.reportBug(
+                                new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
+                                        .addClass(obj)
+                                        .addString(getMemberName(target.getClassName(), name, signature)));
                     }
 
                 } catch (ClassNotFoundException e) {
                     bugReporter.reportMissingClass(e);
                 }
             }
-
         }
     }
-
 }

@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -33,15 +32,11 @@ import javax.annotation.Nonnull;
  */
 public class ClassPathUtil {
     /**
-     * Try to find a codebase with the given name in the given class path
-     * string.
+     * Try to find a codebase with the given name in the given class path string.
      *
-     * @param codeBaseName
-     *            name of a codebase (e.g., "findbugs.jar")
-     * @param classPath
-     *            a classpath
-     * @return full path of named codebase, or null if the codebase couldn't be
-     *         found
+     * @param codeBaseName name of a codebase (e.g., "findbugs.jar")
+     * @param classPath a classpath
+     * @return full path of named codebase, or null if the codebase couldn't be found
      */
     public static String findCodeBaseInClassPath(@Nonnull String codeBaseName, String classPath) {
         if (classPath == null) {
@@ -61,16 +56,12 @@ public class ClassPathUtil {
     }
 
     /**
-     * Try to find a codebase matching the given pattern in the given class path
-     * string.
+     * Try to find a codebase matching the given pattern in the given class path string.
      *
-     * @param codeBaseNamePattern
-     *            pattern describing a codebase (e.g., compiled from the regex
-     *            "findbugs\\.jar$")
-     * @param classPath
-     *            a classpath
-     * @return full path of named codebase, or null if the codebase couldn't be
-     *         found
+     * @param codeBaseNamePattern pattern describing a codebase (e.g., compiled from the regex
+     *     "findbugs\\.jar$")
+     * @param classPath a classpath
+     * @return full path of named codebase, or null if the codebase couldn't be found
      */
     public static String findCodeBaseInClassPath(Pattern codeBaseNamePattern, String classPath) {
         if (classPath == null) {

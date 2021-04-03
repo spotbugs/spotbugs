@@ -28,15 +28,12 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce ReturnPathTypeDataflow objects for analyzed
- * methods.
+ * Analysis engine to produce ReturnPathTypeDataflow objects for analyzed methods.
  *
  * @author David Hovemeyer
  */
 public class ReturnPathTypeDataflowFactory extends AnalysisFactory<ReturnPathTypeDataflow> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public ReturnPathTypeDataflowFactory() {
         super("return path type dataflow", ReturnPathTypeDataflow.class);
     }

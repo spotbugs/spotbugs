@@ -19,11 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Map;
-
-import org.apache.bcel.classfile.ElementValue;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -34,8 +29,12 @@ import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
+import java.util.Map;
+import org.apache.bcel.classfile.ElementValue;
+import org.apache.bcel.classfile.JavaClass;
 
-public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, NonReportingDetector {
+public class NoteJCIPAnnotation extends AnnotationVisitor
+        implements Detector, NonReportingDetector {
 
     private static final String NET_JCIP_ANNOTATIONS = "net.jcip.annotations.";
     private static final String JSR305_CONCURRENT_ANNOTATIONS = "javax.annotation.concurrent.";
@@ -45,7 +44,8 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, N
     }
 
     @Override
-    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitAnnotation(
+            String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
         if (annotationClass.startsWith(NET_JCIP_ANNOTATIONS)) {
             annotationClass = annotationClass.substring(NET_JCIP_ANNOTATIONS.length());
         } else if (annotationClass.startsWith(JSR305_CONCURRENT_ANNOTATIONS)) {
@@ -53,8 +53,8 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, N
         } else {
             return;
         }
-        JCIPAnnotationDatabase annotationDatabase = AnalysisContext.currentAnalysisContext()
-                .getJCIPAnnotationDatabase();
+        JCIPAnnotationDatabase annotationDatabase =
+                AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
         ElementValue value = map.get("value");
         ClassMember member;
         if (visitingField()) {
@@ -74,12 +74,10 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, N
         if (!BCELUtil.preTiger(javaClass)) {
             javaClass.accept(this);
         }
-
     }
 
     @Override
     public void report() {
         // noop
     }
-
 }

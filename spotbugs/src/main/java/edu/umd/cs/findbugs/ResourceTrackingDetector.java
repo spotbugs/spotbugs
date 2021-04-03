@@ -19,13 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Iterator;
-
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -40,17 +33,21 @@ import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.log.Profiler;
+import java.util.Iterator;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.MethodGen;
 
 /**
- * Abstract implementation of a Detector to find methods where a particular kind
- * of created resource is not cleaned up or closed properly. Subclasses should
- * override the abstract methods to determine what kinds of resources are
- * tracked by the detector.
+ * Abstract implementation of a Detector to find methods where a particular kind of created resource
+ * is not cleaned up or closed properly. Subclasses should override the abstract methods to
+ * determine what kinds of resources are tracked by the detector.
  *
  * @author David Hovemeyer
  */
-public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType extends ResourceTracker<Resource>> implements
-        Detector {
+public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType extends ResourceTracker<Resource>>
+        implements Detector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("rtd.debug");
 
@@ -70,8 +67,12 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
     public abstract ResourceTrackerType getResourceTracker(ClassContext classContext, Method method)
             throws DataflowAnalysisException, CFGBuilderException;
 
-    public abstract void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
-            Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
+    public abstract void inspectResult(
+            ClassContext classContext,
+            MethodGen methodGen,
+            CFG cfg,
+            Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow,
+            Resource resource);
 
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -93,9 +94,11 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
             }
 
             if (DEBUG) {
-                System.out.println("----------------------------------------------------------------------");
+                System.out.println(
+                        "----------------------------------------------------------------------");
                 System.out.println("Analyzing " + SignatureConverter.convertMethodSignature(methodGen));
-                System.out.println("----------------------------------------------------------------------");
+                System.out.println(
+                        "----------------------------------------------------------------------");
             }
 
             try {
@@ -106,7 +109,8 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
                     continue;
                 }
 
-                ResourceCollection<Resource> resourceCollection = buildResourceCollection(classContext, method, resourceTracker);
+                ResourceCollection<Resource> resourceCollection =
+                        buildResourceCollection(classContext, method, resourceTracker);
                 if (resourceCollection.isEmpty()) {
                     continue;
                 }
@@ -119,11 +123,11 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
             }
             bugAccumulator.reportAccumulatedBugs();
         }
-
     }
 
-    private ResourceCollection<Resource> buildResourceCollection(ClassContext classContext, Method method,
-            ResourceTrackerType resourceTracker) throws CFGBuilderException, DataflowAnalysisException {
+    private ResourceCollection<Resource> buildResourceCollection(
+            ClassContext classContext, Method method, ResourceTrackerType resourceTracker)
+            throws CFGBuilderException, DataflowAnalysisException {
 
         ResourceCollection<Resource> resourceCollection = new ResourceCollection<>();
 
@@ -132,7 +136,8 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
-            Resource resource = resourceTracker.isResourceCreation(location.getBasicBlock(), location.getHandle(), cpg);
+            Resource resource =
+                    resourceTracker.isResourceCreation(location.getBasicBlock(), location.getHandle(), cpg);
             if (resource != null) {
                 resourceCollection.addCreatedResource(location, resource);
             }
@@ -141,7 +146,8 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
         return resourceCollection;
     }
 
-    private boolean mightCloseResource(ClassContext classContext, Method method, ResourceTrackerType resourceTracker)
+    private boolean mightCloseResource(
+            ClassContext classContext, Method method, ResourceTrackerType resourceTracker)
             throws CFGBuilderException, DataflowAnalysisException {
 
         CFG cfg = classContext.getCFG(method);
@@ -152,14 +158,17 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
             if (resourceTracker.mightCloseResource(location.getBasicBlock(), location.getHandle(), cpg)) {
                 return true;
             }
-
         }
 
         return false;
     }
 
-    public void analyzeMethod(ClassContext classContext, Method method, ResourceTrackerType resourceTracker,
-            ResourceCollection<Resource> resourceCollection) throws CFGBuilderException, DataflowAnalysisException {
+    public void analyzeMethod(
+            ClassContext classContext,
+            Method method,
+            ResourceTrackerType resourceTracker,
+            ResourceCollection<Resource> resourceCollection)
+            throws CFGBuilderException, DataflowAnalysisException {
 
         MethodGen methodGen = classContext.getMethodGen(method);
         if (methodGen == null) {
@@ -176,10 +185,10 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
             for (Iterator<Resource> i = resourceCollection.resourceIterator(); i.hasNext();) {
                 Resource resource = i.next();
 
-                ResourceValueAnalysis<Resource> analysis = new ResourceValueAnalysis<>(methodGen, cfg, dfs,
-                        resourceTracker, resource);
-                Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow = new Dataflow<>(
-                        cfg, analysis);
+                ResourceValueAnalysis<Resource> analysis =
+                        new ResourceValueAnalysis<>(methodGen, cfg, dfs, resourceTracker, resource);
+                Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
+                        new Dataflow<>(cfg, analysis);
 
                 Profiler profiler = Global.getAnalysisCache().getProfiler();
                 profiler.start(resourceTracker.getClass());
@@ -191,13 +200,18 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
                 inspectResult(classContext, methodGen, cfg, dataflow, resource);
             }
         } catch (RuntimeException e) {
-            AnalysisContext.logError("Exception while analyzing " + methodGen.getClassName() + "." + methodGen.getName() + ":"
-                    + methodGen.getSignature(), e);
+            AnalysisContext.logError(
+                    "Exception while analyzing "
+                            + methodGen.getClassName()
+                            + "."
+                            + methodGen.getName()
+                            + ":"
+                            + methodGen.getSignature(),
+                    e);
         }
     }
 
     @Override
     public void report() {
     }
-
 }

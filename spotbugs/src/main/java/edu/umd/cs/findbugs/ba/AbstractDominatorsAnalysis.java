@@ -21,25 +21,19 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
 import java.util.Iterator;
-
 import javax.annotation.CheckForNull;
-
 import org.apache.bcel.generic.InstructionHandle;
 
-
 /**
- * <p>A dataflow analysis to compute dominator relationships between basic blocks.
- * Use the {@link #getResultFact} method to get the dominator set for a given
- * basic block. The dominator sets are represented using the
- * {@link java.util.BitSet} class, with the individual bits corresponding to the
- * IDs of basic blocks.</p>
- * <p>
- * Subclasses extend this class to compute either dominators or postdominators.
- * </p>
- * <p>
- * An EdgeChooser may be specified to select which edges to take into account.
- * For example, exception edges could be ignored.
- * </p>
+ * A dataflow analysis to compute dominator relationships between basic blocks. Use the {@link
+ * #getResultFact} method to get the dominator set for a given basic block. The dominator sets are
+ * represented using the {@link java.util.BitSet} class, with the individual bits corresponding to
+ * the IDs of basic blocks.
+ *
+ * <p>Subclasses extend this class to compute either dominators or postdominators.
+ *
+ * <p>An EdgeChooser may be specified to select which edges to take into account. For example,
+ * exception edges could be ignored.
  *
  * @author David Hovemeyer
  * @see DataflowAnalysis
@@ -54,24 +48,22 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
     /**
      * Constructor.
      *
-     * @param cfg
-     *            the CFG to compute dominator relationships for
-     * @param ignoreExceptionEdges
-     *            true if exception edges should be ignored
+     * @param cfg the CFG to compute dominator relationships for
+     * @param ignoreExceptionEdges true if exception edges should be ignored
      */
     public AbstractDominatorsAnalysis(CFG cfg, final boolean ignoreExceptionEdges) {
-        this(cfg, edge -> {
-            return !(ignoreExceptionEdges && edge.isExceptionEdge());
-        });
+        this(
+                cfg,
+                edge -> {
+                    return !(ignoreExceptionEdges && edge.isExceptionEdge());
+                });
     }
 
     /**
      * Constructor.
      *
-     * @param cfg
-     *            the CFG to compute dominator relationships for
-     * @param edgeChooser
-     *            EdgeChooser to choose which Edges to consider significant
+     * @param cfg the CFG to compute dominator relationships for
+     * @param edgeChooser EdgeChooser to choose which Edges to consider significant
      */
     public AbstractDominatorsAnalysis(CFG cfg, EdgeChooser edgeChooser) {
         this.cfg = cfg;
@@ -113,7 +105,8 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
     }
 
     @Override
-    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, BitSet start, BitSet result)
+    public void transfer(
+            BasicBlock basicBlock, @CheckForNull InstructionHandle end, BitSet start, BitSet result)
             throws DataflowAnalysisException {
         // Start with intersection of dominators of predecessors
         copy(start, result);
@@ -141,25 +134,21 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
     }
 
     /**
-     * Get a bitset containing the unique IDs of all blocks which dominate (or
-     * postdominate) the given block.
+     * Get a bitset containing the unique IDs of all blocks which dominate (or postdominate) the given
+     * block.
      *
-     * @param block
-     *            a BasicBlock
-     * @return BitSet of the unique IDs of all blocks that dominate (or
-     *         postdominate) the BasicBlock
+     * @param block a BasicBlock
+     * @return BitSet of the unique IDs of all blocks that dominate (or postdominate) the BasicBlock
      */
     public BitSet getAllDominatorsOf(BasicBlock block) {
         return getResultFact(block);
     }
 
     /**
-     * Get a bitset containing the unique IDs of all blocks in CFG dominated (or
-     * postdominated, depending on how the analysis was done) by given block.
+     * Get a bitset containing the unique IDs of all blocks in CFG dominated (or postdominated,
+     * depending on how the analysis was done) by given block.
      *
-     * @param dominator
-     *            we want to get all blocks dominated (or postdominated) by this
-     *            block
+     * @param dominator we want to get all blocks dominated (or postdominated) by this block
      * @return BitSet of the ids of all blocks dominated by the given block
      */
     public BitSet getAllDominatedBy(BasicBlock dominator) {
@@ -173,5 +162,4 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
         }
         return allDominated;
     }
-
 }

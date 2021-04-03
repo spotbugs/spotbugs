@@ -19,20 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-import java.util.Iterator;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -54,22 +40,33 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import java.util.BitSet;
+import java.util.Iterator;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 /**
- * Find places where ordinary (balanced) synchronization is performed on JSR166
- * Lock objects. Suggested by Doug Lea.
+ * Find places where ordinary (balanced) synchronization is performed on JSR166 Lock objects.
+ * Suggested by Doug Lea.
  *
  * @author David Hovemeyer
  */
 public final class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
-    /**
-     *
-     */
+    /** */
     private static final String UTIL_CONCURRRENT_SIG_PREFIX = "Ljava/util/concurrent/";
 
     private final BugReporter bugReporter;
 
-    private static final ObjectType LOCK_TYPE = ObjectTypeFactory.getInstance("java.util.concurrent.locks.Lock");
+    private static final ObjectType LOCK_TYPE =
+            ObjectTypeFactory.getInstance("java.util.concurrent.locks.Lock");
 
     public FindJSR166LockMonitorenter(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -107,7 +104,6 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
             }
 
             analyzeMethod(classContext, method);
-
         }
     }
 
@@ -140,8 +136,11 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
                 String methodName = iv.getMethodName(cpg);
                 String methodSig = iv.getSignature(cpg);
                 if ("wait".equals(methodName)
-                        && ("()V".equals(methodSig) || "(J)V".equals(methodSig) || "(JI)V".equals(methodSig))
-                        || ("notify".equals(methodName) || "notifyAll".equals(methodName)) && "()V".equals(methodSig)) {
+                        && ("()V".equals(methodSig)
+                                || "(J)V".equals(methodSig)
+                                || "(JI)V".equals(methodSig))
+                        || ("notify".equals(methodName) || "notifyAll".equals(methodName))
+                                && "()V".equals(methodSig)) {
                     try {
                         TypeFrame frame = typeDataflow.getFactAtLocation(location);
                         if (!frame.isValid()) {
@@ -155,8 +154,8 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
                             // verification problem.
                             continue;
                         }
-                        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromSignature(type
-                                .getSignature());
+                        ClassDescriptor classDescriptor =
+                                DescriptorFactory.createClassDescriptorFromSignature(type.getSignature());
                         if (classDescriptor.equals(classContext.getClassDescriptor())) {
                             continue;
                         }
@@ -184,19 +183,22 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
                         }
 
                         if (m != null && m.isPublic() && c.isPublic()) {
-                            bugReporter.reportBug(new BugInstance(this, "JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT", priority)
-                                    .addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(cpg, iv).addMethod(m)
-                                    .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addType(classDescriptor)
-                                    .describe(TypeAnnotation.FOUND_ROLE).addSourceLine(classContext, method, location));
+                            bugReporter.reportBug(
+                                    new BugInstance(this, "JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT", priority)
+                                            .addClassAndMethod(classContext.getJavaClass(), method)
+                                            .addCalledMethod(cpg, iv)
+                                            .addMethod(m)
+                                            .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET)
+                                            .addType(classDescriptor)
+                                            .describe(TypeAnnotation.FOUND_ROLE)
+                                            .addSourceLine(classContext, method, location));
                         }
 
                     } catch (CheckedAnalysisException e) {
                         AnalysisContext.logError("Coult not get Type dataflow", e);
                         continue;
                     }
-
                 }
-
             }
 
             if (ins.getOpcode() != Const.MONITORENTER) {
@@ -231,16 +233,27 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
             boolean isUtilConcurrentSig = sig.startsWith(UTIL_CONCURRRENT_SIG_PREFIX);
 
             if (isSubtype) {
-                bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", isUtilConcurrentSig ? HIGH_PRIORITY
-                        : NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
-                                .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
+                bugReporter.reportBug(
+                        new BugInstance(
+                                this,
+                                "JLM_JSR166_LOCK_MONITORENTER",
+                                isUtilConcurrentSig ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                                        .addClassAndMethod(classContext.getJavaClass(), method)
+                                        .addType(sig)
+                                        .addSourceForTopStackValue(classContext, method, location)
+                                        .addSourceLine(classContext, method, location));
             } else if (isUtilConcurrentSig) {
 
-                int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
-                bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
-                        .addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
-                        .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
-
+                int priority =
+                        "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig)
+                                ? HIGH_PRIORITY
+                                : NORMAL_PRIORITY;
+                bugReporter.reportBug(
+                        new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
+                                .addClassAndMethod(classContext.getJavaClass(), method)
+                                .addType(sig)
+                                .addSourceForTopStackValue(classContext, method, location)
+                                .addSourceLine(classContext, method, location));
             }
         }
     }

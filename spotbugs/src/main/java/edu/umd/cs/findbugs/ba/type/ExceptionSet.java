@@ -19,24 +19,21 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.ch.Subtypes2;
-
 /**
- * Class for keeping track of exceptions that can be thrown by an instruction.
- * We distinguish <em>explicit</em> and <em>implicit</em> exceptions. Explicit
- * exceptions are explicitly declared, thrown, or caught. Implicit exceptions
- * are runtime faults (NPE, array out of bounds) not explicitly handled by the
- * user code.
+ * Class for keeping track of exceptions that can be thrown by an instruction. We distinguish
+ * <em>explicit</em> and <em>implicit</em> exceptions. Explicit exceptions are explicitly declared,
+ * thrown, or caught. Implicit exceptions are runtime faults (NPE, array out of bounds) not
+ * explicitly handled by the user code.
  *
  * @author David Hovemeyer
  * @see TypeAnalysis
@@ -55,9 +52,7 @@ public class ExceptionSet {
 
     private Type commonSupertype;
 
-    /**
-     * Object to iterate over the exception types in the set.
-     */
+    /** Object to iterate over the exception types in the set. */
     public class ThrownExceptionIterator implements Iterator<ObjectType> {
         private int last = -1, next = -1;
 
@@ -106,9 +101,7 @@ public class ExceptionSet {
         }
     }
 
-    /**
-     * Constructor. Creates an empty set.
-     */
+    /** Constructor. Creates an empty set. */
     ExceptionSet(ExceptionSetFactory factory) {
         this.factory = factory;
         this.exceptionSet = new BitSet();
@@ -117,9 +110,7 @@ public class ExceptionSet {
         this.universalHandler = false;
     }
 
-    /**
-     * Return an exact copy of this object.
-     */
+    /** Return an exact copy of this object. */
     public ExceptionSet duplicate() {
         ExceptionSet dup = factory.createExceptionSet();
         dup.exceptionSet.clear();
@@ -148,13 +139,14 @@ public class ExceptionSet {
         }
 
         ExceptionSet other = (ExceptionSet) o;
-        return exceptionSet.equals(other.exceptionSet) && explicitSet.equals(other.explicitSet)
+        return exceptionSet.equals(other.exceptionSet)
+                && explicitSet.equals(other.explicitSet)
                 && universalHandler == other.universalHandler;
     }
 
     /**
-     * Get the least (lowest in the lattice) common supertype of the exceptions
-     * in the set. Returns the special TOP type if the set is empty.
+     * Get the least (lowest in the lattice) common supertype of the exceptions in the set. Returns
+     * the special TOP type if the set is empty.
      */
     public Type getCommonSupertype() throws ClassNotFoundException {
         if (commonSupertype != null) {
@@ -172,7 +164,10 @@ public class ExceptionSet {
         ReferenceType result = i.next();
         while (i.hasNext()) {
             if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
-                result = AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSuperclass(result, i.next());
+                result =
+                        AnalysisContext.currentAnalysisContext()
+                                .getSubtypes2()
+                                .getFirstCommonSuperclass(result, i.next());
             } else {
                 result = result.getFirstCommonSuperclass(i.next());
             }
@@ -189,26 +184,20 @@ public class ExceptionSet {
         return result;
     }
 
-    /**
-     * Return an iterator over thrown exceptions.
-     */
+    /** Return an iterator over thrown exceptions. */
     public ThrownExceptionIterator iterator() {
         return new ThrownExceptionIterator();
     }
 
-    /**
-     * Return whether or not the set is empty.
-     */
+    /** Return whether or not the set is empty. */
     public boolean isEmpty() {
         return size == 0;
     }
 
     /**
-     * Checks to see if the exception set is a singleton set containing just the
-     * named exception
+     * Checks to see if the exception set is a singleton set containing just the named exception
      *
-     * @param exceptionName
-     *            (in dotted format)
+     * @param exceptionName (in dotted format)
      * @return true if it is
      */
     public boolean isSingleton(String exceptionName) {
@@ -217,14 +206,12 @@ public class ExceptionSet {
         }
         ObjectType e = iterator().next();
         return e.toString().equals(exceptionName);
-
     }
 
     /**
      * Add an explicit exception.
      *
-     * @param type
-     *            type of the exception
+     * @param type type of the exception
      */
     public void addExplicit(ObjectType type) {
         add(type, true);
@@ -233,8 +220,7 @@ public class ExceptionSet {
     /**
      * Add an implicit exception.
      *
-     * @param type
-     *            type of the exception
+     * @param type type of the exception
      */
     public void addImplicit(ObjectType type) {
         add(type, false);
@@ -243,11 +229,8 @@ public class ExceptionSet {
     /**
      * Add an exception.
      *
-     * @param type
-     *            the exception type
-     * @param explicit
-     *            true if the exception is explicitly declared or thrown, false
-     *            if implicit
+     * @param type the exception type
+     * @param explicit true if the exception is explicitly declared or thrown, false if implicit
      */
     public void add(ObjectType type, boolean explicit) {
         int index = factory.getIndexOfType(type);
@@ -265,8 +248,7 @@ public class ExceptionSet {
     /**
      * Add all exceptions in the given set.
      *
-     * @param other
-     *            the set
+     * @param other the set
      */
     public void addAll(ExceptionSet other) {
         exceptionSet.or(other.exceptionSet);
@@ -286,9 +268,7 @@ public class ExceptionSet {
         return count;
     }
 
-    /**
-     * Remove all exceptions from the set.
-     */
+    /** Remove all exceptions from the set. */
     public void clear() {
         exceptionSet.clear();
         explicitSet.clear();
@@ -297,25 +277,18 @@ public class ExceptionSet {
         size = 0;
     }
 
-    /**
-     * Return whether or not a universal exception handler was reached by the
-     * set.
-     */
+    /** Return whether or not a universal exception handler was reached by the set. */
     public void sawUniversal() {
         clear();
         universalHandler = true;
     }
 
-    /**
-     * Mark the set as having reached a universal exception handler.
-     */
+    /** Mark the set as having reached a universal exception handler. */
     public boolean sawUniversalHandler() {
         return universalHandler;
     }
 
-    /**
-     * Return whether or not the set contains any checked exceptions.
-     */
+    /** Return whether or not the set contains any checked exceptions. */
     public boolean containsCheckedExceptions() throws ClassNotFoundException {
         for (ThrownExceptionIterator i = iterator(); i.hasNext();) {
             ObjectType type = i.next();
@@ -326,9 +299,7 @@ public class ExceptionSet {
         return false;
     }
 
-    /**
-     * Return whether or not the set contains any explicit exceptions.
-     */
+    /** Return whether or not the set contains any explicit exceptions. */
     public boolean containsExplicitExceptions() {
         for (ThrownExceptionIterator i = iterator(); i.hasNext();) {
             i.next();

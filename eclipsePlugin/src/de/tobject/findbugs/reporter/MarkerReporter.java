@@ -30,24 +30,6 @@ import static de.tobject.findbugs.marker.FindBugsMarker.RANK;
 import static de.tobject.findbugs.marker.FindBugsMarker.UNIQUE_ID;
 import static de.tobject.findbugs.marker.FindBugsMarker.UNIQUE_JAVA_ID;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jface.preference.IPreferenceStore;
-
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
 import edu.umd.cs.findbugs.AppVersion;
@@ -57,10 +39,23 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jface.preference.IPreferenceStore;
 
-/**
- * Creates a FindBugs marker in a runnable window.
- */
+/** Creates a FindBugs marker in a runnable window. */
 public class MarkerReporter implements IWorkspaceRunnable {
     private final SortedBugCollection collection;
 
@@ -68,7 +63,8 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
     private final IProject project;
 
-    public MarkerReporter(List<MarkerParameter> mpList, SortedBugCollection theCollection, IProject project) {
+    public MarkerReporter(
+            List<MarkerParameter> mpList, SortedBugCollection theCollection, IProject project) {
 
         this.mpList = mpList;
         this.collection = theCollection;
@@ -129,7 +125,8 @@ public class MarkerReporter implements IWorkspaceRunnable {
         newMarker.setAttributes(attributes);
     }
 
-    private static @CheckForNull IMarker findSameBug(Map<String, Object> attributes, IMarker[] existingMarkers) throws CoreException {
+    private static @CheckForNull IMarker findSameBug(
+            Map<String, Object> attributes, IMarker[] existingMarkers) throws CoreException {
         Object bugId = attributes.get(UNIQUE_ID);
         if (bugId == null) {
             return null;
@@ -154,8 +151,8 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
     /**
      * @param mp
-     * @return attributes map which should be assigned to the given marker. If the map is empty,
-     * the marker shouldn't be generated
+     * @return attributes map which should be assigned to the given marker. If the map is empty, the
+     *     marker shouldn't be generated
      */
     @Nonnull
     private Map<String, Object> createMarkerAttributes(MarkerParameter mp) {
@@ -165,7 +162,8 @@ public class MarkerReporter implements IWorkspaceRunnable {
         attributes.put(BUG_TYPE, mp.bug.getType());
         attributes.put(PATTERN_TYPE, mp.bug.getAbbrev());
         attributes.put(RANK, Integer.valueOf(mp.bug.getBugRank()));
-        attributes.put(PRIO_AKA_CONFIDENCE, MarkerConfidence.getConfidence(mp.bug.getPriority()).name());
+        attributes.put(
+                PRIO_AKA_CONFIDENCE, MarkerConfidence.getConfidence(mp.bug.getPriority()).name());
 
         long seqNum = mp.bug.getFirstVersion();
         if (seqNum == 0) {
@@ -173,8 +171,12 @@ public class MarkerReporter implements IWorkspaceRunnable {
         } else {
             AppVersion theVersion = collection.getAppVersionFromSequenceNumber(seqNum);
             if (theVersion == null) {
-                attributes.put(FIRST_VERSION, "Cannot find AppVersion: seqnum=" + seqNum + "; collection seqnum="
-                        + collection.getSequenceNumber());
+                attributes.put(
+                        FIRST_VERSION,
+                        "Cannot find AppVersion: seqnum="
+                                + seqNum
+                                + "; collection seqnum="
+                                + collection.getSequenceNumber());
             } else {
                 attributes.put(FIRST_VERSION, Long.toString(theVersion.getTimestamp()));
             }
@@ -182,7 +184,9 @@ public class MarkerReporter implements IWorkspaceRunnable {
         try {
             attributes.put(IMarker.MESSAGE, getMessage(mp));
         } catch (RuntimeException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error generating msg for " + mp.bug.getType() + ", attributes: " + attributes);
+            FindbugsPlugin.getDefault()
+                    .logException(
+                            e, "Error generating msg for " + mp.bug.getType() + ", attributes: " + attributes);
             attributes.clear();
             return attributes;
         }
@@ -244,9 +248,14 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
     private static String getMessage(MarkerParameter mp) {
         String message = mp.bug.getMessageWithoutPrefix();
-        message += " [" + mp.bug.getBugRankCategory() + "(" + mp.bug.getBugRank() +
-                "), " + MarkerConfidence.getConfidence(mp.bug.getPriority()) + " confidence]";
+        message +=
+                " ["
+                        + mp.bug.getBugRankCategory()
+                        + "("
+                        + mp.bug.getBugRank()
+                        + "), "
+                        + MarkerConfidence.getConfidence(mp.bug.getPriority())
+                        + " confidence]";
         return message;
     }
-
 }

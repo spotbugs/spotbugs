@@ -19,16 +19,15 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 
 public class FindNonShortCircuit extends OpcodeStackDetector implements StatelessDetector {
 
@@ -55,9 +54,7 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
     boolean sawDangerOld;
 
     boolean sawNumericTest, sawNumericTestOld, sawNumericTestVeryOld;
-
     boolean sawArrayDanger, sawArrayDangerOld;
-
     boolean sawMethodCall, sawMethodCallOld;
 
     private final BugAccumulator bugAccumulator;
@@ -121,7 +118,8 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
             break;
 
         case Const.INVOKEVIRTUAL:
-            if ("length".equals(getNameConstantOperand()) && "java/lang/String".equals(getClassConstantOperand())) {
+            if ("length".equals(getNameConstantOperand())
+                    && "java/lang/String".equals(getClassConstantOperand())) {
                 break;
             }
             sawDanger = true;
@@ -147,7 +145,6 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
         default:
             break;
         }
-
     }
 
     private void scanForShortCircuit(int seen) {
@@ -215,7 +212,6 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
 
     private void scanForBooleanValue(int seen) {
         switch (seen) {
-
         case Const.IAND:
         case Const.IOR:
             switch (prevOpcode) {
@@ -289,6 +285,5 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
         sawMethodCall = false;
         distance = 0;
         stage1 = 0;
-
     }
 }

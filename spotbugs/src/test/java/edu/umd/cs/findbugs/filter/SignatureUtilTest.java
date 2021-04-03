@@ -24,13 +24,9 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-/**
- * @since 3.1
- */
+/** @since 3.1 */
 public class SignatureUtilTest {
-    /**
-     * Return {@code null} if given parameter is null, otherwise signature of given type.
-     */
+    /** Return {@code null} if given parameter is null, otherwise signature of given type. */
     @Test
     public void testCreateFieldSignature() {
         assertThat(SignatureUtil.createFieldSignature(null), is(nullValue()));
@@ -40,19 +36,23 @@ public class SignatureUtilTest {
     }
 
     /**
-     * First parameter is comma-separated value. It is possible to contain space, tab, line-break or line-feed around
-     * comma. Even though first parameter contains multiple values, generated signature does not separate them by comma.
+     * First parameter is comma-separated value. It is possible to contain space, tab, line-break or
+     * line-feed around comma. Even though first parameter contains multiple values, generated
+     * signature does not separate them by comma.
      */
     @Test
     public void testCreateMethodSignature() {
         assertThat(SignatureUtil.createMethodSignature("", "void"), is("()V"));
-        assertThat(SignatureUtil.createMethodSignature("byte,\r\nchar, \tboolean", "void"), is("(BCZ)V"));
-        assertThat(SignatureUtil.createMethodSignature("float", "java.lang.String[]"), is("(F)[Ljava/lang/String;"));
+        assertThat(
+                SignatureUtil.createMethodSignature("byte,\r\nchar, \tboolean", "void"), is("(BCZ)V"));
+        assertThat(
+                SignatureUtil.createMethodSignature("float", "java.lang.String[]"),
+                is("(F)[Ljava/lang/String;"));
     }
 
     /**
-     * If both parameter is null, {@link SignatureUtil#createMethodSignature(String, String)} returns null. However, its
-     * return value should start with {@code ~}, which means regexp.
+     * If both parameter is null, {@link SignatureUtil#createMethodSignature(String, String)} returns
+     * null. However, its return value should start with {@code ~}, which means regexp.
      *
      * @see NameMatch This class uses {@code ~} to judge signature is regexp or not.
      */

@@ -21,23 +21,6 @@ package edu.umd.cs.findbugs.ba;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
 import edu.umd.cs.findbugs.AnalysisLocal;
@@ -70,17 +53,29 @@ import edu.umd.cs.findbugs.detect.UnreadFieldsData;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import net.jcip.annotations.NotThreadSafe;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.JavaClass;
 
 /**
- * A context for analysis of a complete project. This serves as the repository
- * for whole-program information and data structures.
+ * A context for analysis of a complete project. This serves as the repository for whole-program
+ * information and data structures.
  *
- * <p>
- * <b>NOTE</b>: this class is slated to become obsolete. New code should use the
- * IAnalysisCache object returned by Global.getAnalysisCache() to access all
- * analysis information (global databases, class and method analyses, etc.)
- * </p>
+ * <p><b>NOTE</b>: this class is slated to become obsolete. New code should use the IAnalysisCache
+ * object returned by Global.getAnalysisCache() to access all analysis information (global
+ * databases, class and method analyses, etc.)
  *
  * @author David Hovemeyer
  * @see edu.umd.cs.findbugs.classfile.IAnalysisCache
@@ -90,11 +85,13 @@ import net.jcip.annotations.NotThreadSafe;
 public class AnalysisContext implements AutoCloseable {
     public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.analysiscontext.debug");
 
-    public static final boolean IGNORE_BUILTIN_MODELS = SystemProperties.getBoolean("findbugs.ignoreBuiltinModels");
+    public static final boolean IGNORE_BUILTIN_MODELS =
+            SystemProperties.getBoolean("findbugs.ignoreBuiltinModels");
 
     public static final String DEFAULT_NONNULL_PARAM_DATABASE_FILENAME = "nonnullParam.db";
 
-    public static final String DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME = "checkForNullParam.db";
+    public static final String DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME =
+            "checkForNullParam.db";
 
     public static final String DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE = "nullReturn.db";
 
@@ -108,33 +105,37 @@ public class AnalysisContext implements AutoCloseable {
 
     public static final String DEFAULT_NULL_RETURN_VALUE_DB_FILENAME = "mayReturnNull.db";
 
-    private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext = new InheritableThreadLocal<AnalysisContext>() {
-        @Override
-        public AnalysisContext initialValue() {
-            // throw new
-            // IllegalStateException("currentAnalysisContext should be set by AnalysisContext.setCurrentAnalysisContext");
-            return null;
-        }
-    };
+    private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext =
+            new InheritableThreadLocal<AnalysisContext>() {
+                @Override
+                public AnalysisContext initialValue() {
+                    // throw new
+                    // IllegalStateException("currentAnalysisContext should be set by
+                    // AnalysisContext.setCurrentAnalysisContext");
+                    return null;
+                }
+            };
 
-    private static AnalysisLocal<XFactory> currentXFactory = new AnalysisLocal<XFactory>() {
-        @Override
-        public XFactory initialValue() {
-            throw new IllegalStateException("currentXFactory should be set by AnalysisContext.setCurrentAnalysisContext");
-        }
-    };
+    private static AnalysisLocal<XFactory> currentXFactory =
+            new AnalysisLocal<XFactory>() {
+                @Override
+                public XFactory initialValue() {
+                    throw new IllegalStateException(
+                            "currentXFactory should be set by AnalysisContext.setCurrentAnalysisContext");
+                }
+            };
 
     /**
-     * save the original SyntheticRepository so we may obtain JavaClass objects
-     * which we can reuse. (A URLClassPathRepository gets closed after
-     * analysis.)
+     * save the original SyntheticRepository so we may obtain JavaClass objects which we can reuse. (A
+     * URLClassPathRepository gets closed after analysis.)
      */
-    private static final org.apache.bcel.util.Repository originalRepository = Repository.getRepository(); // BCEL
+    private static final org.apache.bcel.util.Repository originalRepository =
+            Repository.getRepository(); // BCEL
     // SyntheticRepository
 
     /**
-     * Default maximum number of ClassContext objects to cache. FIXME: need to
-     * evaluate this parameter. Need to keep stats about accesses.
+     * Default maximum number of ClassContext objects to cache. FIXME: need to evaluate this
+     * parameter. Need to keep stats about accesses.
      */
     //    private static final int DEFAULT_CACHE_SIZE = 3;
 
@@ -173,7 +174,6 @@ public class AnalysisContext implements AutoCloseable {
 
     private final Map<MethodInfo, MethodInfo> bridgeFrom;
 
-
     public AnalysisContext(@Nonnull Project project) {
         requireNonNull(project);
         this.project = project;
@@ -188,7 +188,8 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     /**
-     * Clear cache and reference in this instances. Cleared {@link AnalysisContext} instance should not be reused.
+     * Clear cache and reference in this instances. Cleared {@link AnalysisContext} instance should
+     * not be reused.
      */
     private void clear() {
         boolPropertySet = null;
@@ -197,14 +198,12 @@ public class AnalysisContext implements AutoCloseable {
         IO.close(project);
     }
 
-    /**
-     * Get the AnalysisContext associated with this thread
-     */
-    static public AnalysisContext currentAnalysisContext() {
+    /** Get the AnalysisContext associated with this thread */
+    public static AnalysisContext currentAnalysisContext() {
         return currentAnalysisContext.get();
     }
 
-    static public XFactory currentXFactory() {
+    public static XFactory currentXFactory() {
         return currentXFactory.get();
     }
 
@@ -276,7 +275,10 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
-        return missing == null || missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
+        return missing == null
+                || missing.length() == 0
+                || missing.charAt(0) == '['
+                || missing.endsWith("package-info");
     }
 
     private static @CheckForNull RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
@@ -295,7 +297,7 @@ public class AnalysisContext implements AutoCloseable {
      *
      * @see #getLookupFailureCallback()
      */
-    static public void reportMissingClass(ClassNotFoundException e) {
+    public static void reportMissingClass(ClassNotFoundException e) {
         requireNonNull(e, "argument is null");
         String missing = AbstractBugReporter.getMissingClassName(e);
         if (skipReportingMissingClass(missing)) {
@@ -311,12 +313,12 @@ public class AnalysisContext implements AutoCloseable {
         }
     }
 
-    static public void reportMissingClass(edu.umd.cs.findbugs.ba.MissingClassException e) {
+    public static void reportMissingClass(edu.umd.cs.findbugs.ba.MissingClassException e) {
         requireNonNull(e, "argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
-    static public boolean analyzingApplicationClass() {
+    public static boolean analyzingApplicationClass() {
         AnalysisContext context = AnalysisContext.currentAnalysisContext();
         if (context == null) {
             return false;
@@ -328,12 +330,12 @@ public class AnalysisContext implements AutoCloseable {
         return context.isApplicationClass(clazz);
     }
 
-    static public void reportMissingClass(edu.umd.cs.findbugs.classfile.MissingClassException e) {
+    public static void reportMissingClass(edu.umd.cs.findbugs.classfile.MissingClassException e) {
         requireNonNull(e, "argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
-    static public void reportMissingClass(ClassDescriptor c) {
+    public static void reportMissingClass(ClassDescriptor c) {
         requireNonNull(c, "argument is null");
         if (!analyzingApplicationClass()) {
             return;
@@ -351,10 +353,8 @@ public class AnalysisContext implements AutoCloseable {
         }
     }
 
-    /**
-     * Report an error
-     */
-    static public void logError(String msg, Exception e) {
+    /** Report an error */
+    public static void logError(String msg, Exception e) {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
             if (e instanceof NoSuchBugPattern) {
@@ -375,20 +375,20 @@ public class AnalysisContext implements AutoCloseable {
             return;
         }
         if (e instanceof edu.umd.cs.findbugs.classfile.MissingClassException) {
-            reportMissingClass(((edu.umd.cs.findbugs.classfile.MissingClassException) e).toClassNotFoundException());
+            reportMissingClass(
+                    ((edu.umd.cs.findbugs.classfile.MissingClassException) e).toClassNotFoundException());
             return;
         }
 
-        RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
+        RepositoryLookupFailureCallback lookupFailureCallback =
+                currentAnalysisContext2.getLookupFailureCallback();
         if (lookupFailureCallback != null) {
             lookupFailureCallback.logError(msg, e);
         }
     }
 
-    /**
-     * Report an error
-     */
-    static public void logError(String msg) {
+    /** Report an error */
+    public static void logError(String msg) {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
             return;
@@ -410,7 +410,6 @@ public class AnalysisContext implements AutoCloseable {
         if (skippedDueToInvokeDynamic.add(m.getMethodDescriptor())) {
             logAnError(m + " skipped due to invoke_dynamic");
         }
-
     }
 
     public boolean setMissingClassWarningsSuppressed(boolean value) {
@@ -429,10 +428,9 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Return whether or not the given class is an application class.
      *
-     * @param cls
-     *            the class to lookup
-     * @return true if the class is an application class, false if not an
-     *         application class or if the class cannot be located
+     * @param cls the class to lookup
+     * @return true if the class is an application class, false if not an application class or if the
+     *     class cannot be located
      */
     public boolean isApplicationClass(JavaClass cls) {
         // return getSubtypes().isApplicationClass(cls);
@@ -442,10 +440,9 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Return whether or not the given class is an application class.
      *
-     * @param className
-     *            name of a class
-     * @return true if the class is an application class, false if not an
-     *         application class or if the class cannot be located
+     * @param className name of a class
+     * @return true if the class is an application class, false if not an application class or if the
+     *     class cannot be located
      */
     public boolean isApplicationClass(@DottedClassName String className) {
         // try {
@@ -455,7 +452,8 @@ public class AnalysisContext implements AutoCloseable {
         // AnalysisContext.reportMissingClass(e);
         // return false;
         // }
-        ClassDescriptor classDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(className);
+        ClassDescriptor classDesc =
+                DescriptorFactory.createClassDescriptorFromDottedClassName(className);
         return getSubtypes2().isApplicationClass(classDesc);
     }
 
@@ -495,8 +493,9 @@ public class AnalysisContext implements AutoCloseable {
                     return true;
                 }
             } catch (RuntimeException e) {
-                AnalysisContext.logError("Error parsing class " + desc
-                        + " from " + classData.getCodeBaseEntry().getCodeBase(), e);
+                AnalysisContext.logError(
+                        "Error parsing class " + desc + " from " + classData.getCodeBaseEntry().getCodeBase(),
+                        e);
                 return true;
             }
 
@@ -511,33 +510,30 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     /**
-     * Lookup a class.
-     * <em>Use this method instead of Repository.lookupClass().</em>
+     * Lookup a class. <em>Use this method instead of Repository.lookupClass().</em>
      *
-     * @param classDescriptor
-     *            descriptor specifying the class to look up
+     * @param classDescriptor descriptor specifying the class to look up
      * @return the class
-     * @throws ClassNotFoundException
-     *             if the class can't be found
+     * @throws ClassNotFoundException if the class can't be found
      */
-    public JavaClass lookupClass(@Nonnull ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    public JavaClass lookupClass(@Nonnull ClassDescriptor classDescriptor)
+            throws ClassNotFoundException {
         return lookupClass(classDescriptor.toDottedClassName());
     }
 
     /**
-     * This is equivalent to Repository.lookupClass() or this.lookupClass(),
-     * except it uses the original Repository instead of the current one.
+     * This is equivalent to Repository.lookupClass() or this.lookupClass(), except it uses the
+     * original Repository instead of the current one.
      *
-     * This can be important because URLClassPathRepository objects are closed
-     * after an analysis, so JavaClass objects obtained from them are no good on
-     * subsequent runs.
+     * <p>This can be important because URLClassPathRepository objects are closed after an analysis,
+     * so JavaClass objects obtained from them are no good on subsequent runs.
      *
-     * @param className
-     *            the name of the class
+     * @param className the name of the class
      * @return the JavaClass representing the class
      * @throws ClassNotFoundException
      */
-    public static JavaClass lookupSystemClass(@Nonnull String className) throws ClassNotFoundException {
+    public static JavaClass lookupSystemClass(@Nonnull String className)
+            throws ClassNotFoundException {
         // TODO: eventually we should move to our own thread-safe repository
         // implementation
         requireNonNull(className, "className is null");
@@ -557,17 +553,18 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Lookup a class's source file
      *
-     * @param dottedClassName
-     *            the name of the class
-     * @return the source file for the class, or
-     *         {@link SourceLineAnnotation#UNKNOWN_SOURCE_FILE} if unable to
-     *         determine
+     * @param dottedClassName the name of the class
+     * @return the source file for the class, or {@link SourceLineAnnotation#UNKNOWN_SOURCE_FILE} if
+     *     unable to determine
      */
     public final String lookupSourceFile(@Nonnull @DottedClassName String dottedClassName) {
         requireNonNull(dottedClassName, "className is null");
         try {
-            XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                    DescriptorFactory.createClassDescriptorFromDottedClassName(dottedClassName));
+            XClass xClass =
+                    Global.getAnalysisCache()
+                            .getClassAnalysis(
+                                    XClass.class,
+                                    DescriptorFactory.createClassDescriptorFromDottedClassName(dottedClassName));
             String name = xClass.getSource();
             if (name == null) {
                 return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
@@ -578,38 +575,45 @@ public class AnalysisContext implements AutoCloseable {
         }
     }
 
-    /**
-     * If possible, load interprocedural property databases.
-     */
+    /** If possible, load interprocedural property databases. */
     public final void loadInterproceduralDatabases() {
-        loadPropertyDatabase(getFieldStoreTypeDatabase(), FieldStoreTypeDatabase.DEFAULT_FILENAME, "field store type database");
-        loadPropertyDatabase(getUnconditionalDerefParamDatabase(), UNCONDITIONAL_DEREF_DB_FILENAME,
+        loadPropertyDatabase(
+                getFieldStoreTypeDatabase(),
+                FieldStoreTypeDatabase.DEFAULT_FILENAME,
+                "field store type database");
+        loadPropertyDatabase(
+                getUnconditionalDerefParamDatabase(),
+                UNCONDITIONAL_DEREF_DB_FILENAME,
                 "unconditional param deref database");
-        loadPropertyDatabase(getReturnValueNullnessPropertyDatabase(), NONNULL_RETURN_DB_FILENAME, "nonnull return db database");
+        loadPropertyDatabase(
+                getReturnValueNullnessPropertyDatabase(),
+                NONNULL_RETURN_DB_FILENAME,
+                "nonnull return db database");
     }
 
     /**
-     * If possible, load default (built-in) interprocedural property databases.
-     * These are the databases for things like Java core APIs that unconditional
-     * dereference parameters.
+     * If possible, load default (built-in) interprocedural property databases. These are the
+     * databases for things like Java core APIs that unconditional dereference parameters.
      */
     public final void loadDefaultInterproceduralDatabases() {
         if (IGNORE_BUILTIN_MODELS) {
             return;
         }
-        loadPropertyDatabaseFromResource(getUnconditionalDerefParamDatabase(), UNCONDITIONAL_DEREF_DB_RESOURCE,
+        loadPropertyDatabaseFromResource(
+                getUnconditionalDerefParamDatabase(),
+                UNCONDITIONAL_DEREF_DB_RESOURCE,
                 "unconditional param deref database");
-        loadPropertyDatabaseFromResource(getReturnValueNullnessPropertyDatabase(), NONNULL_RETURN_DB_RESOURCE,
+        loadPropertyDatabaseFromResource(
+                getReturnValueNullnessPropertyDatabase(),
+                NONNULL_RETURN_DB_RESOURCE,
                 "nonnull return db database");
     }
 
     /**
      * Set a boolean property.
      *
-     * @param prop
-     *            the property to set
-     * @param value
-     *            the value of the property
+     * @param prop the property to set
+     * @param value the value of the property
      */
     public final void setBoolProperty(@AnalysisFeature int prop, boolean value) {
         boolPropertySet.set(prop, value);
@@ -618,10 +622,9 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Get a boolean property.
      *
-     * @param prop
-     *            the property
-     * @return value of the property; defaults to false if the property has not
-     *         had a value assigned explicitly
+     * @param prop the property
+     * @return value of the property; defaults to false if the property has not had a value assigned
+     *     explicitly
      */
     public final boolean getBoolProperty(@AnalysisFeature int prop) {
         return boolPropertySet.get(prop);
@@ -630,8 +633,7 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Set the interprocedural database input directory.
      *
-     * @param databaseInputDir
-     *            the interprocedural database input directory
+     * @param databaseInputDir the interprocedural database input directory
      */
     public final void setDatabaseInputDir(String databaseInputDir) {
         if (DEBUG) {
@@ -652,8 +654,7 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Set the interprocedural database output directory.
      *
-     * @param databaseOutputDir
-     *            the interprocedural database output directory
+     * @param databaseOutputDir the interprocedural database output directory
      */
     public final void setDatabaseOutputDir(String databaseOutputDir) {
         if (DEBUG) {
@@ -674,18 +675,12 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Load an interprocedural property database.
      *
-     * @param <DatabaseType>
-     *            actual type of the database
-     * @param <KeyType>
-     *            type of key (e.g., method or field)
-     * @param <Property>
-     *            type of properties stored in the database
-     * @param database
-     *            the empty database object
-     * @param fileName
-     *            file to load database from
-     * @param description
-     *            description of the database (for diagnostics)
+     * @param <DatabaseType> actual type of the database
+     * @param <KeyType> type of key (e.g., method or field)
+     * @param <Property> type of properties stored in the database
+     * @param database the empty database object
+     * @param fileName file to load database from
+     * @param description description of the database (for diagnostics)
      * @return the database object, or null if the database couldn't be loaded
      */
     public <DatabaseType extends PropertyDatabase<KeyType, Property>, KeyType extends FieldOrMethodDescriptor, Property> DatabaseType loadPropertyDatabase(
@@ -709,30 +704,31 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Load an interprocedural property database.
      *
-     * @param <DatabaseType>
-     *            actual type of the database
-     * @param <KeyType>
-     *            type of key (e.g., method or field)
-     * @param <Property>
-     *            type of properties stored in the database
-     * @param database
-     *            the empty database object
-     * @param resourceName
-     *            name of resource to load the database from
-     * @param description
-     *            description of the database (for diagnostics)
+     * @param <DatabaseType> actual type of the database
+     * @param <KeyType> type of key (e.g., method or field)
+     * @param <Property> type of properties stored in the database
+     * @param database the empty database object
+     * @param resourceName name of resource to load the database from
+     * @param description description of the database (for diagnostics)
      * @return the database object, or null if the database couldn't be loaded
      */
     public <DatabaseType extends PropertyDatabase<KeyType, Property>, KeyType extends FieldOrMethodDescriptor, Property> DatabaseType loadPropertyDatabaseFromResource(
             DatabaseType database, String resourceName, String description) {
         try {
             if (DEBUG) {
-                System.out.println("Loading default " + description + " from " + resourceName + " @ "
-                        + database.getClass().getResource(resourceName) + " ... ");
+                System.out.println(
+                        "Loading default "
+                                + description
+                                + " from "
+                                + resourceName
+                                + " @ "
+                                + database.getClass().getResource(resourceName)
+                                + " ... ");
             }
             try (InputStream in = database.getClass().getResourceAsStream(resourceName)) {
                 if (in == null) {
-                    AnalysisContext.logError("Unable to load " + description + " from resource " + resourceName);
+                    AnalysisContext.logError(
+                            "Unable to load " + description + " from resource " + resourceName);
                 } else {
                     database.read(in);
                 }
@@ -749,18 +745,12 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Write an interprocedural property database.
      *
-     * @param <DatabaseType>
-     *            actual type of the database
-     * @param <KeyType>
-     *            type of key (e.g., method or field)
-     * @param <Property>
-     *            type of properties stored in the database
-     * @param database
-     *            the database
-     * @param fileName
-     *            name of database file
-     * @param description
-     *            description of the database
+     * @param <DatabaseType> actual type of the database
+     * @param <KeyType> type of key (e.g., method or field)
+     * @param <Property> type of properties stored in the database
+     * @param database the database
+     * @param fileName name of database file
+     * @param description description of the database
      */
     public <DatabaseType extends PropertyDatabase<KeyType, Property>, KeyType extends FieldOrMethodDescriptor, Property> void storePropertyDatabase(
             DatabaseType database, String fileName, String description) {
@@ -779,8 +769,7 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Set the current analysis context for this thread.
      *
-     * @param analysisContext
-     *            the current analysis context for this thread
+     * @param analysisContext the current analysis context for this thread
      */
     public static void setCurrentAnalysisContext(AnalysisContext analysisContext) {
         currentAnalysisContext.set(analysisContext);
@@ -813,25 +802,19 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Add an entry to the Repository's classpath.
      *
-     * @param url
-     *            the classpath entry URL
+     * @param url the classpath entry URL
      * @throws IOException
      */
     public void addClasspathEntry(String url) throws IOException {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Clear the ClassContext cache. This should be done between analysis
-     * passes.
-     */
+    /** Clear the ClassContext cache. This should be done between analysis passes. */
     public void clearClassContextCache() {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Clear the BCEL Repository in preparation for analysis.
-     */
+    /** Clear the BCEL Repository in preparation for analysis. */
     public void clearRepository() {
         // Set the backing store for the BCEL Repository to
         // be the AnalysisCache.
@@ -849,8 +832,7 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Get the ClassContext for a class.
      *
-     * @param javaClass
-     *            the class
+     * @param javaClass the class
      * @return the ClassContext for that class
      */
     public ClassContext getClassContext(JavaClass javaClass) {
@@ -858,13 +840,15 @@ public class AnalysisContext implements AutoCloseable {
         // ClassDescriptor->JavaClass lookup.
         // However, we can be assured that it will succeed.
 
-        ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(
-                ClassName.toSlashedClassName(javaClass.getClassName()));
+        ClassDescriptor classDescriptor =
+                DescriptorFactory.instance()
+                        .getClassDescriptor(ClassName.toSlashedClassName(javaClass.getClassName()));
 
         try {
             return Global.getAnalysisCache().getClassAnalysis(ClassContext.class, classDescriptor);
         } catch (CheckedAnalysisException e) {
-            IllegalStateException ise = new IllegalStateException("Could not get ClassContext for JavaClass");
+            IllegalStateException ise =
+                    new IllegalStateException("Could not get ClassContext for JavaClass");
             ise.initCause(e);
             throw ise;
         }
@@ -880,8 +864,7 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     /**
-     * Get the property database recording the types of values stored into
-     * fields.
+     * Get the property database recording the types of values stored into fields.
      *
      * @return the database, or null if there is no database available
      */
@@ -889,35 +872,27 @@ public class AnalysisContext implements AutoCloseable {
         return getDatabase(FieldStoreTypeDatabase.class);
     }
 
-
     public JCIPAnnotationDatabase getJCIPAnnotationDatabase() {
         return getDatabase(JCIPAnnotationDatabase.class);
     }
 
-    /**
-     * Get the lookup failure callback.
-     */
+    /** Get the lookup failure callback. */
     public RepositoryLookupFailureCallback getLookupFailureCallback() {
         return lookupFailureCallback;
     }
 
-    /**
-     * Get the SourceFinder, for finding source files.
-     */
+    /** Get the SourceFinder, for finding source files. */
     public SourceFinder getSourceFinder() {
         return project.getSourceFinder();
     }
 
-    /**
-     * Get the SourceInfoMap.
-     */
+    /** Get the SourceInfoMap. */
     public SourceInfoMap getSourceInfoMap() {
         return getDatabase(SourceInfoMap.class);
     }
 
     /**
-     * Get the property database recording which methods unconditionally
-     * dereference parameters.
+     * Get the property database recording which methods unconditionally dereference parameters.
      *
      * @return the database, or null if there is no database available
      */
@@ -926,26 +901,22 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     /**
-     * Instantiate the CheckReturnAnnotationDatabase. Do this after the
-     * repository has been set up.
+     * Instantiate the CheckReturnAnnotationDatabase. Do this after the repository has been set up.
      */
-
     public void initDatabases() {
         // Databases are created on-demand - don't need to explicitly create
         // them
     }
 
     /**
-     * Lookup a class.
-     * <em>Use this method instead of Repository.lookupClass().</em>
+     * Lookup a class. <em>Use this method instead of Repository.lookupClass().</em>
      *
-     * @param className
-     *            the name of the class
+     * @param className the name of the class
      * @return the JavaClass representing the class
-     * @throws ClassNotFoundException
-     *             (but not really)
+     * @throws ClassNotFoundException (but not really)
      */
-    public JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException {
+    public JavaClass lookupClass(@Nonnull @DottedClassName String className)
+            throws ClassNotFoundException {
         try {
             if (className.length() == 0) {
                 throw new IllegalArgumentException("Class name is empty");
@@ -953,8 +924,11 @@ public class AnalysisContext implements AutoCloseable {
             if (!ClassName.isValidClassName(className)) {
                 throw new ClassNotFoundException("Invalid class name: " + className);
             }
-            return Global.getAnalysisCache().getClassAnalysis(JavaClass.class,
-                    DescriptorFactory.instance().getClassDescriptor(ClassName.toSlashedClassName(className)));
+            return Global.getAnalysisCache()
+                    .getClassAnalysis(
+                            JavaClass.class,
+                            DescriptorFactory.instance()
+                                    .getClassDescriptor(ClassName.toSlashedClassName(className)));
         } catch (CheckedAnalysisException e) {
             throw new ClassNotFoundException("Class not found: " + className, e);
         }
@@ -968,8 +942,8 @@ public class AnalysisContext implements AutoCloseable {
         // FIXME: we really should drive the progress callback here
         HashSet<ClassDescriptor> appSet = new HashSet<>(appClassCollection);
 
-        Collection<ClassDescriptor> allClassDescriptors = new ArrayList<>(DescriptorFactory.instance()
-                .getAllClassDescriptors());
+        Collection<ClassDescriptor> allClassDescriptors =
+                new ArrayList<>(DescriptorFactory.instance().getAllClassDescriptors());
         for (ClassDescriptor appClass : allClassDescriptors) {
             try {
                 XClass xclass = currentXFactory().getXClass(appClass);
@@ -991,28 +965,25 @@ public class AnalysisContext implements AutoCloseable {
         }
 
         if (true && Subtypes2.DEBUG) {
-            System.out.println(getSubtypes2().getGraph().getNumVertices() + " vertices in inheritance graph");
+            System.out.println(
+                    getSubtypes2().getGraph().getNumVertices() + " vertices in inheritance graph");
         }
     }
 
     /**
-     * After a pass has been completed, allow the analysis context to update
-     * information.
+     * After a pass has been completed, allow the analysis context to update information.
      *
-     * @param pass
-     *            -- the first pass is pass 0
+     * @param pass -- the first pass is pass 0
      */
     public void updateDatabases(int pass) {
         if (pass == 0) {
             getCheckReturnAnnotationDatabase().loadAuxiliaryAnnotations();
             getNullnessAnnotationDatabase().loadAuxiliaryAnnotations();
         }
-
     }
 
     /**
-     * Get the property database recording which methods always return nonnull
-     * values
+     * Get the property database recording which methods always return nonnull values
      *
      * @return the database, or null if there is no database available
      */
@@ -1020,30 +991,24 @@ public class AnalysisContext implements AutoCloseable {
         return getDatabase(ReturnValueNullnessPropertyDatabase.class);
     }
 
-    /**
-     * Get the Subtypes2 inheritance hierarchy database.
-     */
+    /** Get the Subtypes2 inheritance hierarchy database. */
     public Subtypes2 getSubtypes2() {
         return Global.getAnalysisCache().getDatabase(Subtypes2.class);
     }
 
-
     public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
         return Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
     }
-
 
     @CheckForNull
     public XMethod getBridgeTo(MethodInfo m) {
         return bridgeTo.get(m);
     }
 
-
     @CheckForNull
     public XMethod getBridgeFrom(MethodInfo m) {
         return bridgeFrom.get(m);
     }
-
 
     public void setBridgeMethod(MethodInfo from, MethodInfo to) {
         bridgeTo.put(from, to);
@@ -1055,14 +1020,14 @@ public class AnalysisContext implements AutoCloseable {
             tqNullnessDatabase = new TypeQualifierNullnessAnnotationDatabase();
         }
         return tqNullnessDatabase;
-
     }
 
     protected <E> E getDatabase(Class<E> cls) {
         return Global.getAnalysisCache().getDatabase(cls);
     }
 
-    static class DelegatingRepositoryLookupFailureCallback implements RepositoryLookupFailureCallback {
+    static class DelegatingRepositoryLookupFailureCallback
+            implements RepositoryLookupFailureCallback {
 
         @Override
         public void logError(String message) {
@@ -1088,12 +1053,10 @@ public class AnalysisContext implements AutoCloseable {
         public void reportSkippedAnalysis(MethodDescriptor method) {
             Global.getAnalysisCache().getErrorLogger().reportSkippedAnalysis(method);
         }
-
     }
 
     @Override
     public void close() {
         clear();
     }
-
 }

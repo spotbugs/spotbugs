@@ -19,18 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Iterator;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEDYNAMIC;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -52,6 +40,16 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.Iterator;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
+import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 
 public class CallToUnconditionalThrower extends PreorderVisitor implements Detector {
 
@@ -73,8 +71,10 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
         //
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
+        if (BCELUtil.isSynthetic(method)
+                || (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
             return;
         }
         CFG cfg = classContext.getCFG(method);
@@ -127,8 +127,10 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
                         System.out.println("\tFound " + xMethod);
                     }
 
-                    boolean isUnconditionalThrower = xMethod.isUnconditionalThrower() && !xMethod.isUnsupported()
-                            && !xMethod.isSynthetic();
+                    boolean isUnconditionalThrower =
+                            xMethod.isUnconditionalThrower()
+                                    && !xMethod.isUnsupported()
+                                    && !xMethod.isSynthetic();
                     if (isUnconditionalThrower) {
                         foundThrower = true;
                         if (DEBUG) {
@@ -140,21 +142,21 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
                             System.out.println("Found non thrower");
                         }
                     }
-
                 }
             } catch (ClassNotFoundException e) {
                 analysisContext.getLookupFailureCallback().reportMissingClass(e);
             }
             boolean newResult = foundThrower && !foundNonThrower;
             if (newResult) {
-                bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY)
-                        .addClassAndMethod(classContext.getJavaClass(), method)
-                        .addString("Call to method that always throws Exception").addMethod(primaryXMethod)
-                        .describe(MethodAnnotation.METHOD_CALLED).addSourceLine(classContext, method, loc));
+                bugReporter.reportBug(
+                        new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY)
+                                .addClassAndMethod(classContext.getJavaClass(), method)
+                                .addString("Call to method that always throws Exception")
+                                .addMethod(primaryXMethod)
+                                .describe(MethodAnnotation.METHOD_CALLED)
+                                .addSourceLine(classContext, method, loc));
             }
-
         }
-
     }
 
     @Override
@@ -175,13 +177,14 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
             } catch (CFGBuilderException e) {
                 bugReporter.logError(
                         "Error checking for infinite recursive loop in "
-                                + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);
+                                + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method),
+                        e);
             } catch (DataflowAnalysisException e) {
                 bugReporter.logError(
                         "Error checking for infinite recursive loop in "
-                                + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);
+                                + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method),
+                        e);
             }
         }
     }
-
 }

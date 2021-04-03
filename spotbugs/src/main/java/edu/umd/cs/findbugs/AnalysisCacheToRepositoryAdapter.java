@@ -19,27 +19,24 @@
 
 package edu.umd.cs.findbugs;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.util.ClassPath;
-import org.apache.bcel.util.Repository;
-
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.util.ClassPath;
+import org.apache.bcel.util.Repository;
 
 /**
- * An implementation of org.apache.bcel.util.Repository that uses the
- * AnalysisCache as its backing store.
+ * An implementation of org.apache.bcel.util.Repository that uses the AnalysisCache as its backing
+ * store.
  *
  * @author David Hovemeyer
  */
 public class AnalysisCacheToRepositoryAdapter implements Repository {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public AnalysisCacheToRepositoryAdapter() {
     }
 
@@ -62,7 +59,8 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
     public JavaClass findClass(String className) {
         @SlashedClassName
         String slashedClassName = ClassName.toSlashedClassName(className);
-        ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(slashedClassName);
+        ClassDescriptor classDescriptor =
+                DescriptorFactory.instance().getClassDescriptor(slashedClassName);
         return Global.getAnalysisCache().probeClassAnalysis(JavaClass.class, classDescriptor);
     }
 

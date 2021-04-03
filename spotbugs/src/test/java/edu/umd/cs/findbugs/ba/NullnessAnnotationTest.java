@@ -23,23 +23,26 @@ public class NullnessAnnotationTest {
 
             // there is no such thing as com.google.common.base.NonNull
             { "com.google.common.base.Nullable", NullnessAnnotation.CHECK_FOR_NULL },
-
             { "org.eclipse.jdt.annotation.NonNull", NullnessAnnotation.NONNULL },
             { "org.eclipse.jdt.annotation.Nullable", NullnessAnnotation.CHECK_FOR_NULL },
-
             { "org.jetbrains.annotations.NotNull", NullnessAnnotation.NONNULL },
             { "org.jetbrains.annotations.Nullable", NullnessAnnotation.CHECK_FOR_NULL },
-
             { "org.checkerframework.checker.nullness.qual.Nullable", NullnessAnnotation.CHECK_FOR_NULL },
-            { "org.checkerframework.checker.nullness.compatqual.NullableDecl", NullnessAnnotation.CHECK_FOR_NULL },
-
-            { edu.umd.cs.findbugs.annotations.CheckForNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL },
-            { edu.umd.cs.findbugs.annotations.PossiblyNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL },
-
+            {
+                "org.checkerframework.checker.nullness.compatqual.NullableDecl",
+                NullnessAnnotation.CHECK_FOR_NULL
+            },
+            {
+                edu.umd.cs.findbugs.annotations.CheckForNull.class.getName(),
+                NullnessAnnotation.CHECK_FOR_NULL
+            },
+            {
+                edu.umd.cs.findbugs.annotations.PossiblyNull.class.getName(),
+                NullnessAnnotation.CHECK_FOR_NULL
+            },
             { javax.annotation.CheckForNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL },
             { javax.annotation.Nonnull.class.getName(), NullnessAnnotation.NONNULL },
             { javax.annotation.Nullable.class.getName(), NullnessAnnotation.NULLABLE },
-
             { "something different", null },
         };
     }

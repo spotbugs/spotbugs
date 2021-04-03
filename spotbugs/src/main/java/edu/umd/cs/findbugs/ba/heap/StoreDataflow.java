@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.ba.heap;
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class StoreDataflow extends AbstractDataflow<FieldSet, StoreAnalysis> {
     public StoreDataflow(CFG cfg, StoreAnalysis analysis) {
         super(cfg, analysis);

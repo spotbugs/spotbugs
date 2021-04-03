@@ -21,11 +21,10 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-import java.util.Iterator;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
+import java.util.Iterator;
 
 public class NotMatcher extends CompoundMatcher {
 

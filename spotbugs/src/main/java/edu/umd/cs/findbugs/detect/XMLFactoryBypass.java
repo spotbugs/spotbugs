@@ -19,39 +19,39 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.JavaClass;
 
 public class XMLFactoryBypass extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
 
     @StaticConstant
-    private static final Set<String> xmlInterfaces = new HashSet<String>() {
-        static final long serialVersionUID = -9117982073509840017L;
-        {
-            add("javax.xml.parsers.DocumentBuilder");
-            add("org.w3c.dom.Document");
-            add("javax.xml.parsers.SAXParser");
-            add("org.xml.sax.XMLReader");
-            add("org.xml.sax.XMLFilter");
-            add("javax.xml.transform.Transformer");
-            add("org.w3c.dom.Attr");
-            add("org.w3c.dom.CDATASection");
-            add("org.w3c.dom.Comment");
-            add("org.w3c.dom.Element");
-            add("org.w3c.dom.Text");
-        }
-    };
+    private static final Set<String> xmlInterfaces =
+            new HashSet<String>() {
+                static final long serialVersionUID = -9117982073509840017L;
+
+                {
+                    add("javax.xml.parsers.DocumentBuilder");
+                    add("org.w3c.dom.Document");
+                    add("javax.xml.parsers.SAXParser");
+                    add("org.xml.sax.XMLReader");
+                    add("org.xml.sax.XMLFilter");
+                    add("javax.xml.transform.Transformer");
+                    add("org.w3c.dom.Attr");
+                    add("org.w3c.dom.CDATASection");
+                    add("org.w3c.dom.Comment");
+                    add("org.w3c.dom.Element");
+                    add("org.w3c.dom.Text");
+                }
+            };
 
     private final Set<String> rejectedXMLClasses = new HashSet<>();
 
@@ -104,8 +104,10 @@ public class XMLFactoryBypass extends BytecodeScanningDetector {
                 JavaClass[] infs = newCls.getAllInterfaces();
                 for (JavaClass inf : infs) {
                     if (xmlInterfaces.contains(inf.getClassName())) {
-                        bugReporter.reportBug(new BugInstance(this, "XFB_XML_FACTORY_BYPASS", LOW_PRIORITY).addClassAndMethod(
-                                this).addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, "XFB_XML_FACTORY_BYPASS", LOW_PRIORITY)
+                                        .addClassAndMethod(this)
+                                        .addSourceLine(this));
                         rejectedXMLClasses.remove(newClsName);
                     }
                 }

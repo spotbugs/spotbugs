@@ -34,8 +34,7 @@ public class RegexStringMatcher implements StringMatcher {
     /**
      * Constructor.
      *
-     * @param patStr
-     *            a String defining the regular expression pattern to match
+     * @param patStr a String defining the regular expression pattern to match
      */
     public RegexStringMatcher(String patStr) {
         pattern = Pattern.compile(patStr);
@@ -51,5 +50,4 @@ public class RegexStringMatcher implements StringMatcher {
     public String toString() {
         return pattern.toString();
     }
-
 }

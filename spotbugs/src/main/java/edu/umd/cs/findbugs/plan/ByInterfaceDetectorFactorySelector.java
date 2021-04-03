@@ -23,8 +23,8 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.Plugin;
 
 /**
- * DetectorFactorySelector implementation that chooses detectors based on an
- * implemented interface or extended superclass.
+ * DetectorFactorySelector implementation that chooses detectors based on an implemented interface
+ * or extended superclass.
  *
  * @author David Hovemeyer
  */

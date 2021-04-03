@@ -29,9 +29,8 @@ import java.util.regex.Pattern;
  * Lexical scanner for external annotation files.
  *
  * @author David Hovemeyer
- * @see <a
- *      href="http://groups.csail.mit.edu/pag/jsr308/annotation-file-utilities/">Annotation
- *      File Utilities/</a>
+ * @see <a href="http://groups.csail.mit.edu/pag/jsr308/annotation-file-utilities/">Annotation File
+ *     Utilities/</a>
  */
 public class JAIFScanner {
 
@@ -89,7 +88,7 @@ public class JAIFScanner {
 
     private static final String INT_TYPE_SUFFIX_OPT = "[Ll]?";
 
-    private static final String INPUT_CHAR = "[^\\\\\\\"]";// anything other
+    private static final String INPUT_CHAR = "[^\\\\\\\"]"; // anything other
     // than backslash or
     // double-quote
     // character
@@ -112,11 +111,15 @@ public class JAIFScanner {
         new TokenPattern(ID_START + "(" + ID_REST + ")*", JAIFTokenKind.IDENTIFIER_OR_KEYWORD),
 
         // FP literals
-        new TokenPattern(DIGITS + DOT + DIGITS_OPT + EXP_PART_OPT + FLOAT_TYPE_SUFFIX_OPT,
+        new TokenPattern(
+                DIGITS + DOT + DIGITS_OPT + EXP_PART_OPT + FLOAT_TYPE_SUFFIX_OPT,
                 JAIFTokenKind.FLOATING_POINT_LITERAL),
-        new TokenPattern(DOT + DIGITS + EXP_PART_OPT + FLOAT_TYPE_SUFFIX_OPT, JAIFTokenKind.FLOATING_POINT_LITERAL),
-        new TokenPattern(DIGITS + EXP_PART + FLOAT_TYPE_SUFFIX_OPT, JAIFTokenKind.FLOATING_POINT_LITERAL),
-        new TokenPattern(DIGITS + EXP_PART_OPT + FLOAT_TYPE_SUFFIX, JAIFTokenKind.FLOATING_POINT_LITERAL),
+        new TokenPattern(
+                DOT + DIGITS + EXP_PART_OPT + FLOAT_TYPE_SUFFIX_OPT, JAIFTokenKind.FLOATING_POINT_LITERAL),
+        new TokenPattern(
+                DIGITS + EXP_PART + FLOAT_TYPE_SUFFIX_OPT, JAIFTokenKind.FLOATING_POINT_LITERAL),
+        new TokenPattern(
+                DIGITS + EXP_PART_OPT + FLOAT_TYPE_SUFFIX, JAIFTokenKind.FLOATING_POINT_LITERAL),
 
         // This must come after the FP literal patterns
         new TokenPattern(DOT, JAIFTokenKind.DOT),
@@ -127,7 +130,8 @@ public class JAIFScanner {
         new TokenPattern(DIGITS + INT_TYPE_SUFFIX_OPT, JAIFTokenKind.DECIMAL_LITERAL),
 
         // String literals
-        new TokenPattern("\"" + STRING_CHARS_OPT + "\"", JAIFTokenKind.STRING_LITERAL), };
+        new TokenPattern("\"" + STRING_CHARS_OPT + "\"", JAIFTokenKind.STRING_LITERAL),
+    };
 
     private final BufferedReader reader;
 
@@ -137,9 +141,7 @@ public class JAIFScanner {
 
     private int lineNum;
 
-    /**
-     * @param reader
-     */
+    /** @param reader */
     public JAIFScanner(Reader reader) {
         this.reader = new BufferedReader(reader);
         this.lineNum = 0;
@@ -221,6 +223,7 @@ public class JAIFScanner {
             }
         }
 
-        throw new JAIFSyntaxException(this, "Unrecognized token (trying to match text `" + lineBuf + "')");
+        throw new JAIFSyntaxException(
+                this, "Unrecognized token (trying to match text `" + lineBuf + "')");
     }
 }

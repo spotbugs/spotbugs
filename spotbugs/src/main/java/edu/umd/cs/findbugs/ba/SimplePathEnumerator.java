@@ -19,19 +19,17 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.umd.cs.findbugs.SystemProperties;
-
 /**
- * <p>Object to enumerate (some subset of) the simple paths in a CFG. A simple path
- * is a path from entry to exit, ignoring backedges and unhandled exceptions.
- * </p>
- * <p>
- * FIXME: instead of storing the simple paths, should invoke a callback as each
- * simple path is produced. That would save memory.</p>
+ * Object to enumerate (some subset of) the simple paths in a CFG. A simple path is a path from
+ * entry to exit, ignoring backedges and unhandled exceptions.
+ *
+ * <p>FIXME: instead of storing the simple paths, should invoke a callback as each simple path is
+ * produced. That would save memory.
  *
  * @author David Hovemeyer
  * @see CFG
@@ -51,21 +49,16 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("spe.debug");
 
-    /**
-     * Default number of steps to be performed in path enumeration.
-     */
+    /** Default number of steps to be performed in path enumeration. */
     public static final int DEFAULT_MAX_WORK = 200000;
 
     /**
      * Constructor.
      *
-     * @param cfg
-     *            the control flow graph to enumerate simple paths of
-     * @param maxPaths
-     *            maximum number of simple paths to find
-     * @param maxWork
-     *            maximum number of steps to be performed in the path
-     *            enumeration (to handle exponential blowup of search space)
+     * @param cfg the control flow graph to enumerate simple paths of
+     * @param maxPaths maximum number of simple paths to find
+     * @param maxWork maximum number of steps to be performed in the path enumeration (to handle
+     *     exponential blowup of search space)
      */
     public SimplePathEnumerator(CFG cfg, int maxPaths, int maxWork) {
         this.cfg = cfg;
@@ -80,10 +73,8 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
     /**
      * Constructor; max work is set to DEFAULT_MAX_WORK.
      *
-     * @param cfg
-     *            the control flow graph to enumerate simple paths of
-     * @param maxPaths
-     *            maximum number of simple paths to find
+     * @param cfg the control flow graph to enumerate simple paths of
+     * @param maxPaths maximum number of simple paths to find
      */
     public SimplePathEnumerator(CFG cfg, int maxPaths) {
         this(cfg, maxPaths, DEFAULT_MAX_WORK);
@@ -112,9 +103,7 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
         return this;
     }
 
-    /**
-     * Iterate over simple paths.
-     */
+    /** Iterate over simple paths. */
     public Iterator<List<Edge>> iterator() {
         return pathList.iterator();
     }
@@ -139,7 +128,8 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
             Edge outEdge = i.next();
 
             // Ignore back edges and unhandled exception edges
-            if (dfs.getDFSEdgeType(outEdge) == BACK_EDGE || outEdge.getType() == UNHANDLED_EXCEPTION_EDGE) {
+            if (dfs.getDFSEdgeType(outEdge) == BACK_EDGE
+                    || outEdge.getType() == UNHANDLED_EXCEPTION_EDGE) {
                 continue;
             }
 

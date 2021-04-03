@@ -19,6 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -26,16 +31,9 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReturnInstruction;
 
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-
 /**
- * Analysis to determine where particular values are locked in a method. The
- * dataflow values are maps of value numbers to the number of times those values
- * are locked.
+ * Analysis to determine where particular values are locked in a method. The dataflow values are
+ * maps of value numbers to the number of times those values are locked.
  *
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
@@ -61,7 +59,8 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
         this.isSynchronized = methodGen.isSynchronized();
         this.isStatic = methodGen.isStatic();
         if (DEBUG) {
-            System.out.println("Analyzing Locks in " + methodGen.getClassName() + "." + methodGen.getName());
+            System.out.println(
+                    "Analyzing Locks in " + methodGen.getClassName() + "." + methodGen.getName());
         }
     }
 
@@ -140,7 +139,8 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
         }
     }
 
-    private void modifyLock(ValueNumberFrame frame, LockSet fact, int delta) throws DataflowAnalysisException {
+    private void modifyLock(ValueNumberFrame frame, LockSet fact, int delta)
+            throws DataflowAnalysisException {
         if (frame.isValid()) {
             int lockNumber = frame.getTopValue().getNumber();
             lockOp(fact, lockNumber, delta);
@@ -157,8 +157,15 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
             value = LockSet.BOTTOM;
         }
         if (DEBUG) {
-            System.out.println("Setting " + lockNumber + " to " + value + " in " + methodGen.getClassName() + "."
-                    + methodGen.getName());
+            System.out.println(
+                    "Setting "
+                            + lockNumber
+                            + " to "
+                            + value
+                            + " in "
+                            + methodGen.getClassName()
+                            + "."
+                            + methodGen.getName());
         }
         fact.setLockCount(lockNumber, value);
     }

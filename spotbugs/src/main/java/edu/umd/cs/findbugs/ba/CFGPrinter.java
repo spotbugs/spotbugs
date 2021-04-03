@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.PrintStream;
 import java.util.Iterator;
-
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -45,9 +44,7 @@ public class CFGPrinter {
         this.isForwards = isForwards;
     }
 
-    /**
-     * @return Returns the isForwards.
-     */
+    /** @return Returns the isForwards. */
     public boolean isForwards() {
         return isForwards;
     }
@@ -57,8 +54,11 @@ public class CFGPrinter {
         while (i.hasNext()) {
             BasicBlock bb = i.next();
             out.println();
-            out.println("BASIC BLOCK: " + bb.getLabel() + (bb.isExceptionThrower() ? " [EXCEPTION THROWER]" : "")
-                    + blockStartAnnotate(bb));
+            out.println(
+                    "BASIC BLOCK: "
+                            + bb.getLabel()
+                            + (bb.isExceptionThrower() ? " [EXCEPTION THROWER]" : "")
+                            + blockStartAnnotate(bb));
             if (bb.isExceptionThrower()) {
                 out.println("  Exception thrower: " + bb.getExceptionThrower());
             }
@@ -72,7 +72,8 @@ public class CFGPrinter {
                 out.println(handle + instructionAnnotate(handle, bb));
             }
             out.println("END" + blockAnnotate(bb));
-            Iterator<Edge> edgeIter = isForwards ? cfg.outgoingEdgeIterator(bb) : cfg.incomingEdgeIterator(bb);
+            Iterator<Edge> edgeIter =
+                    isForwards ? cfg.outgoingEdgeIterator(bb) : cfg.incomingEdgeIterator(bb);
             while (edgeIter.hasNext()) {
                 Edge edge = edgeIter.next();
                 out.println("  " + edge.formatAsString(!isForwards) + " " + edgeAnnotate(edge));

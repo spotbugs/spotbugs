@@ -19,13 +19,11 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Match bug instances having one of given codes or patterns.
@@ -44,12 +42,9 @@ public class BugMatcher implements Matcher {
     /**
      * Constructor.
      *
-     * @param codes
-     *            comma-separated list of bug codes
-     * @param patterns
-     *            coma-separated list of bug patterns.
-     * @param categories
-     *            coma-separated list of bug categories.
+     * @param codes comma-separated list of bug codes
+     * @param patterns coma-separated list of bug patterns.
+     * @param categories coma-separated list of bug categories.
      */
     public BugMatcher(String codes, String patterns, String categories) {
         this.codes = new StringSetMatch(codes);
@@ -62,8 +57,15 @@ public class BugMatcher implements Matcher {
         boolean result1 = codes.match(bugInstance.getAbbrev());
         boolean result2 = patterns.match(bugInstance.getType());
         boolean result3 = categories.match(bugInstance.getBugPattern().getCategory());
-        LOG.debug("Matching {}/{}/{} with {}, result = {}/{}/{}", bugInstance.getAbbrev(), bugInstance.getType(),
-                bugInstance.getBugPattern().getCategory(), this, result1, result2, result3);
+        LOG.debug(
+                "Matching {}/{}/{} with {}, result = {}/{}/{}",
+                bugInstance.getAbbrev(),
+                bugInstance.getType(),
+                bugInstance.getBugPattern().getCategory(),
+                this,
+                result1,
+                result2,
+                result3);
 
         return result1 || result2 || result3;
     }
@@ -79,7 +81,9 @@ public class BugMatcher implements Matcher {
             return false;
         }
         BugMatcher other = (BugMatcher) o;
-        return codes.equals(other.codes) && patterns.equals(other.patterns) && categories.equals(other.categories);
+        return codes.equals(other.codes)
+                && patterns.equals(other.patterns)
+                && categories.equals(other.categories);
     }
 
     @Override
@@ -95,7 +99,8 @@ public class BugMatcher implements Matcher {
         xmlOutput.stopTag(true);
     }
 
-    public void addAttribute(XMLOutput xmlOutput, String name, StringSetMatch matches) throws IOException {
+    public void addAttribute(XMLOutput xmlOutput, String name, StringSetMatch matches)
+            throws IOException {
         String value = matches.toString();
         if (value.length() != 0) {
             xmlOutput.addAttribute(name, value);
@@ -118,5 +123,4 @@ public class BugMatcher implements Matcher {
         buf.append(")");
         return buf.toString();
     }
-
 }

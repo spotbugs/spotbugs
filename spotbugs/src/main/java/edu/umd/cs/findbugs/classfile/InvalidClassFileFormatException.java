@@ -19,43 +19,42 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class InvalidClassFileFormatException extends CheckedAnalysisException {
     private final ClassDescriptor classDescriptor;
 
     private final ICodeBaseEntry codeBaseEntry;
 
-    public InvalidClassFileFormatException(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
+    public InvalidClassFileFormatException(
+            ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
         super("Invalid classfile format");
         this.classDescriptor = classDescriptor;
         this.codeBaseEntry = codeBaseEntry;
     }
 
-    public InvalidClassFileFormatException(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry, Throwable cause) {
+    public InvalidClassFileFormatException(
+            ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry, Throwable cause) {
         super("Invalid classfile format", cause);
         this.classDescriptor = classDescriptor;
         this.codeBaseEntry = codeBaseEntry;
     }
 
-    public InvalidClassFileFormatException(String msg, ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
+    public InvalidClassFileFormatException(
+            String msg, ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
         super(msg);
         this.classDescriptor = classDescriptor;
         this.codeBaseEntry = codeBaseEntry;
     }
 
     /**
-     * @return Returns the ClassDescriptor of the class found to have an invalid
-     *         format (null if unknown)
+     * @return Returns the ClassDescriptor of the class found to have an invalid format (null if
+     *     unknown)
      */
     public ClassDescriptor getClassDescriptor() {
         return classDescriptor;
     }
 
-    /**
-     * @return Returns the codeBaseEntry.
-     */
+    /** @return Returns the codeBaseEntry. */
     public ICodeBaseEntry getCodeBaseEntry() {
         return codeBaseEntry;
     }

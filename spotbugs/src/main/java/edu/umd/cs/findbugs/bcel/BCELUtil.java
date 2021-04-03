@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs.bcel;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
@@ -26,13 +32,6 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.FieldGenOrMethodGen;
 import org.apache.bcel.generic.ObjectType;
-
-import edu.umd.cs.findbugs.bytecode.MemberUtils;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Utility methods for detectors and analyses using BCEL.
@@ -43,38 +42,38 @@ public abstract class BCELUtil {
     /**
      * Construct a MethodDescriptor from JavaClass and method.
      *
-     * @param jclass
-     *            a JavaClass
-     * @param method
-     *            a Method belonging to the JavaClass
+     * @param jclass a JavaClass
+     * @param method a Method belonging to the JavaClass
      * @return a MethodDescriptor identifying the method
      */
     public static MethodDescriptor getMethodDescriptor(JavaClass jclass, Method method) {
-        return DescriptorFactory.instance().getMethodDescriptor(jclass.getClassName().replace('.', '/'), method.getName(),
-                method.getSignature(), method.isStatic());
+        return DescriptorFactory.instance()
+                .getMethodDescriptor(
+                        jclass.getClassName().replace('.', '/'),
+                        method.getName(),
+                        method.getSignature(),
+                        method.isStatic());
     }
 
     /**
      * Construct a ClassDescriptor from a JavaClass.
      *
-     * @param jclass
-     *            a JavaClass
+     * @param jclass a JavaClass
      * @return a ClassDescriptor identifying that JavaClass
      */
     public static ClassDescriptor getClassDescriptor(JavaClass jclass) {
-        return DescriptorFactory.instance().getClassDescriptor(ClassName.toSlashedClassName(jclass.getClassName()));
+        return DescriptorFactory.instance()
+                .getClassDescriptor(ClassName.toSlashedClassName(jclass.getClassName()));
     }
 
     private static final int JDK15_MAJOR = 48;
 
     private static final int JDK15_MINOR = 0;
 
-    /**
-     * Checks if classfile was compiled for pre 1.5 target
-     */
+    /** Checks if classfile was compiled for pre 1.5 target */
     public static boolean preTiger(JavaClass jclass) {
-        return jclass.getMajor() < JDK15_MAJOR || (jclass.getMajor() == JDK15_MAJOR && jclass.getMinor() < JDK15_MINOR);
-
+        return jclass.getMajor() < JDK15_MAJOR
+                || (jclass.getMajor() == JDK15_MAJOR && jclass.getMinor() < JDK15_MINOR);
     }
 
     public static ObjectType getObjectTypeInstance(@DottedClassName String className) {
@@ -86,9 +85,8 @@ public abstract class BCELUtil {
      *
      * @param m The member to be checked
      * @return True if the member is synthetic, false otherwise
-     * @deprecated You probably don't care for synthetic members, but want to
-     *             know if the developer added it (think of lambdas), use
-     *             {@link MemberUtils#isUserGenerated(FieldOrMethod)} instead
+     * @deprecated You probably don't care for synthetic members, but want to know if the developer
+     *     added it (think of lambdas), use {@link MemberUtils#isUserGenerated(FieldOrMethod)} instead
      */
     @Deprecated
     public static boolean isSynthetic(FieldOrMethod m) {

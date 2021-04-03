@@ -19,23 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ATHROW;
-import org.apache.bcel.generic.CodeExceptionGen;
-import org.apache.bcel.generic.IF_ACMPNE;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -61,6 +44,20 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.Const;
+import org.apache.bcel.generic.ALOAD;
+import org.apache.bcel.generic.ATHROW;
+import org.apache.bcel.generic.CodeExceptionGen;
+import org.apache.bcel.generic.IF_ACMPNE;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
 /**
  * A dataflow analysis to detect potential null pointer dereferences.
@@ -70,8 +67,8 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @see IsNullValueFrame
  * @see IsNullValueFrameModelingVisitor
  */
-public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame> implements EdgeTypes,
-        IsNullValueAnalysisFeatures {
+public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame>
+        implements EdgeTypes, IsNullValueAnalysisFeatures {
     static final boolean DEBUG = SystemProperties.getBoolean("inva.debug");
 
     static {
@@ -102,32 +99,55 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
     private final @CheckForNull PointerEqualityCheck pointerEqualityCheck;
 
-    public IsNullValueAnalysis(MethodDescriptor descriptor, MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow,
-            TypeDataflow typeDataflow, DepthFirstSearch dfs, AssertionMethods assertionMethods) {
+    public IsNullValueAnalysis(
+            MethodDescriptor descriptor,
+            MethodGen methodGen,
+            CFG cfg,
+            ValueNumberDataflow vnaDataflow,
+            TypeDataflow typeDataflow,
+            DepthFirstSearch dfs,
+            AssertionMethods assertionMethods) {
         super(dfs);
 
-        this.trackValueNumbers = AnalysisContext.currentAnalysisContext().getBoolProperty(
-                AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS);
+        this.trackValueNumbers =
+                AnalysisContext.currentAnalysisContext()
+                        .getBoolProperty(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS);
 
         this.methodGen = methodGen;
-        this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool(), assertionMethods, vnaDataflow,
-                typeDataflow, trackValueNumbers);
+        this.visitor =
+                new IsNullValueFrameModelingVisitor(
+                        methodGen.getConstantPool(),
+                        assertionMethods,
+                        vnaDataflow,
+                        typeDataflow,
+                        trackValueNumbers);
         this.vnaDataflow = vnaDataflow;
         this.cfg = cfg;
         this.locationWhereValueBecomesNullSet = new HashSet<>();
         this.pointerEqualityCheck = getForPointerEqualityCheck(cfg, vnaDataflow);
 
         if (DEBUG) {
-            System.out.println("IsNullValueAnalysis for " + methodGen.getClassName() + "." + methodGen.getName() + " : "
-                    + methodGen.getSignature());
+            System.out.println(
+                    "IsNullValueAnalysis for "
+                            + methodGen.getClassName()
+                            + "."
+                            + methodGen.getName()
+                            + " : "
+                            + methodGen.getSignature());
         }
     }
 
     enum PointerEqualityCheckState {
-        INIT, START, SAW1, SAW2, IFEQUAL, IFNOTEQUAL;
+        INIT,
+        START,
+        SAW1,
+        SAW2,
+        IFEQUAL,
+        IFNOTEQUAL;
     }
 
-    public static @CheckForNull PointerEqualityCheck getForPointerEqualityCheck(CFG cfg, ValueNumberDataflow vna) {
+    public static @CheckForNull PointerEqualityCheck getForPointerEqualityCheck(
+            CFG cfg, ValueNumberDataflow vna) {
         PointerEqualityCheckState state = PointerEqualityCheckState.INIT;
         int target = Integer.MAX_VALUE;
         Location test = null;
@@ -174,7 +194,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                     try {
                         ValueNumberFrame vnaFrame = vna.getFactAtLocation(test);
 
-                        return new PointerEqualityCheck(vnaFrame.getStackValue(0), vnaFrame.getStackValue(1), target);
+                        return new PointerEqualityCheck(
+                                vnaFrame.getStackValue(0), vnaFrame.getStackValue(1), target);
                     } catch (DataflowAnalysisException e) {
                         return null;
                     }
@@ -186,7 +207,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         return null;
     }
 
-    private @CheckForNull ValueNumber getKnownNonnullDueToPointerDisequality(ValueNumber knownNull, int pc) {
+    private @CheckForNull ValueNumber getKnownNonnullDueToPointerDisequality(
+            ValueNumber knownNull, int pc) {
         if (pointerEqualityCheck == null || pc < pointerEqualityCheck.firstValuePC) {
             return null;
         }
@@ -233,9 +255,14 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
             int numLocals = methodGen.getMaxLocals();
             boolean instanceMethod = !methodGen.isStatic();
-            XMethod xm = XFactory.createXMethod(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature(),
-                    methodGen.isStatic());
-            INullnessAnnotationDatabase db = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
+            XMethod xm =
+                    XFactory.createXMethod(
+                            methodGen.getClassName(),
+                            methodGen.getName(),
+                            methodGen.getSignature(),
+                            methodGen.isStatic());
+            INullnessAnnotationDatabase db =
+                    AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
             int paramShift = instanceMethod ? 1 : 0;
             Type[] argumentTypes = methodGen.getArgumentTypes();
             for (int i = 0; i < numLocals; ++i) {
@@ -257,7 +284,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                 } else if (n == NullnessAnnotation.NONNULL) {
                     // Parameter declared @NonNull
                     // TODO: label this so we don't report defensive programming
-                    // value = false ? IsNullValue.nonNullValue()  : IsNullValue.parameterMarkedAsNonnull(methodParameter);
+                    // value = false ? IsNullValue.nonNullValue()  :
+                    // IsNullValue.parameterMarkedAsNonnull(methodParameter);
                     value = IsNullValue.parameterMarkedAsNonnull(methodParameter);
                 } else {
                     // Don't know; use default value, normally non-reporting
@@ -274,20 +302,24 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
     }
 
     @Override
-    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, IsNullValueFrame start,
-            IsNullValueFrame result) throws DataflowAnalysisException {
+    public void transfer(
+            BasicBlock basicBlock,
+            @CheckForNull InstructionHandle end,
+            IsNullValueFrame start,
+            IsNullValueFrame result)
+            throws DataflowAnalysisException {
         startTransfer();
         super.transfer(basicBlock, end, start, result);
         endTransfer(basicBlock, end, result);
 
         if (end == null) {
-            ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(Location.getLastLocation(basicBlock));
+            ValueNumberFrame vnaFrameAfter =
+                    vnaDataflow.getFactAfterLocation(Location.getLastLocation(basicBlock));
             // purge stale information
             if (!vnaFrameAfter.isTop()) {
                 result.cleanStaleKnowledge(vnaFrameAfter);
             }
         }
-
     }
 
     public void startTransfer() {
@@ -295,7 +327,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         instanceOfFrame = null;
     }
 
-    public void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, IsNullValueFrame result)
+    public void endTransfer(
+            BasicBlock basicBlock, @CheckForNull InstructionHandle end, IsNullValueFrame result)
             throws DataflowAnalysisException {
         // Determine if this basic block ends in a redundant branch.
         if (end == null) {
@@ -311,7 +344,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
     }
 
     @Override
-    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
+    public void transferInstruction(
+            InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
             throws DataflowAnalysisException {
 
         if (!fact.isValid()) {
@@ -355,7 +389,11 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         Location location = new Location(handle, basicBlock);
         ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(location);
         if (!vnaFrameAfter.isValid()) {
-            assert false : "Invalid VNA after location " + location + " in " + SignatureConverter.convertMethodSignature(methodGen);
+            assert false
+                    : "Invalid VNA after location "
+                            + location
+                            + " in "
+                            + SignatureConverter.convertMethodSignature(methodGen);
             return;
         }
         for (int i = start; i < fact.getNumSlots(); ++i) {
@@ -375,11 +413,12 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
         if (visitor.getSlotContainingNewNullValue() >= 0) {
             ValueNumber newNullValue = vnaFrameAfter.getValue(visitor.getSlotContainingNewNullValue());
-            addLocationWhereValueBecomesNull(new LocationWhereValueBecomesNull(location, newNullValue// ,
-            // handle
-            ));
+            addLocationWhereValueBecomesNull(
+                    new LocationWhereValueBecomesNull(
+                            location, newNullValue // ,
+                    // handle
+                    ));
         }
-
     }
 
     private static final BitSet nullComparisonInstructionSet = new BitSet();
@@ -392,11 +431,16 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
     }
 
     @Override
-    public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result) throws DataflowAnalysisException {
+    public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
+            throws DataflowAnalysisException {
         meetInto(fact, edge, result, true);
     }
 
-    public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result, boolean propagatePhiNodeInformation)
+    public void meetInto(
+            IsNullValueFrame fact,
+            Edge edge,
+            IsNullValueFrame result,
+            boolean propagatePhiNodeInformation)
             throws DataflowAnalysisException {
 
         if (fact.isValid()) {
@@ -488,22 +532,32 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                                         System.out.println("Set decision information");
                                         System.out.println("  " + valueTested + " becomes " + decisionValue);
                                         System.out.println("  at " + targetBlock.getFirstInstruction().getPosition());
-                                        System.out.println("  prev available loads: " + prevVnaFrame.availableLoadMapAsString());
-                                        System.out.println("  target available loads: "
-                                                + targetVnaFrame.availableLoadMapAsString());
+                                        System.out.println(
+                                                "  prev available loads: " + prevVnaFrame.availableLoadMapAsString());
+                                        System.out.println(
+                                                "  target available loads: " + targetVnaFrame.availableLoadMapAsString());
                                     }
-                                    tmpFact = replaceValues(fact, tmpFact, valueTested, prevVnaFrame, targetVnaFrame,
-                                            decisionValue);
+                                    tmpFact =
+                                            replaceValues(
+                                                    fact, tmpFact, valueTested, prevVnaFrame, targetVnaFrame, decisionValue);
                                     if (decisionValue.isDefinitelyNull()) {
                                         // Make a note of the value that has
                                         // become null
                                         // due to the if comparison.
-                                        addLocationWhereValueBecomesNull(new LocationWhereValueBecomesNull(atIf, valueTested));
-                                        ValueNumber knownNonnull = getKnownNonnullDueToPointerDisequality(valueTested, atIf
-                                                .getHandle().getPosition());
+                                        addLocationWhereValueBecomesNull(
+                                                new LocationWhereValueBecomesNull(atIf, valueTested));
+                                        ValueNumber knownNonnull =
+                                                getKnownNonnullDueToPointerDisequality(
+                                                        valueTested, atIf.getHandle().getPosition());
                                         if (knownNonnull != null) {
-                                            tmpFact = replaceValues(fact, tmpFact, knownNonnull, prevVnaFrame, targetVnaFrame,
-                                                    IsNullValue.checkedNonNullValue());
+                                            tmpFact =
+                                                    replaceValues(
+                                                            fact,
+                                                            tmpFact,
+                                                            knownNonnull,
+                                                            prevVnaFrame,
+                                                            targetVnaFrame,
+                                                            IsNullValue.checkedNonNullValue());
                                         }
                                     }
                                 }
@@ -537,8 +591,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                         // value.
                         InstructionHandle kaBoomLocation = targetBlock.getFirstInstruction();
                         ValueNumber replaceMe = vnaFrame.getInstance(firstInDest, methodGen.getConstantPool());
-                        IsNullValue noKaboomNonNullValue = IsNullValue.noKaboomNonNullValue(new Location(kaBoomLocation,
-                                targetBlock));
+                        IsNullValue noKaboomNonNullValue =
+                                IsNullValue.noKaboomNonNullValue(new Location(kaBoomLocation, targetBlock));
                         if (DEBUG) {
                             System.out.println("Start vna fact: " + vnaFrame);
                             System.out.println("inva fact: " + fact);
@@ -546,7 +600,9 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                             System.out.println("Dereferenced " + instance);
                             System.out.println("On fall through from source block " + sourceBlock);
                         }
-                        tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, noKaboomNonNullValue);
+                        tmpFact =
+                                replaceValues(
+                                        fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, noKaboomNonNullValue);
                     }
                 } // if (sourceBlock.isNullCheck() && edgeType ==
                   // FALL_THROUGH_EDGE)
@@ -593,7 +649,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
     }
 
     @Override
-    protected void mergeInto(IsNullValueFrame other, IsNullValueFrame result) throws DataflowAnalysisException {
+    protected void mergeInto(IsNullValueFrame other, IsNullValueFrame result)
+            throws DataflowAnalysisException {
         if (other.isTop()) {
             return;
         }
@@ -606,7 +663,6 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         if (trackValueNumbers) {
             result.mergeKnownValuesWith(other);
         }
-
     }
 
     @Override
@@ -617,7 +673,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         locationWhereValueBecomesNullSet.clear();
     }
 
-    public void addLocationWhereValueBecomesNull(LocationWhereValueBecomesNull locationWhereValueBecomesNull) {
+    public void addLocationWhereValueBecomesNull(
+            LocationWhereValueBecomesNull locationWhereValueBecomesNull) {
         // System.out.println("Location becomes null: " +
         // locationWhereValueBecomesNull );
         locationWhereValueBecomesNullSet.add(locationWhereValueBecomesNull);
@@ -637,14 +694,10 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
     /**
      * Determine if the given basic block ends in a redundant null comparison.
      *
-     * @param basicBlock
-     *            the basic block
-     * @param lastFrame
-     *            the IsNullValueFrame representing values at the final
-     *            instruction of the block
-     * @return an IsNullConditionDecision object representing the is-null
-     *         information gained about the compared value, or null if no
-     *         information is gained
+     * @param basicBlock the basic block
+     * @param lastFrame the IsNullValueFrame representing values at the final instruction of the block
+     * @return an IsNullConditionDecision object representing the is-null information gained about the
+     *     compared value, or null if no information is gained
      */
     private IsNullConditionDecision getDecision(BasicBlock basicBlock, IsNullValueFrame lastFrame)
             throws DataflowAnalysisException {
@@ -697,9 +750,11 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                 fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : tos;
             }
             if (DEBUG) {
-                System.out.println("Checking..." + tos + " -> " + ifcmpDecision + " or " + fallThroughDecision);
+                System.out.println(
+                        "Checking..." + tos + " -> " + ifcmpDecision + " or " + fallThroughDecision);
             }
-            return new IsNullConditionDecision(instanceOfVnaFrame.getTopValue(), ifcmpDecision, fallThroughDecision);
+            return new IsNullConditionDecision(
+                    instanceOfVnaFrame.getTopValue(), ifcmpDecision, fallThroughDecision);
         }
 
         if (!nullComparisonInstructionSet.get(lastInSourceOpcode)) {
@@ -710,7 +765,6 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
 
         switch (lastInSourceOpcode) {
-
         case Const.IFNULL:
         case Const.IFNONNULL: {
             IsNullValue tos = lastFrame.getTopValue();
@@ -783,10 +837,10 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         default:
             throw new IllegalStateException();
         }
-
     }
 
-    private IsNullConditionDecision handleIfNull(IsNullValue tos, ValueNumber prevTopValue, boolean ifnull) {
+    private IsNullConditionDecision handleIfNull(
+            IsNullValue tos, ValueNumber prevTopValue, boolean ifnull) {
         // Initially, assume neither branch is feasible.
         IsNullValue ifcmpDecision = null;
         IsNullValue fallThroughDecision = null;
@@ -802,51 +856,63 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         } else if (tos.isDefinitelyNotNull()) {
             // Predetermined comparison - one branch is infeasible
             if (ifnull) {
-                fallThroughDecision = tos.wouldHaveBeenAKaboom() ? tos : IsNullValue.pathSensitiveNonNullValue();
+                fallThroughDecision =
+                        tos.wouldHaveBeenAKaboom() ? tos : IsNullValue.pathSensitiveNonNullValue();
             } else {
                 // ifnonnull
                 ifcmpDecision = tos.wouldHaveBeenAKaboom() ? tos : IsNullValue.pathSensitiveNonNullValue();
             }
         } else {
             // As far as we know, both branches feasible
-            ifcmpDecision = ifnull ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
-            fallThroughDecision = ifnull ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
+            ifcmpDecision =
+                    ifnull ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
+            fallThroughDecision =
+                    ifnull ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
         }
         return new IsNullConditionDecision(prevTopValue, ifcmpDecision, fallThroughDecision);
     }
 
     /**
-     * Update is-null information at a branch target based on information gained
-     * at a null comparison branch.
+     * Update is-null information at a branch target based on information gained at a null comparison
+     * branch.
      *
-     * @param origFrame
-     *            the original is-null frame at entry to basic block
-     * @param frame
-     *            the modified version of the is-null entry frame; null if the
-     *            entry frame has not been modified yet
-     * @param replaceMe
-     *            the ValueNumber in the value number frame at the if comparison
-     *            whose is-null information will be updated
-     * @param prevVnaFrame
-     *            the ValueNumberFrame at the if comparison
-     * @param targetVnaFrame
-     *            the ValueNumberFrame at entry to the basic block
-     * @param replacementValue
-     *            the IsNullValue representing the updated is-null information
+     * @param origFrame the original is-null frame at entry to basic block
+     * @param frame the modified version of the is-null entry frame; null if the entry frame has not
+     *     been modified yet
+     * @param replaceMe the ValueNumber in the value number frame at the if comparison whose is-null
+     *     information will be updated
+     * @param prevVnaFrame the ValueNumberFrame at the if comparison
+     * @param targetVnaFrame the ValueNumberFrame at entry to the basic block
+     * @param replacementValue the IsNullValue representing the updated is-null information
      * @return a modified IsNullValueFrame with updated is-null information
      */
-    private IsNullValueFrame replaceValues(IsNullValueFrame origFrame, IsNullValueFrame frame, ValueNumber replaceMe,
-            ValueNumberFrame prevVnaFrame, ValueNumberFrame targetVnaFrame, IsNullValue replacementValue) {
+    private IsNullValueFrame replaceValues(
+            IsNullValueFrame origFrame,
+            IsNullValueFrame frame,
+            ValueNumber replaceMe,
+            ValueNumberFrame prevVnaFrame,
+            ValueNumberFrame targetVnaFrame,
+            IsNullValue replacementValue) {
 
         if (!targetVnaFrame.isValid()) {
-            throw new IllegalArgumentException("Invalid frame in " + methodGen.getClassName() + "." + methodGen.getName() + " : "
-                    + methodGen.getSignature());
+            throw new IllegalArgumentException(
+                    "Invalid frame in "
+                            + methodGen.getClassName()
+                            + "."
+                            + methodGen.getName()
+                            + " : "
+                            + methodGen.getSignature());
         }
         // If required, make a copy of the frame
         frame = modifyFrame(origFrame, frame);
 
-        assert frame.getNumSlots() == targetVnaFrame.getNumSlots() : " frame has " + frame.getNumSlots() + ", target has "
-                + targetVnaFrame.getNumSlots() + " in  " + classAndMethod;
+        assert frame.getNumSlots() == targetVnaFrame.getNumSlots()
+                : " frame has "
+                        + frame.getNumSlots()
+                        + ", target has "
+                        + targetVnaFrame.getNumSlots()
+                        + " in  "
+                        + classAndMethod;
 
         // The VNA frame may have more slots than the IsNullValueFrame
         // if it was produced by an IF comparison (whose operand or operands
@@ -906,7 +972,6 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         }
 
         return frame;
-
     }
 
     public IsNullValueFrame getFactAtMidEdge(Edge edge) throws DataflowAnalysisException {
@@ -923,5 +988,4 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
         return result;
     }
-
 }

@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
@@ -45,19 +48,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipFile;
-
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.WillNotClose;
 
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import edu.umd.cs.findbugs.charsets.UTF8;
-
-/**
- * @author William Pugh
- */
+/** @author William Pugh */
 public class Util {
 
     public static Thread startDameonThread(Thread t) {
@@ -69,13 +65,11 @@ public class Util {
     public static Thread runInDameonThread(Runnable r, String name) {
         Thread t = new Thread(r, name);
         return startDameonThread(t);
-
     }
 
     public static Thread runInDameonThread(Runnable r) {
         Thread t = new Thread(r);
         return startDameonThread(t);
-
     }
 
     public static String repeat(String s, int number) {
@@ -96,22 +90,23 @@ public class Util {
         if (ShutdownLogging.LOGGING) {
             if (runAtShutdown == null) {
                 runAtShutdown = new LinkedList<>();
-                Runtime.getRuntime().addShutdownHook(new Thread() {
-                    @Override
-                    public void run() {
-                        for (Runnable r : runAtShutdown) {
-                            try {
-                                r.run();
-                            } catch (RuntimeException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
+                Runtime.getRuntime()
+                        .addShutdownHook(
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                        for (Runnable r : runAtShutdown) {
+                                            try {
+                                                r.run();
+                                            } catch (RuntimeException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }
+                                });
             }
             runAtShutdown.add(r);
         }
-
     }
 
     public static <T> Set<T> emptyOrNonnullSingleton(T t) {
@@ -158,9 +153,7 @@ public class Util {
         }
     }
 
-    /**
-     * @deprecated Use try-with-resources instead.
-     */
+    /** @deprecated Use try-with-resources instead. */
     @Deprecated
     public static void closeSilently(@WillClose Reader in) {
         try {
@@ -173,8 +166,8 @@ public class Util {
     }
 
     /**
-     * @deprecated Use try-with-resources instead. And basically {@link IOException} from {@link OutputStream#close()}
-     *             is not good to ignore.
+     * @deprecated Use try-with-resources instead. And basically {@link IOException} from {@link
+     *     OutputStream#close()} is not good to ignore.
      */
     @Deprecated
     public static void closeSilently(@WillClose OutputStream out) {
@@ -188,8 +181,8 @@ public class Util {
     }
 
     /**
-     * @deprecated Use try-with-resources instead. And basically {@link IOException} from {@link OutputStream#close()}
-     *             is not good to ignore.
+     * @deprecated Use try-with-resources instead. And basically {@link IOException} from {@link
+     *     OutputStream#close()} is not good to ignore.
      */
     @Deprecated
     public static void closeSilently(@WillClose Closeable out) {
@@ -202,9 +195,7 @@ public class Util {
         }
     }
 
-    /**
-     * @deprecated Use try-with-resources instead.
-     */
+    /** @deprecated Use try-with-resources instead. */
     @Deprecated
     public static void closeSilently(@WillClose ZipFile zip) {
         try {
@@ -242,7 +233,6 @@ public class Util {
         } finally {
             in.reset();
         }
-
     }
 
     private static String getFileExtension(String name) {
@@ -267,8 +257,7 @@ public class Util {
     }
 
     /**
-     * @param i
-     *            the Iterable whose first element is to be retrieved
+     * @param i the Iterable whose first element is to be retrieved
      * @return first element of iterable
      */
     public static <E> E first(Iterable<E> i) {
@@ -285,21 +274,18 @@ public class Util {
         HashMap<K, V> result = new HashMap<>((int) (m.size() / DEFAULT_LOAD_FACTOR + 2));
         result.putAll(m);
         return result;
-
     }
 
     public static <K> HashSet<K> makeSmallHashSet(Collection<K> m) {
         HashSet<K> result = new HashSet<>((int) (m.size() / DEFAULT_LOAD_FACTOR + 2));
         result.addAll(m);
         return result;
-
     }
 
     public static <K> ArrayList<K> makeSmallArrayList(List<K> m) {
         ArrayList<K> result = new ArrayList<>(m.size() + 2);
         result.addAll(m);
         return result;
-
     }
 
     public static <K> Set<K> addTo(Set<K> s, K k) {
@@ -316,7 +302,6 @@ public class Util {
         HashSet<K> result = makeSmallHashSet(s);
         result.add(k);
         return result;
-
     }
 
     public static <K> List<K> addTo(List<K> s, K k) {
@@ -330,7 +315,7 @@ public class Util {
         return s;
     }
 
-    static public @Nonnull MessageDigest getMD5Digest() {
+    public static @Nonnull MessageDigest getMD5Digest() {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             return digest;
@@ -340,8 +325,6 @@ public class Util {
     }
 
     public static boolean isPowerOfTwo(int i) {
-        return i > 0
-                && (i | (i - 1)) + 1 == 2 * i;
+        return i > 0 && (i | (i - 1)) + 1 == 2 * i;
     }
-
 }

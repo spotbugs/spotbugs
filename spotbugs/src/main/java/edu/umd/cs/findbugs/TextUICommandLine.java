@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.sarif.SarifBugReporter;
+import edu.umd.cs.findbugs.util.Util;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,38 +42,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.WillCloseWhenClosed;
-
-import edu.umd.cs.findbugs.sarif.SarifBugReporter;
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.filter.FilterException;
-import edu.umd.cs.findbugs.util.Util;
-
 /**
- * Helper class to parse the command line and configure the IFindBugsEngine
- * object. As a side-effect it also configures a DetectorFactoryCollection (to
- * enable and disable detectors as requested).
+ * Helper class to parse the command line and configure the IFindBugsEngine object. As a side-effect
+ * it also configures a DetectorFactoryCollection (to enable and disable detectors as requested).
  */
 public class TextUICommandLine extends FindBugsCommandLine {
     /**
-     * Handling callback for choose() method, used to implement the
-     * -chooseVisitors and -choosePlugins options.
+     * Handling callback for choose() method, used to implement the -chooseVisitors and -choosePlugins
+     * options.
      */
     private interface Chooser {
         /**
          * Choose a detector, plugin, etc.
          *
-         * @param enable
-         *            whether or not the item should be enabled
-         * @param what
-         *            the item
+         * @param enable whether or not the item should be enabled
+         * @param what the item
          */
         public void choose(boolean enable, String what);
     }
@@ -118,7 +112,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private int priorityThreshold = Detector.NORMAL_PRIORITY;
 
-    private int rankThreshold = SystemProperties.getInt("findbugs.maxRank", BugRanker.VISIBLE_RANK_MAX);
+    private int rankThreshold =
+            SystemProperties.getInt("findbugs.maxRank", BugRanker.VISIBLE_RANK_MAX);
 
     private PrintStream outputStream = null;
 
@@ -148,43 +143,51 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private boolean printVersion;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public TextUICommandLine() {
         addSwitch("-showPlugins", "show list of available detector plugins");
 
-        addOption("-userPrefs", "filename",
+        addOption(
+                "-userPrefs",
+                "filename",
                 "user preferences file, e.g /path/to/project/.settings/edu.umd.cs.findbugs.core.prefs for Eclipse projects");
 
         startOptionGroup("Output options:");
         addSwitch("-justListOptions", "throw an exception that lists the provided options");
         makeOptionUnlisted("-justListOptions");
 
-
         addSwitch("-timestampNow", "set timestamp of results to be current time");
         addSwitch("-quiet", "suppress error messages");
         addSwitch("-longBugCodes", "report long bug codes");
         addSwitch("-progress", "display progress in terminal window");
         addOption("-release", "release name", "set the release name of the analyzed application");
-        addSwitch("-experimental", "report of any confidence level including experimental bug patterns");
+        addSwitch(
+                "-experimental", "report of any confidence level including experimental bug patterns");
         addSwitch("-low", "report warnings of any confidence level");
         addSwitch("-medium", "report only medium and high confidence warnings [default]");
         addSwitch("-high", "report only high confidence warnings");
-        addOption("-maxRank", "rank", "only report issues with a bug rank at least as scary as that provided");
+        addOption(
+                "-maxRank",
+                "rank",
+                "only report issues with a bug rank at least as scary as that provided");
         addSwitch("-dontCombineWarnings", "Don't combine warnings that differ only in line number");
 
         addSwitch("-sortByClass", "sort warnings by class");
         addSwitchWithOptionalExtraPart("-xml", "withMessages", "XML output (optionally with messages)");
         addSwitch("-xdocs", "xdoc XML output to use with Apache Maven");
         addSwitch("-sarif", "SARIF 2.1.0 output");
-        addSwitchWithOptionalExtraPart("-html", "stylesheet", "Generate HTML output (default stylesheet is default.xsl)");
+        addSwitchWithOptionalExtraPart(
+                "-html", "stylesheet", "Generate HTML output (default stylesheet is default.xsl)");
         addSwitch("-emacs", "Use emacs reporting format");
         addSwitch("-relaxed", "Relaxed reporting mode (more false positives!)");
-        addSwitchWithOptionalExtraPart("-train", "outputDir", "Save training data (experimental); output dir defaults to '.'");
-        addSwitchWithOptionalExtraPart("-useTraining", "inputDir", "Use training data (experimental); input dir defaults to '.'");
-        addOption("-redoAnalysis", "filename", "Redo analysis using configuration from previous analysis");
-        addOption("-sourceInfo", "filename", "Specify source info file (line numbers for fields/classes)");
+        addSwitchWithOptionalExtraPart(
+                "-train", "outputDir", "Save training data (experimental); output dir defaults to '.'");
+        addSwitchWithOptionalExtraPart(
+                "-useTraining", "inputDir", "Use training data (experimental); input dir defaults to '.'");
+        addOption(
+                "-redoAnalysis", "filename", "Redo analysis using configuration from previous analysis");
+        addOption(
+                "-sourceInfo", "filename", "Specify source info file (line numbers for fields/classes)");
         addOption("-projectName", "project name", "Descriptive name of project");
 
         addOption("-reanalyze", "filename", "redo analysis in provided file");
@@ -192,23 +195,33 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addOption("-outputFile", "filename", "Save output in named file");
         addOption("-output", "filename", "Save output in named file");
         makeOptionUnlisted("-outputFile");
-        addSwitchWithOptionalExtraPart("-nested", "true|false", "analyze nested jar/zip archives (default=true)");
+        addSwitchWithOptionalExtraPart(
+                "-nested", "true|false", "analyze nested jar/zip archives (default=true)");
 
         startOptionGroup("Output filtering options:");
         addOption("-bugCategories", "cat1[,cat2...]", "only report bugs in given categories");
-        addOption("-onlyAnalyze", "classes/packages",
+        addOption(
+                "-onlyAnalyze",
+                "classes/packages",
                 "only analyze given classes and packages; end with .* to indicate classes in a package, .- to indicate a package prefix");
-        addOption("-excludeBugs", "baseline bugs", "exclude bugs that are also reported in the baseline xml output");
+        addOption(
+                "-excludeBugs",
+                "baseline bugs",
+                "exclude bugs that are also reported in the baseline xml output");
         addOption("-exclude", "filter file", "exclude bugs matching given filter");
         addOption("-include", "filter file", "include only bugs matching given filter");
-        addSwitch("-applySuppression", "Exclude any bugs that match suppression filter loaded from fbp file");
+        addSwitch(
+                "-applySuppression", "Exclude any bugs that match suppression filter loaded from fbp file");
 
         startOptionGroup("Detector (visitor) configuration options:");
         addOption("-visitors", "v1[,v2...]", "run only named visitors");
         addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
         addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
         addOption("-choosePlugins", "+p1,-p2,...", "selectively enable/disable plugins");
-        addOption("-adjustPriority", "v1=(raise|lower)[,...]", "raise/lower priority of warnings for given visitor(s)");
+        addOption(
+                "-adjustPriority",
+                "v1=(raise|lower)[,...]",
+                "raise/lower priority of warnings for given visitor(s)");
 
         startOptionGroup("Project configuration options:");
         addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
@@ -217,9 +230,14 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addOption("-sourcepath", "source path", "set source path for analyzed classes");
         addSwitch("-exitcode", "set exit code of process");
         addSwitch("-noClassOk", "output empty warning file if no classes are specified");
-        addSwitch("-xargs", "get list of classfiles/jarfiles from standard input rather than command line");
-        addOption("-analyzeFromFile", "filepath", "get the list of class/jar files from a designated file");
-        addOption("-bugReporters", "name,name2,-name3", "bug reporter decorators to explicitly enable/disable");
+        addSwitch(
+                "-xargs", "get list of classfiles/jarfiles from standard input rather than command line");
+        addOption(
+                "-analyzeFromFile", "filepath", "get the list of class/jar files from a designated file");
+        addOption(
+                "-bugReporters",
+                "name,name2,-name3",
+                "bug reporter decorators to explicitly enable/disable");
 
         addSwitch("-printConfiguration", "print configuration and exit, without running analysis");
         addSwitch("-version", "print version, check for updates and exit, without running analysis");
@@ -276,8 +294,12 @@ public class TextUICommandLine extends FindBugsCommandLine {
             int count = 0;
             for (Iterator<Plugin> i = DetectorFactoryCollection.instance().pluginIterator(); i.hasNext();) {
                 Plugin plugin = i.next();
-                System.out.println("  " + plugin.getPluginId() + " (default: " + (plugin.isEnabledByDefault() ? "enabled" : "disabled")
-                        + ")");
+                System.out.println(
+                        "  "
+                                + plugin.getPluginId()
+                                + " (default: "
+                                + (plugin.isEnabledByDefault() ? "enabled" : "disabled")
+                                + ")");
                 if (plugin.getShortDescription() != null) {
                     System.out.println("    Description: " + plugin.getShortDescription());
                 }
@@ -350,7 +372,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
         } else if ("-quiet".equals(option)) {
             quiet = true;
         } else if ("-nested".equals(option)) {
-            scanNestedArchives = "".equals(optionExtraPart) || Boolean.valueOf(optionExtraPart).booleanValue();
+            scanNestedArchives =
+                    "".equals(optionExtraPart) || Boolean.valueOf(optionExtraPart).booleanValue();
         } else if ("-exitcode".equals(option)) {
             setExitCode = true;
         } else if ("-auxclasspathFromInput".equals(option)) {
@@ -397,13 +420,15 @@ public class TextUICommandLine extends FindBugsCommandLine {
         }
         if ("-outputFile".equals(option) || "-output".equals(option)) {
             if (outputFile != null) {
-                throw new IllegalArgumentException("output set twice; to " + outputFile + " and to " + argument);
+                throw new IllegalArgumentException(
+                        "output set twice; to " + outputFile + " and to " + argument);
             }
             outputFile = new File(argument);
 
             String fileName = outputFile.getName();
             String extension = Util.getFileExtensionIgnoringGz(outputFile);
-            if (bugReporterType == PRINTING_REPORTER && ("xml".equals(extension) || "fba".equals(extension))) {
+            if (bugReporterType == PRINTING_REPORTER
+                    && ("xml".equals(extension) || "fba".equals(extension))) {
                 bugReporterType = XML_REPORTER;
             }
 
@@ -464,26 +489,37 @@ public class TextUICommandLine extends FindBugsCommandLine {
             // you can selectively enable and disable detectors,
             // starting from the default set (or whatever set
             // happens to be in effect).
-            choose(argument, "Detector choices", (enabled, what) -> {
-                DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(what);
-                if (factory == null) {
-                    throw new IllegalArgumentException("Unknown detector: " + what);
-                }
-                if (FindBugs.DEBUG) {
-                    System.err.println("Detector " + factory.getShortName() + " " + (enabled ? "enabled" : "disabled")
-                            + ", userPreferences=" + System.identityHashCode(getUserPreferences()));
-                }
-                getUserPreferences().enableDetector(factory, enabled);
-            });
+            choose(
+                    argument,
+                    "Detector choices",
+                    (enabled, what) -> {
+                        DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(what);
+                        if (factory == null) {
+                            throw new IllegalArgumentException("Unknown detector: " + what);
+                        }
+                        if (FindBugs.DEBUG) {
+                            System.err.println(
+                                    "Detector "
+                                            + factory.getShortName()
+                                            + " "
+                                            + (enabled ? "enabled" : "disabled")
+                                            + ", userPreferences="
+                                            + System.identityHashCode(getUserPreferences()));
+                        }
+                        getUserPreferences().enableDetector(factory, enabled);
+                    });
         } else if ("-choosePlugins".equals(option)) {
             // Selectively enable/disable plugins
-            choose(argument, "Plugin choices", (enabled, what) -> {
-                Plugin plugin = DetectorFactoryCollection.instance().getPluginById(what);
-                if (plugin == null) {
-                    throw new IllegalArgumentException("Unknown plugin: " + what);
-                }
-                plugin.setGloballyEnabled(enabled);
-            });
+            choose(
+                    argument,
+                    "Plugin choices",
+                    (enabled, what) -> {
+                        Plugin plugin = DetectorFactoryCollection.instance().getPluginById(what);
+                        if (plugin == null) {
+                            throw new IllegalArgumentException("Unknown plugin: " + what);
+                        }
+                        plugin.setGloballyEnabled(enabled);
+                    });
         } else if ("-adjustPriority".equals(option)) {
             // Selectively raise or lower the priority of warnings
             // produced by specified detectors.
@@ -522,7 +558,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     }
                     pattern.adjustPriority(adjustmentAmount);
                 }
-
             }
         } else if ("-bugCategories".equals(option)) {
             this.bugCategorySet = FindBugs.handleBugCategories(argument);
@@ -584,19 +619,17 @@ public class TextUICommandLine extends FindBugsCommandLine {
     /**
      * Common handling code for -chooseVisitors and -choosePlugins options.
      *
-     * @param argument
-     *            the list of visitors or plugins to be chosen
-     * @param desc
-     *            String describing what is being chosen
-     * @param chooser
-     *            callback object to selectively choose list members
+     * @param argument the list of visitors or plugins to be chosen
+     * @param desc String describing what is being chosen
+     * @param chooser callback object to selectively choose list members
      */
     private void choose(String argument, String desc, Chooser chooser) {
         StringTokenizer tok = new StringTokenizer(argument, ",");
         while (tok.hasMoreTokens()) {
             String what = tok.nextToken().trim();
             if (!what.startsWith("+") && !what.startsWith("-")) {
-                throw new IllegalArgumentException(desc + " must start with " + "\"+\" or \"-\" (saw " + what + ")");
+                throw new IllegalArgumentException(
+                        desc + " must start with " + "\"+\" or \"-\" (saw " + what + ")");
             }
             boolean enabled = what.startsWith("+");
             chooser.choose(enabled, what.substring(1));
@@ -609,7 +642,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
         // Set the DetectorFactoryCollection (that has been configured
         // by command line parsing)
         findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
-
 
         if (redoAnalysisFile != null) {
             SortedBugCollection bugs = new SortedBugCollection();
@@ -715,8 +747,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
     }
 
     /**
-     * Handle -xargs command line option by reading jar file names from standard
-     * input and adding them to the project.
+     * Handle -xargs command line option by reading jar file names from standard input and adding them
+     * to the project.
      *
      * @throws IOException
      */
@@ -735,8 +767,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
     }
 
     /**
-     * Handle -readAuxFromFile command line option by reading classpath entries
-     * from a file and adding them to the project.
+     * Handle -readAuxFromFile command line option by reading classpath entries from a file and adding
+     * them to the project.
      *
      * @throws IOException
      */
@@ -753,8 +785,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
     }
 
     /**
-     * Handle -analyzeFromFile command line option by reading jar file names
-     * from a file and adding them to the project.
+     * Handle -analyzeFromFile command line option by reading jar file names from a file and adding
+     * them to the project.
      *
      * @throws IOException
      */
@@ -770,9 +802,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         }
     }
 
-    /**
-     * @return Returns the userPreferences.
-     */
+    /** @return Returns the userPreferences. */
     private UserPreferences getUserPreferences() {
         return project.getConfiguration();
     }

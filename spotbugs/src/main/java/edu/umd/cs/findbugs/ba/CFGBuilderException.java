@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.ba;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 
 public class CFGBuilderException extends CheckedAnalysisException {
-    /**
-     *
-     */
+    /** */
     private static final long serialVersionUID = 1L;
 
     public CFGBuilderException(String message) {

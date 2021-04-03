@@ -26,8 +26,8 @@ import java.util.StringTokenizer;
 /**
  * Matches a string against a set of predefined values.
  *
- * Value set is defined using a String containing a comma separated value list.
- * Heading an trailing whitespace on the values is ignored in matching.
+ * <p>Value set is defined using a String containing a comma separated value list. Heading an
+ * trailing whitespace on the values is ignored in matching.
  *
  * @author rak
  */
@@ -50,8 +50,7 @@ public class StringSetMatch {
     /**
      * Constructor.
      *
-     * @param strings
-     *            comma-separated list of Strings
+     * @param strings comma-separated list of Strings
      */
     public StringSetMatch(String strings) {
         if (strings != null) {

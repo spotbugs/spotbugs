@@ -27,9 +27,7 @@ import java.nio.file.FileSystem;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-/**
- * A source file data source for source files residing in Zip or Jar archives.
- */
+/** A source file data source for source files residing in Zip or Jar archives. */
 public class ZipSourceFileDataSource implements SourceFileDataSource {
     private final ZipFile zipFile;
 

@@ -19,13 +19,13 @@
 
 package edu.umd.cs.findbugs.sourceViewer;
 
+import edu.umd.cs.findbugs.gui2.MainFrame;
 import java.awt.Container;
 import java.awt.Rectangle;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
@@ -33,11 +33,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.StyledDocument;
 
-import edu.umd.cs.findbugs.gui2.MainFrame;
-
-/**
- * @author tuc
- */
+/** @author tuc */
 public class NavigableTextPane extends JTextPane {
 
     public NavigableTextPane() {
@@ -48,8 +44,8 @@ public class NavigableTextPane extends JTextPane {
     }
 
     /**
-     * return the height of the parent (which is presumably a JViewport). If
-     * there is no parent, return this.getHeight().
+     * return the height of the parent (which is presumably a JViewport). If there is no parent,
+     * return this.getHeight().
      */
     private int parentHeight() {
         Container parent = getParent();
@@ -72,7 +68,8 @@ public class NavigableTextPane extends JTextPane {
             }
             return element.getStartOffset();
         } catch (ArrayIndexOutOfBoundsException aioobe) {
-            BadLocationException ble = new BadLocationException("line " + line + " does not exist", -line);
+            BadLocationException ble =
+                    new BadLocationException("line " + line + " does not exist", -line);
             ble.initCause(aioobe);
             throw ble;
         }
@@ -104,10 +101,7 @@ public class NavigableTextPane extends JTextPane {
         }
     }
 
-    /**
-     * scroll the specified line into view, with a margin of 'margin' pixels
-     * above and below
-     */
+    /** scroll the specified line into view, with a margin of 'margin' pixels above and below */
     public void scrollLineToVisible(int line, int margin) {
         int maxMargin = (parentHeight() - 20) / 2;
         if (margin > maxMargin) {
@@ -123,8 +117,8 @@ public class NavigableTextPane extends JTextPane {
     }
 
     /**
-     * scroll the specified primary lines into view, along with as many of the
-     * other lines as is convenient
+     * scroll the specified primary lines into view, along with as many of the other lines as is
+     * convenient
      */
     public void scrollLinesToVisible(int startLine, int endLine, Collection<Integer> otherLines) {
         int startY, endY;
@@ -147,7 +141,8 @@ public class NavigableTextPane extends JTextPane {
             endY = startY + max;
         } else if (otherLines != null && otherLines.size() > 0) {
             int origin = startY + endY / 2;
-            PriorityQueue<Integer> pq = new PriorityQueue<>(otherLines.size(), new DistanceComparator(origin));
+            PriorityQueue<Integer> pq =
+                    new PriorityQueue<>(otherLines.size(), new DistanceComparator(origin));
             for (int line : otherLines) {
                 int otherY;
                 try {
@@ -195,5 +190,4 @@ public class NavigableTextPane extends JTextPane {
             return Math.abs(b - origin) - Math.abs(a - origin);
         }
     }
-
 }

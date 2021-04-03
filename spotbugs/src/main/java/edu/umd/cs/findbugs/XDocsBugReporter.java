@@ -19,19 +19,16 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
-
 import javax.annotation.Nonnull;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * BugReporter to output warnings in xdocs format for Maven.
@@ -39,9 +36,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * @author Garvin LeClaire
  */
 public class XDocsBugReporter extends TextUIBugReporter {
-    final private SortedBugCollection bugCollection;
+    private final SortedBugCollection bugCollection;
 
-    final private Project project;
+    private final Project project;
 
     private final Document document;
 
@@ -69,7 +66,6 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
         this.document = DocumentHelper.createDocument();
         this.root = document.addElement(ROOT_ELEMENT_NAME);
-
     }
 
     @Override
@@ -174,7 +170,8 @@ public class XDocsBugReporter extends TextUIBugReporter {
     public void toElement(BugInstance bugInstance) {
 
         String className = bugInstance.getPrimaryClass().getClassName();
-        Element element = (Element) root.selectSingleNode(FILE_ELEMENT_NAME + "[@classname='" + className + "']");
+        Element element =
+                (Element) root.selectSingleNode(FILE_ELEMENT_NAME + "[@classname='" + className + "']");
 
         if (element == null) {
             element = root.addElement(FILE_ELEMENT_NAME);
@@ -206,8 +203,6 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
         SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation();
         element.addAttribute("line", Integer.toString(line.getStartLine()));
-
-
     }
 
     /*
@@ -221,5 +216,4 @@ public class XDocsBugReporter extends TextUIBugReporter {
     public @Nonnull BugCollection getBugCollection() {
         return bugCollection;
     }
-
 }

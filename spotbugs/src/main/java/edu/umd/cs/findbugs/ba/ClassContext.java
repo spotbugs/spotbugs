@@ -19,30 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.CodeException;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LineNumber;
-import org.apache.bcel.classfile.LineNumberTable;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -71,18 +47,39 @@ import edu.umd.cs.findbugs.classfile.engine.bcel.NonImplicitExceptionPostDominat
 import edu.umd.cs.findbugs.classfile.engine.bcel.UnpackedBytecodeCallback;
 import edu.umd.cs.findbugs.classfile.engine.bcel.UnpackedCode;
 import edu.umd.cs.findbugs.util.MapCache;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumber;
+import org.apache.bcel.classfile.LineNumberTable;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.MethodGen;
 
 /**
- * A ClassContext caches all of the auxiliary objects used to analyze the
- * methods of a class. That way, these objects don't need to be created over and
- * over again.
+ * A ClassContext caches all of the auxiliary objects used to analyze the methods of a class. That
+ * way, these objects don't need to be created over and over again.
  *
  * @author David Hovemeyer
  */
 public class ClassContext {
     public static final boolean DEBUG = SystemProperties.getBoolean("classContext.debug");
 
-    public static final boolean TIME_ANALYSES = SystemProperties.getBoolean("classContext.timeAnalyses");
+    public static final boolean TIME_ANALYSES =
+            SystemProperties.getBoolean("classContext.timeAnalyses");
 
     public static final boolean DUMP_DATAFLOW_ANALYSIS = SystemProperties.getBoolean("dataflow.dump");
 
@@ -108,16 +105,16 @@ public class ClassContext {
     /**
      * Constructor.
      *
-     * @param jclass
-     *            the JavaClass
+     * @param jclass the JavaClass
      */
     public ClassContext(JavaClass jclass, AnalysisContext analysisContext) {
         this.jclass = jclass;
         this.analysisContext = analysisContext;
         this.methodAnalysisObjectMap = new HashMap<>();
         try {
-            classInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                    DescriptorFactory.createClassDescriptor(jclass));
+            classInfo =
+                    (ClassInfo) Global.getAnalysisCache()
+                            .getClassAnalysis(XClass.class, DescriptorFactory.createClassDescriptor(jclass));
         } catch (CheckedAnalysisException e) {
             throw new AssertionError("No ClassInfo for " + jclass);
         }
@@ -139,17 +136,15 @@ public class ClassContext {
     }
 
     /**
-     * Store a method analysis object. Note that the cached analysis object
-     * could be a special value (indicating null or an exception).
+     * Store a method analysis object. Note that the cached analysis object could be a special value
+     * (indicating null or an exception).
      *
-     * @param analysisClass
-     *            class the method analysis object belongs to
-     * @param methodDescriptor
-     *            method descriptor identifying the analyzed method
-     * @param object
-     *            the analysis object to cache
+     * @param analysisClass class the method analysis object belongs to
+     * @param methodDescriptor method descriptor identifying the analyzed method
+     * @param object the analysis object to cache
      */
-    public void putMethodAnalysis(Class<?> analysisClass, MethodDescriptor methodDescriptor, Object object) {
+    public void putMethodAnalysis(
+            Class<?> analysisClass, MethodDescriptor methodDescriptor, Object object) {
         if (object == null) {
             throw new IllegalArgumentException();
         }
@@ -160,10 +155,8 @@ public class ClassContext {
     /**
      * Retrieve a method analysis object.
      *
-     * @param analysisClass
-     *            class the method analysis object should belong to
-     * @param methodDescriptor
-     *            method descriptor identifying the analyzed method
+     * @param analysisClass class the method analysis object should belong to
+     * @param methodDescriptor method descriptor identifying the analyzed method
      * @return the analysis object
      */
     public Object getMethodAnalysis(Class<?> analysisClass, MethodDescriptor methodDescriptor) {
@@ -178,11 +171,11 @@ public class ClassContext {
     /**
      * Purge all CFG-based method analyses for given method.
      *
-     * @param methodDescriptor
-     *            method descriptor identifying method to purge
+     * @param methodDescriptor method descriptor identifying method to purge
      */
     public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
-        Set<Map.Entry<Class<?>, Map<MethodDescriptor, Object>>> entrySet = methodAnalysisObjectMap.entrySet();
+        Set<Map.Entry<Class<?>, Map<MethodDescriptor, Object>>> entrySet =
+                methodAnalysisObjectMap.entrySet();
         for (Map.Entry<Class<?>, Map<MethodDescriptor, Object>> entry : entrySet) {
             Class<?> cls = entry.getKey();
 
@@ -199,9 +192,7 @@ public class ClassContext {
         }
     }
 
-    /**
-     * Get the JavaClass.
-     */
+    /** Get the JavaClass. */
     public JavaClass getJavaClass() {
         return jclass;
     }
@@ -217,14 +208,14 @@ public class ClassContext {
     /**
      * Look up the Method represented by given MethodGen.
      *
-     * @param methodGen
-     *            a MethodGen
+     * @param methodGen a MethodGen
      * @return the Method represented by the MethodGen
      */
     public Method getMethod(MethodGen methodGen) {
         Method[] methodList = jclass.getMethods();
         for (Method method : methodList) {
-            if (method.getName().equals(methodGen.getName()) && method.getSignature().equals(methodGen.getSignature())
+            if (method.getName().equals(methodGen.getName())
+                    && method.getSignature().equals(methodGen.getSignature())
                     && method.getAccessFlags() == methodGen.getAccessFlags()) {
                 return method;
             }
@@ -233,7 +224,10 @@ public class ClassContext {
     }
 
     public String getFullyQualifiedMethodName(Method method) {
-        return getClassDescriptor().getDottedClassName() + "." + method.getName() + method.getSignature();
+        return getClassDescriptor().getDottedClassName()
+                + "."
+                + method.getName()
+                + method.getSignature();
     }
 
     public @Nonnull List<Method> getMethodsInCallOrder() {
@@ -253,9 +247,7 @@ public class ClassContext {
         return methodsInCallOrder;
     }
 
-    /**
-     * Get the AnalysisContext.
-     */
+    /** Get the AnalysisContext. */
     public AnalysisContext getAnalysisContext() {
         return analysisContext;
     }
@@ -272,11 +264,9 @@ public class ClassContext {
     /**
      * Get a MethodGen object for given method.
      *
-     * @param method
-     *            the method
-     * @return the MethodGen object for the method, or null if the method has no
-     *         Code attribute (and thus cannot be analyzed) or if the method
-     *         seems unprofitable to analyze
+     * @param method the method
+     * @return the MethodGen object for the method, or null if the method has no Code attribute (and
+     *     thus cannot be analyzed) or if the method seems unprofitable to analyze
      */
     @CheckForNull
     public MethodGen getMethodGen(Method method) {
@@ -284,16 +274,13 @@ public class ClassContext {
     }
 
     /**
-     * Get a CFG for given method. If pruning options are in effect, pruning
-     * will be done. Because the CFG pruning can involve interprocedural
-     * analysis, it is done on a best-effort basis, so the CFG returned might
-     * not actually be pruned.
+     * Get a CFG for given method. If pruning options are in effect, pruning will be done. Because the
+     * CFG pruning can involve interprocedural analysis, it is done on a best-effort basis, so the CFG
+     * returned might not actually be pruned.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the CFG
-     * @throws CFGBuilderException
-     *             if a CFG cannot be constructed for the method
+     * @throws CFGBuilderException if a CFG cannot be constructed for the method
      */
     public CFG getCFG(Method method) throws CFGBuilderException {
         return getMethodAnalysisNoDataflowAnalysisException(CFG.class, method);
@@ -311,53 +298,51 @@ public class ClassContext {
     /**
      * Get a UsagesRequiringNonNullValues for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the UsagesRequiringNonNullValues
      */
-    public UsagesRequiringNonNullValues getUsagesRequiringNonNullValues(Method method) throws DataflowAnalysisException,
-            CFGBuilderException {
+    public UsagesRequiringNonNullValues getUsagesRequiringNonNullValues(Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
         return getMethodAnalysis(UsagesRequiringNonNullValues.class, method);
     }
 
     /**
      * Get a ValueNumberDataflow for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the ValueNumberDataflow
      */
-    public ValueNumberDataflow getValueNumberDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
+    public ValueNumberDataflow getValueNumberDataflow(Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
         return getMethodAnalysis(ValueNumberDataflow.class, method);
     }
 
     /**
      * Get an IsNullValueDataflow for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the IsNullValueDataflow
      */
-    public IsNullValueDataflow getIsNullValueDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
+    public IsNullValueDataflow getIsNullValueDataflow(Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
         return getMethodAnalysis(IsNullValueDataflow.class, method);
     }
 
     /**
      * Get a TypeDataflow for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the TypeDataflow
      */
-    public TypeDataflow getTypeDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
+    public TypeDataflow getTypeDataflow(Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
         return getMethodAnalysis(TypeDataflow.class, method);
     }
 
     /**
      * Get a DepthFirstSearch for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the DepthFirstSearch
      */
     public DepthFirstSearch getDepthFirstSearch(Method method) throws CFGBuilderException {
@@ -367,11 +352,11 @@ public class ClassContext {
     /**
      * Get a ReverseDepthFirstSearch for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the ReverseDepthFirstSearch
      */
-    public ReverseDepthFirstSearch getReverseDepthFirstSearch(Method method) throws CFGBuilderException {
+    public ReverseDepthFirstSearch getReverseDepthFirstSearch(Method method)
+            throws CFGBuilderException {
         return getMethodAnalysisNoDataflowAnalysisException(ReverseDepthFirstSearch.class, method);
     }
 
@@ -391,18 +376,15 @@ public class ClassContext {
                 }
             };
 
-
     /**
-     * Get a BitSet representing the bytecodes that are used in the given
-     * method. This is useful for prescreening a method for the existence of
-     * particular instructions. Because this step doesn't require building a
-     * MethodGen, it is very fast and memory-efficient. It may allow a Detector
-     * to avoid some very expensive analysis, which is a Big Win for the user.
+     * Get a BitSet representing the bytecodes that are used in the given method. This is useful for
+     * prescreening a method for the existence of particular instructions. Because this step doesn't
+     * require building a MethodGen, it is very fast and memory-efficient. It may allow a Detector to
+     * avoid some very expensive analysis, which is a Big Win for the user.
      *
-     * @param method
-     *            the method
-     * @return the BitSet containing the opcodes which appear in the method, or
-     *         null if the method has no code
+     * @param method the method
+     * @return the BitSet containing the opcodes which appear in the method, or null if the method has
+     *     no code
      */
     @CheckForNull
     public BitSet getBytecodeSet(Method method) {
@@ -410,19 +392,17 @@ public class ClassContext {
     }
 
     /**
-     * Get a BitSet representing the bytecodes that are used in the given
-     * method. This is useful for prescreening a method for the existence of
-     * particular instructions. Because this step doesn't require building a
-     * MethodGen, it is very fast and memory-efficient. It may allow a Detector
-     * to avoid some very expensive analysis, which is a Big Win for the user.
+     * Get a BitSet representing the bytecodes that are used in the given method. This is useful for
+     * prescreening a method for the existence of particular instructions. Because this step doesn't
+     * require building a MethodGen, it is very fast and memory-efficient. It may allow a Detector to
+     * avoid some very expensive analysis, which is a Big Win for the user.
      *
-     * @param method
-     *            the method
-     * @return the BitSet containing the opcodes which appear in the method, or
-     *         null if the method has no code
+     * @param method the method
+     * @return the BitSet containing the opcodes which appear in the method, or null if the method has
+     *     no code
      */
     @CheckForNull
-    static public BitSet getBytecodeSet(JavaClass clazz, Method method) {
+    public static BitSet getBytecodeSet(JavaClass clazz, Method method) {
 
         XMethod xmethod = XFactory.createXMethod(clazz, method);
         if (cachedBitsets().containsKey(xmethod)) {
@@ -456,7 +436,7 @@ public class ClassContext {
     }
 
     @Nonnull
-    static public Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
+    public static Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
 
         XMethod xmethod = XFactory.createXMethod(methodGen);
         if (cachedLoopExits().containsKey(xmethod)) {
@@ -499,7 +479,6 @@ public class ClassContext {
         int branchByte2 = 0xff & codeBytes[pos + 1];
         int branchOffset = (short) (branchByte1 << 8 | branchByte2);
         return (short) branchOffset;
-
     }
 
     static boolean checkForBranchExit(byte[] codeBytes, int pos) {
@@ -530,15 +509,12 @@ public class ClassContext {
     }
 
     /**
-     * Get array mapping bytecode offsets to opcodes for given method. Array
-     * elements containing zero are either not valid instruction offsets, or
-     * contain a NOP instruction. (It is convenient not to distinguish these
-     * cases.)
+     * Get array mapping bytecode offsets to opcodes for given method. Array elements containing zero
+     * are either not valid instruction offsets, or contain a NOP instruction. (It is convenient not
+     * to distinguish these cases.)
      *
-     * @param method
-     *            the method
-     * @return map of bytecode offsets to opcodes, empty if the method has no
-     *         code
+     * @param method the method
+     * @return map of bytecode offsets to opcodes, empty if the method has no code
      */
     @Nonnull
     public short[] getOffsetToOpcodeMap(Method method) {
@@ -549,84 +525,77 @@ public class ClassContext {
     /**
      * Get dataflow for LockAnalysis for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the LockDataflow
      */
-    public LockDataflow getLockDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
+    public LockDataflow getLockDataflow(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(LockDataflow.class, method);
     }
 
     /**
-     * Get LockChecker for method. This is like LockDataflow, but may be able to
-     * avoid performing the actual dataflow analyses if the method doesn't
-     * contain explicit monitorenter/monitorexit instructions.
+     * Get LockChecker for method. This is like LockDataflow, but may be able to avoid performing the
+     * actual dataflow analyses if the method doesn't contain explicit monitorenter/monitorexit
+     * instructions.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the LockChecker
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    public LockChecker getLockChecker(Method method) throws CFGBuilderException, DataflowAnalysisException {
+    public LockChecker getLockChecker(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(LockChecker.class, method);
     }
 
     /**
      * Get ReturnPathDataflow for method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the ReturnPathDataflow
      */
-    public ReturnPathDataflow getReturnPathDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
+    public ReturnPathDataflow getReturnPathDataflow(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(ReturnPathDataflow.class, method);
     }
 
     /**
-     * Get DominatorsAnalysis for given method, where exception edges are
-     * ignored.
+     * Get DominatorsAnalysis for given method, where exception edges are ignored.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the DominatorsAnalysis
      */
-    public DominatorsAnalysis getNonExceptionDominatorsAnalysis(Method method) throws CFGBuilderException,
-            DataflowAnalysisException {
+    public DominatorsAnalysis getNonExceptionDominatorsAnalysis(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(DominatorsAnalysis.class, method);
     }
 
     /**
-     * Get DominatorsAnalysis for given method, where implicit exception edges
-     * are ignored.
+     * Get DominatorsAnalysis for given method, where implicit exception edges are ignored.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the DominatorsAnalysis
      */
-    public PostDominatorsAnalysis getNonImplicitExceptionDominatorsAnalysis(Method method) throws CFGBuilderException,
-            DataflowAnalysisException {
+    public PostDominatorsAnalysis getNonImplicitExceptionDominatorsAnalysis(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(NonImplicitExceptionPostDominatorsAnalysis.class, method);
     }
 
     /**
-     * Get PostDominatorsAnalysis for given method, where exception edges are
-     * ignored.
+     * Get PostDominatorsAnalysis for given method, where exception edges are ignored.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the PostDominatorsAnalysis
      */
-    public PostDominatorsAnalysis getNonExceptionPostDominatorsAnalysis(Method method) throws CFGBuilderException,
-            DataflowAnalysisException {
+    public PostDominatorsAnalysis getNonExceptionPostDominatorsAnalysis(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(NonExceptionPostdominatorsAnalysis.class, method);
     }
 
     /**
      * Get ExceptionSetFactory for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the ExceptionSetFactory
      */
     public ExceptionSetFactory getExceptionSetFactory(Method method) {
@@ -636,10 +605,8 @@ public class ClassContext {
     /**
      * Get array of type signatures of parameters for given method.
      *
-     * @param method
-     *            the method
-     * @return an array of type signatures indicating the types of the method's
-     *         parameters
+     * @param method the method
+     * @return an array of type signatures indicating the types of the method's parameters
      */
     public String[] getParameterSignatureList(Method method) {
         return getMethodAnalysisNoException(String[].class, method);
@@ -648,8 +615,7 @@ public class ClassContext {
     /**
      * Get the set of fields loaded by given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the set of fields loaded by the method
      */
     public LoadedFieldSet getLoadedFieldSet(Method method) {
@@ -659,22 +625,22 @@ public class ClassContext {
     /**
      * Get LiveLocalStoreAnalysis dataflow for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the Dataflow object for LiveLocalStoreAnalysis on the method
      */
-    public LiveLocalStoreDataflow getLiveLocalStoreDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
+    public LiveLocalStoreDataflow getLiveLocalStoreDataflow(Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
         return getMethodAnalysis(LiveLocalStoreDataflow.class, method);
     }
 
     /**
      * Get BlockType dataflow for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the Dataflow object for BlockTypeAnalysis on the method
      */
-    public BlockTypeDataflow getBlockTypeDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
+    public BlockTypeDataflow getBlockTypeDataflow(Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
         return getMethodAnalysis(BlockTypeDataflow.class, method);
     }
 
@@ -704,52 +670,52 @@ public class ClassContext {
     /**
      * Get ConstantDataflow for method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the ConstantDataflow
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    public ConstantDataflow getConstantDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
+    public ConstantDataflow getConstantDataflow(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(ConstantDataflow.class, method);
     }
 
     /**
      * Get load dataflow.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the LoadDataflow
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    public LoadDataflow getLoadDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
+    public LoadDataflow getLoadDataflow(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(LoadDataflow.class, method);
     }
 
     /**
      * Get store dataflow.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the StoreDataflow
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    public StoreDataflow getStoreDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
+    public StoreDataflow getStoreDataflow(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(StoreDataflow.class, method);
     }
 
     /**
      * Get CallListDataflow for method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the CallListDataflow
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    public CallListDataflow getCallListDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
+    public CallListDataflow getCallListDataflow(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(CallListDataflow.class, method);
     }
 
@@ -826,73 +792,100 @@ public class ClassContext {
     /**
      * Get the UnconditionalValueDerefDataflow for a method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the UnconditionalValueDerefDataflow
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    public UnconditionalValueDerefDataflow getUnconditionalValueDerefDataflow(Method method) throws CFGBuilderException,
-            DataflowAnalysisException {
+    public UnconditionalValueDerefDataflow getUnconditionalValueDerefDataflow(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(UnconditionalValueDerefDataflow.class, method);
     }
 
     /**
      * Get a CompactLocationNumbering for a method.
      *
-     * @param method
-     *            a method
+     * @param method a method
      * @return the CompactLocationNumbering for the method
      * @throws CFGBuilderException
      */
-    public CompactLocationNumbering getCompactLocationNumbering(Method method) throws CFGBuilderException {
+    public CompactLocationNumbering getCompactLocationNumbering(Method method)
+            throws CFGBuilderException {
         return getMethodAnalysisNoDataflowAnalysisException(CompactLocationNumbering.class, method);
     }
-
 
     /**
      * Get ReturnPathTypeDataflow for a method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the ReturnPathTypeDataflow for the method
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    public ReturnPathTypeDataflow getReturnPathTypeDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
+    public ReturnPathTypeDataflow getReturnPathTypeDataflow(Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         return getMethodAnalysis(ReturnPathTypeDataflow.class, method);
     }
 
     public void dumpSimpleDataflowInformation(Method method) {
         try {
-            dumpDataflowInformation(method, getCFG(method), getValueNumberDataflow(method), getIsNullValueDataflow(method), null,
+            dumpDataflowInformation(
+                    method,
+                    getCFG(method),
+                    getValueNumberDataflow(method),
+                    getIsNullValueDataflow(method),
+                    null,
                     null);
         } catch (DataflowAnalysisException e) {
             AnalysisContext.logError(
-                    "Could not dump data information for " + getJavaClass().getClassName() + "." + method.getName(), e);
+                    "Could not dump data information for "
+                            + getJavaClass().getClassName()
+                            + "."
+                            + method.getName(),
+                    e);
         } catch (CFGBuilderException e) {
             AnalysisContext.logError(
-                    "Could not dump data information for " + getJavaClass().getClassName() + "." + method.getName(), e);
-
+                    "Could not dump data information for "
+                            + getJavaClass().getClassName()
+                            + "."
+                            + method.getName(),
+                    e);
         }
     }
 
     public void dumpDataflowInformation(Method method) {
         try {
-            dumpDataflowInformation(method, getCFG(method), getValueNumberDataflow(method), getIsNullValueDataflow(method),
-                    getUnconditionalValueDerefDataflow(method), getTypeDataflow(method));
+            dumpDataflowInformation(
+                    method,
+                    getCFG(method),
+                    getValueNumberDataflow(method),
+                    getIsNullValueDataflow(method),
+                    getUnconditionalValueDerefDataflow(method),
+                    getTypeDataflow(method));
         } catch (DataflowAnalysisException e) {
             AnalysisContext.logError(
-                    "Could not dump data information for " + getJavaClass().getClassName() + "." + method.getName(), e);
+                    "Could not dump data information for "
+                            + getJavaClass().getClassName()
+                            + "."
+                            + method.getName(),
+                    e);
         } catch (CFGBuilderException e) {
             AnalysisContext.logError(
-                    "Could not dump data information for " + getJavaClass().getClassName() + "." + method.getName(), e);
-
+                    "Could not dump data information for "
+                            + getJavaClass().getClassName()
+                            + "."
+                            + method.getName(),
+                    e);
         }
     }
 
-    public static void dumpDataflowInformation(Method method, CFG cfg, ValueNumberDataflow vnd, IsNullValueDataflow inv,
-            @CheckForNull UnconditionalValueDerefDataflow dataflow, @CheckForNull TypeDataflow typeDataflow)
+    public static void dumpDataflowInformation(
+            Method method,
+            CFG cfg,
+            ValueNumberDataflow vnd,
+            IsNullValueDataflow inv,
+            @CheckForNull UnconditionalValueDerefDataflow dataflow,
+            @CheckForNull TypeDataflow typeDataflow)
             throws DataflowAnalysisException {
         System.out.println("\n\n{ UnconditionalValueDerefAnalysis analysis for " + method.getName());
         TreeSet<Location> tree = new TreeSet<>();
@@ -924,9 +917,14 @@ public class ClassContext {
         System.out.println("}\n\n");
     }
 
-    public static void dumpTypeDataflow(Method method, CFG cfg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
-        System.out.println("\n\n{ Type analysis for " + cfg.getMethodGen().getClassName() + "." + method.getName()
-                + method.getSignature());
+    public static void dumpTypeDataflow(Method method, CFG cfg, TypeDataflow typeDataflow)
+            throws DataflowAnalysisException {
+        System.out.println(
+                "\n\n{ Type analysis for "
+                        + cfg.getMethodGen().getClassName()
+                        + "."
+                        + method.getName()
+                        + method.getSignature());
         TreeSet<Location> tree = new TreeSet<>();
 
         for (Iterator<Location> locs = cfg.locationIterator(); locs.hasNext();) {
@@ -941,7 +939,8 @@ public class ClassContext {
         System.out.println("}\n\n");
     }
 
-    public static void dumpLiveLocalStoreDataflow(MethodDescriptor method, CFG cfg, LiveLocalStoreDataflow dataflow)
+    public static void dumpLiveLocalStoreDataflow(
+            MethodDescriptor method, CFG cfg, LiveLocalStoreDataflow dataflow)
             throws DataflowAnalysisException {
         System.out.println("\n\n{ LiveLocalStore analysis for " + method);
         TreeSet<Location> tree = new TreeSet<>();
@@ -964,7 +963,8 @@ public class ClassContext {
      * ----------------------------------------------------------------------
      */
 
-    private <Analysis> Analysis getMethodAnalysisNoException(Class<Analysis> analysisClass, Method method) {
+    private <Analysis> Analysis getMethodAnalysisNoException(
+            Class<Analysis> analysisClass, Method method) {
         try {
             return getMethodAnalysis(analysisClass, method);
         } catch (CheckedAnalysisException e) {
@@ -974,8 +974,8 @@ public class ClassContext {
         }
     }
 
-    private <Analysis> Analysis getMethodAnalysisNoDataflowAnalysisException(Class<Analysis> analysisClass, Method method)
-            throws CFGBuilderException {
+    private <Analysis> Analysis getMethodAnalysisNoDataflowAnalysisException(
+            Class<Analysis> analysisClass, Method method) throws CFGBuilderException {
         try {
             return getMethodAnalysis(analysisClass, method);
         } catch (CFGBuilderException e) {
@@ -985,11 +985,10 @@ public class ClassContext {
             ise.initCause(e);
             throw ise;
         }
-
     }
 
-    private <Analysis> Analysis getMethodAnalysis(Class<Analysis> analysisClass, Method method) throws DataflowAnalysisException,
-            CFGBuilderException {
+    private <Analysis> Analysis getMethodAnalysis(Class<Analysis> analysisClass, Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
         try {
             MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(jclass, method);
             return Global.getAnalysisCache().getMethodAnalysis(analysisClass, methodDescriptor);
@@ -1002,14 +1001,21 @@ public class ClassContext {
             if (cause instanceof CFGBuilderException) {
                 throw (CFGBuilderException) cause;
             }
-            String message = "Should not happen: bad CAE: " + e.getClass().getName() + " for " + analysisClass.getName() + " of " + method;
+            String message =
+                    "Should not happen: bad CAE: "
+                            + e.getClass().getName()
+                            + " for "
+                            + analysisClass.getName()
+                            + " of "
+                            + method;
             IllegalStateException ise = new IllegalStateException(message);
             ise.initCause(e);
             throw ise;
         }
     }
 
-    private <Analysis> Analysis getClassAnalysis(Class<Analysis> analysisClass) throws CheckedAnalysisException {
+    private <Analysis> Analysis getClassAnalysis(Class<Analysis> analysisClass)
+            throws CheckedAnalysisException {
         ClassDescriptor classDescriptor = BCELUtil.getClassDescriptor(jclass);
         return Global.getAnalysisCache().getClassAnalysis(analysisClass, classDescriptor);
     }

@@ -18,9 +18,11 @@
  */
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.FindBugsJob;
+import de.tobject.findbugs.FindbugsPlugin;
+import edu.umd.cs.findbugs.BugCollection;
 import java.io.File;
 import java.io.IOException;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -31,15 +33,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 
-import de.tobject.findbugs.FindBugsJob;
-import de.tobject.findbugs.FindbugsPlugin;
-import edu.umd.cs.findbugs.BugCollection;
-
 public class SaveXmlAction extends FindBugsAction {
 
-    private static final String DIALOG_SETTINGS_SECTION = "SaveXMLDialogSettings"; //$NON-NLS-1$
+    private static final String DIALOG_SETTINGS_SECTION = "SaveXMLDialogSettings"; // $NON-NLS-1$
 
-    private static final String SAVE_XML_PATH_KEY = "SaveXMLPathSetting"; //$NON-NLS-1$
+    private static final String SAVE_XML_PATH_KEY = "SaveXMLPathSetting"; // $NON-NLS-1$
 
     /*
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
@@ -66,13 +64,17 @@ public class SaveXmlAction extends FindBugsAction {
             }
             validFileName = validateSelectedFileName(fileName);
             if (!validFileName) {
-                MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning", fileName
-                        + " is not a file or is not writable!");
+                MessageDialog.openWarning(
+                        Display.getDefault().getActiveShell(),
+                        "Warning",
+                        fileName + " is not a file or is not writable!");
                 continue;
             }
             if (new File(fileName).exists()) {
-                if (!MessageDialog.openQuestion(Display.getDefault().getActiveShell(), "Warning", fileName
-                        + " already exists. Override?")) {
+                if (!MessageDialog.openQuestion(
+                        Display.getDefault().getActiveShell(),
+                        "Warning",
+                        fileName + " already exists. Override?")) {
                     continue;
                 }
             }
@@ -86,7 +88,8 @@ public class SaveXmlAction extends FindBugsAction {
     }
 
     private FileDialog createFileDialog(IProject project) {
-        FileDialog fileDialog = new FileDialog(FindbugsPlugin.getShell(), SWT.APPLICATION_MODAL | SWT.SAVE);
+        FileDialog fileDialog =
+                new FileDialog(FindbugsPlugin.getShell(), SWT.APPLICATION_MODAL | SWT.SAVE);
         fileDialog.setText("Select bug result xml for project: " + project.getName());
         String initialFileName = getDialogSettings().get(SAVE_XML_PATH_KEY);
         if (initialFileName != null && initialFileName.length() > 0) {
@@ -115,28 +118,32 @@ public class SaveXmlAction extends FindBugsAction {
     }
 
     /**
-     * Save the XML result of a FindBugs analysis on the given project,
-     * displaying a progress monitor.
+     * Save the XML result of a FindBugs analysis on the given project, displaying a progress monitor.
      *
-     * @param project
-     *            The selected project.
-     * @param fileName
-     *            The file name to store the XML to.
+     * @param project The selected project.
+     * @param fileName The file name to store the XML to.
      */
     private void work(final IProject project, final String fileName) {
-        FindBugsJob runFindBugs = new FindBugsJob("Saving SpotBugs XML data to " + fileName + "...", project) {
-            @Override
-            protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
-                BugCollection bugCollection = FindbugsPlugin.getBugCollection(project, monitor);
-                try {
-                    bugCollection.writeXML(fileName);
-                } catch (IOException e) {
-                    CoreException ex = new CoreException(FindbugsPlugin.createErrorStatus(
-                            "Can't write SpotBugs bug collection from project " + project + " to file " + fileName, e));
-                    throw ex;
-                }
-            }
-        };
+        FindBugsJob runFindBugs =
+                new FindBugsJob("Saving SpotBugs XML data to " + fileName + "...", project) {
+                    @Override
+                    protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+                        BugCollection bugCollection = FindbugsPlugin.getBugCollection(project, monitor);
+                        try {
+                            bugCollection.writeXML(fileName);
+                        } catch (IOException e) {
+                            CoreException ex =
+                                    new CoreException(
+                                            FindbugsPlugin.createErrorStatus(
+                                                    "Can't write SpotBugs bug collection from project "
+                                                            + project
+                                                            + " to file "
+                                                            + fileName,
+                                                    e));
+                            throw ex;
+                        }
+                    }
+                };
         runFindBugs.setRule(project);
         runFindBugs.scheduleInteractive();
     }

@@ -19,14 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -38,6 +30,12 @@ import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector {
 
@@ -48,8 +46,18 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
     public SynchronizationOnSharedBuiltinConstant(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
         badSignatures = new HashSet<>();
-        badSignatures.addAll(Arrays.asList(new String[] { "Ljava/lang/Boolean;", "Ljava/lang/Double;", "Ljava/lang/Float;",
-            "Ljava/lang/Byte;", "Ljava/lang/Character;", "Ljava/lang/Short;", "Ljava/lang/Integer;", "Ljava/lang/Long;" }));
+        badSignatures.addAll(
+                Arrays.asList(
+                        new String[] {
+                            "Ljava/lang/Boolean;",
+                            "Ljava/lang/Double;",
+                            "Ljava/lang/Float;",
+                            "Ljava/lang/Byte;",
+                            "Ljava/lang/Character;",
+                            "Ljava/lang/Short;",
+                            "Ljava/lang/Integer;",
+                            "Ljava/lang/Long;"
+                        }));
     }
 
     private static boolean newlyConstructedObject(OpcodeStack.Item item) {
@@ -93,8 +101,9 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
             Object constant = top.getConstant();
             if ("Ljava/lang/String;".equals(syncSignature) && constant instanceof String) {
 
-                pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY)
-                        .addClassAndMethod(this);
+                pendingBug =
+                        new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY)
+                                .addClassAndMethod(this);
 
                 String value = (String) constant;
                 if (identified.matcher(value).matches()) {
@@ -111,15 +120,26 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
                     priority--;
                 }
                 if (newlyConstructedObject(summary)) {
-                    pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
-                            .addClassAndMethod(this).addType(syncSignature).addOptionalField(field)
-                            .addOptionalLocalVariable(this, top);
+                    pendingBug =
+                            new BugInstance(
+                                    this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
+                                            .addClassAndMethod(this)
+                                            .addType(syncSignature)
+                                            .addOptionalField(field)
+                                            .addOptionalLocalVariable(this, top);
                 } else if (isSyncOnBoolean) {
-                    pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority).addClassAndMethod(this)
-                            .addOptionalField(field).addOptionalLocalVariable(this, top);
+                    pendingBug =
+                            new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority)
+                                    .addClassAndMethod(this)
+                                    .addOptionalField(field)
+                                    .addOptionalLocalVariable(this, top);
                 } else {
-                    pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority).addClassAndMethod(this)
-                            .addType(syncSignature).addOptionalField(field).addOptionalLocalVariable(this, top);
+                    pendingBug =
+                            new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority)
+                                    .addClassAndMethod(this)
+                                    .addType(syncSignature)
+                                    .addOptionalField(field)
+                                    .addOptionalLocalVariable(this, top);
                 }
             }
             break;
@@ -135,7 +155,8 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
         if (pendingBug == null) {
             return;
         }
-        bugAccumulator.accumulateBug(pendingBug, SourceLineAnnotation.fromVisitedInstruction(this, monitorEnterPC));
+        bugAccumulator.accumulateBug(
+                pendingBug, SourceLineAnnotation.fromVisitedInstruction(this, monitorEnterPC));
         pendingBug = null;
     }
 }

@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URL;
@@ -32,13 +35,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public class ProjectPackagePrefixes {
 
     public static class PrefixFilter {
@@ -70,7 +67,6 @@ public class ProjectPackagePrefixes {
             String result = Arrays.asList(parts).toString();
             return result.substring(1, result.length() - 1);
         }
-
     }
 
     public int size() {
@@ -93,9 +89,7 @@ public class ProjectPackagePrefixes {
         countPackageMember(packageName);
     }
 
-    /**
-     * @param packageName
-     */
+    /** @param packageName */
     public void countPackageMember(String packageName) {
         totalCount++;
         TreeSet<String> results = getProjects(packageName);
@@ -133,8 +127,10 @@ public class ProjectPackagePrefixes {
         }
     }
 
-    static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty(
-            "findbugs.forbiddenPackagePrefixes", " none ").replace(',', '|'));
+    static final Pattern FORBIDDEN_PACKAGE_PREFIXES =
+            Pattern.compile(
+                    SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ")
+                            .replace(',', '|'));
 
     public void report() {
         System.out.println("# of items counted: " + totalCount);
@@ -191,7 +187,6 @@ public class ProjectPackagePrefixes {
                         break;
                     }
                 }
-
             }
         }
 
@@ -222,9 +217,6 @@ public class ProjectPackagePrefixes {
 
                 AnalysisContext.logError("Error loading projects paths", e1);
             }
-
         }
-
     }
-
 }

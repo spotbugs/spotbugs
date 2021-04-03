@@ -26,8 +26,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Mark a method as cleaning up a resource. The marked method must be a member
- * of a class marked with the CleanupObligation annotation.
+ * Mark a method as cleaning up a resource. The marked method must be a member of a class marked
+ * with the CleanupObligation annotation.
  *
  * @author David Hovemeyer
  */
@@ -35,5 +35,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface DischargesObligation {
-
 }

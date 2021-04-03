@@ -23,18 +23,14 @@ import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.concurrent.NotThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>
- * An {@link ExecutorService} implementation that runs command in the current thread. Instance of this class is not
- * thread safe, do not share it among multiple threads. SpotBugs uses this class to keep backward compatibility
- * (SpotBugs 3.1 run analysis on the main/current thread).
- * </p>
+ * An {@link ExecutorService} implementation that runs command in the current thread. Instance of
+ * this class is not thread safe, do not share it among multiple threads. SpotBugs uses this class
+ * to keep backward compatibility (SpotBugs 3.1 run analysis on the main/current thread).
  *
  * @since 4.0
  */
@@ -75,7 +71,8 @@ class CurrentThreadExecutorService extends AbstractExecutorService {
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) {
         if (!isShutdown) {
-            // this ExecutorService is not designed to share among threads, then simply throw IllegalStateException
+            // this ExecutorService is not designed to share among threads, then simply throw
+            // IllegalStateException
             throw new IllegalStateException("awaitTermination() should be called after the shutdown");
         }
         return true;

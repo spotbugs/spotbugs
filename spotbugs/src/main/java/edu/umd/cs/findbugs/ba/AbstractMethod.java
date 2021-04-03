@@ -18,16 +18,16 @@
  */
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import org.apache.bcel.Const;
 
 public abstract class AbstractMethod extends AbstractClassMember implements XMethod {
 
-    protected AbstractMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
+    protected AbstractMethod(
+            @DottedClassName String className, String methodName, String methodSig, int accessFlags) {
         super(className, methodName, methodSig, accessFlags);
     }
 
@@ -64,8 +64,9 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
      */
     @Override
     public MethodDescriptor getMethodDescriptor() {
-        return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(getClassName()), getName(),
-                getSignature(), isStatic());
+        return DescriptorFactory.instance()
+                .getMethodDescriptor(
+                        ClassName.toSlashedClassName(getClassName()), getName(), getSignature(), isStatic());
     }
 
     @Override
@@ -75,7 +76,5 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
             return XFactory.createXMethod(access);
         }
         return this;
-
     }
-
 }

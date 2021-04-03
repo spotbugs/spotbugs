@@ -27,7 +27,9 @@ public final class FindBugsHtmlFileFilter extends FindBugsFileFilter {
 
     @Override
     public boolean accept(File arg0) {
-        return arg0.getName().endsWith(".html") || arg0.getName().endsWith(".htm") || arg0.isDirectory();
+        return arg0.getName().endsWith(".html")
+                || arg0.getName().endsWith(".htm")
+                || arg0.isDirectory();
     }
 
     @Override

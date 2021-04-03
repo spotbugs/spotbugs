@@ -25,17 +25,16 @@ package edu.umd.cs.findbugs.props;
  */
 public interface WarningProperty {
     /**
-     * Get the priority adjustment: i.e., the effect that this warning property
-     * is expected to have on the likelihood that the warning is real, benign,
-     * or a false positive.
+     * Get the priority adjustment: i.e., the effect that this warning property is expected to have on
+     * the likelihood that the warning is real, benign, or a false positive.
      *
      * @return the priority adjustment
      */
     public abstract PriorityAdjustment getPriorityAdjustment();
 
     /**
-     * Get the fully qualified name of the property. Should be full class name,
-     * ".", followed by the descriptive name of the property.
+     * Get the fully qualified name of the property. Should be full class name, ".", followed by the
+     * descriptive name of the property.
      *
      * @return fully qualified name of the property
      */

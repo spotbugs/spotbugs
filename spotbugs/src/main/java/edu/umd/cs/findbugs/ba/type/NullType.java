@@ -22,10 +22,9 @@ package edu.umd.cs.findbugs.ba.type;
 import org.apache.bcel.generic.ReferenceType;
 
 /**
- * Special type representing the null value. This is a type which is higher in
- * the lattice than any object type, but lower than the overall Top type. It
- * represents the type of the null value, which may logically be merged with any
- * object type without loss of information.
+ * Special type representing the null value. This is a type which is higher in the lattice than any
+ * object type, but lower than the overall Top type. It represents the type of the null value, which
+ * may logically be merged with any object type without loss of information.
  *
  * @author David Hovemeyer
  * @see TypeAnalysis

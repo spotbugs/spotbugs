@@ -19,15 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.classfile.ArrayElementValue;
-import org.apache.bcel.classfile.ClassElementValue;
-import org.apache.bcel.classfile.ElementValue;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase.Target;
@@ -38,17 +29,21 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.classfile.ArrayElementValue;
+import org.apache.bcel.classfile.ClassElementValue;
+import org.apache.bcel.classfile.ElementValue;
 
 /**
  * Scan application classes for NonNull annotations.
  *
  * @author David Hovemeyer
  * @author William Pugh
- *
- * @deprecated AnnotationDatabases are being phased out, since annotations are
- *             now stored directly in the XClass/XMethod/XField objects.
- *             Resolving nullness annotations will be handled through the
- *             JSR-305 type qualifier code.
+ * @deprecated AnnotationDatabases are being phased out, since annotations are now stored directly
+ *     in the XClass/XMethod/XField objects. Resolving nullness annotations will be handled through
+ *     the JSR-305 type qualifier code.
  */
 @Deprecated
 public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
@@ -58,12 +53,12 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
     @StaticConstant
     private static final Map<String, AnnotationDatabase.Target> defaultKind = new HashMap<>();
+
     static {
         defaultKind.put("", AnnotationDatabase.Target.ANY);
         defaultKind.put("ForParameters", AnnotationDatabase.Target.PARAMETER);
         defaultKind.put("ForMethods", AnnotationDatabase.Target.METHOD);
         defaultKind.put("ForFields", AnnotationDatabase.Target.FIELD);
-
     }
 
     private final NullnessAnnotationDatabase database;
@@ -85,11 +80,11 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
         if (n != null) {
             database.addDefaultAnnotation(annotationTarget, getDottedClassName(), n);
         }
-
     }
 
     @Override
-    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitAnnotation(
+            String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
 
         if (database == null) {
             return;
@@ -125,7 +120,6 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
         } else if (visitingField()) {
             database.addDirectAnnotation(XFactory.createXField(this), n);
         }
-
     }
 
     @Override
@@ -139,11 +133,11 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
         XMethodParameter xparameter = new XMethodParameter(xmethod, p);
 
         database.addDirectAnnotation(xparameter, NullnessAnnotation.UNKNOWN_NULLNESS);
-
     }
 
     @Override
-    public void visitParameterAnnotation(int p, String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitParameterAnnotation(
+            int p, String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
         if (database == null) {
             return;
         }
@@ -156,13 +150,16 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
         XMethod xmethod = XFactory.createXMethod(this);
         if (DEBUG) {
-            System.out.println("Parameter " + p + " @" + annotationClass.substring(annotationClass.lastIndexOf('/') + 1) + " in "
-                    + xmethod.toString());
+            System.out.println(
+                    "Parameter "
+                            + p
+                            + " @"
+                            + annotationClass.substring(annotationClass.lastIndexOf('/') + 1)
+                            + " in "
+                            + xmethod.toString());
         }
         XMethodParameter xparameter = new XMethodParameter(xmethod, p);
 
         database.addDirectAnnotation(xparameter, n);
-
     }
-
 }

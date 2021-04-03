@@ -25,17 +25,15 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.Version;
+import edu.umd.cs.findbugs.log.Logger;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.regex.Pattern;
-
 import javax.swing.JFrame;
 import javax.swing.event.HyperlinkEvent;
-
-import edu.umd.cs.findbugs.Version;
-import edu.umd.cs.findbugs.log.Logger;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**
  * The Help:About dialog.
@@ -47,9 +45,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
     // private JFrame parent;
 
-    /**
-     * Creates new form AboutDialog
-     */
+    /** Creates new form AboutDialog */
     public AboutDialog(JFrame parent, Logger l, boolean modal) {
         super(parent, modal);
         // this.parent = parent;
@@ -59,66 +55,45 @@ public class AboutDialog extends javax.swing.JDialog {
         try {
             aboutEditorPane.setPage(AboutDialog.class.getResource("help/About.html"));
             licenseEditorPane.setPage(AboutDialog.class.getResource("help/License.html"));
-            acknowldgementsEditorPane.setPage(AboutDialog.class.getResource("help/Acknowledgements.html"));
+            acknowldgementsEditorPane.setPage(
+                    AboutDialog.class.getResource("help/Acknowledgements.html"));
         } catch (IOException e) {
             l.logMessage(Logger.ERROR, e.toString());
         }
 
-        setTitle(MessageFormat.format(edu.umd.cs.findbugs.L10N.getLocalString("dlg.aboutfindbugs_ttl", "About SpotBugs {0}"),
-                new Object[] { Version.VERSION_STRING }));
+        setTitle(
+                MessageFormat.format(
+                        edu.umd.cs.findbugs.L10N.getLocalString("dlg.aboutfindbugs_ttl", "About SpotBugs {0}"),
+                        new Object[] { Version.VERSION_STRING }));
     }
 
     static Pattern pattern = Pattern.compile("@VERSION@");
 
     /**
-     * Process an HTML page to replace certain substitution patterns. Right now,
-     * we just expand @VERSION@.
+     * Process an HTML page to replace certain substitution patterns. Right now, we just
+     * expand @VERSION@.
      *
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("OS_OPEN_STREAM")
-    private void processPage(javax.swing.JEditorPane pane, String fileName) throws IOException {
-        InputStream in = null;
-        BufferedReader reader = null;
-        try {
-            StringBuilder buf = new StringBuilder();
-    
-            // Open the file as a stream
-            in = getClass().getClassLoader().getResourceAsStream(fileName);
-            if (in == null)
-                throw new IOException(MessageFormat.format(
-                        edu.umd.cs.findbugs.L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"),
-                        new Object[] { fileName }));
-            reader = UTF8.bufferedReader(in);
-    
-            // Replace instances of @VERSION@ with actual version number
-    
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = pattern.matcher(line).replaceAll(Version.RELEASE);
-                buf.append(line);
-                buf.append('\n');
-            }
-    
-            // Load the page into the editor pane
-            String text = buf.toString();
-            pane.setContentType("text/html");
-            pane.setText(text);
-        } finally {
-            try {
-                if (reader != null)
-                    reader.close();
-                else if (in != null)
-                    in.close();
-            } catch (IOException e) {
-            }
-        }
-    }*/
+     * @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("OS_OPEN_STREAM") private void
+     *     processPage(javax.swing.JEditorPane pane, String fileName) throws IOException { InputStream
+     *     in = null; BufferedReader reader = null; try { StringBuilder buf = new StringBuilder();
+     *     <p>// Open the file as a stream in =
+     *     getClass().getClassLoader().getResourceAsStream(fileName); if (in == null) throw new
+     *     IOException(MessageFormat.format(
+     *     edu.umd.cs.findbugs.L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"), new
+     *     Object[] { fileName })); reader = UTF8.bufferedReader(in);
+     *     <p>// Replace instances of @VERSION@ with actual version number
+     *     <p>String line; while ((line = reader.readLine()) != null) { line =
+     *     pattern.matcher(line).replaceAll(Version.RELEASE); buf.append(line); buf.append('\n'); }
+     *     <p>// Load the page into the editor pane String text = buf.toString();
+     *     pane.setContentType("text/html"); pane.setText(text); } finally { try { if (reader != null)
+     *     reader.close(); else if (in != null) in.close(); } catch (IOException e) { } } }
+     */
 
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
-    private void initComponents() {// GEN-BEGIN:initComponents
+    private void initComponents() { // GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
         aboutTabPane = new javax.swing.JTabbedPane();
@@ -133,12 +108,13 @@ public class AboutDialog extends javax.swing.JDialog {
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                closeDialog(evt);
-            }
-        });
+        addWindowListener(
+                new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent evt) {
+                        closeDialog(evt);
+                    }
+                });
 
         aboutEditorPane.setEditable(false);
         aboutEditorPane.addHyperlinkListener(evt -> editorPaneHyperlinkUpdate(evt));
@@ -169,8 +145,11 @@ public class AboutDialog extends javax.swing.JDialog {
 
         {
             aboutTabPane.setTitleAt(0, edu.umd.cs.findbugs.L10N.getLocalString("dlg.about_tab", "About"));
-            aboutTabPane.setTitleAt(1, edu.umd.cs.findbugs.L10N.getLocalString("dlg.license_tab", "License"));
-            aboutTabPane.setTitleAt(2, edu.umd.cs.findbugs.L10N.getLocalString("dlg.acknowledgements_tab", "Acknowledgements"));
+            aboutTabPane.setTitleAt(
+                    1, edu.umd.cs.findbugs.L10N.getLocalString("dlg.license_tab", "License"));
+            aboutTabPane.setTitleAt(
+                    2,
+                    edu.umd.cs.findbugs.L10N.getLocalString("dlg.acknowledgements_tab", "Acknowledgements"));
         }
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -189,9 +168,10 @@ public class AboutDialog extends javax.swing.JDialog {
         getContentPane().add(okButton, gridBagConstraints);
 
         pack();
-    }// GEN-END:initComponents
+    } // GEN-END:initComponents
 
-    static void editorPaneHyperlinkUpdate(HyperlinkEvent evt) {// GEN-FIRST:event_editorPaneHyperlinkUpdate
+    static void editorPaneHyperlinkUpdate(
+            HyperlinkEvent evt) { // GEN-FIRST:event_editorPaneHyperlinkUpdate
         try {
             if (evt.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
                 URL url = evt.getURL();
@@ -199,18 +179,17 @@ public class AboutDialog extends javax.swing.JDialog {
             }
         } catch (Exception e) {
         }
-    }// GEN-LAST:event_editorPaneHyperlinkUpdate
+    } // GEN-LAST:event_editorPaneHyperlinkUpdate
 
-    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_okButtonActionPerformed
+    private void okButtonActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_okButtonActionPerformed
         closeDialog();
-    }// GEN-LAST:event_okButtonActionPerformed
+    } // GEN-LAST:event_okButtonActionPerformed
 
-    /**
-     * Closes the dialog
-     */
-    private void closeDialog(java.awt.event.WindowEvent evt) {// GEN-FIRST:event_closeDialog
+    /** Closes the dialog */
+    private void closeDialog(java.awt.event.WindowEvent evt) { // GEN-FIRST:event_closeDialog
         closeDialog();
-    }// GEN-LAST:event_closeDialog
+    } // GEN-LAST:event_closeDialog
 
     private void closeDialog() {
         setVisible(false);

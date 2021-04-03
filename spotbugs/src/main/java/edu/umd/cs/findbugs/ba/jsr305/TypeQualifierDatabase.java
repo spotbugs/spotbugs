@@ -19,23 +19,20 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Store computed type qualifiers for method parameters and return values. This
- * allows interprocedural checking of type qualifiers.
+ * Store computed type qualifiers for method parameters and return values. This allows
+ * interprocedural checking of type qualifiers.
  *
  * @author David Hovemeyer
  */
 public class TypeQualifierDatabase {
-    /**
-     * If true, populate and use interprocedural database.
-     */
+    /** If true, populate and use interprocedural database. */
     public static final boolean USE_DATABASE = SystemProperties.getBoolean("ctq.usedatabase", true);
 
     public static final boolean DEBUG = SystemProperties.getBoolean("ctq.db.debug");
@@ -44,9 +41,7 @@ public class TypeQualifierDatabase {
 
     private final DualKeyHashMap<MethodDescriptor, Integer, Map<TypeQualifierValue<?>, TypeQualifierAnnotation>> parameterMap;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public TypeQualifierDatabase() {
         this.returnValueMap = new HashMap<>();
         this.parameterMap = new DualKeyHashMap<>();
@@ -55,16 +50,14 @@ public class TypeQualifierDatabase {
     /**
      * Set a TypeQualifierAnnotation on a method return value.
      *
-     * @param methodDesc
-     *            the method
-     * @param tqv
-     *            the type qualifier
-     * @param tqa
-     *            the type qualifier annotation
+     * @param methodDesc the method
+     * @param tqv the type qualifier
+     * @param tqa the type qualifier annotation
      */
-    public void setReturnValue(MethodDescriptor methodDesc, TypeQualifierValue<?> tqv, TypeQualifierAnnotation tqa) {
-        Map<TypeQualifierValue<?>, TypeQualifierAnnotation> map = returnValueMap.computeIfAbsent(methodDesc,
-                k -> new HashMap<>());
+    public void setReturnValue(
+            MethodDescriptor methodDesc, TypeQualifierValue<?> tqv, TypeQualifierAnnotation tqa) {
+        Map<TypeQualifierValue<?>, TypeQualifierAnnotation> map =
+                returnValueMap.computeIfAbsent(methodDesc, k -> new HashMap<>());
         map.put(tqv, tqa);
 
         if (DEBUG) {
@@ -75,15 +68,13 @@ public class TypeQualifierDatabase {
     /**
      * Get the TypeQualifierAnnotation on a method return value.
      *
-     * @param methodDesc
-     *            the method
-     * @param tqv
-     *            the type qualifier
-     * @return the type qualifier annotation on the method return value, or null
-     *         if no (interesting) type qualifier annotation was computed for
-     *         this method
+     * @param methodDesc the method
+     * @param tqv the type qualifier
+     * @return the type qualifier annotation on the method return value, or null if no (interesting)
+     *     type qualifier annotation was computed for this method
      */
-    public TypeQualifierAnnotation getReturnValue(MethodDescriptor methodDesc, TypeQualifierValue<?> tqv) {
+    public TypeQualifierAnnotation getReturnValue(
+            MethodDescriptor methodDesc, TypeQualifierValue<?> tqv) {
         //
         // TODO: handling of overridden methods?
         //
@@ -97,16 +88,16 @@ public class TypeQualifierDatabase {
     /**
      * Set a TypeQualifierAnnotation on a method parameter.
      *
-     * @param methodDesc
-     *            the method
-     * @param param
-     *            the parameter (0 == first parameter)
-     * @param tqv
-     *            the type qualifier
-     * @param tqa
-     *            the type qualifier annotation
+     * @param methodDesc the method
+     * @param param the parameter (0 == first parameter)
+     * @param tqv the type qualifier
+     * @param tqa the type qualifier annotation
      */
-    public void setParameter(MethodDescriptor methodDesc, int param, TypeQualifierValue<?> tqv, TypeQualifierAnnotation tqa) {
+    public void setParameter(
+            MethodDescriptor methodDesc,
+            int param,
+            TypeQualifierValue<?> tqv,
+            TypeQualifierAnnotation tqa) {
         Map<TypeQualifierValue<?>, TypeQualifierAnnotation> map = parameterMap.get(methodDesc, param);
         if (map == null) {
             map = new HashMap<>();
@@ -115,24 +106,22 @@ public class TypeQualifierDatabase {
         map.put(tqv, tqa);
 
         if (DEBUG) {
-            System.out.println("tqdb: " + methodDesc + " parameter " + param + " for " + tqv + " ==> " + tqa);
+            System.out.println(
+                    "tqdb: " + methodDesc + " parameter " + param + " for " + tqv + " ==> " + tqa);
         }
     }
 
     /**
      * Get the TypeQualifierAnnotation on a parameter.
      *
-     * @param methodDesc
-     *            the method
-     * @param param
-     *            the parameter (0 == first parameter)
-     * @param tqv
-     *            the type qualifier
-     * @return the type qualifier annotation on the method return value, or null
-     *         if no (interesting) type qualifier annotation was computed for
-     *         this method
+     * @param methodDesc the method
+     * @param param the parameter (0 == first parameter)
+     * @param tqv the type qualifier
+     * @return the type qualifier annotation on the method return value, or null if no (interesting)
+     *     type qualifier annotation was computed for this method
      */
-    public TypeQualifierAnnotation getParameter(MethodDescriptor methodDesc, int param, TypeQualifierValue<?> tqv) {
+    public TypeQualifierAnnotation getParameter(
+            MethodDescriptor methodDesc, int param, TypeQualifierValue<?> tqv) {
         //
         // TODO: handling of overridden methods?
         //

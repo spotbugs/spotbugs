@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.plan;
 
-import java.util.*;
-
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryChooser;
@@ -30,11 +28,12 @@ import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.graph.DepthFirstSearch;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import java.util.*;
 
 /**
- * A plan for executing Detectors on an application. Automatically assigns
- * Detectors to passes and orders Detectors within each pass based on ordering
- * constraints specified in the plugin descriptor(s).
+ * A plan for executing Detectors on an application. Automatically assigns Detectors to passes and
+ * orders Detectors within each pass based on ordering constraints specified in the plugin
+ * descriptor(s).
  *
  * @author David Hovemeyer
  */
@@ -56,22 +55,21 @@ public class ExecutionPlan {
 
     private Set<DetectorFactory> assignedToPassSet;
 
-    /**
-     * Constructor. Creates an empty plan.
-     */
+    /** Constructor. Creates an empty plan. */
     public ExecutionPlan() {
         this.pluginList = new LinkedList<>();
-        this.factoryChooser = new DetectorFactoryChooser() {
-            @Override
-            public boolean choose(DetectorFactory factory) {
-                return true;
-            }
+        this.factoryChooser =
+                new DetectorFactoryChooser() {
+                    @Override
+                    public boolean choose(DetectorFactory factory) {
+                        return true;
+                    }
 
-            @Override
-            public void enable(DetectorFactory factory) {
-                // OK...
-            }
-        };
+                    @Override
+                    public void enable(DetectorFactory factory) {
+                        // OK...
+                    }
+                };
         this.passList = new LinkedList<>();
         this.factoryMap = new HashMap<>();
         this.interPassConstraintList = new LinkedList<>();
@@ -90,9 +88,8 @@ public class ExecutionPlan {
     }
 
     /**
-     * Set the DetectorFactoryChooser to use to select which detectors to
-     * enable. This must be called before any Plugins are added to the execution
-     * plan.
+     * Set the DetectorFactoryChooser to use to select which detectors to enable. This must be called
+     * before any Plugins are added to the execution plan.
      */
     public void setDetectorFactoryChooser(DetectorFactoryChooser factoryChooser) {
         this.factoryChooser = factoryChooser;
@@ -106,9 +103,7 @@ public class ExecutionPlan {
         return isActive(detectorClass.getName());
     }
 
-    /**
-     * Add a Plugin whose Detectors should be added to the execution plan.
-     */
+    /** Add a Plugin whose Detectors should be added to the execution plan. */
     public void addPlugin(Plugin plugin) throws OrderingConstraintException {
         if (DEBUG) {
             System.out.println("Adding plugin " + plugin.getPluginId() + " to execution plan");
@@ -126,15 +121,15 @@ public class ExecutionPlan {
                 System.out.println("  Detector factory " + factory.getShortName());
             }
             if (factoryMap.put(factory.getFullName(), factory) != null) {
-                throw new OrderingConstraintException("Detector " + factory.getFullName() + " is defined by more than one plugin");
+                throw new OrderingConstraintException(
+                        "Detector " + factory.getFullName() + " is defined by more than one plugin");
             }
         }
     }
 
     /**
-     * Build the execution plan. Using the ordering constraints specified in the
-     * plugin descriptor(s), assigns Detectors to passes and orders the
-     * Detectors within those passes.
+     * Build the execution plan. Using the ordering constraints specified in the plugin descriptor(s),
+     * assigns Detectors to passes and orders the Detectors within those passes.
      */
     public void build() throws OrderingConstraintException {
 
@@ -142,14 +137,14 @@ public class ExecutionPlan {
             detectorFactory.setEnabledButNonReporting(false);
         }
 
-        ArrayList<DetectorOrderingConstraint> allConstraints = new ArrayList<>(
-                interPassConstraintList.size() + intraPassConstraintList.size());
+        ArrayList<DetectorOrderingConstraint> allConstraints =
+                new ArrayList<>(interPassConstraintList.size() + intraPassConstraintList.size());
         allConstraints.addAll(interPassConstraintList);
         allConstraints.addAll(intraPassConstraintList);
 
         Map<String, DetectorNode> nodeMapAll = new HashMap<>();
-        ConstraintGraph allPassConstraintGraph = buildConstraintGraph(nodeMapAll,
-                new HashSet<>(factoryMap.values()), allConstraints);
+        ConstraintGraph allPassConstraintGraph =
+                buildConstraintGraph(nodeMapAll, new HashSet<>(factoryMap.values()), allConstraints);
         boolean change;
         do {
             change = false;
@@ -173,10 +168,8 @@ public class ExecutionPlan {
                                 System.out.println("Dependences force enabling of " + startFactory.getFullName());
                             }
                         }
-
                     }
                 }
-
             }
         } while (change);
 
@@ -184,10 +177,11 @@ public class ExecutionPlan {
 
         // Build inter-pass constraint graph
         Map<String, DetectorNode> nodeMap = new HashMap<>();
-        ConstraintGraph interPassConstraintGraph = buildConstraintGraph(nodeMap,
-                new HashSet<>(factoryMap.values()), interPassConstraintList);
+        ConstraintGraph interPassConstraintGraph =
+                buildConstraintGraph(nodeMap, new HashSet<>(factoryMap.values()), interPassConstraintList);
         if (DEBUG) {
-            System.out.println(interPassConstraintGraph.getNumVertices() + " nodes in inter-pass constraint graph");
+            System.out.println(
+                    interPassConstraintGraph.getNumVertices() + " nodes in inter-pass constraint graph");
         }
 
         // Build list of analysis passes.
@@ -224,9 +218,7 @@ public class ExecutionPlan {
         }
     }
 
-    /**
-     * Get an Iterator over the AnalysisPasses.
-     */
+    /** Get an Iterator over the AnalysisPasses. */
     public Iterator<AnalysisPass> passIterator() {
         return passList.iterator();
     }
@@ -247,29 +239,29 @@ public class ExecutionPlan {
     }
 
     /**
-     * Build a constraint graph. This represents ordering constraints between
-     * Detectors. A topological sort of the constraint graph will yield a
-     * correct ordering of the detectors (which may mean either passes or an
-     * ordering within a single pass, depending on whether the constraints are
+     * Build a constraint graph. This represents ordering constraints between Detectors. A topological
+     * sort of the constraint graph will yield a correct ordering of the detectors (which may mean
+     * either passes or an ordering within a single pass, depending on whether the constraints are
      * inter-pass or intra-pass).
      *
-     * @param nodeMap
-     *            map to be populated with detector class names to constraint
-     *            graph nodes for those detectors
-     * @param factorySet
-     *            build the graph using these DetectorFactories as nodes
-     * @param constraintList
-     *            List of ordering constraints
+     * @param nodeMap map to be populated with detector class names to constraint graph nodes for
+     *     those detectors
+     * @param factorySet build the graph using these DetectorFactories as nodes
+     * @param constraintList List of ordering constraints
      * @return the ConstraintGraph
      */
-    private ConstraintGraph buildConstraintGraph(Map<String, DetectorNode> nodeMap, Set<DetectorFactory> factorySet,
+    private ConstraintGraph buildConstraintGraph(
+            Map<String, DetectorNode> nodeMap,
+            Set<DetectorFactory> factorySet,
             List<DetectorOrderingConstraint> constraintList) {
 
         ConstraintGraph result = new ConstraintGraph();
 
         for (DetectorOrderingConstraint constraint : constraintList) {
-            Set<DetectorNode> earlierSet = addOrCreateDetectorNodes(constraint.getEarlier(), nodeMap, factorySet, result);
-            Set<DetectorNode> laterSet = addOrCreateDetectorNodes(constraint.getLater(), nodeMap, factorySet, result);
+            Set<DetectorNode> earlierSet =
+                    addOrCreateDetectorNodes(constraint.getEarlier(), nodeMap, factorySet, result);
+            Set<DetectorNode> laterSet =
+                    addOrCreateDetectorNodes(constraint.getLater(), nodeMap, factorySet, result);
 
             createConstraintEdges(result, earlierSet, laterSet, constraint);
         }
@@ -277,7 +269,8 @@ public class ExecutionPlan {
         return result;
     }
 
-    private Set<DetectorFactory> selectDetectors(DetectorFactorySelector selector, Set<DetectorFactory> candidateSet) {
+    private Set<DetectorFactory> selectDetectors(
+            DetectorFactorySelector selector, Set<DetectorFactory> candidateSet) {
         Set<DetectorFactory> result = new HashSet<>();
         for (DetectorFactory factory : candidateSet) {
             if (selector.selectFactory(factory)) {
@@ -287,8 +280,11 @@ public class ExecutionPlan {
         return result;
     }
 
-    private Set<DetectorNode> addOrCreateDetectorNodes(DetectorFactorySelector selector, Map<String, DetectorNode> nodeMap,
-            Set<DetectorFactory> factorySet, ConstraintGraph constraintGraph) {
+    private Set<DetectorNode> addOrCreateDetectorNodes(
+            DetectorFactorySelector selector,
+            Map<String, DetectorNode> nodeMap,
+            Set<DetectorFactory> factorySet,
+            ConstraintGraph constraintGraph) {
         HashSet<DetectorNode> result = new HashSet<>();
 
         Set<DetectorFactory> chosenSet = selectDetectors(selector, factorySet);
@@ -301,8 +297,8 @@ public class ExecutionPlan {
         return result;
     }
 
-    private DetectorNode addOrCreateDetectorNode(DetectorFactory factory, Map<String, DetectorNode> nodeMap,
-            ConstraintGraph constraintGraph) {
+    private DetectorNode addOrCreateDetectorNode(
+            DetectorFactory factory, Map<String, DetectorNode> nodeMap, ConstraintGraph constraintGraph) {
         DetectorNode node = nodeMap.get(factory.getFullName());
         if (node == null) {
             node = new DetectorNode(factory);
@@ -312,7 +308,10 @@ public class ExecutionPlan {
         return node;
     }
 
-    private void createConstraintEdges(ConstraintGraph result, Set<DetectorNode> earlierSet, Set<DetectorNode> laterSet,
+    private void createConstraintEdges(
+            ConstraintGraph result,
+            Set<DetectorNode> earlierSet,
+            Set<DetectorNode> laterSet,
             DetectorOrderingConstraint constraint) {
 
         // It is perfectly fine for a constraint to produce no edges
@@ -343,14 +342,13 @@ public class ExecutionPlan {
                     inDegreeZeroList.add(node);
                 } else if (DEBUG) {
                     System.out.println("Can't schedule " + node.getFactory().getShortName());
-                    Iterator<ConstraintEdge> incomingEdgeIterator = constraintGraph.incomingEdgeIterator(node);
+                    Iterator<ConstraintEdge> incomingEdgeIterator =
+                            constraintGraph.incomingEdgeIterator(node);
                     while (incomingEdgeIterator.hasNext()) {
                         ConstraintEdge edge = incomingEdgeIterator.next();
                         System.out.println("  requires " + edge.getSource().getFactory().getShortName());
-
                     }
                 }
-
             }
 
             if (inDegreeZeroList.isEmpty()) {
@@ -371,7 +369,6 @@ public class ExecutionPlan {
             for (DetectorNode node : inDegreeZeroList) {
                 assignToPass(node.getFactory(), pass);
             }
-
         }
     }
 
@@ -382,8 +379,11 @@ public class ExecutionPlan {
         passList.add(pass);
     }
 
-    private void sortPass(List<DetectorOrderingConstraint> constraintList, Map<String, DetectorFactory> factoryMap,
-            AnalysisPass pass) throws OrderingConstraintException {
+    private void sortPass(
+            List<DetectorOrderingConstraint> constraintList,
+            Map<String, DetectorFactory> factoryMap,
+            AnalysisPass pass)
+            throws OrderingConstraintException {
 
         // Build set of all (initial) detectors in pass
         Set<DetectorFactory> detectorSet = new HashSet<>(pass.getMembers());
@@ -412,7 +412,8 @@ public class ExecutionPlan {
 
         // Build intra-pass constraint graph
         Map<String, DetectorNode> nodeMap = new HashMap<>();
-        ConstraintGraph constraintGraph = buildConstraintGraph(nodeMap, availableSet, passConstraintList);
+        ConstraintGraph constraintGraph =
+                buildConstraintGraph(nodeMap, availableSet, passConstraintList);
         if (DEBUG) {
             System.out.println("Pass constraint graph:");
             dumpGraph(constraintGraph);
@@ -428,8 +429,8 @@ public class ExecutionPlan {
         }
 
         // Perform DFS, check for cycles
-        DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs = new DepthFirstSearch<>(
-                constraintGraph);
+        DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs =
+                new DepthFirstSearch<>(constraintGraph);
         dfs.search();
         if (dfs.containsCycle()) {
             throw new OrderingConstraintException("Cycle in intra-pass ordering constraints!");
@@ -454,17 +455,15 @@ public class ExecutionPlan {
         return unassignedSet;
     }
 
-    /**
-     * Make a DetectorFactory a member of an AnalysisPass.
-     */
+    /** Make a DetectorFactory a member of an AnalysisPass. */
     private void assignToPass(DetectorFactory factory, AnalysisPass pass) {
         pass.addToPass(factory);
         assignedToPassSet.add(factory);
     }
 
     /**
-     * Append a DetectorFactory to the end position in an AnalysisPass. The
-     * DetectorFactory must be a member of the pass.
+     * Append a DetectorFactory to the end position in an AnalysisPass. The DetectorFactory must be a
+     * member of the pass.
      */
     private void appendToPass(DetectorFactory factory, AnalysisPass pass) {
         pass.append(factory);
@@ -472,15 +471,18 @@ public class ExecutionPlan {
 
     private void appendDetectorsToPass(Collection<DetectorFactory> detectorSet, AnalysisPass pass) {
         DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[0]);
-        Arrays.sort(unassignedList, (a, b) -> {
-            // Sort first by plugin id...
-            int cmp = a.getPlugin().getPluginId().compareTo(b.getPlugin().getPluginId());
-            if (cmp != 0) {
-                return cmp;
-            }
-            // Then by order specified in plugin descriptor
-            return a.getPositionSpecifiedInPluginDescriptor() - b.getPositionSpecifiedInPluginDescriptor();
-        });
+        Arrays.sort(
+                unassignedList,
+                (a, b) -> {
+                    // Sort first by plugin id...
+                    int cmp = a.getPlugin().getPluginId().compareTo(b.getPlugin().getPluginId());
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+                    // Then by order specified in plugin descriptor
+                    return a.getPositionSpecifiedInPluginDescriptor()
+                            - b.getPositionSpecifiedInPluginDescriptor();
+                });
         for (DetectorFactory factory : unassignedList) {
             appendToPass(factory, pass);
         }
@@ -503,8 +505,10 @@ public class ExecutionPlan {
     private void dumpGraph(ConstraintGraph graph) {
         for (Iterator<ConstraintEdge> i = graph.edgeIterator(); i.hasNext();) {
             ConstraintEdge edge = i.next();
-            System.out.println(edge.getSource().getFactory().getShortName() + " ==> "
-                    + edge.getTarget().getFactory().getShortName());
+            System.out.println(
+                    edge.getSource().getFactory().getShortName()
+                            + " ==> "
+                            + edge.getTarget().getFactory().getShortName());
         }
     }
 

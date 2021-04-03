@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 public class FindUnsyncGet extends BytecodeScanningDetector {
     String prevClassName = " none ";
@@ -60,8 +58,11 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
             MethodAnnotation getMethod = getMethods.get(propName);
             MethodAnnotation setMethod = setMethods.get(propName);
 
-            bugReporter.reportBug(new BugInstance(this, "UG_SYNC_SET_UNSYNC_GET", NORMAL_PRIORITY).addClass(prevClassName)
-                    .addMethod(getMethod).addMethod(setMethod));
+            bugReporter.reportBug(
+                    new BugInstance(this, "UG_SYNC_SET_UNSYNC_GET", NORMAL_PRIORITY)
+                            .addClass(prevClassName)
+                            .addMethod(getMethod)
+                            .addMethod(setMethod));
         }
         getMethods.clear();
         setMethods.clear();

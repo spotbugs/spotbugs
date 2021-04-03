@@ -20,6 +20,9 @@ package de.tobject.findbugs.builder.test;
 
 import static junit.framework.Assert.assertEquals;
 
+import de.tobject.findbugs.builder.FindBugsWorker;
+import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -27,10 +30,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import de.tobject.findbugs.builder.FindBugsWorker;
-import de.tobject.findbugs.test.AbstractFindBugsTest;
-import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the public methods for FindBugsWorker.
@@ -50,7 +49,8 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
 
     private static final String CLASS_A_PROJECT_RELATIVE = SRC + "/A.java";
 
-    private static final String CLASS_A_WORKSPACE_RELATIVE = TEST_PROJECT + "/" + CLASS_A_PROJECT_RELATIVE;
+    private static final String CLASS_A_WORKSPACE_RELATIVE =
+            TEST_PROJECT + "/" + CLASS_A_PROJECT_RELATIVE;
 
     @Test
     public void testBaselineBugs() throws CoreException {
@@ -77,9 +77,12 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
     @Test
     public void testGetFilterPath() throws JavaModelException {
         IPath classALocation = getClassA().getResource().getLocation();
-        assertEquals(classALocation, FindBugsWorker.getFilterPath(classALocation.toOSString(), getProject()));
-        assertEquals(classALocation, FindBugsWorker.getFilterPath(CLASS_A_PROJECT_RELATIVE, getProject()));
-        assertEquals(classALocation, FindBugsWorker.getFilterPath(CLASS_A_WORKSPACE_RELATIVE, getProject()));
+        assertEquals(
+                classALocation, FindBugsWorker.getFilterPath(classALocation.toOSString(), getProject()));
+        assertEquals(
+                classALocation, FindBugsWorker.getFilterPath(CLASS_A_PROJECT_RELATIVE, getProject()));
+        assertEquals(
+                classALocation, FindBugsWorker.getFilterPath(CLASS_A_WORKSPACE_RELATIVE, getProject()));
         assertEquals(classALocation, FindBugsWorker.getFilterPath(CLASS_A_WORKSPACE_RELATIVE, null));
     }
 
@@ -104,8 +107,11 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
     @Test
     public void testToFilterPath() throws JavaModelException {
         String classALocation = getClassA().getResource().getLocation().toOSString();
-        assertEquals(new Path(CLASS_A_PROJECT_RELATIVE), FindBugsWorker.toFilterPath(classALocation, getProject()));
-        assertEquals(new Path(CLASS_A_WORKSPACE_RELATIVE), FindBugsWorker.toFilterPath(classALocation, null));
+        assertEquals(
+                new Path(CLASS_A_PROJECT_RELATIVE),
+                FindBugsWorker.toFilterPath(classALocation, getProject()));
+        assertEquals(
+                new Path(CLASS_A_WORKSPACE_RELATIVE), FindBugsWorker.toFilterPath(classALocation, null));
     }
 
     private void assertExpectedBugsWithBaseline() throws CoreException {

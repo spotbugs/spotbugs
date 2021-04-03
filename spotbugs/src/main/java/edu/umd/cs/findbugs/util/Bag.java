@@ -76,5 +76,4 @@ public class Bag<E> {
             return v;
         }
     }
-
 }

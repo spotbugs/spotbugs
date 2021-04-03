@@ -68,7 +68,8 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
     }
 
     @Override
-    public void meetInto(ReturnPath fact, Edge edge, ReturnPath result) throws DataflowAnalysisException {
+    public void meetInto(ReturnPath fact, Edge edge, ReturnPath result)
+            throws DataflowAnalysisException {
         switch (edge.getType()) {
         case UNHANDLED_EXCEPTION_EDGE:
             fact = new ReturnPath(ReturnPath.UE);

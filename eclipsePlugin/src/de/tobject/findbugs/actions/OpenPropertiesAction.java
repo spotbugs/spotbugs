@@ -19,6 +19,9 @@
 
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.view.explorer.BugGroup;
+import de.tobject.findbugs.view.explorer.GroupType;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -33,13 +36,7 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.dialogs.PropertyDialogAction;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.view.explorer.BugGroup;
-import de.tobject.findbugs.view.explorer.GroupType;
-
-/**
- * Show details on a selected FindBugs marker.
- */
+/** Show details on a selected FindBugs marker. */
 public class OpenPropertiesAction implements IObjectActionDelegate {
 
     /** The current selection. */
@@ -83,32 +80,36 @@ public class OpenPropertiesAction implements IObjectActionDelegate {
                 if (element instanceof BugGroup) {
                     final BugGroup group = (BugGroup) element;
                     if (group.getType() == GroupType.Project) {
-                        PropertyDialogAction paction = new PropertyDialogAction(new IShellProvider() {
-                            @Override
-                            public Shell getShell() {
-                                return null;
-                            }
-                        }, new ISelectionProvider() {
-                            @Override
-                            public void addSelectionChangedListener(ISelectionChangedListener listener) {
-                                // noop
-                            }
+                        PropertyDialogAction paction =
+                                new PropertyDialogAction(
+                                        new IShellProvider() {
+                                            @Override
+                                            public Shell getShell() {
+                                                return null;
+                                            }
+                                        },
+                                        new ISelectionProvider() {
+                                            @Override
+                                            public void addSelectionChangedListener(ISelectionChangedListener listener) {
+                                                // noop
+                                            }
 
-                            @Override
-                            public ISelection getSelection() {
-                                return new StructuredSelection(group.getData());
-                            }
+                                            @Override
+                                            public ISelection getSelection() {
+                                                return new StructuredSelection(group.getData());
+                                            }
 
-                            @Override
-                            public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-                                // noop
-                            }
+                                            @Override
+                                            public void removeSelectionChangedListener(
+                                                    ISelectionChangedListener listener) {
+                                                // noop
+                                            }
 
-                            @Override
-                            public void setSelection(ISelection selection) {
-                                // noop
-                            }
-                        });
+                                            @Override
+                                            public void setSelection(ISelection selection) {
+                                                // noop
+                                            }
+                                        });
                         paction.run();
                         return;
                     }
@@ -116,10 +117,10 @@ public class OpenPropertiesAction implements IObjectActionDelegate {
                 targetPart.getSite().getPage().showView(IPageLayout.ID_PROP_SHEET);
             }
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Exception while parsing content of SpotBugs markers.");
+            FindbugsPlugin.getDefault()
+                    .logException(e, "Exception while parsing content of SpotBugs markers.");
         } finally {
             targetPart = null;
         }
     }
-
 }

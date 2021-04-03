@@ -19,15 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.io.PrintStream;
-import java.util.BitSet;
-
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LineNumber;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BugReporterObserver;
@@ -37,8 +28,16 @@ import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.io.PrintStream;
+import java.util.BitSet;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumber;
+import org.apache.bcel.classfile.Method;
 
-public class FindBugsSummaryStats extends PreorderVisitor implements Detector, BugReporterObserver, NonReportingDetector {
+public class FindBugsSummaryStats extends PreorderVisitor
+        implements Detector, BugReporterObserver, NonReportingDetector {
     private final ProjectStats stats;
 
     BitSet lines = new BitSet(500);
@@ -106,7 +105,6 @@ public class FindBugsSummaryStats extends PreorderVisitor implements Detector, B
         totalNCSS += linesNCSS;
         totalMethods += methods;
         totalFields += fields;
-
     }
 
     @Override
@@ -146,5 +144,4 @@ public class FindBugsSummaryStats extends PreorderVisitor implements Detector, B
     public void reportBug(BugInstance bug) {
         // already added when bug was added to bug collection
     }
-
 }

@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -31,10 +27,10 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import java.util.HashSet;
+import org.apache.bcel.Const;
 
-/**
- * Detector to find private methods that are never called.
- */
+/** Detector to find private methods that are never called. */
 public class CalledMethods extends BytecodeScanningDetector implements NonReportingDetector {
     boolean emptyArrayOnTOS;
 
@@ -45,7 +41,6 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
     XFactory xFactory = AnalysisContext.currentXFactory();
 
     public CalledMethods(BugReporter bugReporter) {
-
     }
 
     @Override
@@ -62,10 +57,12 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
                     }
                 }
             }
-
         }
-        emptyArrayOnTOS = (seen == Const.ANEWARRAY || seen == Const.NEWARRAY || seen == Const.MULTIANEWARRAY && getIntConstant() == 1)
-                && getPrevOpcode(1) == Const.ICONST_0;
+        emptyArrayOnTOS =
+                (seen == Const.ANEWARRAY
+                        || seen == Const.NEWARRAY
+                        || seen == Const.MULTIANEWARRAY && getIntConstant() == 1)
+                        && getPrevOpcode(1) == Const.ICONST_0;
 
         if (seen == Const.GETSTATIC || seen == Const.GETFIELD) {
             XField f = getXFieldOperand();
@@ -98,5 +95,4 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
         }
         emptyArray.clear();
     }
-
 }

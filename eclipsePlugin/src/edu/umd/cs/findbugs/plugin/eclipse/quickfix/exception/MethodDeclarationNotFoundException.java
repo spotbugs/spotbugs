@@ -24,8 +24,8 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
- * Thrown when no <CODE>MethodDeclaration</CODE> was found in the specified
- * <CODE>TypeDeclaration</CODE>.
+ * Thrown when no <CODE>MethodDeclaration</CODE> was found in the specified <CODE>TypeDeclaration
+ * </CODE>.
  *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -41,9 +41,15 @@ public class MethodDeclarationNotFoundException extends BodyDeclarationNotFoundE
 
     private final String methodSignature;
 
-    public MethodDeclarationNotFoundException(TypeDeclaration typeDeclaration, String methodName, String methodSignature) {
-        super("Method declaration '" + methodName + methodSignature + "' not found in type declaration '"
-                + typeDeclaration.getName() + "'.");
+    public MethodDeclarationNotFoundException(
+            TypeDeclaration typeDeclaration, String methodName, String methodSignature) {
+        super(
+                "Method declaration '"
+                        + methodName
+                        + methodSignature
+                        + "' not found in type declaration '"
+                        + typeDeclaration.getName()
+                        + "'.");
         this.typeDeclaration = typeDeclaration;
         this.methodName = methodName;
         this.methodSignature = methodSignature;
@@ -60,5 +66,4 @@ public class MethodDeclarationNotFoundException extends BodyDeclarationNotFoundE
     public String getMethodSignature() {
         return methodSignature;
     }
-
 }

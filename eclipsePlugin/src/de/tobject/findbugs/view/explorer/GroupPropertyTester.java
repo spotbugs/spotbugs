@@ -20,9 +20,7 @@ package de.tobject.findbugs.view.explorer;
 
 import org.eclipse.core.expressions.PropertyTester;
 
-/**
- * @author Andrei
- */
+/** @author Andrei */
 public class GroupPropertyTester extends PropertyTester {
 
     public GroupPropertyTester() {
@@ -31,11 +29,12 @@ public class GroupPropertyTester extends PropertyTester {
 
     @Override
     public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
-        if ("type".equals(property) && receiver instanceof BugGroup && expectedValue instanceof String) {
+        if ("type".equals(property)
+                && receiver instanceof BugGroup
+                && expectedValue instanceof String) {
             BugGroup group = (BugGroup) receiver;
             return group.testAttribute(group, property, (String) expectedValue);
         }
         return false;
     }
-
 }

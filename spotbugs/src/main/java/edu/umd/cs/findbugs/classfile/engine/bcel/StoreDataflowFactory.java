@@ -18,13 +18,12 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.heap.StoreAnalysis;
 import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Analysis engine to produce StoreDataflow objects for analyzed methods.
@@ -32,9 +31,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class StoreDataflowFactory extends AnalysisFactory<StoreDataflow> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public StoreDataflowFactory() {
         super("field store analysis", StoreDataflow.class);
     }
@@ -47,13 +44,16 @@ public class StoreDataflowFactory extends AnalysisFactory<StoreDataflow> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public StoreDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public StoreDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             return null;
         }
-        StoreAnalysis analysis = new StoreAnalysis(getDepthFirstSearch(analysisCache, descriptor), getConstantPoolGen(
-                analysisCache, descriptor.getClassDescriptor()));
+        StoreAnalysis analysis =
+                new StoreAnalysis(
+                        getDepthFirstSearch(analysisCache, descriptor),
+                        getConstantPoolGen(analysisCache, descriptor.getClassDescriptor()));
         StoreDataflow dataflow = new StoreDataflow(getCFG(analysisCache, descriptor), analysis);
         dataflow.execute();
         return dataflow;

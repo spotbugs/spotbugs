@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class FindBugsDisplayFeatures {
 
     private static boolean abridgedMessages;
@@ -33,5 +31,4 @@ public class FindBugsDisplayFeatures {
     public static void setAbridgedMessages(boolean b) {
         abridgedMessages = b;
     }
-
 }

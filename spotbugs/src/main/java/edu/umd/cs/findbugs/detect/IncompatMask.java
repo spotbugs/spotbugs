@@ -19,17 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 /**
- * Find comparisons involving values computed with bitwise operations whose
- * outcomes are fixed at compile time.
+ * Find comparisons involving values computed with bitwise operations whose outcomes are fixed at
+ * compile time.
  *
  * @author Tom Truscott &lt;trt@unx.sas.com&gt;
  * @author Tagir Valeev
@@ -124,10 +123,14 @@ public class IncompatMask extends OpcodeStackDetector {
             boolean onlyLowBits = bits >>> 12 == 0;
             BugInstance bug;
             if (highbit) {
-                bug = new BugInstance(this, "BIT_SIGNED_CHECK_HIGH_BIT", (seen == Const.IFLE || seen == Const.IFGT) ? HIGH_PRIORITY
-                        : NORMAL_PRIORITY);
+                bug =
+                        new BugInstance(
+                                this,
+                                "BIT_SIGNED_CHECK_HIGH_BIT",
+                                (seen == Const.IFLE || seen == Const.IFGT) ? HIGH_PRIORITY : NORMAL_PRIORITY);
             } else {
-                bug = new BugInstance(this, "BIT_SIGNED_CHECK", onlyLowBits ? LOW_PRIORITY : NORMAL_PRIORITY);
+                bug =
+                        new BugInstance(this, "BIT_SIGNED_CHECK", onlyLowBits ? LOW_PRIORITY : NORMAL_PRIORITY);
             }
             bug.addClassAndMethod(this).addString(toHex(arg1) + " (" + arg1 + ")").addSourceLine(this);
             bugReporter.reportBug(bug);
@@ -163,7 +166,8 @@ public class IncompatMask extends OpcodeStackDetector {
     }
 
     private static String toHex(Number n) {
-        return "0x" + (n instanceof Long ? Long.toHexString(n.longValue()) : Integer.toHexString(n.intValue()));
+        return "0x"
+                + (n instanceof Long ? Long.toHexString(n.longValue()) : Integer.toHexString(n.intValue()));
     }
 
     private boolean checkItem(int n) {

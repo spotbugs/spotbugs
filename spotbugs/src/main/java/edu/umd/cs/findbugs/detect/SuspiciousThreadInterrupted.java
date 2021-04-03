@@ -20,23 +20,22 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-import java.util.Collections;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import java.util.BitSet;
+import java.util.Collections;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
 
 /**
- * looks for calls to Thread.interrupted from a non static context, especially
- * when that context is not 'currentThread()'.
+ * looks for calls to Thread.interrupted from a non static context, especially when that context is
+ * not 'currentThread()'.
  */
-public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implements StatelessDetector {
+public class SuspiciousThreadInterrupted extends BytecodeScanningDetector
+        implements StatelessDetector {
     public static final int SEEN_NOTHING = 0;
 
     public static final int SEEN_CURRENTTHREAD = 1;
@@ -59,7 +58,8 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if (hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/lang/Thread"))) {
+        if (hasInterestingClass(
+                classContext.getJavaClass().getConstantPool(), Collections.singleton("java/lang/Thread"))) {
             super.visitClassContext(classContext);
         }
     }
@@ -84,10 +84,15 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
         }
         switch (state) {
         case SEEN_NOTHING:
-            if ((seen == Const.INVOKESTATIC) && "java/lang/Thread".equals(getClassConstantOperand())
-                    && "currentThread".equals(getNameConstantOperand()) && "()Ljava/lang/Thread;".equals(getSigConstantOperand())) {
+            if ((seen == Const.INVOKESTATIC)
+                    && "java/lang/Thread".equals(getClassConstantOperand())
+                    && "currentThread".equals(getNameConstantOperand())
+                    && "()Ljava/lang/Thread;".equals(getSigConstantOperand())) {
                 state = SEEN_CURRENTTHREAD;
-            } else if ((seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL)
+            } else if ((seen == Const.INVOKESTATIC
+                    || seen == Const.INVOKEINTERFACE
+                    || seen == Const.INVOKEVIRTUAL
+                    || seen == Const.INVOKESPECIAL)
                     && getSigConstantOperand().endsWith("Ljava/lang/Thread;")) {
                 state = SEEN_POSSIBLE_THREAD;
             } else if (seen == Const.ALOAD) {
@@ -102,7 +107,8 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
                 } else {
                     state = SEEN_POSSIBLE_THREAD;
                 }
-            } else if ((seen == Const.GETFIELD || seen == Const.GETSTATIC) && "Ljava/lang/Thread;".equals(getSigConstantOperand())) {
+            } else if ((seen == Const.GETFIELD || seen == Const.GETSTATIC)
+                    && "Ljava/lang/Thread;".equals(getSigConstantOperand())) {
                 state = SEEN_POSSIBLE_THREAD;
             }
             break;
@@ -122,14 +128,20 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
             break;
 
         default:
-            if ((seen == Const.INVOKESTATIC) && "java/lang/Thread".equals(getClassConstantOperand())
-                    && "interrupted".equals(getNameConstantOperand()) && "()Z".equals(getSigConstantOperand())) {
+            if ((seen == Const.INVOKESTATIC)
+                    && "java/lang/Thread".equals(getClassConstantOperand())
+                    && "interrupted".equals(getNameConstantOperand())
+                    && "()Z".equals(getSigConstantOperand())) {
                 if (state == SEEN_POP_AFTER_CURRENTTHREAD) {
-                    bugReporter.reportBug(new BugInstance(this, "STI_INTERRUPTED_ON_CURRENTTHREAD", LOW_PRIORITY)
-                            .addClassAndMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, "STI_INTERRUPTED_ON_CURRENTTHREAD", LOW_PRIORITY)
+                                    .addClassAndMethod(this)
+                                    .addSourceLine(this));
                 } else if (state == SEEN_UNKNOWNCONTEXT_POP) {
-                    bugReporter.reportBug(new BugInstance(this, "STI_INTERRUPTED_ON_UNKNOWNTHREAD", NORMAL_PRIORITY)
-                            .addClassAndMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, "STI_INTERRUPTED_ON_UNKNOWNTHREAD", NORMAL_PRIORITY)
+                                    .addClassAndMethod(this)
+                                    .addSourceLine(this));
                 }
             }
             state = SEEN_NOTHING;

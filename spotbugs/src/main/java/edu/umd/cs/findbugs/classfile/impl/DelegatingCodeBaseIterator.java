@@ -25,9 +25,8 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 
 /**
- * An implementation of ICodeBaseIterator that delegates to another codebase. In
- * particular, the codebase entries it creates are DelegatingCodeBaseEntry
- * objects.
+ * An implementation of ICodeBaseIterator that delegates to another codebase. In particular, the
+ * codebase entries it creates are DelegatingCodeBaseEntry objects.
  *
  * @author David Hovemeyer
  */
@@ -62,5 +61,4 @@ public class DelegatingCodeBaseIterator implements ICodeBaseIterator {
         ICodeBaseEntry delegateCodeBaseEntry = delegateCodeBaseIterator.next();
         return new DelegatingCodeBaseEntry(frontEndCodeBase, delegateCodeBaseEntry);
     }
-
 }

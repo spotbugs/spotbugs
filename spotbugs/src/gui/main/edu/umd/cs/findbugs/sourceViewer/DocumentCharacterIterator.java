@@ -20,14 +20,11 @@
 package edu.umd.cs.findbugs.sourceViewer;
 
 import java.text.CharacterIterator;
-
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Segment;
 
-/**
- * A CharacterIterator over a Document. Only a partial implementation.
- */
+/** A CharacterIterator over a Document. Only a partial implementation. */
 public class DocumentCharacterIterator implements CharacterIterator {
 
     private final Document doc;
@@ -89,11 +86,9 @@ public class DocumentCharacterIterator implements CharacterIterator {
     }
 
     /**
-     * Increments the iterator's index by one and returns the character at the
-     * new index.
+     * Increments the iterator's index by one and returns the character at the new index.
      *
-     * @return the character at the new position, or DONE if the new position is
-     *         off the end
+     * @return the character at the new position, or DONE if the new position is off the end
      */
     @Override
     public char next() {
@@ -119,5 +114,4 @@ public class DocumentCharacterIterator implements CharacterIterator {
     public char setIndex(int position) {
         throw new UnsupportedOperationException();
     }
-
 }

@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InvokeInstruction;
-
 import edu.umd.cs.findbugs.ba.ComparableMethod;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
+import org.apache.bcel.generic.InvokeInstruction;
 
 /**
  * Descriptor uniquely identifying a method in a class.
@@ -37,26 +36,31 @@ public class MethodDescriptor extends FieldOrMethodDescriptor implements Compara
     /**
      * Constructor.
      *
-     * @param className
-     *            name of the class containing the method, in VM format (e.g.,
-     *            "java/lang/String")
-     * @param methodName
-     *            name of the method
-     * @param methodSignature
-     *            signature of the method
-     * @param isStatic
-     *            true if method is static, false otherwise
+     * @param className name of the class containing the method, in VM format (e.g.,
+     *     "java/lang/String")
+     * @param methodName name of the method
+     * @param methodSignature signature of the method
+     * @param isStatic true if method is static, false otherwise
      */
-    public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, boolean isStatic) {
+    public MethodDescriptor(
+            @SlashedClassName String className,
+            String methodName,
+            String methodSignature,
+            boolean isStatic) {
         super(className, methodName, methodSignature, isStatic);
     }
 
-    public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature) {
+    public MethodDescriptor(
+            @SlashedClassName String className, String methodName, String methodSignature) {
         super(className, methodName, methodSignature, false);
     }
 
     public MethodDescriptor(InvokeInstruction iins, ConstantPoolGen cpg) {
-        super(ClassName.toSlashedClassName(iins.getClassName(cpg)), iins.getMethodName(cpg), iins.getSignature(cpg), iins instanceof INVOKESTATIC);
+        super(
+                ClassName.toSlashedClassName(iins.getClassName(cpg)),
+                iins.getMethodName(cpg),
+                iins.getSignature(cpg),
+                iins instanceof INVOKESTATIC);
     }
 
     @Override

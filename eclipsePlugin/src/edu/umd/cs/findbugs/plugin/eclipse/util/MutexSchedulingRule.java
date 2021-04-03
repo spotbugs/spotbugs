@@ -23,11 +23,10 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 /**
  * A complicated scheduling rule for mutually exclusivity, derived from:
- * http://help.eclipse.org/help30/topic/org.eclipse.platform.doc.isv/guide/
- * runtime_jobs_rules.htm
+ * http://help.eclipse.org/help30/topic/org.eclipse.platform.doc.isv/guide/ runtime_jobs_rules.htm
  *
- * This rule takes the available cores into account and also allows to run
- * FB independently on different resources (if there are enough cores available)
+ * <p>This rule takes the available cores into account and also allows to run FB independently on
+ * different resources (if there are enough cores available)
  */
 public class MutexSchedulingRule implements ISchedulingRule {
 
@@ -67,5 +66,4 @@ public class MutexSchedulingRule implements ISchedulingRule {
     public String toString() {
         return "MutexSchedulingRule, resource: " + resource;
     }
-
 }

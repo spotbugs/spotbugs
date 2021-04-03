@@ -18,9 +18,8 @@
  */
 package de.tobject.findbugs.properties;
 
-import org.eclipse.core.runtime.IStatus;
-
 import edu.umd.cs.findbugs.Plugin;
+import org.eclipse.core.runtime.IStatus;
 
 public class PluginElement implements IPathElement {
 
@@ -41,7 +40,12 @@ public class PluginElement implements IPathElement {
         if (eclipsePlugin) {
             string = "(Eclipse) ";
         }
-        string += plugin.getShortDescription() + " [" + plugin.getPluginId() + "]" + (isEnabled() ? "" : " (disabled)");
+        string +=
+                plugin.getShortDescription()
+                        + " ["
+                        + plugin.getPluginId()
+                        + "]"
+                        + (isEnabled() ? "" : " (disabled)");
         return string;
     }
 
@@ -56,7 +60,8 @@ public class PluginElement implements IPathElement {
             return true;
         }
         if (obj instanceof PluginElement) {
-            return plugin.equals(((PluginElement) obj).plugin) && enabled == ((PluginElement) obj).enabled;
+            return plugin.equals(((PluginElement) obj).plugin)
+                    && enabled == ((PluginElement) obj).enabled;
         }
         return false;
     }
@@ -66,17 +71,13 @@ public class PluginElement implements IPathElement {
         return plugin.hashCode();
     }
 
-    /**
-     * @return the enabled
-     */
+    /** @return the enabled */
     @Override
     public boolean isEnabled() {
         return enabled;
     }
 
-    /**
-     * @param enabled the enabled to set
-     */
+    /** @param enabled the enabled to set */
     @Override
     public void setEnabled(boolean enabled) {
         if (plugin.isCorePlugin() || (!enabled && plugin.cannotDisable())) {

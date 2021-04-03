@@ -19,8 +19,8 @@
 
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.builder.WorkItem;
 import java.util.Arrays;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
@@ -29,8 +29,6 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
-
-import de.tobject.findbugs.builder.WorkItem;
 
 /**
  * Remove all bug markers for the currently selected editor.
@@ -62,8 +60,8 @@ public class ClearMarkersEditorAction implements IEditorActionDelegate {
             Job job = new ClearMarkersJob(file, Arrays.asList(new WorkItem[] { new WorkItem(file) }));
             job.setUser(true);
             job.setPriority(Job.INTERACTIVE);
-            IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) currentEditor.getEditorSite().getService(
-                    IWorkbenchSiteProgressService.class);
+            IWorkbenchSiteProgressService service =
+                    (IWorkbenchSiteProgressService) currentEditor.getEditorSite().getService(IWorkbenchSiteProgressService.class);
             service.schedule(job);
         }
     }

@@ -26,34 +26,22 @@ package edu.umd.cs.findbugs;
  * @see Tokenizer
  */
 public class Token {
-    /**
-     * End of file.
-     */
+    /** End of file. */
     public static final int EOF = -1;
 
-    /**
-     * End of line.
-     */
+    /** End of line. */
     public static final int EOL = -2;
 
-    /**
-     * An ordinary word, number, etc.
-     */
+    /** An ordinary word, number, etc. */
     public static final int WORD = 0;
 
-    /**
-     * A string or character literal.
-     */
+    /** A string or character literal. */
     public static final int STRING = 1;
 
-    /**
-     * A single character token.
-     */
+    /** A single character token. */
     public static final int SINGLE = 2;
 
-    /**
-     * A comment.
-     */
+    /** A comment. */
     public static final int COMMENT = 3;
 
     private final int kind;
@@ -63,10 +51,8 @@ public class Token {
     /**
      * Constructor.
      *
-     * @param kind
-     *            the kind of token
-     * @param lexeme
-     *            the text value of the token
+     * @param kind the kind of token
+     * @param lexeme the text value of the token
      */
     public Token(int kind, String lexeme) {
         this.kind = kind;
@@ -76,24 +62,19 @@ public class Token {
     /**
      * Constructor when there is no text. E.g., EOF and EOL.
      *
-     * @param kind
-     *            the kind of token
+     * @param kind the kind of token
      */
     public Token(int kind) {
         this.kind = kind;
         this.lexeme = "";
     }
 
-    /**
-     * Get the kind of token.
-     */
+    /** Get the kind of token. */
     public int getKind() {
         return kind;
     }
 
-    /**
-     * Get the text value of the token.
-     */
+    /** Get the text value of the token. */
     public String getLexeme() {
         return lexeme;
     }

@@ -26,8 +26,9 @@ import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDe
 import static org.eclipse.jdt.core.dom.Modifier.ModifierKeyword.PROTECTED_KEYWORD;
 import static org.eclipse.jdt.core.dom.Modifier.ModifierKeyword.PUBLIC_KEYWORD;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 import java.util.List;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -36,17 +37,14 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
-
 /**
- * Methods that should be accessed only by the class itself or by direct
- * subclasses should have <CODE>protected</CODE> access, not <CODE>public</CODE>
- * . The class <CODE>ChangePublicToProtectedResolution</CODE> replaces the
- * modifier of such methods by the modifier <CODE>protected</CODE>.
+ * Methods that should be accessed only by the class itself or by direct subclasses should have
+ * <CODE>protected</CODE> access, not <CODE>public</CODE> . The class <CODE>
+ * ChangePublicToProtectedResolution</CODE> replaces the modifier of such methods by the modifier
+ * <CODE>protected</CODE>.
  *
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_PUBLIC_SHOULD_BE_PROTECTED">FI_PUBLIC_SHOULD_BE_PROTECTED</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_PUBLIC_SHOULD_BE_PROTECTED">FI_PUBLIC_SHOULD_BE_PROTECTED</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @version 1.0
@@ -54,7 +52,8 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
 public class ChangePublicToProtectedResolution extends BugResolution {
 
     @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
+            throws BugResolutionException {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(workingUnit);
         Assert.isNotNull(bug);
@@ -77,7 +76,6 @@ public class ChangePublicToProtectedResolution extends BugResolution {
                     return mdf;
                 }
             }
-
         }
         return null;
     }
@@ -86,5 +84,4 @@ public class ChangePublicToProtectedResolution extends BugResolution {
     protected boolean resolveBindings() {
         return true;
     }
-
 }

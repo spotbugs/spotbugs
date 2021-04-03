@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.util.Util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,20 +29,15 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.util.Util;
-
 /**
- * Global information about the source code for an application. Currently, this
- * object contains a map of source line information for fields and classes
- * (items we don't get line number information for directly in classfiles), and
- * also source line information for methods that don't appear directly in
- * classfiles, such as abstract and native methods.
+ * Global information about the source code for an application. Currently, this object contains a
+ * map of source line information for fields and classes (items we don't get line number information
+ * for directly in classfiles), and also source line information for methods that don't appear
+ * directly in classfiles, such as abstract and native methods.
  *
  * @author David Hovemeyer
  */
@@ -155,20 +152,17 @@ public class SourceInfoMap {
                 return false;
             }
             MethodDescriptor other = (MethodDescriptor) obj;
-            return className.equals(other.className) && methodName.equals(other.methodName)
+            return className.equals(other.className)
+                    && methodName.equals(other.methodName)
                     && methodSignature.equals(other.methodSignature);
         }
     }
 
-    /**
-     * A range of source lines.
-     */
+    /** A range of source lines. */
     public static class SourceLineRange {
         private final Integer start, end;
 
-        /**
-         * Constructor for a single line.
-         */
+        /** Constructor for a single line. */
         public SourceLineRange(@Nonnull Integer line) {
             this.start = this.end = line;
         }
@@ -176,26 +170,20 @@ public class SourceInfoMap {
         /**
          * Constructor for a range of lines.
          *
-         * @param start
-         *            start line in range
-         * @param end
-         *            end line in range
+         * @param start start line in range
+         * @param end end line in range
          */
         public SourceLineRange(@Nonnull Integer start, @Nonnull Integer end) {
             this.start = start;
             this.end = end;
         }
 
-        /**
-         * @return Returns the start.
-         */
+        /** @return Returns the start. */
         public @Nonnull Integer getStart() {
             return start;
         }
 
-        /**
-         * @return Returns the end.
-         */
+        /** @return Returns the end. */
         public @Nonnull Integer getEnd() {
             return end;
         }
@@ -227,9 +215,7 @@ public class SourceInfoMap {
         return fieldLineMap.isEmpty() && methodLineMap.isEmpty() && classLineMap.isEmpty();
     }
 
-    /**
-     * Constructor. Creates an empty object.
-     */
+    /** Constructor. Creates an empty object. */
     public SourceInfoMap() {
         this.fieldLineMap = new HashMap<>();
         this.methodLineMap = new HashMap<>();
@@ -239,12 +225,9 @@ public class SourceInfoMap {
     /**
      * Add a line number entry for a field.
      *
-     * @param className
-     *            name of class containing the field
-     * @param fieldName
-     *            name of field
-     * @param range
-     *            the line number(s) of the field
+     * @param className name of class containing the field
+     * @param fieldName name of field
+     * @param range the line number(s) of the field
      */
     public void addFieldLine(String className, String fieldName, SourceLineRange range) {
         fieldLineMap.put(new FieldDescriptor(className, fieldName), range);
@@ -253,26 +236,21 @@ public class SourceInfoMap {
     /**
      * Add a line number entry for a method.
      *
-     * @param className
-     *            name of class containing the method
-     * @param methodName
-     *            name of method
-     * @param methodSignature
-     *            signature of method
-     * @param range
-     *            the line number of the method
+     * @param className name of class containing the method
+     * @param methodName name of method
+     * @param methodSignature signature of method
+     * @param range the line number of the method
      */
-    public void addMethodLine(String className, String methodName, String methodSignature, SourceLineRange range) {
+    public void addMethodLine(
+            String className, String methodName, String methodSignature, SourceLineRange range) {
         methodLineMap.put(new MethodDescriptor(className, methodName, methodSignature), range);
     }
 
     /**
      * Add line number entry for a class.
      *
-     * @param className
-     *            name of class
-     * @param range
-     *            the line numbers of the class
+     * @param className name of class
+     * @param range the line numbers of the class
      */
     public void addClassLine(String className, SourceLineRange range) {
         classLineMap.put(className, range);
@@ -281,12 +259,9 @@ public class SourceInfoMap {
     /**
      * Look up the line number range for a field.
      *
-     * @param className
-     *            name of class containing the field
-     * @param fieldName
-     *            name of field
-     * @return the line number range, or null if no line number is known for the
-     *         field
+     * @param className name of class containing the field
+     * @param fieldName name of field
+     * @return the line number range, or null if no line number is known for the field
      */
     public @CheckForNull SourceLineRange getFieldLine(String className, String fieldName) {
         return fieldLineMap.get(new FieldDescriptor(className, fieldName));
@@ -295,26 +270,21 @@ public class SourceInfoMap {
     /**
      * Look up the line number range for a method.
      *
-     * @param className
-     *            name of class containing the method
-     * @param methodName
-     *            name of method
-     * @param methodSignature
-     *            signature of method
-     * @return the line number range, or null if no line number is known for the
-     *         method
+     * @param className name of class containing the method
+     * @param methodName name of method
+     * @param methodSignature signature of method
+     * @return the line number range, or null if no line number is known for the method
      */
-    public @CheckForNull SourceLineRange getMethodLine(String className, String methodName, String methodSignature) {
+    public @CheckForNull SourceLineRange getMethodLine(
+            String className, String methodName, String methodSignature) {
         return methodLineMap.get(new MethodDescriptor(className, methodName, methodSignature));
     }
 
     /**
      * Look up the line number range for a class.
      *
-     * @param className
-     *            name of the class
-     * @return the line number range, or null if no line number is known for the
-     *         class
+     * @param className name of the class
+     * @return the line number range, or null if no line number is known for the class
      */
     public @CheckForNull SourceLineRange getClassLine(String className) {
         return classLineMap.get(className);
@@ -323,13 +293,10 @@ public class SourceInfoMap {
     private static final Pattern DIGITS = Pattern.compile("^[0-9]+$");
 
     /**
-     * Read source info from given InputStream. The stream is guaranteed to be
-     * closed.
+     * Read source info from given InputStream. The stream is guaranteed to be closed.
      *
-     * @param inputStream
-     *            the InputStream
-     * @throws IOException
-     *             if an I/O error occurs, or if the format is invalid
+     * @param inputStream the InputStream
+     * @throws IOException if an I/O error occurs, or if the format is invalid
      */
     public void read(@WillClose InputStream inputStream) throws IOException {
         int lineNumber = 0;
@@ -412,15 +379,15 @@ public class SourceInfoMap {
     /**
      * Parse the sourceInfo version string.
      *
-     * @param line
-     *            the first line of the sourceInfo file
-     * @return the version number constant, or null if the line does not appear
-     *         to be a version string
+     * @param line the first line of the sourceInfo file
+     * @return the version number constant, or null if the line does not appear to be a version string
      */
     private static String parseVersionNumber(String line) {
         StringTokenizer tokenizer = new StringTokenizer(line, " \t");
 
-        if (!expect(tokenizer, "sourceInfo") || !expect(tokenizer, "version") || !tokenizer.hasMoreTokens()) {
+        if (!expect(tokenizer, "sourceInfo")
+                || !expect(tokenizer, "version")
+                || !tokenizer.hasMoreTokens()) {
             return null;
         }
 
@@ -428,13 +395,10 @@ public class SourceInfoMap {
     }
 
     /**
-     * Expect a particular token string to be returned by the given
-     * StringTokenizer.
+     * Expect a particular token string to be returned by the given StringTokenizer.
      *
-     * @param tokenizer
-     *            the StringTokenizer
-     * @param token
-     *            the expectedToken
+     * @param tokenizer the StringTokenizer
+     * @param token the expectedToken
      * @return true if the expected token was returned, false if not
      */
     private static boolean expect(StringTokenizer tokenizer, String token) {

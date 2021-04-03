@@ -26,6 +26,11 @@
 
 package edu.umd.cs.findbugs.config;
 
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.IFindBugsEngine;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.SystemProperties;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -44,26 +49,17 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
 import javax.annotation.WillClose;
 
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.IFindBugsEngine;
-import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.SystemProperties;
-
 /**
- * User Preferences outside of any one Project. This consists of a class to
- * manage the findbugs.prop file found in the user.home.
+ * User Preferences outside of any one Project. This consists of a class to manage the findbugs.prop
+ * file found in the user.home.
  *
  * @author Dave Brosius
  */
 public class UserPreferences implements Cloneable {
 
-    /**
-     * Separator string for values composed from a string and boolean
-     */
+    /** Separator string for values composed from a string and boolean */
     private static final char BOOL_SEPARATOR = '|';
 
     public static final String EFFORT_MIN = "min";
@@ -72,9 +68,7 @@ public class UserPreferences implements Cloneable {
 
     public static final String EFFORT_MAX = "max";
 
-    /**
-     * Key prefix for custom plugins, full key consists of a prefix + plugin index starting with 0
-     */
+    /** Key prefix for custom plugins, full key consists of a prefix + plugin index starting with 0 */
     public static final String KEY_PLUGIN = "plugin";
 
     // Private constants
@@ -93,19 +87,13 @@ public class UserPreferences implements Cloneable {
 
     private static final String EFFORT_KEY = "effort";
 
-    /**
-     * Key prefix for custom filters, full key consists of a prefix + filter index starting with 0
-     */
+    /** Key prefix for custom filters, full key consists of a prefix + filter index starting with 0 */
     public static final String KEY_INCLUDE_FILTER = "includefilter";
 
-    /**
-     * Key prefix for custom filters, full key consists of a prefix + filter index starting with 0
-     */
+    /** Key prefix for custom filters, full key consists of a prefix + filter index starting with 0 */
     public static final String KEY_EXCLUDE_FILTER = "excludefilter";
 
-    /**
-     * Key prefix for custom filters, full key consists of a prefix + filter index starting with 0
-     */
+    /** Key prefix for custom filters, full key consists of a prefix + filter index starting with 0 */
     public static final String KEY_EXCLUDE_BUGS = "excludebugs";
 
     // Fields
@@ -149,10 +137,7 @@ public class UserPreferences implements Cloneable {
         return new UserPreferences();
     }
 
-    /**
-     * Read persistent global UserPreferences from file in the user's home
-     * directory.
-     */
+    /** Read persistent global UserPreferences from file in the user's home directory. */
     public void read() {
         File prefFile = new File(SystemProperties.getProperty("user.home"), PREF_FILE_NAME);
         if (!prefFile.exists() || !prefFile.isFile()) {
@@ -166,11 +151,10 @@ public class UserPreferences implements Cloneable {
     }
 
     /**
-     * Read user preferences from given input stream. The InputStream is
-     * guaranteed to be closed by this method.
+     * Read user preferences from given input stream. The InputStream is guaranteed to be closed by
+     * this method.
      *
-     * @param in
-     *            the InputStream
+     * @param in the InputStream
      * @throws IOException
      */
     public void read(@WillClose InputStream in) throws IOException {
@@ -188,8 +172,10 @@ public class UserPreferences implements Cloneable {
             if (e.getKey() instanceof String) {
                 String key = e.getKey().toString();
                 String value = e.getValue().toString();
-                prefixlessProperties.setProperty(key.replace("/instance/edu.umd.cs.findbugs.plugin.eclipse/", "")
-                        .replace("/instance/com.github.spotbugs.plugin.eclipse/", ""), value);
+                prefixlessProperties.setProperty(
+                        key.replace("/instance/edu.umd.cs.findbugs.plugin.eclipse/", "")
+                                .replace("/instance/com.github.spotbugs.plugin.eclipse/", ""),
+                        value);
             } else {
                 prefixlessProperties.put(e.getKey(), e.getValue());
             }
@@ -203,7 +189,6 @@ public class UserPreferences implements Cloneable {
                 recentProjectsList.add(projectName);
             }
         }
-
 
         for (Map.Entry<?, ?> e : props.entrySet()) {
 
@@ -223,7 +208,8 @@ public class UserPreferences implements Cloneable {
 
         if (props.get(FILTER_SETTINGS_KEY) != null) {
             // Properties contain encoded project filter settings.
-            filterSettings = ProjectFilterSettings.fromEncodedString(props.getProperty(FILTER_SETTINGS_KEY));
+            filterSettings =
+                    ProjectFilterSettings.fromEncodedString(props.getProperty(FILTER_SETTINGS_KEY));
         } else {
             // Properties contain only minimum warning priority threshold
             // (probably).
@@ -240,7 +226,8 @@ public class UserPreferences implements Cloneable {
         }
         if (props.get(FILTER_SETTINGS2_KEY) != null) {
             // populate the hidden bug categories in the project filter settings
-            ProjectFilterSettings.hiddenFromEncodedString(filterSettings, props.getProperty(FILTER_SETTINGS2_KEY));
+            ProjectFilterSettings.hiddenFromEncodedString(
+                    filterSettings, props.getProperty(FILTER_SETTINGS2_KEY));
         }
         if (props.get(RUN_AT_FULL_BUILD) != null) {
             runAtFullBuild = Boolean.parseBoolean(props.getProperty(RUN_AT_FULL_BUILD));
@@ -252,9 +239,7 @@ public class UserPreferences implements Cloneable {
         customPlugins = readProperties(props, KEY_PLUGIN);
     }
 
-    /**
-     * Write persistent global UserPreferences to file in user's home directory.
-     */
+    /** Write persistent global UserPreferences to file in user's home directory. */
     public void write() {
         try {
             File prefFile = new File(SystemProperties.getProperty("user.home"), PREF_FILE_NAME);
@@ -267,11 +252,10 @@ public class UserPreferences implements Cloneable {
     }
 
     /**
-     * Write UserPreferences to given OutputStream. The OutputStream is
-     * guaranteed to be closed by this method.
+     * Write UserPreferences to given OutputStream. The OutputStream is guaranteed to be closed by
+     * this method.
      *
-     * @param out
-     *            the OutputStream
+     * @param out the OutputStream
      * @throws IOException
      */
     public void write(@WillClose OutputStream out) throws IOException {
@@ -285,7 +269,9 @@ public class UserPreferences implements Cloneable {
         }
 
         for (Entry<String, Boolean> entry : detectorEnablementMap.entrySet()) {
-            props.put("detector" + entry.getKey(), entry.getKey() + BOOL_SEPARATOR + String.valueOf(entry.getValue().booleanValue()));
+            props.put(
+                    "detector" + entry.getKey(),
+                    entry.getKey() + BOOL_SEPARATOR + String.valueOf(entry.getValue().booleanValue()));
         }
 
         // Save ProjectFilterSettings
@@ -319,11 +305,9 @@ public class UserPreferences implements Cloneable {
     }
 
     /**
-     * Add given project filename to the front of the recently-used project
-     * list.
+     * Add given project filename to the front of the recently-used project list.
      *
-     * @param projectName
-     *            project filename
+     * @param projectName project filename
      */
     public void useProject(String projectName) {
         removeProject(projectName);
@@ -336,8 +320,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Remove project filename from the recently-used project list.
      *
-     * @param projectName
-     *            project filename
+     * @param projectName project filename
      */
     public void removeProject(String projectName) {
         // It should only be in list once (usually in slot 0) but check entire
@@ -350,11 +333,8 @@ public class UserPreferences implements Cloneable {
     /**
      * Set the enabled/disabled status of given Detector.
      *
-     * @param factory
-     *            the DetectorFactory for the Detector to be enabled/disabled
-     * @param enable
-     *            true if the Detector should be enabled, false if it should be
-     *            Disabled
+     * @param factory the DetectorFactory for the Detector to be enabled/disabled
+     * @param enable true if the Detector should be enabled, false if it should be Disabled
      */
     public void enableDetector(DetectorFactory factory, boolean enable) {
         detectorEnablementMap.put(factory.getShortName(), enable);
@@ -363,8 +343,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Get the enabled/disabled status of given Detector.
      *
-     * @param factory
-     *            the DetectorFactory of the Detector
+     * @param factory the DetectorFactory of the Detector
      * @return true if the Detector is enabled, false if not
      */
     public boolean isDetectorEnabled(DetectorFactory factory) {
@@ -378,9 +357,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Enable or disable all known Detectors.
      *
-     * @param enable
-     *            true if all detectors should be enabled, false if they should
-     *            all be disabled
+     * @param enable true if all detectors should be enabled, false if they should all be disabled
      */
     public void enableAllDetectors(boolean enable) {
         detectorEnablementMap.clear();
@@ -396,8 +373,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Set the ProjectFilterSettings.
      *
-     * @param filterSettings
-     *            the ProjectFilterSettings
+     * @param filterSettings the ProjectFilterSettings
      */
     public void setProjectFilterSettings(ProjectFilterSettings filterSettings) {
         this.filterSettings = filterSettings;
@@ -424,8 +400,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Set the detector threshold (min severity to report a warning).
      *
-     * @param threshold
-     *            the detector threshold
+     * @param threshold the detector threshold
      */
     public void setUserDetectorThreshold(int threshold) {
         String minPriority = ProjectFilterSettings.getIntPriorityAsString(threshold);
@@ -433,12 +408,10 @@ public class UserPreferences implements Cloneable {
     }
 
     /**
-     * Set the enabled/disabled status of running findbugs automatically for
-     * full builds.
+     * Set the enabled/disabled status of running findbugs automatically for full builds.
      *
-     * @param enable
-     *            true if running FindBugs at full builds should be enabled,
-     *            false if it should be Disabled
+     * @param enable true if running FindBugs at full builds should be enabled, false if it should be
+     *     Disabled
      */
     public void setRunAtFullBuild(boolean enable) {
         this.runAtFullBuild = enable;
@@ -456,8 +429,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Set the detector threshold (min severity to report a warning).
      *
-     * @param threshold
-     *            the detector threshold
+     * @param threshold the detector threshold
      */
     public void setUserDetectorThreshold(String threshold) {
         filterSettings.setMinPriority(threshold);
@@ -471,17 +443,26 @@ public class UserPreferences implements Cloneable {
 
         UserPreferences other = (UserPreferences) obj;
 
-        return runAtFullBuild == other.runAtFullBuild && recentProjectsList.equals(other.recentProjectsList)
-                && detectorEnablementMap.equals(other.detectorEnablementMap) && filterSettings.equals(other.filterSettings)
-                && effort.equals(other.effort) && includeFilterFiles.equals(other.includeFilterFiles)
-                && excludeFilterFiles.equals(other.excludeFilterFiles) && excludeBugsFiles.equals(other.excludeBugsFiles)
+        return runAtFullBuild == other.runAtFullBuild
+                && recentProjectsList.equals(other.recentProjectsList)
+                && detectorEnablementMap.equals(other.detectorEnablementMap)
+                && filterSettings.equals(other.filterSettings)
+                && effort.equals(other.effort)
+                && includeFilterFiles.equals(other.includeFilterFiles)
+                && excludeFilterFiles.equals(other.excludeFilterFiles)
+                && excludeBugsFiles.equals(other.excludeBugsFiles)
                 && customPlugins.equals(other.customPlugins);
     }
 
     @Override
     public int hashCode() {
-        return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
-                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0);
+        return recentProjectsList.hashCode()
+                + detectorEnablementMap.hashCode()
+                + filterSettings.hashCode()
+                + effort.hashCode()
+                + includeFilterFiles.hashCode()
+                + excludeFilterFiles.hashCode()
+                + (runAtFullBuild ? 1 : 0);
     }
 
     @Override
@@ -507,11 +488,12 @@ public class UserPreferences implements Cloneable {
     }
 
     public void setEffort(String effort) {
-        if (!EFFORT_MIN.equals(effort) && !EFFORT_DEFAULT.equals(effort) && !EFFORT_MAX.equals(effort)) {
+        if (!EFFORT_MIN.equals(effort)
+                && !EFFORT_DEFAULT.equals(effort)
+                && !EFFORT_MAX.equals(effort)) {
             throw new IllegalArgumentException("Effort \"" + effort + "\" is not a valid effort value.");
         }
         this.effort = effort;
-
     }
 
     public Map<String, Boolean> getIncludeFilterFiles() {
@@ -548,13 +530,12 @@ public class UserPreferences implements Cloneable {
     }
 
     /**
-     * Additional plugins which could be used by {@link IFindBugsEngine} (if
-     * enabled), or which shouldn't be used (if disabled). If a plugin is not
-     * included in the set, it's enablement depends on it's default settings.
+     * Additional plugins which could be used by {@link IFindBugsEngine} (if enabled), or which
+     * shouldn't be used (if disabled). If a plugin is not included in the set, it's enablement
+     * depends on it's default settings.
      *
-     * @param customPlugins
-     *            map with additional third party plugin locations (as absolute
-     *            paths), never null, but might be empty
+     * @param customPlugins map with additional third party plugin locations (as absolute paths),
+     *     never null, but might be empty
      * @see Plugin#isCorePlugin()
      * @see Plugin#isGloballyEnabled()
      */
@@ -566,16 +547,14 @@ public class UserPreferences implements Cloneable {
     }
 
     /**
-     * Additional plugins which could be used by {@link IFindBugsEngine} (if
-     * enabled), or which shouldn't be used (if disabled). If a plugin is not
-     * included in the set, it's enablement depends on it's default settings.
+     * Additional plugins which could be used by {@link IFindBugsEngine} (if enabled), or which
+     * shouldn't be used (if disabled). If a plugin is not included in the set, it's enablement
+     * depends on it's default settings.
      *
-     * @return map with additional third party plugins, might be empty, never
-     *         null. The keys are either absolute plugin paths or plugin id's.
-     *         <b>Special case</b>: if the path consists of one path segment
-     *         then it represents the plugin id for a plugin to be
-     *         <b>disabled</b>. A value of a particular key can be null (same as
-     *         disabled)
+     * @return map with additional third party plugins, might be empty, never null. The keys are
+     *     either absolute plugin paths or plugin id's. <b>Special case</b>: if the path consists of
+     *     one path segment then it represents the plugin id for a plugin to be <b>disabled</b>. A
+     *     value of a particular key can be null (same as disabled)
      * @see Plugin#isCorePlugin()
      * @see Plugin#isGloballyEnabled()
      */
@@ -584,15 +563,13 @@ public class UserPreferences implements Cloneable {
     }
 
     /**
-     * Additional plugins which could be used or shouldn't be used (depending on
-     * given argument) by {@link IFindBugsEngine}. If a plugin is not included
-     * in the set, it's enablement depends on it's default settings.
+     * Additional plugins which could be used or shouldn't be used (depending on given argument) by
+     * {@link IFindBugsEngine}. If a plugin is not included in the set, it's enablement depends on
+     * it's default settings.
      *
-     * @return set with additional third party plugins, might be empty, never
-     *         null. The elements are either absolute plugin paths or plugin id's.
-     *         <b>Special case</b>: if the path consists of one path segment
-     *         then it represents the plugin id for a plugin to be
-     *         <b>disabled</b>.
+     * @return set with additional third party plugins, might be empty, never null. The elements are
+     *     either absolute plugin paths or plugin id's. <b>Special case</b>: if the path consists of
+     *     one path segment then it represents the plugin id for a plugin to be <b>disabled</b>.
      * @see Plugin#isCorePlugin()
      * @see Plugin#isGloballyEnabled()
      */
@@ -613,15 +590,12 @@ public class UserPreferences implements Cloneable {
         return result;
     }
 
-
     /**
-     * Helper method to read array of strings out of the properties file, using
-     * a Findbugs style format.
+     * Helper method to read array of strings out of the properties file, using a Findbugs style
+     * format.
      *
-     * @param props
-     *            The properties file to read the array from.
-     * @param keyPrefix
-     *            The key prefix of the array.
+     * @param props The properties file to read the array from.
+     * @param keyPrefix The key prefix of the array.
      * @return The array of Strings, or an empty array if no values exist.
      */
     private static Map<String, Boolean> readProperties(Properties props, String keyPrefix) {
@@ -649,17 +623,15 @@ public class UserPreferences implements Cloneable {
     }
 
     /**
-     * Helper method to write array of strings out of the properties file, using
-     * a Findbugs style format.
+     * Helper method to write array of strings out of the properties file, using a Findbugs style
+     * format.
      *
-     * @param props
-     *            The properties file to write the array to.
-     * @param keyPrefix
-     *            The key prefix of the array.
-     * @param filters
-     *            The filters array to write to the properties.
+     * @param props The properties file to write the array to.
+     * @param keyPrefix The key prefix of the array.
+     * @param filters The filters array to write to the properties.
      */
-    private static void writeProperties(Properties props, String keyPrefix, Map<String, Boolean> filters) {
+    private static void writeProperties(
+            Properties props, String keyPrefix, Map<String, Boolean> filters) {
         int counter = 0;
         Set<Entry<String, Boolean>> entrySet = filters.entrySet();
         for (Entry<String, Boolean> entry : entrySet) {
@@ -680,11 +652,9 @@ public class UserPreferences implements Cloneable {
     }
 
     /**
-     * Returns the effort level as an array of feature settings as expected by
-     * FindBugs.
+     * Returns the effort level as an array of feature settings as expected by FindBugs.
      *
-     * @return The array of feature settings corresponding to the current effort
-     *         setting.
+     * @return The array of feature settings corresponding to the current effort setting.
      */
     public AnalysisFeatureSetting[] getAnalysisFeatureSettings() {
         if (EFFORT_DEFAULT.equals(effort)) {

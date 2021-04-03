@@ -19,19 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -49,6 +36,17 @@ import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Iterator;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 public final class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
     private final BugReporter bugReporter;
@@ -100,7 +98,8 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
 
         MethodGen methodGen = classContext.getMethodGen(method);
         if (methodGen == null) {
@@ -125,7 +124,8 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
             String methodName = inv.getName(cpg);
             String methodSig = inv.getSignature(cpg);
 
-            if (Hierarchy.isMonitorWait(methodName, methodSig) || Hierarchy.isMonitorNotify(methodName, methodSig)) {
+            if (Hierarchy.isMonitorWait(methodName, methodSig)
+                    || Hierarchy.isMonitorNotify(methodName, methodSig)) {
                 int numConsumed = inv.consumeStack(cpg);
                 if (numConsumed == Const.UNPREDICTABLE) {
                     throw new DataflowAnalysisException("Unpredictable stack consumption", methodGen, handle);
@@ -155,7 +155,8 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
 
                     if (!foundMatch) {
 
-                        String type = "wait".equals(methodName) ? "MWN_MISMATCHED_WAIT" : "MWN_MISMATCHED_NOTIFY";
+                        String type =
+                                "wait".equals(methodName) ? "MWN_MISMATCHED_WAIT" : "MWN_MISMATCHED_NOTIFY";
                         String sourceFile = classContext.getJavaClass().getSourceFileName();
                         // Report as medium priority only if the method is
                         // public.
@@ -165,7 +166,8 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
 
                         bugAccumulator.accumulateBug(
                                 new BugInstance(this, type, priority).addClassAndMethod(methodGen, sourceFile),
-                                SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
+                                SourceLineAnnotation.fromVisitedInstruction(
+                                        classContext, methodGen, sourceFile, handle));
                     }
                 }
             }

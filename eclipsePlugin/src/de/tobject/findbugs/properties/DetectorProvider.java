@@ -18,6 +18,12 @@
  */
 package de.tobject.findbugs.properties;
 
+import de.tobject.findbugs.DetectorsExtensionHelper;
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.builder.FindBugsWorker;
+import de.tobject.findbugs.properties.DetectorValidator.ValidationStatus;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,20 +32,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.widgets.FileDialog;
-
-import de.tobject.findbugs.DetectorsExtensionHelper;
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.builder.FindBugsWorker;
-import de.tobject.findbugs.properties.DetectorValidator.ValidationStatus;
-import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.config.UserPreferences;
 
 public class DetectorProvider extends PathsProvider {
 
@@ -49,15 +47,14 @@ public class DetectorProvider extends PathsProvider {
     }
 
     /**
-     * The complexity of the code below is partly caused by the fact that we
-     * might have multiple ways to install and/or enable custom plugins. There
-     * are plugins discovered by FB itself, plugins contributed to Eclipse and
-     * plugins added by user manually via properties. Plugins can be disabled
-     * via code or properties. The code below is still work in progress, see
-     * also {@link FindbugsPlugin#applyCustomDetectors(boolean)}.
+     * The complexity of the code below is partly caused by the fact that we might have multiple ways
+     * to install and/or enable custom plugins. There are plugins discovered by FB itself, plugins
+     * contributed to Eclipse and plugins added by user manually via properties. Plugins can be
+     * disabled via code or properties. The code below is still work in progress, see also {@link
+     * FindbugsPlugin#applyCustomDetectors(boolean)}.
      *
-     * @return a list with all known plugin paths known by FindBugs (they must
-     *         neither be valid nor exists).
+     * @return a list with all known plugin paths known by FindBugs (they must neither be valid nor
+     *     exists).
      */
     public static List<IPathElement> getPluginElements(UserPreferences userPreferences) {
         DetectorValidator validator = new DetectorValidator();
@@ -103,7 +100,8 @@ public class DetectorProvider extends PathsProvider {
         Map<URI, Plugin> allPlugins = Plugin.getAllPluginsMap();
 
         // List of plugins contributed by Eclipse
-        SortedMap<String, String> contributedDetectors = DetectorsExtensionHelper.getContributedDetectors();
+        SortedMap<String, String> contributedDetectors =
+                DetectorsExtensionHelper.getContributedDetectors();
         for (Entry<String, String> entry : contributedDetectors.entrySet()) {
             String pluginId = entry.getKey();
             URI uri = new Path(entry.getValue()).toFile().toURI();
@@ -129,8 +127,7 @@ public class DetectorProvider extends PathsProvider {
     }
 
     /**
-     * Eclipse plugin can be disabled ONLY by user, so it must NOT be in the
-     * list of loaded plugins
+     * Eclipse plugin can be disabled ONLY by user, so it must NOT be in the list of loaded plugins
      */
     static boolean isEclipsePluginDisabled(String pluginId, Map<URI, Plugin> allPlugins) {
         for (Plugin plugin : allPlugins.values()) {

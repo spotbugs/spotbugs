@@ -22,18 +22,16 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 class ValidatorClassLoader extends ClassLoader {
 
     static {
         if (TypeQualifierValue.DEBUG_CLASSLOADING) {
             new RuntimeException("Initialising ValidatorClassLoader").printStackTrace();
         }
-
     }
-    final static ValidatorClassLoader INSTANCE = new ValidatorClassLoader();
+
+    static final ValidatorClassLoader INSTANCE = new ValidatorClassLoader();
 
     ValidatorClassLoader() {
         super(ClassLoader.getSystemClassLoader().getParent());
@@ -43,8 +41,7 @@ class ValidatorClassLoader extends ClassLoader {
     }
 
     @Override
-    protected Class<?> loadClass(String name, boolean resolve)
-            throws ClassNotFoundException {
+    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 
         if (TypeQualifierValue.DEBUG_CLASSLOADING) {
             if (resolve) {
@@ -83,7 +80,6 @@ class ValidatorClassLoader extends ClassLoader {
         }
     }
 
-
     private Class<?> findClass(@DottedClassName String name, byte[] b) {
         try {
             if (TypeQualifierValue.DEBUG_CLASSLOADING) {
@@ -99,10 +95,5 @@ class ValidatorClassLoader extends ClassLoader {
             e.printStackTrace();
             throw e;
         }
-
-
     }
-
-
-
 }

@@ -20,9 +20,7 @@
 package edu.umd.cs.findbugs.xml;
 
 import java.io.IOException;
-
 import javax.annotation.Nonnull;
-
 
 /**
  * Quote metacharacters in a String.
@@ -38,10 +36,8 @@ public abstract class QuoteMetaCharacters {
     /**
      * Constructor.
      *
-     * @param text
-     *            the text in which we want to quote metacharacters
-     * @param map
-     *            the MetaCharacterMap
+     * @param text the text in which we want to quote metacharacters
+     * @param map the MetaCharacterMap
      */
     public QuoteMetaCharacters(@Nonnull String text, @Nonnull MetaCharacterMap map) {
         if (text == null) {
@@ -54,9 +50,7 @@ public abstract class QuoteMetaCharacters {
         this.map = map;
     }
 
-    /**
-     * Quote metacharacters in the text.
-     */
+    /** Quote metacharacters in the text. */
     public void process() throws IOException {
         int pos = 0;
         do {
@@ -73,11 +67,10 @@ public abstract class QuoteMetaCharacters {
     }
 
     /**
-     * Downcall method to emit literal text, in which any occurrences of the
-     * metacharacters are quoted.
+     * Downcall method to emit literal text, in which any occurrences of the metacharacters are
+     * quoted.
      *
-     * @param s
-     *            the literal text to emit
+     * @param s the literal text to emit
      */
     public abstract void emitLiteral(String s) throws IOException;
 

@@ -8,16 +8,14 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeThat;
 
+import edu.umd.cs.findbugs.AbstractIntegrationTest;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/408">#408</a>
@@ -48,5 +46,4 @@ public class Issue408Test extends AbstractIntegrationTest {
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().build();
         assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
     }
-
 }

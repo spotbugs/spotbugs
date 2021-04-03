@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.charsets.UserTextFile;
+import edu.umd.cs.findbugs.config.CommandLine;
+import edu.umd.cs.findbugs.util.DualKeyHashMap;
+import edu.umd.cs.findbugs.util.Util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -35,16 +41,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.charsets.UserTextFile;
-import edu.umd.cs.findbugs.config.CommandLine;
-import edu.umd.cs.findbugs.util.DualKeyHashMap;
-import edu.umd.cs.findbugs.util.Util;
-
-/**
- * @author William Pugh
- */
+/** @author William Pugh */
 public class CountClassVersions {
 
     public static List<String> readFromStandardInput() throws IOException {
@@ -74,7 +71,10 @@ public class CountClassVersions {
             addOption("-maxAge", "days", "maximum age in days (ignore jar files older than this");
             addOption("-inputFileList", "filename", "text file containing names of jar files");
 
-            addOption("-prefix", "class name prefix", "prefix of class names that should be analyzed e.g., edu.umd.cs.)");
+            addOption(
+                    "-prefix",
+                    "class name prefix",
+                    "prefix of class names that should be analyzed e.g., edu.umd.cs.)");
         }
 
         @Override
@@ -94,14 +94,17 @@ public class CountClassVersions {
                 throw new IllegalArgumentException("Unknown option : " + option);
             }
         }
-
     }
 
     public static void main(String args[]) throws Exception {
         FindBugs.setNoAnalysis();
         CountClassVersionsCommandLine commandLine = new CountClassVersionsCommandLine();
-        int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, "Usage: " + CountClassVersions.class.getName()
-                + " [options] [<jarFile>+] ");
+        int argCount =
+                commandLine.parse(
+                        args,
+                        0,
+                        Integer.MAX_VALUE,
+                        "Usage: " + CountClassVersions.class.getName() + " [options] [<jarFile>+] ");
 
         List<String> fileList;
 
@@ -119,7 +122,8 @@ public class CountClassVersions {
         for (String fInName : fileList) {
             File f = new File(fInName);
             if (f.lastModified() < commandLine.maxAge) {
-                System.err.println("Skipping " + fInName + ", too old (" + new Date(f.lastModified()) + ")");
+                System.err.println(
+                        "Skipping " + fInName + ", too old (" + new Date(f.lastModified()) + ")");
                 continue;
             }
             System.err.println("Opening " + f);
@@ -151,7 +155,6 @@ public class CountClassVersions {
                             break;
                         }
                         digest.update(buffer, 0, bytesRead);
-
                     }
                     String hash = new BigInteger(1, digest.digest()).toString(16);
                     map.put(name, hash, fInName);
@@ -166,7 +169,6 @@ public class CountClassVersions {
             if (values.size() > 1) {
                 System.out.println(values.size() + "\t" + s + "\t" + values.values());
             }
-
         }
     }
 }

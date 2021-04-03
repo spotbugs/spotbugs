@@ -19,20 +19,18 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
+import edu.umd.cs.findbugs.log.Profiler;
 import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipException;
 
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
-import edu.umd.cs.findbugs.log.Profiler;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class ZipCodeBaseFactory {
 
-    public static AbstractScannableCodeBase makeZipCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
+    public static AbstractScannableCodeBase makeZipCodeBase(
+            ICodeBaseLocator codeBaseLocator, File file) throws IOException {
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(ZipCodeBaseFactory.class);
         try {
@@ -44,7 +42,4 @@ public class ZipCodeBaseFactory {
             profiler.end(ZipCodeBaseFactory.class);
         }
     }
-
-
-
 }

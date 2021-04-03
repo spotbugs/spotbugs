@@ -20,12 +20,9 @@
 package edu.umd.cs.findbugs.filter;
 
 import java.util.Objects;
-
 import javax.annotation.CheckForNull;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class MemberMatcher {
 
     protected final NameMatch name;
@@ -48,7 +45,8 @@ public class MemberMatcher {
 
         if (name == null) {
             if (signature == null) {
-                throw new FilterException(this.getClass().getName() + " must have either name or signature attributes");
+                throw new FilterException(
+                        this.getClass().getName() + " must have either name or signature attributes");
             } else {
                 name = "~.*"; // any name
             }
@@ -57,7 +55,6 @@ public class MemberMatcher {
         this.name = new NameMatch(name);
         this.signature = new NameMatch(signature);
         this.role = role;
-
     }
 
     @Override
@@ -93,5 +90,4 @@ public class MemberMatcher {
         MemberMatcher other = (MemberMatcher) o;
         return name.equals(other.name) && Objects.equals(signature, other.signature);
     }
-
 }

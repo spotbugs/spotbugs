@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class BlockTypeDataflow extends Dataflow<BlockType, BlockTypeAnalysis> {
     public BlockTypeDataflow(CFG cfg, BlockTypeAnalysis analysis) {
         super(cfg, analysis);

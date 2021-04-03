@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-
-import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 
 /**
  * Utility methods for working with zip/jar archives.
@@ -33,11 +32,10 @@ import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
  */
 public class Archive {
 
-    /**
-     * File extensions that indicate an archive (zip, jar, or similar).
-     */
+    /** File extensions that indicate an archive (zip, jar, or similar). */
     @StaticConstant
     public static final Set<String> ARCHIVE_EXTENSION_SET;
+
     static {
         Set<String> extensions = new HashSet<>();
         extensions.add(".jar");
@@ -49,13 +47,10 @@ public class Archive {
     }
 
     /**
-     * Determine whether or not the given filename appears to identify a zip/jar
-     * archive.
+     * Determine whether or not the given filename appears to identify a zip/jar archive.
      *
-     * @param fileName
-     *            the filename
-     * @return true if the filename appears to identify an archive, false
-     *         otherwise
+     * @param fileName the filename
+     * @return true if the filename appears to identify an archive, false otherwise
      */
     public static boolean isArchiveFileName(String fileName) {
         String extension = getExtension(fileName);

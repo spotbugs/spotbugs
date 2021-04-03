@@ -33,10 +33,8 @@ public class Binding {
     /**
      * Constructor.
      *
-     * @param varName
-     *            the name of the variable
-     * @param variable
-     *            the variable
+     * @param varName the name of the variable
+     * @param variable the variable
      */
     public Binding(String varName, Variable variable) {
         if (variable == null) {
@@ -46,16 +44,12 @@ public class Binding {
         this.variable = variable;
     }
 
-    /**
-     * Get the variable name.
-     */
+    /** Get the variable name. */
     public String getVarName() {
         return varName;
     }
 
-    /**
-     * Get the variable of the variable.
-     */
+    /** Get the variable of the variable. */
     public Variable getVariable() {
         return variable;
     }

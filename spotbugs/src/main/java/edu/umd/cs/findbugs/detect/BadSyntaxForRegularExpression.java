@@ -20,15 +20,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.regex.Pattern;
-
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import java.util.regex.Pattern;
+import org.apache.bcel.Const;
 
 public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
 
@@ -40,7 +38,8 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
 
     private void singleDotPatternWouldBeSilly(int stackDepth, boolean ignorePasswordMasking) {
         if (ignorePasswordMasking && stackDepth != 1) {
-            throw new IllegalArgumentException("Password masking requires stack depth 1, but is " + stackDepth);
+            throw new IllegalArgumentException(
+                    "Password masking requires stack depth 1, but is " + stackDepth);
         }
         if (stack.getStackDepth() < stackDepth) {
             return;
@@ -62,8 +61,11 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             Object topValue = top.getConstant();
             if (topValue instanceof String) {
                 String replacementString = (String) topValue;
-                if ("x".equals(replacementString.toLowerCase()) || "-".equals(replacementString) || "*".equals(replacementString)
-                        || " ".equals(replacementString) || "\\*".equals(replacementString)) {
+                if ("x".equals(replacementString.toLowerCase())
+                        || "-".equals(replacementString)
+                        || "*".equals(replacementString)
+                        || " ".equals(replacementString)
+                        || "\\*".equals(replacementString)) {
                     return;
                 }
                 if (replacementString.length() == 1 && getMethodName().toLowerCase().indexOf("pass") >= 0) {
@@ -72,8 +74,11 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             }
         }
 
-        bugReporter.reportBug(new BugInstance(this, "RE_POSSIBLE_UNINTENDED_PATTERN", priority).addClassAndMethod(this)
-                .addCalledMethod(this).addSourceLine(this));
+        bugReporter.reportBug(
+                new BugInstance(this, "RE_POSSIBLE_UNINTENDED_PATTERN", priority)
+                        .addClassAndMethod(this)
+                        .addCalledMethod(this)
+                        .addSourceLine(this));
     }
 
     private void sawRegExPattern(int stackDepth) {
@@ -85,9 +90,13 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             return;
         }
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
-        if (it.getSpecialKind() == OpcodeStack.Item.FILE_SEPARATOR_STRING && (flags & Pattern.LITERAL) == 0) {
-            bugReporter.reportBug(new BugInstance(this, "RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION", HIGH_PRIORITY)
-                    .addClassAndMethod(this).addCalledMethod(this).addSourceLine(this));
+        if (it.getSpecialKind() == OpcodeStack.Item.FILE_SEPARATOR_STRING
+                && (flags & Pattern.LITERAL) == 0) {
+            bugReporter.reportBug(
+                    new BugInstance(this, "RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION", HIGH_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addCalledMethod(this)
+                            .addSourceLine(this));
             return;
         }
         Object value = it.getConstant();
@@ -103,9 +112,14 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             if (eol > 0) {
                 message = message.substring(0, eol);
             }
-            BugInstance bug = new BugInstance(this, "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION", HIGH_PRIORITY)
-                    .addClassAndMethod(this).addCalledMethod(this).addString(message).describe(StringAnnotation.ERROR_MSG_ROLE)
-                    .addString(regex).describe(StringAnnotation.REGEX_ROLE);
+            BugInstance bug =
+                    new BugInstance(this, "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION", HIGH_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addCalledMethod(this)
+                            .addString(message)
+                            .describe(StringAnnotation.ERROR_MSG_ROLE)
+                            .addString(regex)
+                            .describe(StringAnnotation.REGEX_ROLE);
             String options = getOptions(flags);
             if (options.length() > 0) {
                 bug.addString("Regex flags: " + options).describe(StringAnnotation.STRING_MESSAGE);
@@ -130,33 +144,41 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
-                && "compile".equals(getNameConstantOperand()) && getSigConstantOperand().startsWith("(Ljava/lang/String;I)")) {
+        if (seen == Const.INVOKESTATIC
+                && "java/util/regex/Pattern".equals(getClassConstantOperand())
+                && "compile".equals(getNameConstantOperand())
+                && getSigConstantOperand().startsWith("(Ljava/lang/String;I)")) {
             sawRegExPattern(1, getIntValue(0, 0));
-        } else if (seen == Const.INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
-                && "compile".equals(getNameConstantOperand()) && getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
+        } else if (seen == Const.INVOKESTATIC
+                && "java/util/regex/Pattern".equals(getClassConstantOperand())
+                && "compile".equals(getNameConstantOperand())
+                && getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
             sawRegExPattern(0);
-        } else if (seen == Const.INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKESTATIC
+                && "java/util/regex/Pattern".equals(getClassConstantOperand())
                 && "matches".equals(getNameConstantOperand())) {
             sawRegExPattern(1);
-        } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKEVIRTUAL
+                && "java/lang/String".equals(getClassConstantOperand())
                 && "replaceAll".equals(getNameConstantOperand())) {
             sawRegExPattern(1);
             singleDotPatternWouldBeSilly(1, true);
-        } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKEVIRTUAL
+                && "java/lang/String".equals(getClassConstantOperand())
                 && "replaceFirst".equals(getNameConstantOperand())) {
             sawRegExPattern(1);
             singleDotPatternWouldBeSilly(1, false);
-        } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKEVIRTUAL
+                && "java/lang/String".equals(getClassConstantOperand())
                 && "matches".equals(getNameConstantOperand())) {
             sawRegExPattern(0);
             singleDotPatternWouldBeSilly(0, false);
-        } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKEVIRTUAL
+                && "java/lang/String".equals(getClassConstantOperand())
                 && "split".equals(getNameConstantOperand())) {
             sawRegExPattern(0);
             singleDotPatternWouldBeSilly(0, false);
         }
-
     }
 
     static void appendOption(StringBuilder b, int flags, int mask, String name) {
@@ -167,7 +189,6 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             b.append(" | ");
         }
         b.append("Pattern." + name);
-
     }
 
     static String getOptions(int flags) {

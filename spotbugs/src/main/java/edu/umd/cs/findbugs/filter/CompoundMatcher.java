@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import edu.umd.cs.findbugs.xml.XMLOutput;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-
-import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public abstract class CompoundMatcher implements Matcher {
     protected LinkedHashSet<Matcher> children = new LinkedHashSet<>();

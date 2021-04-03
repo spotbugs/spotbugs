@@ -21,27 +21,22 @@
 
 package edu.umd.cs.findbugs.graph;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
- * Comparator to compare GraphVertex objects by their visitation times in a
- * search; for example, it could compare the finishing times produced by
- * DepthFirstSearch.
+ * Comparator to compare GraphVertex objects by their visitation times in a search; for example, it
+ * could compare the finishing times produced by DepthFirstSearch.
  */
-public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>> implements Comparator<VertexType>, Serializable {
+public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>>
+        implements Comparator<VertexType>, Serializable {
     private static final long serialVersionUID = 0L;
 
-    /**
-     * Compare in ascending order.
-     */
+    /** Compare in ascending order. */
     public static final int ASCENDING = 0;
 
-    /**
-     * Compare in descending order.
-     */
+    /** Compare in descending order. */
     public static final int DESCENDING = 1;
 
     private final int[] m_visitationTimeList;
@@ -51,10 +46,8 @@ public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>
     /**
      * Constructor.
      *
-     * @param visitationTimeList
-     *            array of visitation times indexed by vertex label
-     * @param direction
-     *            either ASCENDING or DESCENDING
+     * @param visitationTimeList array of visitation times indexed by vertex label
+     * @param direction either ASCENDING or DESCENDING
      */
     @SuppressFBWarnings("EI2")
     public VisitationTimeComparator(int[] visitationTimeList, int direction) {
@@ -77,5 +70,4 @@ public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>
             return f2 - f1;
         }
     }
-
 }

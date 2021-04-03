@@ -18,26 +18,24 @@
  */
 package edu.umd.cs.findbugs.ba.ch;
 
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.graph.AbstractGraph;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.graph.AbstractGraph;
-
 /**
- * Class representing the interprocedural call graph. Vertices represent
- * methods. Edges represent method calls.
+ * Class representing the interprocedural call graph. Vertices represent methods. Edges represent
+ * method calls.
  *
  * @author David Hovemeyer
  */
 @Deprecated
-public class InterproceduralCallGraph extends AbstractGraph<InterproceduralCallGraphEdge, InterproceduralCallGraphVertex> {
+public class InterproceduralCallGraph
+        extends AbstractGraph<InterproceduralCallGraphEdge, InterproceduralCallGraphVertex> {
 
     private final Map<MethodDescriptor, InterproceduralCallGraphVertex> methodDescToVertexMap;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public InterproceduralCallGraph() {
         this.methodDescToVertexMap = new HashMap<>();
     }
@@ -58,10 +56,9 @@ public class InterproceduralCallGraph extends AbstractGraph<InterproceduralCallG
     /**
      * Look up vertex corresponding to given method.
      *
-     * @param methodDesc
-     *            a MethodDescriptor specifying a method
-     * @return the InterproceduralCallGraphVertex representing that method, or
-     *         null if no such vertex exists
+     * @param methodDesc a MethodDescriptor specifying a method
+     * @return the InterproceduralCallGraphVertex representing that method, or null if no such vertex
+     *     exists
      */
     public InterproceduralCallGraphVertex lookupVertex(MethodDescriptor methodDesc) {
         return methodDescToVertexMap.get(methodDesc);
@@ -75,8 +72,8 @@ public class InterproceduralCallGraph extends AbstractGraph<InterproceduralCallG
      * .graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)
      */
     @Override
-    protected InterproceduralCallGraphEdge allocateEdge(InterproceduralCallGraphVertex source,
-            InterproceduralCallGraphVertex target) {
+    protected InterproceduralCallGraphEdge allocateEdge(
+            InterproceduralCallGraphVertex source, InterproceduralCallGraphVertex target) {
         return new InterproceduralCallGraphEdge(source, target);
     }
 }

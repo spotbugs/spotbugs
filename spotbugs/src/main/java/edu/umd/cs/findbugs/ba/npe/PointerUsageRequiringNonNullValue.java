@@ -19,15 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import javax.annotation.CheckForNull;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public abstract class PointerUsageRequiringNonNullValue {
 
     public abstract String getDescription();
@@ -53,41 +50,44 @@ public abstract class PointerUsageRequiringNonNullValue {
         return null;
     }
 
-    private static final PointerUsageRequiringNonNullValue instance = new PointerUsageRequiringNonNullValue() {
-        @Override
-        public boolean isDirect() {
-            return true;
-        }
+    private static final PointerUsageRequiringNonNullValue instance =
+            new PointerUsageRequiringNonNullValue() {
+                @Override
+                public boolean isDirect() {
+                    return true;
+                }
 
-        @Override
-        public String getDescription() {
-            return "SOURCE_LINE_DEREF";
-        }
-    };
+                @Override
+                public String getDescription() {
+                    return "SOURCE_LINE_DEREF";
+                }
+            };
 
-    private static final PointerUsageRequiringNonNullValue nonNullReturnInstance = new PointerUsageRequiringNonNullValue() {
-        @Override
-        public boolean isReturnFromNonNullMethod() {
-            return true;
-        }
+    private static final PointerUsageRequiringNonNullValue nonNullReturnInstance =
+            new PointerUsageRequiringNonNullValue() {
+                @Override
+                public boolean isReturnFromNonNullMethod() {
+                    return true;
+                }
 
-        @Override
-        public String getDescription() {
-            return "SOURCE_LINE_RETURNED";
-        }
-    };
+                @Override
+                public String getDescription() {
+                    return "SOURCE_LINE_RETURNED";
+                }
+            };
 
     public static PointerUsageRequiringNonNullValue getPointerDereference() {
         return instance;
     }
 
-    private static final PointerUsageRequiringNonNullValue nullCheckInstance = new PointerUsageRequiringNonNullValue() {
+    private static final PointerUsageRequiringNonNullValue nullCheckInstance =
+            new PointerUsageRequiringNonNullValue() {
 
-        @Override
-        public String getDescription() {
-            return "SOURCE_LINE_NULL_CHECKED";
-        }
-    };
+                @Override
+                public String getDescription() {
+                    return "SOURCE_LINE_NULL_CHECKED";
+                }
+            };
 
     public static PointerUsageRequiringNonNullValue getPointerNullChecked() {
         return nullCheckInstance;
@@ -97,7 +97,8 @@ public abstract class PointerUsageRequiringNonNullValue {
         return nonNullReturnInstance;
     }
 
-    public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(final XMethod m, final int param) {
+    public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(
+            final XMethod m, final int param) {
         return new PointerUsageRequiringNonNullValue() {
             @Override
             public @CheckForNull XMethodParameter getNonNullParameter() {
@@ -108,7 +109,6 @@ public abstract class PointerUsageRequiringNonNullValue {
             public String getDescription() {
                 return "SOURCE_LINE_INVOKED";
             }
-
         };
     }
 
@@ -123,7 +123,6 @@ public abstract class PointerUsageRequiringNonNullValue {
             public String getDescription() {
                 return "SOURCE_LINE_STORED";
             }
-
         };
     }
 }

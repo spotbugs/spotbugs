@@ -28,43 +28,36 @@ public interface IErrorLogger {
     /**
      * Called to report a class lookup failure.
      *
-     * @param ex
-     *            a ClassNotFoundException resulting from the class lookup
-     *            failure
+     * @param ex a ClassNotFoundException resulting from the class lookup failure
      */
     public void reportMissingClass(ClassNotFoundException ex);
 
     /**
      * Called to report a class lookup failure.
      *
-     * @param classDescriptor
-     *            ClassDescriptor of a missing class
+     * @param classDescriptor ClassDescriptor of a missing class
      */
     public void reportMissingClass(ClassDescriptor classDescriptor);
 
     /**
      * Log an error that occurs while performing analysis.
      *
-     * @param message
-     *            the error message
+     * @param message the error message
      */
     public void logError(String message);
 
     /**
      * Log an error that occurs while performing analysis.
      *
-     * @param message
-     *            the error message
-     * @param e
-     *            the exception which is the underlying cause of the error
+     * @param message the error message
+     * @param e the exception which is the underlying cause of the error
      */
     public void logError(String message, Throwable e);
 
     /**
      * Report that we skipped some analysis of a method
      *
-     * @param method
-     *            the method we skipped
+     * @param method the method we skipped
      */
     public void reportSkippedAnalysis(MethodDescriptor method);
 }

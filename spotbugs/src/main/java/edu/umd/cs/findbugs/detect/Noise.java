@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.charsets.UTF8;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class Noise extends OpcodeStackDetector {
 
@@ -86,7 +84,11 @@ public class Noise extends OpcodeStackDetector {
             md.update(data, next, size - next);
             md.update(data, 0, next);
             byte[] hash = md.digest();
-            int result = (hash[0] & 0xff) | (hash[1] & 0xff) << 8 | (hash[2] & 0xff) << 16 | (hash[3] & 0x7f) << 24;
+            int result =
+                    (hash[0] & 0xff)
+                            | (hash[1] & 0xff) << 8
+                            | (hash[2] & 0xff) << 16
+                            | (hash[3] & 0x7f) << 24;
             return result;
         }
 
@@ -169,8 +171,11 @@ public class Noise extends OpcodeStackDetector {
 
             priority = hq.getPriority();
             if (priority <= Priorities.LOW_PRIORITY) {
-                accumulator.accumulateBug(new BugInstance(this, "NOISE_METHOD_CALL", priority).addClassAndMethod(this)
-                        .addCalledMethod(this), this);
+                accumulator.accumulateBug(
+                        new BugInstance(this, "NOISE_METHOD_CALL", priority)
+                                .addClassAndMethod(this)
+                                .addCalledMethod(this),
+                        this);
             }
             break;
         case Const.GETFIELD:
@@ -184,8 +189,11 @@ public class Noise extends OpcodeStackDetector {
             hq.pushHash(getSigConstantOperand());
             priority = hq.getPriority();
             if (priority <= Priorities.LOW_PRIORITY) {
-                accumulator.accumulateBug(new BugInstance(this, "NOISE_FIELD_REFERENCE", priority).addClassAndMethod(this)
-                        .addReferencedField(this), this);
+                accumulator.accumulateBug(
+                        new BugInstance(this, "NOISE_FIELD_REFERENCE", priority)
+                                .addClassAndMethod(this)
+                                .addReferencedField(this),
+                        this);
             }
             break;
         case Const.CHECKCAST:
@@ -246,7 +254,9 @@ public class Noise extends OpcodeStackDetector {
             priority = hq.getPriority();
             if (priority <= Priorities.LOW_PRIORITY) {
                 accumulator.accumulateBug(
-                        new BugInstance(this, "NOISE_OPERATION", priority).addClassAndMethod(this).addString(Const.getOpcodeName(seen)),
+                        new BugInstance(this, "NOISE_OPERATION", priority)
+                                .addClassAndMethod(this)
+                                .addString(Const.getOpcodeName(seen)),
                         this);
             }
             break;
@@ -254,5 +264,4 @@ public class Noise extends OpcodeStackDetector {
             break;
         }
     }
-
 }

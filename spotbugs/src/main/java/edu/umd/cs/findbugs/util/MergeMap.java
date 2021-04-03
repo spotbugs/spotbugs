@@ -23,9 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public abstract class MergeMap<K, V> {
 
     public static class MinMap<K, V extends Comparable<? super V>> extends MergeMap<K, V> {
@@ -98,7 +96,5 @@ public abstract class MergeMap<K, V> {
         m.put("b", 2);
         m.put("b", 1);
         System.out.println(m.entrySet());
-
     }
-
 }

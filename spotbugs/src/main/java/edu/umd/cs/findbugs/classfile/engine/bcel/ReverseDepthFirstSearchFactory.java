@@ -25,15 +25,12 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce ReverseDepthFirstSearch objects for analyzed
- * methods.
+ * Analysis engine to produce ReverseDepthFirstSearch objects for analyzed methods.
  *
  * @author David Hovemeyer
  */
 public class ReverseDepthFirstSearchFactory extends AnalysisFactory<ReverseDepthFirstSearch> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public ReverseDepthFirstSearchFactory() {
         super("reverse depth first search", ReverseDepthFirstSearch.class);
     }

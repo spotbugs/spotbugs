@@ -30,9 +30,7 @@ import org.apache.bcel.generic.Type;
  * @see TypeMerger
  */
 public class TopType extends Type implements ExtendedTypes {
-    /**
-     *
-     */
+    /** */
     private static final long serialVersionUID = 1L;
 
     private static final Type theInstance = new TopType();
@@ -51,9 +49,7 @@ public class TopType extends Type implements ExtendedTypes {
         return o == this;
     }
 
-    /**
-     * Get the single instance of the top type.
-     */
+    /** Get the single instance of the top type. */
     public static Type instance() {
         return theInstance;
     }

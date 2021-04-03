@@ -19,18 +19,15 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.graph.AbstractEdge;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Set;
-
 import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifier;
-
 import org.apache.bcel.generic.InstructionHandle;
-
-import edu.umd.cs.findbugs.graph.AbstractEdge;
 
 /**
  * An edge of a control flow graph.
@@ -67,10 +64,8 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
     /**
      * Constructor.
      *
-     * @param source
-     *            source basic block
-     * @param dest
-     *            destination basic block
+     * @param source source basic block
+     * @param dest destination basic block
      */
     public Edge(BasicBlock source, BasicBlock dest) {
         super(source, dest);
@@ -80,30 +75,22 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
         return getLabel();
     }
 
-    /**
-     * Get the type of edge.
-     */
+    /** Get the type of edge. */
     public @Type int getType() {
         return type;
     }
 
-    /**
-     * Set the type of edge.
-     */
+    /** Set the type of edge. */
     public void setType(@Type int type) {
         this.type = type;
     }
 
-    /**
-     * Get the edge flags.
-     */
+    /** Get the edge flags. */
     public int getFlags() {
         return flags;
     }
 
-    /**
-     * Set the edge flags.
-     */
+    /** Set the edge flags. */
     public void setFlags(int flags) {
         this.flags = flags;
     }
@@ -111,17 +98,14 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
     /**
      * Return if given edge flag is set.
      *
-     * @param flag
-     *            the edge flag
+     * @param flag the edge flag
      * @return true if the flag is set, false otherwise
      */
     public boolean isFlagSet(int flag) {
         return (this.flags & flag) != 0;
     }
 
-    /**
-     * Is the edge an exception edge?
-     */
+    /** Is the edge an exception edge? */
     public boolean isExceptionEdge() {
         return type == HANDLED_EXCEPTION_EDGE || type == UNHANDLED_EXCEPTION_EDGE;
     }
@@ -132,7 +116,8 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
             return false;
         }
         Edge other = (Edge) o;
-        return this.getSource() == other.getSource() && this.getTarget() == other.getTarget()
+        return this.getSource() == other.getSource()
+                && this.getTarget() == other.getTarget()
                 && this.getType() == other.getType();
     }
 
@@ -141,9 +126,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
         return 2003 * getSource().getLabel() + getTarget().getLabel();
     }
 
-    /**
-     * Compare with other edge.
-     */
+    /** Compare with other edge. */
     @Override
     public int compareTo(Edge other) {
         int cmp = super.compareTo(other);
@@ -169,12 +152,12 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
             return false;
         }
         return targetInstruction.getPosition() < sourceInstruction.getPosition();
-
     }
 
     public boolean sourceIsTopOfLoop(@Nonnull Set<Integer> positions) {
         if (positions == null) {
-            AnalysisContext.logError("Null positions", new NullPointerException("positions can't be null"));
+            AnalysisContext.logError(
+                    "Null positions", new NullPointerException("positions can't be null"));
             return false;
         }
         BasicBlock source = getSource();
@@ -185,12 +168,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
             return false;
         }
         return positions.contains(sourceInstruction.getPosition());
-
     }
 
-    /**
-     * Return a string representation of the edge.
-     */
+    /** Return a string representation of the edge. */
     public String formatAsString(boolean reverse) {
         BasicBlock source = getSource();
         BasicBlock target = getTarget();
@@ -233,9 +213,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
         return buf.toString();
     }
 
-    /**
-     * Get string representing given edge type.
-     */
+    /** Get string representing given edge type. */
     public static String edgeTypeToString(@Type int edgeType) {
         switch (edgeType) {
         case FALL_THROUGH_EDGE:
@@ -270,9 +248,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
         throw new IllegalStateException("unknown edge type: " + edgeType);
     }
 
-    /**
-     * Get numeric edge type from string representation.
-     */
+    /** Get numeric edge type from string representation. */
     public static @Type int stringToEdgeType(String s) {
         s = s.toUpperCase(Locale.ENGLISH);
 

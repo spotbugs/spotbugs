@@ -18,11 +18,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import javax.annotation.meta.When;
-
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -38,6 +33,9 @@ import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import javax.annotation.meta.When;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 public class InconsistentAnnotations implements Detector, UseAnnotationDatabase {
 
@@ -46,7 +44,8 @@ public class InconsistentAnnotations implements Detector, UseAnnotationDatabase 
     final BugReporter reporter;
 
     public InconsistentAnnotations(BugReporter reporter) {
-        ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
+        ClassDescriptor nonnullClassDesc =
+                DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
         this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
         this.reporter = reporter;
     }
@@ -58,13 +57,17 @@ public class InconsistentAnnotations implements Detector, UseAnnotationDatabase 
 
         for (Method method : jclass.getMethods()) {
             XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-            ParameterProperty nonnullParameters = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase()
-                    .getProperty(xmethod.getMethodDescriptor());
+            ParameterProperty nonnullParameters =
+                    AnalysisContext.currentAnalysisContext()
+                            .getUnconditionalDerefParamDatabase()
+                            .getProperty(xmethod.getMethodDescriptor());
             if (nonnullParameters != null) {
                 for (int p : nonnullParameters.iterable()) {
-                    TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications
-                            .getDirectTypeQualifierAnnotation(xmethod, p, nonnullTypeQualifierValue);
-                    if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.UNKNOWN) {
+                    TypeQualifierAnnotation directTypeQualifierAnnotation =
+                            TypeQualifierApplications.getDirectTypeQualifierAnnotation(
+                                    xmethod, p, nonnullTypeQualifierValue);
+                    if (directTypeQualifierAnnotation != null
+                            && directTypeQualifierAnnotation.when == When.UNKNOWN) {
                         //
                         // The LocalVariableAnnotation is constructed using the
                         // local variable
@@ -72,16 +75,19 @@ public class InconsistentAnnotations implements Detector, UseAnnotationDatabase 
                         //
                         int paramLocal = xmethod.isStatic() ? p : p + 1;
 
-                        reporter.reportBug(new BugInstance(this, "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE",
-                                NORMAL_PRIORITY).addClassAndMethod(jclass, method).add(
-                                        LocalVariableAnnotation.getParameterLocalVariableAnnotation(method, paramLocal)));
-
+                        reporter.reportBug(
+                                new BugInstance(
+                                        this,
+                                        "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE",
+                                        NORMAL_PRIORITY)
+                                                .addClassAndMethod(jclass, method)
+                                                .add(
+                                                        LocalVariableAnnotation.getParameterLocalVariableAnnotation(
+                                                                method, paramLocal)));
                     }
-
                 }
             }
         }
-
     }
 
     @Override

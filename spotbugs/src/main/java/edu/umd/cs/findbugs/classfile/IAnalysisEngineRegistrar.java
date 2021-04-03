@@ -20,8 +20,7 @@
 package edu.umd.cs.findbugs.classfile;
 
 /**
- * Interface for a registrar class that registers analysis engines with an
- * analysis cache.
+ * Interface for a registrar class that registers analysis engines with an analysis cache.
  *
  * @author David Hovemeyer
  */
@@ -29,8 +28,7 @@ public interface IAnalysisEngineRegistrar {
     /**
      * Register analysis engines with given analysis cache.
      *
-     * @param analysisCache
-     *            the analysis cache
+     * @param analysisCache the analysis cache
      */
     public void registerAnalysisEngines(IAnalysisCache analysisCache);
 }

@@ -1,8 +1,6 @@
 package edu.umd.cs.findbugs;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class NoOpFindBugsProgress implements FindBugsProgress {
     @Override
     public void reportNumberOfArchives(int numArchives) {

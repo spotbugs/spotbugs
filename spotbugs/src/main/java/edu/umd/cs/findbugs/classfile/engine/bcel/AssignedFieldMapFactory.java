@@ -40,7 +40,8 @@ public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine<Ass
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public AssignedFieldMap analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public AssignedFieldMap analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor)
+            throws CheckedAnalysisException {
         /*
          * JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class,
          * descriptor); return new AssignedFieldMap(jclass);
@@ -63,5 +64,4 @@ public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine<Ass
          */
         throw new UnsupportedOperationException("AssignedFieldMap is going away");
     }
-
 }

@@ -19,11 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -31,21 +26,25 @@ import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.bcel.Const;
 
 /**
- * Use whenever possible String.indexOf(int) instead of String.indexOf(String),
- * or String.lastIndexOf(int) instead of String.lastIndexOf(String).
+ * Use whenever possible String.indexOf(int) instead of String.indexOf(String), or
+ * String.lastIndexOf(int) instead of String.lastIndexOf(String).
  *
  * @author Reto Merz
  */
 public class InefficientIndexOf extends OpcodeStackDetector {
     private final BugReporter bugReporter;
 
-    private static final List<MethodDescriptor> methods = Arrays.asList(
-            new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;)I"),
-            new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;)I"),
-            new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;I)I"),
-            new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;I)I"));
+    private static final List<MethodDescriptor> methods =
+            Arrays.asList(
+                    new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;)I"),
+                    new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;)I"),
+                    new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;I)I"),
+                    new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;I)I"));
 
     public InefficientIndexOf(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -60,7 +59,9 @@ public class InefficientIndexOf extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.INVOKEVIRTUAL && stack.getStackDepth() > 0 && "java/lang/String".equals(getClassConstantOperand())) {
+        if (seen == Const.INVOKEVIRTUAL
+                && stack.getStackDepth() > 0
+                && "java/lang/String".equals(getClassConstantOperand())) {
 
             boolean lastIndexOf = "lastIndexOf".equals(getNameConstantOperand());
             if (lastIndexOf || "indexOf".equals(getNameConstantOperand())) {
@@ -75,13 +76,18 @@ public class InefficientIndexOf extends OpcodeStackDetector {
                     OpcodeStack.Item item = stack.getStackItem(stackOff);
                     Object o = item.getConstant();
                     if (o != null && ((String) o).length() == 1) {
-                        bugReporter.reportBug(new BugInstance(this, lastIndexOf ? "IIO_INEFFICIENT_LAST_INDEX_OF" : "IIO_INEFFICIENT_INDEX_OF",
-                                LOW_PRIORITY).addClassAndMethod(this)
-                                        .describe(StringAnnotation.STRING_MESSAGE).addCalledMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(
+                                        this,
+                                        lastIndexOf ? "IIO_INEFFICIENT_LAST_INDEX_OF" : "IIO_INEFFICIENT_INDEX_OF",
+                                        LOW_PRIORITY)
+                                                .addClassAndMethod(this)
+                                                .describe(StringAnnotation.STRING_MESSAGE)
+                                                .addCalledMethod(this)
+                                                .addSourceLine(this));
                     }
                 }
             }
         }
     }
-
 }

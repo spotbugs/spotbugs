@@ -18,6 +18,7 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,23 +28,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
-
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
-/**
- * Helper class to read contributions for the "detectorPlugins" extension point
- */
+/** Helper class to read contributions for the "detectorPlugins" extension point */
 public class QuickFixesExtensionHelper {
 
     /**
-     * The extension point ID defined by <strong>FindBugs</strong>, unchanged for compatibility reasons.
+     * The extension point ID defined by <strong>FindBugs</strong>, unchanged for compatibility
+     * reasons.
      */
-    private static final String EXTENSION_POINT_ID = "edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes";
+    private static final String EXTENSION_POINT_ID =
+            "edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes";
 
     private static final String ARGUMENTS = "arguments";
     private static final String PATTERN = "pattern";
@@ -72,7 +70,8 @@ public class QuickFixesExtensionHelper {
         return contributedQuickFixes;
     }
 
-    private static void addContribution(Map<String, List<QuickFixContribution>> set, final IConfigurationElement configElt) {
+    private static void addContribution(
+            Map<String, List<QuickFixContribution>> set, final IConfigurationElement configElt) {
         IContributor contributor = null;
         try {
             contributor = configElt.getContributor();
@@ -108,26 +107,38 @@ public class QuickFixesExtensionHelper {
                 set.put(pattern, list);
             }
             if (list.contains(qf)) {
-                throw new IllegalArgumentException("Duplicated quick fix contribution for pattern '"
-                        + pattern + "': " + qf + ".");
+                throw new IllegalArgumentException(
+                        "Duplicated quick fix contribution for pattern '" + pattern + "': " + qf + ".");
             }
             list.add(qf);
         } catch (Throwable e) {
             String cName = contributor != null ? contributor.getName() : "unknown contributor";
-            String message = "Failed to read contribution for '" + EXTENSION_POINT_ID
-                    + "' extension point from " + cName;
+            String message =
+                    "Failed to read contribution for '"
+                            + EXTENSION_POINT_ID
+                            + "' extension point from "
+                            + cName;
             FindbugsPlugin.getDefault().logException(e, message);
         }
     }
 
-    private static QuickFixContribution createQuickFix(final IConfigurationElement configElt, String clazzFqn, String label,
-            String pattern, Set<String> args) {
-        return new QuickFixContribution(clazzFqn, label, pattern, args, new Callable<BugResolution>() {
-            @Override
-            public BugResolution call() throws Exception {
-                return (BugResolution) configElt.createExecutableExtension(CLASS_FQN);
-            }
-        });
+    private static QuickFixContribution createQuickFix(
+            final IConfigurationElement configElt,
+            String clazzFqn,
+            String label,
+            String pattern,
+            Set<String> args) {
+        return new QuickFixContribution(
+                clazzFqn,
+                label,
+                pattern,
+                args,
+                new Callable<BugResolution>() {
+                    @Override
+                    public BugResolution call() throws Exception {
+                        return (BugResolution) configElt.createExecutableExtension(CLASS_FQN);
+                    }
+                });
     }
 
     static boolean isEmpty(String s) {

@@ -30,12 +30,9 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
-
 import javax.annotation.WillCloseWhenClosed;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class UserTextFile {
 
     public static final Charset charset;
@@ -51,7 +48,6 @@ public class UserTextFile {
     public static PrintWriter printWriter(String fileName) throws IOException {
         return new PrintWriter(new BufferedWriter(fileWriter(fileName)));
     }
-
 
     public static Reader reader(@WillCloseWhenClosed InputStream in) {
         return new InputStreamReader(in, charset);

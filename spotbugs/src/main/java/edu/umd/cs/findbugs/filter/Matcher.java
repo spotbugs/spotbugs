@@ -19,10 +19,9 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
 /**
  * Match BugInstances for some feature.
@@ -31,11 +30,9 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  */
 public interface Matcher {
     /**
-     * Determine whether or not the given BugInstance has the feature this
-     * Matcher tests for.
+     * Determine whether or not the given BugInstance has the feature this Matcher tests for.
      *
-     * @param bugInstance
-     *            the BugInstance
+     * @param bugInstance the BugInstance
      * @return true if the BugInstance matches, false if not
      */
     public boolean match(BugInstance bugInstance);

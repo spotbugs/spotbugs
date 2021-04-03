@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -33,6 +30,8 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.impl.ZipInputStreamCodeBaseEntry;
 import edu.umd.cs.findbugs.io.IO;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Analysis engine to produce the data (bytes) of a class.
@@ -42,7 +41,8 @@ import edu.umd.cs.findbugs.io.IO;
 public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<ClassData> {
 
     @Override
-    public ClassData analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public ClassData analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor)
+            throws CheckedAnalysisException {
 
         // Compute the resource name
         String resourceName = descriptor.toResourceName();
@@ -107,9 +107,11 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
 
         @Override
         public InputStream openResource() throws IOException {
-            InputStream stream = getClass().getClassLoader().getResourceAsStream(descriptor.toResourceName());
+            InputStream stream =
+                    getClass().getClassLoader().getResourceAsStream(descriptor.toResourceName());
             if (stream == null) {
-                throw new IOException("Can not load '" + descriptor.toResourceName() + "' from SpotBugs classpath.");
+                throw new IOException(
+                        "Can not load '" + descriptor.toResourceName() + "' from SpotBugs classpath.");
             }
             return stream;
         }
@@ -128,6 +130,5 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
         public void overrideResourceName(String resourceName) {
             //
         }
-
     }
 }

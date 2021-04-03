@@ -19,33 +19,35 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-
 public class SuppressionMatcher implements Matcher {
-    private final Map<ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings = new HashMap<>();
+    private final Map<ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings =
+            new HashMap<>();
 
-    private final Map<String, Collection<WarningSuppressor>> suppressedPackageWarnings = new HashMap<>();
+    private final Map<String, Collection<WarningSuppressor>> suppressedPackageWarnings =
+            new HashMap<>();
 
     int count = 0;
 
     public void addPackageSuppressor(PackageWarningSuppressor suppressor) {
         String packageName = suppressor.getPackageName();
 
-        Collection<WarningSuppressor> c = suppressedPackageWarnings.computeIfAbsent(packageName,
-                k -> new LinkedList<>());
+        Collection<WarningSuppressor> c =
+                suppressedPackageWarnings.computeIfAbsent(packageName, k -> new LinkedList<>());
         c.add(suppressor);
     }
 
     public void addSuppressor(ClassWarningSuppressor suppressor) {
         ClassAnnotation clazz = suppressor.getClassAnnotation().getTopLevelClass();
-        Collection<WarningSuppressor> c = suppressedWarnings.computeIfAbsent(clazz, k -> new LinkedList<>());
+        Collection<WarningSuppressor> c =
+                suppressedWarnings.computeIfAbsent(clazz, k -> new LinkedList<>());
         c.add(suppressor);
     }
 
@@ -80,5 +82,4 @@ public class SuppressionMatcher implements Matcher {
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         // no-op; these aren't saved to XML
     }
-
 }

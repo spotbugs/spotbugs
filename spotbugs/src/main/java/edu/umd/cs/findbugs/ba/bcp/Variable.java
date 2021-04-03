@@ -20,13 +20,10 @@
 package edu.umd.cs.findbugs.ba.bcp;
 
 /**
- * A Variable is either a LocalVariable or a FieldVariable. The only
- * functinality of a Variable is to determine whether it is the same as some
- * other Variable.
+ * A Variable is either a LocalVariable or a FieldVariable. The only functinality of a Variable is
+ * to determine whether it is the same as some other Variable.
  */
 public interface Variable {
-    /**
-     * Determine if the given Variable is the same as this one.
-     */
+    /** Determine if the given Variable is the same as this one. */
     public boolean sameAs(Variable other);
 }

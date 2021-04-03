@@ -22,12 +22,12 @@ package edu.umd.cs.findbugs.ba.npe;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 
 /**
- * A dataflow value that indicates what kind of return path is possible at the
- * current program location. Either:
+ * A dataflow value that indicates what kind of return path is possible at the current program
+ * location. Either:
+ *
  * <ul>
- * <li>It is possible to return normally</li>
- * <li>It is not possible to return normally (i.e., an exception is guaranteed
- * to be thrown)</li>
+ *   <li>It is possible to return normally
+ *   <li>It is not possible to return normally (i.e., an exception is guaranteed to be thrown)
  * </ul>
  *
  * @author David Hovemeyer
@@ -41,17 +41,12 @@ public class ReturnPathType {
 
     private int type;
 
-    /**
-     * Constructor. Creates a top dataflow fact.
-     */
+    /** Constructor. Creates a top dataflow fact. */
     public ReturnPathType() {
         type = TOP;
     }
 
-    /**
-     * @return true if the method can return normally at this location, false
-     *         otherwise
-     */
+    /** @return true if the method can return normally at this location, false otherwise */
     public boolean canReturnNormally() throws DataflowAnalysisException {
         if (!isValid()) {
             throw new DataflowAnalysisException("Checking invalid ReturnPathType");
@@ -62,23 +57,18 @@ public class ReturnPathType {
     /**
      * Make this dataflow fact an exact copy of the other one.
      *
-     * @param other
-     *            another dataflow fact
+     * @param other another dataflow fact
      */
     public void copyFrom(ReturnPathType other) {
         this.type = other.type;
     }
 
-    /**
-     * Set the dataflow fact to top.
-     */
+    /** Set the dataflow fact to top. */
     public void setTop() {
         type = TOP;
     }
 
-    /**
-     * @return true if the dataflow fact is top, false otherwise
-     */
+    /** @return true if the dataflow fact is top, false otherwise */
     public boolean isTop() {
         return type == TOP;
     }
@@ -86,9 +76,8 @@ public class ReturnPathType {
     /**
      * Set whether or not it is possible to return normally.
      *
-     * @param canReturnNormally
-     *            true if the method can return normally at this location, false
-     *            otherwise
+     * @param canReturnNormally true if the method can return normally at this location, false
+     *     otherwise
      */
     public void setCanReturnNormally(boolean canReturnNormally) {
         type = canReturnNormally ? CAN_RETURN_NORMALLY : CANNOT_RETURN_NORMALLY;
@@ -97,8 +86,7 @@ public class ReturnPathType {
     /**
      * Merge this fact with given fact.
      *
-     * @param fact
-     *            another dataflow fact
+     * @param fact another dataflow fact
      */
     public void mergeWith(ReturnPathType fact) {
         if (fact.isTop()) {
@@ -120,18 +108,16 @@ public class ReturnPathType {
     /**
      * Determine whether this dataflow fact is identical to another one.
      *
-     * @param other
-     *            another dataflow fact
-     * @return true if the two dataflow facts are identical, false if they are
-     *         different
+     * @param other another dataflow fact
+     * @return true if the two dataflow facts are identical, false if they are different
      */
     boolean sameAs(ReturnPathType other) {
         return this.type == other.type;
     }
 
     /**
-     * @return true if this is a valid dataflow fact (not top or bottom), false
-     *         if not a valid dataflow fact
+     * @return true if this is a valid dataflow fact (not top or bottom), false if not a valid
+     *     dataflow fact
      */
     public boolean isValid() {
         return type != TOP;

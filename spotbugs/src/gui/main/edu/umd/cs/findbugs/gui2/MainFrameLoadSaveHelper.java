@@ -1,18 +1,5 @@
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.EventQueue;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.URL;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.HTMLBugReporter;
@@ -22,6 +9,17 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
+import java.awt.EventQueue;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.URL;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 public class MainFrameLoadSaveHelper implements Serializable {
     private final MainFrame mainFrame;
@@ -48,11 +46,10 @@ public class MainFrameLoadSaveHelper implements Serializable {
         filterOpenFileChooser.setFileFilter(FindBugsFilterFileFilter.INSTANCE);
     }
 
-    /**
-     * This method is for when the user wants to open a file.
-     */
+    /** This method is for when the user wants to open a file. */
     void importFilter() {
-        filterOpenFileChooser.setDialogTitle(L10N.getLocalString("dlg.importFilter_ttl", "Import and merge filter..."));
+        filterOpenFileChooser.setDialogTitle(
+                L10N.getLocalString("dlg.importFilter_ttl", "Import and merge filter..."));
 
         boolean retry = true;
         File f;
@@ -68,7 +65,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
             f = filterOpenFileChooser.getSelectedFile();
 
             if (!f.exists()) {
-                JOptionPane.showMessageDialog(filterOpenFileChooser, "No such file", "Invalid File", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        filterOpenFileChooser, "No such file", "Invalid File", JOptionPane.WARNING_MESSAGE);
                 retry = true;
                 continue;
             }
@@ -89,12 +87,9 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
             PreferencesFrame.getInstance().updateFilterPanel();
         }
-
     }
 
-    /**
-     * This method is for when the user wants to open a file.
-     */
+    /** This method is for when the user wants to open a file. */
     void open() {
         if (askToSave()) {
             return;
@@ -113,8 +108,11 @@ public class MainFrameLoadSaveHelper implements Serializable {
             final File f = saveOpenFileChooser.getSelectedFile();
 
             if (!fileType.isValid(f)) {
-                JOptionPane.showMessageDialog(saveOpenFileChooser, "That file is not compatible with the chosen file type",
-                        "Invalid File", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        saveOpenFileChooser,
+                        "That file is not compatible with the chosen file type",
+                        "Invalid File",
+                        JOptionPane.WARNING_MESSAGE);
                 loading = true;
                 continue;
             }
@@ -122,15 +120,18 @@ public class MainFrameLoadSaveHelper implements Serializable {
             switch (fileType) {
             case XML_ANALYSIS:
                 if (!f.getName().endsWith(".xml")) {
-                    JOptionPane.showMessageDialog(saveOpenFileChooser,
-                            L10N.getLocalString("dlg.not_xml_data_lbl", "This is not a saved bug XML data file."));
+                    JOptionPane.showMessageDialog(
+                            saveOpenFileChooser,
+                            L10N.getLocalString(
+                                    "dlg.not_xml_data_lbl", "This is not a saved bug XML data file."));
                     loading = true;
                     continue tryAgain;
                 }
 
                 if (!mainFrame.openAnalysis(f, fileType)) {
                     // TODO: Deal if something happens when loading analysis
-                    JOptionPane.showMessageDialog(saveOpenFileChooser, "An error occurred while trying to load the analysis.");
+                    JOptionPane.showMessageDialog(
+                            saveOpenFileChooser, "An error occurred while trying to load the analysis.");
                     loading = true;
                     continue tryAgain;
                 }
@@ -138,7 +139,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
             case FBP_FILE:
                 if (!openFBPFile(f)) {
                     // TODO: Deal if something happens when loading analysis
-                    JOptionPane.showMessageDialog(saveOpenFileChooser, "An error occurred while trying to load the analysis.");
+                    JOptionPane.showMessageDialog(
+                            saveOpenFileChooser, "An error occurred while trying to load the analysis.");
                     loading = true;
                     continue tryAgain;
                 }
@@ -146,7 +148,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
             case FBA_FILE:
                 if (!openFBAFile(f)) {
                     // TODO: Deal if something happens when loading analysis
-                    JOptionPane.showMessageDialog(saveOpenFileChooser, "An error occurred while trying to load the analysis.");
+                    JOptionPane.showMessageDialog(
+                            saveOpenFileChooser, "An error occurred while trying to load the analysis.");
                     loading = true;
                     continue tryAgain;
                 }
@@ -160,9 +163,15 @@ public class MainFrameLoadSaveHelper implements Serializable {
     /** Returns true if cancelled */
     private boolean askToSave() {
         if (mainFrame.isProjectChanged()) {
-            int response = JOptionPane.showConfirmDialog(mainFrame, L10N.getLocalString("dlg.save_current_changes",
-                    "The current project has been changed, Save current changes?"), L10N.getLocalString("dlg.save_changes",
-                            "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            int response =
+                    JOptionPane.showConfirmDialog(
+                            mainFrame,
+                            L10N.getLocalString(
+                                    "dlg.save_current_changes",
+                                    "The current project has been changed, Save current changes?"),
+                            L10N.getLocalString("dlg.save_changes", "Save Changes?"),
+                            JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.WARNING_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
                 if (mainFrame.getSaveFile() != null) {
@@ -195,7 +204,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     boolean exportFilter() {
-        filterOpenFileChooser.setDialogTitle(L10N.getLocalString("dlg.exportFilter_ttl", "Export filter..."));
+        filterOpenFileChooser.setDialogTitle(
+                L10N.getLocalString("dlg.exportFilter_ttl", "Export filter..."));
 
         boolean retry = true;
         boolean alreadyExists;
@@ -213,10 +223,14 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
             alreadyExists = f.exists();
             if (alreadyExists) {
-                int response = JOptionPane.showConfirmDialog(filterOpenFileChooser,
-                        L10N.getLocalString("dlg.file_exists_lbl", "This file already exists.\nReplace it?"),
-                        L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.WARNING_MESSAGE);
+                int response =
+                        JOptionPane.showConfirmDialog(
+                                filterOpenFileChooser,
+                                L10N.getLocalString(
+                                        "dlg.file_exists_lbl", "This file already exists.\nReplace it?"),
+                                L10N.getLocalString("dlg.warning_ttl", "Warning!"),
+                                JOptionPane.OK_CANCEL_OPTION,
+                                JOptionPane.WARNING_MESSAGE);
 
                 if (response == JOptionPane.OK_OPTION) {
                     retry = false;
@@ -225,15 +239,14 @@ public class MainFrameLoadSaveHelper implements Serializable {
                     retry = true;
                     continue;
                 }
-
             }
 
             Filter suppressionFilter = mainFrame.getProject().getSuppressionFilter();
             try {
                 suppressionFilter.writeEnabledMatchersAsXML(new FileOutputStream(f));
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(mainFrame,
-                        L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
+                JOptionPane.showMessageDialog(
+                        mainFrame, L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
                 return false;
             }
         }
@@ -245,7 +258,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
         saveOpenFileChooser.setDialogTitle(L10N.getLocalString("dlg.saveas_ttl", "Save as..."));
 
         if (mainFrame.getCurrentProject() == null) {
-            JOptionPane.showMessageDialog(mainFrame, L10N.getLocalString("dlg.no_proj_save_lbl", "There is no project to save"));
+            JOptionPane.showMessageDialog(
+                    mainFrame, L10N.getLocalString("dlg.no_proj_save_lbl", "There is no project to save"));
             return false;
         }
 
@@ -277,8 +291,11 @@ public class MainFrameLoadSaveHelper implements Serializable {
             f = convertFile(f, fileType);
 
             if (!fileType.isValid(f)) {
-                JOptionPane.showMessageDialog(saveOpenFileChooser, "That file is not compatible with the chosen file type",
-                        "Invalid File", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        saveOpenFileChooser,
+                        "That file is not compatible with the chosen file type",
+                        "Invalid File",
+                        JOptionPane.WARNING_MESSAGE);
                 retry = true;
                 continue;
             }
@@ -289,28 +306,46 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
                 switch (fileType) {
                 case HTML_OUTPUT:
-                    response = JOptionPane.showConfirmDialog(saveOpenFileChooser,
-                            L10N.getLocalString("dlg.analysis_exists_lbl", "This html output already exists.\nReplace it?"),
-                            L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION,
-                            JOptionPane.WARNING_MESSAGE);
+                    response =
+                            JOptionPane.showConfirmDialog(
+                                    saveOpenFileChooser,
+                                    L10N.getLocalString(
+                                            "dlg.analysis_exists_lbl", "This html output already exists.\nReplace it?"),
+                                    L10N.getLocalString("dlg.warning_ttl", "Warning!"),
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.WARNING_MESSAGE);
                     break;
                 case XML_ANALYSIS:
-                    response = JOptionPane.showConfirmDialog(saveOpenFileChooser,
-                            L10N.getLocalString("dlg.analysis_exists_lbl", "This analysis already exists.\nReplace it?"),
-                            L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION,
-                            JOptionPane.WARNING_MESSAGE);
+                    response =
+                            JOptionPane.showConfirmDialog(
+                                    saveOpenFileChooser,
+                                    L10N.getLocalString(
+                                            "dlg.analysis_exists_lbl", "This analysis already exists.\nReplace it?"),
+                                    L10N.getLocalString("dlg.warning_ttl", "Warning!"),
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.WARNING_MESSAGE);
                     break;
                 case FBP_FILE:
-                    response = JOptionPane.showConfirmDialog(saveOpenFileChooser,
-                            L10N.getLocalString("FB Project File already exists",
-                                    "This FB project file already exists.\nDo you want to replace it?"), L10N.getLocalString(
-                                            "dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+                    response =
+                            JOptionPane.showConfirmDialog(
+                                    saveOpenFileChooser,
+                                    L10N.getLocalString(
+                                            "FB Project File already exists",
+                                            "This FB project file already exists.\nDo you want to replace it?"),
+                                    L10N.getLocalString("dlg.warning_ttl", "Warning!"),
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.WARNING_MESSAGE);
                     break;
                 case FBA_FILE:
-                    response = JOptionPane.showConfirmDialog(saveOpenFileChooser, L10N.getLocalString(
-                            "FB Analysis File already exists",
-                            "This FB analysis file already exists.\nDo you want to replace it?"), L10N.getLocalString(
-                                    "dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+                    response =
+                            JOptionPane.showConfirmDialog(
+                                    saveOpenFileChooser,
+                                    L10N.getLocalString(
+                                            "FB Analysis File already exists",
+                                            "This FB analysis file already exists.\nDo you want to replace it?"),
+                                    L10N.getLocalString("dlg.warning_ttl", "Warning!"),
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.WARNING_MESSAGE);
                     break;
                 default:
                     assert false;
@@ -323,13 +358,11 @@ public class MainFrameLoadSaveHelper implements Serializable {
                     retry = true;
                     continue;
                 }
-
             }
 
             SaveReturn successful = SaveReturn.SAVE_ERROR;
 
             switch (fileType) {
-
             case HTML_OUTPUT:
                 successful = printHtml(f);
                 break;
@@ -348,8 +381,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
             }
 
             if (successful != SaveReturn.SAVE_SUCCESSFUL) {
-                JOptionPane.showMessageDialog(mainFrame,
-                        L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
+                JOptionPane.showMessageDialog(
+                        mainFrame, L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
                 return false;
             }
         }
@@ -396,7 +429,6 @@ public class MainFrameLoadSaveHelper implements Serializable {
         SaveReturn result = SaveReturn.SAVE_ERROR;
 
         switch (mainFrame.getSaveType()) {
-
         case XML_ANALYSIS:
             result = saveAnalysis(sFile);
             break;
@@ -409,11 +441,11 @@ public class MainFrameLoadSaveHelper implements Serializable {
         default:
             JOptionPane.showMessageDialog(mainFrame, "Unknown save file type");
             return;
-
         }
 
         if (result != SaveReturn.SAVE_SUCCESSFUL) {
-            JOptionPane.showMessageDialog(mainFrame, L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
+            JOptionPane.showMessageDialog(
+                    mainFrame, L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
         }
     }
 
@@ -436,22 +468,27 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
     SaveReturn printHtml(final File f) {
 
-        Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(() -> {
-            HTMLBugReporter reporter = new HTMLBugReporter(mainFrame.getProject(), "default.xsl");
-            reporter.setIsRelaxed(true);
-            reporter.setOutputStream(UTF8.printStream(new FileOutputStream(f)));
-            for (BugInstance bug : mainFrame.getBugCollection().getCollection()) {
-                try {
-                    if (mainFrame.getViewFilter().show(bug)) {
-                        reporter.reportBug(bug);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            reporter.finish();
-            return null;
-        });
+        Future<Object> waiter =
+                mainFrame
+                        .getBackgroundExecutor()
+                        .submit(
+                                () -> {
+                                    HTMLBugReporter reporter =
+                                            new HTMLBugReporter(mainFrame.getProject(), "default.xsl");
+                                    reporter.setIsRelaxed(true);
+                                    reporter.setOutputStream(UTF8.printStream(new FileOutputStream(f)));
+                                    for (BugInstance bug : mainFrame.getBugCollection().getCollection()) {
+                                        try {
+                                            if (mainFrame.getViewFilter().show(bug)) {
+                                                reporter.reportBug(bug);
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    reporter.finish();
+                                    return null;
+                                });
         try {
             waiter.get();
         } catch (InterruptedException e) {
@@ -464,17 +501,20 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     /**
-     * Save current analysis as file passed in. Return SAVE_SUCCESSFUL if save
-     * successful. Method doesn't do much. This method is more if need to do
-     * other things in the future for saving analysis. And to keep saving naming
-     * convention.
+     * Save current analysis as file passed in. Return SAVE_SUCCESSFUL if save successful. Method
+     * doesn't do much. This method is more if need to do other things in the future for saving
+     * analysis. And to keep saving naming convention.
      */
     SaveReturn saveAnalysis(final File f) {
 
-        Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(() -> {
-            BugSaver.saveBugs(f, mainFrame.getBugCollection(), mainFrame.getProject());
-            return null;
-        });
+        Future<Object> waiter =
+                mainFrame
+                        .getBackgroundExecutor()
+                        .submit(
+                                () -> {
+                                    BugSaver.saveBugs(f, mainFrame.getBugCollection(), mainFrame.getProject());
+                                    return null;
+                                });
         try {
             waiter.get();
         } catch (InterruptedException e) {
@@ -518,20 +558,21 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
     void loadAnalysis(final File file) {
 
-        Runnable runnable = () -> {
-            mainFrame.acquireDisplayWait();
-            try {
-                Project project = new Project();
-                project.setGuiCallback(mainFrame.getGuiCallback());
-                project.setCurrentWorkingDirectory(file.getParentFile());
-                BugLoader.loadBugs(mainFrame, project, file);
-                project.getSourceFinder(); // force source finder to be
-                // initialized
-                mainFrame.updateBugTree();
-            } finally {
-                mainFrame.releaseDisplayWait();
-            }
-        };
+        Runnable runnable =
+                () -> {
+                    mainFrame.acquireDisplayWait();
+                    try {
+                        Project project = new Project();
+                        project.setGuiCallback(mainFrame.getGuiCallback());
+                        project.setCurrentWorkingDirectory(file.getParentFile());
+                        BugLoader.loadBugs(mainFrame, project, file);
+                        project.getSourceFinder(); // force source finder to be
+                        // initialized
+                        mainFrame.updateBugTree();
+                    } finally {
+                        mainFrame.releaseDisplayWait();
+                    }
+                };
         if (EventQueue.isDispatchThread()) {
             new Thread(runnable, "Analysis loading thread").start();
         } else {
@@ -541,19 +582,20 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
     void loadAnalysis(final URL url) {
 
-        Runnable runnable = () -> {
-            mainFrame.acquireDisplayWait();
-            try {
-                Project project = new Project();
-                project.setGuiCallback(mainFrame.getGuiCallback());
-                BugLoader.loadBugs(mainFrame, project, url);
-                project.getSourceFinder(); // force source finder to be
-                // initialized
-                mainFrame.updateBugTree();
-            } finally {
-                mainFrame.releaseDisplayWait();
-            }
-        };
+        Runnable runnable =
+                () -> {
+                    mainFrame.acquireDisplayWait();
+                    try {
+                        Project project = new Project();
+                        project.setGuiCallback(mainFrame.getGuiCallback());
+                        BugLoader.loadBugs(mainFrame, project, url);
+                        project.getSourceFinder(); // force source finder to be
+                        // initialized
+                        mainFrame.updateBugTree();
+                    } finally {
+                        mainFrame.releaseDisplayWait();
+                    }
+                };
         if (EventQueue.isDispatchThread()) {
             new Thread(runnable, "Analysis loading thread").start();
         } else {
@@ -563,12 +605,13 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
     void loadProjectFromFile(final File f) {
 
-        Runnable runnable = () -> {
-            final Project project = BugLoader.loadProject(mainFrame, f);
-            final BugCollection bc = project == null ? null : BugLoader.doAnalysis(project);
-            mainFrame.updateProjectAndBugCollection(bc);
-            mainFrame.setProjectAndBugCollectionInSwingThread(project, bc);
-        };
+        Runnable runnable =
+                () -> {
+                    final Project project = BugLoader.loadProject(mainFrame, f);
+                    final BugCollection bc = project == null ? null : BugLoader.doAnalysis(project);
+                    mainFrame.updateProjectAndBugCollection(bc);
+                    mainFrame.setProjectAndBugCollectionInSwingThread(project, bc);
+                };
         if (EventQueue.isDispatchThread()) {
             new Thread(runnable).start();
         } else {
@@ -584,10 +627,11 @@ public class MainFrameLoadSaveHelper implements Serializable {
         } finally {
             mainFrame.releaseDisplayWait();
         }
-
     }
 
     enum SaveReturn {
-        SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR
+        SAVE_SUCCESSFUL,
+        SAVE_IO_EXCEPTION,
+        SAVE_ERROR
     }
 }

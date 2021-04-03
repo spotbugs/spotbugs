@@ -1,16 +1,5 @@
 package edu.umd.cs.findbugs.ba;
 
-import java.lang.annotation.ElementType;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -18,16 +7,26 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
+import java.lang.annotation.ElementType;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import org.apache.bcel.Const;
 
 /**
- * XMethod implementation for unresolvable methods. Returns some kind of
- * reasonable default answer to questions that can't be answered (e.g., what are
- * the access flags).
+ * XMethod implementation for unresolvable methods. Returns some kind of reasonable default answer
+ * to questions that can't be answered (e.g., what are the access flags).
  */
 class UnresolvedXMethod extends AbstractMethod {
 
     protected UnresolvedXMethod(MethodDescriptor m) {
-        super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(),
+        super(
+                m.getClassDescriptor().getDottedClassName(),
+                m.getName(),
+                m.getSignature(),
                 m.isStatic() ? Const.ACC_STATIC : 0);
         if (XFactory.DEBUG_UNRESOLVED) {
             System.out.println("Unresolved xmethod: " + this);
@@ -56,7 +55,8 @@ class UnresolvedXMethod extends AbstractMethod {
         if (o instanceof XMethod) {
             return XFactory.compare((XMethod) this, (XMethod) o);
         }
-        throw new ClassCastException("Don't know how to compare " + this.getClass().getName() + " to " + o.getClass().getName());
+        throw new ClassCastException(
+                "Don't know how to compare " + this.getClass().getName() + " to " + o.getClass().getName());
     }
 
     @Override
@@ -172,7 +172,8 @@ class UnresolvedXMethod extends AbstractMethod {
         return false;
     }
 
-    Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations = Collections.emptyMap();
+    Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations =
+            Collections.emptyMap();
 
     /*
      * (non-Javadoc)
@@ -182,14 +183,13 @@ class UnresolvedXMethod extends AbstractMethod {
      */
     @Override
     public void addParameterAnnotation(int param, AnnotationValue annotationValue) {
-        HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations = new HashMap<>(
-                methodParameterAnnotations);
-        Map<ClassDescriptor, AnnotationValue> paramMap = updatedAnnotations.computeIfAbsent(param,
-                k -> new HashMap<>());
+        HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations =
+                new HashMap<>(methodParameterAnnotations);
+        Map<ClassDescriptor, AnnotationValue> paramMap =
+                updatedAnnotations.computeIfAbsent(param, k -> new HashMap<>());
         paramMap.put(annotationValue.getAnnotationClass(), annotationValue);
 
         methodParameterAnnotations = updatedAnnotations;
-
     }
 
     @Override
@@ -235,8 +235,7 @@ class UnresolvedXMethod extends AbstractMethod {
      */
     @Override
     public void addAnnotation(AnnotationValue annotationValue) {
-        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<>(
-                methodAnnotations);
+        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<>(methodAnnotations);
         updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
         methodAnnotations = updatedAnnotations;
     }
@@ -301,6 +300,4 @@ class UnresolvedXMethod extends AbstractMethod {
     public boolean usesInvokeDynamic() {
         return false;
     }
-
-
 }

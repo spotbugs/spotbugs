@@ -19,22 +19,18 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.util.MultiMap;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import javax.annotation.CheckForNull;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class UsagesRequiringNonNullValues {
 
     public static class Pair {
@@ -73,7 +69,8 @@ public class UsagesRequiringNonNullValues {
         map.add(loc.getHandle().getPosition(), p);
     }
 
-    public @CheckForNull PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn, ValueNumberDataflow vnaDataflow) {
+    public @CheckForNull PointerUsageRequiringNonNullValue get(
+            Location loc, ValueNumber vn, ValueNumberDataflow vnaDataflow) {
         // PointerUsageRequiringNonNullValue secondBest = null;
         MergeTree mergeTree = vnaDataflow.getAnalysis().getMergeTree();
         for (Pair p : map.get(loc.getHandle().getPosition())) {
@@ -94,5 +91,4 @@ public class UsagesRequiringNonNullValues {
     public Collection<? extends Pair> getPairs(Integer loc) {
         return map.get(loc);
     }
-
 }

@@ -19,16 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -36,21 +26,28 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 /**
- * Detector to find calls to Number constructors with base type argument in Java
- * 5 or newer bytecode.
+ * Detector to find calls to Number constructors with base type argument in Java 5 or newer
+ * bytecode.
  *
- * Using <code>new Integer(int)</code> is guaranteed to always result in a new
- * object whereas <code>Integer.valueOf(int)</code> allows caching of values to
- * be done by the javac, JVM class library or JIT.
+ * <p>Using <code>new Integer(int)</code> is guaranteed to always result in a new object whereas
+ * <code>Integer.valueOf(int)</code> allows caching of values to be done by the javac, JVM class
+ * library or JIT.
  *
- * Currently only the JVM class library seems to do caching in the range of -128
- * to 127. There does not seem to be any caching for float and double which is
- * why those are reported as low priority.
+ * <p>Currently only the JVM class library seems to do caching in the range of -128 to 127. There
+ * does not seem to be any caching for float and double which is why those are reported as low
+ * priority.
  *
- * All invokes of Number constructor with a constant argument are flagged as
- * high priority and invokes with unknwon value are normal priority.
+ * <p>All invokes of Number constructor with a constant argument are flagged as high priority and
+ * invokes with unknwon value are normal priority.
  *
  * @author Mikko Tiihonen
  */
@@ -75,8 +72,7 @@ public class NumberConstructor extends OpcodeStackDetector {
     /**
      * Constructs a NC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public NumberConstructor(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -87,12 +83,14 @@ public class NumberConstructor extends OpcodeStackDetector {
         handle("java/lang/Long", false, "(J)");
         handle("java/lang/Float", true, "(F)");
         handle("java/lang/Double", true, "(D)");
-
     }
 
     private void handle(@SlashedClassName String className, boolean isFloatingPoint, String sig) {
-        MethodDescriptor boxingMethod = new MethodDescriptor(className, "valueOf", sig + "L" + className + ";", true);
-        MethodDescriptor parsingMethod = new MethodDescriptor(className, "valueOf", "(Ljava/lang/String;)" + "L" + className + ";", true);
+        MethodDescriptor boxingMethod =
+                new MethodDescriptor(className, "valueOf", sig + "L" + className + ";", true);
+        MethodDescriptor parsingMethod =
+                new MethodDescriptor(
+                        className, "valueOf", "(Ljava/lang/String;)" + "L" + className + ";", true);
         boxClasses.put(className, new Pair(boxingMethod, parsingMethod));
         methods.add(new MethodDescriptor(className, Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"));
         methods.add(new MethodDescriptor(className, Const.CONSTRUCTOR_NAME, sig + "V"));
@@ -101,13 +99,13 @@ public class NumberConstructor extends OpcodeStackDetector {
     /**
      * The detector is only meaningful for Java5 class libraries.
      *
-     * @param classContext
-     *            the context object that holds the JavaClass parsed
+     * @param classContext the context object that holds the JavaClass parsed
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
         int majorVersion = classContext.getJavaClass().getMajor();
-        if (majorVersion >= Const.MAJOR_1_5 && hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
+        if (majorVersion >= Const.MAJOR_1_5
+                && hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
             super.visitClassContext(classContext);
         }
     }
@@ -182,8 +180,13 @@ public class NumberConstructor extends OpcodeStackDetector {
             type = "DM_NUMBER_CTOR";
         }
 
-        BugInstance bug = new BugInstance(this, type, prio).addClass(this).addMethod(this).addCalledMethod(this)
-                .addMethod(shouldCall).describe("SHOULD_CALL");
+        BugInstance bug =
+                new BugInstance(this, type, prio)
+                        .addClass(this)
+                        .addMethod(this)
+                        .addCalledMethod(this)
+                        .addMethod(shouldCall)
+                        .describe("SHOULD_CALL");
         bugAccumulator.accumulateBug(bug, this);
     }
 }

@@ -19,13 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import javax.annotation.CheckForNull;
 
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-
 /**
- * Interface for querying nullness annotations on methods, fields, and
- * parameters.
+ * Interface for querying nullness annotations on methods, fields, and parameters.
  *
  * @author David Hovemeyer
  */
@@ -34,31 +32,23 @@ public interface INullnessAnnotationDatabase {
     /**
      * Determine whether given parameter must be non-null.
      *
-     * @param m
-     *            a method
-     * @param param
-     *            parameter (0 == first parameter)
+     * @param m a method
+     * @param param parameter (0 == first parameter)
      * @return true if the parameter must be non-null, false otherwise
      */
     public abstract boolean parameterMustBeNonNull(XMethod m, int param);
 
     /**
-     * Get a resolved NullnessAnnotation on given XMethod, XField, or
-     * XMethodParameter.
+     * Get a resolved NullnessAnnotation on given XMethod, XField, or XMethodParameter.
      *
-     * @param o
-     *            an XMethod, XField, or XMethodParameter
-     * @param getMinimal
-     *            TODO: what does this mean?
+     * @param o an XMethod, XField, or XMethodParameter
+     * @param getMinimal TODO: what does this mean?
      * @return resolved NullnessAnnotation
      */
     @CheckForNull
     public abstract NullnessAnnotation getResolvedAnnotation(final Object o, boolean getMinimal);
 
-    /**
-     * Load "built-in" annotations that might not be evident from the
-     * analyzed/referenced code.
-     */
+    /** Load "built-in" annotations that might not be evident from the analyzed/referenced code. */
     public void loadAuxiliaryAnnotations();
 
     // /**
@@ -73,66 +63,61 @@ public interface INullnessAnnotationDatabase {
     /**
      * Add a field annotation to the database.
      *
-     * @param cName
-     *            dotted class name
-     * @param mName
-     *            field name
-     * @param mSig
-     *            field signature
-     * @param isStatic
-     *            true if field is static, false otherwise
-     * @param annotation
-     *            NullnessAnnotation to add
+     * @param cName dotted class name
+     * @param mName field name
+     * @param mSig field signature
+     * @param isStatic true if field is static, false otherwise
+     * @param annotation NullnessAnnotation to add
      */
-    public void addFieldAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic,
+    public void addFieldAnnotation(
+            @DottedClassName String cName,
+            String mName,
+            String mSig,
+            boolean isStatic,
             NullnessAnnotation annotation);
 
     /**
      * Add a method annotation to the database.
      *
-     * @param cName
-     *            dotted class name
-     * @param mName
-     *            method name
-     * @param mSig
-     *            method signature
-     * @param isStatic
-     *            true if method is static, false otherwise
-     * @param annotation
-     *            NullnessAnnotation to add
+     * @param cName dotted class name
+     * @param mName method name
+     * @param mSig method signature
+     * @param isStatic true if method is static, false otherwise
+     * @param annotation NullnessAnnotation to add
      */
-    public void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic,
+    public void addMethodAnnotation(
+            @DottedClassName String cName,
+            String mName,
+            String mSig,
+            boolean isStatic,
             NullnessAnnotation annotation);
 
     /**
      * Add a method parameter annotation to the database.
      *
-     * @param cName
-     *            dotted class name
-     * @param mName
-     *            method name
-     * @param mSig
-     *            method signature
-     * @param isStatic
-     *            true if method is static, false otherwise
-     * @param param
-     *            parameter (0 == first parameter)
-     * @param annotation
-     *            the NullnessAnnotation to add
+     * @param cName dotted class name
+     * @param mName method name
+     * @param mSig method signature
+     * @param isStatic true if method is static, false otherwise
+     * @param param parameter (0 == first parameter)
+     * @param annotation the NullnessAnnotation to add
      */
-    public void addMethodParameterAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic,
-            int param, NullnessAnnotation annotation);
+    public void addMethodParameterAnnotation(
+            @DottedClassName String cName,
+            String mName,
+            String mSig,
+            boolean isStatic,
+            int param,
+            NullnessAnnotation annotation);
 
     /**
      * Add a default annotation to the database.
      *
-     * @param target
-     *            one of AnnotationDatabase.METHOD, AnnotationDatabase.FIELD,
-     *            AnnotationDatabase.PARAMETER, or AnnotationDatabase.ANY
-     * @param c
-     *            dotted class name of class default annotation pertains to
-     * @param n
-     *            the default NullnessAnnotation
+     * @param target one of AnnotationDatabase.METHOD, AnnotationDatabase.FIELD,
+     *     AnnotationDatabase.PARAMETER, or AnnotationDatabase.ANY
+     * @param c dotted class name of class default annotation pertains to
+     * @param n the default NullnessAnnotation
      */
-    public void addDefaultAnnotation(AnnotationDatabase.Target target, @DottedClassName String c, NullnessAnnotation n);
+    public void addDefaultAnnotation(
+            AnnotationDatabase.Target target, @DottedClassName String c, NullnessAnnotation n);
 }

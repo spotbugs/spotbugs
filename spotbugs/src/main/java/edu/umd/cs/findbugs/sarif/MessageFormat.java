@@ -1,13 +1,13 @@
 package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-
 import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
- * Class to parse longDescription to generate formatted test for SARIF.
- * All the logic is copied from {@code FindBugsMessageFormat}.
+ * Class to parse longDescription to generate formatted test for SARIF. All the logic is copied from
+ * {@code FindBugsMessageFormat}.
+ *
  * @see edu.umd.cs.findbugs.FindBugsMessageFormat
  */
 class MessageFormat {
@@ -59,7 +59,8 @@ class MessageFormat {
             try {
                 result.append(handler.apply(fieldNum, key));
             } catch (IllegalArgumentException iae) {
-                throw new IllegalArgumentException("Problem processing " + pattern + " format " + substPat, iae);
+                throw new IllegalArgumentException(
+                        "Problem processing " + pattern + " format " + substPat, iae);
             }
             pat = pat.substring(end + 1);
         }

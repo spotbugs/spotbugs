@@ -21,26 +21,22 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.annotation.CheckForNull;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ui.IMarkerResolution;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
 /**
- * The <CODE>BugResolutionAssociations</CODE> is the container for the loaded
- * bug-resolutions. For each registred bug pattern, at least one resolution-class
- * has to be specified. Also an instance of a bug resolution can be associated
- * with a bug pattern.
+ * The <CODE>BugResolutionAssociations</CODE> is the container for the loaded bug-resolutions. For
+ * each registred bug pattern, at least one resolution-class has to be specified. Also an instance
+ * of a bug resolution can be associated with a bug pattern.
  *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -118,5 +114,4 @@ public class BugResolutionAssociations {
             return null;
         }
     }
-
 }

@@ -19,12 +19,15 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.util.Util;
 import java.io.File;
 
-import edu.umd.cs.findbugs.util.Util;
-
 enum SaveType {
-    NOT_KNOWN, HTML_OUTPUT, XML_ANALYSIS, FBP_FILE, FBA_FILE;
+    NOT_KNOWN,
+    HTML_OUTPUT,
+    XML_ANALYSIS,
+    FBP_FILE,
+    FBA_FILE;
 
     public FindBugsFileFilter getFilter() {
         switch (this) {
@@ -52,7 +55,6 @@ enum SaveType {
 
     public String getFileExtension() {
         switch (this) {
-
         case HTML_OUTPUT:
             return ".html";
         case XML_ANALYSIS:

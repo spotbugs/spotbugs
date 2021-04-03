@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.sarif;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -13,9 +15,6 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.util.ClassName;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -31,7 +30,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317670">3.28 location object</a>
+ * @see <a
+ *     href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317670">3.28
+ *     location object</a>
  */
 class Location {
     @Nullable
@@ -39,9 +40,12 @@ class Location {
     @NonNull
     private final List<LogicalLocation> logicalLocations;
 
-    Location(@Nullable PhysicalLocation physicalLocation, @NonNull Collection<LogicalLocation> logicalLocations) {
+    Location(
+            @Nullable PhysicalLocation physicalLocation,
+            @NonNull Collection<LogicalLocation> logicalLocations) {
         if (physicalLocation == null && (Objects.requireNonNull(logicalLocations).isEmpty())) {
-            throw new IllegalArgumentException("One of physicalLocation or logicalLocations should exist");
+            throw new IllegalArgumentException(
+                    "One of physicalLocation or logicalLocations should exist");
         }
 
         this.physicalLocation = physicalLocation;
@@ -60,37 +64,48 @@ class Location {
         }
 
         JsonArray logicalLocationArray = new JsonArray();
-        logicalLocations.stream().map(LogicalLocation::toJsonObject).forEach(logicalLocation -> logicalLocationArray.add(logicalLocation));
+        logicalLocations.stream()
+                .map(LogicalLocation::toJsonObject)
+                .forEach(logicalLocation -> logicalLocationArray.add(logicalLocation));
         if (logicalLocationArray.size() > 0) {
             result.add("logicalLocations", logicalLocationArray);
         }
         return result;
     }
 
-    static Optional<Location> fromBugInstance(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
+    static Optional<Location> fromBugInstance(
+            @NonNull BugInstance bugInstance,
+            @NonNull SourceFinder sourceFinder,
             @NonNull Map<URI, String> baseToId) {
         Objects.requireNonNull(bugInstance);
         Objects.requireNonNull(sourceFinder);
         Objects.requireNonNull(baseToId);
 
-        final PhysicalLocation physicalLocation = findPhysicalLocation(bugInstance, sourceFinder, baseToId);
-        return LogicalLocation.fromBugInstance(bugInstance).map(logicalLocation -> new Location(physicalLocation,
-                Collections.singleton(logicalLocation)));
+        final PhysicalLocation physicalLocation =
+                findPhysicalLocation(bugInstance, sourceFinder, baseToId);
+        return LogicalLocation.fromBugInstance(bugInstance)
+                .map(
+                        logicalLocation -> new Location(physicalLocation, Collections.singleton(logicalLocation)));
     }
 
-    static Location fromStackTraceElement(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
+    static Location fromStackTraceElement(
+            @NonNull StackTraceElement element,
+            @NonNull SourceFinder sourceFinder,
             @NonNull Map<URI, String> baseToId) {
         Objects.requireNonNull(element);
         Objects.requireNonNull(sourceFinder);
         Objects.requireNonNull(baseToId);
 
-        Optional<PhysicalLocation> physicalLocation = findPhysicalLocation(element, sourceFinder, baseToId);
+        Optional<PhysicalLocation> physicalLocation =
+                findPhysicalLocation(element, sourceFinder, baseToId);
         LogicalLocation logicalLocation = LogicalLocation.fromStackTraceElement(element);
         return new Location(physicalLocation.orElse(null), Collections.singleton(logicalLocation));
     }
 
     @CheckForNull
-    private static PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
+    private static PhysicalLocation findPhysicalLocation(
+            @NonNull BugInstance bugInstance,
+            @NonNull SourceFinder sourceFinder,
             Map<URI, String> baseToId) {
         try {
             return PhysicalLocation.fromBugAnnotation(bugInstance, sourceFinder, baseToId).orElse(null);
@@ -101,17 +116,22 @@ class Location {
     }
 
     @CheckForNull
-    private static Optional<PhysicalLocation> findPhysicalLocation(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
+    private static Optional<PhysicalLocation> findPhysicalLocation(
+            @NonNull StackTraceElement element,
+            @NonNull SourceFinder sourceFinder,
             Map<URI, String> baseToId) {
-        Optional<Region> region = Optional.of(element.getLineNumber())
-                .filter(line -> line > 0)
-                .map(line -> new Region(line, line));
+        Optional<Region> region =
+                Optional.of(element.getLineNumber())
+                        .filter(line -> line > 0)
+                        .map(line -> new Region(line, line));
         return ArtifactLocation.fromStackTraceElement(element, sourceFinder, baseToId)
                 .map(artifactLocation -> new PhysicalLocation(artifactLocation, region.orElse(null)));
     }
 
     /**
-     * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317427">3.4 artifactLocation object</a>
+     * @see <a
+     *     href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317427">3.4
+     *     artifactLocation object</a>
      */
     static final class ArtifactLocation {
         @NonNull
@@ -131,22 +151,30 @@ class Location {
             return locationJson;
         }
 
-        static Optional<ArtifactLocation> fromBugAnnotation(@NonNull ClassAnnotation classAnnotation, @NonNull SourceLineAnnotation bugAnnotation,
+        static Optional<ArtifactLocation> fromBugAnnotation(
+                @NonNull ClassAnnotation classAnnotation,
+                @NonNull SourceLineAnnotation bugAnnotation,
                 @NonNull SourceFinder sourceFinder,
                 @NonNull Map<URI, String> baseToId) {
             Objects.requireNonNull(bugAnnotation);
             Objects.requireNonNull(sourceFinder);
             Objects.requireNonNull(baseToId);
 
-            Optional<ArtifactLocation> location = sourceFinder.getBase(bugAnnotation).map(base -> {
-                String uriBaseId = baseToId.computeIfAbsent(base, s -> Integer.toString(s.hashCode()));
-                try {
-                    SourceFile sourceFile = sourceFinder.findSourceFile(bugAnnotation);
-                    return new ArtifactLocation(base.relativize(sourceFile.getFullURI()), uriBaseId);
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
+            Optional<ArtifactLocation> location =
+                    sourceFinder
+                            .getBase(bugAnnotation)
+                            .map(
+                                    base -> {
+                                        String uriBaseId =
+                                                baseToId.computeIfAbsent(base, s -> Integer.toString(s.hashCode()));
+                                        try {
+                                            SourceFile sourceFile = sourceFinder.findSourceFile(bugAnnotation);
+                                            return new ArtifactLocation(
+                                                    base.relativize(sourceFile.getFullURI()), uriBaseId);
+                                        } catch (IOException e) {
+                                            throw new UncheckedIOException(e);
+                                        }
+                                    });
 
             if (location.isPresent()) {
                 return location;
@@ -162,7 +190,8 @@ class Location {
             }
         }
 
-        static Optional<ArtifactLocation> fromStackTraceElement(StackTraceElement element, SourceFinder sourceFinder, Map<URI, String> baseToId) {
+        static Optional<ArtifactLocation> fromStackTraceElement(
+                StackTraceElement element, SourceFinder sourceFinder, Map<URI, String> baseToId) {
             Objects.requireNonNull(element);
             Objects.requireNonNull(sourceFinder);
             Objects.requireNonNull(baseToId);
@@ -175,11 +204,15 @@ class Location {
                 int index = fullFileName.indexOf(packageName.replace('.', File.separatorChar));
                 assert index >= 0;
                 String relativeFileName = fullFileName.substring(index);
-                return sourceFinder.getBase(relativeFileName).map(base -> {
-                    String baseId = baseToId.computeIfAbsent(base, s -> Integer.toString(s.hashCode()));
-                    URI relativeUri = base.relativize(sourceFile.getFullURI());
-                    return new ArtifactLocation(relativeUri, baseId);
-                });
+                return sourceFinder
+                        .getBase(relativeFileName)
+                        .map(
+                                base -> {
+                                    String baseId =
+                                            baseToId.computeIfAbsent(base, s -> Integer.toString(s.hashCode()));
+                                    URI relativeUri = base.relativize(sourceFile.getFullURI());
+                                    return new ArtifactLocation(relativeUri, baseId);
+                                });
             } catch (IOException fileNotFound) {
                 return Optional.empty();
             }
@@ -187,16 +220,14 @@ class Location {
     }
 
     /**
-     * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317685">3.30 region object</a>
+     * @see <a
+     *     href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317685">3.30
+     *     region object</a>
      */
     static final class Region {
-        /**
-         * 1-indexed line number
-         */
+        /** 1-indexed line number */
         final int startLine;
-        /**
-         * 1-indexed line number
-         */
+        /** 1-indexed line number */
         final int endLine;
 
         Region(int startLine, int endLine) {
@@ -227,7 +258,9 @@ class Location {
     }
 
     /**
-     * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317678">3.29 physicalLocation object</a>
+     * @see <a
+     *     href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317678">3.29
+     *     physicalLocation object</a>
      */
     static final class PhysicalLocation {
         @NonNull
@@ -249,19 +282,22 @@ class Location {
             return result;
         }
 
-        static Optional<PhysicalLocation> fromBugAnnotation(@NonNull BugInstance bugInstance, SourceFinder sourceFinder,
-                Map<URI, String> baseToId) {
+        static Optional<PhysicalLocation> fromBugAnnotation(
+                @NonNull BugInstance bugInstance, SourceFinder sourceFinder, Map<URI, String> baseToId) {
             ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
             SourceLineAnnotation sourceLine = bugInstance.getPrimarySourceLineAnnotation();
 
-            Optional<ArtifactLocation> artifactLocation = ArtifactLocation.fromBugAnnotation(primaryClass, sourceLine, sourceFinder, baseToId);
+            Optional<ArtifactLocation> artifactLocation =
+                    ArtifactLocation.fromBugAnnotation(primaryClass, sourceLine, sourceFinder, baseToId);
             Optional<Region> region = Region.fromBugAnnotation(sourceLine);
             return artifactLocation.map(location -> new PhysicalLocation(location, region.orElse(null)));
         }
     }
 
     /**
-     * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317719">3.33 logicalLocation object</a>
+     * @see <a
+     *     href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317719">3.33
+     *     logicalLocation object</a>
      */
     static final class LogicalLocation {
         @NonNull
@@ -275,7 +311,11 @@ class Location {
         @Nullable
         final Map<String, String> properties = new HashMap<>();
 
-        LogicalLocation(@NonNull String name, @Nullable String decoratedName, @NonNull String kind, @Nullable String fullyQualifiedName,
+        LogicalLocation(
+                @NonNull String name,
+                @Nullable String decoratedName,
+                @NonNull String kind,
+                @Nullable String fullyQualifiedName,
                 @Nullable Map<String, String> properties) {
             this.name = Objects.requireNonNull(name);
             this.decoratedName = decoratedName;
@@ -306,10 +346,12 @@ class Location {
 
         @NonNull
         static LogicalLocation fromStackTraceElement(@NonNull StackTraceElement element) {
-            String fullyQualifiedName = String.format("%s.%s", element.getClassName(), element.getMethodName());
+            String fullyQualifiedName =
+                    String.format("%s.%s", element.getClassName(), element.getMethodName());
             Map<String, String> properties = new HashMap<>();
             properties.put("line-number", Integer.toString(element.getLineNumber()));
-            return new LogicalLocation(element.getMethodName(), null, "function", fullyQualifiedName, properties);
+            return new LogicalLocation(
+                    element.getMethodName(), null, "function", fullyQualifiedName, properties);
         }
 
         @NonNull
@@ -336,11 +378,16 @@ class Location {
             BugAnnotation annotation = null;
             if (localVariableAnnotation != null) {
                 annotation = localVariableAnnotation;
-                fullyQualifiedName = String.format("%s#%s", methodAnnotation.getFullMethod(classAnnotation), localVariableAnnotation.getName());
+                fullyQualifiedName =
+                        String.format(
+                                "%s#%s",
+                                methodAnnotation.getFullMethod(classAnnotation), localVariableAnnotation.getName());
             } else {
                 if (fieldAnnotation != null) {
                     annotation = fieldAnnotation;
-                    fullyQualifiedName = String.format("%s.%s", classAnnotation.getClassName(), fieldAnnotation.getFieldName());
+                    fullyQualifiedName =
+                            String.format(
+                                    "%s.%s", classAnnotation.getClassName(), fieldAnnotation.getFieldName());
                 } else {
                     if (methodAnnotation != null) {
                         annotation = methodAnnotation;

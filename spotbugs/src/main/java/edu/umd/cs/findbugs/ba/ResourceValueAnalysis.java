@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
@@ -28,11 +29,9 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.SystemProperties;
-
 @javax.annotation.ParametersAreNonnullByDefault
-public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> implements
-        EdgeTypes {
+public class ResourceValueAnalysis<Resource>
+        extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> implements EdgeTypes {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
 
@@ -48,7 +47,11 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
     private final boolean ignoreImplicitExceptions;
 
-    public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs, ResourceTracker<Resource> resourceTracker,
+    public ResourceValueAnalysis(
+            MethodGen methodGen,
+            CFG cfg,
+            DepthFirstSearch dfs,
+            ResourceTracker<Resource> resourceTracker,
             Resource resource) {
 
         super(dfs);
@@ -75,12 +78,14 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
         final int numSlots = result.getNumSlots();
         for (int i = 0; i < numSlots; ++i) {
             boolean slotContainsInstance = resourceTracker.isParamInstance(resource, i);
-            result.setValue(i, slotContainsInstance ? ResourceValue.instance() : ResourceValue.notInstance());
+            result.setValue(
+                    i, slotContainsInstance ? ResourceValue.instance() : ResourceValue.notInstance());
         }
     }
 
     @Override
-    public void meetInto(ResourceValueFrame fact, Edge edge, ResourceValueFrame result) throws DataflowAnalysisException {
+    public void meetInto(ResourceValueFrame fact, Edge edge, ResourceValueFrame result)
+            throws DataflowAnalysisException {
         BasicBlock source = edge.getSource();
         BasicBlock dest = edge.getTarget();
 
@@ -92,8 +97,10 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
             // PruneInfeasibleExceptionEdges),
             // and the resource tracker says to ignore implicit exceptions
             // for this resource, ignore it.
-            if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)
-                    && ignoreImplicitExceptions && !edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG)) {
+            if (AnalysisContext.currentAnalysisContext()
+                    .getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)
+                    && ignoreImplicitExceptions
+                    && !edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG)) {
                 return;
             }
 
@@ -119,8 +126,12 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                     System.out.println("Null fall through successor!");
                 }
                 if (fallThroughSuccessor != null
-                        && resourceTracker.isResourceClose(fallThroughSuccessor, exceptionThrower, methodGen.getConstantPool(),
-                                resource, fact)) {
+                        && resourceTracker.isResourceClose(
+                                fallThroughSuccessor,
+                                exceptionThrower,
+                                methodGen.getConstantPool(),
+                                resource,
+                                fact)) {
                     tmpFact = modifyFrame(fact, tmpFact);
                     tmpFact.setStatus(ResourceValueFrame.CLOSED);
                     if (DEBUG) {
@@ -165,7 +176,10 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                     }
                     // If instructions exist and both push one word onto the
                     // stack and the next-topmost pushes null...
-                    if (ihPrev != null && ihPrevPrev != null && prevPush == 1 && prevPrevPush == 1
+                    if (ihPrev != null
+                            && ihPrevPrev != null
+                            && prevPush == 1
+                            && prevPrevPush == 1
                             && ihPrevPrev.getInstruction().getOpcode() == Const.ACONST_NULL) {
                         // Topmost item on stack is being compared with null
                         // (the null itself is next-topmost on the stack)
@@ -185,11 +199,13 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                         // The source block has a valid start fact.
                         // That means it is safe to inspect the frame at the If
                         // instruction.
-                        ResourceValueFrame frameAtIf = getFactAtLocation(new Location(lastInSourceHandle, source));
+                        ResourceValueFrame frameAtIf =
+                                getFactAtLocation(new Location(lastInSourceHandle, source));
                         ResourceValue topValue = frameAtIf.getValue(frameAtIf.getNumSlots() - 1);
 
                         if (topValue.isInstance()) {
-                            if ((isNullCheck && edgeType == IFCMP_EDGE) || (isNonNullCheck && edgeType == FALL_THROUGH_EDGE)) {
+                            if ((isNullCheck && edgeType == IFCMP_EDGE)
+                                    || (isNonNullCheck && edgeType == FALL_THROUGH_EDGE)) {
                                 // System.out.println("**** making resource nonexistent on edge "+edge.getId());
                                 tmpFact = modifyFrame(fact, tmpFact);
                                 tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
@@ -208,7 +224,8 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
     }
 
     @Override
-    protected void mergeInto(ResourceValueFrame frame, ResourceValueFrame result) throws DataflowAnalysisException {
+    protected void mergeInto(ResourceValueFrame frame, ResourceValueFrame result)
+            throws DataflowAnalysisException {
         // Merge slots
         super.mergeInto(frame, result);
 
@@ -217,19 +234,20 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
     }
 
     @Override
-    protected void mergeValues(ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot)
+    protected void mergeValues(
+            ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot)
             throws DataflowAnalysisException {
-        ResourceValue value = ResourceValue.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
+        ResourceValue value =
+                ResourceValue.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
         resultFrame.setValue(slot, value);
     }
 
     @Override
-    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
+    public void transferInstruction(
+            InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
             throws DataflowAnalysisException {
 
         visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
         visitor.transferInstruction(handle, basicBlock);
-
     }
-
 }

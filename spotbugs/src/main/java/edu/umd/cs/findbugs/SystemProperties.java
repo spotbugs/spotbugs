@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.io.IO;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,21 +32,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.io.IO;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class SystemProperties {
 
     private static Properties properties = new Properties();
 
-    public final static boolean ASSERTIONS_ENABLED;
+    public static final boolean ASSERTIONS_ENABLED;
 
-    public final static boolean RUNNING_IN_ECLIPSE;
+    public static final boolean RUNNING_IN_ECLIPSE;
 
-    public final static boolean RUNNING_AS_IDE_PLUGIN;
+    public static final boolean RUNNING_AS_IDE_PLUGIN;
 
     static {
         String name = SystemProperties.class.getClassLoader().getClass().getCanonicalName();
@@ -52,7 +49,8 @@ public class SystemProperties {
         RUNNING_AS_IDE_PLUGIN = RUNNING_IN_ECLIPSE || name.startsWith("com.intellij.ide.");
     }
 
-    final static String OS_NAME;
+    static final String OS_NAME;
+
     static {
         boolean tmp = false;
         assert tmp = true; // set tmp to true if assertions are enabled
@@ -90,7 +88,6 @@ public class SystemProperties {
                 loadPropertiesFromURL(configURL);
             } catch (MalformedURLException e) {
                 AnalysisContext.logError("Unable to load properties from " + u, e);
-
             }
         }
     }
@@ -106,11 +103,9 @@ public class SystemProperties {
     }
 
     /**
-     * This method is public to allow clients to set system properties via any
-     * {@link URL}
+     * This method is public to allow clients to set system properties via any {@link URL}
      *
-     * @param url
-     *            an url to load system properties from, may be nullerrorMsg
+     * @param url an url to load system properties from, may be nullerrorMsg
      */
     public static void loadPropertiesFromURL(URL url) {
         if (url == null) {
@@ -128,14 +123,13 @@ public class SystemProperties {
     }
 
     /**
-     * Get boolean property, returning false if a security manager prevents us
-     * from accessing system properties
-     * <p>
-     * (incomplete) list of known system properties
+     * Get boolean property, returning false if a security manager prevents us from accessing system
+     * properties
+     *
+     * <p>(incomplete) list of known system properties
+     *
      * <ul>
-     * <li>
-     * "report_TESTING_pattern_in_standard_detectors" - default is false
-     * </li>
+     *   <li>"report_TESTING_pattern_in_standard_detectors" - default is false
      * </ul>
      *
      * @return true if the property exists and is set to true
@@ -163,10 +157,8 @@ public class SystemProperties {
     }
 
     /**
-     * @param arg0
-     *            property name
-     * @param arg1
-     *            default value
+     * @param arg0 property name
+     * @param arg1 default value
      * @return the int value (or arg1 if the property does not exist)
      * @deprecated Use {@link #getInt(String,int)} instead
      */
@@ -176,10 +168,8 @@ public class SystemProperties {
     }
 
     /**
-     * @param name
-     *            property name
-     * @param defaultValue
-     *            default value
+     * @param name property name
+     * @param defaultValue default value
      * @return the int value (or defaultValue if the property does not exist)
      */
     public static int getInt(String name, int defaultValue) {
@@ -195,8 +185,7 @@ public class SystemProperties {
     }
 
     /**
-     * @param name
-     *            property name
+     * @param name property name
      * @return string value (or null if the property does not exist)
      */
     public static String getOSDependentProperty(String name) {
@@ -209,8 +198,7 @@ public class SystemProperties {
     }
 
     /**
-     * @param name
-     *            property name
+     * @param name property name
      * @return string value (or null if the property does not exist)
      */
     public static String getProperty(String name) {
@@ -223,7 +211,6 @@ public class SystemProperties {
         } catch (Exception e) {
             return null;
         }
-
     }
 
     public static void setProperty(String name, String value) {
@@ -231,10 +218,8 @@ public class SystemProperties {
     }
 
     /**
-     * @param name
-     *            property name
-     * @param defaultValue
-     *            default value
+     * @param name property name
+     * @param defaultValue default value
      * @return string value (or defaultValue if the property does not exist)
      */
     public static String getProperty(String name, String defaultValue) {
@@ -249,9 +234,11 @@ public class SystemProperties {
         }
     }
 
-    private static final String URL_REWRITE_PATTERN_STRING = getOSDependentProperty("findbugs.urlRewritePattern");
+    private static final String URL_REWRITE_PATTERN_STRING =
+            getOSDependentProperty("findbugs.urlRewritePattern");
 
-    private static final String URL_REWRITE_FORMAT = getOSDependentProperty("findbugs.urlRewriteFormat");
+    private static final String URL_REWRITE_FORMAT =
+            getOSDependentProperty("findbugs.urlRewriteFormat");
 
     private static final Pattern URL_REWRITE_PATTERN;
 
@@ -262,16 +249,28 @@ public class SystemProperties {
                 p = Pattern.compile(URL_REWRITE_PATTERN_STRING);
                 String ignored = String.format(URL_REWRITE_FORMAT, "");
             } catch (PatternSyntaxException e) {
-                throw new IllegalArgumentException("Bad findbugs.urlRewritePattern '" + URL_REWRITE_PATTERN_STRING + "' - "
-                        + e.getClass().getSimpleName() + ": " + e.getMessage());
+                throw new IllegalArgumentException(
+                        "Bad findbugs.urlRewritePattern '"
+                                + URL_REWRITE_PATTERN_STRING
+                                + "' - "
+                                + e.getClass().getSimpleName()
+                                + ": "
+                                + e.getMessage());
             } catch (IllegalFormatException e) {
-                throw new IllegalArgumentException("Bad findbugs.urlRewriteFormat '" + URL_REWRITE_FORMAT + "' - "
-                        + e.getClass().getSimpleName() + ": " + e.getMessage());
+                throw new IllegalArgumentException(
+                        "Bad findbugs.urlRewriteFormat '"
+                                + URL_REWRITE_FORMAT
+                                + "' - "
+                                + e.getClass().getSimpleName()
+                                + ": "
+                                + e.getMessage());
             }
         } else if (URL_REWRITE_PATTERN_STRING != null) {
-            throw new IllegalArgumentException("findbugs.urlRewritePattern is set but not findbugs.urlRewriteFormat");
+            throw new IllegalArgumentException(
+                    "findbugs.urlRewritePattern is set but not findbugs.urlRewriteFormat");
         } else if (URL_REWRITE_FORMAT != null) {
-            throw new IllegalArgumentException("findbugs.urlRewriteFormat is set but not findbugs.urlRewritePattern");
+            throw new IllegalArgumentException(
+                    "findbugs.urlRewriteFormat is set but not findbugs.urlRewritePattern");
         }
         URL_REWRITE_PATTERN = p;
     }
@@ -287,5 +286,4 @@ public class SystemProperties {
         String result = String.format(URL_REWRITE_FORMAT, m.group(1));
         return result;
     }
-
 }

@@ -19,18 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
-import java.lang.annotation.ElementType;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -48,16 +36,26 @@ import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.TopologicalSort;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges2;
 import edu.umd.cs.findbugs.util.Util;
+import java.lang.annotation.ElementType;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.CheckForNull;
 
 /**
- * ClassInfo represents important metadata about a loaded class, such as its
- * superclass, access flags, codebase entry, etc.
+ * ClassInfo represents important metadata about a loaded class, such as its superclass, access
+ * flags, codebase entry, etc.
  *
  * @author David Hovemeyer
  */
 public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
-    private final static boolean DEBUG = SystemProperties.getBoolean("ci.debug");
+    private static final boolean DEBUG = SystemProperties.getBoolean("ci.debug");
     private final FieldInfo[] xFields;
 
     private final MethodInfo[] xMethods;
@@ -66,11 +64,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
     private final ClassDescriptor immediateEnclosingClass;
 
-    /* final */Map<ClassDescriptor, AnnotationValue> classAnnotations;
+    /* final */ Map<ClassDescriptor, AnnotationValue> classAnnotations;
 
-    final private String classSourceSignature;
+    private final String classSourceSignature;
 
-    final private String source;
+    private final String source;
 
     private final boolean usesConcurrency;
 
@@ -86,9 +84,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
         private List<MethodInfo> methodInfoList = new LinkedList<>();
 
-        /**
-         * Mapping from one method signature to its bridge method signature
-         */
+        /** Mapping from one method signature to its bridge method signature */
         private final Map<MethodInfo, String> bridgedSignatures = new IdentityHashMap<>();
 
         private ClassDescriptor immediateEnclosingClass;
@@ -122,7 +118,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
                 fields = fieldInfoList.toArray(new FieldInfo[0]);
             }
 
-
             for (MethodInfo m : methodInfoList) {
                 if (m.isBridge() && !bridgedSignatures.containsKey(m)) {
 
@@ -139,13 +134,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
                                 }
                                 bridgedSignatures.put(m, to.getSignature());
                             }
-
                         }
                     } // end  for(MethodInfo to
                 } // end  if (m.isBridge()
             } // end  for(MethodInfo m : methodInfoList)
-
-
 
             for (Map.Entry<MethodInfo, String> e : bridgedSignatures.entrySet()) {
                 MethodInfo method = e.getKey();
@@ -164,10 +156,8 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
                             }
                         }
                         context.setBridgeMethod(method, m);
-
                     }
                 }
-
             } // end for
 
             if (methodInfoList.size() == 0) {
@@ -176,9 +166,23 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
                 methods = methodInfoList.toArray(new MethodInfo[0]);
             }
 
-            return new ClassInfo(classDescriptor, classSourceSignature, superclassDescriptor, interfaceDescriptorList,
-                    codeBaseEntry, accessFlags, source, majorVersion, minorVersion, referencedClassDescriptorList,
-                    calledClassDescriptors, classAnnotations, fields, methods, immediateEnclosingClass, usesConcurrency,
+            return new ClassInfo(
+                    classDescriptor,
+                    classSourceSignature,
+                    superclassDescriptor,
+                    interfaceDescriptorList,
+                    codeBaseEntry,
+                    accessFlags,
+                    source,
+                    majorVersion,
+                    minorVersion,
+                    referencedClassDescriptorList,
+                    calledClassDescriptors,
+                    classAnnotations,
+                    fields,
+                    methods,
+                    immediateEnclosingClass,
+                    usesConcurrency,
                     hasStubs);
         }
 
@@ -233,7 +237,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         public void setHasStubs() {
             hasStubs = true;
         }
-
     }
 
     private MethodInfo[] computeMethodsInCallOrder() {
@@ -242,52 +245,65 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         for (MethodInfo m : xMethods) {
             map.put(m.getName() + m.getSignature() + m.isStatic(), m);
         }
-        final MultiMap<MethodInfo, MethodInfo> multiMap = SelfMethodCalls.getSelfCalls(getClassDescriptor(), map);
-        OutEdges2<MethodInfo> edges1 = new OutEdges2<MethodInfo>() {
+        final MultiMap<MethodInfo, MethodInfo> multiMap =
+                SelfMethodCalls.getSelfCalls(getClassDescriptor(), map);
+        OutEdges2<MethodInfo> edges1 =
+                new OutEdges2<MethodInfo>() {
 
-            @Override
-            public Collection<MethodInfo> getOutEdges(MethodInfo method) {
-                return multiMap.get(method);
-            }
+                    @Override
+                    public Collection<MethodInfo> getOutEdges(MethodInfo method) {
+                        return multiMap.get(method);
+                    }
 
-            @Override
-            public int score(MethodInfo e) {
-                return e.getMethodCallCount();
-            }
-        };
+                    @Override
+                    public int score(MethodInfo e) {
+                        return e.getMethodCallCount();
+                    }
+                };
         List<MethodInfo> result = TopologicalSort.sortByCallGraph(Arrays.asList(xMethods), edges1);
         assert xMethods.length == result.size();
         return result.toArray(new MethodInfo[0]);
     }
 
     /**
-     *
-     * @param classDescriptor
-     *            ClassDescriptor representing the class name
-     * @param superclassDescriptor
-     *            ClassDescriptor representing the superclass name
-     * @param interfaceDescriptorList
-     *            ClassDescriptors representing implemented interface names
-     * @param codeBaseEntry
-     *            codebase entry class was loaded from
-     * @param accessFlags
-     *            class's access flags
-     * @param referencedClassDescriptorList
-     *            ClassDescriptors of all classes/interfaces referenced by the
-     *            class
-     * @param fieldDescriptorList
-     *            FieldDescriptors of fields defined in the class
-     * @param methodInfoList
-     *            MethodDescriptors of methods defined in the class
+     * @param classDescriptor ClassDescriptor representing the class name
+     * @param superclassDescriptor ClassDescriptor representing the superclass name
+     * @param interfaceDescriptorList ClassDescriptors representing implemented interface names
+     * @param codeBaseEntry codebase entry class was loaded from
+     * @param accessFlags class's access flags
+     * @param referencedClassDescriptorList ClassDescriptors of all classes/interfaces referenced by
+     *     the class
+     * @param fieldDescriptorList FieldDescriptors of fields defined in the class
+     * @param methodInfoList MethodDescriptors of methods defined in the class
      */
-    private ClassInfo(ClassDescriptor classDescriptor, String classSourceSignature, ClassDescriptor superclassDescriptor,
-            ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, String source,
-            int majorVersion, int minorVersion, Collection<ClassDescriptor> referencedClassDescriptorList,
-            Set<ClassDescriptor> calledClassDescriptors, Map<ClassDescriptor, AnnotationValue> classAnnotations,
-            FieldInfo[] fieldDescriptorList, MethodInfo[] methodInfoList, ClassDescriptor immediateEnclosingClass,
-            boolean usesConcurrency, boolean hasStubs) {
-        super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags,
-                referencedClassDescriptorList, calledClassDescriptors, majorVersion, minorVersion);
+    private ClassInfo(
+            ClassDescriptor classDescriptor,
+            String classSourceSignature,
+            ClassDescriptor superclassDescriptor,
+            ClassDescriptor[] interfaceDescriptorList,
+            ICodeBaseEntry codeBaseEntry,
+            int accessFlags,
+            String source,
+            int majorVersion,
+            int minorVersion,
+            Collection<ClassDescriptor> referencedClassDescriptorList,
+            Set<ClassDescriptor> calledClassDescriptors,
+            Map<ClassDescriptor, AnnotationValue> classAnnotations,
+            FieldInfo[] fieldDescriptorList,
+            MethodInfo[] methodInfoList,
+            ClassDescriptor immediateEnclosingClass,
+            boolean usesConcurrency,
+            boolean hasStubs) {
+        super(
+                classDescriptor,
+                superclassDescriptor,
+                interfaceDescriptorList,
+                codeBaseEntry,
+                accessFlags,
+                referencedClassDescriptorList,
+                calledClassDescriptors,
+                majorVersion,
+                minorVersion);
         this.source = source;
         this.classSourceSignature = classSourceSignature;
         if (fieldDescriptorList.length == 0) {
@@ -302,11 +318,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         this.methodsInCallOrder = computeMethodsInCallOrder();
         /*
         if (false) {
-            System.out.println("Methods in call order for " + classDescriptor);
-            for (MethodInfo m : methodsInCallOrder) {
-                System.out.println("  " + m);
-            }
-            System.out.println();
+        System.out.println("Methods in call order for " + classDescriptor);
+        for (MethodInfo m : methodsInCallOrder) {
+        System.out.println("  " + m);
+        }
+        System.out.println();
         }
          */
     }
@@ -329,8 +345,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     public XMethod findMethod(String methodName, String methodSig, boolean isStatic) {
         int hash = FieldOrMethodDescriptor.getNameSigHashCode(methodName, methodSig);
         for (MethodInfo mInfo : xMethods) {
-            if (mInfo.getNameSigHashCode() == hash && mInfo.getName().equals(methodName)
-                    && mInfo.getSignature().equals(methodSig) && mInfo.isStatic() == isStatic) {
+            if (mInfo.getNameSigHashCode() == hash
+                    && mInfo.getName().equals(methodName)
+                    && mInfo.getSignature().equals(methodSig)
+                    && mInfo.isStatic() == isStatic) {
                 return mInfo;
             }
         }
@@ -354,7 +372,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     public XField findField(String name, String signature, boolean isStatic) {
         int hash = FieldOrMethodDescriptor.getNameSigHashCode(name, signature);
         for (FieldInfo fInfo : xFields) {
-            if (fInfo.getNameSigHashCode() == hash && fInfo.getName().equals(name) && fInfo.getSignature().equals(signature)
+            if (fInfo.getNameSigHashCode() == hash
+                    && fInfo.getName().equals(name)
+                    && fInfo.getSignature().equals(signature)
                     && fInfo.isStatic() == isStatic) {
                 return fInfo;
             }
@@ -363,7 +383,8 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             if (getSuperclassDescriptor() == null) {
                 return null;
             }
-            XClass superClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, getSuperclassDescriptor());
+            XClass superClass =
+                    Global.getAnalysisCache().getClassAnalysis(XClass.class, getSuperclassDescriptor());
             XField result = superClass.findField(name, signature, isStatic);
             if (result != null) {
                 return result;
@@ -427,15 +448,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     }
 
     /**
-     * Destructively add an annotation to the object. In general, this is not a
-     * great idea, since it could cause the same class to appear to have
-     * different annotations at different times. However, this method is
-     * necessary for "built-in" annotations that FindBugs adds to system
-     * classes. As long as we add such annotations early enough that nobody will
-     * notice, we should be ok.
+     * Destructively add an annotation to the object. In general, this is not a great idea, since it
+     * could cause the same class to appear to have different annotations at different times. However,
+     * this method is necessary for "built-in" annotations that FindBugs adds to system classes. As
+     * long as we add such annotations early enough that nobody will notice, we should be ok.
      *
-     * @param annotationValue
-     *            an AnnotationValue to add to the class
+     * @param annotationValue an AnnotationValue to add to the class
      */
     public void addAnnotation(AnnotationValue annotationValue) {
         HashMap<ClassDescriptor, AnnotationValue> updatedMap = new HashMap<>(classAnnotations);
@@ -451,7 +469,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             return ElementType.ANNOTATION_TYPE;
         }
         return ElementType.TYPE;
-
     }
 
     @Override
@@ -471,12 +488,14 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     public @CheckForNull AnnotatedObject getContainingScope0() {
         try {
             if (immediateEnclosingClass != null) {
-                return Global.getAnalysisCache().getClassAnalysis(XClass.class, getImmediateEnclosingClass());
+                return Global.getAnalysisCache()
+                        .getClassAnalysis(XClass.class, getImmediateEnclosingClass());
             }
             if (getClassName().endsWith("package-info")) {
                 return null;
             }
-            ClassDescriptor p = DescriptorFactory.createClassDescriptor(getSlashedPackageName() + "/" + "package-info");
+            ClassDescriptor p =
+                    DescriptorFactory.createClassDescriptor(getSlashedPackageName() + "/" + "package-info");
             return Global.getAnalysisCache().getClassAnalysis(XClass.class, p);
         } catch (CheckedAnalysisException e) {
             return null;
@@ -497,5 +516,4 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     public boolean hasStubs() {
         return hasStubs;
     }
-
 }

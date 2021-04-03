@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -38,8 +34,12 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.internalAnnotations.AnalysisContextContained;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
 
-public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector.WithCustomJumpInfo {
+public class CheckAnalysisContextContainedAnnotation
+        extends OpcodeStackDetector.WithCustomJumpInfo {
 
     final BugReporter bugReporter;
 
@@ -53,9 +53,10 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
         testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
-    final static ClassDescriptor ConstantAnnotation = DescriptorFactory.createClassDescriptor(StaticConstant.class);
-    final static ClassDescriptor AnalysisContextContainedAnnotation = DescriptorFactory.createClassDescriptor(AnalysisContextContained.class);
-
+    static final ClassDescriptor ConstantAnnotation =
+            DescriptorFactory.createClassDescriptor(StaticConstant.class);
+    static final ClassDescriptor AnalysisContextContainedAnnotation =
+            DescriptorFactory.createClassDescriptor(AnalysisContextContained.class);
 
     private boolean analysisContextContained(XClass xclass) {
         AnnotatedObject ao = xclass;
@@ -67,7 +68,6 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
 
         } while (ao != null);
         return false;
-
     }
 
     @Override
@@ -76,16 +76,20 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
             return;
         }
         String signature = field.getSignature();
-        if (signature.startsWith("Ljava/util/") && !"Ljava/util/regex/Pattern;".equals(signature)
-                && !"Ljava/util/logging/Logger;".equals(signature) && !"Ljava/util/BitSet;".equals(signature)
+        if (signature.startsWith("Ljava/util/")
+                && !"Ljava/util/regex/Pattern;".equals(signature)
+                && !"Ljava/util/logging/Logger;".equals(signature)
+                && !"Ljava/util/BitSet;".equals(signature)
                 && !"Ljava/util/ResourceBundle;".equals(signature)
                 && !"Ljava/util/Comparator;".equals(signature)
                 && getXField().getAnnotation(ConstantAnnotation) == null) {
             boolean flagged = analysisContextContained(getXClass());
 
-            bugReporter.reportBug(new BugInstance(this, "TESTING", flagged ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addField(this).addType(
-                    signature));
-
+            bugReporter.reportBug(
+                    new BugInstance(this, "TESTING", flagged ? NORMAL_PRIORITY : LOW_PRIORITY)
+                            .addClass(this)
+                            .addField(this)
+                            .addType(signature));
         }
     }
 
@@ -109,13 +113,17 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
             OpcodeStack.Item left = stack.getStackItem(1);
             OpcodeStack.Item right = stack.getStackItem(0);
             if (bad(left, right) || bad(right, left)) {
-                accumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addValueSource(left, this).addValueSource(right, this)
-                        .addString("Just check the sign of the result of compare or compareTo, not specific values such as 1 or -1"), this);
+                accumulator.accumulateBug(
+                        new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addValueSource(left, this)
+                                .addValueSource(right, this)
+                                .addString(
+                                        "Just check the sign of the result of compare or compareTo, not specific values such as 1 or -1"),
+                        this);
             }
             break;
         }
-
     }
 
     private boolean bad(Item left, Item right) {
@@ -130,8 +138,8 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
                 && !m.isStatic()
                 && m.isPublic()
                 && (("compareTo".equals(m.getName()) && "(Ljava/lang/Object;)I".equals(m.getSignature()))
-                        ||
-                        ("compare".equals(m.getName()) && "(Ljava/lang/Object;Ljava/lang/Object;)I".equals(m.getSignature())));
+                        || ("compare".equals(m.getName())
+                                && "(Ljava/lang/Object;Ljava/lang/Object;)I".equals(m.getSignature())));
     }
 
     @Override
@@ -139,5 +147,4 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
         // TODO Auto-generated method stub
         return null;
     }
-
 }

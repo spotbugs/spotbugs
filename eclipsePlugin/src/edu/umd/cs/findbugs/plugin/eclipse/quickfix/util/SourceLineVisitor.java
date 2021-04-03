@@ -63,5 +63,4 @@ public class SourceLineVisitor extends ASTVisitor {
     public ASTNode getASTNode() {
         return node;
     }
-
 }

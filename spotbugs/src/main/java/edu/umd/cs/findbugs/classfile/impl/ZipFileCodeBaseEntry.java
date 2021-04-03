@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
-
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * Implementation of ICodeBaseEntry for resources in zipfile codebases.

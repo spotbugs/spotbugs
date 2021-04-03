@@ -22,14 +22,14 @@ package edu.umd.cs.findbugs;
 /**
  * A Detector that can be run in the first pass.
  *
- * A detector can be run in the first pass if either:
+ * <p>A detector can be run in the first pass if either:
+ *
  * <ul>
- * <li>It doesn't report any warnings, or
- * <li>It doesn't depend upon information from analyzing any other classes
+ *   <li>It doesn't report any warnings, or
+ *   <li>It doesn't depend upon information from analyzing any other classes
  * </ul>
  *
  * @author Bill Pugh
  */
 public interface FirstPassDetector {
-
 }

@@ -20,19 +20,17 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
-
 import javax.annotation.CheckForNull;
 
 /**
- * A convenient base class for dataflow analysis classes which use Frames as
- * values.
+ * A convenient base class for dataflow analysis classes which use Frames as values.
  *
  * @author David Hovemeyer
  * @see Frame
  * @see DataflowAnalysis
  */
-public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<ValueType>> extends
-        ForwardDataflowAnalysis<FrameType> {
+public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<ValueType>>
+        extends ForwardDataflowAnalysis<FrameType> {
     public FrameDataflowAnalysis(DepthFirstSearch dfs) {
         super(dfs);
     }
@@ -58,13 +56,12 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
     }
 
     /**
-     * Get the dataflow fact representing the point just before given Location.
-     * Note "before" is meant in the logical sense, so for backward analyses,
-     * before means after the location in the control flow sense.
+     * Get the dataflow fact representing the point just before given Location. Note "before" is meant
+     * in the logical sense, so for backward analyses, before means after the location in the control
+     * flow sense.
      *
      * @return the fact at the point just before the location
      */
-
     public FrameType getFactAtPC(CFG cfg, int pc) throws DataflowAnalysisException {
         FrameType result = createFact();
         makeFactTop(result);
@@ -81,13 +78,12 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
     }
 
     /**
-     * Get the dataflow fact representing the point just before given Location.
-     * Note "before" is meant in the logical sense, so for backward analyses,
-     * before means after the location in the control flow sense.
+     * Get the dataflow fact representing the point just before given Location. Note "before" is meant
+     * in the logical sense, so for backward analyses, before means after the location in the control
+     * flow sense.
      *
      * @return the fact at the point just before the location
      */
-
     public FrameType getFactBeforeExceptionCheck(CFG cfg, int pc) throws DataflowAnalysisException {
         FrameType result = createFact();
         makeFactTop(result);
@@ -132,10 +128,8 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
     }
 
     /**
-     * <p>Create a modifiable copy of a frame. This is useful for meetInto(), if
-     * the frame needs to be modified in a path-sensitive fashion. A typical
-     * usage pattern is:
-     * </p>
+     * Create a modifiable copy of a frame. This is useful for meetInto(), if the frame needs to be
+     * modified in a path-sensitive fashion. A typical usage pattern is:
      *
      * <pre>
      * FrameType copy = null;
@@ -151,20 +145,16 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
      *     fact = copy;
      * mergeInto(fact, result);
      * </pre>
-     * <p>
-     * The advantage of using modifyFrame() is that new code can be added before
-     * or after other places where the frame is modified, and the code will
-     * remain correct.</p>
      *
-     * @param orig
-     *            the original frame
-     * @param copy
-     *            the modifiable copy (returned by a previous call to
-     *            modifyFrame()), or null if this is the first time
-     *            modifyFrame() is being called
+     * <p>The advantage of using modifyFrame() is that new code can be added before or after other
+     * places where the frame is modified, and the code will remain correct.
+     *
+     * @param orig the original frame
+     * @param copy the modifiable copy (returned by a previous call to modifyFrame()), or null if this
+     *     is the first time modifyFrame() is being called
      * @return a modifiable copy of fact
      */
-    final protected FrameType modifyFrame(FrameType orig, @CheckForNull FrameType copy) {
+    protected final FrameType modifyFrame(FrameType orig, @CheckForNull FrameType copy) {
         if (copy == null) {
             copy = createFact();
             copy.copyFrom(orig);
@@ -175,11 +165,8 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
     /**
      * Merge one frame into another.
      *
-     * @param other
-     *            the frame to merge with the result
-     * @param result
-     *            the result frame, which is modified to be the merge of the two
-     *            frames
+     * @param other the frame to merge with the result
+     * @param result the result frame, which is modified to be the merge of the two frames
      */
     protected void mergeInto(FrameType other, FrameType result) throws DataflowAnalysisException {
         // Handle if result Frame or the other Frame is the special "TOP" value.
@@ -221,13 +208,11 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
     /**
      * Merge the values contained in a given slot of two Frames.
      *
-     * @param otherFrame
-     *            a Frame
-     * @param resultFrame
-     *            a Frame which will contain the resulting merged value
-     * @param slot
-     *            a slot in both frames
+     * @param otherFrame a Frame
+     * @param resultFrame a Frame which will contain the resulting merged value
+     * @param slot a slot in both frames
      * @throws DataflowAnalysisException
      */
-    protected abstract void mergeValues(FrameType otherFrame, FrameType resultFrame, int slot) throws DataflowAnalysisException;
+    protected abstract void mergeValues(FrameType otherFrame, FrameType resultFrame, int slot)
+            throws DataflowAnalysisException;
 }

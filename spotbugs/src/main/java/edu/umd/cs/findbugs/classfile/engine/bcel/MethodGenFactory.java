@@ -18,12 +18,6 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
@@ -32,6 +26,11 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Analysis engine to produce MethodGen objects for analyzed methods.
@@ -40,9 +39,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author Bill Pugh
  */
 public class MethodGenFactory extends AnalysisFactory<MethodGen> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public MethodGenFactory() {
         super("MethodGen construction", MethodGen.class);
     }
@@ -55,7 +52,8 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public MethodGen analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public MethodGen analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         Method method = getMethod(analysisCache, descriptor);
 
         if (method.getCode() == null) {
@@ -75,16 +73,22 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
             String methodName = method.getName();
             int codeLength = method.getCode().getCode().length;
             String superclassName = jclass.getSuperclassName();
-            if (codeLength > 6000 && Const.STATIC_INITIALIZER_NAME.equals(methodName) && "java.lang.Enum".equals(superclassName)) {
-                analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
-                        new JavaClassAndMethod(jclass, method).toMethodDescriptor());
+            if (codeLength > 6000
+                    && Const.STATIC_INITIALIZER_NAME.equals(methodName)
+                    && "java.lang.Enum".equals(superclassName)) {
+                analysisContext
+                        .getLookupFailureCallback()
+                        .reportSkippedAnalysis(new JavaClassAndMethod(jclass, method).toMethodDescriptor());
                 return null;
             }
             if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
-                if (codeLength > 6000 || (Const.STATIC_INITIALIZER_NAME.equals(methodName) || "getContents".equals(methodName))
-                        && codeLength > 2000) {
-                    analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
-                            new JavaClassAndMethod(jclass, method).toMethodDescriptor());
+                if (codeLength > 6000
+                        || (Const.STATIC_INITIALIZER_NAME.equals(methodName)
+                                || "getContents".equals(methodName))
+                                && codeLength > 2000) {
+                    analysisContext
+                            .getLookupFailureCallback()
+                            .reportSkippedAnalysis(new JavaClassAndMethod(jclass, method).toMethodDescriptor());
                     return null;
                 }
             }

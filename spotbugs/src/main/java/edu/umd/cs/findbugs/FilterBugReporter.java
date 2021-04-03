@@ -19,9 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import javax.annotation.Nonnull;
-
 import edu.umd.cs.findbugs.filter.Matcher;
+import javax.annotation.Nonnull;
 
 public class FilterBugReporter extends DelegatingBugReporter {
     private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");

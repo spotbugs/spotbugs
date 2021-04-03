@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.swing.event.TreeModelEvent;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
-
 /**
- * Filter out bugs which fail (match) all filters. This is what happens when you
- * filter out a branch.
+ * Filter out bugs which fail (match) all filters. This is what happens when you filter out a
+ * branch.
  */
 @Deprecated
 public class StackedFilterMatcher extends FilterMatcher {
@@ -40,7 +38,8 @@ public class StackedFilterMatcher extends FilterMatcher {
 
     @Override
     Sortables getFilterBy() {
-        throw new UnsupportedOperationException("Stacked filter matchers do not filter out a single Sortables, use getFilters()");
+        throw new UnsupportedOperationException(
+                "Stacked filter matchers do not filter out a single Sortables, use getFilters()");
     }
 
     @Override
@@ -109,7 +108,9 @@ public class StackedFilterMatcher extends FilterMatcher {
                         whatToDo = BugTreeModel.TreeModification.INSERT;
                     }
                 } else {
-                    event = (MainFrame.getInstance().getBugTreeModel()).restructureBranch(finalPath, active);// if
+                    event =
+                            (MainFrame.getInstance().getBugTreeModel())
+                                    .restructureBranch(finalPath, active); // if
                     // active
                     // is
                     // true,
@@ -139,7 +140,6 @@ public class StackedFilterMatcher extends FilterMatcher {
                 this.active = active;
             }
         }
-
     }
 
     public FilterMatcher[] getFilters() {
@@ -204,6 +204,8 @@ public class StackedFilterMatcher extends FilterMatcher {
     }
 
     public static void main(String[] args) {
-        System.out.println(new StackedFilterMatcher(new FilterMatcher[0]).equals(new StackedFilterMatcher(new FilterMatcher[0])));
+        System.out.println(
+                new StackedFilterMatcher(new FilterMatcher[0])
+                        .equals(new StackedFilterMatcher(new FilterMatcher[0])));
     }
 }

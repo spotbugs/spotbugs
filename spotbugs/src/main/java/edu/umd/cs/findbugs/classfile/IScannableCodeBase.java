@@ -20,8 +20,8 @@
 package edu.umd.cs.findbugs.classfile;
 
 /**
- * A scannable code base: in addition to looking up a named resource, scannable
- * code bases can also enumerate the names of the resources they contain.
+ * A scannable code base: in addition to looking up a named resource, scannable code bases can also
+ * enumerate the names of the resources they contain.
  *
  * @author David Hovemeyer
  */

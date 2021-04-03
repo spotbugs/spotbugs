@@ -20,13 +20,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -43,12 +36,20 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import java.util.Collections;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 
 public class WrongMapIterator extends BytecodeScanningDetector implements StatelessDetector {
-    private static final Set<MethodDescriptor> methods = Collections.singleton(new MethodDescriptor("", "keySet", "()Ljava/util/Set;"));
+    private static final Set<MethodDescriptor> methods =
+            Collections.singleton(new MethodDescriptor("", "keySet", "()Ljava/util/Set;"));
 
     static enum LoadedVariableState {
-        NOTHING, LOCAL, FIELD
+        NOTHING,
+        LOCAL,
+        FIELD
     }
 
     final LoadedVariable NONE = new LoadedVariable(LoadedVariableState.NOTHING, 0, null);
@@ -153,17 +154,17 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
     }
 
     /**
-     * Determine from the class descriptor for a variable whether that variable
-     * implements java.util.Map.
+     * Determine from the class descriptor for a variable whether that variable implements
+     * java.util.Map.
      *
-     * @param d
-     *            class descriptor for variable we want to check implements Map
+     * @param d class descriptor for variable we want to check implements Map
      * @return true iff the descriptor corresponds to an implementor of Map
      */
     private static boolean implementsMap(ClassDescriptor d) {
         while (d != null) {
             try {
-                // Do not report this warning for EnumMap: EnumMap.keySet()/get() iteration is as fast as entrySet() iteration
+                // Do not report this warning for EnumMap: EnumMap.keySet()/get() iteration is as fast as
+                // entrySet() iteration
                 if ("java.util.EnumMap".equals(d.getDottedClassName())) {
                     return false;
                 }
@@ -223,15 +224,19 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
             switch (seen) {
             case Const.INVOKEINTERFACE:
             case Const.INVOKEVIRTUAL:
-                if (!loadedVariable.none() &&
-                        "keySet".equals(getNameConstantOperand()) && "()Ljava/util/Set;".equals(getSigConstantOperand())
+                if (!loadedVariable.none()
+                        && "keySet".equals(getNameConstantOperand())
+                        && "()Ljava/util/Set;".equals(getSigConstantOperand())
                         // Following check solves sourceforge bug 1830576
                         && implementsMap(getClassDescriptorOperand())) {
                     try {
-                        LocationAndFactPair lfp = getClassContext().getTypeDataflow(getMethod()).getLocationAndFactForInstruction(
-                                getPC());
+                        LocationAndFactPair lfp =
+                                getClassContext()
+                                        .getTypeDataflow(getMethod())
+                                        .getLocationAndFactForInstruction(getPC());
                         // Skip EnumMap if TypeAnalysis knows that the type is EnumMap
-                        if (lfp != null && lfp.frame.getTopValue().getSignature().equals("Ljava/util/EnumMap;")) {
+                        if (lfp != null
+                                && lfp.frame.getTopValue().getSignature().equals("Ljava/util/EnumMap;")) {
                             break;
                         }
                     } catch (DataflowAnalysisException | CFGBuilderException e) {
@@ -241,7 +246,8 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                     removedFromStack(true);
                     keySetRegister = IN_STACK;
                 } else if ((keySetRegister == IN_STACK || loadedVariable.isRegister(keySetRegister))
-                        && "iterator".equals(getNameConstantOperand()) && "()Ljava/util/Iterator;".equals(getSigConstantOperand())) {
+                        && "iterator".equals(getNameConstantOperand())
+                        && "()Ljava/util/Iterator;".equals(getSigConstantOperand())) {
                     removedFromStack(true);
                     iteratorRegister = IN_STACK;
                 } else if ((iteratorRegister == IN_STACK || loadedVariable.isRegister(iteratorRegister))
@@ -249,17 +255,25 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                         && "()Ljava/lang/Object;".equals(getSigConstantOperand())) {
                     removedFromStack(true);
                     keyRegister = IN_STACK;
-                } else if (mapAndKeyLoaded && "get".equals(getNameConstantOperand())
+                } else if (mapAndKeyLoaded
+                        && "get".equals(getNameConstantOperand())
                         && "(Ljava/lang/Object;)Ljava/lang/Object;".equals(getSigConstantOperand())) {
                     MethodAnnotation ma = MethodAnnotation.fromVisitedMethod(this);
-                    bugAccumulator.accumulateBug(mapVariable
-                            .annotate(new BugInstance(this, "WMI_WRONG_MAP_ITERATOR", NORMAL_PRIORITY).addClass(this).addMethod(ma)),
+                    bugAccumulator.accumulateBug(
+                            mapVariable.annotate(
+                                    new BugInstance(this, "WMI_WRONG_MAP_ITERATOR", NORMAL_PRIORITY)
+                                            .addClass(this)
+                                            .addMethod(ma)),
                             this);
                     reset();
-                } else if (("intValue".equals(getNameConstantOperand()) && "java/lang/Integer".equals(getClassConstantOperand())) ||
-                        ("longValue".equals(getNameConstantOperand()) && "java/lang/Long".equals(getClassConstantOperand())) ||
-                        ("doubleValue".equals(getNameConstantOperand()) && "java/lang/Double".equals(getClassConstantOperand())) ||
-                        ("floatValue".equals(getNameConstantOperand()) && "java/lang/Float".equals(getClassConstantOperand()))) {
+                } else if (("intValue".equals(getNameConstantOperand())
+                        && "java/lang/Integer".equals(getClassConstantOperand()))
+                        || ("longValue".equals(getNameConstantOperand())
+                                && "java/lang/Long".equals(getClassConstantOperand()))
+                        || ("doubleValue".equals(getNameConstantOperand())
+                                && "java/lang/Double".equals(getClassConstantOperand()))
+                        || ("floatValue".equals(getNameConstantOperand())
+                                && "java/lang/Float".equals(getClassConstantOperand()))) {
                     removedFromStack(false);
                 } else {
                     removedFromStack(true);
@@ -269,8 +283,8 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                 if ("valueOf".equals(getNameConstantOperand())
                         && ("java/lang/Integer".equals(getClassConstantOperand())
                                 || "java/lang/Long".equals(getClassConstantOperand())
-                                || "java/lang/Double".equals(getClassConstantOperand()) || "java/lang/Float"
-                                        .equals(getClassConstantOperand()))) {
+                                || "java/lang/Double".equals(getClassConstantOperand())
+                                || "java/lang/Float".equals(getClassConstantOperand()))) {
                     loadedPreserved = true;
                 }
                 removedFromStack(true);

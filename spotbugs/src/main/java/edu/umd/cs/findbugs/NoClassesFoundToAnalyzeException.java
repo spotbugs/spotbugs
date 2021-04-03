@@ -19,17 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.classfile.IClassPath;
 import java.io.IOException;
 
-import edu.umd.cs.findbugs.classfile.IClassPath;
-
 /**
- * Signals that FindBugs found no classes on the classpath it was invoked to
- * analyze.
- * <p>
- * To be consistent with FindBugs 1.3 this exception is an {@link IOException}
- * and replicates the message used in that release (because I suspect some tools
- * looked for that text pattern to come out at the console).
+ * Signals that FindBugs found no classes on the classpath it was invoked to analyze.
+ *
+ * <p>To be consistent with FindBugs 1.3 this exception is an {@link IOException} and replicates the
+ * message used in that release (because I suspect some tools looked for that text pattern to come
+ * out at the console).
  *
  * @author Tim Halloran
  */
@@ -49,8 +47,7 @@ public class NoClassesFoundToAnalyzeException extends IOException {
     /**
      * Constructs an {@code NoClassesFoundToAnalyze} on the passed classpath.
      *
-     * @param classPath
-     *            the classpath used
+     * @param classPath the classpath used
      */
     public NoClassesFoundToAnalyzeException(final IClassPath classPath) {
         super("No classes found to analyze in " + classPath);

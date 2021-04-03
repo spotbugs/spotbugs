@@ -19,10 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.heap;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XField;
+import org.apache.bcel.generic.ConstantPoolGen;
 
 public class LoadAnalysis extends FieldSetAnalysis {
     public LoadAnalysis(DepthFirstSearch dfs, ConstantPoolGen cpg) {

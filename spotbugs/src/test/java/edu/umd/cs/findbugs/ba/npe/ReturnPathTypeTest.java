@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 
 /**
  * Test cases for ReturnPathType class.
@@ -52,7 +51,7 @@ public class ReturnPathTypeTest {
         Assert.assertFalse(top.isValid());
         Assert.assertTrue(top.isTop());
         try {
-            top.canReturnNormally();// should throw exception
+            top.canReturnNormally(); // should throw exception
             Assert.assertTrue(false);
         } catch (DataflowAnalysisException e) {
             // Good

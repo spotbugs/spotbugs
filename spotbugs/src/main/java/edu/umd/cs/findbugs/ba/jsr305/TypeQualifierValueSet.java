@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,9 +28,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * Set of ValueNumbers and their corresponding FlowValues.
@@ -38,7 +37,9 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 public class TypeQualifierValueSet {
     // States
     enum State {
-        VALID, TOP, BOTTOM
+        VALID,
+        TOP,
+        BOTTOM
     }
 
     private final Map<ValueNumber, FlowValue> valueMap;
@@ -101,9 +102,12 @@ public class TypeQualifierValueSet {
         copyMapValue(whereNever, from, to);
     }
 
-    private static void addSourceSinkInfo(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn,
+    private static void addSourceSinkInfo(
+            Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
+            ValueNumber vn,
             SourceSinkInfo sourceSinkInfo) {
-        Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
+        Set<SourceSinkInfo> sourceSinkInfoSet =
+                sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
         sourceSinkInfoSet.add(sourceSinkInfo);
     }
 
@@ -123,7 +127,6 @@ public class TypeQualifierValueSet {
             return getSourceSinkInfoSet(whereNever, vn);
         }
         return Collections.emptySet();
-
     }
 
     public Set<? extends SourceSinkInfo> getWhereAlways(ValueNumber vn) {
@@ -134,8 +137,8 @@ public class TypeQualifierValueSet {
         return getSourceSinkInfoSet(whereNever, vn);
     }
 
-    private static Set<? extends SourceSinkInfo> getSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
-            ValueNumber vn) {
+    private static Set<? extends SourceSinkInfo> getSourceSinkInfoSet(
+            Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn) {
         Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
         if (sourceSinkInfoSet == null || sourceSinkInfoSet.isEmpty()) {
             return Collections.emptySet();
@@ -144,13 +147,12 @@ public class TypeQualifierValueSet {
         return sourceSinkInfoSet;
     }
 
-    private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
-            ValueNumber vn) {
-        Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
+    private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(
+            Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn) {
+        Set<SourceSinkInfo> sourceSinkInfoSet =
+                sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
         return sourceSinkInfoSet;
     }
-
-
 
     public FlowValue getValue(ValueNumber vn) {
         FlowValue result = valueMap.get(vn);
@@ -183,7 +185,8 @@ public class TypeQualifierValueSet {
         copySourceSinkInfoSetMap(this.whereNever, source.whereNever);
     }
 
-    private void copySourceSinkInfoSetMap(Map<ValueNumber, Set<SourceSinkInfo>> dest, Map<ValueNumber, Set<SourceSinkInfo>> source) {
+    private void copySourceSinkInfoSetMap(
+            Map<ValueNumber, Set<SourceSinkInfo>> dest, Map<ValueNumber, Set<SourceSinkInfo>> source) {
         dest.clear();
 
         for (Map.Entry<ValueNumber, Set<SourceSinkInfo>> entry : source.entrySet()) {
@@ -236,7 +239,9 @@ public class TypeQualifierValueSet {
         whereNever.remove(fromVN);
     }
 
-    private static void transferSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber fromVN,
+    private static void transferSourceSinkInfoSet(
+            Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
+            ValueNumber fromVN,
             ValueNumber toVN) {
         Set<? extends SourceSinkInfo> locSet = getSourceSinkInfoSet(sourceSinkInfoSetMap, fromVN);
 
@@ -261,14 +266,17 @@ public class TypeQualifierValueSet {
         }
     }
 
-    private void mergeSourceSinkInfoSets(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMapToUpdate,
-            Map<ValueNumber, Set<SourceSinkInfo>> otherSourceSinkInfoSetMap, ValueNumber vn) {
+    private void mergeSourceSinkInfoSets(
+            Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMapToUpdate,
+            Map<ValueNumber, Set<SourceSinkInfo>> otherSourceSinkInfoSetMap,
+            ValueNumber vn) {
         if (!otherSourceSinkInfoSetMap.containsKey(vn)) {
             return;
         }
         Set<? extends SourceSinkInfo> otherInfo = getSourceSinkInfoSet(otherSourceSinkInfoSetMap, vn);
         if (!otherInfo.isEmpty()) {
-            Set<SourceSinkInfo> sourceSinkInfoSetToUpdate = getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMapToUpdate, vn);
+            Set<SourceSinkInfo> sourceSinkInfoSetToUpdate =
+                    getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMapToUpdate, vn);
             sourceSinkInfoSetToUpdate.addAll(otherInfo);
         }
     }
@@ -362,7 +370,8 @@ public class TypeQualifierValueSet {
         return buf.toString();
     }
 
-    private static void appendSourceSinkInfos(StringBuilder buf, String key, Set<? extends SourceSinkInfo> sourceSinkInfoSet) {
+    private static void appendSourceSinkInfos(
+            StringBuilder buf, String key, Set<? extends SourceSinkInfo> sourceSinkInfoSet) {
         TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<>(sourceSinkInfoSet);
         boolean first = true;
         buf.append(key);

@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
+import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,10 +31,6 @@ import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-
-import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
-import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
-import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 
 /**
  * Implementation of ICodeBase to read from a zip file or jar file.
@@ -44,11 +43,9 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
     /**
      * Constructor.
      *
-     * @param codeBaseLocator
-     *            the codebase locator for this codebase
-     * @param file
-     *            the File containing the zip file (may be a temp file if the
-     *            codebase was copied from a nested zipfile in another codebase)
+     * @param codeBaseLocator the codebase locator for this codebase
+     * @param file the File containing the zip file (may be a temp file if the codebase was copied
+     *     from a nested zipfile in another codebase)
      */
     public ZipFileCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
         super(codeBaseLocator);
@@ -73,7 +70,8 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
                 throw new IOException("Zip file is empty: " + file);
             }
             if (!(e instanceof ZipException)) {
-                IOException ioException = new IOException("Error opening zip file " + file + " of " + file.length() + " bytes");
+                IOException ioException =
+                        new IOException("Error opening zip file " + file + " of " + file.length() + " bytes");
                 ioException.initCause(e);
                 throw ioException;
             }
@@ -81,13 +79,18 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
             try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
                 magicBytes = in.readInt();
             } catch (IOException e3) {
-                throw new IOException(String.format("Unable read first 4 bytes of zip file %s of %d bytes", file, file.length()));
+                throw new IOException(
+                        String.format(
+                                "Unable read first 4 bytes of zip file %s of %d bytes", file, file.length()));
             }
             if (magicBytes != 0x504b0304) {
-                throw new IOException(String.format("Wrong magic bytes of %x for zip file %s of %d bytes", magicBytes, file,
-                        file.length()));
+                throw new IOException(
+                        String.format(
+                                "Wrong magic bytes of %x for zip file %s of %d bytes",
+                                magicBytes, file, file.length()));
             }
-            ZipException e2 = new ZipException("Error opening zip file " + file + " of " + file.length() + " bytes");
+            ZipException e2 =
+                    new ZipException("Error opening zip file " + file + " of " + file.length() + " bytes");
             e2.initCause(e);
             throw e2;
         }

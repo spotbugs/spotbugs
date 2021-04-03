@@ -19,17 +19,14 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.ba.SourceFinder;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class SourceSearcher {
     final HashSet<String> sourceFound = new HashSet<>();
 
@@ -79,5 +76,4 @@ public class SourceSearcher {
             return false;
         }
     }
-
 }

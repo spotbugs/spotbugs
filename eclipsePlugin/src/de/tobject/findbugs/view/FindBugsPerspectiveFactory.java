@@ -18,16 +18,13 @@
  */
 package de.tobject.findbugs.view;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
-/**
- * @author Andrey Loskutov
- */
+/** @author Andrey Loskutov */
 public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
 
     /** perspective id, see plugin.xml */
@@ -36,14 +33,15 @@ public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
     @Override
     public void createInitialLayout(IPageLayout layout) {
         String editorArea = layout.getEditorArea();
-        IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, (float) 0.25, editorArea);
+        IFolderLayout topLeft =
+                layout.createFolder("topLeft", IPageLayout.LEFT, (float) 0.25, editorArea);
         topLeft.addView(FindbugsPlugin.TREE_VIEW_ID);
         topLeft.addPlaceholder(JavaUI.ID_PACKAGES);
 
         // Bottom right.
-        IFolderLayout bottomRightB = layout.createFolder("bottomRightB", IPageLayout.RIGHT, (float) 0.45, editorArea);
+        IFolderLayout bottomRightB =
+                layout.createFolder("bottomRightB", IPageLayout.RIGHT, (float) 0.45, editorArea);
 
         bottomRightB.addView(FindbugsPlugin.DETAILS_VIEW_ID);
     }
-
 }

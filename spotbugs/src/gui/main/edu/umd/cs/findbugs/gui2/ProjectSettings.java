@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -27,15 +28,11 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.WillClose;
 
-import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
-
 /**
- * This is the .fas file stored when projects are saved All project related
- * information goes here. Anything that would be shared between multiple
- * projects goes into GUISaveState instead
+ * This is the .fas file stored when projects are saved All project related information goes here.
+ * Anything that would be shared between multiple projects goes into GUISaveState instead
  */
 @Deprecated
 public class ProjectSettings implements Serializable {
@@ -61,19 +58,13 @@ public class ProjectSettings implements Serializable {
         return instance;
     }
 
-    /**
-     * The list of all defined filters
-     */
+    /** The list of all defined filters */
     private final ArrayList<FilterMatcher> filters;
 
-    /**
-     * The CompoundMatcher enveloping all enabled matchers.
-     */
+    /** The CompoundMatcher enveloping all enabled matchers. */
     private final CompoundMatcher allMatchers;
 
-    /**
-     * Max number of previous comments stored.
-     */
+    /** Max number of previous comments stored. */
     private int maxSizeOfPreviousComments;
 
     public static void loadInstance(@WillClose InputStream in) {
@@ -155,7 +146,8 @@ public class ProjectSettings implements Serializable {
                 try {
                     model.sendEvent(model.removeBranch(finalPath), BugTreeModel.TreeModification.REMOVE);
                 } catch (BranchOperationException e) {
-                    throw new IllegalStateException("They added a stacked filter on a branch that doesn't exist... Whaa?");
+                    throw new IllegalStateException(
+                            "They added a stacked filter on a branch that doesn't exist... Whaa?");
                 }
             } else {
                 FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
@@ -196,9 +188,7 @@ public class ProjectSettings implements Serializable {
         return filters;
     }
 
-    /**
-     * @return Returns the maximum number of previous comments stored.
-     */
+    /** @return Returns the maximum number of previous comments stored. */
     public int getMaxSizeOfPreviousComments() {
         return maxSizeOfPreviousComments;
     }

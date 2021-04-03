@@ -23,9 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class SimilarClassFinder {
     private final List<SimilarClassSet> similarClassSetList;
 

@@ -21,12 +21,11 @@ package edu.umd.cs.findbugs.ba;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
-
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+import org.junit.Test;
 
 public class Issue688Test extends AbstractIntegrationTest {
 
@@ -37,5 +36,4 @@ public class Issue688Test extends AbstractIntegrationTest {
         SortedBugCollection bugCollection = (SortedBugCollection) getBugCollection();
         assertThat(bugCollection, containsExactly(0, bugTypeMatcher));
     }
-
 }

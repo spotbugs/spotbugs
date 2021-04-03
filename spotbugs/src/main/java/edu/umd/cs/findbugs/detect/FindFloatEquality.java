@@ -20,13 +20,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Objects;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -35,6 +28,11 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Objects;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class FindFloatEquality extends OpcodeStackDetector implements StatelessDetector {
     private static final int SAW_NOTHING = 0;
@@ -66,7 +64,8 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
         super.visit(obj);
         bugAccumulator.reportAccumulatedBugs();
         if (!found.isEmpty()) {
-            BugInstance bug = new BugInstance(this, "FE_FLOATING_POINT_EQUALITY", priority).addClassAndMethod(this);
+            BugInstance bug =
+                    new BugInstance(this, "FE_FLOATING_POINT_EQUALITY", priority).addClassAndMethod(this);
 
             boolean first = true;
             for (SourceLineAnnotation s : found) {
@@ -115,7 +114,8 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
                 OpcodeStack.Item first = stack.getStackItem(0);
                 OpcodeStack.Item second = stack.getStackItem(1);
 
-                if (first.getRegisterNumber() == second.getRegisterNumber() && first.getRegisterNumber() != -1) {
+                if (first.getRegisterNumber() == second.getRegisterNumber()
+                        && first.getRegisterNumber() != -1) {
                     break;
                 }
                 if (first.isInitialParameter() && second.isInitialParameter()) {
@@ -127,17 +127,21 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
 
                 Number n1 = (Number) first.getConstant();
                 Number n2 = (Number) second.getConstant();
-                if (n1 != null && Double.isNaN(n1.doubleValue()) || n2 != null && Double.isNaN(n2.doubleValue())) {
-                    BugInstance bug = new BugInstance(this, "FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER", HIGH_PRIORITY)
-                            .addClassAndMethod(this);
+                if (n1 != null && Double.isNaN(n1.doubleValue())
+                        || n2 != null && Double.isNaN(n2.doubleValue())) {
+                    BugInstance bug =
+                            new BugInstance(this, "FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER", HIGH_PRIORITY)
+                                    .addClassAndMethod(this);
                     bugAccumulator.accumulateBug(bug, this);
                     state = SAW_NOTHING;
                     break;
                 }
                 if (first.getSpecialKind() == OpcodeStack.Item.NASTY_FLOAT_MATH && !isZero(n2)
                         || second.getSpecialKind() == OpcodeStack.Item.NASTY_FLOAT_MATH && !isZero(n1)
-                        || first.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n2)
-                        || second.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n1)) {
+                        || first.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH
+                                && !okValueToCompareAgainst(n2)
+                        || second.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH
+                                && !okValueToCompareAgainst(n1)) {
                     if (priority != HIGH_PRIORITY) {
                         found.clear();
                     }
@@ -157,7 +161,8 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
                 if (okValueToCompareAgainst(n1) || okValueToCompareAgainst(n2)) {
                     break;
                 }
-                if (n1 != null && !second.isInitialParameter() || n2 != null && !first.isInitialParameter()) {
+                if (n1 != null && !second.isInitialParameter()
+                        || n2 != null && !first.isInitialParameter()) {
                     if (priority == LOW_PRIORITY) {
                         found.clear();
                     }
@@ -173,8 +178,8 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
         case Const.IFEQ:
         case Const.IFNE:
             if (state == SAW_COMP) {
-                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this,
-                        getPC());
+                SourceLineAnnotation sourceLineAnnotation =
+                        SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, getPC());
                 if (sourceLineAnnotation != null) {
                     found.add(sourceLineAnnotation);
                 }

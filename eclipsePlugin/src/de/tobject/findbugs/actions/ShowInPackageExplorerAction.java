@@ -18,6 +18,9 @@
  */
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.view.explorer.BugGroup;
+import de.tobject.findbugs.view.explorer.GroupType;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.IAction;
@@ -30,10 +33,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ISetSelectionTarget;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.view.explorer.BugGroup;
-import de.tobject.findbugs.view.explorer.GroupType;
 
 public class ShowInPackageExplorerAction implements IObjectActionDelegate {
 
@@ -99,7 +98,9 @@ public class ShowInPackageExplorerAction implements IObjectActionDelegate {
             return;
         }
         BugGroup group = (BugGroup) firstElement;
-        if (group.getType() == GroupType.Class || group.getType() == GroupType.Package || group.getType() == GroupType.Project) {
+        if (group.getType() == GroupType.Class
+                || group.getType() == GroupType.Package
+                || group.getType() == GroupType.Project) {
             data = group.getData();
             action.setEnabled(data != null);
         } else {
@@ -107,5 +108,4 @@ public class ShowInPackageExplorerAction implements IObjectActionDelegate {
             action.setEnabled(false);
         }
     }
-
 }

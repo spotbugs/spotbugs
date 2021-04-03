@@ -26,27 +26,27 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.charsets.UserTextFile;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.umd.cs.findbugs.charsets.UserTextFile;
 
 public class L10N {
     private static final Logger LOG = LoggerFactory.getLogger(L10N.class);
 
-    private static final boolean GENERATE_MISSING_KEYS = SystemProperties.getBoolean("i18n.generateMissingKeys");
+    private static final boolean GENERATE_MISSING_KEYS =
+            SystemProperties.getBoolean("i18n.generateMissingKeys");
 
     private static ResourceBundle bundle;
 
     private static ResourceBundle bundle_en;
 
     private static PrintWriter extraProperties;
+
     static {
         try {
             if (GENERATE_MISSING_KEYS) {
@@ -58,7 +58,8 @@ public class L10N {
             }
 
             bundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui.bundle.findbugs");
-            bundle_en = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui.bundle.findbugs", Locale.ENGLISH);
+            bundle_en =
+                    ResourceBundle.getBundle("edu.umd.cs.findbugs.gui.bundle.findbugs", Locale.ENGLISH);
 
         } catch (Exception mre) {
         }
@@ -104,5 +105,4 @@ public class L10N {
             }
         }
     }
-
 }

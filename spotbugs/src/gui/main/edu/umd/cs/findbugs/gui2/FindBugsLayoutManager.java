@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.gui2;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public interface FindBugsLayoutManager {
 
     public JMenu createWindowMenu();

@@ -19,12 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Iterator;
-
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.LocalVariableTable;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.TrainingDetector;
@@ -35,18 +29,24 @@ import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.Iterator;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 
 public class TrainLongInstantfParams extends PreorderVisitor implements Detector, TrainingDetector {
 
     static class LongInstantParameterDatabase extends MethodPropertyDatabase<ParameterProperty> {
         @Override
-        protected ParameterProperty decodeProperty(String propStr) throws PropertyDatabaseFormatException {
+        protected ParameterProperty decodeProperty(String propStr)
+                throws PropertyDatabaseFormatException {
             try {
                 int longInstants = Integer.parseInt(propStr);
                 ParameterProperty prop = new ParameterProperty(longInstants);
                 return prop;
             } catch (NumberFormatException e) {
-                throw new PropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
+                throw new PropertyDatabaseFormatException(
+                        "Invalid unconditional deref param set: " + propStr);
             }
         }
 
@@ -62,7 +62,6 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
         protected String encodeProperty(ParameterProperty property) {
             return String.valueOf(property.getParamsWithProperty());
         }
-
     }
 
     LongInstantParameterDatabase database = new LongInstantParameterDatabase();
@@ -91,7 +90,8 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
             LocalVariable localVariable = t.getLocalVariable(index, 0);
             if (localVariable != null) {
                 String name = localVariable.getName();
-                if ("J".equals(s) && (name.toLowerCase().indexOf("instant") >= 0 || name.startsWith("date"))) {
+                if ("J".equals(s)
+                        && (name.toLowerCase().indexOf("instant") >= 0 || name.startsWith("date"))) {
 
                     // System.out.println(getFullyQualifiedMethodName() + " " + s + " " + index + " " + name);
                     property.setParamWithProperty(parameterNumber, true);
@@ -118,13 +118,12 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
     @Override
     public void report() {
         // System.out.println(database.entrySet().size() + " methods");
-        AnalysisContext.currentAnalysisContext().storePropertyDatabase(database, "longInstant.db", "long instant database");
-
+        AnalysisContext.currentAnalysisContext()
+                .storePropertyDatabase(database, "longInstant.db", "long instant database");
     }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
     }
-
 }

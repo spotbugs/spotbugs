@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.util;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class TripleKeyHashMap<K1, K2, K3, V> {
     Map<K1, DualKeyHashMap<K2, K3, V>> map = new HashMap<>();
 
@@ -44,5 +42,4 @@ public class TripleKeyHashMap<K1, K2, K3, V> {
         }
         return m.put(k2, k3, v);
     }
-
 }

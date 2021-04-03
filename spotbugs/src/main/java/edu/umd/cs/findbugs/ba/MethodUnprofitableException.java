@@ -19,10 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Used to signal a method not analyzed because it seemed unprofitable to do so
@@ -37,8 +36,7 @@ public class MethodUnprofitableException extends CFGBuilderException {
     /**
      * Constructor.
      *
-     * @param method
-     *            the method that is unprofitable to analyze
+     * @param method the method that is unprofitable to analyze
      */
     public MethodUnprofitableException(JavaClassAndMethod method) {
         super("Appears unprofitable to analyze " + method);
@@ -48,11 +46,8 @@ public class MethodUnprofitableException extends CFGBuilderException {
     /**
      * Constructor.
      *
-     * @param jClass
-     *            the class containing the method that is unprofitable to
-     *            analyze
-     * @param method
-     *            the method that is unprofitable to analyze
+     * @param jClass the class containing the method that is unprofitable to analyze
+     * @param method the method that is unprofitable to analyze
      */
     public MethodUnprofitableException(JavaClass jClass, Method method) {
         super("Appears unprofitable to analyze " + method);
@@ -62,21 +57,21 @@ public class MethodUnprofitableException extends CFGBuilderException {
     /**
      * Constructor.
      *
-     * @param methodDescriptor
-     *            the MethodDescriptor indicating the method it is unprofitable
-     *            to analyze
+     * @param methodDescriptor the MethodDescriptor indicating the method it is unprofitable to
+     *     analyze
      */
     public MethodUnprofitableException(MethodDescriptor methodDescriptor) {
         super("Appears unprofitable to analyze " + methodDescriptor.toString());
-        this.method = XFactory.createXMethod(methodDescriptor.getClassDescriptor().toDottedClassName(),
-                methodDescriptor.getName(), methodDescriptor.getSignature(), methodDescriptor.isStatic());
+        this.method =
+                XFactory.createXMethod(
+                        methodDescriptor.getClassDescriptor().toDottedClassName(),
+                        methodDescriptor.getName(),
+                        methodDescriptor.getSignature(),
+                        methodDescriptor.isStatic());
     }
 
-    /**
-     * @return the method that is unprofitable to analyze
-     */
+    /** @return the method that is unprofitable to analyze */
     public XMethod getMethod() {
         return method;
     }
-
 }

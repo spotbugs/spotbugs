@@ -19,11 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -32,8 +27,12 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
+import java.util.BitSet;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
-public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implements StatelessDetector {
+public class FindLocalSelfAssignment2 extends BytecodeScanningDetector
+        implements StatelessDetector {
 
     private final BugReporter bugReporter;
 
@@ -71,33 +70,44 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
                 previousLoadOf = getRegisterOperand();
             } else {
                 if (isRegisterStore()) {
-                    if (previousLoadOf == getRegisterOperand() && gotoCount < 2 && getPC() != previousGotoTarget) {
+                    if (previousLoadOf == getRegisterOperand()
+                            && gotoCount < 2
+                            && getPC() != previousGotoTarget) {
                         int priority = NORMAL_PRIORITY;
                         String methodName = getMethodName();
-                        if (Const.CONSTRUCTOR_NAME.equals(methodName) || methodName.startsWith("set") && getCode().getCode().length <= 5
+                        if (Const.CONSTRUCTOR_NAME.equals(methodName)
+                                || methodName.startsWith("set") && getCode().getCode().length <= 5
                                 || !previousStores.get(getRegisterOperand())) {
                             priority = HIGH_PRIORITY;
                         }
                         previousStores.set(getRegisterOperand());
                         XClass c = getXClass();
-                        LocalVariableAnnotation local = LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
-                                getRegisterOperand(), getPC(), getPC());
+                        LocalVariableAnnotation local =
+                                LocalVariableAnnotation.getLocalVariableAnnotation(
+                                        getMethod(), getRegisterOperand(), getPC(), getPC());
                         if ("?".equals(local.getName())) {
                             priority++;
                         } else {
                             for (XField f : c.getXFields()) {
-                                if (f.getName().equals(local.getName()) && (f.isStatic() || !getMethod().isStatic())) {
-                                    bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD",
-                                            priority).addClassAndMethod(this).add(local).addField(f)
-                                                    .describe(FieldAnnotation.DID_YOU_MEAN_ROLE).addSourceLine(this));
+                                if (f.getName().equals(local.getName())
+                                        && (f.isStatic() || !getMethod().isStatic())) {
+                                    bugReporter.reportBug(
+                                            new BugInstance(this, "SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD", priority)
+                                                    .addClassAndMethod(this)
+                                                    .add(local)
+                                                    .addField(f)
+                                                    .describe(FieldAnnotation.DID_YOU_MEAN_ROLE)
+                                                    .addSourceLine(this));
                                     return;
-
                                 }
                             }
                         }
 
-                        bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_SELF_ASSIGNMENT", priority).addClassAndMethod(this)
-                                .add(local).addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, "SA_LOCAL_SELF_ASSIGNMENT", priority)
+                                        .addClassAndMethod(this)
+                                        .add(local)
+                                        .addSourceLine(this));
                     } else {
                         previousStores.set(getRegisterOperand());
                     }

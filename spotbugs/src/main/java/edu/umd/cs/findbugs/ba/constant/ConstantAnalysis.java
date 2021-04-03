@@ -18,15 +18,14 @@
  */
 package edu.umd.cs.findbugs.ba.constant;
 
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Dataflow analysis to find constant values.
@@ -61,14 +60,16 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
     }
 
     @Override
-    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ConstantFrame frame)
+    public void transferInstruction(
+            InstructionHandle handle, BasicBlock basicBlock, ConstantFrame frame)
             throws DataflowAnalysisException {
         visitor.setFrameAndLocation(frame, new Location(handle, basicBlock));
         visitor.analyzeInstruction(handle.getInstruction());
     }
 
     @Override
-    public void meetInto(ConstantFrame fact, Edge edge, ConstantFrame result) throws DataflowAnalysisException {
+    public void meetInto(ConstantFrame fact, Edge edge, ConstantFrame result)
+            throws DataflowAnalysisException {
 
         if (fact.isValid()) {
             ConstantFrame tmpFact = null;
@@ -88,7 +89,8 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
     }
 
     @Override
-    protected void mergeValues(ConstantFrame otherFrame, ConstantFrame resultFrame, int slot) throws DataflowAnalysisException {
+    protected void mergeValues(ConstantFrame otherFrame, ConstantFrame resultFrame, int slot)
+            throws DataflowAnalysisException {
         Constant value = Constant.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
         resultFrame.setValue(slot, value);
     }

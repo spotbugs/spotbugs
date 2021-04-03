@@ -18,12 +18,6 @@
  */
 package de.tobject.findbugs.view;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jface.viewers.IStructuredSelection;
-
 import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
 import de.tobject.findbugs.marker.FindBugsMarker.MarkerRank;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -34,6 +28,11 @@ import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.Plugin;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jface.viewers.IStructuredSelection;
 
 public class PropPageTitleProvider extends BugLabelProvider {
     @Override

@@ -19,15 +19,12 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public abstract class RelationalOp {
 
     public abstract <T extends Comparable<T>> boolean check(T x, T y);
@@ -51,9 +48,7 @@ public abstract class RelationalOp {
         return map.values();
     }
 
-    /**
-     * @deprecated Use {@link #RelationalOp(String,String)} instead
-     */
+    /** @deprecated Use {@link #RelationalOp(String,String)} instead */
     @Deprecated
     private RelationalOp(String value) {
         this(value, "xxx");
@@ -74,52 +69,51 @@ public abstract class RelationalOp {
         return name;
     }
 
-    public static final RelationalOp EQ = new RelationalOp("==", "EQ") {
-        @Override
-        public <T extends Comparable<T>> boolean check(T x, T y) {
-            return x.compareTo(y) == 0;
-        }
+    public static final RelationalOp EQ =
+            new RelationalOp("==", "EQ") {
+                @Override
+                public <T extends Comparable<T>> boolean check(T x, T y) {
+                    return x.compareTo(y) == 0;
+                }
+            };
 
-    };
+    public static final RelationalOp LEQ =
+            new RelationalOp("<=", "LEQ") {
+                @Override
+                public <T extends Comparable<T>> boolean check(T x, T y) {
+                    return x.compareTo(y) <= 0;
+                }
+            };
 
-    public static final RelationalOp LEQ = new RelationalOp("<=", "LEQ") {
-        @Override
-        public <T extends Comparable<T>> boolean check(T x, T y) {
-            return x.compareTo(y) <= 0;
-        }
+    public static final RelationalOp NEQ =
+            new RelationalOp("!=", "NEQ") {
+                @Override
+                public <T extends Comparable<T>> boolean check(T x, T y) {
+                    return x.compareTo(y) != 0;
+                }
+            };
 
-    };
+    public static final RelationalOp GEQ =
+            new RelationalOp(">=", "GEQ") {
+                @Override
+                public <T extends Comparable<T>> boolean check(T x, T y) {
+                    return x.compareTo(y) >= 0;
+                }
+            };
 
-    public static final RelationalOp NEQ = new RelationalOp("!=", "NEQ") {
-        @Override
-        public <T extends Comparable<T>> boolean check(T x, T y) {
-            return x.compareTo(y) != 0;
-        }
+    public static final RelationalOp LT =
+            new RelationalOp("<", "LT") {
+                @Override
+                public <T extends Comparable<T>> boolean check(T x, T y) {
+                    return x.compareTo(y) < 0;
+                }
+            };
 
-    };
-
-    public static final RelationalOp GEQ = new RelationalOp(">=", "GEQ") {
-        @Override
-        public <T extends Comparable<T>> boolean check(T x, T y) {
-            return x.compareTo(y) >= 0;
-        }
-
-    };
-
-    public static final RelationalOp LT = new RelationalOp("<", "LT") {
-        @Override
-        public <T extends Comparable<T>> boolean check(T x, T y) {
-            return x.compareTo(y) < 0;
-        }
-
-    };
-
-    public static final RelationalOp GT = new RelationalOp(">", "GT") {
-        @Override
-        public <T extends Comparable<T>> boolean check(T x, T y) {
-            return x.compareTo(y) > 0;
-        }
-
-    };
-
+    public static final RelationalOp GT =
+            new RelationalOp(">", "GT") {
+                @Override
+                public <T extends Comparable<T>> boolean check(T x, T y) {
+                    return x.compareTo(y) > 0;
+                }
+            };
 }

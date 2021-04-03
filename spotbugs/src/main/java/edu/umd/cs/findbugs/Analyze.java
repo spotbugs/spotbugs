@@ -1,11 +1,5 @@
 package edu.umd.cs.findbugs;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -15,19 +9,23 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Values;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.JavaClass;
 
 public class Analyze {
-    static private JavaClass serializable;
+    private static JavaClass serializable;
 
-    static private JavaClass collection;
+    private static JavaClass collection;
 
-    static private JavaClass comparator;
+    private static JavaClass comparator;
 
-    static private JavaClass map;
+    private static JavaClass map;
 
-    static private JavaClass remote;
+    private static JavaClass remote;
 
-    static private ClassNotFoundException storedException;
+    private static ClassNotFoundException storedException;
 
     static {
         try {
@@ -50,10 +48,10 @@ public class Analyze {
 
     /*
     private static boolean containsConcreteClasses(Set<JavaClass> s) {
-        for (JavaClass c : s)
-            if (!c.isInterface() && !c.isAbstract())
-                return true;
-        return false;
+    for (JavaClass c : s)
+    if (!c.isInterface() && !c.isAbstract())
+    return true;
+    return false;
     }
      */
 
@@ -92,7 +90,6 @@ public class Analyze {
         } catch (ClassNotFoundException e) {
             return 0.99;
         }
-
     }
 
     private static boolean isPrimitiveComponentClass(String refSig) {
@@ -146,31 +143,26 @@ public class Analyze {
     }
 
     /**
-     * Given two JavaClasses, try to estimate the probability that an reference
-     * of type x is also an instance of type y. Will return 0 only if it is
-     * impossible and 1 only if it is guaranteed.
+     * Given two JavaClasses, try to estimate the probability that an reference of type x is also an
+     * instance of type y. Will return 0 only if it is impossible and 1 only if it is guaranteed.
      *
-     * @param x
-     *            Known type of object
-     * @param y
-     *            Type queried about
+     * @param x Known type of object
+     * @param y Type queried about
      * @return 0 - 1 value indicating probablility
      */
-
-    public static double deepInstanceOf(@DottedClassName String x, @DottedClassName String y) throws ClassNotFoundException {
-        return deepInstanceOf(AnalysisContext.currentAnalysisContext().lookupClass(x), AnalysisContext.currentAnalysisContext()
-                .lookupClass(y));
+    public static double deepInstanceOf(@DottedClassName String x, @DottedClassName String y)
+            throws ClassNotFoundException {
+        return deepInstanceOf(
+                AnalysisContext.currentAnalysisContext().lookupClass(x),
+                AnalysisContext.currentAnalysisContext().lookupClass(y));
     }
 
     /**
-     * Given two JavaClasses, try to estimate the probability that an reference
-     * of type x is also an instance of type y. Will return 0 only if it is
-     * impossible and 1 only if it is guaranteed.
+     * Given two JavaClasses, try to estimate the probability that an reference of type x is also an
+     * instance of type y. Will return 0 only if it is impossible and 1 only if it is guaranteed.
      *
-     * @param x
-     *            Known type of object
-     * @param y
-     *            Type queried about
+     * @param x Known type of object
+     * @param y Type queried about
      * @return 0 - 1 value indicating probability
      */
     public static double deepInstanceOf(JavaClass x, JavaClass y) throws ClassNotFoundException {
@@ -199,7 +191,8 @@ public class Analyze {
             }
         }
 
-        Set<ClassDescriptor> transitiveCommonSubtypes = subtypes2.getTransitiveCommonSubtypes(xDesc, yDesc);
+        Set<ClassDescriptor> transitiveCommonSubtypes =
+                subtypes2.getTransitiveCommonSubtypes(xDesc, yDesc);
 
         if (transitiveCommonSubtypes.isEmpty()) {
             for (ClassDescriptor c : subtypes2.getSubtypes(xDesc)) {
@@ -232,7 +225,6 @@ public class Analyze {
             } catch (CheckedAnalysisException e) {
                 continue;
             }
-
         }
         return 0.99;
     }

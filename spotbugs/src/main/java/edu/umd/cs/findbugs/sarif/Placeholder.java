@@ -4,18 +4,16 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
-
 import java.util.List;
 import java.util.Objects;
 
 class Placeholder {
-    /**
-     * Index of the target {@link edu.umd.cs.findbugs.BugAnnotation} to embed.
-     */
+    /** Index of the target {@link edu.umd.cs.findbugs.BugAnnotation} to embed. */
     final int index;
 
     /**
      * Key to formatting {@link edu.umd.cs.findbugs.BugAnnotation}.
+     *
      * @see edu.umd.cs.findbugs.BugAnnotation#format(String, ClassAnnotation)
      */
     @NonNull
@@ -27,7 +25,8 @@ class Placeholder {
     }
 
     @NonNull
-    String toArgument(List<? extends BugAnnotation> bugAnnotations, @Nullable ClassAnnotation primaryClass) {
+    String toArgument(
+            List<? extends BugAnnotation> bugAnnotations, @Nullable ClassAnnotation primaryClass) {
         return bugAnnotations.get(index).format(key, primaryClass);
     }
 }

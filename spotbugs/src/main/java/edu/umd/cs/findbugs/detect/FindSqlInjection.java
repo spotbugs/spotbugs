@@ -19,29 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.AALOAD;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.LDC;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.NOP;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -74,6 +51,26 @@ import edu.umd.cs.findbugs.detect.BuildStringPassthruGraph.MethodParameter;
 import edu.umd.cs.findbugs.detect.BuildStringPassthruGraph.StringPassthruDatabase;
 import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.AALOAD;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.LDC;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NOP;
+import org.apache.bcel.generic.Type;
 
 /**
  * Find potential SQL injection vulnerabilities.
@@ -83,31 +80,37 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * @author Matt Hargett
  */
 public class FindSqlInjection implements Detector {
-    private static final String[] PREPARE_STATEMENT_SIGNATURES = new String[] {
-        "(Ljava/lang/String;)Ljava/sql/PreparedStatement;",
-        "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;",
-        "(Ljava/lang/String;II)Ljava/sql/PreparedStatement;",
-        "(Ljava/lang/String;III)Ljava/sql/PreparedStatement;",
-        "(Ljava/lang/String;[I)Ljava/sql/PreparedStatement;",
-        "(Ljava/lang/String;[Ljava/lang/String;)Ljava/sql/PreparedStatement;",
-    };
+    private static final String[] PREPARE_STATEMENT_SIGNATURES =
+            new String[] {
+                "(Ljava/lang/String;)Ljava/sql/PreparedStatement;",
+                "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;",
+                "(Ljava/lang/String;II)Ljava/sql/PreparedStatement;",
+                "(Ljava/lang/String;III)Ljava/sql/PreparedStatement;",
+                "(Ljava/lang/String;[I)Ljava/sql/PreparedStatement;",
+                "(Ljava/lang/String;[Ljava/lang/String;)Ljava/sql/PreparedStatement;",
+            };
 
-    private static final MethodDescriptor[] EXECUTE_METHODS = new MethodDescriptor[] {
-        new MethodDescriptor("java/sql/Statement", "executeQuery", "(Ljava/lang/String;)Ljava/sql/ResultSet;"),
-        new MethodDescriptor("java/sql/Statement", "executeUpdate", "(Ljava/lang/String;)I"),
-        new MethodDescriptor("java/sql/Statement", "executeUpdate", "(Ljava/lang/String;I)I"),
-        new MethodDescriptor("java/sql/Statement", "executeUpdate", "(Ljava/lang/String;[I)I"),
-        new MethodDescriptor("java/sql/Statement", "executeUpdate", "(Ljava/lang/String;[Ljava/lang/String;)I"),
-        new MethodDescriptor("java/sql/Statement", "executeLargeUpdate", "(Ljava/lang/String;)J"),
-        new MethodDescriptor("java/sql/Statement", "executeLargeUpdate", "(Ljava/lang/String;I)J"),
-        new MethodDescriptor("java/sql/Statement", "executeLargeUpdate", "(Ljava/lang/String;[I)J"),
-        new MethodDescriptor("java/sql/Statement", "executeLargeUpdate", "(Ljava/lang/String;[Ljava/lang/String;)J"),
-        new MethodDescriptor("java/sql/Statement", "execute", "(Ljava/lang/String;)Z"),
-        new MethodDescriptor("java/sql/Statement", "execute", "(Ljava/lang/String;I)Z"),
-        new MethodDescriptor("java/sql/Statement", "execute", "(Ljava/lang/String;[I)Z"),
-        new MethodDescriptor("java/sql/Statement", "execute", "(Ljava/lang/String;[Ljava/lang/String;)Z"),
-        new MethodDescriptor("java/sql/Statement", "addBatch", "(Ljava/lang/String;)V"),
-    };
+    private static final MethodDescriptor[] EXECUTE_METHODS =
+            new MethodDescriptor[] {
+                new MethodDescriptor(
+                        "java/sql/Statement", "executeQuery", "(Ljava/lang/String;)Ljava/sql/ResultSet;"),
+                new MethodDescriptor("java/sql/Statement", "executeUpdate", "(Ljava/lang/String;)I"),
+                new MethodDescriptor("java/sql/Statement", "executeUpdate", "(Ljava/lang/String;I)I"),
+                new MethodDescriptor("java/sql/Statement", "executeUpdate", "(Ljava/lang/String;[I)I"),
+                new MethodDescriptor(
+                        "java/sql/Statement", "executeUpdate", "(Ljava/lang/String;[Ljava/lang/String;)I"),
+                new MethodDescriptor("java/sql/Statement", "executeLargeUpdate", "(Ljava/lang/String;)J"),
+                new MethodDescriptor("java/sql/Statement", "executeLargeUpdate", "(Ljava/lang/String;I)J"),
+                new MethodDescriptor("java/sql/Statement", "executeLargeUpdate", "(Ljava/lang/String;[I)J"),
+                new MethodDescriptor(
+                        "java/sql/Statement", "executeLargeUpdate", "(Ljava/lang/String;[Ljava/lang/String;)J"),
+                new MethodDescriptor("java/sql/Statement", "execute", "(Ljava/lang/String;)Z"),
+                new MethodDescriptor("java/sql/Statement", "execute", "(Ljava/lang/String;I)Z"),
+                new MethodDescriptor("java/sql/Statement", "execute", "(Ljava/lang/String;[I)Z"),
+                new MethodDescriptor(
+                        "java/sql/Statement", "execute", "(Ljava/lang/String;[Ljava/lang/String;)Z"),
+                new MethodDescriptor("java/sql/Statement", "addBatch", "(Ljava/lang/String;)V"),
+            };
 
     private static class StringAppendState {
         // remember the smallest position at which we saw something that
@@ -185,7 +188,6 @@ public class FindSqlInjection implements Detector {
         public void setSawInitialTaint() {
             sawTaint = 0;
         }
-
     }
 
     BugReporter bugReporter;
@@ -203,12 +205,20 @@ public class FindSqlInjection implements Detector {
         for (MethodDescriptor executeMethod : EXECUTE_METHODS) {
             baseExecuteMethods.add(new MethodParameter(executeMethod, 0));
         }
-        executeMethods = Global.getAnalysisCache().getDatabase(StringPassthruDatabase.class).findLinkedMethods(baseExecuteMethods);
+        executeMethods =
+                Global.getAnalysisCache()
+                        .getDatabase(StringPassthruDatabase.class)
+                        .findLinkedMethods(baseExecuteMethods);
         Set<MethodParameter> basePrepareMethods = new HashSet<>();
         for (String signature : PREPARE_STATEMENT_SIGNATURES) {
-            basePrepareMethods.add(new MethodParameter(new MethodDescriptor("java/sql/Connection", "prepareStatement", signature), 0));
+            basePrepareMethods.add(
+                    new MethodParameter(
+                            new MethodDescriptor("java/sql/Connection", "prepareStatement", signature), 0));
         }
-        preparedStatementMethods = Global.getAnalysisCache().getDatabase(StringPassthruDatabase.class).findLinkedMethods(basePrepareMethods);
+        preparedStatementMethods =
+                Global.getAnalysisCache()
+                        .getDatabase(StringPassthruDatabase.class)
+                        .findLinkedMethods(basePrepareMethods);
         allMethods.addAll(executeMethods.keySet());
         allMethods.addAll(preparedStatementMethods.keySet());
     }
@@ -231,15 +241,18 @@ public class FindSqlInjection implements Detector {
                 analyzeMethod(classContext, method);
             } catch (DataflowAnalysisException e) {
                 bugReporter.logError(
-                        "FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(method),
+                        "FindSqlInjection caught exception while analyzing "
+                                + classContext.getFullyQualifiedMethodName(method),
                         e);
             } catch (CFGBuilderException e) {
                 bugReporter.logError(
-                        "FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(method),
+                        "FindSqlInjection caught exception while analyzing "
+                                + classContext.getFullyQualifiedMethodName(method),
                         e);
             } catch (RuntimeException e) {
                 bugReporter.logError(
-                        "FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(method),
+                        "FindSqlInjection caught exception while analyzing "
+                                + classContext.getFullyQualifiedMethodName(method),
                         e);
             }
         }
@@ -249,7 +262,8 @@ public class FindSqlInjection implements Detector {
         if (ins instanceof INVOKEVIRTUAL) {
             INVOKEVIRTUAL invoke = (INVOKEVIRTUAL) ins;
 
-            if ("append".equals(invoke.getMethodName(cpg)) && invoke.getClassName(cpg).startsWith("java.lang.StringB")) {
+            if ("append".equals(invoke.getMethodName(cpg))
+                    && invoke.getClassName(cpg).startsWith("java.lang.StringB")) {
                 String sig = invoke.getSignature(cpg);
                 char firstChar = sig.charAt(1);
                 return firstChar == '[' || firstChar == 'L';
@@ -284,7 +298,8 @@ public class FindSqlInjection implements Detector {
         return closeQuotePattern.matcher(s).find();
     }
 
-    private StringAppendState updateStringAppendState(Location location, ConstantPoolGen cpg, StringAppendState stringAppendState) {
+    private StringAppendState updateStringAppendState(
+            Location location, ConstantPoolGen cpg, StringAppendState stringAppendState) {
         InstructionHandle handle = location.getHandle();
         Instruction ins = handle.getInstruction();
         if (!isConstantStringLoad(location, cpg)) {
@@ -307,7 +322,8 @@ public class FindSqlInjection implements Detector {
         return stringAppendState;
     }
 
-    private StringAppendState getStringAppendState(CFG cfg, ConstantPoolGen cpg) throws CFGBuilderException {
+    private StringAppendState getStringAppendState(CFG cfg, ConstantPoolGen cpg)
+            throws CFGBuilderException {
         StringAppendState stringAppendState = new StringAppendState();
         String sig = method.getSignature();
         sig = sig.substring(0, sig.indexOf(')'));
@@ -337,7 +353,8 @@ public class FindSqlInjection implements Detector {
                 if (sig2.indexOf("java/lang/String") >= 0) {
                     String methodName = inv.getMethodName(cpg);
                     String className = inv.getClassName(cpg);
-                    if ("valueOf".equals(methodName) && Values.DOTTED_JAVA_LANG_STRING.equals(className)
+                    if ("valueOf".equals(methodName)
+                            && Values.DOTTED_JAVA_LANG_STRING.equals(className)
                             && "(Ljava/lang/Object;)Ljava/lang/String;".equals(sig1)) {
                         try {
                             TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
@@ -358,13 +375,19 @@ public class FindSqlInjection implements Detector {
                         } catch (CheckedAnalysisException e) {
                             stringAppendState.setSawTaint(handle);
                         }
-                    } else if (className.startsWith(Values.DOTTED_JAVA_LANG_STRING) || "java.lang.Long".equals(className)
-                            || Values.DOTTED_JAVA_LANG_INTEGER.equals(className) || "java.lang.Float".equals(className)
-                            || "java.lang.Double".equals(className) || "java.lang.Short".equals(className)
-                            || "java.lang.Byte".equals(className) || "java.lang.Character".equals(className)) {
+                    } else if (className.startsWith(Values.DOTTED_JAVA_LANG_STRING)
+                            || "java.lang.Long".equals(className)
+                            || Values.DOTTED_JAVA_LANG_INTEGER.equals(className)
+                            || "java.lang.Float".equals(className)
+                            || "java.lang.Double".equals(className)
+                            || "java.lang.Short".equals(className)
+                            || "java.lang.Byte".equals(className)
+                            || "java.lang.Character".equals(className)) {
                         // ignore it
                         assert true;
-                    } else if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8) {
+                    } else if (methodName.startsWith("to")
+                            && methodName.endsWith("String")
+                            && methodName.length() > 8) {
                         // ignore it
                         assert true;
                     } else if (className.startsWith("javax.servlet") && methodName.startsWith("get")) {
@@ -373,7 +396,6 @@ public class FindSqlInjection implements Detector {
                     } else {
                         stringAppendState.setSawTaint(handle);
                     }
-
                 }
             } else if (ins instanceof GETFIELD) {
                 GETFIELD getfield = (GETFIELD) ins;
@@ -415,7 +437,8 @@ public class FindSqlInjection implements Detector {
         return false;
     }
 
-    private @CheckForNull InstructionHandle getPreviousInstruction(InstructionHandle handle, boolean skipNops) {
+    private @CheckForNull InstructionHandle getPreviousInstruction(
+            InstructionHandle handle, boolean skipNops) {
         while (handle.getPrev() != null) {
             handle = handle.getPrev();
             Instruction prevIns = handle.getInstruction();
@@ -426,7 +449,8 @@ public class FindSqlInjection implements Detector {
         return null;
     }
 
-    private @CheckForNull Location getPreviousLocation(CFG cfg, Location startLocation, boolean skipNops) {
+    private @CheckForNull Location getPreviousLocation(
+            CFG cfg, Location startLocation, boolean skipNops) {
         Location loc = startLocation;
         InstructionHandle prev = getPreviousInstruction(loc.getHandle(), skipNops);
         if (prev != null) {
@@ -445,8 +469,12 @@ public class FindSqlInjection implements Detector {
         }
     }
 
-    private BugInstance generateBugInstance(JavaClass javaClass, MethodGen methodGen, InstructionHandle handle,
-            StringAppendState stringAppendState, boolean isExecute) {
+    private BugInstance generateBugInstance(
+            JavaClass javaClass,
+            MethodGen methodGen,
+            InstructionHandle handle,
+            StringAppendState stringAppendState,
+            boolean isExecute) {
         int priority = LOW_PRIORITY;
         boolean sawSeriousTaint = false;
         if (stringAppendState.getSawAppend(handle)) {
@@ -486,7 +514,8 @@ public class FindSqlInjection implements Detector {
 
     ClassContext classContext;
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
         JavaClass javaClass = classContext.getJavaClass();
         ValueNumberDataflow vnd = classContext.getValueNumberDataflow(method);
 
@@ -533,7 +562,8 @@ public class FindSqlInjection implements Detector {
             ConstantFrame frame = dataflow.getFactAtLocation(location);
             SignatureParser parser = new SignatureParser(invoke.getSignature(cpg));
             Constant value = frame.getArgument(invoke, cpg, paramNumber, parser);
-            ValueNumber vn = vnd.getFactAtLocation(location).getArgument(invoke, cpg, paramNumber, parser);
+            ValueNumber vn =
+                    vnd.getFactAtLocation(location).getArgument(invoke, cpg, paramNumber, parser);
 
             if (!value.isConstantString() && !passthruParams.contains(vn)) {
                 // TODO: verify it's the same string represented by
@@ -542,12 +572,13 @@ public class FindSqlInjection implements Detector {
                 // returns by methods
                 Location prev = getValueNumberCreationLocation(vnd, vn);
                 if (prev == null || !isSafeValue(prev, cpg)) {
-                    BugInstance bug = generateBugInstance(javaClass, methodGen, location.getHandle(), stringAppendState,
-                            executeMethod);
+                    BugInstance bug =
+                            generateBugInstance(
+                                    javaClass, methodGen, location.getHandle(), stringAppendState, executeMethod);
                     bugAccumulator.accumulateBug(
                             bug,
-                            SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
-                                    javaClass.getSourceFileName(), location.getHandle()));
+                            SourceLineAnnotation.fromVisitedInstruction(
+                                    classContext, methodGen, javaClass.getSourceFileName(), location.getHandle()));
                 }
             }
         }
@@ -567,13 +598,15 @@ public class FindSqlInjection implements Detector {
                     return loc;
                 }
             } catch (DataflowAnalysisException e) {
-                AnalysisContext.logError("While analyzing " + vnd.getCFG().getMethodGen() + " at " + loc, e);
+                AnalysisContext.logError(
+                        "While analyzing " + vnd.getCFG().getMethodGen() + " at " + loc, e);
             }
         }
         return null;
     }
 
-    private Set<ValueNumber> getPassthruParams(ValueNumberDataflow vnd, Method method, JavaClass javaClass) {
+    private Set<ValueNumber> getPassthruParams(
+            ValueNumberDataflow vnd, Method method, JavaClass javaClass) {
         XMethod xMethod = XFactory.createXMethod(javaClass, method);
         Set<ValueNumber> passthruParams = new HashSet<>();
 

@@ -18,8 +18,6 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
@@ -36,6 +34,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.log.Profiler;
+import org.apache.bcel.generic.ConstantPoolGen;
 
 /**
  * Analysis factory which creates instances of ObligationDataflow.
@@ -54,19 +53,32 @@ public class ObligationDataflowFactory extends AnalysisFactory<ObligationDataflo
     public ObligationDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException {
         CFG cfg = analysisCache.getMethodAnalysis(CFG.class, methodDescriptor);
-        DepthFirstSearch dfs = analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
+        DepthFirstSearch dfs =
+                analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
         XMethod xmethod = XFactory.createXMethod(methodDescriptor);
-        ConstantPoolGen cpg = analysisCache.getClassAnalysis(ConstantPoolGen.class, methodDescriptor.getClassDescriptor());
+        ConstantPoolGen cpg =
+                analysisCache.getClassAnalysis(
+                        ConstantPoolGen.class, methodDescriptor.getClassDescriptor());
 
         ObligationPolicyDatabase database = analysisCache.getDatabase(ObligationPolicyDatabase.class);
 
-        TypeDataflow typeDataflow = analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
-        IsNullValueDataflow invDataflow = analysisCache.getMethodAnalysis(IsNullValueDataflow.class, methodDescriptor);
+        TypeDataflow typeDataflow =
+                analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
+        IsNullValueDataflow invDataflow =
+                analysisCache.getMethodAnalysis(IsNullValueDataflow.class, methodDescriptor);
 
         ObligationFactory factory = database.getFactory();
 
-        ObligationAnalysis analysis = new ObligationAnalysis(dfs, xmethod, cpg, factory, database, typeDataflow, invDataflow,
-                analysisCache.getErrorLogger());
+        ObligationAnalysis analysis =
+                new ObligationAnalysis(
+                        dfs,
+                        xmethod,
+                        cpg,
+                        factory,
+                        database,
+                        typeDataflow,
+                        invDataflow,
+                        analysisCache.getErrorLogger());
         ObligationDataflow dataflow = new ObligationDataflow(cfg, analysis);
 
         Profiler profiler = analysisCache.getProfiler();

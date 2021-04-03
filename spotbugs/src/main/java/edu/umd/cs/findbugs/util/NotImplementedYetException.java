@@ -19,13 +19,10 @@
 
 package edu.umd.cs.findbugs.util;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class NotImplementedYetException extends RuntimeException {
 
     public NotImplementedYetException(String msg) {
         super(msg);
     }
-
 }

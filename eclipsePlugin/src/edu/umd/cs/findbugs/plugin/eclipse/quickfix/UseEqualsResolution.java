@@ -25,9 +25,10 @@ import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNod
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.EQUALS;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.NOT_EQUALS;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -43,15 +44,14 @@ import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
-
 /**
- * Code that uses the == or != operators to compare Strings is bad code. The
- * <CODE>UseEqualsResolution</CODE> uses <CODE>equals()</CODE> instead.
+ * Code that uses the == or != operators to compare Strings is bad code. The <CODE>
+ * UseEqualsResolution</CODE> uses <CODE>equals()</CODE> instead.
  *
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#ES_COMPARING_PARAMETER_STRING_WITH_EQ">ES_COMPARING_PARAMETER_STRING_WITH_EQ</a>
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#ES_COMPARING_STRINGS_WITH_EQ">ES_COMPARING_STRINGS_WITH_EQ</a>
+ * @see <a
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#ES_COMPARING_PARAMETER_STRING_WITH_EQ">ES_COMPARING_PARAMETER_STRING_WITH_EQ</a>
+ * @see <a
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#ES_COMPARING_STRINGS_WITH_EQ">ES_COMPARING_STRINGS_WITH_EQ</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @version 1.0
@@ -66,12 +66,14 @@ public class UseEqualsResolution extends BugResolution {
     }
 
     @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
+            throws BugResolutionException {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(workingUnit);
         Assert.isNotNull(bug);
 
-        InfixExpression[] stringEqualityChecks = findStringEqualityChecks(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
+        InfixExpression[] stringEqualityChecks =
+                findStringEqualityChecks(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
         for (InfixExpression stringEqualityCheck : stringEqualityChecks) {
             Operator operator = stringEqualityCheck.getOperator();
             Expression replaceExpression;
@@ -86,7 +88,8 @@ public class UseEqualsResolution extends BugResolution {
         }
     }
 
-    protected Expression createNotEqualsExpression(ASTRewrite rewrite, InfixExpression stringEqualityCheck) {
+    protected Expression createNotEqualsExpression(
+            ASTRewrite rewrite, InfixExpression stringEqualityCheck) {
         Expression equalsExpression = createEqualsExpression(rewrite, stringEqualityCheck);
 
         final AST ast = rewrite.getAST();
@@ -96,7 +99,8 @@ public class UseEqualsResolution extends BugResolution {
         return prefixExpression;
     }
 
-    protected Expression createEqualsExpression(ASTRewrite rewrite, InfixExpression stringEqualityCheck) {
+    protected Expression createEqualsExpression(
+            ASTRewrite rewrite, InfixExpression stringEqualityCheck) {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(stringEqualityCheck);
 
@@ -108,7 +112,8 @@ public class UseEqualsResolution extends BugResolution {
         equalsInvocation.setName(ast.newSimpleName(EQUALS_METHOD_NAME));
         equalsInvocation.setExpression(leftOperand);
 
-        ListRewrite argumentsRewrite = rewrite.getListRewrite(equalsInvocation, MethodInvocation.ARGUMENTS_PROPERTY);
+        ListRewrite argumentsRewrite =
+                rewrite.getListRewrite(equalsInvocation, MethodInvocation.ARGUMENTS_PROPERTY);
         argumentsRewrite.insertLast(rightOperand, null);
 
         return equalsInvocation;
@@ -140,7 +145,9 @@ public class UseEqualsResolution extends BugResolution {
 
     static boolean isStringEqualityCheck(InfixExpression infix) {
         Operator op = infix.getOperator();
-        return (EQUALS.equals(op) || NOT_EQUALS.equals(op)) && isStringOperand(infix.getLeftOperand()) && isStringOperand(infix.getRightOperand());
+        return (EQUALS.equals(op) || NOT_EQUALS.equals(op))
+                && isStringOperand(infix.getLeftOperand())
+                && isStringOperand(infix.getRightOperand());
     }
 
     static boolean isStringOperand(Expression operand) {
@@ -162,7 +169,5 @@ public class UseEqualsResolution extends BugResolution {
         public InfixExpression[] getStringEqualityChecks() {
             return objectEqualityChecks.toArray(new InfixExpression[objectEqualityChecks.size()]);
         }
-
     }
-
 }

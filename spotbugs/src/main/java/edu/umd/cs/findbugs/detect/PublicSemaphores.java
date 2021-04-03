@@ -19,23 +19,21 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 /**
- * finds public classes that use 'this' as a semaphore, which can cause
- * conflicts if clients of this class use an instance of this class as their own
- * synchronization point. Frankly, Just calling synchronized on this, or
- * defining synchronized methods is bad, but since that is so prevalent, don't
- * warn on that.
+ * finds public classes that use 'this' as a semaphore, which can cause conflicts if clients of this
+ * class use an instance of this class as their own synchronization point. Frankly, Just calling
+ * synchronized on this, or defining synchronized methods is bad, but since that is so prevalent,
+ * don't warn on that.
  */
 public class PublicSemaphores extends BytecodeScanningDetector implements StatelessDetector {
     private static final int SEEN_NOTHING = 0;
@@ -90,9 +88,13 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
         case SEEN_ALOAD_0:
             if ((seen == Const.INVOKEVIRTUAL) && "java/lang/Object".equals(getClassConstantOperand())) {
                 String methodName = getNameConstantOperand();
-                if ("wait".equals(methodName) || "notify".equals(methodName) || "notifyAll".equals(methodName)) {
-                    bugReporter.reportBug(new BugInstance(this, "PS_PUBLIC_SEMAPHORES", NORMAL_PRIORITY).addClassAndMethod(this)
-                            .addSourceLine(this));
+                if ("wait".equals(methodName)
+                        || "notify".equals(methodName)
+                        || "notifyAll".equals(methodName)) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, "PS_PUBLIC_SEMAPHORES", NORMAL_PRIORITY)
+                                    .addClassAndMethod(this)
+                                    .addSourceLine(this));
                     alreadyReported = true;
                 }
             }
@@ -101,7 +103,5 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
         default:
             break;
         }
-
     }
-
 }

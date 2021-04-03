@@ -19,14 +19,11 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
 
-import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
-
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public abstract class AbstractFieldAnnotationVisitor extends FieldVisitor {
 
     public AbstractFieldAnnotationVisitor() {
@@ -45,5 +42,4 @@ public abstract class AbstractFieldAnnotationVisitor extends FieldVisitor {
         // TODO Auto-generated method stub
 
     }
-
 }

@@ -47,5 +47,4 @@ public class SingleDetectorFactorySelector implements DetectorFactorySelector {
     public String toString() {
         return className;
     }
-
 }

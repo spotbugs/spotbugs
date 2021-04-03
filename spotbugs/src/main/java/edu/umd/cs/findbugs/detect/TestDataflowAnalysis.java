@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Iterator;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -38,14 +36,16 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import java.util.Iterator;
 
 /**
- * This detector is just a test harness to test a dataflow analysis class
- * specified by the dataflow.classname property.
+ * This detector is just a test harness to test a dataflow analysis class specified by the
+ * dataflow.classname property.
  *
  * @author David Hovemeyer
  */
-public class TestDataflowAnalysis<Fact, AnalysisType extends DataflowAnalysis<Fact>> implements Detector2, NonReportingDetector {
+public class TestDataflowAnalysis<Fact, AnalysisType extends DataflowAnalysis<Fact>>
+        implements Detector2, NonReportingDetector {
 
     private final String dataflowClassName;
 
@@ -116,7 +116,8 @@ public class TestDataflowAnalysis<Fact, AnalysisType extends DataflowAnalysis<Fa
             System.out.println("-----------------------------------------------------------------");
 
             // Create and execute the dataflow analysis
-            Dataflow<Fact, AnalysisType> dataflow = analysisCache.getMethodAnalysis(dataflowClass, methodDescriptor);
+            Dataflow<Fact, AnalysisType> dataflow =
+                    analysisCache.getMethodAnalysis(dataflowClass, methodDescriptor);
 
             System.out.println("Dataflow finished after " + dataflow.getNumIterations());
 
@@ -124,7 +125,6 @@ public class TestDataflowAnalysis<Fact, AnalysisType extends DataflowAnalysis<Fa
                 DataflowCFGPrinter<Fact, AnalysisType> cfgPrinter = new DataflowCFGPrinter<>(dataflow);
                 cfgPrinter.print(System.out);
             }
-
         }
     }
 
@@ -147,7 +147,8 @@ public class TestDataflowAnalysis<Fact, AnalysisType extends DataflowAnalysis<Fa
         if (cls == null) {
             // Find the dataflow class from the plugin in which it was loaded
 
-            DetectorFactoryCollection detectorFactoryCollection = analysisCache.getDatabase(DetectorFactoryCollection.class);
+            DetectorFactoryCollection detectorFactoryCollection =
+                    analysisCache.getDatabase(DetectorFactoryCollection.class);
             for (Iterator<Plugin> i = detectorFactoryCollection.pluginIterator(); i.hasNext();) {
                 Plugin plugin = i.next();
 
@@ -157,23 +158,21 @@ public class TestDataflowAnalysis<Fact, AnalysisType extends DataflowAnalysis<Fa
                 } catch (ClassNotFoundException e) {
                     assert true;
                 }
-
             }
         }
 
         if (cls == null) {
-            analysisCache.getErrorLogger().logError("TestDataflowAnalysis: could not load class " + dataflowClassName);
+            analysisCache
+                    .getErrorLogger()
+                    .logError("TestDataflowAnalysis: could not load class " + dataflowClassName);
             return;
         }
 
-
         dataflowClass = cls;
     }
-
 
     @SuppressWarnings("unchecked")
     private Class<? extends Dataflow<Fact, AnalysisType>> asDataflowClass(Class<?> c) {
         return (Class<? extends Dataflow<Fact, AnalysisType>>) c.asSubclass(Dataflow.class);
     }
-
 }

@@ -19,28 +19,17 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public interface FieldOrMethodName {
-    /**
-     * @return a ClassDescriptor for the field/method's class
-     */
+    /** @return a ClassDescriptor for the field/method's class */
     public ClassDescriptor getClassDescriptor();
 
-    /**
-     * @return Returns the field/method name
-     */
+    /** @return Returns the field/method name */
     public String getName();
 
-    /**
-     * @return Returns the field/method signature
-     */
+    /** @return Returns the field/method signature */
     public String getSignature();
 
-    /**
-     * @return Returns true if field/method is static, false if not
-     */
+    /** @return Returns true if field/method is static, false if not */
     public boolean isStatic();
-
 }

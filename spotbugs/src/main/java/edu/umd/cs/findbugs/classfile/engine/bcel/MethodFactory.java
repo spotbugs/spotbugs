@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 /**
  * Method analysis engine to produce BCEL Method objects.
@@ -46,16 +45,23 @@ public class MethodFactory extends AnalysisFactory<Method> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public Method analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
-        JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor.getClassDescriptor());
+    public Method analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
+        JavaClass jclass =
+                analysisCache.getClassAnalysis(JavaClass.class, descriptor.getClassDescriptor());
         Method[] methodList = jclass.getMethods();
 
         Method result = null;
 
         // As a side-effect, cache all of the Methods for this JavaClass
         for (Method method : methodList) {
-            MethodDescriptor methodDescriptor = DescriptorFactory.instance().getMethodDescriptor(
-                    descriptor.getSlashedClassName(), method.getName(), method.getSignature(), method.isStatic());
+            MethodDescriptor methodDescriptor =
+                    DescriptorFactory.instance()
+                            .getMethodDescriptor(
+                                    descriptor.getSlashedClassName(),
+                                    method.getName(),
+                                    method.getSignature(),
+                                    method.isStatic());
 
             // Put in cache eagerly
             analysisCache.eagerlyPutMethodAnalysis(Method.class, methodDescriptor, method);
@@ -79,5 +85,4 @@ public class MethodFactory extends AnalysisFactory<Method> {
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerMethodAnalysisEngine(Method.class, this);
     }
-
 }

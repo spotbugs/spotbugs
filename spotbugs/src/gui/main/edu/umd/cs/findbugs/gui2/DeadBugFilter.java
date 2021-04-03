@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-/**
- * @author Dan
- */
+/** @author Dan */
 public class DeadBugFilter extends FilterMatcher {
 
     public DeadBugFilter(Sortables filterBy, String value, FilterWhere mode) {
@@ -32,5 +30,4 @@ public class DeadBugFilter extends FilterMatcher {
     public String toString() {
         return edu.umd.cs.findbugs.L10N.getLocalString("pref.dead_bugs", "Dead Bugs");
     }
-
 }

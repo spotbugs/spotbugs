@@ -18,6 +18,7 @@
  */
 package de.tobject.findbugs.io;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,9 +26,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import javax.annotation.Nonnull;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -35,8 +34,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-
-import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Input/output helper methods.
@@ -47,15 +44,13 @@ public abstract class IO {
     /**
      * Write the contents of a file in the Eclipse workspace.
      *
-     * @param file
-     *            the file to write to
-     * @param output
-     *            the FileOutput object responsible for generating the data
-     * @param monitor
-     *            a progress monitor (or null if none)
+     * @param file the file to write to
+     * @param output the FileOutput object responsible for generating the data
+     * @param monitor a progress monitor (or null if none)
      * @throws CoreException
      */
-    public static void writeFile(IFile file, final FileOutput output, IProgressMonitor monitor) throws CoreException {
+    public static void writeFile(IFile file, final FileOutput output, IProgressMonitor monitor)
+            throws CoreException {
 
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -68,22 +63,21 @@ public abstract class IO {
                 file.setContents(bis, true, false, monitor);
             }
         } catch (IOException e) {
-            IStatus status = FindbugsPlugin.createErrorStatus("Exception while " + output.getTaskDescription(), e);
+            IStatus status =
+                    FindbugsPlugin.createErrorStatus("Exception while " + output.getTaskDescription(), e);
             throw new CoreException(status);
         }
     }
 
     /**
-     * Recursively creates all folders needed, up to the project. Project must
-     * already exist.
+     * Recursively creates all folders needed, up to the project. Project must already exist.
      *
-     * @param resource
-     *            non null
-     * @param monitor
-     *            non null
+     * @param resource non null
+     * @param monitor non null
      * @throws CoreException
      */
-    private static void mkdirs(@Nonnull IResource resource, IProgressMonitor monitor) throws CoreException {
+    private static void mkdirs(@Nonnull IResource resource, IProgressMonitor monitor)
+            throws CoreException {
         IContainer container = resource.getParent();
         if (container.getType() == IResource.FOLDER && !container.exists()) {
             if (!container.getParent().exists()) {
@@ -96,12 +90,12 @@ public abstract class IO {
     /**
      * Write the contents of a java.io.File
      *
-     * @param file
-     *            the file to write to
-     * @param output
-     *            the FileOutput object responsible for generating the data
+     * @param file the file to write to
+     * @param output the FileOutput object responsible for generating the data
      */
-    public static void writeFile(final File file, final FileOutput output, final IProgressMonitor monitor) throws CoreException {
+    public static void writeFile(
+            final File file, final FileOutput output, final IProgressMonitor monitor)
+            throws CoreException {
         try (FileOutputStream fout = new FileOutputStream(file);
                 BufferedOutputStream bout = new BufferedOutputStream(fout)) {
             if (monitor != null) {
@@ -110,7 +104,8 @@ public abstract class IO {
             output.writeFile(bout);
             bout.flush();
         } catch (IOException e) {
-            IStatus status = FindbugsPlugin.createErrorStatus("Exception while " + output.getTaskDescription(), e);
+            IStatus status =
+                    FindbugsPlugin.createErrorStatus("Exception while " + output.getTaskDescription(), e);
             throw new CoreException(status);
         }
     }

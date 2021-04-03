@@ -6,7 +6,8 @@ public class ParameterWarningSuppressor extends ClassWarningSuppressor {
 
     final int register;
 
-    public ParameterWarningSuppressor(String bugPattern, ClassAnnotation clazz, MethodAnnotation method, int register) {
+    public ParameterWarningSuppressor(
+            String bugPattern, ClassAnnotation clazz, MethodAnnotation method, int register) {
         super(bugPattern, clazz);
         this.method = method;
         this.register = register;

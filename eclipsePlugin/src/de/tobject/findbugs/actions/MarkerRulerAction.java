@@ -18,10 +18,10 @@
  */
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import java.util.ArrayList;
-
 import javax.annotation.CheckForNull;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -47,20 +47,17 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorExtension;
 import org.eclipse.ui.texteditor.IUpdate;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-
 /**
- * An action that can display a bug marker's details in the FindBugs details
- * view. TODO (PeterF) We should replace this action with a marker resolution or
- * a marker help contribution.
+ * An action that can display a bug marker's details in the FindBugs details view. TODO (PeterF) We
+ * should replace this action with a marker resolution or a marker help contribution.
  *
  * @author Phil Crosby
  * @author Peter Friese
  * @version 1.0
  * @since 20.4.2004
  */
-public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseListener, IMenuListener {
+public class MarkerRulerAction
+        implements IEditorActionDelegate, IUpdate, MouseListener, IMenuListener {
 
     private IVerticalRulerInfo ruler;
 
@@ -71,8 +68,8 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     private final ArrayList<IMarker> markers;
 
     /**
-     * The action sent to this delegate. Enable and disable it based upon
-     * whether there are FindBugs markers on the current line
+     * The action sent to this delegate. Enable and disable it based upon whether there are FindBugs
+     * markers on the current line
      */
     private IAction action;
 
@@ -123,7 +120,9 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         this.action = action1;
         obtainFindBugsMarkers();
         if (markers.size() == 0 && editor != null) {
-            MessageDialog.openError(editor.getSite().getShell(), "Error Showing Bug Details",
+            MessageDialog.openError(
+                    editor.getSite().getShell(),
+                    "Error Showing Bug Details",
                     "You must first select a FindBugs marker to view bug details.");
         } else {
             update();
@@ -136,8 +135,8 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     }
 
     /**
-     * Fills markers field with all of the FindBugs markers associated with the
-     * current line in the text editor's ruler marign.
+     * Fills markers field with all of the FindBugs markers associated with the current line in the
+     * text editor's ruler marign.
      */
     protected void obtainFindBugsMarkers() {
         // Delete old markers
@@ -182,13 +181,11 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     }
 
     /**
-     * Checks a Position in a document to see whether the line of last mouse
-     * activity falls within this region.
+     * Checks a Position in a document to see whether the line of last mouse activity falls within
+     * this region.
      *
-     * @param position
-     *            Position of the marker
-     * @param document
-     *            the Document the marker resides in
+     * @param position Position of the marker
+     * @param document the Document the marker resides in
      * @return true if the last mouse click falls on the same line as the marker
      */
     protected boolean includesRulerLine(Position position, IDocument document) {
@@ -263,5 +260,4 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     public void mouseUp(MouseEvent e) {
         //
     }
-
 }

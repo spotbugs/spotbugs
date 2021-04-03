@@ -19,26 +19,22 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-import java.util.Date;
-
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
+import java.io.IOException;
+import java.util.Date;
 
 /**
- * A version of an analyzed application. Application versions are uniquely
- * identified by a sequence number, which represents a run of FindBugs on the
- * application. Timestamp is when FindBugs was run (according to
- * System.currentTimeMillis()), and the release name is available if the user
- * provided it.
+ * A version of an analyzed application. Application versions are uniquely identified by a sequence
+ * number, which represents a run of FindBugs on the application. Timestamp is when FindBugs was run
+ * (according to System.currentTimeMillis()), and the release name is available if the user provided
+ * it.
  *
  * @author David Hovemeyer
  */
 public class AppVersion implements XMLWriteable, Cloneable {
-    /**
-     * XML element name for a stored AppVersion object.
-     */
+    /** XML element name for a stored AppVersion object. */
     public static final String ELEMENT_NAME = "AppVersion";
 
     private final long sequence;
@@ -84,16 +80,12 @@ public class AppVersion implements XMLWriteable, Cloneable {
         }
     }
 
-    /**
-     * @return Returns the sequence.
-     */
+    /** @return Returns the sequence. */
     public long getSequenceNumber() {
         return sequence;
     }
 
-    /**
-     * @return Returns the timestamp.
-     */
+    /** @return Returns the timestamp. */
     public long getTimestamp() {
         if (timestamp <= 0) {
             return System.currentTimeMillis();
@@ -101,26 +93,18 @@ public class AppVersion implements XMLWriteable, Cloneable {
         return timestamp;
     }
 
-    /**
-     * @return Returns the releaseName.
-     */
+    /** @return Returns the releaseName. */
     public String getReleaseName() {
         return releaseName;
     }
 
-    /**
-     * @param timestamp
-     *            The timestamp to set.
-     */
+    /** @param timestamp The timestamp to set. */
     public AppVersion setTimestamp(long timestamp) {
         this.timestamp = timestamp;
         return this;
     }
 
-    /**
-     * @param releaseName
-     *            The releaseName to set.
-     */
+    /** @param releaseName The releaseName to set. */
     public AppVersion setReleaseName(String releaseName) {
         this.releaseName = releaseName;
         return this;
@@ -137,8 +121,10 @@ public class AppVersion implements XMLWriteable, Cloneable {
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         xmlOutput.openCloseTag(
                 ELEMENT_NAME,
-                new XMLAttributeList().addAttribute("sequence", String.valueOf(sequence))
-                        .addAttribute("timestamp", String.valueOf(timestamp)).addAttribute("release", releaseName)
+                new XMLAttributeList()
+                        .addAttribute("sequence", String.valueOf(sequence))
+                        .addAttribute("timestamp", String.valueOf(timestamp))
+                        .addAttribute("release", releaseName)
                         .addAttribute("codeSize", String.valueOf(codeSize))
                         .addAttribute("numClasses", String.valueOf(numClasses)));
     }
@@ -164,34 +150,24 @@ public class AppVersion implements XMLWriteable, Cloneable {
         return buf.toString();
     }
 
-    /**
-     * @param numClasses
-     *            The numClasses to set.
-     */
+    /** @param numClasses The numClasses to set. */
     public AppVersion setNumClasses(int numClasses) {
         this.numClasses = numClasses;
         return this;
     }
 
-    /**
-     * @return Returns the numClasses.
-     */
+    /** @return Returns the numClasses. */
     public int getNumClasses() {
         return numClasses;
     }
 
-    /**
-     * @param codeSize
-     *            The codeSize to set.
-     */
+    /** @param codeSize The codeSize to set. */
     public AppVersion setCodeSize(int codeSize) {
         this.codeSize = codeSize;
         return this;
     }
 
-    /**
-     * @return Returns the codeSize.
-     */
+    /** @return Returns the codeSize. */
     public int getCodeSize() {
         return codeSize;
     }

@@ -52,12 +52,8 @@ public class XMLBugReporter extends BugCollectionBugReporter {
         }
     }
 
-    /**
-     * @param xmlMinimal
-     */
+    /** @param xmlMinimal */
     public void setMinimalXML(boolean xmlMinimal) {
         getBugCollection().setMinimalXML(xmlMinimal);
-
     }
-
 }

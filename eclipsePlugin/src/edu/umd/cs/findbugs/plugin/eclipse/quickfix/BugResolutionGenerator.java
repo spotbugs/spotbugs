@@ -21,19 +21,17 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolutionGenerator2;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-
 /**
- * The <CODE>BugResolutionGenerator</CODE> searchs for bug-resolutions, that can
- * be used to fix the specific bug-type.
+ * The <CODE>BugResolutionGenerator</CODE> searchs for bug-resolutions, that can be used to fix the
+ * specific bug-type.
  *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -58,7 +56,8 @@ public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
     }
 
     private static BugResolutionAssociations loadBugResolutions() {
-        Map<String, List<QuickFixContribution>> quickFixes = QuickFixesExtensionHelper.getContributedQuickFixes();
+        Map<String, List<QuickFixContribution>> quickFixes =
+                QuickFixesExtensionHelper.getContributedQuickFixes();
         return new BugResolutionAssociations(quickFixes);
     }
 
@@ -87,5 +86,4 @@ public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
         }
         return resolutions.containsBugResolution(type);
     }
-
 }

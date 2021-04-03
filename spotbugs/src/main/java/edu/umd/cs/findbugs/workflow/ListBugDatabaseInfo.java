@@ -17,14 +17,6 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
-
-import javax.annotation.CheckForNull;
-
-import org.dom4j.DocumentException;
-
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -33,18 +25,24 @@ import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.CommandLine;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+import javax.annotation.CheckForNull;
+import org.dom4j.DocumentException;
 
 /**
- * Java main application to compute update a historical bug collection with
- * results from another build/analysis.
+ * Java main application to compute update a historical bug collection with results from another
+ * build/analysis.
  *
  * @author William Pugh
  */
-
 public class ListBugDatabaseInfo {
 
-    private static final String USAGE = "Usage: " + ListBugDatabaseInfo.class.getName()
-            + " [options] data1File data2File data3File ... ";
+    private static final String USAGE =
+            "Usage: "
+                    + ListBugDatabaseInfo.class.getName()
+                    + " [options] data1File data2File data3File ... ";
 
     static class ListBugDatabaseInfoCommandLine extends CommandLine {
 
@@ -89,8 +87,9 @@ public class ListBugDatabaseInfo {
         out.close();
     }
 
-    private static void listVersion(PrintWriter out, @CheckForNull String fileName, boolean formatDates) throws IOException,
-            DocumentException {
+    private static void listVersion(
+            PrintWriter out, @CheckForNull String fileName, boolean formatDates)
+            throws IOException, DocumentException {
         SortedBugCollection origCollection;
         origCollection = new SortedBugCollection();
 
@@ -130,5 +129,4 @@ public class ListBugDatabaseInfo {
 
         out.println();
     }
-
 }

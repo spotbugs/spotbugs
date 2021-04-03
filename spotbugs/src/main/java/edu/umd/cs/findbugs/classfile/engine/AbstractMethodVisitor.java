@@ -19,18 +19,14 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
-import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
-
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public abstract class AbstractMethodVisitor extends MethodVisitor {
-
 
     public AbstractMethodVisitor() {
         super(FindBugsASM.ASM_VERSION);
@@ -82,7 +78,6 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String desc) {
         visitSomeInsn();
-
     }
 
     /*
@@ -105,7 +100,6 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitIincInsn(int var, int increment) {
         visitSomeInsn();
-
     }
 
     /*
@@ -116,7 +110,6 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitInsn(int opcode) {
         visitSomeInsn();
-
     }
 
     /*
@@ -127,7 +120,6 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitIntInsn(int opcode, int operand) {
         visitSomeInsn();
-
     }
 
     /*
@@ -139,7 +131,6 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitJumpInsn(int opcode, Label label) {
         visitSomeInsn();
-
     }
 
     /*
@@ -161,7 +152,6 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitLdcInsn(Object cst) {
         visitSomeInsn();
-
     }
 
     /*
@@ -184,7 +174,8 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
      * org.objectweb.asm.Label, int)
      */
     @Override
-    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+    public void visitLocalVariable(
+            String name, String desc, String signature, Label start, Label end, int index) {
         // TODO Auto-generated method stub
 
     }
@@ -199,7 +190,6 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
         visitSomeInsn();
-
     }
 
     /*
@@ -222,7 +212,6 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
         visitSomeInsn();
-
     }
 
     /*
@@ -235,7 +224,6 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitMultiANewArrayInsn(String desc, int dims) {
         visitSomeInsn();
-
     }
 
     /*
@@ -272,7 +260,6 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitTypeInsn(int opcode, String type) {
         visitSomeInsn();
-
     }
 
     /*
@@ -283,7 +270,5 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
     @Override
     public void visitVarInsn(int opcode, int var) {
         visitSomeInsn();
-
     }
-
 }

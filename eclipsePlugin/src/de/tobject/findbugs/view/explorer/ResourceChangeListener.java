@@ -18,12 +18,11 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import de.tobject.findbugs.marker.FindBugsMarker;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
-
-import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
  * Listener which reports changes on projects or on FindBug markers

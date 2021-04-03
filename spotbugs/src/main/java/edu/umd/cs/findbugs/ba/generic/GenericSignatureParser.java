@@ -21,9 +21,7 @@ package edu.umd.cs.findbugs.ba.generic;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
@@ -32,12 +30,10 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-
 /**
  * A simple class to parse method signatures that include generic information.
- * <p>
  *
- * Modified from edu.umd.cs.findbugs.ba.SignatureParser
+ * <p>Modified from edu.umd.cs.findbugs.ba.SignatureParser
  *
  * @author Nat Ayewah
  */
@@ -47,7 +43,9 @@ public class GenericSignatureParser {
 
         @Override
         public boolean hasNext() {
-            return index < signature.length() && signature.charAt(index) != ')' && signature.charAt(index) != '^';
+            return index < signature.length()
+                    && signature.charAt(index) != ')'
+                    && signature.charAt(index) != '^';
         }
 
         @Override
@@ -119,8 +117,13 @@ public class GenericSignatureParser {
                     throw new NoSuchElementException("Should have already thrown NoSuchElementException");
                 case 'V':
                 default:
-                    throw new IllegalStateException("Invalid method signature: '" + signature + "' : "
-                            + signature.substring(index) + " " + result);
+                    throw new IllegalStateException(
+                            "Invalid method signature: '"
+                                    + signature
+                                    + "' : "
+                                    + signature.substring(index)
+                                    + " "
+                                    + result);
                 }
             } while (!done);
             return result.toString();
@@ -135,11 +138,10 @@ public class GenericSignatureParser {
     private final String signature;
 
     /**
-     * Parses a generic method signature of the form:
-     * <code>(argument_signature)return_type_signature</code>
+     * Parses a generic method signature of the form: <code>(argument_signature)return_type_signature
+     * </code>
      *
-     * @param signature
-     *            the method signature to be parsed
+     * @param signature the method signature to be parsed
      */
     public GenericSignatureParser(String signature) {
         // XXX not currently handling Type parameters for class, interface or
@@ -203,10 +205,9 @@ public class GenericSignatureParser {
     }
 
     /**
-     * @param target
-     *            the method whose signature is to be parsed
-     * @return an iterator over the parameters of the generic signature of
-     *         method. Returns null if the generic signature cannot be parsed
+     * @param target the method whose signature is to be parsed
+     * @return an iterator over the parameters of the generic signature of method. Returns null if the
+     *     generic signature cannot be parsed
      */
     public static @CheckForNull Iterator<String> getGenericSignatureIterator(Method target) {
         try {
@@ -238,8 +239,8 @@ public class GenericSignatureParser {
     }
 
     /**
-     * Compare a plain method signature to the a generic method Signature and
-     * return true if they match
+     * Compare a plain method signature to the a generic method Signature and return true if they
+     * match
      */
     public static boolean compareSignatures(String plainSignature, String genericSignature) {
         GenericSignatureParser plainParser = new GenericSignatureParser(plainSignature);
@@ -250,7 +251,8 @@ public class GenericSignatureParser {
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.err.println("Usage: " + GenericSignatureParser.class.getName() + " '<method signature>'");
+            System.err.println(
+                    "Usage: " + GenericSignatureParser.class.getName() + " '<method signature>'");
             System.exit(1);
         }
         GenericSignatureParser parser = new GenericSignatureParser(args[0]);
@@ -267,6 +269,5 @@ public class GenericSignatureParser {
             }
         }
         System.out.println(parser.getNumParameters() + " parameter(s)");
-
     }
 }

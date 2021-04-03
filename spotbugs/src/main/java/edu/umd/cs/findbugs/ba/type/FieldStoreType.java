@@ -19,21 +19,19 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.ch.Subtypes2;
-
 /**
- * Field property storing the types of values stored in a field. The idea is
- * that we may be able to determine a more precise type for values loaded from
- * the field than the field type alone would indicate.
+ * Field property storing the types of values stored in a field. The idea is that we may be able to
+ * determine a more precise type for values loaded from the field than the field type alone would
+ * indicate.
  *
  * @author David Hovemeyer
  */
@@ -86,8 +84,10 @@ public class FieldStoreType {
                     leastSupertype = (ReferenceType) type;
                 } else {
                     if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
-                        leastSupertype = AnalysisContext.currentAnalysisContext().getSubtypes2()
-                                .getFirstCommonSuperclass(leastSupertype, (ReferenceType) type);
+                        leastSupertype =
+                                AnalysisContext.currentAnalysisContext()
+                                        .getSubtypes2()
+                                        .getFirstCommonSuperclass(leastSupertype, (ReferenceType) type);
                     } else {
                         leastSupertype = leastSupertype.getFirstCommonSuperclass((ReferenceType) type);
                     }

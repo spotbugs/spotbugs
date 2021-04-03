@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba.type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.apache.bcel.generic.ObjectType;
 
 public class ExceptionSetFactory {

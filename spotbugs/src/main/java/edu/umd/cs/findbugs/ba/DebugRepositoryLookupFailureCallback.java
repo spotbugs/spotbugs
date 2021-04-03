@@ -25,8 +25,8 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * DebugRepositoryLookupFailureCallback implementation for debugging. (Test
- * drivers, etc.) It just prints a message and exits.
+ * DebugRepositoryLookupFailureCallback implementation for debugging. (Test drivers, etc.) It just
+ * prints a message and exits.
  *
  * @author David Hovemeyer
  */
@@ -98,7 +98,6 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
             // Don't report dataflow analysis exceptions due to missing classes.
             // Too much noise.
             return;
-
         }
         if (e instanceof MethodUnprofitableException) {
             // TODO: log this

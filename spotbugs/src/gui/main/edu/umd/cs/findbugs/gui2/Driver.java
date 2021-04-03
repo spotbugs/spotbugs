@@ -19,26 +19,23 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.io.File;
-import java.util.Locale;
-
-import javax.swing.JOptionPane;
-
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.util.JavaWebStart;
+import java.io.File;
+import java.util.Locale;
+import javax.swing.JOptionPane;
 
 /**
- * This is where it all begins run with -f int to set font size run with -clear
- * to clear recent projects menu, or any other issues with program not starting
- * properly due to something being corrupted (or just faulty) in backend store
- * for GUISaveState.
- *
+ * This is where it all begins run with -f int to set font size run with -clear to clear recent
+ * projects menu, or any other issues with program not starting properly due to something being
+ * corrupted (or just faulty) in backend store for GUISaveState.
  */
 public class Driver {
-    private static final String USAGE = Driver.class.getName() + " [options] [project or analysis results file]";
+    private static final String USAGE =
+            Driver.class.getName() + " [options] [project or analysis results file]";
 
     private static GUI2CommandLine commandLine = new GUI2CommandLine();
 
@@ -73,7 +70,9 @@ public class Driver {
                 if (argLowerCase.endsWith(".fbp") || argLowerCase.endsWith(".fb")) {
                     // Project file specified
                     commandLine.loadProject(arg);
-                } else if (argLowerCase.endsWith(".xml") || argLowerCase.endsWith(".xml.gz") || argLowerCase.endsWith(".fba")) {
+                } else if (argLowerCase.endsWith(".xml")
+                        || argLowerCase.endsWith(".xml.gz")
+                        || argLowerCase.endsWith(".fba")) {
                     // Saved analysis results specified
                     commandLine.setSaveFile(new File(arg));
                 } else {
@@ -107,14 +106,15 @@ public class Driver {
             // System.out.println(serializableIdiomDetector.getFullName());
             // UserPreferences.getUserPreferences().enableDetector(serializableIdiomDetector,false);
 
-            FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
+            FindBugsLayoutManagerFactory factory =
+                    new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
             MainFrame.makeInstance(factory);
-
 
             splash.setVisible(false);
             splash.dispose();
         } catch (Throwable t) {
-            JOptionPane.showMessageDialog(null, t.toString(), "Fatal Error during SpotBugs startup", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    null, t.toString(), "Fatal Error during SpotBugs startup", JOptionPane.ERROR_MESSAGE);
             t.printStackTrace(System.err);
             System.exit(1);
         }
@@ -125,9 +125,14 @@ public class Driver {
             Plugin plugin = Plugin.getByPluginId(pid);
             if (plugin != null) {
                 if (!enabled && plugin.cannotDisable()) {
-                    JOptionPane.showMessageDialog(null,
-                            "Cannot disable plugin: " + plugin.getPluginId() + "\n" + plugin.getShortDescription(),
-                            "Cannot disable plugin", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Cannot disable plugin: "
+                                    + plugin.getPluginId()
+                                    + "\n"
+                                    + plugin.getShortDescription(),
+                            "Cannot disable plugin",
+                            JOptionPane.ERROR_MESSAGE);
                 } else {
                     plugin.setGloballyEnabled(enabled);
                 }

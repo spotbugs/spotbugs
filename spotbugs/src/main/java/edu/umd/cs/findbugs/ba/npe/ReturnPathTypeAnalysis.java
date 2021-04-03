@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import org.apache.bcel.generic.InstructionHandle;
-
 import edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
@@ -30,10 +28,11 @@ import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ReverseDFSOrder;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
- * A dataflow analysis to determine, at each location in a method's CFG, whether
- * or not it is possible to return normally at that location.
+ * A dataflow analysis to determine, at each location in a method's CFG, whether or not it is
+ * possible to return normally at that location.
  *
  * @author David Hovemeyer
  */
@@ -47,12 +46,9 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
     /**
      * Constructor.
      *
-     * @param cfg
-     *            the method's CFG
-     * @param rdfs
-     *            a ReverseDepthFirstSearch on the method's CFG
-     * @param dfs
-     *            a DepthFirstSearch on the method's CFG
+     * @param cfg the method's CFG
+     * @param rdfs a ReverseDepthFirstSearch on the method's CFG
+     * @param dfs a DepthFirstSearch on the method's CFG
      */
     public ReturnPathTypeAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
         this.cfg = cfg;
@@ -110,12 +106,12 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * @return the dataflow fact for the block
      *
     private ReturnPathType getOrCreateFact(HashMap<BasicBlock, ReturnPathType> map, BasicBlock block) {
-        ReturnPathType returnPathType = map.get(block);
-        if (returnPathType == null) {
-            returnPathType = createFact();
-            map.put(block, returnPathType);
-        }
-        return returnPathType;
+    ReturnPathType returnPathType = map.get(block);
+    if (returnPathType == null) {
+    returnPathType = createFact();
+    map.put(block, returnPathType);
+    }
+    return returnPathType;
     }
      */
 
@@ -145,7 +141,8 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
     }
 
     @Override
-    public void meetInto(ReturnPathType fact, Edge edge, ReturnPathType result) throws DataflowAnalysisException {
+    public void meetInto(ReturnPathType fact, Edge edge, ReturnPathType result)
+            throws DataflowAnalysisException {
         result.mergeWith(fact);
     }
 
@@ -165,10 +162,10 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
     }
 
     @Override
-    public void transfer(BasicBlock basicBlock, InstructionHandle end, ReturnPathType start, ReturnPathType result)
+    public void transfer(
+            BasicBlock basicBlock, InstructionHandle end, ReturnPathType start, ReturnPathType result)
             throws DataflowAnalysisException {
         // just copy the start fact
         result.copyFrom(start);
     }
-
 }

@@ -31,14 +31,16 @@ import edu.umd.cs.findbugs.classfile.engine.asm.ClassReaderAnalysisEngine;
  * @author David Hovemeyer
  */
 public class EngineRegistrar implements IAnalysisEngineRegistrar {
-    private static IClassAnalysisEngine<?>[] classAnalysisEngineList = { new ClassDataAnalysisEngine(),
-        new ClassInfoAnalysisEngine(), new ClassNameAndSuperclassInfoAnalysisEngine(), new ClassReaderAnalysisEngine() };
+    private static IClassAnalysisEngine<?>[] classAnalysisEngineList = {
+        new ClassDataAnalysisEngine(),
+        new ClassInfoAnalysisEngine(),
+        new ClassNameAndSuperclassInfoAnalysisEngine(),
+        new ClassReaderAnalysisEngine()
+    };
 
     private static IMethodAnalysisEngine<?>[] methodAnalysisEngineList = {};
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public EngineRegistrar() {
     }
 

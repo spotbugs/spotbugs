@@ -18,6 +18,7 @@
  */
 package de.tobject.findbugs.properties;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -39,11 +40,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Table;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
 /**
- * List box with two buttons on the left side: "add" and "remove". First the
- * viewer must be created, then the buttons.
+ * List box with two buttons on the left side: "add" and "remove". First the viewer must be created,
+ * then the buttons.
  *
  * @author andrei
  */
@@ -70,17 +69,18 @@ public class ManagePathsWidget extends Composite {
             Link details = new Link(this, SWT.NULL);
             details.setText(linkText);
             details.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
-            details.addSelectionListener(new SelectionListener() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    Program.launch(e.text);
-                }
+            details.addSelectionListener(
+                    new SelectionListener() {
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            Program.launch(e.text);
+                        }
 
-                @Override
-                public void widgetDefaultSelected(SelectionEvent e) {
-                    // noop
-                }
-            });
+                        @Override
+                        public void widgetDefaultSelected(SelectionEvent e) {
+                            // noop
+                        }
+                    });
         }
 
         int style = SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL;
@@ -93,22 +93,25 @@ public class ManagePathsWidget extends Composite {
         final PathElementLabelProvider labelProvider = new PathElementLabelProvider();
         viewer1.setLabelProvider(labelProvider);
         this.viewer = viewer1;
-        viewer1.getControl().addMouseTrackListener(new MouseTrackAdapter() {
-            @Override
-            public void mouseHover(MouseEvent e) {
-                String tooltip = "";
-                ViewerCell cell = viewer.getCell(new Point(e.x, e.y));
-                if (cell != null) {
-                    tooltip = labelProvider.getToolTip(cell.getElement());
-                }
-                viewer.getControl().setToolTipText(tooltip);
-            }
+        viewer1
+                .getControl()
+                .addMouseTrackListener(
+                        new MouseTrackAdapter() {
+                            @Override
+                            public void mouseHover(MouseEvent e) {
+                                String tooltip = "";
+                                ViewerCell cell = viewer.getCell(new Point(e.x, e.y));
+                                if (cell != null) {
+                                    tooltip = labelProvider.getToolTip(cell.getElement());
+                                }
+                                viewer.getControl().setToolTipText(tooltip);
+                            }
 
-            @Override
-            public void mouseExit(MouseEvent e) {
-                viewer.getControl().setToolTipText("");
-            }
-        });
+                            @Override
+                            public void mouseExit(MouseEvent e) {
+                                viewer.getControl().setToolTipText("");
+                            }
+                        });
         return viewer1;
     }
 
@@ -134,20 +137,21 @@ public class ManagePathsWidget extends Composite {
         removeButton.setEnabled(false);
         removeButton.addSelectionListener(contentProvider);
 
-        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-                if (selection.isEmpty()) {
-                    removeButton.setEnabled(false);
-                } else {
-                    if (selection.getFirstElement() instanceof IPathElement) {
-                        IPathElement pathElement = (IPathElement) selection.getFirstElement();
-                        removeButton.setEnabled(!pathElement.isSystem());
+        viewer.addSelectionChangedListener(
+                new ISelectionChangedListener() {
+                    @Override
+                    public void selectionChanged(SelectionChangedEvent event) {
+                        IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                        if (selection.isEmpty()) {
+                            removeButton.setEnabled(false);
+                        } else {
+                            if (selection.getFirstElement() instanceof IPathElement) {
+                                IPathElement pathElement = (IPathElement) selection.getFirstElement();
+                                removeButton.setEnabled(!pathElement.isSystem());
+                            }
+                        }
                     }
-                }
-            }
-        });
+                });
     }
 
     protected static String getMessage(String key) {

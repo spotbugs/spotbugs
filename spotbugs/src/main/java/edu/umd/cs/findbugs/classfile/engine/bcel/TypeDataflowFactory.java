@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -34,6 +31,8 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Analysis engine to produce TypeDataflow objects for analyzed methods.
@@ -41,9 +40,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class TypeDataflowFactory extends AnalysisFactory<TypeDataflow> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public TypeDataflowFactory() {
         super("type analysis", TypeDataflow.class);
     }
@@ -56,7 +53,8 @@ public class TypeDataflowFactory extends AnalysisFactory<TypeDataflow> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public TypeDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public TypeDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             throw new MethodUnprofitableException(descriptor);
@@ -66,17 +64,25 @@ public class TypeDataflowFactory extends AnalysisFactory<TypeDataflow> {
         ExceptionSetFactory exceptionSetFactory = getExceptionSetFactory(analysisCache, descriptor);
         Method method = getMethod(analysisCache, descriptor);
 
-        TypeAnalysis typeAnalysis = new TypeAnalysis(method, methodGen, cfg, dfs, AnalysisContext.currentAnalysisContext()
-                .getLookupFailureCallback(), exceptionSetFactory);
+        TypeAnalysis typeAnalysis =
+                new TypeAnalysis(
+                        method,
+                        methodGen,
+                        cfg,
+                        dfs,
+                        AnalysisContext.currentAnalysisContext().getLookupFailureCallback(),
+                        exceptionSetFactory);
 
-        if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.MODEL_INSTANCEOF)) {
+        if (AnalysisContext.currentAnalysisContext()
+                .getBoolProperty(AnalysisFeatures.MODEL_INSTANCEOF)) {
             typeAnalysis.setValueNumberDataflow(getValueNumberDataflow(analysisCache, descriptor));
         }
 
         // Field store type database.
         // If present, this can give us more accurate type information
         // for values loaded from fields.
-        typeAnalysis.setFieldStoreTypeDatabase(AnalysisContext.currentAnalysisContext().getFieldStoreTypeDatabase());
+        typeAnalysis.setFieldStoreTypeDatabase(
+                AnalysisContext.currentAnalysisContext().getFieldStoreTypeDatabase());
 
         TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
         try {

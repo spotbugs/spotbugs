@@ -19,14 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.ElementValue;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ClassWarningSuppressor;
@@ -44,8 +36,15 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.ElementValue;
+import org.apache.bcel.classfile.JavaClass;
 
-public class NoteSuppressedWarnings extends AnnotationVisitor implements Detector, NonReportingDetector {
+public class NoteSuppressedWarnings extends AnnotationVisitor
+        implements Detector, NonReportingDetector {
 
     private final Set<String> packages = new HashSet<>();
 
@@ -81,7 +80,8 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
     }
 
     @Override
-    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitAnnotation(
+            String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
         if (!isSuppressWarnings(annotationClass)) {
             return;
         }
@@ -101,7 +101,8 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
     }
 
     @Override
-    public void visitParameterAnnotation(int p, String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitParameterAnnotation(
+            int p, String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
         if (!isSuppressWarnings(annotationClass)) {
             return;
         }
@@ -122,21 +123,23 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
     private void suppressWarning(int parameter, String pattern) {
         String className = getDottedClassName();
         ClassAnnotation clazz = new ClassAnnotation(className);
-        suppressionMatcher.addSuppressor(new ParameterWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this),
-                parameter));
-
+        suppressionMatcher.addSuppressor(
+                new ParameterWarningSuppressor(
+                        pattern, clazz, MethodAnnotation.fromVisitedMethod(this), parameter));
     }
 
     private void suppressWarning(String pattern) {
         String className = getDottedClassName();
         ClassAnnotation clazz = new ClassAnnotation(className);
         if (className.endsWith(".package-info")) {
-            suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, getPackageName().replace('/', '.')));
+            suppressionMatcher.addPackageSuppressor(
+                    new PackageWarningSuppressor(pattern, getPackageName().replace('/', '.')));
         } else if (visitingMethod()) {
-            suppressionMatcher
-                    .addSuppressor(new MethodWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this)));
+            suppressionMatcher.addSuppressor(
+                    new MethodWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this)));
         } else if (visitingField()) {
-            suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, clazz, FieldAnnotation.fromVisitedField(this)));
+            suppressionMatcher.addSuppressor(
+                    new FieldWarningSuppressor(pattern, clazz, FieldAnnotation.fromVisitedField(this)));
         } else {
             suppressionMatcher.addSuppressor(new ClassWarningSuppressor(pattern, clazz));
         }
@@ -144,7 +147,5 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
 
     @Override
     public void report() {
-
     }
-
 }

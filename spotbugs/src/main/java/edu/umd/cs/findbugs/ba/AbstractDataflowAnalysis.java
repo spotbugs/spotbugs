@@ -19,19 +19,15 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Iterator;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.generic.InstructionHandle;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import java.util.Iterator;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
- * Abstract base class providing functionality that will be useful for most
- * dataflow analysis implementations that model instructions within basic
- * blocks.
+ * Abstract base class providing functionality that will be useful for most dataflow analysis
+ * implementations that model instructions within basic blocks.
  *
  * @author David Hovemeyer
  * @see Dataflow
@@ -49,31 +45,24 @@ public abstract class AbstractDataflowAnalysis<Fact> extends BasicAbstractDatafl
     /**
      * Transfer function for a single instruction.
      *
-     * @param handle
-     *            the instruction
-     * @param basicBlock
-     *            the BasicBlock containing the instruction; needed to
-     *            disambiguate instructions in inlined JSR subroutines
-     * @param fact
-     *            which should be modified based on the instruction
+     * @param handle the instruction
+     * @param basicBlock the BasicBlock containing the instruction; needed to disambiguate
+     *     instructions in inlined JSR subroutines
+     * @param fact which should be modified based on the instruction
      */
-    public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, Fact fact)
-            throws DataflowAnalysisException;
+    public abstract void transferInstruction(
+            InstructionHandle handle, BasicBlock basicBlock, Fact fact) throws DataflowAnalysisException;
 
-    /**
-     * Determine whether the given fact is <em>valid</em> (neither top nor
-     * bottom).
-     */
+    /** Determine whether the given fact is <em>valid</em> (neither top nor bottom). */
     @CheckReturnValue
     public abstract boolean isFactValid(Fact fact);
 
     /**
-     * Get the dataflow fact representing the point just before given Location.
-     * Note "before" is meant in the logical sense, so for backward analyses,
-     * before means after the location in the control flow sense.
+     * Get the dataflow fact representing the point just before given Location. Note "before" is meant
+     * in the logical sense, so for backward analyses, before means after the location in the control
+     * flow sense.
      *
-     * @param location
-     *            the location
+     * @param location the location
      * @return the fact at the point just before the location
      */
     @Override
@@ -86,12 +75,11 @@ public abstract class AbstractDataflowAnalysis<Fact> extends BasicAbstractDatafl
     }
 
     /**
-     * Get the dataflow fact representing the point just after given Location.
-     * Note "after" is meant in the logical sense, so for backward analyses,
-     * after means before the location in the control flow sense.
+     * Get the dataflow fact representing the point just after given Location. Note "after" is meant
+     * in the logical sense, so for backward analyses, after means before the location in the control
+     * flow sense.
      *
-     * @param location
-     *            the location
+     * @param location the location
      * @return the fact at the point just after the location
      */
     @Override
@@ -102,7 +90,8 @@ public abstract class AbstractDataflowAnalysis<Fact> extends BasicAbstractDatafl
         if (handle == (isForwards() ? basicBlock.getLastInstruction() : basicBlock.getFirstInstruction())) {
             return getResultFact(basicBlock);
         } else {
-            return getFactAtLocation(new Location(isForwards() ? handle.getNext() : handle.getPrev(), basicBlock));
+            return getFactAtLocation(
+                    new Location(isForwards() ? handle.getNext() : handle.getPrev(), basicBlock));
         }
     }
 
@@ -113,14 +102,14 @@ public abstract class AbstractDataflowAnalysis<Fact> extends BasicAbstractDatafl
      */
 
     @Override
-    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, Fact start, Fact result)
+    public void transfer(
+            BasicBlock basicBlock, @CheckForNull InstructionHandle end, Fact start, Fact result)
             throws DataflowAnalysisException {
         copy(start, result);
 
         if (isFactValid(result)) {
-            Iterator<InstructionHandle> i = isForwards() ? basicBlock.instructionIterator()
-                    : basicBlock
-                            .instructionReverseIterator();
+            Iterator<InstructionHandle> i =
+                    isForwards() ? basicBlock.instructionIterator() : basicBlock.instructionReverseIterator();
 
             while (i.hasNext()) {
                 InstructionHandle handle = i.next();
@@ -141,5 +130,4 @@ public abstract class AbstractDataflowAnalysis<Fact> extends BasicAbstractDatafl
             }
         }
     }
-
 }

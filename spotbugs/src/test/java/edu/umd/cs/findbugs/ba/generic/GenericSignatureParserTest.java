@@ -24,24 +24,23 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
-
 import org.junit.Test;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class GenericSignatureParserTest {
 
     @Test
     public void testGenerics() {
-        GenericSignatureParser parser = new GenericSignatureParser(
-                "(Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;)V");
+        GenericSignatureParser parser =
+                new GenericSignatureParser(
+                        "(Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;)V");
         assertEquals(1, parser.getNumParameters());
     }
 
     @Test
     public void testThrowsGenerics() {
-        GenericSignatureParser parser = new GenericSignatureParser("(Ljava/lang/String;^TE1;^TE2;^TE3;)V");
+        GenericSignatureParser parser =
+                new GenericSignatureParser("(Ljava/lang/String;^TE1;^TE2;^TE3;)V");
         assertEquals(1, parser.getNumParameters());
     }
 
@@ -60,16 +59,24 @@ public class GenericSignatureParserTest {
     public void testSignatures() {
         processTest("(Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;");
 
-        processTest("(Ljava/lang/Comparable;TE;**[Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;", "TE;", "*", "*",
+        processTest(
+                "(Ljava/lang/Comparable;TE;**[Ljava/lang/Comparable;)V",
+                "Ljava/lang/Comparable;",
+                "TE;",
+                "*",
+                "*",
                 "[Ljava/lang/Comparable;");
 
-        processTest("(TE;*+[Ljava/lang/Comparable;-TV;)V", "TE;", "*", "+[Ljava/lang/Comparable;", "-TV;");
+        processTest(
+                "(TE;*+[Ljava/lang/Comparable;-TV;)V", "TE;", "*", "+[Ljava/lang/Comparable;", "-TV;");
     }
 
     @Test
     public void testEclipseJDTInvalidSignature() {
-        GenericSignatureParser parser = new GenericSignatureParser("(!+LHasUniqueKey<Ljava/lang/Integer;>;)V");
+        GenericSignatureParser parser =
+                new GenericSignatureParser("(!+LHasUniqueKey<Ljava/lang/Integer;>;)V");
         assertEquals(1, parser.getNumParameters());
-        assertEquals("+LHasUniqueKey<Ljava/lang/Integer;>;", parser.parameterSignatureIterator().next());
+        assertEquals(
+                "+LHasUniqueKey<Ljava/lang/Integer;>;", parser.parameterSignatureIterator().next());
     }
 }

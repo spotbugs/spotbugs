@@ -17,6 +17,8 @@
  */
 package edu.umd.cs.findbugs.bytecode;
 
+import edu.umd.cs.findbugs.ba.ClassMember;
+import edu.umd.cs.findbugs.ba.XMethod;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.Method;
@@ -24,12 +26,7 @@ import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.FieldGenOrMethodGen;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.ba.ClassMember;
-import edu.umd.cs.findbugs.ba.XMethod;
-
-/**
- * Utility to analyze class members.
- */
+/** Utility to analyze class members. */
 public final class MemberUtils {
 
     private MemberUtils() {
@@ -65,8 +62,8 @@ public final class MemberUtils {
     }
 
     /**
-     * Checks if the method could be a lambda. Notice this is a best-check,
-     * since once compiled lambda methods are not univocally distinguishable.
+     * Checks if the method could be a lambda. Notice this is a best-check, since once compiled lambda
+     * methods are not univocally distinguishable.
      *
      * @param m The method to check if it's a lambda
      * @return True if this could be a lambda, false otherwise
@@ -76,8 +73,8 @@ public final class MemberUtils {
     }
 
     /**
-     * Checks if the method could be a lambda. Notice this is a best-check,
-     * since once compiled lambda methods are not univocally distinguishable.
+     * Checks if the method could be a lambda. Notice this is a best-check, since once compiled lambda
+     * methods are not univocally distinguishable.
      *
      * @param m The method to check if it's a lambda
      * @return True if this could be a lambda, false otherwise
@@ -87,8 +84,8 @@ public final class MemberUtils {
     }
 
     /**
-     * Checks if the method could be a lambda. Notice this is a best-check,
-     * since once compiled lambda methods are not univocally distinguishable.
+     * Checks if the method could be a lambda. Notice this is a best-check, since once compiled lambda
+     * methods are not univocally distinguishable.
      *
      * @param m The method to check if it's a lambda
      * @return True if this could be a lambda, false otherwise
@@ -98,10 +95,9 @@ public final class MemberUtils {
     }
 
     /**
-     * Checks if the the given method was user-generated. This takes into
-     * account for instance lambda methods, that even though they are marked as
-     * "synthetic", they are user-generated, and therefore interesting to
-     * analysis.
+     * Checks if the the given method was user-generated. This takes into account for instance lambda
+     * methods, that even though they are marked as "synthetic", they are user-generated, and
+     * therefore interesting to analysis.
      *
      * @param m The field or method to check.
      * @return True if the given member is user generated, false otherwise.
@@ -111,10 +107,9 @@ public final class MemberUtils {
     }
 
     /**
-     * Checks if the the given method was user-generated. This takes into
-     * account for instance lambda methods, that even though they are marked as
-     * "synthetic", they are user-generated, and therefore interesting to
-     * analysis.
+     * Checks if the the given method was user-generated. This takes into account for instance lambda
+     * methods, that even though they are marked as "synthetic", they are user-generated, and
+     * therefore interesting to analysis.
      *
      * @param m The field or method to check.
      * @return True if the given member is user generated, false otherwise.
@@ -124,10 +119,9 @@ public final class MemberUtils {
     }
 
     /**
-     * Checks if the the given method was user-generated. This takes into
-     * account for instance lambda methods, that even though they are marked as
-     * "synthetic", they are user-generated, and therefore interesting to
-     * analysis.
+     * Checks if the the given method was user-generated. This takes into account for instance lambda
+     * methods, that even though they are marked as "synthetic", they are user-generated, and
+     * therefore interesting to analysis.
      *
      * @param m The field or method to check.
      * @return True if the given member is user generated, false otherwise.

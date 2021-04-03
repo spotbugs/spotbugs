@@ -19,15 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -46,6 +37,13 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.EditDistance;
 import edu.umd.cs.findbugs.util.Values;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
@@ -67,7 +65,9 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         }
 
         String superclassName2 = getSuperclassName();
-        boolean weird = Values.DOTTED_JAVA_LANG_OBJECT.equals(superclassName2) && obj.getInterfaceIndices().length == 0;
+        boolean weird =
+                Values.DOTTED_JAVA_LANG_OBJECT.equals(superclassName2)
+                        && obj.getInterfaceIndices().length == 0;
         boolean hasAnonymousName = ClassName.isLocalOrAnonymous(obj.getClassName());
         boolean isAnonymousInnerClass = hasAnonymousName && !weird;
         if (isAnonymousInnerClass) {
@@ -89,7 +89,6 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         }
 
         return definedInSuperClassOrInterface(clazz, method);
-
     }
 
     @Override
@@ -101,13 +100,16 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
             }
             XClass c = getXClass();
             int nameDistance = EditDistance.editDistance(m.getName(), getMethodName());
-            if (nameDistance < 4 && c.findMatchingMethod(m.getMethodDescriptor()) == null && !m.isFinal()) {
+            if (nameDistance < 4
+                    && c.findMatchingMethod(m.getMethodDescriptor()) == null
+                    && !m.isFinal()) {
                 potentialSuperCall = m;
             }
         }
     }
 
-    boolean definedInSuperClassOrInterface(JavaClass clazz, String method) throws ClassNotFoundException {
+    boolean definedInSuperClassOrInterface(JavaClass clazz, String method)
+            throws ClassNotFoundException {
         if (clazz == null) {
             return false;
         }
@@ -116,8 +118,12 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
             return false;
         }
         try {
-            XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                    DescriptorFactory.createClassDescriptorFromDottedClassName(superClass.getClassName()));
+            XClass xClass =
+                    Global.getAnalysisCache()
+                            .getClassAnalysis(
+                                    XClass.class,
+                                    DescriptorFactory.createClassDescriptorFromDottedClassName(
+                                            superClass.getClassName()));
             if (xClass.hasStubs()) {
                 return true;
             }
@@ -165,7 +171,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         if (Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
             return true;
         }
-        if ("()Ljava/lang/Object;".equals(sig) && ("readResolve".equals(methodName) || "writeReplace".equals(methodName))) {
+        if ("()Ljava/lang/Object;".equals(sig)
+                && ("readResolve".equals(methodName) || "writeReplace".equals(methodName))) {
             return true;
         }
         if (methodName.startsWith("access$")) {
@@ -208,11 +215,16 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 }
                 pendingBug.addClass(superclassName).describe(role);
                 try {
-                    XClass from = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                            DescriptorFactory.createClassDescriptorFromDottedClassName(superclassName));
+                    XClass from =
+                            Global.getAnalysisCache()
+                                    .getClassAnalysis(
+                                            XClass.class,
+                                            DescriptorFactory.createClassDescriptorFromDottedClassName(superclassName));
                     XMethod potentialMatch = null;
                     for (XMethod m : from.getXMethods()) {
-                        if (!m.isStatic() && !m.isPrivate() && m.getName().toLowerCase().equals(obj.getName().toLowerCase())) {
+                        if (!m.isStatic()
+                                && !m.isPrivate()
+                                && m.getName().toLowerCase().equals(obj.getName().toLowerCase())) {
                             if (potentialMatch == null) {
                                 potentialMatch = m;
                             } else {
@@ -223,7 +235,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                         }
                     }
                     if (potentialMatch != null) {
-                        pendingBug.addMethod(potentialMatch)
+                        pendingBug
+                                .addMethod(potentialMatch)
                                 .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
                     }
 
@@ -232,13 +245,14 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 }
             } else {
                 pendingBug.setPriority(pendingBug.getPriority() - 1);
-                pendingBug.addMethod(potentialSuperCall).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
+                pendingBug
+                        .addMethod(potentialSuperCall)
+                        .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
             }
             bugReporter.reportBug(pendingBug);
             pendingBug = null;
             potentialSuperCall = null;
         }
-
     }
 
     @Override
@@ -260,7 +274,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
             XMethod xmethod = XFactory.createXMethod(clazz, obj);
             XFactory factory = AnalysisContext.currentXFactory();
             String key = obj.getName() + ":" + obj.getSignature();
-            if (!factory.isCalled(xmethod) && (obj.isStatic() || !definedInSuperClassOrInterface(clazz, key))) {
+            if (!factory.isCalled(xmethod)
+                    && (obj.isStatic() || !definedInSuperClassOrInterface(clazz, key))) {
                 int priority = NORMAL_PRIORITY;
                 JavaClass superClass = clazz.getSuperClass();
                 String superClassName = superClass.getClassName();
@@ -283,14 +298,14 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                     priority++;
                 }
 
-                pendingBug = new BugInstance(this, "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS", priority).addClassAndMethod(this);
+                pendingBug =
+                        new BugInstance(this, "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS", priority)
+                                .addClassAndMethod(this);
                 potentialSuperCall = null;
             }
 
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }
-
     }
-
 }

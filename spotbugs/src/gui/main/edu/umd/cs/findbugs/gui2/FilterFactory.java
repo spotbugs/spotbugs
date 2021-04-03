@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.util.Collection;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
@@ -35,10 +33,9 @@ import edu.umd.cs.findbugs.filter.RankMatcher;
 import edu.umd.cs.findbugs.filter.RelationalOp;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.util.NotImplementedYetException;
+import java.util.Collection;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class FilterFactory {
 
     public static Matcher makeOrMatcher(Collection<SortableValue> sortables) {
@@ -86,7 +83,6 @@ public class FilterFactory {
         return matcher;
     }
 
-
     public static boolean canFilter(Sortables s) {
         switch (s) {
         case BUGCODE:
@@ -103,7 +99,6 @@ public class FilterFactory {
             return false;
         }
     }
-
 
     private static Matcher makeMatcher(Sortables s, BugInstance bug) {
         switch (s) {
@@ -168,10 +163,6 @@ public class FilterFactory {
         case DIVIDER:
         default:
             throw new NotImplementedYetException("No matcher for " + s);
-
         }
-
     }
-
-
 }

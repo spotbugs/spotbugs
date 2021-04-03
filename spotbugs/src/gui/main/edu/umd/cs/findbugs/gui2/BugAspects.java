@@ -19,29 +19,25 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.filter.Matcher;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import edu.umd.cs.findbugs.filter.Matcher;
-
 /**
- * These are the branches in our tree, each branch forms a complete query that
- * could be sent to the main bugset to return all the bugs it contains For
- * example, a single bugAspects could be {@literal <priority,high>} or it could be
- * {@literal <priority,high>}, {@literal <designation,must fix>},{@literal <class,fishpond>},
- * {@literal <package,default>}
+ * These are the branches in our tree, each branch forms a complete query that could be sent to the
+ * main bugset to return all the bugs it contains For example, a single bugAspects could be
+ * {@literal <priority,high>} or it could be {@literal <priority,high>}, {@literal <designation,must
+ * fix>},{@literal <class,fishpond>}, {@literal <package,default>}
  *
- * In this implementation, {@literal <priority,high>},{@literal <designation,unclassified>} is
+ * <p>In this implementation, {@literal <priority,high>},{@literal <designation,unclassified>} is
  * different from {@literal <designation,unclassified>},{@literal <priority,high>}. (I'm not talking
- * about the fact we use the .equals from ArrayList, I'm talking about what a
- * query would return, though both are true) For a speed boost, this class could
- * be rewritten to make these equal, BugSet could be rewritten to cache full
- * queries off the main BugSet, (instead of caching each part of the query
- * separately in the BugSets created) and resetData could be rewritten to work
- * more like Swing's validate, only clearing data if the data is wrong. This
- * would save time after changing certain aspects of the tree. Just an idea, I
- * wouldn't suggest it unless its absolutely necessary. -Dan
- *
+ * about the fact we use the .equals from ArrayList, I'm talking about what a query would return,
+ * though both are true) For a speed boost, this class could be rewritten to make these equal,
+ * BugSet could be rewritten to cache full queries off the main BugSet, (instead of caching each
+ * part of the query separately in the BugSets created) and resetData could be rewritten to work
+ * more like Swing's validate, only clearing data if the data is wrong. This would save time after
+ * changing certain aspects of the tree. Just an idea, I wouldn't suggest it unless its absolutely
+ * necessary. -Dan
  *
  * @author All of us
  */
@@ -78,8 +74,8 @@ public class BugAspects implements Iterable<BugAspects.SortableValue> {
     }
 
     /**
-     * This is how the numbers after the branches contain the number of bugs in
-     * them, even if they aren't the final branch
+     * This is how the numbers after the branches contain the number of bugs in them, even if they
+     * aren't the final branch
      *
      * @param count
      */
@@ -128,9 +124,9 @@ public class BugAspects implements Iterable<BugAspects.SortableValue> {
     }
 
     static class SortableValue {
-        final public Sortables key;
+        public final Sortables key;
 
-        final public String value;
+        public final String value;
 
         public SortableValue(Sortables key, String value) {
             this.key = key;

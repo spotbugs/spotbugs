@@ -44,8 +44,6 @@ public class ListErrors {
             } else {
                 System.out.println(e.getMessage());
             }
-
         }
-
     }
 }

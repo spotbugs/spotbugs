@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -37,8 +33,12 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.util.ClassName;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.generic.Type;
 
-public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackDetector implements FirstPassDetector {
+public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackDetector
+        implements FirstPassDetector {
 
     final BugReporter bugReporter;
 
@@ -62,7 +62,6 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
             }
             bugAccumulator.clearBugs();
         }
-
     }
 
     /*
@@ -73,13 +72,16 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
     @Override
     public void sawOpcode(int seen) {
         if (seen == Const.INVOKEVIRTUAL) {
-            if ("equals".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())) {
+            if ("equals".equals(getNameConstantOperand())
+                    && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())) {
                 OpcodeStack.Item item = stack.getStackItem(1);
-                ClassDescriptor c = DescriptorFactory.createClassDescriptorFromSignature(item.getSignature());
+                ClassDescriptor c =
+                        DescriptorFactory.createClassDescriptorFromSignature(item.getSignature());
                 check(c);
 
             } else if ("java/lang/Class".equals(getClassConstantOperand())
-                    && ("isInstance".equals(getNameConstantOperand()) || "cast".equals(getNameConstantOperand()))) {
+                    && ("isInstance".equals(getNameConstantOperand())
+                            || "cast".equals(getNameConstantOperand()))) {
                 OpcodeStack.Item item = stack.getStackItem(1);
                 if ("Ljava/lang/Class;".equals(item.getSignature())) {
                     Object value = item.getConstant();
@@ -88,18 +90,14 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
                         check(c);
                     }
                 }
-
             }
 
         } else if (seen == Const.INSTANCEOF || seen == Const.CHECKCAST) {
             check(getClassDescriptorOperand());
         }
-
     }
 
-    /**
-     *
-     */
+    /** */
     private void check(ClassDescriptor c) {
         OpcodeStack.Item item = stack.getStackItem(0);
         if (item.isInitialParameter() && item.getRegisterNumber() == 1) {
@@ -109,26 +107,32 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
             }
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
             try {
-                if (!c.isArray() && (subtypes2.isSubtype(c, thisClassDescriptor) || subtypes2.isSubtype(thisClassDescriptor, c))) {
+                if (!c.isArray()
+                        && (subtypes2.isSubtype(c, thisClassDescriptor)
+                                || subtypes2.isSubtype(thisClassDescriptor, c))) {
                     return;
                 }
 
                 Type thisType = Type.getType(thisClassDescriptor.getSignature());
                 Type cType = Type.getType(c.getSignature());
-                IncompatibleTypes check = IncompatibleTypes.getPriorityForAssumingCompatible(thisType, cType, false);
+                IncompatibleTypes check =
+                        IncompatibleTypes.getPriorityForAssumingCompatible(thisType, cType, false);
                 int priority = check.getPriority();
-                if ("java/lang/Object".equals(getSuperclassName()) && ClassName.isLocalOrAnonymous(getClassName())) {
+                if ("java/lang/Object".equals(getSuperclassName())
+                        && ClassName.isLocalOrAnonymous(getClassName())) {
                     priority++;
                 }
-                bugAccumulator.accumulateBug(new BugInstance(this, "EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS", priority)
-                        .addClassAndMethod(this).addType(c).describe(TypeAnnotation.FOUND_ROLE), this);
+                bugAccumulator.accumulateBug(
+                        new BugInstance(this, "EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS", priority)
+                                .addClassAndMethod(this)
+                                .addType(c)
+                                .describe(TypeAnnotation.FOUND_ROLE),
+                        this);
                 classSummary.checksForEqualTo(thisClassDescriptor, c);
 
             } catch (ClassNotFoundException e) {
                 bugReporter.reportMissingClass(e);
             }
-
         }
     }
-
 }

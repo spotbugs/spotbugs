@@ -19,13 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Iterator;
-import java.util.Set;
-
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InvokeInstruction;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -38,6 +31,11 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import java.util.Iterator;
+import java.util.Set;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InvokeInstruction;
 
 /**
  * This is just for debugging method call resolution.
@@ -48,7 +46,8 @@ public class CheckCalls implements Detector, NonReportingDetector {
 
     private static final String METHOD = SystemProperties.getProperty("checkcalls.method");
 
-    private static final String TARGET_METHOD = SystemProperties.getProperty("checkcalls.targetmethod");
+    private static final String TARGET_METHOD =
+            SystemProperties.getProperty("checkcalls.targetmethod");
 
     BugReporter bugReporter;
 
@@ -77,7 +76,9 @@ public class CheckCalls implements Detector, NonReportingDetector {
             }
 
             try {
-                System.out.println("Analyzing " + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
+                System.out.println(
+                        "Analyzing "
+                                + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
                 analyzeMethod(classContext, method);
             } catch (CFGBuilderException e) {
                 bugReporter.logError("Error", e);
@@ -89,8 +90,8 @@ public class CheckCalls implements Detector, NonReportingDetector {
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, ClassNotFoundException,
-            DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, ClassNotFoundException, DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
@@ -98,26 +99,37 @@ public class CheckCalls implements Detector, NonReportingDetector {
 
             if (ins instanceof InvokeInstruction) {
                 if (TARGET_METHOD != null
-                        && !((InvokeInstruction) ins).getMethodName(classContext.getConstantPoolGen()).equals(TARGET_METHOD)) {
+                        && !((InvokeInstruction) ins)
+                                .getMethodName(classContext.getConstantPoolGen())
+                                .equals(TARGET_METHOD)) {
                     continue;
                 }
 
                 System.out.println("\n*******************************************************\n");
 
                 System.out.println("Method invocation: " + location.getHandle());
-                System.out.println("\tInvoking: "
-                        + SignatureConverter.convertMethodSignature((InvokeInstruction) ins, classContext.getConstantPoolGen()));
+                System.out.println(
+                        "\tInvoking: "
+                                + SignatureConverter.convertMethodSignature(
+                                        (InvokeInstruction) ins, classContext.getConstantPoolGen()));
 
-                JavaClassAndMethod proto = Hierarchy.findInvocationLeastUpperBound((InvokeInstruction) ins,
-                        classContext.getConstantPoolGen());
+                JavaClassAndMethod proto =
+                        Hierarchy.findInvocationLeastUpperBound(
+                                (InvokeInstruction) ins, classContext.getConstantPoolGen());
                 if (proto == null) {
                     System.out.println("\tUnknown prototype method");
                 } else {
-                    System.out.println("\tPrototype method: class=" + proto.getJavaClass().getClassName() + ", method="
-                            + proto.getMethod());
+                    System.out.println(
+                            "\tPrototype method: class="
+                                    + proto.getJavaClass().getClassName()
+                                    + ", method="
+                                    + proto.getMethod());
                 }
-                Set<JavaClassAndMethod> calledMethodSet = Hierarchy.resolveMethodCallTargets((InvokeInstruction) ins,
-                        classContext.getTypeDataflow(method).getFactAtLocation(location), classContext.getConstantPoolGen());
+                Set<JavaClassAndMethod> calledMethodSet =
+                        Hierarchy.resolveMethodCallTargets(
+                                (InvokeInstruction) ins,
+                                classContext.getTypeDataflow(method).getFactAtLocation(location),
+                                classContext.getConstantPoolGen());
                 System.out.println("\tTarget method set: " + calledMethodSet);
             }
         }
@@ -131,5 +143,4 @@ public class CheckCalls implements Detector, NonReportingDetector {
     @Override
     public void report() {
     }
-
 }

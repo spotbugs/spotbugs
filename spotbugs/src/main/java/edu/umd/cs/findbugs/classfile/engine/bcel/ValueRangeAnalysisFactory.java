@@ -21,11 +21,26 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import static org.apache.bcel.Const.*;
 
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.EdgeTypes;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.engine.bcel.FinallyDuplicatesInfoFactory.FinallyDuplicatesInfo;
 import java.util.*;
 import java.util.Map.Entry;
-
 import javax.annotation.Nullable;
-
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -51,28 +66,9 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PushInstruction;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.EdgeTypes;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.classfile.engine.bcel.FinallyDuplicatesInfoFactory.FinallyDuplicatesInfo;
-
-/**
- * @author Tagir Valeev
- */
-public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRangeAnalysisFactory.ValueRangeAnalysis> {
+/** @author Tagir Valeev */
+public class ValueRangeAnalysisFactory
+        implements IMethodAnalysisEngine<ValueRangeAnalysisFactory.ValueRangeAnalysis> {
     private static class TypeLongRange {
         long min, max;
         String signature;
@@ -189,9 +185,10 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
 
         public boolean intersects(LongRangeSet other) {
             for (Entry<Long, Long> entry : map.entrySet()) {
-                SortedMap<Long, Long> subMap = entry.getValue() == Long.MAX_VALUE ? other.map.tailMap(entry.getKey())
-                        : other.map
-                                .subMap(entry.getKey(), entry.getValue() + 1);
+                SortedMap<Long, Long> subMap =
+                        entry.getValue() == Long.MAX_VALUE
+                                ? other.map.tailMap(entry.getKey())
+                                : other.map.subMap(entry.getKey(), entry.getValue() + 1);
                 if (!subMap.isEmpty()) {
                     return true;
                 }
@@ -326,7 +323,12 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         final Set<Long> numbers = new HashSet<>();
         final String varName;
 
-        public Branch(String varName, String trueCondition, String falseCondition, LongRangeSet trueSet, Number number) {
+        public Branch(
+                String varName,
+                String trueCondition,
+                String falseCondition,
+                LongRangeSet trueSet,
+                Number number) {
             this.trueSet = trueSet;
             this.trueCondition = fixCondition(trueCondition);
             this.falseCondition = fixCondition(falseCondition);
@@ -379,7 +381,11 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         final Map<Integer, Value> types;
         final ValueNumberDataflow vnaDataflow;
 
-        public Context(ConstantPool cp, LocalVariableTable lvTable, Map<Integer, Value> types, ValueNumberDataflow vnaDataflow) {
+        public Context(
+                ConstantPool cp,
+                LocalVariableTable lvTable,
+                Map<Integer, Value> types,
+                ValueNumberDataflow vnaDataflow) {
             this.cp = cp;
             this.lvTable = lvTable;
             this.types = types;
@@ -406,7 +412,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             return null;
         }
 
-        private Object extractValue(BackIterator iterator, String defSignature) throws DataflowAnalysisException {
+        private Object extractValue(BackIterator iterator, String defSignature)
+                throws DataflowAnalysisException {
             if (!iterator.hasNext()) {
                 return null;
             }
@@ -439,32 +446,54 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 if (valueObj instanceof Value) {
                     Value value = (Value) valueObj;
                     ConstantCP desc = (ConstantCP) cp.getConstant(((GETFIELD) inst).getIndex());
-                    ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
+                    ConstantNameAndType nameAndType =
+                            (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
                     String name = ((ConstantUtf8) cp.getConstant(nameAndType.getNameIndex())).getBytes();
-                    String signature = ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
-                    return new Value(value.name + "." + name, vnaDataflow.getFactAfterLocation(new Location(ih, block)).getStackValue(0), signature);
+                    String signature =
+                            ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                    return new Value(
+                            value.name + "." + name,
+                            vnaDataflow.getFactAfterLocation(new Location(ih, block)).getStackValue(0),
+                            signature);
                 }
                 return null;
             }
             if (inst instanceof INVOKEVIRTUAL) {
                 ConstantCP desc = (ConstantCP) cp.getConstant(((INVOKEVIRTUAL) inst).getIndex());
-                ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
+                ConstantNameAndType nameAndType =
+                        (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
                 String className = cp.getConstantString(desc.getClassIndex(), CONSTANT_Class);
                 String name = ((ConstantUtf8) cp.getConstant(nameAndType.getNameIndex())).getBytes();
-                String signature = ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
-                if (className.equals("java/lang/Integer") && name.equals("intValue") && signature.equals("()I") ||
-                        className.equals("java/lang/Long") && name.equals("longValue") && signature.equals("()J") ||
-                        className.equals("java/lang/Short") && name.equals("shortValue") && signature.equals("()S") ||
-                        className.equals("java/lang/Byte") && name.equals("byteValue") && signature.equals("()B") ||
-                        className.equals("java/lang/Boolean") && name.equals("booleanValue") && signature.equals("()Z") ||
-                        className.equals("java/lang/Character") && name.equals("charValue") && signature.equals("()C")) {
+                String signature =
+                        ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                if (className.equals("java/lang/Integer")
+                        && name.equals("intValue")
+                        && signature.equals("()I")
+                        || className.equals("java/lang/Long")
+                                && name.equals("longValue")
+                                && signature.equals("()J")
+                        || className.equals("java/lang/Short")
+                                && name.equals("shortValue")
+                                && signature.equals("()S")
+                        || className.equals("java/lang/Byte")
+                                && name.equals("byteValue")
+                                && signature.equals("()B")
+                        || className.equals("java/lang/Boolean")
+                                && name.equals("booleanValue")
+                                && signature.equals("()Z")
+                        || className.equals("java/lang/Character")
+                                && name.equals("charValue")
+                                && signature.equals("()C")) {
                     Object valueObj = extractValue(iterator, defSignature);
                     if (valueObj instanceof Value) {
                         Value value = (Value) valueObj;
-                        return new Value(value.name, value.vn, String.valueOf(signature.charAt(signature.length() - 1)));
+                        return new Value(
+                                value.name, value.vn, String.valueOf(signature.charAt(signature.length() - 1)));
                     }
                 }
-                if (className.equals("java/lang/String") && name.equals("length") && signature.equals("()I")) {
+                if (className.equals("java/lang/String")
+                        && name.equals("length")
+                        && signature.equals("()I")) {
                     Object valueObj = extractValue(iterator, defSignature);
                     if (valueObj instanceof Value) {
                         Value value = (Value) valueObj;
@@ -475,7 +504,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             }
             if (inst instanceof LoadInstruction) {
                 int index = ((LoadInstruction) inst).getIndex();
-                LocalVariable lv = lvTable == null ? null : lvTable.getLocalVariable(index, ih.getPosition());
+                LocalVariable lv =
+                        lvTable == null ? null : lvTable.getLocalVariable(index, ih.getPosition());
                 String name, signature;
                 if (lv == null) {
                     name = "local$" + index;
@@ -489,7 +519,10 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                     name = lv.getName();
                     signature = lv.getSignature();
                 }
-                return new Value(name, vnaDataflow.getFactAfterLocation(new Location(ih, block)).getStackValue(0), signature);
+                return new Value(
+                        name,
+                        vnaDataflow.getFactAfterLocation(new Location(ih, block)).getStackValue(0),
+                        signature);
             }
             return inst;
         }
@@ -521,7 +554,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             }
         }
 
-        private Condition extractTwoArgCondition(BackIterator iterator, short cmpOpcode, String signature) throws DataflowAnalysisException {
+        private Condition extractTwoArgCondition(
+                BackIterator iterator, short cmpOpcode, String signature) throws DataflowAnalysisException {
             Object val2 = extractValue(iterator, signature);
             if (val2 instanceof Instruction) {
                 return null;
@@ -571,8 +605,16 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         private final Location liveCodeLocation;
         private final Number number;
 
-        public RedundantCondition(Location location, String trueCondition, boolean hasDeadCode, Location deadCodeLocation,
-                Location liveCodeLocation, String signature, boolean byType, Number number, boolean border) {
+        public RedundantCondition(
+                Location location,
+                String trueCondition,
+                boolean hasDeadCode,
+                Location deadCodeLocation,
+                Location liveCodeLocation,
+                String signature,
+                boolean byType,
+                Number number,
+                boolean border) {
             this.location = location;
             this.trueCondition = trueCondition;
             this.hasDeadCode = hasDeadCode;
@@ -634,7 +676,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
     }
 
     @Override
-    public ValueRangeAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public ValueRangeAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         XMethod xMethod = XFactory.createXMethod(descriptor);
         if (xMethod.isNative() || xMethod.isSynthetic() || xMethod.isAbstract()) {
             return null;
@@ -648,10 +691,15 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         if (cfg == null) {
             return null;
         }
-        ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, descriptor.getClassDescriptor());
+        ClassContext classContext =
+                analysisCache.getClassAnalysis(ClassContext.class, descriptor.getClassDescriptor());
         Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
-        Context context = new Context(cfg.getMethodGen().getConstantPool().getConstantPool(), method.getCode().getLocalVariableTable(),
-                getParameterTypes(descriptor), classContext.getValueNumberDataflow(method));
+        Context context =
+                new Context(
+                        cfg.getMethodGen().getConstantPool().getConstantPool(),
+                        method.getCode().getLocalVariableTable(),
+                        getParameterTypes(descriptor),
+                        classContext.getValueNumberDataflow(method));
         Map<ValueNumber, VariableData> analyzedArguments = new HashMap<>();
         Map<Edge, Branch> allEdges = new IdentityHashMap<>();
         for (Iterator<Edge> edgeIterator = cfg.edgeIterator(); edgeIterator.hasNext();) {
@@ -679,27 +727,63 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 switch (condition.opcode) {
                 case IF_ICMPGT:
                 case IFGT:
-                    branch = new Branch(varName, "> " + numberStr, "<= " + numberStr, data.splitSet.gt(number.longValue()), number);
+                    branch =
+                            new Branch(
+                                    varName,
+                                    "> " + numberStr,
+                                    "<= " + numberStr,
+                                    data.splitSet.gt(number.longValue()),
+                                    number);
                     break;
                 case IF_ICMPLE:
                 case IFLE:
-                    branch = new Branch(varName, "<= " + numberStr, "> " + numberStr, data.splitSet.le(number.longValue()), number);
+                    branch =
+                            new Branch(
+                                    varName,
+                                    "<= " + numberStr,
+                                    "> " + numberStr,
+                                    data.splitSet.le(number.longValue()),
+                                    number);
                     break;
                 case IF_ICMPGE:
                 case IFGE:
-                    branch = new Branch(varName, ">= " + numberStr, "< " + numberStr, data.splitSet.ge(number.longValue()), number);
+                    branch =
+                            new Branch(
+                                    varName,
+                                    ">= " + numberStr,
+                                    "< " + numberStr,
+                                    data.splitSet.ge(number.longValue()),
+                                    number);
                     break;
                 case IF_ICMPLT:
                 case IFLT:
-                    branch = new Branch(varName, "< " + numberStr, ">= " + numberStr, data.splitSet.lt(number.longValue()), number);
+                    branch =
+                            new Branch(
+                                    varName,
+                                    "< " + numberStr,
+                                    ">= " + numberStr,
+                                    data.splitSet.lt(number.longValue()),
+                                    number);
                     break;
                 case IF_ICMPEQ:
                 case IFEQ:
-                    branch = new Branch(varName, "== " + numberStr, "!= " + numberStr, data.splitSet.eq(number.longValue()), number);
+                    branch =
+                            new Branch(
+                                    varName,
+                                    "== " + numberStr,
+                                    "!= " + numberStr,
+                                    data.splitSet.eq(number.longValue()),
+                                    number);
                     break;
                 case IF_ICMPNE:
                 case IFNE:
-                    branch = new Branch(varName, "!= " + numberStr, "== " + numberStr, data.splitSet.ne(number.longValue()), number);
+                    branch =
+                            new Branch(
+                                    varName,
+                                    "!= " + numberStr,
+                                    "== " + numberStr,
+                                    data.splitSet.ne(number.longValue()),
+                                    number);
                     break;
                 default:
                     break;
@@ -743,7 +827,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                         }
                     }
                     BasicBlock trueTarget = edge.getTarget();
-                    BasicBlock falseTarget = cfg.getSuccessorWithEdgeType(edge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
+                    BasicBlock falseTarget =
+                            cfg.getSuccessorWithEdgeType(edge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
                     String condition;
                     BasicBlock deadTarget, aliveTarget;
                     if (branch.trueReachedSet.isEmpty()) {
@@ -755,10 +840,17 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                         deadTarget = falseTarget;
                         aliveTarget = trueTarget;
                     }
-                    redundantConditions.add(new RedundantCondition(Location.getLastLocation(edge.getSource()), condition,
-                            !data.reachableBlocks.get(deadTarget.getLabel()), getLocation(deadTarget), getLocation(aliveTarget),
-                            branch.trueSet.getSignature(), branch.trueSet.isEmpty() || branch.trueSet.isFull(),
-                            branch.number, branch.numbers.contains(branch.number.longValue())));
+                    redundantConditions.add(
+                            new RedundantCondition(
+                                    Location.getLastLocation(edge.getSource()),
+                                    condition,
+                                    !data.reachableBlocks.get(deadTarget.getLabel()),
+                                    getLocation(deadTarget),
+                                    getLocation(aliveTarget),
+                                    branch.trueSet.getSignature(),
+                                    branch.trueSet.isEmpty() || branch.trueSet.isFull(),
+                                    branch.number,
+                                    branch.numbers.contains(branch.number.longValue())));
                 }
             }
         }
@@ -874,7 +966,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         return result;
     }
 
-    private static void walkCFG(final CFG cfg, LongRangeSet subRange, Map<Edge, Branch> edges, final BitSet reachedBlocks) {
+    private static void walkCFG(
+            final CFG cfg, LongRangeSet subRange, Map<Edge, Branch> edges, final BitSet reachedBlocks) {
         class WalkState {
             Set<Long> numbers;
             BasicBlock target;
@@ -953,7 +1046,10 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                     }
                 } while (block.isExceptionThrower());
             }
-            next = (block.isExceptionThrower() || result == block.getFirstInstruction()) ? null : next.getPrev();
+            next =
+                    (block.isExceptionThrower() || result == block.getFirstInstruction())
+                            ? null
+                            : next.getPrev();
             return result;
         }
 

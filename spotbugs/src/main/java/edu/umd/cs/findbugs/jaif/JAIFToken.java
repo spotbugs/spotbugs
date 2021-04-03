@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs.jaif;
  *
  * @author David Hovemeyer
  * @see <a href="http://pag.csail.mit.edu/jsr308/annotation-file-utilities/">
- * http://pag.csail.mit.edu/jsr308/annotation-file-utilities/</a>
+ *     http://pag.csail.mit.edu/jsr308/annotation-file-utilities/</a>
  */
 class JAIFToken {
     JAIFTokenKind kind;

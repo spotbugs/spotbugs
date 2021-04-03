@@ -18,16 +18,14 @@
  */
 package de.tobject.findbugs.properties.test;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.TabFolder;
-
 import de.tobject.findbugs.properties.FilterFilesTab;
 import de.tobject.findbugs.properties.FindbugsPropertyPage;
 import de.tobject.findbugs.properties.IPathElement;
+import java.io.File;
+import java.util.ArrayList;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.TabFolder;
 
 /**
  * Test subclass of FilterFilesTab that provides methods for testing purposes.
@@ -65,7 +63,8 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
     }
 
     @Override
-    protected FilterProvider createFilterProvider(TableViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
+    protected FilterProvider createFilterProvider(
+            TableViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
         return new FilterProviderTestSubclass(viewer, kind, page);
     }
 
@@ -77,7 +76,8 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
 
         private String fileName;
 
-        protected FilterProviderTestSubclass(TableViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
+        protected FilterProviderTestSubclass(
+                TableViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
             super(viewer, kind, propertyPage);
         }
 
@@ -109,6 +109,5 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
         protected String openFileDialog(FileDialog dialog) {
             return fileLocation;
         }
-
     }
 }

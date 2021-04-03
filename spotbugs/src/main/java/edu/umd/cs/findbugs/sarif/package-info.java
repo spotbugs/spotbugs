@@ -19,6 +19,7 @@
  *   </tbody>
  * </table>
  *
- * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html">Static Analysis Results Interchange Format (SARIF) Version 2.1.0</a>
+ * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html">Static Analysis
+ *     Results Interchange Format (SARIF) Version 2.1.0</a>
  */
 package edu.umd.cs.findbugs.sarif;

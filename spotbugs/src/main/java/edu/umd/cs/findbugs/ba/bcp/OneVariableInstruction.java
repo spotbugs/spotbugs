@@ -20,8 +20,7 @@
 package edu.umd.cs.findbugs.ba.bcp;
 
 /**
- * Abstract PatternElement subclass for matching single instructions which have
- * a single Variable.
+ * Abstract PatternElement subclass for matching single instructions which have a single Variable.
  *
  * @see PatternElement
  */
@@ -31,28 +30,23 @@ public abstract class OneVariableInstruction extends SingleInstruction {
     /**
      * Constructor.
      *
-     * @param varName
-     *            the name of the Variable used in this instruction
+     * @param varName the name of the Variable used in this instruction
      */
     public OneVariableInstruction(String varName) {
         this.varName = varName;
     }
 
     /**
-     * Add a variable definition to the given BindingSet, or if there is an
-     * existing definition, make sure it is consistent with the new definition.
+     * Add a variable definition to the given BindingSet, or if there is an existing definition, make
+     * sure it is consistent with the new definition.
      *
-     * @param variable
-     *            the Variable which should be added or checked for consistency
-     * @param bindingSet
-     *            the existing set of bindings
-     * @return a MatchResult containing the updated BindingSet (if the variable
-     *         is consistent with the previous bindings), or null if the new
-     *         variable is inconsistent with the previous bindings
+     * @param variable the Variable which should be added or checked for consistency
+     * @param bindingSet the existing set of bindings
+     * @return a MatchResult containing the updated BindingSet (if the variable is consistent with the
+     *     previous bindings), or null if the new variable is inconsistent with the previous bindings
      */
     protected MatchResult addOrCheckDefinition(Variable variable, BindingSet bindingSet) {
         bindingSet = addOrCheckDefinition(varName, variable, bindingSet);
         return bindingSet != null ? new MatchResult(this, bindingSet) : null;
     }
-
 }

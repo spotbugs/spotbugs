@@ -21,9 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.generic.InstructionHandle;
 
-/**
- * The target of a branch instruction.
- */
+/** The target of a branch instruction. */
 public class Target {
     private final InstructionHandle targetInstruction;
 
@@ -32,26 +30,20 @@ public class Target {
     /**
      * Constructor.
      *
-     * @param targetInstruction
-     *            the handle of the target instruction
-     * @param edgeType
-     *            type of CFG edge; see EdgeTypes interface
+     * @param targetInstruction the handle of the target instruction
+     * @param edgeType type of CFG edge; see EdgeTypes interface
      */
     public Target(InstructionHandle targetInstruction, @Edge.Type int edgeType) {
         this.targetInstruction = targetInstruction;
         this.edgeType = edgeType;
     }
 
-    /**
-     * Get the handle of the target instruction.
-     */
+    /** Get the handle of the target instruction. */
     public InstructionHandle getTargetInstruction() {
         return targetInstruction;
     }
 
-    /**
-     * Get the control flow edge type.
-     */
+    /** Get the control flow edge type. */
     public @Edge.Type int getEdgeType() {
         return edgeType;
     }

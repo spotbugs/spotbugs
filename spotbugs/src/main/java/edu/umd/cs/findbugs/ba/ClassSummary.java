@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class ClassSummary {
     private final Map<ClassDescriptor, ClassDescriptor> map = new HashMap<>();
@@ -45,5 +44,4 @@ public class ClassSummary {
             map.put(checker, checkee);
         }
     }
-
 }

@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionHandle;
-
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * PatternElement to match instructions with a particular opcode.
@@ -38,23 +37,26 @@ public class Opcode extends PatternElement {
     /**
      * Constructor.
      *
-     * @param opcode
-     *            the opcode to match
+     * @param opcode the opcode to match
      */
     public Opcode(int opcode) {
         this.opcode = opcode;
     }
 
     @Override
-    public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
-            BindingSet bindingSet) throws DataflowAnalysisException {
+    public MatchResult match(
+            InstructionHandle handle,
+            ConstantPoolGen cpg,
+            ValueNumberFrame before,
+            ValueNumberFrame after,
+            BindingSet bindingSet)
+            throws DataflowAnalysisException {
 
         if (handle.getInstruction().getOpcode() == opcode) {
             return new MatchResult(this, bindingSet);
         } else {
             return null;
         }
-
     }
 
     @Override

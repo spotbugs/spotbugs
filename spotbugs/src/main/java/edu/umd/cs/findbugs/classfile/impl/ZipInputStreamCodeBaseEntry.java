@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
-
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * Implementation of ICodeBaseEntry for resources in zipfile codebases.
@@ -39,7 +38,8 @@ public class ZipInputStreamCodeBaseEntry extends AbstractScannableCodeBaseEntry 
 
     private final byte[] bytes;
 
-    public ZipInputStreamCodeBaseEntry(ZipInputStreamCodeBase codeBase, ZipEntry zipEntry, byte[] bytes) {
+    public ZipInputStreamCodeBaseEntry(
+            ZipInputStreamCodeBase codeBase, ZipEntry zipEntry, byte[] bytes) {
         this.codeBase = codeBase;
         this.zipEntry = zipEntry;
         this.bytes = bytes;

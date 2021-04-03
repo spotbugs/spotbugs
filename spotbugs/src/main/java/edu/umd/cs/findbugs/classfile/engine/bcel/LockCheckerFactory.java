@@ -29,9 +29,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class LockCheckerFactory extends AnalysisFactory<LockChecker> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public LockCheckerFactory() {
         super("lock checker meta-analysis", LockChecker.class);
     }
@@ -44,7 +42,8 @@ public class LockCheckerFactory extends AnalysisFactory<LockChecker> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public LockChecker analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public LockChecker analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         LockChecker lockChecker = new LockChecker(descriptor);
 
         lockChecker.execute();

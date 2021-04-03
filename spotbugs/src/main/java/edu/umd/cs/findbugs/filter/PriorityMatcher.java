@@ -18,11 +18,10 @@
  */
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
 /**
  * Matcher to select BugInstances with a particular priority.
@@ -40,8 +39,7 @@ public class PriorityMatcher implements Matcher {
     /**
      * Constructor.
      *
-     * @param priorityAsString
-     *            the priority, as a String
+     * @param priorityAsString the priority, as a String
      * @throws FilterException
      */
     public PriorityMatcher(String priorityAsString) {
@@ -69,7 +67,8 @@ public class PriorityMatcher implements Matcher {
 
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-        XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(priority));
+        XMLAttributeList attributes =
+                new XMLAttributeList().addAttribute("value", Integer.toString(priority));
         if (disabled) {
             attributes.addAttribute("disabled", "true");
         }

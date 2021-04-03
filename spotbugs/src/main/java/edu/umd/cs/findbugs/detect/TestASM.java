@@ -22,16 +22,15 @@ package edu.umd.cs.findbugs.detect;
 import static org.apache.bcel.Const.I2D;
 import static org.apache.bcel.Const.INVOKESTATIC;
 
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.asm.AbstractFBMethodVisitor;
 import edu.umd.cs.findbugs.asm.ClassNodeDetector;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * Sample detector, using ASM
@@ -45,11 +44,17 @@ public class TestASM extends ClassNodeDetector {
     }
 
     @Override
-    public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
+    public MethodVisitor visitMethod(
+            final int access,
+            final String name,
+            final String desc,
+            final String signature,
             final String[] exceptions) {
         if (Character.isUpperCase(name.charAt(0))) {
-            BugInstance bug0 = new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", NORMAL_PRIORITY).addClass(this).addMethod(
-                    this.name, name, desc, access);
+            BugInstance bug0 =
+                    new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", NORMAL_PRIORITY)
+                            .addClass(this)
+                            .addMethod(this.name, name, desc, access);
             bugReporter.reportBug(bug0);
         }
         return new AbstractFBMethodVisitor() {
@@ -64,27 +69,38 @@ public class TestASM extends ClassNodeDetector {
             }
 
             @Override
-            public void visitMethodInsn(int opcode, String owner, String invokedName, String invokedDesc, boolean itf) {
-                if (prevPC + 1 == getPC() && prevOpcode == I2D && opcode == INVOKESTATIC && "java/lang/Math".equals(owner)
-                        && "ceil".equals(invokedName) && "(D)D".equals(invokedDesc)) {
-                    BugInstance bug0 = new BugInstance(TestASM.this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", NORMAL_PRIORITY);
-                    MethodAnnotation methodAnnotation = MethodAnnotation.fromForeignMethod(TestASM.this.name, name, desc, access);
+            public void visitMethodInsn(
+                    int opcode, String owner, String invokedName, String invokedDesc, boolean itf) {
+                if (prevPC + 1 == getPC()
+                        && prevOpcode == I2D
+                        && opcode == INVOKESTATIC
+                        && "java/lang/Math".equals(owner)
+                        && "ceil".equals(invokedName)
+                        && "(D)D".equals(invokedDesc)) {
+                    BugInstance bug0 =
+                            new BugInstance(
+                                    TestASM.this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", NORMAL_PRIORITY);
+                    MethodAnnotation methodAnnotation =
+                            MethodAnnotation.fromForeignMethod(TestASM.this.name, name, desc, access);
                     bug0.addClass(TestASM.this).addMethod(methodAnnotation);
                     bugReporter.reportBug(bug0);
                 }
             }
         };
-
     }
 
     @Override
-    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 && (access & Opcodes.ACC_PUBLIC) != 0
+    public FieldVisitor visitField(
+            int access, String name, String desc, String signature, Object value) {
+        if ((access & Opcodes.ACC_STATIC) != 0
+                && (access & Opcodes.ACC_FINAL) != 0
+                && (access & Opcodes.ACC_PUBLIC) != 0
                 && !name.equals(name.toUpperCase())) {
-            bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", Priorities.LOW_PRIORITY).addClass(this)
-                    .addField(this.name, name, desc, access));
+            bugReporter.reportBug(
+                    new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", Priorities.LOW_PRIORITY)
+                            .addClass(this)
+                            .addField(this.name, name, desc, access));
         }
         return null;
     }
-
 }

@@ -26,7 +26,8 @@ public class BlockTypeAnalysisFactory extends AnalysisFactory<BlockTypeDataflow>
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public BlockTypeDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public BlockTypeDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
         DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
         BlockTypeAnalysis analysis = new BlockTypeAnalysis(dfs);

@@ -19,14 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -41,13 +33,20 @@ import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 
 /**
  * Scan methods for directly-relevant type qualifiers, building the
- * DirectlyRelevantTypeQualifiersDatabase. This helps the CheckTypeQualifiers
- * detector figure out which type qualifiers to check for each method.
+ * DirectlyRelevantTypeQualifiersDatabase. This helps the CheckTypeQualifiers detector figure out
+ * which type qualifiers to check for each method.
  */
-public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implements Detector, NonReportingDetector {
+public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode
+        implements Detector, NonReportingDetector {
 
     private DirectlyRelevantTypeQualifiersDatabase qualifiers;
 
@@ -57,7 +56,8 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
     @Override
     public void visitClassContext(ClassContext classContext) {
         if (qualifiers == null) {
-            qualifiers = AnalysisContext.currentAnalysisContext().getDirectlyRelevantTypeQualifiersDatabase();
+            qualifiers =
+                    AnalysisContext.currentAnalysisContext().getDirectlyRelevantTypeQualifiersDatabase();
         }
 
         JavaClass javaClass = classContext.getJavaClass();
@@ -80,8 +80,8 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
         super.visit(m);
 
         if (applicableApplications.size() > 0) {
-            qualifiers.setDirectlyRelevantTypeQualifiers(getMethodDescriptor(), new ArrayList<>(
-                    applicableApplications));
+            qualifiers.setDirectlyRelevantTypeQualifiers(
+                    getMethodDescriptor(), new ArrayList<>(applicableApplications));
         }
     }
 
@@ -112,7 +112,8 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
         case Const.PUTFIELD: {
             XField f = getXFieldOperand();
             if (f != null) {
-                Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(f);
+                Collection<TypeQualifierAnnotation> annotations =
+                        TypeQualifierApplications.getApplicableApplications(f);
                 Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
             }
 
@@ -123,11 +124,10 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
         }
     }
 
-    /**
-     * @param m
-     */
+    /** @param m */
     private void updateApplicableAnnotations(XMethod m) {
-        Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(m);
+        Collection<TypeQualifierAnnotation> annotations =
+                TypeQualifierApplications.getApplicableApplications(m);
         Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
         Analysis.addKnownTypeQualifiersForParameters(applicableApplications, m);
     }

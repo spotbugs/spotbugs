@@ -25,17 +25,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
-
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.junit.Test;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class GenericUtilitiesTest {
 
-    private static final String SAMPLE_SIGNATURE = "Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;";
+    private static final String SAMPLE_SIGNATURE =
+            "Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;";
 
     @Test
     public void testUnmatchedRightAngleBracket() {
@@ -49,8 +47,9 @@ public class GenericUtilitiesTest {
     }
 
     public void notestNestedSignature2() {
-        List<ReferenceType> parameters = GenericUtilities
-                .getTypeParameters("Lcom/google/common/util/WeakIdentityHashMap<TK;TV;>.IdentityWeakReference;TV;");
+        List<ReferenceType> parameters =
+                GenericUtilities.getTypeParameters(
+                        "Lcom/google/common/util/WeakIdentityHashMap<TK;TV;>.IdentityWeakReference;TV;");
 
         System.out.println(parameters);
         assertEquals(2, parameters.size());
@@ -60,8 +59,8 @@ public class GenericUtilitiesTest {
 
     @Test
     public void testMapSignature() {
-        GenericObjectType t = (GenericObjectType) GenericUtilities
-                .getType("Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;");
+        GenericObjectType t =
+                (GenericObjectType) GenericUtilities.getType("Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;");
         assertEquals(2, t.getNumParameters());
     }
 
@@ -84,7 +83,8 @@ public class GenericUtilitiesTest {
         final Type type = GenericUtilities.getType("!+LHasUniqueKey<Ljava/lang/Integer;>;");
         assertThat(type, instanceOf(GenericObjectType.class));
         assertEquals("+", ((GenericObjectType) type).getVariable());
-        assertEquals("HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
+        assertEquals(
+                "HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
     }
 
     @Test
@@ -92,7 +92,8 @@ public class GenericUtilitiesTest {
         final Type type = GenericUtilities.getType("!-LHasUniqueKey<Ljava/lang/Integer;>;");
         assertThat(type, instanceOf(GenericObjectType.class));
         assertEquals("-", ((GenericObjectType) type).getVariable());
-        assertEquals("HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
+        assertEquals(
+                "HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
     }
 
     @Test

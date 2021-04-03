@@ -23,22 +23,20 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor;
 
 /**
- * Accumulate type qualifier annotations on method, taking supertype methods
- * into account.
+ * Accumulate type qualifier annotations on method, taking supertype methods into account.
  *
  * @author David Hovemeyer
  */
 public abstract class AbstractMethodAnnotationAccumulator extends OverriddenMethodsVisitor {
     private final TypeQualifierValue<?> typeQualifierValue;
 
-    protected AbstractMethodAnnotationAccumulator(TypeQualifierValue<?> typeQualifierValue, XMethod xmethod) {
+    protected AbstractMethodAnnotationAccumulator(
+            TypeQualifierValue<?> typeQualifierValue, XMethod xmethod) {
         super(xmethod);
         this.typeQualifierValue = typeQualifierValue;
     }
 
-    /**
-     * @return Returns the typeQualifierValue.
-     */
+    /** @return Returns the typeQualifierValue. */
     public TypeQualifierValue<?> getTypeQualifierValue() {
         return typeQualifierValue;
     }
@@ -62,7 +60,8 @@ public abstract class AbstractMethodAnnotationAccumulator extends OverriddenMeth
         } else {
             // This branch of search ends here.
             // Add partial result.
-            getResult().addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(xmethod, tqa));
+            getResult()
+                    .addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(xmethod, tqa));
             return false;
         }
     }

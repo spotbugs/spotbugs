@@ -20,22 +20,17 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.io.PrintStream;
-
 import org.apache.bcel.generic.InstructionHandle;
 
-/**
- * CFGPrinter class which prints dataflow values at each basic block and
- * instruction.
- */
-public class DataflowCFGPrinter<Fact, AnalysisType extends DataflowAnalysis<Fact>> extends CFGPrinter {
+/** CFGPrinter class which prints dataflow values at each basic block and instruction. */
+public class DataflowCFGPrinter<Fact, AnalysisType extends DataflowAnalysis<Fact>>
+        extends CFGPrinter {
     private final Dataflow<Fact, AnalysisType> dataflow;
 
     /**
      * Constructor.
      *
-     * @param dataflow
-     *            the Dataflow object whose values should be used to annotate
-     *            the printed CFG
+     * @param dataflow the Dataflow object whose values should be used to annotate the printed CFG
      */
     public DataflowCFGPrinter(Dataflow<Fact, AnalysisType> dataflow) {
         super(dataflow.getCFG());
@@ -55,7 +50,8 @@ public class DataflowCFGPrinter<Fact, AnalysisType extends DataflowAnalysis<Fact
     public String edgeAnnotate(Edge edge) {
         String edgeAnnotation = "";
         try {
-            edgeAnnotation = " " + dataflow.getAnalysis().factToString(dataflow.getAnalysis().getFactOnEdge(edge));
+            edgeAnnotation =
+                    " " + dataflow.getAnalysis().factToString(dataflow.getAnalysis().getFactOnEdge(edge));
         } catch (Throwable e) {
             // ignore
         }
@@ -85,7 +81,10 @@ public class DataflowCFGPrinter<Fact, AnalysisType extends DataflowAnalysis<Fact
 
             Location loc = new Location(handle, bb);
 
-            Fact fact = flip ? dataflow.getAnalysis().getFactAfterLocation(loc) : dataflow.getAnalysis().getFactAtLocation(loc);
+            Fact fact =
+                    flip
+                            ? dataflow.getAnalysis().getFactAfterLocation(loc)
+                            : dataflow.getAnalysis().getFactAtLocation(loc);
             return " " + dataflow.getAnalysis().factToString(fact);
         } catch (DataflowAnalysisException e) {
             throw new IllegalStateException("Caught exception: " + e.toString());
@@ -95,19 +94,14 @@ public class DataflowCFGPrinter<Fact, AnalysisType extends DataflowAnalysis<Fact
     /**
      * Print CFG annotated with results from given dataflow analysis.
      *
-     * @param <Fact>
-     *            Dataflow fact type
-     * @param <AnalysisType>
-     *            Dataflow analysis type
-     * @param dataflow
-     *            dataflow driver
-     * @param out
-     *            PrintStream to use
+     * @param <Fact> Dataflow fact type
+     * @param <AnalysisType> Dataflow analysis type
+     * @param dataflow dataflow driver
+     * @param out PrintStream to use
      */
     public static <Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>> void printCFG(
             Dataflow<Fact, AnalysisType> dataflow, PrintStream out) {
         DataflowCFGPrinter<Fact, AnalysisType> printer = new DataflowCFGPrinter<>(dataflow);
         printer.print(out);
     }
-
 }

@@ -22,10 +22,9 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
 
 /**
- * An instruction recorded as a redundant reference comparison. We keep track of
- * the line number, in order to ensure that if the branch was duplicated, all
- * duplicates are determined in the same way. (If they aren't, then we don't
- * report it.)
+ * An instruction recorded as a redundant reference comparison. We keep track of the line number, in
+ * order to ensure that if the branch was duplicated, all duplicates are determined in the same way.
+ * (If they aren't, then we don't report it.)
  */
 public class RedundantBranch {
     public final Location location;
@@ -39,16 +38,13 @@ public class RedundantBranch {
     /**
      * Constructor.
      *
-     * @param location
-     *            Location of ref comparison
-     * @param lineNumber
-     *            line number of ref comparison
-     * @param firstValue
-     *            first value compared
-     * @param secondValue
-     *            second value compared
+     * @param location Location of ref comparison
+     * @param lineNumber line number of ref comparison
+     * @param firstValue first value compared
+     * @param secondValue second value compared
      */
-    public RedundantBranch(Location location, int lineNumber, IsNullValue firstValue, IsNullValue secondValue) {
+    public RedundantBranch(
+            Location location, int lineNumber, IsNullValue firstValue, IsNullValue secondValue) {
         this.location = location;
         this.lineNumber = lineNumber;
         this.firstValue = firstValue;
@@ -58,12 +54,9 @@ public class RedundantBranch {
     /**
      * Constructor.
      *
-     * @param location
-     *            Location of ref comparison
-     * @param lineNumber
-     *            line number of ref comparison
-     * @param firstValue
-     *            first value compared
+     * @param location Location of ref comparison
+     * @param lineNumber line number of ref comparison
+     * @param firstValue first value compared
      */
     public RedundantBranch(Location location, int lineNumber, IsNullValue firstValue) {
         this.location = location;
@@ -75,8 +68,7 @@ public class RedundantBranch {
     /**
      * Set the edge which has been determined to be infeasible.
      *
-     * @param infeasibleEdge
-     *            The infeasibleEdge to set.
+     * @param infeasibleEdge The infeasibleEdge to set.
      */
     public void setInfeasibleEdge(Edge infeasibleEdge) {
         this.infeasibleEdge = infeasibleEdge;

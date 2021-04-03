@@ -19,19 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
-/**
- * @author Tagir Valeev
- */
+/** @author Tagir Valeev */
 public class MutableEnum extends OpcodeStackDetector {
 
     private final BugReporter reporter;
@@ -50,8 +47,10 @@ public class MutableEnum extends OpcodeStackDetector {
         for (XField field : classContext.getXClass().getXFields()) {
             if (!field.isStatic() && !field.isFinal() && !field.isSynthetic()) {
                 if (field.isPublic()) {
-                    reporter.reportBug(new BugInstance("ME_MUTABLE_ENUM_FIELD", NORMAL_PRIORITY).addClass(classContext.getJavaClass())
-                            .addField(field));
+                    reporter.reportBug(
+                            new BugInstance("ME_MUTABLE_ENUM_FIELD", NORMAL_PRIORITY)
+                                    .addClass(classContext.getJavaClass())
+                                    .addField(field));
                 } else {
                     hasInterestingField = true;
                 }
@@ -81,8 +80,11 @@ public class MutableEnum extends OpcodeStackDetector {
             if (xField != null && xField.getClassDescriptor().getClassName().equals(getClassName())) {
                 Item val = getStack().getStackItem(0);
                 if (val.isInitialParameter()) {
-                    reporter.reportBug(new BugInstance("ME_ENUM_FIELD_SETTER", NORMAL_PRIORITY).addClassAndMethod(this).addField(xField)
-                            .addSourceLine(this));
+                    reporter.reportBug(
+                            new BugInstance("ME_ENUM_FIELD_SETTER", NORMAL_PRIORITY)
+                                    .addClassAndMethod(this)
+                                    .addField(xField)
+                                    .addSourceLine(this));
                 }
             }
         }

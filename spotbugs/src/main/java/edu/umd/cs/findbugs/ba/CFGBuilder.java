@@ -27,14 +27,11 @@ package edu.umd.cs.findbugs.ba;
  * @see CFGBuilderFactory
  */
 public interface CFGBuilder {
-    /**
-     * Build the CFG.
-     */
+    /** Build the CFG. */
     public void build() throws CFGBuilderException;
 
     /**
-     * Get the CFG built by this object. Assumes that the build() method has
-     * already been called.
+     * Get the CFG built by this object. Assumes that the build() method has already been called.
      *
      * @return the CFG
      */

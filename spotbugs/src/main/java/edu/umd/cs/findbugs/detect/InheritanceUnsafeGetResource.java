@@ -19,15 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantString;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -35,8 +26,16 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantString;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
-public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements StatelessDetector {
+public class InheritanceUnsafeGetResource extends BytecodeScanningDetector
+        implements StatelessDetector {
 
     private final BugReporter bugReporter;
 
@@ -97,20 +96,30 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
             break;
         case Const.INVOKEVIRTUAL:
             if ("java/lang/Class".equals(getClassConstantOperand())
-                    && ("getResource".equals(getNameConstantOperand()) || "getResourceAsStream".equals(getNameConstantOperand()))
+                    && ("getResource".equals(getNameConstantOperand())
+                            || "getResourceAsStream".equals(getNameConstantOperand()))
                     && sawGetClass + 10 >= getPC()) {
                 int priority = NORMAL_PRIORITY;
-                if (prevOpcode == Const.LDC && stringConstant != null && stringConstant.length() > 0 && stringConstant.charAt(0) == '/') {
+                if (prevOpcode == Const.LDC
+                        && stringConstant != null
+                        && stringConstant.length() > 0
+                        && stringConstant.charAt(0) == '/') {
                     priority = LOW_PRIORITY;
                 } else {
                     priority = adjustPriority(priority);
                 }
-                bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", priority)
-                        .addClassAndMethod(this).addSourceLine(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", priority)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this));
                 reportedForThisClass = true;
 
-            } else if (state == 1 && !methodIsStatic && !classIsFinal && classIsVisibleToOtherPackages
-                    && "getClass".equals(getNameConstantOperand()) && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
+            } else if (state == 1
+                    && !methodIsStatic
+                    && !classIsFinal
+                    && classIsVisibleToOtherPackages
+                    && "getClass".equals(getNameConstantOperand())
+                    && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
                 sawGetClass = getPC();
             }
             state = 0;
@@ -123,14 +132,12 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
             stringConstant = null;
         }
         prevOpcode = seen;
-
     }
 
     /**
      * Adjust the priority of a warning about to be reported.
      *
-     * @param priority
-     *            initial priority
+     * @param priority initial priority
      * @return adjusted priority
      */
     private int adjustPriority(int priority) {
@@ -160,5 +167,4 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
         }
         return priority;
     }
-
 }

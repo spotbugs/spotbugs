@@ -37,7 +37,5 @@ public class Methods extends PreorderVisitor implements Detector, NonReportingDe
 
     @Override
     public void report() {
-
     }
-
 }

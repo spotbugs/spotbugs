@@ -21,10 +21,9 @@ package edu.umd.cs.findbugs.ba;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
-
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import org.junit.Test;
 
 public class Issue758Test extends AbstractIntegrationTest {
 
@@ -34,5 +33,4 @@ public class Issue758Test extends AbstractIntegrationTest {
         SortedBugCollection bugCollection = (SortedBugCollection) getBugCollection();
         assertThat(bugCollection.getErrors(), hasSize(0));
     }
-
 }

@@ -20,47 +20,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.meta.TypeQualifier;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.CodeException;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantDouble;
-import org.apache.bcel.classfile.ConstantFloat;
-import org.apache.bcel.classfile.ConstantInteger;
-import org.apache.bcel.classfile.ConstantLong;
-import org.apache.bcel.classfile.ConstantString;
-import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.LocalVariableTable;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.BasicType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
 import edu.umd.cs.findbugs.StackMapAnalyzer.JumpInfoFromStackMap;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -86,36 +45,72 @@ import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.meta.TypeQualifier;
+import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantFloat;
+import org.apache.bcel.classfile.ConstantInteger;
+import org.apache.bcel.classfile.ConstantLong;
+import org.apache.bcel.classfile.ConstantString;
+import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.BasicType;
+import org.apache.bcel.generic.Type;
 
 /**
- * tracks the types and numbers of objects that are currently on the operand
- * stack throughout the execution of method. To use, a detector should
- * instantiate one for each method, and call
- * <p>
- * stack.sawOpcode(this,seen);
- * </p>
- * at the bottom of their sawOpcode method. at any point you can then inspect
- * the stack and see what the types of objects are on the stack, including
- * constant values if they were pushed. The types described are of course, only
- * the static types. There are some outstanding opcodes that have yet to be
- * implemented, I couldn't find any code that actually generated these, so i
- * didn't put them in because I couldn't test them:
+ * tracks the types and numbers of objects that are currently on the operand stack throughout the
+ * execution of method. To use, a detector should instantiate one for each method, and call
+ *
+ * <p>stack.sawOpcode(this,seen); at the bottom of their sawOpcode method. at any point you can then
+ * inspect the stack and see what the types of objects are on the stack, including constant values
+ * if they were pushed. The types described are of course, only the static types. There are some
+ * outstanding opcodes that have yet to be implemented, I couldn't find any code that actually
+ * generated these, so i didn't put them in because I couldn't test them:
+ *
  * <ul>
- * <li>dup2_x2</li>
- * <li>jsr_w</li>
- * <li>wide</li>
+ *   <li>dup2_x2
+ *   <li>jsr_w
+ *   <li>wide
  * </ul>
  */
 public class OpcodeStack {
 
-    /** You can put this annotation on a OpcodeStack detector
-     * to indicate that it uses {@link OpcodeStack.Item#userValue},
-     * and thus should not reuse generic OpcodeStack information
-     * from an iterative evaluation of the opcode stack. Such detectors
-     * will not use iterative opcode stack evaluation.
+    /**
+     * You can put this annotation on a OpcodeStack detector to indicate that it uses {@link
+     * OpcodeStack.Item#userValue}, and thus should not reuse generic OpcodeStack information from an
+     * iterative evaluation of the opcode stack. Such detectors will not use iterative opcode stack
+     * evaluation.
      *
-     * This is primarily for detectors that need to be backwards compatible with
-     * versions of FindBugs that do not support {@link edu.umd.cs.findbugs.bcel.OpcodeStackDetector.WithCustomJumpInfo }}
+     * <p>This is primarily for detectors that need to be backwards compatible with versions of
+     * FindBugs that do not support {@link
+     * edu.umd.cs.findbugs.bcel.OpcodeStackDetector.WithCustomJumpInfo }}
      */
     @Documented
     @Target({ ElementType.TYPE, ElementType.PACKAGE })
@@ -153,8 +148,9 @@ public class OpcodeStack {
 
     private boolean seenTransferOfControl;
 
-    private final boolean useIterativeAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(
-            AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS);
+    private final boolean useIterativeAnalysis =
+            AnalysisContext.currentAnalysisContext()
+                    .getBoolProperty(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS);
 
     boolean encountedTop;
 
@@ -188,9 +184,7 @@ public class OpcodeStack {
 
     public static class Item {
 
-        /**
-         * A type qualifier to mark {@code int} value as SpecialKind type.
-         */
+        /** A type qualifier to mark {@code int} value as SpecialKind type. */
         @Documented
         @TypeQualifier(applicableTo = Integer.class)
         @Retention(RetentionPolicy.RUNTIME)
@@ -252,7 +246,8 @@ public class OpcodeStack {
         public static final @SpecialKind int TYPE_ONLY = 24;
 
         @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-        private static final ConcurrentMap<Integer, String> specialKindToName = new ConcurrentHashMap<>();
+        private static final ConcurrentMap<Integer, String> specialKindToName =
+                new ConcurrentHashMap<>();
 
         private static AtomicInteger nextSpecialKind = new AtomicInteger(TYPE_ONLY + 1);
 
@@ -329,7 +324,6 @@ public class OpcodeStack {
             r *= 31;
             r += registerNumber;
             return r;
-
         }
 
         public boolean usesTwoSlots() {
@@ -343,19 +337,22 @@ public class OpcodeStack {
             }
             Item that = (Item) o;
 
-            return Objects.equals(this.signature, that.signature) && Objects.equals(this.constValue, that.constValue)
-                    && Objects.equals(this.source, that.source) && Objects.equals(this.userValue, that.userValue)
-                    && Objects.equals(this.injection, that.injection) && this.specialKind == that.specialKind
-                    && this.registerNumber == that.registerNumber && this.flags == that.flags
+            return Objects.equals(this.signature, that.signature)
+                    && Objects.equals(this.constValue, that.constValue)
+                    && Objects.equals(this.source, that.source)
+                    && Objects.equals(this.userValue, that.userValue)
+                    && Objects.equals(this.injection, that.injection)
+                    && this.specialKind == that.specialKind
+                    && this.registerNumber == that.registerNumber
+                    && this.flags == that.flags
                     && this.fieldLoadedFromRegister == that.fieldLoadedFromRegister;
-
         }
-
 
         public boolean sameValue(OpcodeStack.Item that) {
 
-            return this.equals(that) && (this.registerNumber != -1 && this.registerNumber == that.registerNumber
-                    || this.fieldLoadedFromRegister != -1);
+            return this.equals(that)
+                    && (this.registerNumber != -1 && this.registerNumber == that.registerNumber
+                            || this.fieldLoadedFromRegister != -1);
         }
 
         @Override
@@ -435,7 +432,6 @@ public class OpcodeStack {
                 buf.append(", #" + specialKind);
                 buf.append("(" + specialKindToName.get(specialKind) + ")");
                 break;
-
             }
             if (constValue != UNKNOWN) {
                 if (constValue instanceof String) {
@@ -554,13 +550,11 @@ public class OpcodeStack {
             this(signature, Integer.valueOf(constValue));
         }
 
-
         public static Item initialArgument(String signature, int reg) {
             Item it = new Item(signature);
             it.setInitialParameter(true);
             it.registerNumber = reg;
             return it;
-
         }
 
         public Item(String signature) {
@@ -585,8 +579,6 @@ public class OpcodeStack {
             this.specialKind = it.specialKind;
             this.pc = it.pc;
         }
-
-
 
         public Item(Item it, String signature) {
             this(it);
@@ -661,11 +653,10 @@ public class OpcodeStack {
         }
 
         /**
-         * If this value was loaded from an instance field,
-         * give the register number containing the object that the field was loaded from.
-         * If Integer.MAX value, the value was loaded from a static field
-         * If -1, we don't know or don't have the register containing the object that
-         * the field was loaded from.
+         * If this value was loaded from an instance field, give the register number containing the
+         * object that the field was loaded from. If Integer.MAX value, the value was loaded from a
+         * static field If -1, we don't know or don't have the register containing the object that the
+         * field was loaded from.
          */
         public int getFieldLoadedFromRegister() {
             return fieldLoadedFromRegister;
@@ -719,7 +710,6 @@ public class OpcodeStack {
                     setCouldBeZero(true);
                 }
             }
-
         }
 
         private void setSpecialKindFromSignature() {
@@ -817,10 +807,9 @@ public class OpcodeStack {
         }
 
         /**
-         * Returns a constant value for this Item, if known. NOTE: if the value
-         * is a constant Class object, the constant value returned is the name
-         * of the class.
-         * if the value is an array of known length, the constant value returned is its length (Integer)
+         * Returns a constant value for this Item, if known. NOTE: if the value is a constant Class
+         * object, the constant value returned is the name of the class. if the value is an array of
+         * known length, the constant value returned is its length (Integer)
          */
         public Object getConstant() {
             return constValue;
@@ -839,10 +828,7 @@ public class OpcodeStack {
             return null;
         }
 
-        /**
-         * @param specialKind
-         *            The specialKind to set.
-         */
+        /** @param specialKind The specialKind to set. */
         public void setSpecialKind(@SpecialKind int specialKind) {
             this.specialKind = specialKind;
         }
@@ -853,37 +839,29 @@ public class OpcodeStack {
             return that;
         }
 
-        /**
-         * @return Returns the specialKind.
-         */
+        /** @return Returns the specialKind. */
         public @SpecialKind int getSpecialKind() {
             return specialKind;
         }
 
-        /**
-         * @return Returns the specialKind.
-         */
+        /** @return Returns the specialKind. */
         public boolean isBooleanNullnessValue() {
             return specialKind == ZERO_MEANS_NULL || specialKind == NONZERO_MEANS_NULL;
         }
 
         /**
-         * <p>attaches a detector specified value to this item</p>
-         * <p>to use this method, detector should be annotated with {@code CustomUserValue}.</p>
+         * attaches a detector specified value to this item
          *
-         * @param value
-         *            the custom value to set
+         * <p>to use this method, detector should be annotated with {@code CustomUserValue}.
+         *
+         * @param value the custom value to set
          * @see OpcodeStack.CustomUserValue
          */
         public void setUserValue(@Nullable Object value) {
             userValue = value;
         }
 
-        /**
-         *
-         * @return if this value is the return value of a method, give the
-         *         method invoked
-         */
+        /** @return if this value is the return value of a method, give the method invoked */
         public @CheckForNull XMethod getReturnValueOf() {
             if (source instanceof XMethod) {
                 return (XMethod) source;
@@ -922,7 +900,6 @@ public class OpcodeStack {
             setSpecialKind(Item.SERVLET_OUTPUT);
         }
 
-
         public boolean isServletWriter() {
             if (getSpecialKind() == Item.SERVLET_OUTPUT) {
                 return true;
@@ -932,18 +909,21 @@ public class OpcodeStack {
             }
             XMethod writingToSource = getReturnValueOf();
 
-
-            return writingToSource != null && "javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
-                    && ("getWriter".equals(writingToSource.getName()) || "getOutputStream".equals(writingToSource.getName()));
+            return writingToSource != null
+                    && "javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
+                    && ("getWriter".equals(writingToSource.getName())
+                            || "getOutputStream".equals(writingToSource.getName()));
         }
 
         public boolean valueCouldBeNegative() {
             return !isNonNegative()
-                    && (getSpecialKind() == Item.RANDOM_INT || getSpecialKind() == Item.SIGNED_BYTE
-                            || getSpecialKind() == Item.HASHCODE_INT || getSpecialKind() == Item.RANDOM_INT_REMAINDER
-                            || getSpecialKind() == Item.HASHCODE_INT_REMAINDER || getSpecialKind() == Item.MATH_ABS_OF_RANDOM
+                    && (getSpecialKind() == Item.RANDOM_INT
+                            || getSpecialKind() == Item.SIGNED_BYTE
+                            || getSpecialKind() == Item.HASHCODE_INT
+                            || getSpecialKind() == Item.RANDOM_INT_REMAINDER
+                            || getSpecialKind() == Item.HASHCODE_INT_REMAINDER
+                            || getSpecialKind() == Item.MATH_ABS_OF_RANDOM
                             || getSpecialKind() == Item.MATH_ABS_OF_HASHCODE);
-
         }
 
         public @SpecialKind int getSpecialKindForAbs() {
@@ -970,54 +950,42 @@ public class OpcodeStack {
 
         /** Value could be Integer.MIN_VALUE */
         public boolean checkForIntegerMinValue() {
-            return !isNonNegative() && (getSpecialKind() == Item.RANDOM_INT || getSpecialKind() == Item.HASHCODE_INT);
+            return !isNonNegative()
+                    && (getSpecialKind() == Item.RANDOM_INT || getSpecialKind() == Item.HASHCODE_INT);
         }
 
         /** The result of applying Math.abs to a checkForIntegerMinValue() value */
         public boolean mightRarelyBeNegative() {
             return !isNonNegative()
-                    && (getSpecialKind() == Item.MATH_ABS_OF_RANDOM || getSpecialKind() == Item.MATH_ABS_OF_HASHCODE);
+                    && (getSpecialKind() == Item.MATH_ABS_OF_RANDOM
+                            || getSpecialKind() == Item.MATH_ABS_OF_HASHCODE);
         }
 
-        /**
-         * @param isInitialParameter
-         *            The isInitialParameter to set.
-         */
+        /** @param isInitialParameter The isInitialParameter to set. */
         private void setInitialParameter(boolean isInitialParameter) {
             setFlag(isInitialParameter, IS_INITIAL_PARAMETER_FLAG);
         }
 
-        /**
-         * @return Returns the isInitialParameter.
-         */
+        /** @return Returns the isInitialParameter. */
         public boolean isInitialParameter() {
             return (flags & IS_INITIAL_PARAMETER_FLAG) != 0;
         }
 
-        /**
-         * @param couldBeZero
-         *            The couldBeZero to set.
-         */
+        /** @param couldBeZero The couldBeZero to set. */
         private void setCouldBeZero(boolean couldBeZero) {
             setFlag(couldBeZero, COULD_BE_ZERO_FLAG);
         }
 
-        /**
-         * @return Returns the couldBeZero.
-         */
+        /** @return Returns the couldBeZero. */
         private boolean isCouldBeZero() {
-            return (flags & COULD_BE_ZERO_FLAG) != 0
-                    || isZero();
+            return (flags & COULD_BE_ZERO_FLAG) != 0 || isZero();
         }
 
         private boolean isZero() {
             return constValue != null && constValue.equals(0);
         }
 
-        /**
-         * @param isNull
-         *            The isNull to set.
-         */
+        /** @param isNull The isNull to set. */
         private void setNull(boolean isNull) {
             setFlag(isNull, IS_NULL_FLAG);
         }
@@ -1030,16 +998,12 @@ public class OpcodeStack {
             }
         }
 
-        /**
-         * @return Returns the isNull.
-         */
+        /** @return Returns the isNull. */
         public boolean isNull() {
             return (flags & IS_NULL_FLAG) != 0;
         }
 
-        /**
-         *
-         */
+        /** */
         public void clearNewlyAllocated() {
             if (specialKind == NEWLY_ALLOCATED) {
                 if (signature.startsWith("Ljava/lang/StringB")) {
@@ -1069,6 +1033,7 @@ public class OpcodeStack {
 
         /**
          * Define a new special kind and name it as specified.
+         *
          * @param name Name of new special kind
          * @return int value to represent new special kind
          * @since 3.1.0
@@ -1106,7 +1071,6 @@ public class OpcodeStack {
 
     public boolean hasIncomingBranches(int pc) {
         return jumpEntryLocations.get(pc) && jumpEntries.get(pc) != null;
-
     }
 
     public static String getExceptionSig(DismantleBytecode dbc, CodeException e) {
@@ -1178,9 +1142,7 @@ public class OpcodeStack {
                     if (jumpStackEntry != null) {
                         System.out.println(" and stack " + jumpStackEntry);
                     }
-
                 }
-
             }
             if (isTop()) {
                 lvValues = new ArrayList<>(jumpEntry);
@@ -1225,8 +1187,6 @@ public class OpcodeStack {
                     } else {
                         item = Item.merge(item, newItem);
                     }
-
-
                 }
             }
 
@@ -1238,10 +1198,7 @@ public class OpcodeStack {
 
                 setTop(true);
             }
-
-
         }
-
     }
 
     private void setLastUpdate(int reg, int pc) {
@@ -1293,7 +1250,8 @@ public class OpcodeStack {
 
                         if ((prevOpcode1 == Const.ICONST_0 || prevOpcode1 == Const.ICONST_1)
                                 && (prevOpcode2 == Const.IFNULL || prevOpcode2 == Const.IFNONNULL)
-                                && (nextOpcode == Const.ICONST_0 || nextOpcode == Const.ICONST_1) && prevOpcode1 != nextOpcode) {
+                                && (nextOpcode == Const.ICONST_0 || nextOpcode == Const.ICONST_1)
+                                && prevOpcode1 != nextOpcode) {
                             oneMeansNull = prevOpcode1 == Const.ICONST_0;
                             if (prevOpcode2 != Const.IFNULL) {
                                 oneMeansNull = !oneMeansNull;
@@ -1329,7 +1287,6 @@ public class OpcodeStack {
                 break;
             default:
                 convertJumpToOneZeroState = 0;
-
             }
             switch (seen) {
             case Const.ICONST_0:
@@ -1425,7 +1382,8 @@ public class OpcodeStack {
                 }
                 FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
                 Item i = new Item(dbc.getSigConstantOperand(), field, Integer.MAX_VALUE);
-                if ("separator".equals(field.getFieldName()) && Values.DOTTED_JAVA_IO_FILE.equals(field.getClassName())) {
+                if ("separator".equals(field.getFieldName())
+                        && Values.DOTTED_JAVA_IO_FILE.equals(field.getClassName())) {
                     i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
                 }
                 i.setPC(dbc.getPC());
@@ -1463,7 +1421,6 @@ public class OpcodeStack {
             case Const.IFLE:
             case Const.IFGT:
             case Const.IFGE:
-
                 seenTransferOfControl = true; {
                 Item topItem = pop();
 
@@ -1475,7 +1432,11 @@ public class OpcodeStack {
                 // if we see a test comparing a special negative value with
                 // 0,
                 // reset all other such values on the opcode stack
-                if (topItem.valueCouldBeNegative() && (seen == Const.IFLT || seen == Const.IFLE || seen == Const.IFGT || seen == Const.IFGE)) {
+                if (topItem.valueCouldBeNegative()
+                        && (seen == Const.IFLT
+                                || seen == Const.IFLE
+                                || seen == Const.IFGT
+                                || seen == Const.IFGE)) {
                     int specialKind = topItem.getSpecialKind();
                     for (Item item : stack) {
                         if (item != null && item.getSpecialKind() == specialKind) {
@@ -1487,7 +1448,6 @@ public class OpcodeStack {
                             item.setSpecialKind(Item.NOT_SPECIAL);
                         }
                     }
-
                 }
             }
                 addJumpValue(dbc.getPC(), dbc.getBranchTarget());
@@ -1512,7 +1472,6 @@ public class OpcodeStack {
 
             case Const.IRETURN:
             case Const.LRETURN:
-
                 seenTransferOfControl = true;
                 setReachOnlyByBranch(true);
                 pop();
@@ -1539,9 +1498,7 @@ public class OpcodeStack {
             case Const.IF_ICMPLT:
             case Const.IF_ICMPLE:
             case Const.IF_ICMPGT:
-            case Const.IF_ICMPGE:
-
-            {
+            case Const.IF_ICMPGE: {
                 seenTransferOfControl = true;
                 Item right = pop();
                 Item left = pop();
@@ -1551,8 +1508,9 @@ public class OpcodeStack {
                 boolean takeJump = false;
                 boolean handled = false;
                 if (seen == Const.IF_ACMPNE || seen == Const.IF_ACMPEQ) {
-                    if (lConstant != null && rConstant != null && !lConstant.equals(rConstant) || lConstant != null
-                            && right.isNull() || rConstant != null && left.isNull()) {
+                    if (lConstant != null && rConstant != null && !lConstant.equals(rConstant)
+                            || lConstant != null && right.isNull()
+                            || rConstant != null && left.isNull()) {
                         handled = true;
                         takeJump = seen == Const.IF_ACMPNE;
                     }
@@ -1587,7 +1545,6 @@ public class OpcodeStack {
                     default:
                         assert false;
                     }
-
                 }
                 if (handled) {
                     if (takeJump) {
@@ -1624,7 +1581,6 @@ public class OpcodeStack {
                 }
                 break;
 
-
             case Const.IALOAD:
             case Const.SALOAD:
                 pop(2);
@@ -1644,7 +1600,6 @@ public class OpcodeStack {
                 break;
 
             case Const.DUP_X2:
-
                 handleDupX2();
                 break;
 
@@ -1684,7 +1639,6 @@ public class OpcodeStack {
                 }
                 push(it);
                 break;
-
             }
             case Const.NOP:
                 break;
@@ -1797,10 +1751,11 @@ public class OpcodeStack {
                 }
                 Item item = pop();
                 int reg = item.getRegisterNumber();
-                Item valueLoaded = new Item(dbc.getSigConstantOperand(), FieldAnnotation.fromReferencedField(dbc), reg);
+                Item valueLoaded =
+                        new Item(
+                                dbc.getSigConstantOperand(), FieldAnnotation.fromReferencedField(dbc), reg);
                 valueLoaded.setPC(dbc.getPC());
                 push(valueLoaded);
-
             }
                 break;
 
@@ -1918,7 +1873,6 @@ public class OpcodeStack {
             case Const.LSHR:
             case Const.LREM:
             case Const.LUSHR:
-
                 it = pop();
                 it2 = pop();
                 pushByLongMath(seen, it2, it);
@@ -1966,8 +1920,6 @@ public class OpcodeStack {
                 push(newValue);
             }
                 break;
-
-
 
             case Const.I2C: {
                 it = pop();
@@ -2124,11 +2076,10 @@ public class OpcodeStack {
                 processInvokeDynamic(dbc);
                 break;
             default:
-                throw new UnsupportedOperationException("OpCode " + seen + ":" + Const.getOpcodeName(seen) + " not supported ");
+                throw new UnsupportedOperationException(
+                        "OpCode " + seen + ":" + Const.getOpcodeName(seen) + " not supported ");
             }
-        }
-
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             // If an error occurs, we clear the stack and locals. one of two
             // things will occur.
             // Either the client will expect more stack items than really exist,
@@ -2136,8 +2087,13 @@ public class OpcodeStack {
             // or the stack will resync with the code. But hopefully not false
             // positives
 
-            String msg = "Error processing opcode " + Const.getOpcodeName(seen) + " @ " + dbc.getPC() + " in "
-                    + dbc.getFullyQualifiedMethodName();
+            String msg =
+                    "Error processing opcode "
+                            + Const.getOpcodeName(seen)
+                            + " @ "
+                            + dbc.getPC()
+                            + " in "
+                            + dbc.getFullyQualifiedMethodName();
             AnalysisContext.logError(msg, e);
             if (DEBUG) {
                 e.printStackTrace();
@@ -2302,7 +2258,6 @@ public class OpcodeStack {
         } else {
             push(new Item("I"));
         }
-
     }
 
     private void handleSwap() {
@@ -2425,20 +2380,30 @@ public class OpcodeStack {
         }
     }
 
-    static private void addBoxedType(Class<?>... clss) {
+    private static void addBoxedType(Class<?>... clss) {
         for (Class<?> c : clss) {
             Class<?> primitiveType;
             try {
                 primitiveType = (Class<?>) c.getField("TYPE").get(null);
                 boxedTypes.put(ClassName.toSlashedClassName(c.getName()), primitiveType.getName());
-            } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+            } catch (IllegalArgumentException
+                    | IllegalAccessException
+                    | NoSuchFieldException
+                    | SecurityException e) {
                 throw new AssertionError(e);
             }
         }
     }
 
     static {
-        addBoxedType(Integer.class, Long.class, Double.class, Short.class, Float.class, Boolean.class, Character.class,
+        addBoxedType(
+                Integer.class,
+                Long.class,
+                Double.class,
+                Short.class,
+                Float.class,
+                Boolean.class,
+                Character.class,
                 Byte.class);
     }
 
@@ -2450,7 +2415,6 @@ public class OpcodeStack {
                 sbItem.constValue = null;
             }
         }
-
     }
 
     private void processMethodCall(DismantleBytecode dbc, int seen) {
@@ -2471,8 +2435,8 @@ public class OpcodeStack {
 
         if (boxedTypes.containsKey(clsName)
                 && topItem != null
-                && ("valueOf".equals(methodName) && !signature.contains("String") || methodName.equals(boxedTypes.get(clsName)
-                        + "Value"))) {
+                && ("valueOf".equals(methodName) && !signature.contains("String")
+                        || methodName.equals(boxedTypes.get(clsName) + "Value"))) {
             // boxing/unboxing conversion
             Item value = pop();
             String newSignature = new SignatureParser(signature).getReturnTypeSignature();
@@ -2498,12 +2462,16 @@ public class OpcodeStack {
             }
             Item item = getStackItem(i);
             String itemSignature = item.getSignature();
-            if ("Ljava/lang/StringBuilder;".equals(itemSignature) || "Ljava/lang/StringBuffer;".equals(itemSignature)) {
+            if ("Ljava/lang/StringBuilder;".equals(itemSignature)
+                    || "Ljava/lang/StringBuffer;".equals(itemSignature)) {
                 markConstantValueUnknown(item);
             }
         }
         boolean initializingServletWriter = false;
-        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(methodName) && clsName.startsWith("java/io") && clsName.endsWith("Writer")
+        if (seen == Const.INVOKESPECIAL
+                && Const.CONSTRUCTOR_NAME.equals(methodName)
+                && clsName.startsWith("java/io")
+                && clsName.endsWith("Writer")
                 && numberArguments > 0) {
             Item firstArg = getStackItem(numberArguments - 1);
             if (firstArg.isServletWriter()) {
@@ -2557,8 +2525,11 @@ public class OpcodeStack {
                     sawUnknownAppend = true;
                 }
             }
-        } else if (seen == Const.INVOKESPECIAL && "java/io/FileOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(methodName)
-                && ("(Ljava/io/File;Z)V".equals(signature) || "(Ljava/lang/String;Z)V".equals(signature)) && stack.size() > 3) {
+        } else if (seen == Const.INVOKESPECIAL
+                && "java/io/FileOutputStream".equals(clsName)
+                && Const.CONSTRUCTOR_NAME.equals(methodName)
+                && ("(Ljava/io/File;Z)V".equals(signature) || "(Ljava/lang/String;Z)V".equals(signature))
+                && stack.size() > 3) {
             OpcodeStack.Item item = getStackItem(0);
             Object value = item.getConstant();
             if (value instanceof Integer && ((Integer) value).intValue() == 1) {
@@ -2571,7 +2542,9 @@ public class OpcodeStack {
                 }
                 return;
             }
-        } else if (seen == Const.INVOKESPECIAL && "java/io/BufferedOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(methodName)
+        } else if (seen == Const.INVOKESPECIAL
+                && "java/io/BufferedOutputStream".equals(clsName)
+                && Const.CONSTRUCTOR_NAME.equals(methodName)
                 && "(Ljava/io/OutputStream;)V".equals(signature)) {
 
             if (getStackItem(0).getSpecialKind() == Item.FILE_OPENED_IN_APPEND_MODE
@@ -2584,8 +2557,10 @@ public class OpcodeStack {
                 newTop.setPC(dbc.getPC());
                 return;
             }
-        } else if (seen == Const.INVOKEINTERFACE && "getParameter".equals(methodName)
-                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
+        } else if (seen == Const.INVOKEINTERFACE
+                && "getParameter".equals(methodName)
+                && "javax/servlet/http/HttpServletRequest".equals(clsName)
+                || "javax/servlet/http/ServletRequest".equals(clsName)) {
             Item requestParameter = pop();
             pop();
             Item result = new Item("Ljava/lang/String;");
@@ -2600,8 +2575,10 @@ public class OpcodeStack {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == Const.INVOKEINTERFACE && "getQueryString".equals(methodName)
-                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
+        } else if (seen == Const.INVOKEINTERFACE
+                && "getQueryString".equals(methodName)
+                && "javax/servlet/http/HttpServletRequest".equals(clsName)
+                || "javax/servlet/http/ServletRequest".equals(clsName)) {
             pop();
             Item result = new Item("Ljava/lang/String;");
             result.setServletParameterTainted();
@@ -2609,9 +2586,11 @@ public class OpcodeStack {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == Const.INVOKEINTERFACE && "getHeader".equals(methodName)
-                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
-            /* Item requestParameter = */pop();
+        } else if (seen == Const.INVOKEINTERFACE
+                && "getHeader".equals(methodName)
+                && "javax/servlet/http/HttpServletRequest".equals(clsName)
+                || "javax/servlet/http/ServletRequest".equals(clsName)) {
+            /* Item requestParameter = */ pop();
             pop();
             Item result = new Item("Ljava/lang/String;");
             result.setServletParameterTainted();
@@ -2619,12 +2598,15 @@ public class OpcodeStack {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == Const.INVOKESTATIC && "asList".equals(methodName) && "java/util/Arrays".equals(clsName)) {
-            /* Item requestParameter = */pop();
+        } else if (seen == Const.INVOKESTATIC
+                && "asList".equals(methodName)
+                && "java/util/Arrays".equals(clsName)) {
+            /* Item requestParameter = */ pop();
             Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
             push(result);
             return;
-        } else if (seen == Const.INVOKESTATIC && "(Ljava/util/List;)Ljava/util/List;".equals(signature)
+        } else if (seen == Const.INVOKESTATIC
+                && "(Ljava/util/List;)Ljava/util/List;".equals(signature)
                 && "java/util/Collections".equals(clsName)) {
             Item requestParameter = pop();
             if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
@@ -2645,7 +2627,8 @@ public class OpcodeStack {
             this.getStackItem(0).setIsServletWriter();
         }
 
-        if ((sawUnknownAppend || appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
+        if ((sawUnknownAppend || appenderValue != null || servletRequestParameterTainted)
+                && getStackDepth() > 0) {
             Item i = this.getStackItem(0);
             i.constValue = appenderValue;
             if (!sawUnknownAppend && servletRequestParameterTainted) {
@@ -2665,21 +2648,24 @@ public class OpcodeStack {
             return;
         }
 
-        if (("java/util/Random".equals(clsName) || "java/security/SecureRandom".equals(clsName)) &&
-                ("nextInt".equals(methodName) && "()I".equals(signature)
+        if (("java/util/Random".equals(clsName) || "java/security/SecureRandom".equals(clsName))
+                && ("nextInt".equals(methodName) && "()I".equals(signature)
                         || "nextLong".equals(methodName) && "()J".equals(signature))) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.RANDOM_INT);
             push(i);
-        } else if ("size".equals(methodName) && "()I".equals(signature)
+        } else if ("size".equals(methodName)
+                && "()I".equals(signature)
                 && Subtypes2.instanceOf(ClassName.toDottedClassName(clsName), "java.util.Collection")) {
             Item i = new Item(pop());
             if (i.getSpecialKind() == Item.NOT_SPECIAL) {
                 i.setSpecialKind(Item.NON_NEGATIVE);
             }
             push(i);
-        } else if ("java/lang/String".equals(clsName) && numberArguments == 0 && topItem != null &&
-                topItem.getConstant() instanceof String) {
+        } else if ("java/lang/String".equals(clsName)
+                && numberArguments == 0
+                && topItem != null
+                && topItem.getConstant() instanceof String) {
             String input = (String) topItem.getConstant();
             Object result;
             switch (methodName) {
@@ -2711,15 +2697,20 @@ public class OpcodeStack {
                 i.setSpecialKind(Item.MATH_ABS);
             }
             push(i);
-        } else if (seen == Const.INVOKEVIRTUAL && "hashCode".equals(methodName) && "()I".equals(signature) || seen == Const.INVOKESTATIC
-                && "java/lang/System".equals(clsName) && "identityHashCode".equals(methodName)
-                && "(Ljava/lang/Object;)I".equals(signature)) {
+        } else if (seen == Const.INVOKEVIRTUAL
+                && "hashCode".equals(methodName)
+                && "()I".equals(signature)
+                || seen == Const.INVOKESTATIC
+                        && "java/lang/System".equals(clsName)
+                        && "identityHashCode".equals(methodName)
+                        && "(Ljava/lang/Object;)I".equals(signature)) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.HASHCODE_INT);
             push(i);
         } else if (topIsTainted
-                && (methodName.startsWith("encode") && "javax/servlet/http/HttpServletResponse".equals(clsName) || "trim".equals(methodName)
-                        && "java/lang/String".equals(clsName))) {
+                && (methodName.startsWith("encode")
+                        && "javax/servlet/http/HttpServletResponse".equals(clsName)
+                        || "trim".equals(methodName) && "java/lang/String".equals(clsName))) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
             i.injection = injection;
@@ -2732,7 +2723,9 @@ public class OpcodeStack {
             push(i);
         }
 
-        if (seen == Const.INVOKESTATIC && topItem != null && topItem.isInitialParameter()
+        if (seen == Const.INVOKESTATIC
+                && topItem != null
+                && topItem.isInitialParameter()
                 && isMethodThatReturnsGivenReference(clsName, methodName)) {
             assert getStackDepth() > 0;
             assert !getStackItem(0).isInitialParameter();
@@ -2743,7 +2736,8 @@ public class OpcodeStack {
 
     private boolean isMethodThatReturnsGivenReference(String clsName, String methodName) {
         return "java/util/Objects".equals(clsName) && "requireNonNull".equals(methodName)
-                || "com/google/common/base/Preconditions".equals(clsName) && "checkNotNull".equals(methodName);
+                || "com/google/common/base/Preconditions".equals(clsName)
+                        && "checkNotNull".equals(methodName);
     }
 
     private void processInvokeDynamic(DismantleBytecode dbc) {
@@ -2755,7 +2749,8 @@ public class OpcodeStack {
         pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
     }
 
-    private boolean mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
+    private boolean mergeLists(
+            List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
         // merge stacks
         int intoSize = mergeInto.size();
         int fromSize = mergeFrom.size();
@@ -2829,7 +2824,10 @@ public class OpcodeStack {
 
         final BitSet jumpEntryLocations;
 
-        JumpInfo(Map<Integer, List<Item>> jumpEntries, Map<Integer, List<Item>> jumpStackEntries, BitSet jumpEntryLocations) {
+        JumpInfo(
+                Map<Integer, List<Item>> jumpEntries,
+                Map<Integer, List<Item>> jumpStackEntries,
+                BitSet jumpEntryLocations) {
             this.jumpEntries = jumpEntries;
             this.jumpStackEntries = jumpStackEntries;
             this.jumpEntryLocations = jumpEntryLocations;
@@ -2840,15 +2838,16 @@ public class OpcodeStack {
         }
     }
 
-
-    public static class JumpInfoFactory extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfo> {
+    public static class JumpInfoFactory
+            extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfo> {
 
         public JumpInfoFactory() {
             super("Jump info for opcode stack", JumpInfo.class);
         }
 
         @Override
-        public @CheckForNull JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+        public @CheckForNull JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+                throws CheckedAnalysisException {
             Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
             JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
             Code code = method.getCode();
@@ -2906,8 +2905,8 @@ public class OpcodeStack {
             }
         }
 
-        public static @CheckForNull JumpInfo computeJumpInfo(JavaClass jclass, Method method,
-                JumpStackComputation branchAnalysis) {
+        public static @CheckForNull JumpInfo computeJumpInfo(
+                JavaClass jclass, Method method, JumpStackComputation branchAnalysis) {
             branchAnalysis.setupVisitorForClass(jclass);
             XMethod createXMethod = XFactory.createXMethod(jclass, method);
             if (!(createXMethod instanceof MethodInfo)) {
@@ -2928,11 +2927,13 @@ public class OpcodeStack {
                     myStack.printJumpEntries();
                     System.out.println();
                 }
-                // myStack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
+                // myStack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()),
+                // method);
                 branchAnalysis.doVisitMethod(method);
                 if (xMethod.hasBackBranch() != myStack.backwardsBranch && !myStack.encountedTop) {
                     AnalysisContext.logError(
-                            String.format("For %s, mismatch on existence of backedge: %s for precomputation, %s for bytecode analysis",
+                            String.format(
+                                    "For %s, mismatch on existence of backedge: %s for precomputation, %s for bytecode analysis",
                                     xMethod, xMethod.hasBackBranch(), myStack.backwardsBranch));
                 }
                 if (myStack.isJumpInfoChangedByNewTarget()) {
@@ -2942,16 +2943,27 @@ public class OpcodeStack {
                     iteration = 1;
                 }
                 if (iteration++ > 40) {
-                    AnalysisContext.logError("Iterative jump info didn't converge after " + iteration + " iterations in " + xMethod
-                            + ", size " + method.getCode().getLength());
+                    AnalysisContext.logError(
+                            "Iterative jump info didn't converge after "
+                                    + iteration
+                                    + " iterations in "
+                                    + xMethod
+                                    + ", size "
+                                    + method.getCode().getLength());
                     break;
                 }
             } while (myStack.isJumpInfoChangedByBackwardsBranch() && myStack.backwardsBranch);
             if (iteration > 20 && iteration <= 40) {
-                AnalysisContext.logError("Iterative jump info converged after " + iteration + " iterations in " + xMethod + ", size " + method
-                        .getCode().getLength());
+                AnalysisContext.logError(
+                        "Iterative jump info converged after "
+                                + iteration
+                                + " iterations in "
+                                + xMethod
+                                + ", size "
+                                + method.getCode().getLength());
             }
-            return new JumpInfo(myStack.jumpEntries, myStack.jumpStackEntries, myStack.jumpEntryLocations);
+            return new JumpInfo(
+                    myStack.jumpEntries, myStack.jumpStackEntries, myStack.jumpEntryLocations);
         }
     }
 
@@ -2961,7 +2973,8 @@ public class OpcodeStack {
 
     private void addJumpValue(int from, int target) {
         if (DEBUG) {
-            System.out.println("Set jump entry at " + methodName + ":" + target + " pc to " + stack + " : " + lvValues);
+            System.out.println(
+                    "Set jump entry at " + methodName + ":" + target + " pc to " + stack + " : " + lvValues);
         }
 
         if (from >= target) {
@@ -2985,7 +2998,6 @@ public class OpcodeStack {
                 setJumpInfoChangedByBackwardBranch("stack", from, target);
             }
         }
-
     }
 
     private String methodName;
@@ -3028,7 +3040,8 @@ public class OpcodeStack {
         if (useIterativeAnalysis) {
             if (visitor instanceof OpcodeStackDetector.WithCustomJumpInfo) {
                 jump = ((OpcodeStackDetector.WithCustomJumpInfo) visitor).customJumpInfo();
-            } else if ((visitor instanceof OpcodeStackDetector) && !((OpcodeStackDetector) visitor).isUsingCustomUserValue()) {
+            } else if ((visitor instanceof OpcodeStackDetector)
+                    && !((OpcodeStackDetector) visitor).isUsingCustomUserValue()) {
                 jump = getJumpInfo();
             } else {
                 jump = getJumpInfoFromStackMap();
@@ -3038,7 +3051,6 @@ public class OpcodeStack {
         }
         learnFrom(jump);
         return result;
-
     }
 
     int nullSafeSize(@CheckForNull Collection<?> c) {
@@ -3076,7 +3088,8 @@ public class OpcodeStack {
         }
 
         try {
-            return analysisCache.getMethodAnalysis(JumpInfoFromStackMap.class, xMethod.getMethodDescriptor());
+            return analysisCache.getMethodAnalysis(
+                    JumpInfoFromStackMap.class, xMethod.getMethodDescriptor());
 
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Error getting jump information from StackMap", e);
@@ -3088,7 +3101,6 @@ public class OpcodeStack {
         if (from < to) {
             return;
         }
-
 
         if (DEBUG && !this.isJumpInfoChangedByBackwardsBranch()) {
             System.out.printf("%s jump info at %d changed by jump from %d%n", kind, to, from);
@@ -3152,19 +3164,30 @@ public class OpcodeStack {
 
     public Item getStackItem(int stackOffset) {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
-            AnalysisContext.logError("Can't get stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
-                    + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+            AnalysisContext.logError(
+                    "Can't get stack offset "
+                            + stackOffset
+                            + " from "
+                            + stack.toString()
+                            + " @ "
+                            + v.getPC()
+                            + " in "
+                            + v.getFullyQualifiedMethodName(),
+                    new IllegalArgumentException(stackOffset + " is not a value stack offset"));
             return new Item("Lfindbugs/OpcodeStackError;");
-
         }
         int tos = stack.size() - 1;
         int pos = tos - stackOffset;
         try {
             return stack.get(pos);
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("Requested item at offset " + stackOffset + " in a stack of size "
-                    + stack.size() + ", made request for position " + pos);
+            throw new ArrayIndexOutOfBoundsException(
+                    "Requested item at offset "
+                            + stackOffset
+                            + " in a stack of size "
+                            + stack.size()
+                            + ", made request for position "
+                            + pos);
         }
     }
 
@@ -3174,16 +3197,21 @@ public class OpcodeStack {
 
     public void replace(int stackOffset, Item value) {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
-            AnalysisContext.logError("Can't get replace stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
-                    + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
-
+            AnalysisContext.logError(
+                    "Can't get replace stack offset "
+                            + stackOffset
+                            + " from "
+                            + stack.toString()
+                            + " @ "
+                            + v.getPC()
+                            + " in "
+                            + v.getFullyQualifiedMethodName(),
+                    new IllegalArgumentException(stackOffset + " is not a value stack offset"));
         }
         int tos = stack.size() - 1;
         int pos = tos - stackOffset;
 
         stack.set(pos, value);
-
     }
 
     public void replaceTop(Item newTop) {
@@ -3204,7 +3232,9 @@ public class OpcodeStack {
     private void pushByConstant(DismantleBytecode dbc, Constant c) {
 
         if (c instanceof ConstantClass) {
-            push(new Item("Ljava/lang/Class;", ((ConstantClass) c).getConstantValue(dbc.getConstantPool())));
+            push(
+                    new Item(
+                            "Ljava/lang/Class;", ((ConstantClass) c).getConstantValue(dbc.getConstantPool())));
         } else if (c instanceof ConstantInteger) {
             push(new Item("I", Integer.valueOf(((ConstantInteger) c).getBytes())));
         } else if (c instanceof ConstantString) {
@@ -3244,8 +3274,15 @@ public class OpcodeStack {
 
         try {
             if (DEBUG) {
-                System.out.println("pushByIntMath " + dbc.getFullyQualifiedMethodName() + " @ " + dbc.getPC() + " : " + lhs
-                        + Const.getOpcodeName(seen) + rhs);
+                System.out.println(
+                        "pushByIntMath "
+                                + dbc.getFullyQualifiedMethodName()
+                                + " @ "
+                                + dbc.getPC()
+                                + " : "
+                                + lhs
+                                + Const.getOpcodeName(seen)
+                                + rhs);
             }
 
             if (rhs.getConstant() != null && lhs.getConstant() != null) {
@@ -3256,7 +3293,6 @@ public class OpcodeStack {
                     return;
                 }
                 switch (seen) {
-
                 case Const.IADD:
                     newValue = new Item("I", lhsValue + rhsValue);
                     break;
@@ -3274,7 +3310,8 @@ public class OpcodeStack {
                     break;
                 case Const.IAND:
                     newValue = new Item("I", lhsValue & rhsValue);
-                    if ((rhsValue & 0xff) == 0 && rhsValue != 0 || (lhsValue & 0xff) == 0 && lhsValue != 0) {
+                    if ((rhsValue & 0xff) == 0 && rhsValue != 0
+                            || (lhsValue & 0xff) == 0 && lhsValue != 0) {
                         newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
                     }
 
@@ -3298,7 +3335,6 @@ public class OpcodeStack {
                     break;
                 case Const.IUSHR:
                     newValue = new Item("I", lhsValue >>> rhsValue);
-
                 }
 
             } else if ((seen == Const.ISHL || seen == Const.ISHR || seen == Const.IUSHR)) {
@@ -3349,10 +3385,16 @@ public class OpcodeStack {
         } catch (ArithmeticException e) {
             assert true; // ignore it
         } catch (RuntimeException e) {
-            String msg = "Error processing2 " + lhs + Const.getOpcodeName(seen) + rhs + " @ " + dbc.getPC() + " in "
-                    + dbc.getFullyQualifiedMethodName();
+            String msg =
+                    "Error processing2 "
+                            + lhs
+                            + Const.getOpcodeName(seen)
+                            + rhs
+                            + " @ "
+                            + dbc.getPC()
+                            + " in "
+                            + dbc.getFullyQualifiedMethodName();
             AnalysisContext.logError(msg, e);
-
         }
         if (lhs.getSpecialKind() == Item.INTEGER_SUM && rhs.getConstant() != null) {
             int rhsValue = constantToInt(rhs);
@@ -3360,7 +3402,9 @@ public class OpcodeStack {
                 newValue.setSpecialKind(Item.AVERAGE_COMPUTED_USING_DIVISION);
             }
         }
-        if (seen == Const.IADD && newValue.getSpecialKind() == Item.NOT_SPECIAL && lhs.getConstant() == null
+        if (seen == Const.IADD
+                && newValue.getSpecialKind() == Item.NOT_SPECIAL
+                && lhs.getConstant() == null
                 && rhs.getConstant() == null) {
             newValue.setSpecialKind(Item.INTEGER_SUM);
         }
@@ -3416,12 +3460,14 @@ public class OpcodeStack {
                             newValue = new Item("J", Long.valueOf(lhsValue / rhsValue));
                         } else {
                             // Code like "return 1L / (1L / 2);"
-                            // Here we could report bug, because it will throw java.lang.ArithmeticException: / by zero,
+                            // Here we could report bug, because it will throw java.lang.ArithmeticException: / by
+                            // zero,
                             // see #413
                         }
                     } else if (seen == Const.LAND) {
                         newValue = new Item("J", Long.valueOf(lhsValue & rhsValue));
-                        if ((rhsValue & 0xff) == 0 && rhsValue != 0 || (lhsValue & 0xff) == 0 && lhsValue != 0) {
+                        if ((rhsValue & 0xff) == 0 && rhsValue != 0
+                                || (lhsValue & 0xff) == 0 && lhsValue != 0) {
                             newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
                         }
                     } else if (seen == Const.LOR) {
@@ -3433,16 +3479,21 @@ public class OpcodeStack {
                             newValue = new Item("J", Long.valueOf(lhsValue % rhsValue));
                         } else {
                             // Code like "return 1L % (1L / 2);"
-                            // Here we could report bug, because it will throw java.lang.ArithmeticException: / by zero,
+                            // Here we could report bug, because it will throw java.lang.ArithmeticException: / by
+                            // zero,
                             // see #413
                         }
                     }
                 }
             } else if (rhs.getConstant() != null && seen == Const.LSHL && constantToInt(rhs) >= 8) {
                 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
-            } else if (lhs.getConstant() != null && seen == Const.LAND && (constantToLong(lhs) & 0xff) == 0) {
+            } else if (lhs.getConstant() != null
+                    && seen == Const.LAND
+                    && (constantToLong(lhs) & 0xff) == 0) {
                 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
-            } else if (rhs.getConstant() != null && seen == Const.LAND && (constantToLong(rhs) & 0xff) == 0) {
+            } else if (rhs.getConstant() != null
+                    && seen == Const.LAND
+                    && (constantToLong(rhs) & 0xff) == 0) {
                 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
             }
         } catch (RuntimeException e) {
@@ -3450,8 +3501,10 @@ public class OpcodeStack {
             // Added logging to see if there were even more issues with the code.
             String context = v != null ? v.getFullyQualifiedMethodName() : toString();
             AnalysisContext.logError(
-                    String.format("Exception processing 'pushByLongMath' with opcode %d, lhs %s and rhs %s in %s",
-                            seen, String.valueOf(lhs), String.valueOf(rhs), context), e);
+                    String.format(
+                            "Exception processing 'pushByLongMath' with opcode %d, lhs %s and rhs %s in %s",
+                            seen, String.valueOf(lhs), String.valueOf(rhs), context),
+                    e);
         }
         push(newValue);
     }
@@ -3514,7 +3567,9 @@ public class OpcodeStack {
 
     private void pushByInvoke(DismantleBytecode dbc, boolean popThis) {
         String signature = dbc.getSigConstantOperand();
-        if (Const.CONSTRUCTOR_NAME.equals(dbc.getNameConstantOperand()) && signature.endsWith(")V") && popThis) {
+        if (Const.CONSTRUCTOR_NAME.equals(dbc.getNameConstantOperand())
+                && signature.endsWith(")V")
+                && popThis) {
             pop(PreorderVisitor.getNumberArguments(signature));
             Item constructed = pop();
             if (getStackDepth() > 0) {
@@ -3611,7 +3666,6 @@ public class OpcodeStack {
         }
 
         push(newItem);
-
     }
 
     private void setLVValue(int index, Item value) {
@@ -3672,7 +3726,6 @@ public class OpcodeStack {
         return jumpInfoChangedByBackwardsBranch;
     }
 
-
     void clearJumpInfoChangedByBackwardsBranch() {
         this.jumpInfoChangedByBackwardsBranch = false;
     }
@@ -3681,9 +3734,7 @@ public class OpcodeStack {
         this.jumpInfoChangedByBackwardsBranch = true;
     }
 
-    /**
-     * @return Returns the jumpInfoChangedByNewTarget.
-     */
+    /** @return Returns the jumpInfoChangedByNewTarget. */
     protected boolean isJumpInfoChangedByNewTarget() {
         return jumpInfoChangedByNewTarget;
     }

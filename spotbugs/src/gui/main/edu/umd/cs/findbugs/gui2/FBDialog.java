@@ -23,14 +23,12 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Frame;
-
 import javax.swing.JDialog;
 
 /**
  * All Dialogs are FBDialogs so font size will work.
  *
  * @author Kristin
- *
  */
 @SuppressWarnings("serial")
 public class FBDialog extends JDialog {
@@ -80,5 +78,4 @@ public class FBDialog extends JDialog {
 
         setFontSize(Driver.getFontSize());
     }
-
 }

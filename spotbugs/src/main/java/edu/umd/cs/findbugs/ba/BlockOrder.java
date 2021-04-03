@@ -21,17 +21,14 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
 
-/**
- * Specify an order for visiting basic blocks.
- */
+/** Specify an order for visiting basic blocks. */
 public interface BlockOrder {
-    /**
-     * Return an Iterator which visits the basic blocks in order.
-     */
+    /** Return an Iterator which visits the basic blocks in order. */
     public Iterator<BasicBlock> blockIterator();
 
-    /** Return relative order of blocks.
-     * If b1.compareTo(b2) &lt; 0, then b1 should occur before b2 in iteration.
+    /**
+     * Return relative order of blocks. If b1.compareTo(b2) &lt; 0, then b1 should occur before b2 in
+     * iteration.
      */
     public int compare(BasicBlock b1, BasicBlock b2);
 }

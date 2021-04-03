@@ -18,12 +18,12 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -34,11 +34,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.navigator.CommonViewer;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
-/**
- * @author Andrei
- */
+/** @author Andrei */
 class RefreshJob extends Job implements IViewerRefreshJob {
 
     private final RemovedFirstComparator deltaComparator;
@@ -90,41 +86,43 @@ class RefreshJob extends Job implements IViewerRefreshJob {
             final Set<BugGroup> changedParents = contentProvider.updateContent(deltas);
             final boolean fullRefreshNeeded = changedParents.isEmpty() || containsRoot(changedParents);
 
-            Display.getDefault().syncExec(new Runnable() {
-                @Override
-                public void run() {
-                    if (checkCancellation(monitor)) {
-                        return;
-                    }
-                    viewer.getControl().setRedraw(false);
-                    try {
-                        if (fullRefreshNeeded) {
-                            // Attempt to fix https://sourceforge.net/p/findbugs/bugs/1213/
-                            // discard selection (if any) before refreshing content
-                            viewer.setSelection(StructuredSelection.EMPTY);
-                            viewer.refresh();
-                            if (BugContentProvider.DEBUG) {
-                                System.out.println("Refreshing ROOT!!!");
-                            }
-                        } else {
-                            // update the viewer based on the marker changes.
-                            for (BugGroup parent : changedParents) {
-                                if (BugContentProvider.DEBUG) {
-                                    System.out.println("Refreshing: " + parent);
+            Display.getDefault()
+                    .syncExec(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (checkCancellation(monitor)) {
+                                        return;
+                                    }
+                                    viewer.getControl().setRedraw(false);
+                                    try {
+                                        if (fullRefreshNeeded) {
+                                            // Attempt to fix https://sourceforge.net/p/findbugs/bugs/1213/
+                                            // discard selection (if any) before refreshing content
+                                            viewer.setSelection(StructuredSelection.EMPTY);
+                                            viewer.refresh();
+                                            if (BugContentProvider.DEBUG) {
+                                                System.out.println("Refreshing ROOT!!!");
+                                            }
+                                        } else {
+                                            // update the viewer based on the marker changes.
+                                            for (BugGroup parent : changedParents) {
+                                                if (BugContentProvider.DEBUG) {
+                                                    System.out.println("Refreshing: " + parent);
+                                                }
+                                                if (checkCancellation(monitor)) {
+                                                    break;
+                                                }
+                                                viewer.refresh(parent, true);
+                                            }
+                                        }
+                                    } finally {
+                                        if (viewer != null && !viewer.getControl().isDisposed()) {
+                                            viewer.getControl().setRedraw(true);
+                                        }
+                                    }
                                 }
-                                if (checkCancellation(monitor)) {
-                                    break;
-                                }
-                                viewer.refresh(parent, true);
-                            }
-                        }
-                    } finally {
-                        if (viewer != null && !viewer.getControl().isDisposed()) {
-                            viewer.getControl().setRedraw(true);
-                        }
-                    }
-                }
-            });
+                            });
         }
         if (!monitor.isCanceled()) {
             monitor.worked(totalWork);
@@ -192,10 +190,8 @@ class RefreshJob extends Job implements IViewerRefreshJob {
         return viewer == null || monitor.isCanceled() || viewer.getControl().isDisposed();
     }
 
-    /**
-     * Sorts the removed delta's first. This allows more optimized refresh
-     */
-    private final static class RemovedFirstComparator implements Comparator<DeltaInfo> {
+    /** Sorts the removed delta's first. This allows more optimized refresh */
+    private static final class RemovedFirstComparator implements Comparator<DeltaInfo> {
         @Override
         public int compare(DeltaInfo o1, DeltaInfo o2) {
             if (o1.changeKind == o2.changeKind) {

@@ -20,13 +20,9 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
 import java.util.ArrayList;
-
 import javax.swing.JMenu;
 
-/**
- * @author Dan
- */
-
+/** @author Dan */
 public class RecentMenu {
 
     private static class LimitedArrayList<T> extends ArrayList<T> {
@@ -51,7 +47,7 @@ public class RecentMenu {
         }
     }
 
-    LimitedArrayList<File> recentFiles;// Originally called recentProjects
+    LimitedArrayList<File> recentFiles; // Originally called recentProjects
     // before merge two lists into one.
 
     JMenu recentMenu;
@@ -80,7 +76,6 @@ public class RecentMenu {
 
             recentMenu.add(MainFrame.getInstance().createRecentItem(f, SaveType.forFile(f)));
         }
-
     }
 
     /**
@@ -95,5 +90,4 @@ public class RecentMenu {
 
         makeRecentMenu();
     }
-
 }

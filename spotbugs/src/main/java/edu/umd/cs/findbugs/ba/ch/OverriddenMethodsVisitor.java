@@ -24,11 +24,9 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
- * This class implements a best-effort visitation of all methods overridden by a
- * given derived instance method. Objects extending this class can be used with
- * the
- * {@link Subtypes2#traverseSupertypes(ClassDescriptor, InheritanceGraphVisitor)}
- * method.
+ * This class implements a best-effort visitation of all methods overridden by a given derived
+ * instance method. Objects extending this class can be used with the {@link
+ * Subtypes2#traverseSupertypes(ClassDescriptor, InheritanceGraphVisitor)} method.
  *
  * @author David Hovemeyer
  */
@@ -38,17 +36,14 @@ public abstract class OverriddenMethodsVisitor implements SupertypeTraversalVisi
     /**
      * Constructor.
      *
-     * @param xmethod
-     *            a derived method
+     * @param xmethod a derived method
      */
     public OverriddenMethodsVisitor(XMethod xmethod) {
         assert !xmethod.isStatic();
         this.xmethod = xmethod;
     }
 
-    /**
-     * @return Returns the xmethod.
-     */
+    /** @return Returns the xmethod. */
     public XMethod getXmethod() {
         return xmethod;
     }
@@ -69,7 +64,9 @@ public abstract class OverriddenMethodsVisitor implements SupertypeTraversalVisi
 
         XMethod xm = xclass.findMethod(xmethod.getName(), methodSignature, false);
 
-        if (xm == null && bridgedFrom != null && !classDescriptor.equals(xmethod.getClassDescriptor())) {
+        if (xm == null
+                && bridgedFrom != null
+                && !classDescriptor.equals(xmethod.getClassDescriptor())) {
             methodSignature = bridgedFrom.getSignature();
             xm = xclass.findMethod(xmethod.getName(), methodSignature, false);
         }
@@ -85,16 +82,13 @@ public abstract class OverriddenMethodsVisitor implements SupertypeTraversalVisi
     }
 
     /**
-     * Downcall method: will be called for each method overridden by the derived
-     * method object passed to the constructor. Note that this method will be
-     * called <em>for</em> the original derived method, since this is useful for
-     * some applications.
+     * Downcall method: will be called for each method overridden by the derived method object passed
+     * to the constructor. Note that this method will be called <em>for</em> the original derived
+     * method, since this is useful for some applications.
      *
-     * @param xmethod
-     *            a method which is overridden by the original derived method,
-     *            or is the original derived method
-     * @return true if the traversal should continue into superclasses, false
-     *         otherwise
+     * @param xmethod a method which is overridden by the original derived method, or is the original
+     *     derived method
+     * @return true if the traversal should continue into superclasses, false otherwise
      */
     protected abstract boolean visitOverriddenMethod(XMethod xmethod);
 }

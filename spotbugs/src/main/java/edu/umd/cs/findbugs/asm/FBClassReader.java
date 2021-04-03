@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.asm;
 
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-
-import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 
 public class FBClassReader extends ClassReader {
 
@@ -63,7 +62,8 @@ public class FBClassReader extends ClassReader {
         }
 
         @Override
-        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        public MethodVisitor visitMethod(
+                int access, String name, String desc, String signature, String[] exceptions) {
             MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
             // needOffsets = mv instanceof MyMethodVisitor;
             if (mv instanceof FBMethodVisitor) {

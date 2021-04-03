@@ -18,6 +18,12 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import edu.umd.cs.findbugs.BugCode;
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Plugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl.IInformationPresenterExtension;
@@ -66,16 +71,7 @@ import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.dialogs.SelectionDialog;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import edu.umd.cs.findbugs.BugCode;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.Plugin;
-
-/**
- * @author Andrei
- */
+/** @author Andrei */
 public class FilterBugsDialog extends SelectionDialog {
 
     private final class TreeSelectionChangedListener implements ISelectionChangedListener {
@@ -140,7 +136,7 @@ public class FilterBugsDialog extends SelectionDialog {
         }
     }
 
-    private final static class TreeLabelProvider implements ILabelProvider {
+    private static final class TreeLabelProvider implements ILabelProvider {
         @Override
         public Image getImage(Object element) {
             return null;
@@ -154,10 +150,9 @@ public class FilterBugsDialog extends SelectionDialog {
             }
             if (element instanceof BugCode) {
                 BugCode code = (BugCode) element;
-                return code.getAbbrev();// + " (" + code.getDescription() + ")";
+                return code.getAbbrev(); // + " (" + code.getDescription() + ")";
             }
             return null;
-
         }
 
         @Override
@@ -201,7 +196,10 @@ public class FilterBugsDialog extends SelectionDialog {
 
         public boolean isFiltering() {
             String filterString = getFilterString();
-            boolean yes = filterString != null && filterString.length() > 0 && !filterString.equals(getInitialText());
+            boolean yes =
+                    filterString != null
+                            && filterString.length() > 0
+                            && !filterString.equals(getInitialText());
             return yes;
         }
     }
@@ -231,12 +229,11 @@ public class FilterBugsDialog extends SelectionDialog {
     private Text selectedIds;
 
     /**
-     * Contains logically consistent set of filtered elements. This set is NOT
-     * the same as shown in the tree. The difference is: if parent is checked in
-     * the tree, all the children are checked too. If child is checked in the
-     * tree, the parent is checked too (grayed). However, we don't want to have
-     * each child pattern if it's parent type is checked, and we don't want to
-     * have parent type if only a subset of children is checked.
+     * Contains logically consistent set of filtered elements. This set is NOT the same as shown in
+     * the tree. The difference is: if parent is checked in the tree, all the children are checked
+     * too. If child is checked in the tree, the parent is checked too (grayed). However, we don't
+     * want to have each child pattern if it's parent type is checked, and we don't want to have
+     * parent type if only a subset of children is checked.
      */
     private Object[] checkedElements;
 
@@ -244,12 +241,11 @@ public class FilterBugsDialog extends SelectionDialog {
 
     private final TreeLabelProvider labelProvider;
 
-    /**
-     * Final result stored after dialog is closed
-     */
+    /** Final result stored after dialog is closed */
     private String selectedAsText;
 
-    public FilterBugsDialog(Shell parentShell, Set<BugPattern> filteredPatterns, Set<BugCode> filteredTypes) {
+    public FilterBugsDialog(
+            Shell parentShell, Set<BugPattern> filteredPatterns, Set<BugCode> filteredTypes) {
         super(parentShell);
         codeToPattern = new HashMap<>();
         patternToFactory = new HashMap<>();
@@ -307,24 +303,28 @@ public class FilterBugsDialog extends SelectionDialog {
             for (BugPattern pattern : patterns) {
                 Set<DetectorFactory> set = patternToFactory.get(pattern);
                 if (set == null) {
-                    set = new TreeSet<>(new Comparator<DetectorFactory>() {
-                        @Override
-                        public int compare(DetectorFactory f1, DetectorFactory f2) {
-                            return f1.getFullName().compareTo(f2.getFullName());
-                        }
-                    });
+                    set =
+                            new TreeSet<>(
+                                    new Comparator<DetectorFactory>() {
+                                        @Override
+                                        public int compare(DetectorFactory f1, DetectorFactory f2) {
+                                            return f1.getFullName().compareTo(f2.getFullName());
+                                        }
+                                    });
                     patternToFactory.put(pattern, set);
                 }
                 set.add(factory);
 
                 Set<Plugin> pset = patternToPlugin.get(pattern);
                 if (pset == null) {
-                    pset = new TreeSet<>(new Comparator<Plugin>() {
-                        @Override
-                        public int compare(Plugin f1, Plugin f2) {
-                            return f1.getPluginId().compareTo(f2.getPluginId());
-                        }
-                    });
+                    pset =
+                            new TreeSet<>(
+                                    new Comparator<Plugin>() {
+                                        @Override
+                                        public int compare(Plugin f1, Plugin f2) {
+                                            return f1.getPluginId().compareTo(f2.getPluginId());
+                                        }
+                                    });
                     patternToPlugin.put(pattern, pset);
                 }
                 pset.add(factory.getPlugin());
@@ -376,7 +376,8 @@ public class FilterBugsDialog extends SelectionDialog {
     protected Control createDialogArea(Composite parent) {
 
         final SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
-        GridData layoutData = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_HORIZONTAL);
+        GridData layoutData =
+                new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_HORIZONTAL);
         layoutData.minimumHeight = 200;
         layoutData.minimumWidth = 200;
         layoutData.heightHint = 400;
@@ -390,8 +391,11 @@ public class FilterBugsDialog extends SelectionDialog {
         treeAndButtons.setLayout(new GridLayout());
         treeAndButtons.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        final PatternFilteredTree tree = new PatternFilteredTree(treeAndButtons, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL
-                | SWT.H_SCROLL | SWT.RESIZE, new PatternFilter());
+        final PatternFilteredTree tree =
+                new PatternFilteredTree(
+                        treeAndButtons,
+                        SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE,
+                        new PatternFilter());
         tree.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         Composite buttons = new Composite(treeAndButtons, SWT.NONE);
@@ -401,40 +405,43 @@ public class FilterBugsDialog extends SelectionDialog {
         final Button button1 = new Button(buttons, SWT.PUSH);
         button1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         button1.setText("Select All");
-        button1.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (false && tree.isFiltering()) {
-                    toggleCheckedGroup(true);
-                } else {
-                    checkList.setAllChecked(true);
-                    checkedElements = allowedTypes.toArray();
-                }
-                updateTextIds();
-            }
-        });
+        button1.addSelectionListener(
+                new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (false && tree.isFiltering()) {
+                            toggleCheckedGroup(true);
+                        } else {
+                            checkList.setAllChecked(true);
+                            checkedElements = allowedTypes.toArray();
+                        }
+                        updateTextIds();
+                    }
+                });
 
         final Button button2 = new Button(buttons, SWT.PUSH);
         button2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         button2.setText("Deselect All");
-        button2.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (false && tree.isFiltering()) {
-                    toggleCheckedGroup(false);
-                } else {
-                    checkList.setAllChecked(false);
-                    checkedElements = new Object[0];
-                }
-                updateTextIds();
-            }
-        });
+        button2.addSelectionListener(
+                new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (false && tree.isFiltering()) {
+                            toggleCheckedGroup(false);
+                        } else {
+                            checkList.setAllChecked(false);
+                            checkedElements = new Object[0];
+                        }
+                        updateTextIds();
+                    }
+                });
 
         SashForm rightPane = new SashForm(sash, SWT.VERTICAL);
         rightPane.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         Group group1 = createGroup(rightPane, "Description");
-        htmlControl = new StyledText(group1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
+        htmlControl =
+                new StyledText(group1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
         presentation = new TextPresentation();
         htmlControl.setLayoutData(new GridData(GridData.FILL_BOTH));
         presenter = new HTMLTextPresenter(false);
@@ -489,17 +496,16 @@ public class FilterBugsDialog extends SelectionDialog {
     }
 
     private ContainerCheckedTreeViewer createTree(Composite parent, int style) {
-        final ContainerCheckedTreeViewer viewer = new ContainerCheckedTreeViewer(parent, style | SWT.SINGLE | SWT.BORDER
-                | SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE) {
-            /**
-             * Overriden to re-set checked state of elements after filter change
-             */
-            @Override
-            public void refresh(boolean updateLabels) {
-                super.refresh(updateLabels);
-                setCheckedElements(checkedElements);
-            }
-        };
+        final ContainerCheckedTreeViewer viewer =
+                new ContainerCheckedTreeViewer(
+                        parent, style | SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE) {
+                    /** Overriden to re-set checked state of elements after filter change */
+                    @Override
+                    public void refresh(boolean updateLabels) {
+                        super.refresh(updateLabels);
+                        setCheckedElements(checkedElements);
+                    }
+                };
 
         viewer.setContentProvider(contentProvider);
         viewer.setLabelProvider(labelProvider);
@@ -507,12 +513,15 @@ public class FilterBugsDialog extends SelectionDialog {
         Object[] preselected = getPreselected();
         viewer.setCheckedElements(preselected);
         viewer.addPostSelectionChangedListener(new TreeSelectionChangedListener());
-        viewer.getTree().addControlListener(new ControlAdapter() {
-            @Override
-            public void controlResized(ControlEvent e) {
-                updateDescription((IStructuredSelection) viewer.getSelection());
-            }
-        });
+        viewer
+                .getTree()
+                .addControlListener(
+                        new ControlAdapter() {
+                            @Override
+                            public void controlResized(ControlEvent e) {
+                                updateDescription((IStructuredSelection) viewer.getSelection());
+                            }
+                        });
         viewer.addCheckStateListener(new TreeCheckStateListener());
         return viewer;
     }
@@ -552,8 +561,15 @@ public class FilterBugsDialog extends SelectionDialog {
                 selTypes--;
             }
         }
-        selectedIds.setToolTipText("Available types: " + allowedTypes.size() + ", available patterns: " + allowedPatterns.size()
-                + ", selected types: " + selTypes + ", patterns: " + (checkedElements.length - selTypes));
+        selectedIds.setToolTipText(
+                "Available types: "
+                        + allowedTypes.size()
+                        + ", available patterns: "
+                        + allowedPatterns.size()
+                        + ", selected types: "
+                        + selTypes
+                        + ", patterns: "
+                        + (checkedElements.length - selTypes));
     }
 
     private void toggleElement(boolean on, Object element, Set<Object> set) {
@@ -604,25 +620,28 @@ public class FilterBugsDialog extends SelectionDialog {
     }
 
     private void sortCheckedElements() {
-        Arrays.sort(checkedElements, new Comparator<Object>() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                String text1 = labelProvider.getText(o1);
-                String text2 = labelProvider.getText(o2);
-                if (text1 == null) {
-                    return -1;
-                }
-                if (text2 == null) {
-                    return 1;
-                }
-                return text1.compareTo(text2);
-            }
-        });
+        Arrays.sort(
+                checkedElements,
+                new Comparator<Object>() {
+                    @Override
+                    public int compare(Object o1, Object o2) {
+                        String text1 = labelProvider.getText(o1);
+                        String text2 = labelProvider.getText(o2);
+                        if (text1 == null) {
+                            return -1;
+                        }
+                        if (text2 == null) {
+                            return 1;
+                        }
+                        return text1.compareTo(text2);
+                    }
+                });
     }
 
     private void updateDescription(IStructuredSelection selection) {
         Object element = selection.getFirstElement();
-        // HTMLTextPresenter uses LineBreakingReader/BufferedReader in Eclipse 4.4 which expects non-empty strings (while parsing html line breaks).
+        // HTMLTextPresenter uses LineBreakingReader/BufferedReader in Eclipse 4.4 which expects
+        // non-empty strings (while parsing html line breaks).
         String txt = " ";
         if (element instanceof BugPattern) {
             BugPattern pattern = (BugPattern) element;
@@ -632,7 +651,9 @@ public class FilterBugsDialog extends SelectionDialog {
             txt = getPatternTypeDescription(code);
         }
         Rectangle size = htmlControl.getClientArea();
-        txt = presenter.updatePresentation(getShell().getDisplay(), txt, presentation, size.width, size.height);
+        txt =
+                presenter.updatePresentation(
+                        getShell().getDisplay(), txt, presentation, size.width, size.height);
         htmlControl.setText(txt);
     }
 
@@ -663,20 +684,24 @@ public class FilterBugsDialog extends SelectionDialog {
             sb.append(bugPattern.getType()).append("<br>");
         }
         // add reported by...
-        Set<DetectorFactory> allFactories = new TreeSet<>(new Comparator<DetectorFactory>() {
-            @Override
-            public int compare(DetectorFactory f1, DetectorFactory f2) {
-                return f1.getFullName().compareTo(f2.getFullName());
-            }
-        });
+        Set<DetectorFactory> allFactories =
+                new TreeSet<>(
+                        new Comparator<DetectorFactory>() {
+                            @Override
+                            public int compare(DetectorFactory f1, DetectorFactory f2) {
+                                return f1.getFullName().compareTo(f2.getFullName());
+                            }
+                        });
         for (BugPattern bugPattern : patterns) {
             Set<DetectorFactory> set = patternToFactory.get(bugPattern);
             if (set != null) {
                 allFactories.addAll(set);
             } else {
                 if (shouldReportMissing(bugPattern)) {
-                    FindbugsPlugin.getDefault().logError(
-                            "Pattern not reported by any detector, but defined in findbugs.xml: " + bugPattern);
+                    FindbugsPlugin.getDefault()
+                            .logError(
+                                    "Pattern not reported by any detector, but defined in findbugs.xml: "
+                                            + bugPattern);
                 }
             }
         }

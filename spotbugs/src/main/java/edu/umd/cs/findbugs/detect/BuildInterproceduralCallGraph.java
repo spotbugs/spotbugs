@@ -18,9 +18,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -32,17 +29,19 @@ import edu.umd.cs.findbugs.ba.ch.InterproceduralCallGraphVertex;
 import edu.umd.cs.findbugs.ba.jsr305.Analysis;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
 
 /**
  * Build the interprocedural call graph.
  *
- * NOTE: at the present time, this facility is only used to find relevant type
- * qualifiers. It could become a more general-purpose facility if there were a
- * need.
+ * <p>NOTE: at the present time, this facility is only used to find relevant type qualifiers. It
+ * could become a more general-purpose facility if there were a need.
  *
  * @author David Hovemeyer
  */
-public class BuildInterproceduralCallGraph extends BytecodeScanningDetector implements NonReportingDetector {
+public class BuildInterproceduralCallGraph extends BytecodeScanningDetector
+        implements NonReportingDetector {
 
     private final InterproceduralCallGraph callGraph;
 
@@ -51,8 +50,7 @@ public class BuildInterproceduralCallGraph extends BytecodeScanningDetector impl
     /**
      * Constructor.
      *
-     * @param bugReporter
-     *            the BugReporter to use
+     * @param bugReporter the BugReporter to use
      */
     public BuildInterproceduralCallGraph(BugReporter bugReporter) {
         if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
@@ -95,8 +93,7 @@ public class BuildInterproceduralCallGraph extends BytecodeScanningDetector impl
     /**
      * Find the InterproceduralCallGraphVertex for given XMethod.
      *
-     * @param xmethod
-     *            an XMethod
+     * @param xmethod an XMethod
      * @return the XMethod's InterproceduralCallGraphVertex
      */
     private InterproceduralCallGraphVertex findVertex(XMethod xmethod) {

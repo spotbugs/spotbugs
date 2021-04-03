@@ -18,13 +18,12 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CompactLocationNumbering;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.classfile.Method;
 
 /**
  * Analysis engine to produce CompactLocationNumbering objects for methods.
@@ -32,9 +31,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class CompactLocationNumberingFactory extends AnalysisFactory<CompactLocationNumbering> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public CompactLocationNumberingFactory() {
         super("compact location numbering", CompactLocationNumbering.class);
     }

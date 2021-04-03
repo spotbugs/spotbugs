@@ -24,8 +24,8 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
- * Thrown when no <CODE>FieldDeclaration</CODE> was found in the specified
- * <CODE>TypeDeclaration</CODE>.
+ * Thrown when no <CODE>FieldDeclaration</CODE> was found in the specified <CODE>TypeDeclaration
+ * </CODE>.
  *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -40,7 +40,11 @@ public class FieldDeclarationNotFoundException extends BodyDeclarationNotFoundEx
     }
 
     public FieldDeclarationNotFoundException(TypeDeclaration typeDeclaration, String fieldName) {
-        this("Field declaration '" + fieldName + "' not found in type declaration '" + typeDeclaration.getName() + "'.");
+        this(
+                "Field declaration '"
+                        + fieldName
+                        + "' not found in type declaration '"
+                        + typeDeclaration.getName()
+                        + "'.");
     }
-
 }

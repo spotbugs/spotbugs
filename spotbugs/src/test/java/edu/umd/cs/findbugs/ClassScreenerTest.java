@@ -63,7 +63,8 @@ public class ClassScreenerTest {
 
     private static final String SOME_OTHER_CLASS_JARFILENAME = makeJarURL(SOME_OTHER_CLASS_FILENAME);
 
-    private static final String UNRELATED_THING_CLASS_JARFILENAME = makeJarURL(UNRELATED_THING_CLASS_FILENAME);
+    private static final String UNRELATED_THING_CLASS_JARFILENAME =
+            makeJarURL(UNRELATED_THING_CLASS_FILENAME);
 
     @Before
     public void setUp() {

@@ -21,14 +21,16 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.lang.reflect.Constructor;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class FindBugsLayoutManagerFactory {
     Constructor<? extends FindBugsLayoutManager> constructor;
 
-    public FindBugsLayoutManagerFactory(String classname) throws SecurityException, NoSuchMethodException, ClassNotFoundException {
-        constructor = Class.forName(classname).asSubclass(FindBugsLayoutManager.class).getConstructor(MainFrame.class);
+    public FindBugsLayoutManagerFactory(String classname)
+            throws SecurityException, NoSuchMethodException, ClassNotFoundException {
+        constructor =
+                Class.forName(classname)
+                        .asSubclass(FindBugsLayoutManager.class)
+                        .getConstructor(MainFrame.class);
     }
 
     public FindBugsLayoutManager getInstance(MainFrame frame) {
@@ -39,7 +41,5 @@ public class FindBugsLayoutManagerFactory {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
-
 }

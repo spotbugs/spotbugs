@@ -19,17 +19,13 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import java.lang.annotation.ElementType;
 import java.util.Collection;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public interface AnnotatedObject {
     public Collection<ClassDescriptor> getAnnotationDescriptors();
 

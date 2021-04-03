@@ -1,18 +1,5 @@
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-import java.util.Iterator;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -29,6 +16,17 @@ import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import java.util.BitSet;
+import java.util.Iterator;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 public class FindNonSerializableStoreIntoSession implements Detector {
 
@@ -64,7 +62,8 @@ public class FindNonSerializableStoreIntoSession implements Detector {
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         MethodGen methodGen = classContext.getMethodGen(method);
         if (methodGen == null) {
             return;
@@ -132,15 +131,22 @@ public class FindNonSerializableStoreIntoSession implements Detector {
                 double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(refType);
 
                 if (isSerializable < 0.9) {
-                    SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
-                            methodGen, sourceFile, handle);
+                    SourceLineAnnotation sourceLineAnnotation =
+                            SourceLineAnnotation.fromVisitedInstruction(
+                                    classContext, methodGen, sourceFile, handle);
                     ReferenceType problem = DeepSubtypeAnalysis.getLeastSerializableTypeComponent(refType);
 
-                    bugAccumulator.accumulateBug(new BugInstance(this, "J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION",
-                            isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
-                                    .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
+                    bugAccumulator.accumulateBug(
+                            new BugInstance(
+                                    this,
+                                    "J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION",
+                                    isSerializable < 0.15
+                                            ? HIGH_PRIORITY
+                                            : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                                    .addClassAndMethod(methodGen, sourceFile)
+                                                    .addType(problem)
+                                                    .describe(TypeAnnotation.FOUND_ROLE),
                             sourceLineAnnotation);
-
                 }
             } catch (ClassNotFoundException e) {
                 // ignore
@@ -151,5 +157,4 @@ public class FindNonSerializableStoreIntoSession implements Detector {
     @Override
     public void report() {
     }
-
 }

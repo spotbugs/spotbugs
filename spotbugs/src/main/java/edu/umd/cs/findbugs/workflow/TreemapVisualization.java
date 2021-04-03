@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.TreeMap;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -30,6 +26,9 @@ import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.util.Bag;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class TreemapVisualization {
 
@@ -64,7 +63,9 @@ public class TreemapVisualization {
 
     public void cleanCode(String packageName, int loc, int classes) {
         String superpackage = superpackage(packageName);
-        if (buggyPackages.contains(superpackage) || interiorPackages.contains(superpackage) || superpackage.length() == 0) {
+        if (buggyPackages.contains(superpackage)
+                || interiorPackages.contains(superpackage)
+                || superpackage.length() == 0) {
             goodCodeCount.add(packageName, classes);
             goodCodeSize.add(packageName, loc);
             if (superpackage.length() > 0) {
@@ -81,7 +82,6 @@ public class TreemapVisualization {
             if (p.getTotalBugs() > 0) {
                 buggyPackages.add(p.getPackageName());
                 addInteriorPackages(p.getPackageName());
-
             }
         }
 
@@ -96,8 +96,14 @@ public class TreemapVisualization {
             if (p.getTotalBugs() > 0) {
                 int high = p.getBugsAtPriority(Priorities.HIGH_PRIORITY);
                 int normal = p.getBugsAtPriority(Priorities.NORMAL_PRIORITY);
-                System.out.printf("%d\t%d\t%d\t%d\t%g\t\t%s", p.size(), p.getClassStats().size(), high, high + normal,
-                        (high + normal) * 1000.0 / p.size(), p.getPackageName().substring(11).replace('.', '\t'));
+                System.out.printf(
+                        "%d\t%d\t%d\t%d\t%g\t\t%s",
+                        p.size(),
+                        p.getClassStats().size(),
+                        high,
+                        high + normal,
+                        (high + normal) * 1000.0 / p.size(),
+                        p.getPackageName().substring(11).replace('.', '\t'));
                 if (isInteriorPackage(p.getPackageName())) {
                     System.out.print("\t*");
                 }
@@ -105,11 +111,15 @@ public class TreemapVisualization {
             }
         }
         for (Map.Entry<String, Integer> e : goodCodeSize.entrySet()) {
-            System.out.printf("%d\t%d\t%d\t%d\t%g\t\t%s%n", e.getValue(), goodCodeCount.getCount(e.getKey()), 0, 0, 0.0, e
-                    .getKey().substring(11).replace('.', '\t'));
-
+            System.out.printf(
+                    "%d\t%d\t%d\t%d\t%g\t\t%s%n",
+                    e.getValue(),
+                    goodCodeCount.getCount(e.getKey()),
+                    0,
+                    0,
+                    0.0,
+                    e.getKey().substring(11).replace('.', '\t'));
         }
-
     }
 
     public static void main(String[] args) throws Exception {
@@ -125,6 +135,5 @@ public class TreemapVisualization {
         }
 
         new TreemapVisualization().generateTreeMap(bugCollection);
-
     }
 }

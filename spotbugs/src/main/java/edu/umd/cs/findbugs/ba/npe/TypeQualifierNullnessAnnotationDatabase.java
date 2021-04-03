@@ -19,12 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.meta.When;
-
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Type;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
@@ -54,10 +48,13 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.log.Profiler;
+import javax.annotation.CheckForNull;
+import javax.annotation.meta.When;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Type;
 
 /**
- * Implementation of INullnessAnnotationDatabase that is based on JSR-305 type
- * qualifiers.
+ * Implementation of INullnessAnnotationDatabase that is based on JSR-305 type qualifiers.
  *
  * @author David Hovemeyer
  */
@@ -67,7 +64,8 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     public final TypeQualifierValue<javax.annotation.Nonnull> nonnullTypeQualifierValue;
 
     public TypeQualifierNullnessAnnotationDatabase() {
-        this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(javax.annotation.Nonnull.class, null);
+        this.nonnullTypeQualifierValue =
+                TypeQualifierValue.getValue(javax.annotation.Nonnull.class, null);
     }
 
     @Override
@@ -85,11 +83,13 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
             if (o instanceof XMethodParameter) {
                 XMethodParameter param = (XMethodParameter) o;
 
-                tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(param.getMethod(),
-                        param.getParameterNumber(), nonnullTypeQualifierValue);
+                tqa =
+                        TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                                param.getMethod(), param.getParameterNumber(), nonnullTypeQualifierValue);
             } else if (o instanceof XMethod || o instanceof XField) {
-                tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation((AnnotatedObject) o,
-                        nonnullTypeQualifierValue);
+                tqa =
+                        TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                                (AnnotatedObject) o, nonnullTypeQualifierValue);
             }
 
             NullnessAnnotation result = toNullnessAnnotation(tqa);
@@ -110,8 +110,9 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(this.getClass());
         try {
-            TypeQualifierAnnotation tqa = TypeQualifierApplications.getInheritedTypeQualifierAnnotation(m,
-                    parameter, nonnullTypeQualifierValue);
+            TypeQualifierAnnotation tqa =
+                    TypeQualifierApplications.getInheritedTypeQualifierAnnotation(
+                            m, parameter, nonnullTypeQualifierValue);
             NullnessAnnotation result = toNullnessAnnotation(tqa);
             return result;
         } finally {
@@ -123,7 +124,9 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(this.getClass());
         try {
-            TypeQualifierAnnotation tqa = TypeQualifierApplications.getInheritedTypeQualifierAnnotation(m, nonnullTypeQualifierValue);
+            TypeQualifierAnnotation tqa =
+                    TypeQualifierApplications.getInheritedTypeQualifierAnnotation(
+                            m, nonnullTypeQualifierValue);
             NullnessAnnotation result = toNullnessAnnotation(tqa);
             return result;
         } finally {
@@ -144,11 +147,13 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 
             if (o instanceof XMethodParameter) {
                 XMethodParameter param = (XMethodParameter) o;
-                tqa = TypeQualifierApplications.getDirectTypeQualifierAnnotation(param.getMethod(),
-                        param.getParameterNumber(), nonnullTypeQualifierValue);
+                tqa =
+                        TypeQualifierApplications.getDirectTypeQualifierAnnotation(
+                                param.getMethod(), param.getParameterNumber(), nonnullTypeQualifierValue);
             } else if (o instanceof XMethod || o instanceof XField) {
-                tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation((AnnotatedObject) o,
-                        nonnullTypeQualifierValue);
+                tqa =
+                        TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                                (AnnotatedObject) o, nonnullTypeQualifierValue);
             }
 
             NullnessAnnotation result = toNullnessAnnotation(tqa);
@@ -181,17 +186,23 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         if (DEBUG) {
             System.out.print("Checking " + m + " param " + param + " for @Nonnull...");
         }
-        TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(m, param,
-                nonnullTypeQualifierValue);
+        TypeQualifierAnnotation tqa =
+                TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                        m, param, nonnullTypeQualifierValue);
 
         if (tqa == null && param == 0) {
             String name = m.getName();
             String signature = m.getSignature();
-            if ("main".equals(name) && "([Ljava/lang/String;)V".equals(signature) && m.isStatic() && m.isPublic()) {
+            if ("main".equals(name)
+                    && "([Ljava/lang/String;)V".equals(signature)
+                    && m.isStatic()
+                    && m.isPublic()) {
                 return true;
             } else if (assertsFirstParameterIsNonnull(m)) {
                 return true;
-            } else if ("compareTo".equals(name) && ")Z".equals(signature.substring(signature.indexOf(';') + 1)) && !m.isStatic()) {
+            } else if ("compareTo".equals(name)
+                    && ")Z".equals(signature.substring(signature.indexOf(';') + 1))
+                    && !m.isStatic()) {
                 return true;
             }
         }
@@ -212,11 +223,10 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     // were actually read from the underlying class files.
 
     /**
-     * Convert a NullnessAnnotation into the ClassDescriptor of the equivalent
-     * JSR-305 nullness type qualifier.
+     * Convert a NullnessAnnotation into the ClassDescriptor of the equivalent JSR-305 nullness type
+     * qualifier.
      *
-     * @param n
-     *            a NullnessAnnotation
+     * @param n a NullnessAnnotation
      * @return ClassDescriptor of the equivalent JSR-305 nullness type qualifier
      */
     private ClassDescriptor getNullnessAnnotationClassDescriptor(NullnessAnnotation n) {
@@ -233,11 +243,12 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         }
     }
 
-    private static final ClassDescriptor PARAMETERS_ARE_NONNULL_BY_DEFAULT = DescriptorFactory
-            .createClassDescriptor(javax.annotation.ParametersAreNonnullByDefault.class);
+    private static final ClassDescriptor PARAMETERS_ARE_NONNULL_BY_DEFAULT =
+            DescriptorFactory.createClassDescriptor(javax.annotation.ParametersAreNonnullByDefault.class);
 
-    private static final ClassDescriptor RETURN_VALUES_ARE_NONNULL_BY_DEFAULT = DescriptorFactory
-            .createClassDescriptor(edu.umd.cs.findbugs.annotations.ReturnValuesAreNonnullByDefault.class);
+    private static final ClassDescriptor RETURN_VALUES_ARE_NONNULL_BY_DEFAULT =
+            DescriptorFactory.createClassDescriptor(
+                    edu.umd.cs.findbugs.annotations.ReturnValuesAreNonnullByDefault.class);
 
     @Override
     public void addDefaultAnnotation(Target target, String c, NullnessAnnotation n) {
@@ -245,7 +256,8 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
             System.out.println("addDefaultAnnotation: target=" + target + ", c=" + c + ", n=" + n);
         }
 
-        ClassDescriptor classDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(c);
+        ClassDescriptor classDesc =
+                DescriptorFactory.instance().getClassDescriptorForDottedClassName(c);
         ClassInfo xclass;
 
         // Get the XClass (really a ClassInfo object)
@@ -298,15 +310,27 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     }
 
     @Override
-    public void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation) {
+    public void addFieldAnnotation(
+            String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation) {
         if (DEBUG) {
-            System.out.println("addFieldAnnotation: annotate " + cName + "." + mName + " with " + annotation);
+            System.out.println(
+                    "addFieldAnnotation: annotate " + cName + "." + mName + " with " + annotation);
         }
 
         XField xfield = XFactory.createXField(cName, mName, mSig, isStatic);
         if (!(xfield instanceof FieldInfo)) {
             if (DEBUG) {
-                System.out.println("  Field not found! " + cName + "." + mName + ":" + mSig + " " + isStatic + " " + annotation);
+                System.out.println(
+                        "  Field not found! "
+                                + cName
+                                + "."
+                                + mName
+                                + ":"
+                                + mSig
+                                + " "
+                                + isStatic
+                                + " "
+                                + annotation);
             }
             return;
         }
@@ -321,8 +345,10 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         ((FieldInfo) xfield).addAnnotation(annotationValue);
     }
 
-    public @CheckForNull XMethod getXMethod(String cName, String mName, String sig, boolean isStatic) {
-        ClassDescriptor classDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(cName);
+    public @CheckForNull XMethod getXMethod(
+            String cName, String mName, String sig, boolean isStatic) {
+        ClassDescriptor classDesc =
+                DescriptorFactory.instance().getClassDescriptorForDottedClassName(cName);
         ClassInfo xclass;
 
         // Get the XClass (really a ClassInfo object)
@@ -348,13 +374,14 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
             xmethod = XFactory.createXMethod(cName, mName, sig, isStatic);
         }
         return xmethod;
-
     }
 
     @Override
-    public void addMethodAnnotation(String cName, String mName, String sig, boolean isStatic, NullnessAnnotation annotation) {
+    public void addMethodAnnotation(
+            String cName, String mName, String sig, boolean isStatic, NullnessAnnotation annotation) {
         if (DEBUG) {
-            System.out.println("addMethodAnnotation: annotate " + cName + "." + mName + " with " + annotation);
+            System.out.println(
+                    "addMethodAnnotation: annotate " + cName + "." + mName + " with " + annotation);
         }
         XMethod xmethod = getXMethod(cName, mName, sig, isStatic);
         if (xmethod == null) {
@@ -371,11 +398,23 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     }
 
     @Override
-    public void addMethodParameterAnnotation(@DottedClassName String cName, String mName, String sig, boolean isStatic,
-            int param, NullnessAnnotation annotation) {
+    public void addMethodParameterAnnotation(
+            @DottedClassName String cName,
+            String mName,
+            String sig,
+            boolean isStatic,
+            int param,
+            NullnessAnnotation annotation) {
         if (DEBUG) {
-            System.out.println("addMethodParameterAnnotation: annotate " + cName + "." + mName + " param " + param + " with "
-                    + annotation);
+            System.out.println(
+                    "addMethodParameterAnnotation: annotate "
+                            + cName
+                            + "."
+                            + mName
+                            + " param "
+                            + param
+                            + " with "
+                            + annotation);
         }
         XMethod xmethod = getXMethod(cName, mName, sig, isStatic);
         if (xmethod == null) {
@@ -389,8 +428,14 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 
         if (!xmethod.getClassName().equals(cName)) {
             if (SystemProperties.ASSERTIONS_ENABLED) {
-                AnalysisContext.logError("Could not fully resolve method " + cName + "." + mName + sig + " to apply annotation "
-                        + annotation);
+                AnalysisContext.logError(
+                        "Could not fully resolve method "
+                                + cName
+                                + "."
+                                + mName
+                                + sig
+                                + " to apply annotation "
+                                + annotation);
             }
             return;
         }
@@ -400,7 +445,6 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
             int numParams = parser.getNumParameters();
             assert param < numParams;
         }
-
 
         // Destructively add the annotation to the MethodInfo object
         xmethod.addParameterAnnotation(param, annotationValue);
@@ -412,14 +456,13 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     }
 
     /**
-     * Convert a Nonnull-based TypeQualifierAnnotation into a
-     * NullnessAnnotation.
+     * Convert a Nonnull-based TypeQualifierAnnotation into a NullnessAnnotation.
      *
-     * @param tqa
-     *            Nonnull-based TypeQualifierAnnotation
+     * @param tqa Nonnull-based TypeQualifierAnnotation
      * @return corresponding NullnessAnnotation
      */
-    private @CheckForNull NullnessAnnotation toNullnessAnnotation(@CheckForNull TypeQualifierAnnotation tqa) {
+    private @CheckForNull NullnessAnnotation toNullnessAnnotation(
+            @CheckForNull TypeQualifierAnnotation tqa) {
         if (tqa == null || tqa == TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION) {
             return null;
         }
@@ -427,8 +470,6 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
             new NullPointerException("TGA value with null when field").printStackTrace();
             return null;
         }
-
-
 
         switch (tqa.when) {
         case ALWAYS:

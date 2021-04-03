@@ -19,21 +19,20 @@
 
 package edu.umd.cs.findbugs.model;
 
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
-
 /**
- * Build a map of added class names to removed class names. Serves as a
- * ClassNameRewriter that can match up renamed classes in two BugCollections.
+ * Build a map of added class names to removed class names. Serves as a ClassNameRewriter that can
+ * match up renamed classes in two BugCollections.
  *
  * @author David Hovemeyer
  */
@@ -80,7 +79,6 @@ public class MovedClassMap implements ClassNameRewriter {
                 }
                 rewriteMap.put(fullAddedName, fullRemovedName);
             }
-
         }
 
         return this;
@@ -123,8 +121,7 @@ public class MovedClassMap implements ClassNameRewriter {
     /**
      * Build a map of short class names (without package) to full class names.
      *
-     * @param classSet
-     *            set of fully-qualified class names
+     * @param classSet set of fully-qualified class names
      * @return map of short class names to fully-qualified class names
      */
     private Map<String, String> buildShortNameToFullNameMap(Set<String> classSet) {
@@ -139,8 +136,7 @@ public class MovedClassMap implements ClassNameRewriter {
     /**
      * Get a short class name (no package part).
      *
-     * @param className
-     *            a class name
+     * @param className a class name
      * @return short class name
      */
     private String getShortClassName(String className) {
@@ -150,5 +146,4 @@ public class MovedClassMap implements ClassNameRewriter {
         }
         return className.toLowerCase(Locale.US).replace('+', '$');
     }
-
 }

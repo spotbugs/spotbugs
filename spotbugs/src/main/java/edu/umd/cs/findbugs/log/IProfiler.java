@@ -20,9 +20,7 @@ package edu.umd.cs.findbugs.log;
 
 import edu.umd.cs.findbugs.log.Profiler.Profile;
 
-/**
- * @since 4.0
- */
+/** @since 4.0 */
 public interface IProfiler {
 
     Profile getProfile(Class<?> targetClass);

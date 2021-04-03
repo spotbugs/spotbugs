@@ -19,22 +19,21 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ResourceValue;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
+import org.apache.bcel.Const;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 
 /**
- * A visitor to model the effect of instructions on the status of the resource
- * (in this case, Streams).
+ * A visitor to model the effect of instructions on the status of the resource (in this case,
+ * Streams).
  */
 public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
     private final StreamResourceTracker resourceTracker;
@@ -43,14 +42,16 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 
     private Location location;
 
-    public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker, Stream stream) {
+    public StreamFrameModelingVisitor(
+            ConstantPoolGen cpg, StreamResourceTracker resourceTracker, Stream stream) {
         super(cpg);
         this.resourceTracker = resourceTracker;
         this.stream = stream;
     }
 
     @Override
-    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException {
+    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock)
+            throws DataflowAnalysisException {
         // Record what Location we are analyzing
         this.location = new Location(handle, basicBlock);
 
@@ -92,7 +93,6 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
                 frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
             }
         }
-
     }
 
     @Override
@@ -107,21 +107,34 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         String methodName = inv.getMethodName(cpg);
         String methodSig = inv.getSignature(cpg);
         if (inv.getOpcode() == Const.INVOKEVIRTUAL
-                && ("load".equals(methodName) || "loadFromXml".equals(methodName) || "store".equals(methodName) || "save".equals(methodName))
+                && ("load".equals(methodName)
+                        || "loadFromXml".equals(methodName)
+                        || "store".equals(methodName)
+                        || "save".equals(methodName))
                 && "java.util.Properties".equals(className)) {
             escapes = false;
         }
-        if (inv.getOpcode() == Const.INVOKEVIRTUAL && ("load".equals(methodName) || "store".equals(methodName))
+        if (inv.getOpcode() == Const.INVOKEVIRTUAL
+                && ("load".equals(methodName) || "store".equals(methodName))
                 && "java.security.KeyStore".equals(className)) {
             escapes = false;
         }
-        if (inv.getOpcode() == Const.INVOKEVIRTUAL && "getChannel".equals(methodName)
+        if (inv.getOpcode() == Const.INVOKEVIRTUAL
+                && "getChannel".equals(methodName)
                 && "()Ljava/nio/channels/FileChannel;".equals(methodSig)) {
             escapes = true;
         }
 
         if (FindOpenStream.DEBUG && escapes) {
-            System.out.println("ESCAPE at " + location + " at call to " + className + "." + methodName + ":" + methodSig);
+            System.out.println(
+                    "ESCAPE at "
+                            + location
+                            + " at call to "
+                            + className
+                            + "."
+                            + methodName
+                            + ":"
+                            + methodSig);
         }
 
         // Record the fact that this might be a stream escape

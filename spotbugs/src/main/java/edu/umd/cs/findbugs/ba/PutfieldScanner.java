@@ -19,27 +19,23 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import java.util.Map;
 import java.util.TreeMap;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public class PutfieldScanner {
 
-    public static Map<Integer, OpcodeStack.Item> getPutfieldsFor(JavaClass theClass, Method method, XField field) {
+    public static Map<Integer, OpcodeStack.Item> getPutfieldsFor(
+            JavaClass theClass, Method method, XField field) {
         Scanner scanner = new Scanner(theClass, method, field);
 
         scanner.execute();
         return scanner.putfields;
-
     }
 
     static class Scanner extends OpcodeStackDetector {
@@ -64,10 +60,11 @@ public class PutfieldScanner {
                 return;
             }
             XField xFieldOperand = getXFieldOperand();
-            if (xFieldOperand != null && xFieldOperand.equals(targetField) && stack.getStackItem(1).getRegisterNumber() == 0) {
+            if (xFieldOperand != null
+                    && xFieldOperand.equals(targetField)
+                    && stack.getStackItem(1).getRegisterNumber() == 0) {
                 putfields.put(getPC(), new OpcodeStack.Item(stack.getStackItem(0)));
             }
-
         }
 
         @Override
@@ -81,5 +78,4 @@ public class PutfieldScanner {
             theClass.accept(this);
         }
     }
-
 }

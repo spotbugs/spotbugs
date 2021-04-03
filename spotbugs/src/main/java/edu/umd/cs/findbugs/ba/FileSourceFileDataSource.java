@@ -26,9 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-/**
- * Data source for source files which are stored in the filesystem.
- */
+/** Data source for source files which are stored in the filesystem. */
 public class FileSourceFileDataSource implements SourceFileDataSource {
     private final String fileName;
     private final URI uri;

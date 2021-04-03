@@ -1,12 +1,11 @@
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Analysis engine to produce ConstantDataflow objects for an analyzed method.
@@ -26,12 +25,14 @@ public class ConstantDataflowFactory extends AnalysisFactory<ConstantDataflow> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public ConstantDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public ConstantDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             return null;
         }
-        ConstantAnalysis analysis = new ConstantAnalysis(methodGen, getDepthFirstSearch(analysisCache, descriptor));
+        ConstantAnalysis analysis =
+                new ConstantAnalysis(methodGen, getDepthFirstSearch(analysisCache, descriptor));
         ConstantDataflow dataflow = new ConstantDataflow(getCFG(analysisCache, descriptor), analysis);
         dataflow.execute();
 

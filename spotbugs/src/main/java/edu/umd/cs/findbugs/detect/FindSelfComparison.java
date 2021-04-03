@@ -19,13 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-import java.util.Objects;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.LineNumberTable;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -39,6 +32,11 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.EditDistance;
+import java.util.BitSet;
+import java.util.Objects;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LineNumberTable;
 
 public class FindSelfComparison extends OpcodeStackDetector {
 
@@ -95,7 +93,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
             System.out.printf("%3d %-15s %s%n", getPC(), Const.getOpcodeName(seen), stack);
         }
 
-
         if (stack.hasIncomingBranches(getPC())) {
             resetDoubleAssignmentState();
         }
@@ -106,9 +103,13 @@ public class FindSelfComparison extends OpcodeStackDetector {
             XField f = getXFieldOperand();
             XClass x = getXClassOperand();
 
-            checkPUTFIELD: if (putFieldPC + 10 > getPC() && f != null && obj != null && f.equals(putFieldXField)
-                    && !f.isSynthetic() && obj.sameValue(putFieldObj) && x != null) {
-
+            checkPUTFIELD: if (putFieldPC + 10 > getPC()
+                    && f != null
+                    && obj != null
+                    && f.equals(putFieldXField)
+                    && !f.isSynthetic()
+                    && obj.sameValue(putFieldObj)
+                    && x != null) {
 
                 LineNumberTable table = getCode().getLineNumberTable();
                 if (table != null) {
@@ -137,7 +138,10 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 double minimumDistance = 2;
                 int matches = 0;
                 for (XField f2 : x.getXFields()) {
-                    if (!f.equals(f2) && !f2.isStatic() && !f2.isFinal() && !f2.isSynthetic()
+                    if (!f.equals(f2)
+                            && !f2.isStatic()
+                            && !f2.isFinal()
+                            && !f2.isSynthetic()
                             && f2.getSignature().equals(f.getSignature())) {
 
                         double distance = EditDistance.editDistanceRatio(f.getName(), f2.getName());
@@ -146,7 +150,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
                             minimumDistance = distance;
                             intendedTarget = f2;
                         }
-
                     }
                 }
                 if (minimumDistance > 0.6 && (matches > 1 || storeOfDefaultValue)) {
@@ -154,8 +157,10 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 } else if (intendedTarget != null) {
                     priority--;
                 }
-                BugInstance bug = new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", priority).addClassAndMethod(this)
-                        .addReferencedField(this);
+                BugInstance bug =
+                        new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", priority)
+                                .addClassAndMethod(this)
+                                .addReferencedField(this);
                 if (intendedTarget != null) {
                     bug.addField(intendedTarget).describe(FieldAnnotation.DID_YOU_MEAN_ROLE);
                 }
@@ -251,7 +256,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
         if (isMethodCall()) {
             lastMethodCall = getPC();
         }
-
     }
 
     int whichRegister;
@@ -260,8 +264,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
 
     private void checkForSelfOperation(int opCode, String op) {
         {
-
-
             OpcodeStack.Item item0 = stack.getStackItem(0);
             OpcodeStack.Item item1 = stack.getStackItem(1);
 
@@ -272,9 +274,11 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 return;
             }
 
-            BitSet linesMentionedMultipleTimes = getClassContext().linesMentionedMultipleTimes(getMethod());
+            BitSet linesMentionedMultipleTimes =
+                    getClassContext().linesMentionedMultipleTimes(getMethod());
             SourceLineAnnotation source = SourceLineAnnotation.fromVisitedInstruction(this);
-            boolean possibleClone = source.getStartLine() > 0 && linesMentionedMultipleTimes.get(source.getStartLine());
+            boolean possibleClone =
+                    source.getStartLine() > 0 && linesMentionedMultipleTimes.get(source.getStartLine());
             LineNumberTable lineNumberTable = getCode().getLineNumberTable();
             int linesDifference = 0;
             if (item0.getPC() != -1 && item1.getPC() != -1) {
@@ -301,7 +305,9 @@ public class FindSelfComparison extends OpcodeStackDetector {
             XField field1 = item1.getXField();
             int fr0 = item0.getFieldLoadedFromRegister();
             int fr1 = item1.getFieldLoadedFromRegister();
-            if (field0 != null && field0.equals(field1) && (field0.isStatic() || fr0 != -1 && fr0 == fr1)) {
+            if (field0 != null
+                    && field0.equals(field1)
+                    && (field0.isStatic() || fr0 != -1 && fr0 == fr1)) {
                 int priority = NORMAL_PRIORITY;
                 if (field0.isVolatile()) {
                     priority++;
@@ -313,22 +319,27 @@ public class FindSelfComparison extends OpcodeStackDetector {
                     priority++;
                 }
 
-                BugInstance bug = new BugInstance(this, "SA_FIELD_SELF_" + op, priority)
-                        .addClassAndMethod(this).addField(field0);
+                BugInstance bug =
+                        new BugInstance(this, "SA_FIELD_SELF_" + op, priority)
+                                .addClassAndMethod(this)
+                                .addField(field0);
 
                 if (this.isMethodCall()) {
                     bug.addCalledMethod(this);
                 }
                 bugAccumulator.accumulateBug(bug, this);
-            }
-
-            else if (opCode == Const.IXOR && item0.sameValue(item1)) {
-                LocalVariableAnnotation localVariableAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(this, item0);
+            } else if (opCode == Const.IXOR && item0.sameValue(item1)) {
+                LocalVariableAnnotation localVariableAnnotation =
+                        LocalVariableAnnotation.getLocalVariableAnnotation(this, item0);
                 if (localVariableAnnotation != null) {
                     bugAccumulator.accumulateBug(
-                            new BugInstance(this, "SA_LOCAL_SELF_" + op, linesDifference > 1 ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(
-                                    this).add(
-                                            localVariableAnnotation), this);
+                            new BugInstance(
+                                    this,
+                                    "SA_LOCAL_SELF_" + op,
+                                    linesDifference > 1 ? NORMAL_PRIORITY : HIGH_PRIORITY)
+                                            .addClassAndMethod(this)
+                                            .add(localVariableAnnotation),
+                            this);
                 }
             }
         }

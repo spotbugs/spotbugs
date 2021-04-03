@@ -19,6 +19,11 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.SortedBugCollection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,16 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.SortedBugCollection;
-
 /**
- * Mine historical information from a BugCollection. The BugCollection should be
- * built using UpdateBugCollection to record the history of analyzing all
- * versions over time.
+ * Mine historical information from a BugCollection. The BugCollection should be built using
+ * UpdateBugCollection to record the history of analyzing all versions over time.
  *
  * @author David Hovemeyer
  * @author William Pugh
@@ -92,7 +90,6 @@ public class RebornIssues {
                     }
                     System.out.printf("%5d %5d %s%n", removed, a, bugPattern);
                 }
-
             }
         }
         return this;
@@ -117,8 +114,12 @@ public class RebornIssues {
 
         RebornIssues reborn = new RebornIssues();
         CommandLine commandLine = new CommandLine();
-        int argCount = commandLine.parse(args, 0, 2, "Usage: " + RebornIssues.class.getName()
-                + " [options] [<xml results> [<history>]] ");
+        int argCount =
+                commandLine.parse(
+                        args,
+                        0,
+                        2,
+                        "Usage: " + RebornIssues.class.getName() + " [options] [<xml results> [<history>]] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length) {
@@ -128,6 +129,5 @@ public class RebornIssues {
         }
         reborn.setBugCollection(bugCollection);
         reborn.execute();
-
     }
 }

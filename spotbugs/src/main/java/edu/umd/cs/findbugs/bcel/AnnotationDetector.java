@@ -25,12 +25,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
- * Base class for Detectors which want to perform a preorder traversal of the
- * classfile including visiting Annotations.
+ * Base class for Detectors which want to perform a preorder traversal of the classfile including
+ * visiting Annotations.
  *
  * @see AnnotationVisitor
  */
-abstract public class AnnotationDetector extends AnnotationVisitor implements Detector, UseAnnotationDatabase {
+public abstract class AnnotationDetector extends AnnotationVisitor
+        implements Detector, UseAnnotationDatabase {
     private ClassContext classContext;
 
     @Override

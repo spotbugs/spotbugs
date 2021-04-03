@@ -21,23 +21,21 @@ package edu.umd.cs.findbugs.filter;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
-
 import javax.annotation.CheckForNull;
 
 /**
  * Matches a String value against a predefined specification.
  *
- * Matching can be done in three modes depending on ctor matchSpec argument.
+ * <p>Matching can be done in three modes depending on ctor matchSpec argument.
  *
- * If matchSpec is null, match will succeed for any value (including empty
- * String and null)
+ * <p>If matchSpec is null, match will succeed for any value (including empty String and null)
  *
- * If matchSpec starts with ~ character it will be treated as
- * java.util.regex.Pattern, with the ~ character omitted. The pattern will be
- * matched against whole value (ie Matcher.match(), not Matcher.find())
+ * <p>If matchSpec starts with ~ character it will be treated as java.util.regex.Pattern, with the ~
+ * character omitted. The pattern will be matched against whole value (ie Matcher.match(), not
+ * Matcher.find())
  *
- * If matchSpec is a non-null String with any other initial charcter, exact
- * matching using String.equals(String) will be performed.
+ * <p>If matchSpec is a non-null String with any other initial charcter, exact matching using
+ * String.equals(String) will be performed.
  *
  * @author rafal@caltha.pl
  */

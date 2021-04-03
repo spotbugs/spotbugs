@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.filter;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-/**
- * @author rak
- */
+/** @author rak */
 public class SignatureUtil {
 
     public static String createMethodSignature(String params, String returns) {
@@ -57,7 +55,6 @@ public class SignatureUtil {
         } else {
             return "(" + pString + ")" + rString;
         }
-
     }
 
     public static String createFieldSignature(String type) {

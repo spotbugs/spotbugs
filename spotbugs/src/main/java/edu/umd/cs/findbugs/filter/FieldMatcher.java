@@ -19,17 +19,14 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
-/**
- * @author rafal@caltha.pl
- */
+/** @author rafal@caltha.pl */
 public class FieldMatcher extends MemberMatcher implements Matcher {
 
     public FieldMatcher(String name) {

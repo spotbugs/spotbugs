@@ -54,5 +54,4 @@ public class InheritanceGraph extends AbstractGraph<InheritanceEdge, ClassVertex
         }
         return super.createEdge(source, target);
     }
-
 }

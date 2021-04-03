@@ -21,13 +21,11 @@ package edu.umd.cs.findbugs.classfile.engine.asm;
 
 import org.objectweb.asm.Opcodes;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class FindBugsASM {
 
-    private static final boolean USE_EXPERIMENTAL = Boolean.parseBoolean(System.getProperty("spotbugs.experimental", "true"));
+    private static final boolean USE_EXPERIMENTAL =
+            Boolean.parseBoolean(System.getProperty("spotbugs.experimental", "true"));
 
     public static final int ASM_VERSION = Opcodes.ASM9;
-
 }

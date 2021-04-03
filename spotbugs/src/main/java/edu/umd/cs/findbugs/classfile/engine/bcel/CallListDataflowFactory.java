@@ -24,14 +24,17 @@ public class CallListDataflowFactory extends AnalysisFactory<CallListDataflow> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public CallListDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
-        CallListAnalysis analysis = new CallListAnalysis(getCFG(analysisCache, descriptor), getDepthFirstSearch(analysisCache,
-                descriptor), getConstantPoolGen(analysisCache, descriptor.getClassDescriptor()));
+    public CallListDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
+        CallListAnalysis analysis =
+                new CallListAnalysis(
+                        getCFG(analysisCache, descriptor),
+                        getDepthFirstSearch(analysisCache, descriptor),
+                        getConstantPoolGen(analysisCache, descriptor.getClassDescriptor()));
 
         CallListDataflow dataflow = new CallListDataflow(getCFG(analysisCache, descriptor), analysis);
         dataflow.execute();
 
         return dataflow;
-
     }
 }

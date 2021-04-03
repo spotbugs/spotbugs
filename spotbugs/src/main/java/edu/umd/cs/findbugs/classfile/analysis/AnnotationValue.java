@@ -19,16 +19,14 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
 import org.objectweb.asm.AnnotationVisitor;
-
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 
 /**
  * The "raw" version of an annotation appearing in a class file.
@@ -45,8 +43,7 @@ public class AnnotationValue {
     /**
      * Constructor.
      *
-     * @param annotationClass
-     *            the annotation class
+     * @param annotationClass the annotation class
      */
     public AnnotationValue(ClassDescriptor annotationClass) {
         this.annotationClass = annotationClass;
@@ -55,16 +52,13 @@ public class AnnotationValue {
     /**
      * Constructor.
      *
-     * @param annotationClass
-     *            JVM signature of the annotation class
+     * @param annotationClass JVM signature of the annotation class
      */
     public AnnotationValue(String annotationClass) {
         this.annotationClass = DescriptorFactory.createClassDescriptorFromSignature(annotationClass);
     }
 
-    /**
-     * @return ClassDescriptor referring to the annotation class
-     */
+    /** @return ClassDescriptor referring to the annotation class */
     public ClassDescriptor getAnnotationClass() {
         return annotationClass;
     }
@@ -72,13 +66,11 @@ public class AnnotationValue {
     /**
      * Get the value of given annotation element. See <a href=
      * "http://asm.objectweb.org/current/doc/javadoc/user/org/objectweb/asm/AnnotationVisitor.html"
-     * >AnnotationVisitor Javadoc</a> for information on what the object
-     * returned could be.
+     * >AnnotationVisitor Javadoc</a> for information on what the object returned could be.
      *
-     * @param name
-     *            name of annotation element
-     * @return the element value (primitive value, String value, enum value,
-     *         Type, or array of one of the previous)
+     * @param name name of annotation element
+     * @return the element value (primitive value, String value, enum value, Type, or array of one of
+     *     the previous)
      */
     public Object getValue(String name) {
         return valueMap.get(name);
@@ -87,8 +79,7 @@ public class AnnotationValue {
     /**
      * Get a descriptor specifying the type of an annotation element.
      *
-     * @param name
-     *            name of annotation element
+     * @param name name of annotation element
      * @return descriptor specifying the type of the annotation element
      */
     public Object getDesc(String name) {
@@ -107,9 +98,7 @@ public class AnnotationValue {
         return s;
     }
 
-    /**
-     * Get an AnnotationVisitor which can populate this AnnotationValue object.
-     */
+    /** Get an AnnotationVisitor which can populate this AnnotationValue object. */
     public AnnotationVisitor getAnnotationVisitor() {
         return new AnnotationVisitor(FindBugsASM.ASM_VERSION) {
             @Override
@@ -153,7 +142,6 @@ public class AnnotationValue {
              */
             @Override
             public void visitEnd() {
-
             }
 
             /*
@@ -168,27 +156,20 @@ public class AnnotationValue {
                 name = canonicalString(name);
                 valueMap.put(name, new EnumValue(desc, value));
                 typeMap.put(name, desc);
-
             }
         };
     }
 
     private final class AnnotationArrayVisitor extends AnnotationVisitor {
-        /**
-         *
-         */
+        /** */
         private final String name;
 
         private final List<Object> outerList;
 
-        /**
-         *
-         */
+        /** */
         private final List<Object> result = new LinkedList<>();
 
-        /**
-         * @param name
-         */
+        /** @param name */
         private AnnotationArrayVisitor(String name) {
             super(FindBugsASM.ASM_VERSION);
             name = canonicalString(name);
@@ -231,8 +212,6 @@ public class AnnotationValue {
         @Override
         public void visitEnum(String name, String desc, String value) {
             result.add(new EnumValue(desc, value));
-
         }
     }
-
 }

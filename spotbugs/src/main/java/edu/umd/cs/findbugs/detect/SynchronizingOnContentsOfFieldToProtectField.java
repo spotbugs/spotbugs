@@ -19,16 +19,15 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.CodeException;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
 
 public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDetector {
 
@@ -47,7 +46,6 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
         super.visit(code); // make callbacks to sawOpcode for all opcodes
         syncField = field = null;
         pendingBug = null;
-
     }
 
     int state = 0;
@@ -82,18 +80,21 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
         }
         if (seen == Const.PUTFIELD) {
 
-            if (syncField != null && getPrevOpcode(1) != Const.ALOAD_0 && syncField.equals(getXFieldOperand())) {
+            if (syncField != null
+                    && getPrevOpcode(1) != Const.ALOAD_0
+                    && syncField.equals(getXFieldOperand())) {
                 OpcodeStack.Item value = stack.getStackItem(0);
                 int priority = Priorities.HIGH_PRIORITY;
                 if (value.isNull()) {
                     priority = Priorities.NORMAL_PRIORITY;
                 }
-                pendingBug = new BugInstance(this, "ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD", priority)
-                        .addClassAndMethod(this).addField(syncField).addSourceLine(this);
+                pendingBug =
+                        new BugInstance(this, "ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD", priority)
+                                .addClassAndMethod(this)
+                                .addField(syncField)
+                                .addSourceLine(this);
                 countDown = 2;
-
             }
-
         }
         if (seen == Const.MONITOREXIT) {
             pendingBug = null;
@@ -143,7 +144,5 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
         default:
             break;
         }
-
     }
-
 }

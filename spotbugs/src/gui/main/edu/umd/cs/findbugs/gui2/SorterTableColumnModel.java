@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Component;
 import java.awt.Font;
 import java.net.URL;
@@ -29,7 +30,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ImageIcon;
@@ -46,14 +46,10 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreeModel;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
- * Handles the sorting order and informs the treeModel when changes are
- * necessary
+ * Handles the sorting order and informs the treeModel when changes are necessary
  *
  * @author Dan
- *
  */
 public class SorterTableColumnModel implements TableColumnModel {
 
@@ -89,7 +85,8 @@ public class SorterTableColumnModel implements TableColumnModel {
             return;
         }
         shownError = true;
-        MainFrame.getInstance().error("Incompatible order and shown for SorterTable: " + order + " vs. " + shown);
+        MainFrame.getInstance()
+                .error("Incompatible order and shown for SorterTable: " + order + " vs. " + shown);
         shown.clear();
         shown.addAll(order);
     }
@@ -157,7 +154,6 @@ public class SorterTableColumnModel implements TableColumnModel {
         dlsm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         orderUpdate();
-
     }
 
     public SorterTableColumnModel(Collection<Sortables> columnHeaders) {
@@ -169,15 +165,19 @@ public class SorterTableColumnModel implements TableColumnModel {
         private final TableCellRenderer defaultRenderer = new JTableHeader().getDefaultRenderer();
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
-                int column) {
+        public Component getTableCellRendererComponent(
+                JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-            Component comp = defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            Component comp =
+                    defaultRenderer.getTableCellRendererComponent(
+                            table, value, isSelected, hasFocus, row, column);
             if (comp instanceof JLabel) {
                 JLabel cell = (JLabel) comp;
                 cell.setFont(cell.getFont().deriveFont(Driver.getFontSize()));
                 cell.setFont(cell.getFont().deriveFont(Font.BOLD));
-                cell.setBorder(BorderFactory.createCompoundBorder(cell.getBorder(), BorderFactory.createEmptyBorder(0, 6, 0, 6)));
+                cell.setBorder(
+                        BorderFactory.createCompoundBorder(
+                                cell.getBorder(), BorderFactory.createEmptyBorder(0, 6, 0, 6)));
                 cell.setHorizontalAlignment(SwingConstants.CENTER);
                 if (value == Sortables.DIVIDER) {
                     URL arrows = MainFrame.class.getResource("arrows.png");
@@ -188,7 +188,6 @@ public class SorterTableColumnModel implements TableColumnModel {
                     } else {
                         cell.setText("<->");
                     }
-
                 }
             }
             return comp;
@@ -220,7 +219,8 @@ public class SorterTableColumnModel implements TableColumnModel {
             }
             orderUpdate();
             for (TableColumnModelListener l : watchers) {
-                l.columnAdded(new TableColumnModelEvent(this, columnList.size() - 1, columnList.size() - 1));
+                l.columnAdded(
+                        new TableColumnModelEvent(this, columnList.size() - 1, columnList.size() - 1));
             }
         } else {
             shown.remove(s);
@@ -243,7 +243,6 @@ public class SorterTableColumnModel implements TableColumnModel {
                 }
             }
         }
-
     }
 
     @Override
@@ -283,7 +282,8 @@ public class SorterTableColumnModel implements TableColumnModel {
     public int getColumnIndex(Object columnIdentifier) {
 
         if (columnIdentifier == null) {
-            throw new IllegalArgumentException("Don't send null to getColumnIndex, null shouldn't be in the sorting table.");
+            throw new IllegalArgumentException(
+                    "Don't send null to getColumnIndex, null shouldn't be in the sorting table.");
         }
 
         for (int x = 0; x < columnList.size(); x++) {
@@ -328,7 +328,7 @@ public class SorterTableColumnModel implements TableColumnModel {
 
     @Override
     public void setColumnSelectionAllowed(boolean arg0) {
-        throw new UnsupportedOperationException("BAH");// BAH
+        throw new UnsupportedOperationException("BAH"); // BAH
     }
 
     @Override
@@ -391,7 +391,8 @@ public class SorterTableColumnModel implements TableColumnModel {
     }
 
     List<Sortables> getOrderAfterDivider() {
-        if (!order.contains(Sortables.DIVIDER) || order.indexOf(Sortables.DIVIDER) == order.size() - 1) {
+        if (!order.contains(Sortables.DIVIDER)
+                || order.indexOf(Sortables.DIVIDER) == order.size() - 1) {
             return new ArrayList<>();
         }
 

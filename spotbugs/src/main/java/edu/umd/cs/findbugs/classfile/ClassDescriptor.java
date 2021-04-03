@@ -19,17 +19,14 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import java.io.Serializable;
-import java.util.regex.Pattern;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.io.Serializable;
+import java.util.regex.Pattern;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.classfile.JavaClass;
 
 /**
  * Descriptor identifying a class.
@@ -48,8 +45,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     /**
      * Constructor.
      *
-     * @param className
-     *            class name in VM format, e.g. "java/lang/String"
+     * @param className class name in VM format, e.g. "java/lang/String"
      */
     protected ClassDescriptor(@SlashedClassName String className) {
         if (className.indexOf('.') >= 0) {
@@ -61,9 +57,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
         this.className = className;
     }
 
-    /**
-     * @return Returns the class name in VM format, e.g. "java/lang/String"
-     */
+    /** @return Returns the class name in VM format, e.g. "java/lang/String" */
     public final @SlashedClassName String getClassName() {
         return className;
     }
@@ -78,14 +72,13 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
         return className.compareTo(o.className);
     }
 
-
     public boolean matches(Class<?> c) {
         return getDottedClassName().equals(c.getName());
     }
 
     /**
-     * Get the resource name of this class as it would appear in the classpath.
-     * E.g., "java/lang/String.class"
+     * Get the resource name of this class as it would appear in the classpath. E.g.,
+     * "java/lang/String.class"
      *
      * @return the resource name
      */
@@ -97,7 +90,6 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      * Get the name of the class in dotted format.
      *
      * @return the name of the class in dotted format
-     * 
      * @deprecated use {@link #getDottedClassName()} instead.
      */
     @Deprecated
@@ -150,12 +142,9 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     /**
      * Create a class descriptor from a resource name.
      *
-     * @param resourceName
-     *            the resource name
+     * @param resourceName the resource name
      * @return the class descriptor
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromResourceName(String)}
-     *             instead
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromResourceName(String)} instead
      */
     @Deprecated
     public static ClassDescriptor fromResourceName(String resourceName) {
@@ -165,10 +154,8 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     /**
      * Create a class descriptor from a field signature
      *
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromFieldSignature(String)}
-     *             instead
-     *
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromFieldSignature(String)}
+     *     instead
      */
     @Deprecated
     public static @CheckForNull ClassDescriptor fromFieldSignature(String signature) {
@@ -178,8 +165,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     /**
      * Determine whether or not the given resource name refers to a class.
      *
-     * @param resourceName
-     *            the resource name
+     * @param resourceName the resource name
      * @return true if the resource is a class, false otherwise
      * @deprecated Use {@link DescriptorFactory#isClassResource(String)} instead
      */
@@ -189,48 +175,35 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     }
 
     /**
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromSignature(String)}
-     *             instead
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromSignature(String)} instead
      */
     @Deprecated
     public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
         return DescriptorFactory.createClassDescriptorFromSignature(signature);
     }
 
-    /**
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String)}
-     *             instead
-     */
+    /** @deprecated Use {@link DescriptorFactory#createClassDescriptor(String)} instead */
     @Deprecated
     public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
         return DescriptorFactory.createClassDescriptor(className);
     }
 
-    /**
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String[])}
-     *             instead
-     */
+    /** @deprecated Use {@link DescriptorFactory#createClassDescriptor(String[])} instead */
     @Deprecated
     public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
         return DescriptorFactory.createClassDescriptor(classNames);
     }
 
     /**
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromDottedClassName(String)}
-     *             instead
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromDottedClassName(String)}
+     *     instead
      */
     @Deprecated
     public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
         return DescriptorFactory.createClassDescriptorFromDottedClassName(dottedClassName);
     }
 
-    /**
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptor(JavaClass)}
-     *             instead
-     */
+    /** @deprecated Use {@link DescriptorFactory#createClassDescriptor(JavaClass)} instead */
     @Deprecated
     public static ClassDescriptor createClassDescriptor(JavaClass c) {
         return DescriptorFactory.createClassDescriptor(c);
@@ -274,17 +247,18 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     }
 
     /**
-     * Throw a ClassNotFoundException to indicate that class named by given
-     * ClassDescriptor cannot be found. The exception message is formatted in a
-     * way that can be decoded by ClassNotFoundExceptionParser.
+     * Throw a ClassNotFoundException to indicate that class named by given ClassDescriptor cannot be
+     * found. The exception message is formatted in a way that can be decoded by
+     * ClassNotFoundExceptionParser.
      *
-     * @param classDescriptor
-     *            ClassDescriptor naming a class that cannot be found
+     * @param classDescriptor ClassDescriptor naming a class that cannot be found
      * @throws ClassNotFoundException
      * @see edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser
      */
-    public static void throwClassNotFoundException(ClassDescriptor classDescriptor) throws ClassNotFoundException {
-        throw new ClassNotFoundException("Class " + classDescriptor.toDottedClassName() + " cannot be resolved");
+    public static void throwClassNotFoundException(ClassDescriptor classDescriptor)
+            throws ClassNotFoundException {
+        throw new ClassNotFoundException(
+                "Class " + classDescriptor.toDottedClassName() + " cannot be resolved");
     }
 
     public boolean isAnonymousClass() {

@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.io.IO;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URL;
@@ -27,64 +31,56 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.annotation.CheckForNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.io.IO;
-
 /**
- * Bug rankers are used to compute a bug rank for each bug instance. Bug ranks
- * 1-20 are for bugs that are visible to users. Bug rank 1 is more the most
- * relevant/scary bugs. A bug rank greater than 20 is for issues that should not
- * be shown to users.
+ * Bug rankers are used to compute a bug rank for each bug instance. Bug ranks 1-20 are for bugs
+ * that are visible to users. Bug rank 1 is more the most relevant/scary bugs. A bug rank greater
+ * than 20 is for issues that should not be shown to users.
  *
+ * <p>The following bug rankers may exist:
  *
- * The following bug rankers may exist:
  * <ul>
- * <li>core bug ranker (loaded from etc/bugrank.txt)
- * <li>a bug ranker for each plugin (loaded from {@literal <plugin>}/etc/bugrank.txt)
- * <li>A global adjustment ranker (loaded from plugins/adjustBugrank.txt)
+ *   <li>core bug ranker (loaded from etc/bugrank.txt)
+ *   <li>a bug ranker for each plugin (loaded from {@literal <plugin>}/etc/bugrank.txt)
+ *   <li>A global adjustment ranker (loaded from plugins/adjustBugrank.txt)
  * </ul>
  *
- * A bug ranker is comprised of a list of bug patterns, bug kinds and bug
- * categories. For each, either an absolute or relative bug rank is provided. A
- * relative rank is one preceded by a + or -.
+ * A bug ranker is comprised of a list of bug patterns, bug kinds and bug categories. For each,
+ * either an absolute or relative bug rank is provided. A relative rank is one preceded by a + or -.
  *
- * For core bug detectors, the bug ranker search order is:
+ * <p>For core bug detectors, the bug ranker search order is:
+ *
  * <ul>
- * <li>global adjustment bug ranker
- * <li>core bug ranker
+ *   <li>global adjustment bug ranker
+ *   <li>core bug ranker
  * </ul>
  *
  * For third party plugins, the bug ranker search order is:
+ *
  * <ul>
- * <li>global adjustment bug ranker
- * <li>plugin adjustment bug ranker
- * <li>core bug ranker
+ *   <li>global adjustment bug ranker
+ *   <li>plugin adjustment bug ranker
+ *   <li>core bug ranker
  * </ul>
  *
  * The overall search order is
+ *
  * <ul>
- * <li>Bug patterns, in search order across bug rankers
- * <li>Bug kinds, in search order across bug rankers
- * <li>Bug categories, in search order across bug rankers
+ *   <li>Bug patterns, in search order across bug rankers
+ *   <li>Bug kinds, in search order across bug rankers
+ *   <li>Bug categories, in search order across bug rankers
  * </ul>
  *
- * Search stops at the first absolute bug rank found, and the result is the sum
- * of all of relative bug ranks plus the final absolute bug rank. Since all bug
- * categories are defined by the core bug ranker, we should always find an
- * absolute bug rank.
+ * Search stops at the first absolute bug rank found, and the result is the sum of all of relative
+ * bug ranks plus the final absolute bug rank. Since all bug categories are defined by the core bug
+ * ranker, we should always find an absolute bug rank.
  *
  * @see BugRankCategory
  * @see Priorities
  * @see edu.umd.cs.findbugs.annotations.Confidence
- *
  * @author Bill Pugh
  */
 public class BugRanker {
@@ -124,16 +120,12 @@ public class BugRanker {
                 if (firstChar == '+' || firstChar == '-') {
                     isRelative.add(k);
                 }
-
-
             }
         }
     }
 
     /**
-     * @param u
-     *            may be null. In this case, a default value will be used for
-     *            all bugs
+     * @param u may be null. In this case, a default value will be used for all bugs
      * @throws IOException
      */
     BugRanker(@CheckForNull URL u) throws IOException {
@@ -154,8 +146,11 @@ public class BugRanker {
 
                 String parts[] = s.split(" ");
                 if (parts.length != 3) {
-                    AnalysisContext.logError("Can't parse bug rank line: '" + s + "'. "
-                            + "Valid line must contain 3 parts separated by spaces.");
+                    AnalysisContext.logError(
+                            "Can't parse bug rank line: '"
+                                    + s
+                                    + "'. "
+                                    + "Valid line must contain 3 parts separated by spaces.");
                     continue;
                 }
                 String rank = parts[0];
@@ -168,8 +163,11 @@ public class BugRanker {
                 } else if ("Category".equals(kind)) {
                     bugCategories.storeAdjustment(what, rank);
                 } else {
-                    AnalysisContext.logError("Can't parse rank kind from line: '" + s + "'. "
-                            + "Valid kind must be either 'BugPattern', 'BugKind' or 'Category'.");
+                    AnalysisContext.logError(
+                            "Can't parse rank kind from line: '"
+                                    + s
+                                    + "'. "
+                                    + "Valid kind must be either 'BugPattern', 'BugKind' or 'Category'.");
                 }
             }
         }
@@ -181,9 +179,7 @@ public class BugRanker {
 
     private final Scorer bugCategories = new Scorer();
 
-    /**
-     *
-     */
+    /** */
     public static final String FILENAME = "bugrank.txt";
 
     public static final String ADJUST_FILENAME = "adjustBugrank.txt";
@@ -241,8 +237,6 @@ public class BugRanker {
         return rank;
     }
 
-
-
     private static BugRanker getCoreRanker() {
         Plugin corePlugin = PluginLoader.getCorePluginLoader().getPlugin();
         return corePlugin.getBugRanker();
@@ -258,14 +252,13 @@ public class BugRanker {
         return adjustRank(patternRank, priority);
     }
 
-
-    private static AnalysisLocal<HashMap<BugPattern, Integer>> rankForBugPattern = new AnalysisLocal<HashMap<BugPattern, Integer>>() {
-        @Override
-        protected HashMap<BugPattern, Integer> initialValue() {
-            return new HashMap<>();
-        }
-    };
-
+    private static AnalysisLocal<HashMap<BugPattern, Integer>> rankForBugPattern =
+            new AnalysisLocal<HashMap<BugPattern, Integer>>() {
+                @Override
+                protected HashMap<BugPattern, Integer> initialValue() {
+                    return new HashMap<>();
+                }
+            };
 
     public static int findRank(BugPattern pattern, @CheckForNull DetectorFactory detectorFactory) {
         boolean haveCache = Global.getAnalysisCache() != null;
@@ -312,7 +305,6 @@ public class BugRanker {
                 }
             }
             LOG.debug("plugin {} doesn't match {}", plugin, pattern);
-
         }
         rankers.add(getCoreRanker());
 

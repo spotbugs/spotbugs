@@ -24,12 +24,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Any class or package annotation with this annotation must avoid using mutable static data,
- * and instead use the AnalysisContext for any cross-instance data.
+ * Any class or package annotation with this annotation must avoid using mutable static data, and
+ * instead use the AnalysisContext for any cross-instance data.
  */
-
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AnalysisContextContained {
-
 }

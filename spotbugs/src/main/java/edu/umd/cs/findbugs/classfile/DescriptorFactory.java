@@ -19,38 +19,35 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ObjectType;
-
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ObjectType;
 
 /**
- * Factory for creating ClassDescriptors, MethodDescriptors, and
- * FieldDescriptors.
+ * Factory for creating ClassDescriptors, MethodDescriptors, and FieldDescriptors.
  *
  * @author David Hovemeyer
  */
 public class DescriptorFactory {
-    private static ThreadLocal<DescriptorFactory> instanceThreadLocal = new ThreadLocal<DescriptorFactory>() {
-        @Override
-        protected DescriptorFactory initialValue() {
-            return new DescriptorFactory();
-        }
-    };
+    private static ThreadLocal<DescriptorFactory> instanceThreadLocal =
+            new ThreadLocal<DescriptorFactory>() {
+                @Override
+                protected DescriptorFactory initialValue() {
+                    return new DescriptorFactory();
+                }
+            };
 
     private final Map<String, ClassDescriptor> classDescriptorMap;
 
@@ -70,9 +67,10 @@ public class DescriptorFactory {
     }
 
     /**
-     * This method was designed to canonicalize String to improve performance,
-     * but now GC cost is cheaper than calculation cost in application thread
-     * so removing this old optimization makes SpotBugs 16% faster.
+     * This method was designed to canonicalize String to improve performance, but now GC cost is
+     * cheaper than calculation cost in application thread so removing this old optimization makes
+     * SpotBugs 16% faster.
+     *
      * @return given string instance
      * @deprecated this hack is needless for modern JVM, at least Java8
      */
@@ -112,8 +110,7 @@ public class DescriptorFactory {
     /**
      * Get a ClassDescriptor for a class name in VM (slashed) format.
      *
-     * @param className
-     *            a class name in VM (slashed) format
+     * @param className a class name in VM (slashed) format
      * @return ClassDescriptor for that class
      */
     public @Nonnull ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
@@ -134,11 +131,11 @@ public class DescriptorFactory {
     /**
      * Get a ClassDescriptor for a class name in dotted format.
      *
-     * @param dottedClassName
-     *            a class name in dotted format
+     * @param dottedClassName a class name in dotted format
      * @return ClassDescriptor for that class
      */
-    public ClassDescriptor getClassDescriptorForDottedClassName(@DottedClassName String dottedClassName) {
+    public ClassDescriptor getClassDescriptorForDottedClassName(
+            @DottedClassName String dottedClassName) {
         assert dottedClassName != null;
         ClassDescriptor classDescriptor = dottedClassDescriptorMap.get(dottedClassName);
         if (classDescriptor == null) {
@@ -149,26 +146,25 @@ public class DescriptorFactory {
     }
 
     public MethodDescriptor getMethodDescriptor(JavaClass jClass, Method method) {
-        return getMethodDescriptor(ClassName.toSlashedClassName(jClass.getClassName()), method.getName(), method.getSignature(),
+        return getMethodDescriptor(
+                ClassName.toSlashedClassName(jClass.getClassName()),
+                method.getName(),
+                method.getSignature(),
                 method.isStatic());
     }
 
     /**
      * Get a MethodDescriptor.
      *
-     * @param className
-     *            name of the class containing the method, in VM format (e.g.,
-     *            "java/lang/String")
-     * @param name
-     *            name of the method
-     * @param signature
-     *            signature of the method
-     * @param isStatic
-     *            true if method is static, false otherwise
+     * @param className name of the class containing the method, in VM format (e.g.,
+     *     "java/lang/String")
+     * @param name name of the method
+     * @param signature signature of the method
+     * @param isStatic true if method is static, false otherwise
      * @return MethodDescriptor
      */
-    public MethodDescriptor getMethodDescriptor(@SlashedClassName String className, String name, String signature,
-            boolean isStatic) {
+    public MethodDescriptor getMethodDescriptor(
+            @SlashedClassName String className, String name, String signature, boolean isStatic) {
         if (className == null) {
             throw new NullPointerException("className must be nonnull");
         }
@@ -196,7 +192,6 @@ public class DescriptorFactory {
             }
         }
         System.out.printf("Descriptor factory: %d/%d/%d%n", keys, values, total);
-
     }
 
     public void canonicalize(MethodDescriptor m) {
@@ -204,7 +199,6 @@ public class DescriptorFactory {
         if (m != existing) {
             methodDescriptorMap.put(m, m);
         }
-
     }
 
     public void canonicalize(FieldDescriptor m) {
@@ -212,29 +206,28 @@ public class DescriptorFactory {
         if (m != existing) {
             fieldDescriptorMap.put(m, m);
         }
-
     }
 
     public MethodDescriptor getMethodDescriptor(MethodAnnotation ma) {
-        return getMethodDescriptor(ClassName.toSlashedClassName(ma.getClassName()), ma.getMethodName(), ma.getMethodSignature(),
+        return getMethodDescriptor(
+                ClassName.toSlashedClassName(ma.getClassName()),
+                ma.getMethodName(),
+                ma.getMethodSignature(),
                 ma.isStatic());
     }
 
     /**
      * Get a FieldDescriptor.
      *
-     * @param className
-     *            the name of the class the field belongs to, in VM format
-     *            (e.g., "java/lang/String")
-     * @param name
-     *            the name of the field
-     * @param signature
-     *            the field signature (type)
-     * @param isStatic
-     *            true if field is static, false if not
+     * @param className the name of the class the field belongs to, in VM format (e.g.,
+     *     "java/lang/String")
+     * @param name the name of the field
+     * @param signature the field signature (type)
+     * @param isStatic true if field is static, false if not
      * @return FieldDescriptor
      */
-    public FieldDescriptor getFieldDescriptor(@SlashedClassName String className, String name, String signature, boolean isStatic) {
+    public FieldDescriptor getFieldDescriptor(
+            @SlashedClassName String className, String name, String signature, boolean isStatic) {
         FieldDescriptor fieldDescriptor = new FieldDescriptor(className, name, signature, isStatic);
         FieldDescriptor existing = fieldDescriptorMap.get(fieldDescriptor);
         if (existing == null) {
@@ -246,19 +239,20 @@ public class DescriptorFactory {
 
     public FieldDescriptor getFieldDescriptor(@SlashedClassName String className, Field ma) {
         return getFieldDescriptor(className, ma.getName(), ma.getSignature(), ma.isStatic());
-
     }
 
     public FieldDescriptor getFieldDescriptor(FieldAnnotation ma) {
-        return getFieldDescriptor(ClassName.toSlashedClassName(ma.getClassName()), ma.getFieldName(), ma.getFieldSignature(),
+        return getFieldDescriptor(
+                ClassName.toSlashedClassName(ma.getClassName()),
+                ma.getFieldName(),
+                ma.getFieldSignature(),
                 ma.isStatic());
     }
 
     /**
      * Get a ClassDescriptor for the class described by given ObjectType object.
      *
-     * @param type
-     *            an ObjectType
+     * @param type an ObjectType
      * @return a ClassDescriptor for the class described by the ObjectType
      */
     public static ClassDescriptor getClassDescriptor(ObjectType type) {
@@ -272,8 +266,7 @@ public class DescriptorFactory {
     /**
      * Create a class descriptor from a resource name.
      *
-     * @param resourceName
-     *            the resource name
+     * @param resourceName the resource name
      * @return the class descriptor
      */
     public static ClassDescriptor createClassDescriptorFromResourceName(String resourceName) {
@@ -283,11 +276,9 @@ public class DescriptorFactory {
         return createClassDescriptor(resourceName.substring(0, resourceName.length() - 6));
     }
 
-    /**
-     * Create a class descriptor from a field signature
-     *
-     */
-    public static @CheckForNull ClassDescriptor createClassDescriptorFromFieldSignature(String signature) {
+    /** Create a class descriptor from a field signature */
+    public static @CheckForNull ClassDescriptor createClassDescriptorFromFieldSignature(
+            String signature) {
         int start = signature.indexOf('L');
         if (start < 0) {
             return null;
@@ -302,8 +293,7 @@ public class DescriptorFactory {
     /**
      * Determine whether or not the given resource name refers to a class.
      *
-     * @param resourceName
-     *            the resource name
+     * @param resourceName the resource name
      * @return true if the resource is a class, false otherwise
      */
     public static boolean isClassResource(String resourceName) {
@@ -314,8 +304,7 @@ public class DescriptorFactory {
     /**
      * Determine whether or not the given resource name refers to a module-info class.
      *
-     * @param resourceName
-     *            the resource name
+     * @param resourceName the resource name
      * @return true if the resource is a module-info class, false otherwise
      */
     public static boolean isModuleInfo(String resourceName) {

@@ -21,24 +21,20 @@ package edu.umd.cs.findbugs.anttask;
 
 import java.io.File;
 import java.util.ArrayList;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileSet;
 
 /**
- * An ant task that is wraps the behavior of the UnionResults executable into an
- * ant task.
+ * An ant task that is wraps the behavior of the UnionResults executable into an ant task.
  *
- * {@literal <taskdef name="UnionBugs2" classname="edu.umd.cs.findbugs.anttask.UnionBugs2"
+ * <p>{@literal <taskdef name="UnionBugs2" classname="edu.umd.cs.findbugs.anttask.UnionBugs2"
  * classpath="...">}
  *
- * {@literal <UnionBugs2 to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
+ * <p>{@literal <UnionBugs2 to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
  * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>}
  *
  * @ant.task category="utility"
- *
  */
-
 public class UnionBugs2 extends AbstractFindBugsTask {
 
     private String to;
@@ -53,8 +49,7 @@ public class UnionBugs2 extends AbstractFindBugsTask {
     /**
      * The fileset containing all the findbugs xml files that need to be merged
      *
-     * @param arg
-     *            fileset containing all the findbugs xml files that need to be merged
+     * @param arg fileset containing all the findbugs xml files that need to be merged
      */
     public void addFileset(FileSet arg) {
         fileSets.add(arg);
@@ -63,8 +58,7 @@ public class UnionBugs2 extends AbstractFindBugsTask {
     /**
      * The File everything should get merged into
      *
-     * @param arg
-     *            file everything should get merged into
+     * @param arg file everything should get merged into
      */
     public void setTo(String arg) {
         to = arg;
@@ -83,7 +77,6 @@ public class UnionBugs2 extends AbstractFindBugsTask {
         }
     }
 
-
     @Override
     protected void beforeExecuteJavaProcess() {
         log("unioning bugs...");
@@ -100,7 +93,5 @@ public class UnionBugs2 extends AbstractFindBugsTask {
                 addArg(new File(fromDir, file).toString());
             }
         }
-
     }
-
 }

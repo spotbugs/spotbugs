@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
+import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.io.IO;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,18 +32,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.classfile.ICodeBase;
-import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
-import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
-import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
-import edu.umd.cs.findbugs.io.IO;
-
 /**
- * A scannable code base class for a zip (or Jar) file nested inside some other
- * codebase. These are handled by extracting the nested zip/jar file to a
- * temporary file, and delegating to an internal ZipFileCodeBase that reads from
- * the temporary file.
+ * A scannable code base class for a zip (or Jar) file nested inside some other codebase. These are
+ * handled by extracting the nested zip/jar file to a temporary file, and delegating to an internal
+ * ZipFileCodeBase that reads from the temporary file.
  *
  * @author David Hovemeyer
  */
@@ -53,10 +51,10 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
     /**
      * Constructor.
      *
-     * @param codeBaseLocator
-     *            the codebase locator for this codebase
+     * @param codeBaseLocator the codebase locator for this codebase
      */
-    public NestedZipFileCodeBase(NestedZipFileCodeBaseLocator codeBaseLocator) throws ResourceNotFoundException, IOException {
+    public NestedZipFileCodeBase(NestedZipFileCodeBaseLocator codeBaseLocator)
+            throws ResourceNotFoundException, IOException {
         super(codeBaseLocator);
         this.parentCodeBase = codeBaseLocator.getParentCodeBase();
         this.resourceName = codeBaseLocator.getResourceName();

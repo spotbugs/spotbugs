@@ -18,8 +18,10 @@
  */
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.util.Util;
 import java.util.Set;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -29,10 +31,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.util.Util;
 
 public class CopyMarkerDetailsAction implements IObjectActionDelegate {
 
@@ -85,7 +83,8 @@ public class CopyMarkerDetailsAction implements IObjectActionDelegate {
                 line.append(System.getProperty("line.separator", "\n"));
                 fullText.append(line.toString());
             } catch (CoreException e) {
-                FindbugsPlugin.getDefault().logException(e, "Exception while parsing content of FindBugs markers.");
+                FindbugsPlugin.getDefault()
+                        .logException(e, "Exception while parsing content of FindBugs markers.");
             }
         }
         return fullText.toString();
@@ -94,5 +93,4 @@ public class CopyMarkerDetailsAction implements IObjectActionDelegate {
     private Set<IMarker> getMarkers() {
         return MarkerUtil.getMarkerFromSelection(selection);
     }
-
 }

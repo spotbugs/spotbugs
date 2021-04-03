@@ -19,24 +19,22 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.ExceptionSet;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import org.apache.bcel.generic.MethodGen;
 
 /**
- * Prune a CFG to remove infeasible exception edges. In order to determine what
- * kinds of exceptions can be thrown by explicit ATHROW instructions, type
- * analysis must first be performed on the unpruned CFG.
+ * Prune a CFG to remove infeasible exception edges. In order to determine what kinds of exceptions
+ * can be thrown by explicit ATHROW instructions, type analysis must first be performed on the
+ * unpruned CFG.
  *
  * @author David Hovemeyer
  * @see CFG
@@ -51,22 +49,22 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
     static {
         if (STATS) {
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    System.err.println("Exception edges pruned: " + numEdgesPruned);
-                }
-            });
+            Runtime.getRuntime()
+                    .addShutdownHook(
+                            new Thread() {
+                                @Override
+                                public void run() {
+                                    System.err.println("Exception edges pruned: " + numEdgesPruned);
+                                }
+                            });
         }
     }
 
     /**
-     * A memento to remind us of how we classified a particular exception edge.
-     * If pruning and classifying succeeds, then these momentos can be applied
-     * to actually change the state of the edges. The issue is that the entire
-     * pruning/classifying operation must either fail or succeed as a whole.
-     * Thus, we don't commit any CFG changes until we know everything was
-     * successful.
+     * A memento to remind us of how we classified a particular exception edge. If pruning and
+     * classifying succeeds, then these momentos can be applied to actually change the state of the
+     * edges. The issue is that the entire pruning/classifying operation must either fail or succeed
+     * as a whole. Thus, we don't commit any CFG changes until we know everything was successful.
      */
     private static class MarkedEdge {
         private final Edge edge;
@@ -94,13 +92,10 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
     /**
      * Constructor.
      *
-     * @param cfg
-     *            the CFG to prune
-     * @param methodGen
-     *            the method
-     * @param typeDataflow
-     *            initialized TypeDataflow object for the CFG, indicating the
-     *            types of all stack locations
+     * @param cfg the CFG to prune
+     * @param methodGen the method
+     * @param typeDataflow initialized TypeDataflow object for the CFG, indicating the types of all
+     *     stack locations
      */
     public PruneInfeasibleExceptionEdges(CFG cfg, MethodGen methodGen, TypeDataflow typeDataflow) {
         this.cfg = cfg;
@@ -108,14 +103,11 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
     }
 
     /**
-     * Prune infeasible exception edges from the CFG. If the method returns
-     * normally, then the operation was successful, and the CFG should no longer
-     * contain infeasible exception edges. If ClassNotFoundException or
-     * DataflowAnalysisException are thrown, then the operation was
-     * unsuccessful,
-     * <em>but the CFG is still valid because it was not modified</em>. If a
-     * runtime exception is thrown, then the CFG may be partially modified and
-     * should be considered invalid.
+     * Prune infeasible exception edges from the CFG. If the method returns normally, then the
+     * operation was successful, and the CFG should no longer contain infeasible exception edges. If
+     * ClassNotFoundException or DataflowAnalysisException are thrown, then the operation was
+     * unsuccessful, <em>but the CFG is still valid because it was not modified</em>. If a runtime
+     * exception is thrown, then the CFG may be partially modified and should be considered invalid.
      */
     @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public void execute() throws ClassNotFoundException {
@@ -136,7 +128,8 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
                 // so we can delete the edge.
                 deletedEdgeSet.add(edge);
             } else {
-                if (exceptionSet.isSingleton("java.lang.CloneNotSupportedException") && cfg.getMethodName().endsWith(".clone()")) {
+                if (exceptionSet.isSingleton("java.lang.CloneNotSupportedException")
+                        && cfg.getMethodName().endsWith(".clone()")) {
                     String className = cfg.getMethodGen().getClassName();
                     if (Subtypes2.instanceOf(className, "java.lang.Cloneable")) {
                         deletedEdgeSet.add(edge);
@@ -177,9 +170,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
         }
     }
 
-    /**
-     * @return true if modified
-     */
+    /** @return true if modified */
     public boolean wasCFGModified() {
         return cfgModified;
     }

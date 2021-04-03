@@ -19,14 +19,12 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.io.IOException;
-import java.util.Iterator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
+import java.util.Iterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AndMatcher extends CompoundMatcher {
     private static final Logger LOG = LoggerFactory.getLogger(AndMatcher.class);
@@ -48,7 +46,6 @@ public class AndMatcher extends CompoundMatcher {
         }
         anyMatches = true;
         return true;
-
     }
 
     @Override
@@ -74,5 +71,4 @@ public class AndMatcher extends CompoundMatcher {
         }
         return "And(" + super.toString() + ")";
     }
-
 }

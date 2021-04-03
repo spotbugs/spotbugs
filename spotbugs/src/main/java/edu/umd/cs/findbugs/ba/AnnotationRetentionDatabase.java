@@ -44,5 +44,4 @@ public class AnnotationRetentionDatabase {
     public void setRuntimeRetention(String dottedClassName, boolean value) {
         annotationRetention.put(dottedClassName, Boolean.valueOf(value));
     }
-
 }

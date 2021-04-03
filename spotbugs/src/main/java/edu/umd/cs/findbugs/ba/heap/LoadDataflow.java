@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.ba.heap;
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class LoadDataflow extends AbstractDataflow<FieldSet, LoadAnalysis> {
     public LoadDataflow(CFG cfg, LoadAnalysis analysis) {
         super(cfg, analysis);

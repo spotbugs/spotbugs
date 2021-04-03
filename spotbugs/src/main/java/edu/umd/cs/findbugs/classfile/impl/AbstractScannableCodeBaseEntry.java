@@ -21,9 +21,7 @@ package edu.umd.cs.findbugs.classfile.impl;
 
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public abstract class AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
     @Override
     public abstract AbstractScannableCodeBase getCodeBase();

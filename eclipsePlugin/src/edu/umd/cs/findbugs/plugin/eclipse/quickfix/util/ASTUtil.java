@@ -24,6 +24,15 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.core.runtime.Assert.isTrue;
 
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.ASTNodeNotFoundException;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.FieldDeclarationNotFoundException;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.MethodDeclarationNotFoundException;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.StatementNotFoundException;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.TypeDeclarationNotFoundException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,9 +42,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.annotation.CheckForNull;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -57,21 +64,10 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 
-import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.ASTNodeNotFoundException;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.FieldDeclarationNotFoundException;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.MethodDeclarationNotFoundException;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.StatementNotFoundException;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.TypeDeclarationNotFoundException;
-
 /**
- * The <CODE>ASTUtil</CODE> provides some useful methods to transform
- * <CODE>PackageMemberAnnotations</CODE> into <CODE>BodyDeclarations</CODE>.
- * Normally this methods should be used to get a type, field or method
- * declaration for a class, field or method annotation.
+ * The <CODE>ASTUtil</CODE> provides some useful methods to transform <CODE>PackageMemberAnnotations
+ * </CODE> into <CODE>BodyDeclarations</CODE>. Normally this methods should be used to get a type,
+ * field or method declaration for a class, field or method annotation.
  *
  * @see ASTUtil#getTypeDeclaration(CompilationUnit, ClassAnnotation)
  * @see ASTUtil#getFieldDeclaration(TypeDeclaration, FieldAnnotation)
@@ -98,23 +94,32 @@ public class ASTUtil {
         primitiveTypes.put("J", long.class);
         primitiveTypes.put("F", float.class);
         primitiveTypes.put("D", double.class);
-
     }
 
-    public static void addImports(ASTRewrite rewrite, CompilationUnit compilationUnit, String... imports) {
+    public static void addImports(
+            ASTRewrite rewrite, CompilationUnit compilationUnit, String... imports) {
         addImports(rewrite, compilationUnit, false, imports);
     }
 
-    public static void addStaticImports(ASTRewrite rewrite, CompilationUnit compilationUnit, String... imports) {
+    public static void addStaticImports(
+            ASTRewrite rewrite, CompilationUnit compilationUnit, String... imports) {
         addImports(rewrite, compilationUnit, true, imports);
     }
 
-    public static void addImports(ASTRewrite rewrite, CompilationUnit compilationUnit, boolean staticImports, String... imports) {
+    public static void addImports(
+            ASTRewrite rewrite,
+            CompilationUnit compilationUnit,
+            boolean staticImports,
+            String... imports) {
         addImports(rewrite, compilationUnit, defaultImportComparator, staticImports, imports);
     }
 
-    public static void addImports(ASTRewrite rewrite, CompilationUnit compilationUnit,
-            Comparator<? super ImportDeclaration> comparator, boolean staticImports, String... imports) {
+    public static void addImports(
+            ASTRewrite rewrite,
+            CompilationUnit compilationUnit,
+            Comparator<? super ImportDeclaration> comparator,
+            boolean staticImports,
+            String... imports) {
         requireNonNull(comparator, "import comparator");
         requireNonNull(imports, "imports");
 
@@ -130,28 +135,28 @@ public class ASTUtil {
     }
 
     /**
-     * Adds <CODE>ImportDeclaration</CODE>s to the list of imports in the
-     * specified <CODE>CompilationUnit</CODE>. If an import already exists, the
-     * import will not be inserted. The imports are inserted in an ordered way.
-     * The <CODE>Comparator</CODE> of the <CODE>SortedSet</CODE> is used to sort
-     * the imports.
+     * Adds <CODE>ImportDeclaration</CODE>s to the list of imports in the specified <CODE>
+     * CompilationUnit</CODE>. If an import already exists, the import will not be inserted. The
+     * imports are inserted in an ordered way. The <CODE>Comparator</CODE> of the <CODE>SortedSet
+     * </CODE> is used to sort the imports.
      *
-     * @param rewrite
-     *            the <CODE>ASTRewrite</CODE>, that stores the edits.
-     * @param compilationUnit
-     *            the <CODE>CompilationUnit</CODE>.
-     * @param imports
-     *            the new <CODE>ImportDeclaration</CODE>s to add.
+     * @param rewrite the <CODE>ASTRewrite</CODE>, that stores the edits.
+     * @param compilationUnit the <CODE>CompilationUnit</CODE>.
+     * @param imports the new <CODE>ImportDeclaration</CODE>s to add.
      */
-    public static void addImports(ASTRewrite rewrite, CompilationUnit compilationUnit, SortedSet<ImportDeclaration> imports) {
+    public static void addImports(
+            ASTRewrite rewrite, CompilationUnit compilationUnit, SortedSet<ImportDeclaration> imports) {
         requireNonNull(rewrite, "ast-rewrite");
         requireNonNull(compilationUnit, "compilation-unit");
         requireNonNull(imports, "imports");
-        ListRewrite importRewrite = rewrite.getListRewrite(compilationUnit, CompilationUnit.IMPORTS_PROPERTY);
+        ListRewrite importRewrite =
+                rewrite.getListRewrite(compilationUnit, CompilationUnit.IMPORTS_PROPERTY);
         addImports(importRewrite, imports.comparator(), imports.iterator());
     }
 
-    private static void addImports(ListRewrite importRewrite, Comparator<? super ImportDeclaration> comparator,
+    private static void addImports(
+            ListRewrite importRewrite,
+            Comparator<? super ImportDeclaration> comparator,
             Iterator<ImportDeclaration> newImports) {
         try {
             ImportDeclaration newImport = newImports.next();
@@ -176,74 +181,64 @@ public class ASTUtil {
         }
     }
 
-    public static ASTNode getASTNode(CompilationUnit compilationUnit, SourceLineAnnotation sourceLineAnno)
+    public static ASTNode getASTNode(
+            CompilationUnit compilationUnit, SourceLineAnnotation sourceLineAnno)
             throws ASTNodeNotFoundException {
         requireNonNull(sourceLineAnno, "source line annotation");
         return getASTNode(compilationUnit, sourceLineAnno.getStartLine(), sourceLineAnno.getEndLine());
     }
 
     /**
-     * Searchs the first <CODE>ASTNode</CODE> between the specified
-     * <CODE>startLine</CODE> and <CODE>endLine</CODE>. If the source line
-     * doesn't contain an <CODE>ASTNode</CODE>, a
-     * <CODE>ASTNodeNotFoundException</CODE> is thrown.
+     * Searchs the first <CODE>ASTNode</CODE> between the specified <CODE>startLine</CODE> and <CODE>
+     * endLine</CODE>. If the source line doesn't contain an <CODE>ASTNode</CODE>, a <CODE>
+     * ASTNodeNotFoundException</CODE> is thrown.
      *
-     * @param compilationUnit
-     *            the <CODE>CompilationUnit</CODE>, that contains the
-     *            <CODE>ASTNode</CODE>.
-     * @param startLine
-     *            the starting source line number.
-     * @param endLine
-     *            the ending source line number.
-     * @throws ASTNodeNotFoundException
-     *             if no <CODE>ASTNode</CODE> found between the specifed start
-     *             and end line.
+     * @param compilationUnit the <CODE>CompilationUnit</CODE>, that contains the <CODE>ASTNode</CODE>
+     *     .
+     * @param startLine the starting source line number.
+     * @param endLine the ending source line number.
+     * @throws ASTNodeNotFoundException if no <CODE>ASTNode</CODE> found between the specifed start
+     *     and end line.
      */
-    public static ASTNode getASTNode(CompilationUnit compilationUnit, int startLine, int endLine) throws ASTNodeNotFoundException {
+    public static ASTNode getASTNode(CompilationUnit compilationUnit, int startLine, int endLine)
+            throws ASTNodeNotFoundException {
         requireNonNull(compilationUnit, "compilation unit");
 
         ASTNode node = searchASTNode(compilationUnit, startLine, endLine);
         if (node == null) {
-            throw new ASTNodeNotFoundException("No ast node found between " + startLine + " and " + endLine + ".");
+            throw new ASTNodeNotFoundException(
+                    "No ast node found between " + startLine + " and " + endLine + ".");
         }
         return node;
     }
 
     /**
-     * Returns the <CODE>TypeDeclaration</CODE> for the specified
-     * <CODE>ClassAnnotation</CODE>. The type has to be declared in the
-     * specified <CODE>CompilationUnit</CODE>.
+     * Returns the <CODE>TypeDeclaration</CODE> for the specified <CODE>ClassAnnotation</CODE>. The
+     * type has to be declared in the specified <CODE>CompilationUnit</CODE>.
      *
-     * @param compilationUnit
-     *            The <CODE>CompilationUnit</CODE>, where the
-     *            <CODE>TypeDeclaration</CODE> is declared in.
-     * @param classAnno
-     *            The <CODE>ClassAnnotation</CODE>, which contains the class
-     *            name of the <CODE>TypeDeclaration</CODE>.
-     * @return the <CODE>TypeDeclaration</CODE> found in the specified
-     *         <CODE>CompilationUnit</CODE>.
-     * @throws TypeDeclarationNotFoundException
-     *             if no matching <CODE>TypeDeclaration</CODE> was found.
+     * @param compilationUnit The <CODE>CompilationUnit</CODE>, where the <CODE>TypeDeclaration</CODE>
+     *     is declared in.
+     * @param classAnno The <CODE>ClassAnnotation</CODE>, which contains the class name of the <CODE>
+     *     TypeDeclaration</CODE>.
+     * @return the <CODE>TypeDeclaration</CODE> found in the specified <CODE>CompilationUnit</CODE>.
+     * @throws TypeDeclarationNotFoundException if no matching <CODE>TypeDeclaration</CODE> was found.
      */
-    public static TypeDeclaration getTypeDeclaration(CompilationUnit compilationUnit, ClassAnnotation classAnno)
+    public static TypeDeclaration getTypeDeclaration(
+            CompilationUnit compilationUnit, ClassAnnotation classAnno)
             throws TypeDeclarationNotFoundException {
         requireNonNull(classAnno, "class annotation");
         return getTypeDeclaration(compilationUnit, classAnno.getClassName());
     }
 
     /**
-     * Returns the <CODE>TypeDeclaration</CODE> for the specified type name. The
-     * type has to be declared in the specified <CODE>CompilationUnit</CODE>.
+     * Returns the <CODE>TypeDeclaration</CODE> for the specified type name. The type has to be
+     * declared in the specified <CODE>CompilationUnit</CODE>.
      *
-     * @param compilationUnit
-     *            The <CODE>CompilationUnit</CODE>, where the
-     *            <CODE>TypeDeclaration</CODE> is declared in.
-     * @param typeName
-     *            The qualified class name to search for.
-     * @return the <CODE>TypeDeclaration</CODE> found in the specified
-     *         <CODE>CompilationUnit</CODE>.
-     * @throws TypeDeclarationNotFoundException
-     *             if no matching <CODE>TypeDeclaration</CODE> was found.
+     * @param compilationUnit The <CODE>CompilationUnit</CODE>, where the <CODE>TypeDeclaration</CODE>
+     *     is declared in.
+     * @param typeName The qualified class name to search for.
+     * @return the <CODE>TypeDeclaration</CODE> found in the specified <CODE>CompilationUnit</CODE>.
+     * @throws TypeDeclarationNotFoundException if no matching <CODE>TypeDeclaration</CODE> was found.
      */
     public static TypeDeclaration getTypeDeclaration(CompilationUnit compilationUnit, String typeName)
             throws TypeDeclarationNotFoundException {
@@ -253,11 +248,14 @@ public class ASTUtil {
         int index = typeName.lastIndexOf('.');
         String packageName = index > 0 ? typeName.substring(0, index) : "";
         if (!matchesPackage(compilationUnit.getPackage(), packageName)) {
-            throw new TypeDeclarationNotFoundException(compilationUnit, typeName, "The package '" + packageName
-                    + "' doesn't match the package of the compilation unit.");
+            throw new TypeDeclarationNotFoundException(
+                    compilationUnit,
+                    typeName,
+                    "The package '" + packageName + "' doesn't match the package of the compilation unit.");
         }
 
-        TypeDeclaration type = searchTypeDeclaration(compilationUnit.types(), typeName.substring(index + 1));
+        TypeDeclaration type =
+                searchTypeDeclaration(compilationUnit.types(), typeName.substring(index + 1));
         if (type == null) {
             throw new TypeDeclarationNotFoundException(compilationUnit, typeName);
         }
@@ -265,42 +263,34 @@ public class ASTUtil {
     }
 
     /**
-     * Returns the <CODE>FieldDeclaration</CODE> for the specified
-     * <CODE>FieldAnnotation</CODE>. The field has to be declared in the
-     * specified <CODE>TypeDeclaration</CODE>.
+     * Returns the <CODE>FieldDeclaration</CODE> for the specified <CODE>FieldAnnotation</CODE>. The
+     * field has to be declared in the specified <CODE>TypeDeclaration</CODE>.
      *
-     * @param type
-     *            The <CODE>TypeDeclaration</CODE>, where the
-     *            <CODE>FieldDeclaration</CODE> is declared in.
-     * @param fieldAnno
-     *            The <CODE>FieldAnnotation</CODE>, which contains the field
-     *            name of the <CODE>FieldDeclaration</CODE>.
-     * @return the <CODE>FieldDeclaration</CODE> found in the specified
-     *         <CODE>TypeDeclaration</CODE>.
-     * @throws FieldDeclarationNotFoundException
-     *             if no matching <CODE>FieldDeclaration</CODE> was found.
+     * @param type The <CODE>TypeDeclaration</CODE>, where the <CODE>FieldDeclaration</CODE> is
+     *     declared in.
+     * @param fieldAnno The <CODE>FieldAnnotation</CODE>, which contains the field name of the <CODE>
+     *     FieldDeclaration</CODE>.
+     * @return the <CODE>FieldDeclaration</CODE> found in the specified <CODE>TypeDeclaration</CODE>.
+     * @throws FieldDeclarationNotFoundException if no matching <CODE>FieldDeclaration</CODE> was
+     *     found.
      */
-    public static FieldDeclaration getFieldDeclaration(TypeDeclaration type, FieldAnnotation fieldAnno)
-            throws FieldDeclarationNotFoundException {
+    public static FieldDeclaration getFieldDeclaration(
+            TypeDeclaration type, FieldAnnotation fieldAnno) throws FieldDeclarationNotFoundException {
         requireNonNull(fieldAnno, "field annotation");
 
         return getFieldDeclaration(type, fieldAnno.getFieldName());
     }
 
     /**
-     * Returns the <CODE>FieldDeclaration</CODE> for the specified field name.
-     * The field has to be declared in the specified
-     * <CODE>TypeDeclaration</CODE>.
+     * Returns the <CODE>FieldDeclaration</CODE> for the specified field name. The field has to be
+     * declared in the specified <CODE>TypeDeclaration</CODE>.
      *
-     * @param type
-     *            The <CODE>TypeDeclaration</CODE>, where the
-     *            <CODE>FieldDeclaration</CODE> is declared in.
-     * @param fieldName
-     *            The simple field name to search for.
-     * @return the <CODE>FieldDeclaration</CODE> found in the specified
-     *         <CODE>TypeDeclaration</CODE>.
-     * @throws FieldDeclarationNotFoundException
-     *             if no matching <CODE>FieldDeclaration</CODE> was found.
+     * @param type The <CODE>TypeDeclaration</CODE>, where the <CODE>FieldDeclaration</CODE> is
+     *     declared in.
+     * @param fieldName The simple field name to search for.
+     * @return the <CODE>FieldDeclaration</CODE> found in the specified <CODE>TypeDeclaration</CODE>.
+     * @throws FieldDeclarationNotFoundException if no matching <CODE>FieldDeclaration</CODE> was
+     *     found.
      */
     public static FieldDeclaration getFieldDeclaration(TypeDeclaration type, String fieldName)
             throws FieldDeclarationNotFoundException {
@@ -320,68 +310,65 @@ public class ASTUtil {
     }
 
     /**
-     * Returns the <CODE>MethodDeclaration</CODE> for the specified
-     * <CODE>MethodAnnotation</CODE>. The method has to be declared in the
-     * specified <CODE>TypeDeclaration</CODE>.
+     * Returns the <CODE>MethodDeclaration</CODE> for the specified <CODE>MethodAnnotation</CODE>. The
+     * method has to be declared in the specified <CODE>TypeDeclaration</CODE>.
      *
-     * @param type
-     *            The <CODE>TypeDeclaration</CODE>, where the
-     *            <CODE>MethodDeclaration</CODE> is declared in.
-     * @param methodAnno
-     *            The <CODE>MethodAnnotation</CODE>, which contains the method
-     *            name and signature of the <CODE>MethodDeclaration</CODE>
-     * @return the <CODE>MethodDeclaration</CODE> found in the specified
-     *         <CODE>TypeDeclaration</CODE>.
-     * @throws MethodDeclarationNotFoundException
-     *             if no matching <CODE>MethodDeclaration</CODE> was found.
+     * @param type The <CODE>TypeDeclaration</CODE>, where the <CODE>MethodDeclaration</CODE> is
+     *     declared in.
+     * @param methodAnno The <CODE>MethodAnnotation</CODE>, which contains the method name and
+     *     signature of the <CODE>MethodDeclaration</CODE>
+     * @return the <CODE>MethodDeclaration</CODE> found in the specified <CODE>TypeDeclaration</CODE>.
+     * @throws MethodDeclarationNotFoundException if no matching <CODE>MethodDeclaration</CODE> was
+     *     found.
      */
-    public static MethodDeclaration getMethodDeclaration(TypeDeclaration type, MethodAnnotation methodAnno)
-            throws MethodDeclarationNotFoundException {
+    public static MethodDeclaration getMethodDeclaration(
+            TypeDeclaration type, MethodAnnotation methodAnno) throws MethodDeclarationNotFoundException {
         Objects.requireNonNull(methodAnno, "method annotation");
 
         return getMethodDeclaration(type, methodAnno.getMethodName(), methodAnno.getMethodSignature());
     }
 
     /**
-     * Returns the <CODE>MethodDeclaration</CODE> for the specified method name
-     * and signature. The method has to be declared in the specified
-     * <CODE>TypeDeclaration</CODE>.
+     * Returns the <CODE>MethodDeclaration</CODE> for the specified method name and signature. The
+     * method has to be declared in the specified <CODE>TypeDeclaration</CODE>.
      *
-     * @param type
-     *            The <CODE>TypeDeclaration</CODE>, where the
-     *            <CODE>MethodDeclaration</CODE> is declared in.
-     * @param methodName
-     *            The method name to search for.
-     * @param methodSignature
-     *            The method signature to search for.
-     * @return the <CODE>MethodDeclaration</CODE> found in the specified
-     *         <CODE>TypeDeclaration</CODE>.
-     * @throws MethodDeclarationNotFoundException
-     *             if no matching <CODE>MethodDeclaration</CODE> was found.
+     * @param type The <CODE>TypeDeclaration</CODE>, where the <CODE>MethodDeclaration</CODE> is
+     *     declared in.
+     * @param methodName The method name to search for.
+     * @param methodSignature The method signature to search for.
+     * @return the <CODE>MethodDeclaration</CODE> found in the specified <CODE>TypeDeclaration</CODE>.
+     * @throws MethodDeclarationNotFoundException if no matching <CODE>MethodDeclaration</CODE> was
+     *     found.
      */
-    public static MethodDeclaration getMethodDeclaration(TypeDeclaration type, String methodName, String methodSignature)
+    public static MethodDeclaration getMethodDeclaration(
+            TypeDeclaration type, String methodName, String methodSignature)
             throws MethodDeclarationNotFoundException {
         requireNonNull(type, "type declaration");
         requireNonNull(methodName, "method name");
         requireNonNull(methodSignature, "method signature");
 
-        MethodDeclaration method = searchMethodDeclaration(type.getAST(), type.getMethods(), methodName, methodSignature);
+        MethodDeclaration method =
+                searchMethodDeclaration(type.getAST(), type.getMethods(), methodName, methodSignature);
         if (method == null) {
             throw new MethodDeclarationNotFoundException(type, methodName, methodSignature);
         }
         return method;
     }
 
-    public static Statement getStatement(CompilationUnit compilationUnit, MethodDeclaration method,
-            SourceLineAnnotation sourceLineAnno) throws StatementNotFoundException {
+    public static Statement getStatement(
+            CompilationUnit compilationUnit,
+            MethodDeclaration method,
+            SourceLineAnnotation sourceLineAnno)
+            throws StatementNotFoundException {
         requireNonNull(sourceLineAnno, "source line annotation");
 
-        return getStatement(compilationUnit, method, sourceLineAnno.getStartLine(), sourceLineAnno.getEndLine());
+        return getStatement(
+                compilationUnit, method, sourceLineAnno.getStartLine(), sourceLineAnno.getEndLine());
     }
 
     /**
-     * Return the first <CODE>Statement</CODE> found, that is between the
-     * specified start and end line.
+     * Return the first <CODE>Statement</CODE> found, that is between the specified start and end
+     * line.
      *
      * @param compilationUnit
      * @param method
@@ -391,12 +378,14 @@ public class ASTUtil {
      * @throws StatementNotFoundException
      * @throws StatementNotFoundException
      */
-    public static Statement getStatement(CompilationUnit compilationUnit, MethodDeclaration method, int startLine, int endLine)
+    public static Statement getStatement(
+            CompilationUnit compilationUnit, MethodDeclaration method, int startLine, int endLine)
             throws StatementNotFoundException {
         requireNonNull(compilationUnit, "compilation unit");
         requireNonNull(method, "method declaration");
 
-        Statement statement = searchStatement(compilationUnit, method.getBody().statements(), startLine, endLine);
+        Statement statement =
+                searchStatement(compilationUnit, method.getBody().statements(), startLine, endLine);
         if (statement == null) {
             throw new StatementNotFoundException(compilationUnit, startLine, endLine);
         }
@@ -404,7 +393,8 @@ public class ASTUtil {
     }
 
     @CheckForNull
-    protected static ASTNode searchASTNode(CompilationUnit compilationUnit, int startLine, int endLine) {
+    protected static ASTNode searchASTNode(
+            CompilationUnit compilationUnit, int startLine, int endLine) {
         Assert.isNotNull(compilationUnit);
         isTrue(startLine <= endLine);
 
@@ -442,8 +432,8 @@ public class ASTUtil {
     }
 
     @CheckForNull
-    protected static MethodDeclaration searchMethodDeclaration(AST ast, MethodDeclaration[] methods, String methodName,
-            String methodSignature) {
+    protected static MethodDeclaration searchMethodDeclaration(
+            AST ast, MethodDeclaration[] methods, String methodName, String methodSignature) {
         Assert.isNotNull(methods);
         Assert.isNotNull(methodName);
         Assert.isNotNull(methodSignature);
@@ -462,7 +452,8 @@ public class ASTUtil {
     }
 
     @CheckForNull
-    protected static Statement searchStatement(CompilationUnit compilationUnit, List<?> statements, int startLine, int endLine) {
+    protected static Statement searchStatement(
+            CompilationUnit compilationUnit, List<?> statements, int startLine, int endLine) {
         Assert.isNotNull(compilationUnit);
         Assert.isNotNull(statements);
 
@@ -513,14 +504,17 @@ public class ASTUtil {
     }
 
     private static boolean matchesPackage(PackageDeclaration apackage, String packageName) {
-        return apackage != null && packageName.equals(apackage.getName().getFullyQualifiedName()) || packageName.length() == 0;
+        return apackage != null && packageName.equals(apackage.getName().getFullyQualifiedName())
+                || packageName.length() == 0;
     }
 
     private static boolean matchesParams(List<?> methodParams, String[] paramTypeNames) {
-        return matchesParams(methodParams.toArray(new SingleVariableDeclaration[methodParams.size()]), paramTypeNames);
+        return matchesParams(
+                methodParams.toArray(new SingleVariableDeclaration[methodParams.size()]), paramTypeNames);
     }
 
-    private static boolean matchesParams(SingleVariableDeclaration[] methodParams, String[] paramTypeNames) {
+    private static boolean matchesParams(
+            SingleVariableDeclaration[] methodParams, String[] paramTypeNames) {
         if (methodParams.length != paramTypeNames.length) {
             return false;
         }
@@ -569,5 +563,4 @@ public class ASTUtil {
     private static String getPrettyTypeName(SimpleType type) {
         return type.resolveBinding().getQualifiedName();
     }
-
 }

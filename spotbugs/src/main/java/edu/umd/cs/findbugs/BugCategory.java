@@ -20,11 +20,11 @@
 package edu.umd.cs.findbugs;
 
 /**
- * A BugCategory object collects all of the metadata for a category of bugs.
- * BugCategories derive from the BugCategory elements in messages*.xml files.
+ * A BugCategory object collects all of the metadata for a category of bugs. BugCategories derive
+ * from the BugCategory elements in messages*.xml files.
  */
 public class BugCategory implements Comparable<BugCategory> {
-    final private String category;
+    private final String category;
 
     private String shortDescription;
 
@@ -37,15 +37,10 @@ public class BugCategory implements Comparable<BugCategory> {
     /**
      * Constructor.
      *
-     * @param category
-     *            the category
-     * @param shortDescription
-     *            short (a word or three) description of the bug species
-     * @param abbrev
-     *            the abbreviation (typically a single capital letter)
-     * @param detailText
-     *            full description of the bug category (no HTML markup, may be
-     *            null)
+     * @param category the category
+     * @param shortDescription short (a word or three) description of the bug species
+     * @param abbrev the abbreviation (typically a single capital letter)
+     * @param detailText full description of the bug category (no HTML markup, may be null)
      */
     public BugCategory(String category, String shortDescription, String abbrev, String detailText) {
         this.category = category;
@@ -57,10 +52,8 @@ public class BugCategory implements Comparable<BugCategory> {
     /**
      * Constructor.
      *
-     * @param category
-     *            the category
-     * @param shortDescription
-     *            short (a word or three) description of the bug species
+     * @param category the category
+     * @param shortDescription short (a word or three) description of the bug species
      */
     public BugCategory(String category, String shortDescription) {
         this(category, shortDescription, null, null);
@@ -69,61 +62,46 @@ public class BugCategory implements Comparable<BugCategory> {
     /**
      * Constructor.
      *
-     * @param category
-     *            the category
+     * @param category the category
      */
     public BugCategory(String category) {
         this(category, null, null, null);
     }
 
-    /**
-     * Get the category.
-     */
+    /** Get the category. */
     public String getCategory() {
         return category;
     }
 
-    /**
-     * Get the short description (usually a word or three)
-     */
+    /** Get the short description (usually a word or three) */
     public String getShortDescription() {
         return shortDescription;
     }
 
     /**
-     * Get the abbreviation (usually a single capital letter). May be null, but
-     * shouldn't be if the XML is correct.
+     * Get the abbreviation (usually a single capital letter). May be null, but shouldn't be if the
+     * XML is correct.
      */
     public String getAbbrev() {
         return abbrev;
     }
 
-    /**
-     * Get the detail text describing the category. note: no HTML markup
-     * allowed, may be null
-     */
+    /** Get the detail text describing the category. note: no HTML markup allowed, may be null */
     public String getDetailText() {
         return detailText;
     }
 
-    /**
-     * Set the short description of the category
-     */
+    /** Set the short description of the category */
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
     }
 
-    /**
-     * Set the abbreviation (typically a single capital letter)
-     */
+    /** Set the abbreviation (typically a single capital letter) */
     public void setAbbrev(String abbrev) {
         this.abbrev = abbrev;
     }
 
-    /**
-     * Set the detail text describing the category. note: no HTML markup
-     * allowed, may be null
-     */
+    /** Set the detail text describing the category. note: no HTML markup allowed, may be null */
     public void setDetailText(String detailText) {
         this.detailText = detailText;
     }
@@ -150,22 +128,24 @@ public class BugCategory implements Comparable<BugCategory> {
     /** suitable for debugging. will be ugly if detailText has multiple lines */
     @Override
     public String toString() {
-        return "BugCategory[" + category + "]{short=" + shortDescription + ",abbrev=" + abbrev + ",details=" + detailText + '}';
+        return "BugCategory["
+                + category
+                + "]{short="
+                + shortDescription
+                + ",abbrev="
+                + abbrev
+                + ",details="
+                + detailText
+                + '}';
     }
 
-    /**
-     * @return Returns the hidden.
-     */
+    /** @return Returns the hidden. */
     public boolean isHidden() {
         return hidden;
     }
 
-    /**
-     * @param hidden The hidden to set.
-     */
+    /** @param hidden The hidden to set. */
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }
-
-
 }

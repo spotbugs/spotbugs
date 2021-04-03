@@ -23,19 +23,17 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * A classpath from which resources (classes and other files) may be loaded.
- * Essentially, this is just a list of codebases.
+ * A classpath from which resources (classes and other files) may be loaded. Essentially, this is
+ * just a list of codebases.
  *
  * @author David Hovemeyer
  */
 public interface IClassPath extends AutoCloseable {
     /**
-     * Add a codebase. The object will be interrogated to determine whether it
-     * is an application codebase or an auxiliary codebase. Application
-     * codebases must be scannable.
+     * Add a codebase. The object will be interrogated to determine whether it is an application
+     * codebase or an auxiliary codebase. Application codebases must be scannable.
      *
-     * @param codeBase
-     *            the codebase to add
+     * @param codeBase the codebase to add
      */
     public void addCodeBase(ICodeBase codeBase);
 
@@ -56,23 +54,18 @@ public interface IClassPath extends AutoCloseable {
     /**
      * Lookup a resource by name.
      *
-     * @param resourceName
-     *            name of the resource to look up
+     * @param resourceName name of the resource to look up
      * @return ICodeBaseEntry representing the resource
-     * @throws ResourceNotFoundException
-     *             if the resource is not found
+     * @throws ResourceNotFoundException if the resource is not found
      */
     public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException;
 
     /**
-     * Add a resource name to codebase entry mapping. Once this is done, future
-     * lookups of this resource will automatically resolve to the given codebase
-     * entry.
+     * Add a resource name to codebase entry mapping. Once this is done, future lookups of this
+     * resource will automatically resolve to the given codebase entry.
      *
-     * @param resourceName
-     *            the resource name to map
-     * @param codeBaseEntry
-     *            the codebase entry to use for this resource
+     * @param resourceName the resource name to map
+     * @param codeBaseEntry the codebase entry to use for this resource
      */
     public void mapResourceNameToCodeBaseEntry(String resourceName, ICodeBaseEntry codeBaseEntry);
 
@@ -84,8 +77,8 @@ public interface IClassPath extends AutoCloseable {
     public Map<String, ICodeBaseEntry> getApplicationCodebaseEntries();
 
     /**
-     * Close all of the code bases that are part of this class path. This should
-     * be done once the client is finished with the classpath.
+     * Close all of the code bases that are part of this class path. This should be done once the
+     * client is finished with the classpath.
      */
     @Override
     public void close();

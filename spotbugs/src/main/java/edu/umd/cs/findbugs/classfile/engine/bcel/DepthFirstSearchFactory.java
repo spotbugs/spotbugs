@@ -30,9 +30,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class DepthFirstSearchFactory extends AnalysisFactory<DepthFirstSearch> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public DepthFirstSearchFactory() {
         super("depth first search", DepthFirstSearch.class);
     }
@@ -45,7 +43,8 @@ public class DepthFirstSearchFactory extends AnalysisFactory<DepthFirstSearch> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public DepthFirstSearch analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public DepthFirstSearch analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
         DepthFirstSearch dfs = new DepthFirstSearch(cfg);
         dfs.search();

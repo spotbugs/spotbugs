@@ -19,11 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import edu.umd.cs.findbugs.FindBugs2;
-import java.io.File;
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
@@ -33,6 +30,8 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Factory to create codebase/classpath/classfile objects.
@@ -98,11 +97,13 @@ public class ClassFactory implements IClassFactory {
      * (edu.umd.cs.findbugs.classfile.ICodeBase, java.lang.String)
      */
     @Override
-    public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path) {
+    public ICodeBaseLocator createNestedArchiveCodeBaseLocator(
+            ICodeBase parentCodeBase, String path) {
         return new NestedZipFileCodeBaseLocator(parentCodeBase, path);
     }
 
-    static IScannableCodeBase createFilesystemCodeBase(FilesystemCodeBaseLocator codeBaseLocator) throws IOException {
+    static IScannableCodeBase createFilesystemCodeBase(FilesystemCodeBaseLocator codeBaseLocator)
+            throws IOException {
         String fileName = codeBaseLocator.getPathName();
 
         File file = new File(fileName);
@@ -126,15 +127,16 @@ public class ClassFactory implements IClassFactory {
         }
     }
 
-    private static IScannableCodeBase createEmptyCodeBase(FilesystemCodeBaseLocator codeBaseLocator, File file) {
+    private static IScannableCodeBase createEmptyCodeBase(
+            FilesystemCodeBaseLocator codeBaseLocator, File file) {
         if (FindBugs2.DEBUG) {
             System.out.println("Ignoring unreadable or non-existent file " + file);
         }
         return new EmptyCodeBase(codeBaseLocator);
     }
 
-    static IScannableCodeBase createNestedZipFileCodeBase(NestedZipFileCodeBaseLocator codeBaseLocator)
-            throws ResourceNotFoundException, IOException {
+    static IScannableCodeBase createNestedZipFileCodeBase(
+            NestedZipFileCodeBaseLocator codeBaseLocator) throws ResourceNotFoundException, IOException {
         return new NestedZipFileCodeBase(codeBaseLocator);
     }
 

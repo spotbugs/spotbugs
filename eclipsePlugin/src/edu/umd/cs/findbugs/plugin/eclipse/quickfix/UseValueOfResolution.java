@@ -24,14 +24,14 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.addStaticImports;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -43,19 +43,16 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
-
 /**
- * The <CODE>UseValueOfResolution</CODE> replace the inefficient creation of an
- * instance, by the static <CODE>valueOf(...)</CODE> method.
+ * The <CODE>UseValueOfResolution</CODE> replace the inefficient creation of an instance, by the
+ * static <CODE>valueOf(...)</CODE> method.
  *
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_BOOLEAN_CTOR">DM_BOOLEAN_CTOR</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_BOOLEAN_CTOR">DM_BOOLEAN_CTOR</a>
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_FP_NUMBER_CTOR">DM_FP_NUMBER_CTOR</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_FP_NUMBER_CTOR">DM_FP_NUMBER_CTOR</a>
  * @see <a
- *      href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_NUMBER_CTOR">DM_NUMBER_CTOR</a>
+ *     href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_NUMBER_CTOR">DM_NUMBER_CTOR</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0
@@ -83,16 +80,18 @@ public class UseValueOfResolution extends BugResolution {
     }
 
     @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
+            throws BugResolutionException {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(workingUnit);
 
-        ClassInstanceCreation primitiveTypeCreation = findPrimitiveTypeCreation(getASTNode(workingUnit,
-                bug.getPrimarySourceLineAnnotation()));
+        ClassInstanceCreation primitiveTypeCreation =
+                findPrimitiveTypeCreation(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
         if (primitiveTypeCreation == null) {
             throw new BugResolutionException("Primitive type creation not found.");
         }
-        MethodInvocation valueOfInvocation = createValueOfInvocation(rewrite, workingUnit, primitiveTypeCreation);
+        MethodInvocation valueOfInvocation =
+                createValueOfInvocation(rewrite, workingUnit, primitiveTypeCreation);
         rewrite.replace(primitiveTypeCreation, valueOfInvocation, null);
     }
 
@@ -103,7 +102,9 @@ public class UseValueOfResolution extends BugResolution {
         return visitor.getPrimitiveTypeCreation();
     }
 
-    protected MethodInvocation createValueOfInvocation(ASTRewrite rewrite, CompilationUnit compilationUnit,
+    protected MethodInvocation createValueOfInvocation(
+            ASTRewrite rewrite,
+            CompilationUnit compilationUnit,
             ClassInstanceCreation primitiveTypeCreation) {
         Assert.isNotNull(rewrite);
         Assert.isNotNull(primitiveTypeCreation);
@@ -114,7 +115,8 @@ public class UseValueOfResolution extends BugResolution {
 
         ITypeBinding binding = primitiveTypeCreation.getType().resolveBinding();
         if (isStaticImport()) {
-            addStaticImports(rewrite, compilationUnit, binding.getQualifiedName() + "." + VALUE_OF_METHOD_NAME);
+            addStaticImports(
+                    rewrite, compilationUnit, binding.getQualifiedName() + "." + VALUE_OF_METHOD_NAME);
         } else {
             valueOfInvocation.setExpression(ast.newSimpleName(binding.getName()));
         }
@@ -153,7 +155,8 @@ public class UseValueOfResolution extends BugResolution {
         return new PrimitiveTypeCreationFinder();
     }
 
-    protected class PrimitiveTypeCreationFinder extends ASTVisitor implements CustomLabelVisitor, ApplicabilityVisitor {
+    protected class PrimitiveTypeCreationFinder extends ASTVisitor
+            implements CustomLabelVisitor, ApplicabilityVisitor {
 
         private ClassInstanceCreation primitiveTypeCreation = null;
 
@@ -181,7 +184,7 @@ public class UseValueOfResolution extends BugResolution {
         public String getLabelReplacement() {
             // returns what is in the constructor arguments
             if (primitiveTypeCreation == null || primitiveTypeCreation.arguments().isEmpty()) {
-                return "..."; //safe return value
+                return "..."; // safe return value
             }
             // can safely use toString() here because it's user facing, not being used as actual code
             return primitiveTypeCreation.arguments().get(0).toString();
@@ -193,10 +196,9 @@ public class UseValueOfResolution extends BugResolution {
             // DM_FP_NUMBER_CTOR, it's automatically applicable.  Otherwise,
             // we must match the isDouble argument with actually resolving a double
             return primitiveTypeCreation != null
-                    && (!isFloatingPoint || (isDouble == "java.lang.Double".equals(primitiveTypeCreation.resolveTypeBinding()
-                            .getQualifiedName())));
+                    && (!isFloatingPoint
+                            || (isDouble == "java.lang.Double"
+                                    .equals(primitiveTypeCreation.resolveTypeBinding().getQualifiedName())));
         }
-
     }
-
 }

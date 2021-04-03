@@ -2,7 +2,6 @@ package edu.umd.cs.findbugs;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +20,8 @@ public class BugInstanceTest {
 
     @Test
     public void testPropertyIterator() {
-        checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B", "C" }, new String[] { "a", "b", "c" });
+        checkPropertyIterator(
+                b.propertyIterator(), new String[] { "A", "B", "C" }, new String[] { "a", "b", "c" });
     }
 
     @Test
@@ -69,9 +69,11 @@ public class BugInstanceTest {
     public void testRemoveAndAdd() {
         removeThroughIterator(b.propertyIterator(), "C");
         b.setProperty("D", "d");
-        checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B", "D" }, new String[] { "a", "b", "d" });
+        checkPropertyIterator(
+                b.propertyIterator(), new String[] { "A", "B", "D" }, new String[] { "a", "b", "d" });
         b.setProperty("E", "e");
-        checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B", "D", "E" }, new String[] { "a", "b", "d", "e" });
+        checkPropertyIterator(
+                b.propertyIterator(), new String[] { "A", "B", "D", "E" }, new String[] { "a", "b", "d", "e" });
     }
 
     @Test

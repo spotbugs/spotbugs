@@ -18,13 +18,14 @@
  */
 package de.tobject.findbugs.view;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.view.explorer.BugContentProvider;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ISelection;
@@ -43,10 +44,8 @@ import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.view.explorer.BugContentProvider;
-
-public class BugExplorerView extends CommonNavigator implements IMarkerSelectionHandler, ISelectionChangedListener {
+public class BugExplorerView extends CommonNavigator
+        implements IMarkerSelectionHandler, ISelectionChangedListener {
 
     private MarkerSelectionListener selectionListener;
 
@@ -66,14 +65,15 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
         // Add selection listener to detect click in problems view or in tree
         // view
         ISelectionService theService = getSite().getWorkbenchWindow().getSelectionService();
-        selectionListener = new MarkerSelectionListener(this) {
-            @Override
-            public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
-                selectionInProgress = true;
-                super.selectionChanged(thePart, theSelection);
-                selectionInProgress = false;
-            }
-        };
+        selectionListener =
+                new MarkerSelectionListener(this) {
+                    @Override
+                    public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
+                        selectionInProgress = true;
+                        super.selectionChanged(thePart, theSelection);
+                        selectionInProgress = false;
+                    }
+                };
         theService.addSelectionListener(selectionListener);
         getCommonViewer().addSelectionChangedListener(this);
     }
@@ -148,7 +148,7 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
     @Override
     public void dispose() {
         // XXX see https://bugs.eclipse.org/bugs/show_bug.cgi?id=223068
-        XMLMemento memento = XMLMemento.createWriteRoot("bugExplorer"); //$NON-NLS-1$
+        XMLMemento memento = XMLMemento.createWriteRoot("bugExplorer"); // $NON-NLS-1$
         saveState(memento);
         StringWriter writer = new StringWriter();
         try {
@@ -160,7 +160,10 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
         }
 
         if (selectionListener != null) {
-            getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(selectionListener);
+            getSite()
+                    .getWorkbenchWindow()
+                    .getSelectionService()
+                    .removeSelectionListener(selectionListener);
             selectionListener = null;
         }
         super.dispose();
@@ -197,5 +200,4 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
         }
         return new StructuredSelection(accepted.toArray());
     }
-
 }

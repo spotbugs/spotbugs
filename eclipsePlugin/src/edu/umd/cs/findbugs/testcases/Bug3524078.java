@@ -23,9 +23,10 @@ public class Bug3524078 {
             return ((ITextEditor) editorPart).getSelectionProvider();
         }
         if (editorPart instanceof ISelectionProvider) {
-            return (ISelectionProvider) editorPart; // <- Unchecked/unconfirmed cast from org.eclipse.ui.IEditorPart to org.eclipse.jface.viewers.ISelectionProvider in de.loskutov.anyedit.ui.editor.AbstractEditor.getSelectionProvider()
+            return (ISelectionProvider) editorPart; // <- Unchecked/unconfirmed cast from org.eclipse.ui.IEditorPart to
+            // org.eclipse.jface.viewers.ISelectionProvider in
+            // de.loskutov.anyedit.ui.editor.AbstractEditor.getSelectionProvider()
         }
         return null;
     }
-
 }

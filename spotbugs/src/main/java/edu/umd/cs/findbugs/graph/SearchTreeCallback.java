@@ -19,25 +19,20 @@
 
 package edu.umd.cs.findbugs.graph;
 
-/**
- * Callback interface for building a search tree from a depth first search.
- */
+/** Callback interface for building a search tree from a depth first search. */
 public interface SearchTreeCallback<VertexType extends GraphVertex<VertexType>> {
     /**
      * Start a search tree.
      *
-     * @param vertex
-     *            the root of the search tree
+     * @param vertex the root of the search tree
      */
     public void startSearchTree(VertexType vertex);
 
     /**
      * Add an edge to the current search tree.
      *
-     * @param parent
-     *            the parent vertex
-     * @param child
-     *            the child vertex
+     * @param parent the parent vertex
+     * @param child the child vertex
      */
     public void addToSearchTree(VertexType parent, VertexType child);
 }

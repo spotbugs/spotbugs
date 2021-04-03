@@ -19,29 +19,35 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.Priorities;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-
 import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.Priorities;
-
 @SuppressWarnings("serial")
 /**
- *  Sets colors for JTree nodes
- *  @author Dan
+ * Sets colors for JTree nodes
+ *
+ * @author Dan
  */
 public class BugRenderer extends DefaultTreeCellRenderer {
     @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object node, boolean selected, boolean expanded, boolean leaf,
-            int row, boolean hasFocus) {
-        Component toReturn = super.getTreeCellRendererComponent(tree, node, selected, expanded, leaf, row, hasFocus);
+    public Component getTreeCellRendererComponent(
+            JTree tree,
+            Object node,
+            boolean selected,
+            boolean expanded,
+            boolean leaf,
+            int row,
+            boolean hasFocus) {
+        Component toReturn =
+                super.getTreeCellRendererComponent(tree, node, selected, expanded, leaf, row, hasFocus);
 
         if (!(node instanceof BugLeafNode)) {
             return toReturn;
@@ -73,27 +79,29 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                 break;
             }
             if (leaf) {
-                Icon icon = new Icon() {
-                    @Override
-                    public void paintIcon(Component comp, Graphics g, int x, int y) {
-                        Graphics2D g2 = (Graphics2D) g;
-                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        g2.setColor(c);
-                        g2.fillOval(2, 2, 12, 12);
-                        g2.setColor(Color.BLACK);
-                        g2.drawOval(2, 2, 12, 12);
-                    }
+                Icon icon =
+                        new Icon() {
+                            @Override
+                            public void paintIcon(Component comp, Graphics g, int x, int y) {
+                                Graphics2D g2 = (Graphics2D) g;
+                                g2.setRenderingHint(
+                                        RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                                g2.setColor(c);
+                                g2.fillOval(2, 2, 12, 12);
+                                g2.setColor(Color.BLACK);
+                                g2.drawOval(2, 2, 12, 12);
+                            }
 
-                    @Override
-                    public int getIconWidth() {
-                        return 16;
-                    }
+                            @Override
+                            public int getIconWidth() {
+                                return 16;
+                            }
 
-                    @Override
-                    public int getIconHeight() {
-                        return 16;
-                    }
-                };
+                            @Override
+                            public int getIconHeight() {
+                                return 16;
+                            }
+                        };
                 ((BugRenderer) toReturn).setIcon(icon);
             }
             return toReturn;

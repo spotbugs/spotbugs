@@ -22,23 +22,22 @@ package edu.umd.cs.findbugs.ba.ch;
 import edu.umd.cs.findbugs.graph.AbstractEdge;
 
 /**
- * A class representing an edge in the interprocedural call graph; i.e., a call
- * from one method to another.
+ * A class representing an edge in the interprocedural call graph; i.e., a call from one method to
+ * another.
  *
  * @author David Hovemeyer
  */
-public class InterproceduralCallGraphEdge extends AbstractEdge<InterproceduralCallGraphEdge, InterproceduralCallGraphVertex> {
+public class InterproceduralCallGraphEdge
+        extends AbstractEdge<InterproceduralCallGraphEdge, InterproceduralCallGraphVertex> {
 
     /**
      * Constructor.
      *
-     * @param source
-     *            source vertex (caller)
-     * @param target
-     *            target vertex (callee)
+     * @param source source vertex (caller)
+     * @param target target vertex (callee)
      */
-    public InterproceduralCallGraphEdge(InterproceduralCallGraphVertex source, InterproceduralCallGraphVertex target) {
+    public InterproceduralCallGraphEdge(
+            InterproceduralCallGraphVertex source, InterproceduralCallGraphVertex target) {
         super(source, target);
     }
-
 }

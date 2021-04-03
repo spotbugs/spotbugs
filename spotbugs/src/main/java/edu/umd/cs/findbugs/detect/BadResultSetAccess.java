@@ -20,12 +20,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -33,41 +27,47 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.bcel.Const;
 
 public class BadResultSetAccess extends OpcodeStackDetector {
 
     @StaticConstant
-    private static final Set<String> dbFieldTypesSet = new HashSet<String>() {
-        static final long serialVersionUID = -3510636899394546735L;
-        {
-            add("Array");
-            add("AsciiStream");
-            add("BigDecimal");
-            add("BinaryStream");
-            add("Blob");
-            add("Boolean");
-            add("Byte");
-            add("Bytes");
-            add("CharacterStream");
-            add("Clob");
-            add("Date");
-            add("Double");
-            add("Float");
-            add("Int");
-            add("Long");
-            add("Object");
-            add("Ref");
-            add("RowId");
-            add("Short");
-            add("String");
-            add("Time");
-            add("Timestamp");
-            add("UnicodeStream");
-            add("URL");
-        }
-    };
+    private static final Set<String> dbFieldTypesSet =
+            new HashSet<String>() {
+                static final long serialVersionUID = -3510636899394546735L;
 
-    final private BugReporter bugReporter;
+                {
+                    add("Array");
+                    add("AsciiStream");
+                    add("BigDecimal");
+                    add("BinaryStream");
+                    add("Blob");
+                    add("Boolean");
+                    add("Byte");
+                    add("Bytes");
+                    add("CharacterStream");
+                    add("Clob");
+                    add("Date");
+                    add("Double");
+                    add("Float");
+                    add("Int");
+                    add("Long");
+                    add("Object");
+                    add("Ref");
+                    add("RowId");
+                    add("Short");
+                    add("String");
+                    add("Time");
+                    add("Timestamp");
+                    add("UnicodeStream");
+                    add("URL");
+                }
+            };
+
+    private final BugReporter bugReporter;
 
     public BadResultSetAccess(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -75,7 +75,9 @@ public class BadResultSetAccess extends OpcodeStackDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if (hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/sql/ResultSet"))) {
+        if (hasInterestingClass(
+                classContext.getJavaClass().getConstantPool(),
+                Collections.singleton("java/sql/ResultSet"))) {
             super.visitClassContext(classContext);
         }
     }
@@ -86,25 +88,32 @@ public class BadResultSetAccess extends OpcodeStackDetector {
         if (seen == Const.INVOKEINTERFACE) {
             String methodName = getNameConstantOperand();
             String clsConstant = getClassConstantOperand();
-            if (("java/sql/ResultSet".equals(clsConstant) && ((methodName.startsWith("get") && dbFieldTypesSet
-                    .contains(methodName.substring(3))) || (methodName.startsWith("update") && dbFieldTypesSet
-                            .contains(methodName.substring(6)))))
-                    || (("java/sql/PreparedStatement".equals(clsConstant) && ((methodName.startsWith("set") && dbFieldTypesSet
-                            .contains(methodName.substring(3))))))) {
+            if (("java/sql/ResultSet".equals(clsConstant)
+                    && ((methodName.startsWith("get")
+                            && dbFieldTypesSet.contains(methodName.substring(3)))
+                            || (methodName.startsWith("update")
+                                    && dbFieldTypesSet.contains(methodName.substring(6)))))
+                    || (("java/sql/PreparedStatement".equals(clsConstant)
+                            && ((methodName.startsWith("set")
+                                    && dbFieldTypesSet.contains(methodName.substring(3))))))) {
                 String signature = getSigConstantOperand();
                 int numParms = PreorderVisitor.getNumberArguments(signature);
                 if (stack.getStackDepth() >= numParms) {
                     OpcodeStack.Item item = stack.getStackItem(numParms - 1);
 
                     if ("I".equals(item.getSignature()) && item.couldBeZero()) {
-                        bugReporter.reportBug(new BugInstance(this,
-                                "java/sql/PreparedStatement".equals(clsConstant) ? "SQL_BAD_PREPARED_STATEMENT_ACCESS"
-                                        : "SQL_BAD_RESULTSET_ACCESS", item.mustBeZero() ? HIGH_PRIORITY : NORMAL_PRIORITY)
-                                                .addClassAndMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(
+                                        this,
+                                        "java/sql/PreparedStatement".equals(clsConstant)
+                                                ? "SQL_BAD_PREPARED_STATEMENT_ACCESS"
+                                                : "SQL_BAD_RESULTSET_ACCESS",
+                                        item.mustBeZero() ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                                                .addClassAndMethod(this)
+                                                .addSourceLine(this));
                     }
                 }
             }
         }
-
     }
 }

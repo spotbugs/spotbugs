@@ -20,16 +20,15 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class BadAppletConstructor extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -82,11 +81,16 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
         if (seen == Const.INVOKEVIRTUAL) {
             String method = getNameConstantOperand();
             String signature = getSigConstantOperand();
-            if ((("getDocumentBase".equals(method) || "getCodeBase".equals(method)) && "()Ljava/net/URL;".equals(signature))
-                    || ("getAppletContext".equals(method) && "()Ljava/applet/AppletContext;".equals(signature))
-                    || ("getParameter".equals(method) && "(Ljava/lang/String;)Ljava/lang/String;".equals(signature))) {
-                bugReporter.reportBug(new BugInstance(this, "BAC_BAD_APPLET_CONSTRUCTOR", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this));
+            if ((("getDocumentBase".equals(method) || "getCodeBase".equals(method))
+                    && "()Ljava/net/URL;".equals(signature))
+                    || ("getAppletContext".equals(method)
+                            && "()Ljava/applet/AppletContext;".equals(signature))
+                    || ("getParameter".equals(method)
+                            && "(Ljava/lang/String;)Ljava/lang/String;".equals(signature))) {
+                bugReporter.reportBug(
+                        new BugInstance(this, "BAC_BAD_APPLET_CONSTRUCTOR", NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this));
             }
         }
     }

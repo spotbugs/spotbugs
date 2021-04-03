@@ -19,27 +19,20 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import java.util.IdentityHashMap;
-
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.SystemProperties;
-
-/**
- * Summarize line numbers (and other source information) for a method.
- */
+/** Summarize line numbers (and other source information) for a method. */
 public class LineNumberMap {
-    /**
-     * Set this property to true to get debug print statements.
-     */
+    /** Set this property to true to get debug print statements. */
     private static final boolean DEBUG = SystemProperties.getBoolean("lnm.debug");
 
     /**
-     * When this is true, the workaround for the bug in BCEL 5.0's
-     * LineNumberTable class is disabled.
+     * When this is true, the workaround for the bug in BCEL 5.0's LineNumberTable class is disabled.
      */
     private static final boolean LINE_NUMBER_BUG = SystemProperties.getBoolean("lineNumberBug");
 
@@ -52,8 +45,7 @@ public class LineNumberMap {
     /**
      * Constructor.
      *
-     * @param methodGen
-     *            the method to summarize line numbers for
+     * @param methodGen the method to summarize line numbers for
      */
     public LineNumberMap(MethodGen methodGen) {
         this.methodGen = methodGen;
@@ -61,16 +53,18 @@ public class LineNumberMap {
         hasLineNumbers = false;
     }
 
-    /**
-     * Build the line number information. Should be called before any other
-     * methods.
-     */
+    /** Build the line number information. Should be called before any other methods. */
     public void build() {
         int numGood = 0, numBytecodes = 0;
 
         if (DEBUG) {
-            System.out.println("Method: " + methodGen.getName() + " - " + methodGen.getSignature() + "in class "
-                    + methodGen.getClassName());
+            System.out.println(
+                    "Method: "
+                            + methodGen.getName()
+                            + " - "
+                            + methodGen.getSignature()
+                            + "in class "
+                            + methodGen.getClassName());
         }
 
         // Associate line number information with each InstructionHandle
@@ -121,7 +115,8 @@ public class LineNumberMap {
         for (int i = 0; i < entries.length; ++i) {
             LineNumber ln = entries[i];
             if (DEBUG) {
-                System.out.println("Entry " + i + ": pc=" + ln.getStartPC() + ", line=" + ln.getLineNumber());
+                System.out.println(
+                        "Entry " + i + ": pc=" + ln.getStartPC() + ", line=" + ln.getLineNumber());
             }
             int pc = ln.getStartPC();
             if (pc <= lastBytecode) {
@@ -130,9 +125,7 @@ public class LineNumberMap {
         }
     }
 
-    /**
-     * Does this method have line number information?
-     */
+    /** Does this method have line number information? */
     public boolean hasLineNumbers() {
         return hasLineNumbers;
     }
@@ -140,10 +133,8 @@ public class LineNumberMap {
     /**
      * Find the line number information for instruction whose handle is given.
      *
-     * @param handle
-     *            the InstructionHandle
-     * @return the LineNumber object containing bytecode offset and source line
-     *         number
+     * @param handle the InstructionHandle
+     * @return the LineNumber object containing bytecode offset and source line number
      */
     public LineNumber lookupLineNumber(InstructionHandle handle) {
         return lineNumberMap.get(handle);

@@ -1,18 +1,5 @@
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-import java.util.Iterator;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
@@ -28,6 +15,17 @@ import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import java.util.BitSet;
+import java.util.Iterator;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 public class FindNonSerializableValuePassedToWriteObject implements Detector {
 
@@ -59,7 +57,8 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         MethodGen methodGen = classContext.getMethodGen(method);
         if (methodGen == null) {
             return;
@@ -140,14 +139,21 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
                     isSerializable = isRemote;
                 }
 
+                SourceLineAnnotation sourceLineAnnotation =
+                        SourceLineAnnotation.fromVisitedInstruction(
+                                classContext, methodGen, sourceFile, handle);
 
-                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
-                        methodGen, sourceFile, handle);
-
-                bugReporter.reportBug(new BugInstance(this, "DMI_NONSERIALIZABLE_OBJECT_WRITTEN",
-                        isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
-                                .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE)
-                                .addSourceLine(sourceLineAnnotation));
+                bugReporter.reportBug(
+                        new BugInstance(
+                                this,
+                                "DMI_NONSERIALIZABLE_OBJECT_WRITTEN",
+                                isSerializable < 0.15
+                                        ? HIGH_PRIORITY
+                                        : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                                .addClassAndMethod(methodGen, sourceFile)
+                                                .addType(problem)
+                                                .describe(TypeAnnotation.FOUND_ROLE)
+                                                .addSourceLine(sourceLineAnnotation));
 
             } catch (ClassNotFoundException e) {
                 // ignore
@@ -158,5 +164,4 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
     @Override
     public void report() {
     }
-
 }

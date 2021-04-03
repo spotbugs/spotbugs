@@ -19,19 +19,16 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
-import org.apache.bcel.generic.ObjectType;
-
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import org.apache.bcel.generic.ObjectType;
 
 /**
- * An obligation that must be cleaned up by error handling code. Examples
- * include open streams and database connections.
+ * An obligation that must be cleaned up by error handling code. Examples include open streams and
+ * database connections.
  *
- * <p>
- * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
- * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
- * </p>
+ * <p>See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011" >Finding and
+ * preventing run-time error handling mistakes</a>, OOPSLA 2004.
  *
  * @author David Hovemeyer
  */

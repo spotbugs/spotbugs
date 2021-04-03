@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.anttask;
 
+import edu.umd.cs.findbugs.workflow.UnionResults;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,28 +27,22 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
-import edu.umd.cs.findbugs.workflow.UnionResults;
-
 /**
- * An ant task that is wraps the behavior of the UnionResults executable into an
- * ant task.
+ * An ant task that is wraps the behavior of the UnionResults executable into an ant task.
  *
- * {@literal <taskdef name="UnionBugs" classname="edu.umd.cs.findbugs.anttask.UnionBugs"
+ * <p>{@literal <taskdef name="UnionBugs" classname="edu.umd.cs.findbugs.anttask.UnionBugs"
  * classpath="...">}
  *
- * {@literal <UnionBugs to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
+ * <p>{@literal <UnionBugs to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
  * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>}
  *
  * @author Peter Franza <a href="mailto:pfranza@gmail.com">pfranza@gmail.com</a>
  * @version 1.0
- *
  * @ant.task category="utility"
- *
  */
 @Deprecated
 public class UnionBugs extends Task {
@@ -59,8 +54,7 @@ public class UnionBugs extends Task {
     /**
      * The fileset containing all the findbugs xml files that need to be merged
      *
-     * @param arg
-     *            fileset containing all the findbugs xml files that need to be merged
+     * @param arg fileset containing all the findbugs xml files that need to be merged
      */
     public void addFileset(FileSet arg) {
         fileSets.add(arg);
@@ -69,8 +63,7 @@ public class UnionBugs extends Task {
     /**
      * The File everything should get merged into
      *
-     * @param file
-     *            everything should get merged into
+     * @param file everything should get merged into
      */
     public void setTo(String file) {
         into = file;
@@ -140,10 +133,8 @@ public class UnionBugs extends Task {
     /**
      * Copy a File
      *
-     * @param in
-     *            to Copy From
-     * @param out
-     *            to Copy To
+     * @param in to Copy From
+     * @param out to Copy To
      * @throws IOException
      */
     private static void copyFile(File in, File out) throws IOException {
@@ -153,5 +144,4 @@ public class UnionBugs extends Task {
             inChannel.transferTo(0, inChannel.size(), outStream.getChannel());
         }
     }
-
 }

@@ -19,25 +19,23 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public class OpcodeStackScanner {
 
     static final boolean DEBUG = SystemProperties.getBoolean("oss.debug");
 
     public static class UnreachableCodeException extends RuntimeException {
 
-        public UnreachableCodeException(@DottedClassName String className, String methodName, String methodSignature, int pc) {
+        public UnreachableCodeException(
+                @DottedClassName String className, String methodName, String methodSignature, int pc) {
             super("Didn't reach pc " + pc + " of " + className + "." + methodName + methodSignature);
             this.className = className;
             this.methodName = methodName;
@@ -68,7 +66,8 @@ public class OpcodeStackScanner {
         } catch (EarlyExitException e) {
             return e.stack;
         }
-        throw new UnreachableCodeException(theClass.getClassName(), method.getName(), method.getSignature(), pc);
+        throw new UnreachableCodeException(
+                theClass.getClassName(), method.getName(), method.getSignature(), pc);
     }
 
     static class Scanner extends OpcodeStackDetector {
@@ -114,5 +113,4 @@ public class OpcodeStackScanner {
             theClass.accept(this);
         }
     }
-
 }

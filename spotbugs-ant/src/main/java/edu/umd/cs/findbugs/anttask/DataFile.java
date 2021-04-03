@@ -30,17 +30,12 @@ public class DataFile {
     public DataFile() {
     }
 
-    /**
-     * @param name
-     *            The name to set.
-     */
+    /** @param name The name to set. */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return Returns the name.
-     */
+    /** @return Returns the name. */
     public String getName() {
         return name;
     }

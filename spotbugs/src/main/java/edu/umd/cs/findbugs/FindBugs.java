@@ -19,16 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.logging.Logger;
-
-import org.dom4j.DocumentException;
+import static java.util.logging.Level.*;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -38,138 +29,158 @@ import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
-
-import static java.util.logging.Level.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.logging.Logger;
+import org.dom4j.DocumentException;
 
 /**
- * Static methods and fields useful for working with instances of
- * IFindBugsEngine.
+ * Static methods and fields useful for working with instances of IFindBugsEngine.
  *
- * This class was previously the main driver for FindBugs analyses, but has been
- * replaced by {@link FindBugs2 FindBugs2}.
+ * <p>This class was previously the main driver for FindBugs analyses, but has been replaced by
+ * {@link FindBugs2 FindBugs2}.
  *
  * @author Bill Pugh
  * @author David Hovemeyer
  */
 public abstract class FindBugs {
-    /**
-     * Analysis settings for -effort:min.
-     */
-    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
-    public static final AnalysisFeatureSetting[] MIN_EFFORT = new AnalysisFeatureSetting[] {
-        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
-        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
-        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
-        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
-        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
-        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+    /** Analysis settings for -effort:min. */
+    @SuppressFBWarnings(
+            value = "MS_MUTABLE_ARRAY",
+            justification = "Would have to break APIs to fix this properly")
+    public static final AnalysisFeatureSetting[] MIN_EFFORT =
+            new AnalysisFeatureSetting[] {
+                new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
+                new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
+                new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
+                new AnalysisFeatureSetting(
+                        AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
+                new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
+                new AnalysisFeatureSetting(
+                        FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
+            };
 
-    /**
-     * Analysis settings for -effort:less.
-     */
-    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
-    public static final AnalysisFeatureSetting[] LESS_EFFORT = new AnalysisFeatureSetting[] {
-        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
-        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
-        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
-        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+    /** Analysis settings for -effort:less. */
+    @SuppressFBWarnings(
+            value = "MS_MUTABLE_ARRAY",
+            justification = "Would have to break APIs to fix this properly")
+    public static final AnalysisFeatureSetting[] LESS_EFFORT =
+            new AnalysisFeatureSetting[] {
+                new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+                new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
+                new AnalysisFeatureSetting(
+                        AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
+                new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
+                new AnalysisFeatureSetting(
+                        FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
+            };
 
-    /**
-     * Analysis settings for -effort:default.
-     */
-    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
-    public static final AnalysisFeatureSetting[] DEFAULT_EFFORT = new AnalysisFeatureSetting[] {
-        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+    /** Analysis settings for -effort:default. */
+    @SuppressFBWarnings(
+            value = "MS_MUTABLE_ARRAY",
+            justification = "Would have to break APIs to fix this properly")
+    public static final AnalysisFeatureSetting[] DEFAULT_EFFORT =
+            new AnalysisFeatureSetting[] {
+                new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+                new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+                new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
+            };
 
-    /**
-     * Analysis settings for -effort:more.
-     */
-    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
-    public static final AnalysisFeatureSetting[] MORE_EFFORT = new AnalysisFeatureSetting[] {
-        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+    /** Analysis settings for -effort:more. */
+    @SuppressFBWarnings(
+            value = "MS_MUTABLE_ARRAY",
+            justification = "Would have to break APIs to fix this properly")
+    public static final AnalysisFeatureSetting[] MORE_EFFORT =
+            new AnalysisFeatureSetting[] {
+                new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+                new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+                new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
+            };
 
-    /**
-     * Analysis settings for -effort:max.
-     */
-    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
-    public static final AnalysisFeatureSetting[] MAX_EFFORT = new AnalysisFeatureSetting[] {
-        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
-        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, true), };
+    /** Analysis settings for -effort:max. */
+    @SuppressFBWarnings(
+            value = "MS_MUTABLE_ARRAY",
+            justification = "Would have to break APIs to fix this properly")
+    public static final AnalysisFeatureSetting[] MAX_EFFORT =
+            new AnalysisFeatureSetting[] {
+                new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+                new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+                new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
+                new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+                new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+                new AnalysisFeatureSetting(
+                        FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, true),
+            };
 
-    /**
-     * Debug tracing.
-     */
+    /** Debug tracing. */
     public static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
 
-    /**
-     * FindBugs home directory.
-     */
-    private static String home = System.getProperty("spotbugs.home", System.getProperty("findbugs.home"));
+    /** FindBugs home directory. */
+    private static String home =
+            System.getProperty("spotbugs.home", System.getProperty("findbugs.home"));
 
     private static boolean noAnalysis = Boolean.getBoolean("findbugs.noAnalysis");
 
-    /**
-     * Disable analysis within FindBugs. Turns off loading of bug detectors.
-     */
+    /** Disable analysis within FindBugs. Turns off loading of bug detectors. */
     public static void setNoAnalysis() {
         noAnalysis = true;
     }
 
-    /**
-     * @return Returns the noAnalysis.
-     */
+    /** @return Returns the noAnalysis. */
     public static boolean isNoAnalysis() {
         return noAnalysis;
     }
 
     private static boolean noMains = Boolean.getBoolean("findbugs.noMains");
 
-    /**
-     * Disable loading of FindBugsMain classes.
-     */
+    /** Disable loading of FindBugsMain classes. */
     public static void setNoMains() {
         noMains = true;
     }
 
-    /**
-     * @return Returns the noMains.
-     */
+    /** @return Returns the noMains. */
     public static boolean isNoMains() {
         return noMains;
     }
@@ -181,11 +192,12 @@ public abstract class FindBugs {
     }
 
     /**
-     * Known URL protocols. Filename URLs that do not have an explicit protocol
-     * are assumed to be files.
+     * Known URL protocols. Filename URLs that do not have an explicit protocol are assumed to be
+     * files.
      */
     @StaticConstant
     public static final Set<String> knownURLProtocolSet;
+
     static {
         Set<String> protocols = new HashSet<>();
         protocols.add("file");
@@ -195,16 +207,12 @@ public abstract class FindBugs {
         knownURLProtocolSet = Collections.unmodifiableSet(protocols);
     }
 
-    /**
-     * Set the FindBugs home directory.
-     */
+    /** Set the FindBugs home directory. */
     public static void setHome(String home) {
         FindBugs.home = home;
     }
 
-    /**
-     * Get the FindBugs home directory.
-     */
+    /** Get the FindBugs home directory. */
     public static String getHome() {
         return home;
     }
@@ -212,8 +220,7 @@ public abstract class FindBugs {
     /**
      * Configure training databases.
      *
-     * @param findBugs
-     *            the IFindBugsEngine to configure
+     * @param findBugs the IFindBugsEngine to configure
      * @throws IOException
      */
     public static void configureTrainingDatabases(IFindBugsEngine findBugs) throws IOException {
@@ -225,7 +232,9 @@ public abstract class FindBugs {
             }
             AnalysisContext.currentAnalysisContext().setDatabaseOutputDir(trainingOutputDir);
             // XXX: hack
-            System.setProperty("findbugs.checkreturn.savetraining", new File(trainingOutputDir, "checkReturn.db").getPath());
+            System.setProperty(
+                    "findbugs.checkreturn.savetraining",
+                    new File(trainingOutputDir, "checkReturn.db").getPath());
         }
         if (findBugs.useTrainingInput()) {
             String trainingInputDir = findBugs.getTrainingInputDir();
@@ -236,7 +245,9 @@ public abstract class FindBugs {
             AnalysisContext.currentAnalysisContext().setDatabaseInputDir(trainingInputDir);
             AnalysisContext.currentAnalysisContext().loadInterproceduralDatabases();
             // XXX: hack
-            System.setProperty("findbugs.checkreturn.loadtraining", new File(trainingInputDir, "checkReturn.db").getPath());
+            System.setProperty(
+                    "findbugs.checkreturn.loadtraining",
+                    new File(trainingInputDir, "checkReturn.db").getPath());
         } else {
             AnalysisContext.currentAnalysisContext().loadDefaultInterproceduralDatabases();
         }
@@ -245,15 +256,13 @@ public abstract class FindBugs {
     /**
      * Determines whether or not given DetectorFactory should be enabled.
      *
-     * @param findBugs
-     *            the IFindBugsEngine
-     * @param factory
-     *            the DetectorFactory
-     * @param rankThreshold
-     *            TODO
+     * @param findBugs the IFindBugsEngine
+     * @param factory the DetectorFactory
+     * @param rankThreshold TODO
      * @return true if the DetectorFactory should be enabled, false otherwise
      */
-    public static boolean isDetectorEnabled(IFindBugsEngine findBugs, DetectorFactory factory, int rankThreshold) {
+    public static boolean isDetectorEnabled(
+            IFindBugsEngine findBugs, DetectorFactory factory, int rankThreshold) {
 
         if (!findBugs.getUserPreferences().isDetectorEnabled(factory)) {
             return false;
@@ -265,7 +274,8 @@ public abstract class FindBugs {
 
         // Slow first pass detectors are usually disabled, but may be explicitly
         // enabled
-        if (!AnalysisContext.currentAnalysisContext().getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS)
+        if (!AnalysisContext.currentAnalysisContext()
+                .getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS)
                 && factory.isDetectorClassSubtypeOf(InterproceduralFirstPassDetector.class)) {
             return false;
         }
@@ -298,9 +308,7 @@ public abstract class FindBugs {
     /**
      * Process -bugCategories option.
      *
-     * @param categories
-     *            comma-separated list of bug categories
-     *
+     * @param categories comma-separated list of bug categories
      * @return Set of categories to be used
      */
     public static Set<String> handleBugCategories(String categories) {
@@ -317,16 +325,14 @@ public abstract class FindBugs {
     /**
      * Process the command line.
      *
-     * @param commandLine
-     *            the TextUICommandLine object which will parse the command line
-     * @param argv
-     *            the command line arguments
-     * @param findBugs
-     *            the IFindBugsEngine to configure
+     * @param commandLine the TextUICommandLine object which will parse the command line
+     * @param argv the command line arguments
+     * @param findBugs the IFindBugsEngine to configure
      * @throws IOException
      * @throws FilterException
      */
-    public static void processCommandLine(TextUICommandLine commandLine, String[] argv, IFindBugsEngine findBugs)
+    public static void processCommandLine(
+            TextUICommandLine commandLine, String[] argv, IFindBugsEngine findBugs)
             throws IOException, FilterException {
         // Expand option files in command line.
         // An argument beginning with "@" is treated as specifying
@@ -357,8 +363,9 @@ public abstract class FindBugs {
         commandLine.handleXArgs();
 
         commandLine.configureEngine(findBugs);
-        if (commandLine.getProject().getFileCount() == 0 &&
-                !commandLine.justPrintConfiguration() && !commandLine.justPrintVersion()) {
+        if (commandLine.getProject().getFileCount() == 0
+                && !commandLine.justPrintConfiguration()
+                && !commandLine.justPrintVersion()) {
             LOG.warning("No files to be analyzed");
 
             showHelp(commandLine);
@@ -379,16 +386,15 @@ public abstract class FindBugs {
     }
 
     /**
-     * Given a fully-configured IFindBugsEngine and the TextUICommandLine used
-     * to configure it, execute the analysis.
+     * Given a fully-configured IFindBugsEngine and the TextUICommandLine used to configure it,
+     * execute the analysis.
      *
-     * @param findBugs
-     *            a fully-configured IFindBugsEngine
-     * @param commandLine
-     *            the TextUICommandLine used to configure the IFindBugsEngine
+     * @param findBugs a fully-configured IFindBugsEngine
+     * @param commandLine the TextUICommandLine used to configure the IFindBugsEngine
      */
     @SuppressFBWarnings("DM_EXIT")
-    public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine) throws IOException {
+    public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine)
+            throws IOException {
         boolean verbose = !commandLine.quiet();
 
         try {
@@ -429,9 +435,7 @@ public abstract class FindBugs {
         }
     }
 
-    /**
-     * Print command line options synopses to stdout.
-     */
+    /** Print command line options synopses to stdout. */
     public static void showCommandLineOptions() {
         showCommandLineOptions(new TextUICommandLine());
     }
@@ -439,61 +443,51 @@ public abstract class FindBugs {
     /**
      * Print command line options synopses to stdout.
      *
-     * @param commandLine
-     *            the TextUICommandLine whose options should be printed
+     * @param commandLine the TextUICommandLine whose options should be printed
      */
     public static void showCommandLineOptions(TextUICommandLine commandLine) {
         commandLine.printUsage(System.out);
     }
 
-    /**
-     * Show the overall FindBugs command synopsis.
-     */
+    /** Show the overall FindBugs command synopsis. */
     public static void showSynopsis() {
-        LOG.warning("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
+        LOG.warning(
+                "Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
     }
 
     /**
      * Configure the (bug instance) Filter for the given DelegatingBugReporter.
      *
-     * @param bugReporter
-     *            a DelegatingBugReporter
-     * @param filterFileName
-     *            filter file name
-     * @param include
-     *            true if the filter is an include filter, false if it's an
-     *            exclude filter
+     * @param bugReporter a DelegatingBugReporter
+     * @param filterFileName filter file name
+     * @param include true if the filter is an include filter, false if it's an exclude filter
      * @throws java.io.IOException
      * @throws edu.umd.cs.findbugs.filter.FilterException
      */
-    public static BugReporter configureFilter(BugReporter bugReporter, String filterFileName, boolean include)
+    public static BugReporter configureFilter(
+            BugReporter bugReporter, String filterFileName, boolean include)
             throws IOException, FilterException {
         Filter filter = new Filter(filterFileName);
         return new FilterBugReporter(bugReporter, filter, include);
-
     }
 
     /**
      * Configure a baseline bug instance filter.
      *
-     * @param bugReporter
-     *            a DelegatingBugReporter
-     * @param baselineFileName
-     *            filename of baseline Filter
+     * @param bugReporter a DelegatingBugReporter
+     * @param baselineFileName filename of baseline Filter
      * @throws java.io.IOException
      * @throws org.dom4j.DocumentException
      */
-    public static BugReporter configureBaselineFilter(BugReporter bugReporter, String baselineFileName) throws IOException,
-            DocumentException {
+    public static BugReporter configureBaselineFilter(
+            BugReporter bugReporter, String baselineFileName) throws IOException, DocumentException {
         return new ExcludingHashesBugReporter(bugReporter, baselineFileName);
     }
 
     /**
-     * Configure the BugCollection (if the BugReporter being used is
-     * constructing one).
+     * Configure the BugCollection (if the BugReporter being used is constructing one).
      *
-     * @param findBugs
-     *            the IFindBugsEngine
+     * @param findBugs the IFindBugsEngine
      */
     public static void configureBugCollection(IFindBugsEngine findBugs) {
         BugCollection bugs = findBugs.getBugReporter().getBugCollection();
@@ -520,7 +514,8 @@ public abstract class FindBugs {
     }
 
     /** Date of release of Java 1.0 */
-    public final static long MINIMUM_TIMESTAMP = new GregorianCalendar(1996, 0, 23).getTime().getTime();
+    public static final long MINIMUM_TIMESTAMP =
+            new GregorianCalendar(1996, 0, 23).getTime().getTime();
 
     public static boolean validTimestamp(long timestamp) {
         return timestamp > MINIMUM_TIMESTAMP;

@@ -19,17 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.Dataflow;
@@ -41,14 +30,21 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
 
 /**
- * <p>A dataflow analysis to track the production and flow of values in the Java
- * stack frame. See the {@link ValueNumber ValueNumber} class for an explanation
- * of what the value numbers mean, and when they can be compared.</p>
+ * A dataflow analysis to track the production and flow of values in the Java stack frame. See the
+ * {@link ValueNumber ValueNumber} class for an explanation of what the value numbers mean, and when
+ * they can be compared.
  *
- * <p>
- * This class is still experimental.</p>
+ * <p>This class is still experimental.
  *
  * @author David Hovemeyer
  * @see ValueNumber
@@ -56,7 +52,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, ValueNumberFrame> {
 
-    private final static boolean TRACE = SystemProperties.getBoolean("vna.trace");
+    private static final boolean TRACE = SystemProperties.getBoolean("vna.trace");
 
     public static final boolean DEBUG = TRACE || SystemProperties.getBoolean("vna.debug");
 
@@ -78,14 +74,19 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
     private MergeTree mergeTree;
 
-    public ValueNumberAnalysis(MethodGen methodGen, DepthFirstSearch dfs, LoadedFieldSet loadedFieldSet,
+    public ValueNumberAnalysis(
+            MethodGen methodGen,
+            DepthFirstSearch dfs,
+            LoadedFieldSet loadedFieldSet,
             RepositoryLookupFailureCallback lookupFailureCallback) {
 
         super(dfs);
         this.methodGen = methodGen;
         this.factory = new ValueNumberFactory();
         ValueNumberCache cache = new ValueNumberCache();
-        this.visitor = new ValueNumberFrameModelingVisitor(methodGen, factory, cache, loadedFieldSet, lookupFailureCallback);
+        this.visitor =
+                new ValueNumberFrameModelingVisitor(
+                        methodGen, factory, cache, loadedFieldSet, lookupFailureCallback);
 
         int numLocals = methodGen.getMaxLocals();
         this.entryLocalValueList = new ValueNumber[numLocals];
@@ -104,10 +105,14 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         this.factAtLocationMap = new HashMap<>();
         this.factAfterLocationMap = new HashMap<>();
         if (DEBUG) {
-            System.out.println("VNA Analysis " + methodGen.getClassName() + "." + methodGen.getName() + " : "
-                    + methodGen.getSignature());
+            System.out.println(
+                    "VNA Analysis "
+                            + methodGen.getClassName()
+                            + "."
+                            + methodGen.getName()
+                            + " : "
+                            + methodGen.getSignature());
         }
-
     }
 
     public ValueNumber getClassObjectValue(String className) {
@@ -139,11 +144,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     /**
-     * Get the value number assigned to the given local variable upon entry to
-     * the method.
+     * Get the value number assigned to the given local variable upon entry to the method.
      *
-     * @param local
-     *            local variable number
+     * @param local local variable number
      * @return ValueNumber assigned to the local variable
      */
     public ValueNumber getEntryValue(int local) {
@@ -151,11 +154,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     /**
-     * Get the value number assigned to the given parameter upon entry to the
-     * method.
+     * Get the value number assigned to the given parameter upon entry to the method.
      *
-     * @param param
-     *            a parameter (0 == first parameter)
+     * @param param a parameter (0 == first parameter)
      * @return the ValueNumber assigned to that parameter
      */
     public ValueNumber getEntryValueForParameter(int param) {
@@ -194,7 +195,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     @Override
-    public void transfer(BasicBlock basicBlock, InstructionHandle end, ValueNumberFrame start, ValueNumberFrame result)
+    public void transfer(
+            BasicBlock basicBlock, InstructionHandle end, ValueNumberFrame start, ValueNumberFrame result)
             throws DataflowAnalysisException {
         if (basicBlock.isExceptionThrower() && isFactValid(start)) {
             /* If exceptionThrower is invoke instruction then it's possible that
@@ -215,7 +217,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     @Override
-    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
+    public void transferInstruction(
+            InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
             throws DataflowAnalysisException {
 
         Location location = new Location(handle, basicBlock);
@@ -232,7 +235,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     @Override
-    public void meetInto(ValueNumberFrame fact, Edge edge, ValueNumberFrame result) throws DataflowAnalysisException {
+    public void meetInto(ValueNumberFrame fact, Edge edge, ValueNumberFrame result)
+            throws DataflowAnalysisException {
         if (edge.getTarget().isExceptionHandler() && fact.isValid()) {
             // Special case: when merging predecessor facts for entry to
             // an exception handler, we clear the stack and push a
@@ -255,7 +259,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     @Override
-    protected void mergeInto(ValueNumberFrame frame, ValueNumberFrame result) throws DataflowAnalysisException {
+    protected void mergeInto(ValueNumberFrame frame, ValueNumberFrame result)
+            throws DataflowAnalysisException {
         result.mergeAvailableLoadSets(frame, factory, mergeTree);
         super.mergeInto(frame, result);
     }
@@ -263,11 +268,13 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     @Override
     protected void mergeValues(ValueNumberFrame otherFrame, ValueNumberFrame resultFrame, int slot)
             throws DataflowAnalysisException {
-        ValueNumber value = mergeValues(resultFrame, slot, resultFrame.getValue(slot), otherFrame.getValue(slot));
+        ValueNumber value =
+                mergeValues(resultFrame, slot, resultFrame.getValue(slot), otherFrame.getValue(slot));
         resultFrame.setValue(slot, value);
     }
 
-    private ValueNumber mergeValues(ValueNumberFrame frame, int slot, ValueNumber mine, ValueNumber other) {
+    private ValueNumber mergeValues(
+            ValueNumberFrame frame, int slot, ValueNumber mine, ValueNumber other) {
 
         // Merging slot values:
         // - Merging identical values results in no change
@@ -293,9 +300,10 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
         ValueNumber mergedValue = frame.getMergedValue(slot);
         if (mergedValue == null) {
-            mergedValue = factory.createFreshValue(ValueNumber.mergeFlags(mine.getFlags(), other.getFlags()) | ValueNumber.PHI_NODE);
+            mergedValue =
+                    factory.createFreshValue(
+                            ValueNumber.mergeFlags(mine.getFlags(), other.getFlags()) | ValueNumber.PHI_NODE);
             frame.setMergedValue(slot, mergedValue);
-
         }
 
         if (mergeTree != null) {
@@ -317,7 +325,6 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         return fact;
     }
 
-
     @Override
     public ValueNumberFrame getFactAfterLocation(Location location) {
         if (TRACE) {
@@ -326,10 +333,14 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         ValueNumberFrame fact = factAfterLocationMap.get(location);
         if (fact == null) {
             if (TRACE) {
-                System.out
-                        .println("Initialized fact after " + location + " @ "
-                                + Integer.toHexString(System.identityHashCode(location)) + " in "
-                                + Integer.toHexString(System.identityHashCode(this)) + " : "
+                System.out.println(
+                        "Initialized fact after "
+                                + location
+                                + " @ "
+                                + Integer.toHexString(System.identityHashCode(location))
+                                + " in "
+                                + Integer.toHexString(System.identityHashCode(this))
+                                + " : "
                                 + factAfterLocationMap.containsKey(location));
             }
 
@@ -341,9 +352,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     /**
-     * Get an Iterator over all dataflow facts that we've recorded for the
-     * Locations in the CFG. Note that this does not include result facts (since
-     * there are no Locations corresponding to the end of basic blocks).
+     * Get an Iterator over all dataflow facts that we've recorded for the Locations in the CFG. Note
+     * that this does not include result facts (since there are no Locations corresponding to the end
+     * of basic blocks).
      */
     public Iterator<ValueNumberFrame> factIterator() {
         return factAtLocationMap.values().iterator();
@@ -352,54 +363,50 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     // These fields are used by the compactValueNumbers() method.
     /*
     private static class ValueCompacter {
-        public final BitSet valuesUsed;
+    public final BitSet valuesUsed;
     
-        public int numValuesUsed;
+    public int numValuesUsed;
     
-        public final int[] discovered;
+    public final int[] discovered;
     
-        public ValueCompacter(int origNumValuesAllocated) {
-            valuesUsed = new BitSet();
-            numValuesUsed = 0;
+    public ValueCompacter(int origNumValuesAllocated) {
+    valuesUsed = new BitSet();
+    numValuesUsed = 0;
     
-            // The "discovered" array tells us the mapping of old value numbers
-            // to new (which are based on order of discovery). Negative values
-            // specify value numbers which are not actually used (and thus can
-            // be purged.)
-            discovered = new int[origNumValuesAllocated];
-            for (int i = 0; i < discovered.length; ++i) {
-                discovered[i] = -1;
-            }
-        }
+    // The "discovered" array tells us the mapping of old value numbers
+    // to new (which are based on order of discovery). Negative values
+    // specify value numbers which are not actually used (and thus can
+    // be purged.)
+    discovered = new int[origNumValuesAllocated];
+    for (int i = 0; i < discovered.length; ++i) {
+    discovered[i] = -1;
+    }
+    }
     
-        public boolean isUsed(int number) {
-            return valuesUsed.get(number);
-        }
+    public boolean isUsed(int number) {
+    return valuesUsed.get(number);
+    }
     
-        public void setUsed(int number) {
-            valuesUsed.set(number, true);
-        }
+    public void setUsed(int number) {
+    valuesUsed.set(number, true);
+    }
     
-        public int allocateValue() {
-            return numValuesUsed++;
-        }
+    public int allocateValue() {
+    return numValuesUsed++;
+    }
     }
      */
 
     /**
-     * <p>Compact the value numbers assigned. This should be done only after the
-     * dataflow algorithm has executed. This works by modifying the actual
-     * ValueNumber objects assigned. After this method is called, the
-     * getNumValuesAllocated() method of this object will return a value less
-     * than or equal to the value it would have returned before the call to this
-     * method.
-     * </p>
-     * <p>
-     * <em>This method should be called at most once</em>.
-     * </p>
-     * @param dataflow
-     *            the Dataflow object which executed this analysis (and has all
-     *            of the block result values)
+     * Compact the value numbers assigned. This should be done only after the dataflow algorithm has
+     * executed. This works by modifying the actual ValueNumber objects assigned. After this method is
+     * called, the getNumValuesAllocated() method of this object will return a value less than or
+     * equal to the value it would have returned before the call to this method.
+     *
+     * <p><em>This method should be called at most once</em>.
+     *
+     * @param dataflow the Dataflow object which executed this analysis (and has all of the block
+     *     result values)
      */
     @Deprecated
     public void compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis> dataflow) {
@@ -409,22 +416,14 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     /**
      * Mark value numbers in a value number frame for compaction.
      *
-    private static void markFrameValues(ValueNumberFrame frame, ValueCompacter compacter) {
-        // We don't need to do anything for top and bottom frames.
-        if (!frame.isValid()) {
-            return;
-        }
-    
-        for (int j = 0; j < frame.getNumSlots(); ++j) {
-            ValueNumber value = frame.getValue(j);
-            int number = value.getNumber();
-    
-            if (!compacter.isUsed(number)) {
-                compacter.discovered[number] = compacter.allocateValue();
-                compacter.setUsed(number);
-            }
-        }
-    }
+     * <p>private static void markFrameValues(ValueNumberFrame frame, ValueCompacter compacter) { //
+     * We don't need to do anything for top and bottom frames. if (!frame.isValid()) { return; }
+     *
+     * <p>for (int j = 0; j < frame.getNumSlots(); ++j) { ValueNumber value = frame.getValue(j); int
+     * number = value.getNumber();
+     *
+     * <p>if (!compacter.isUsed(number)) { compacter.discovered[number] = compacter.allocateValue();
+     * compacter.setUsed(number); } } }
      */
 
     // /**

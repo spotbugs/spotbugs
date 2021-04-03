@@ -19,13 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class PluginDoesntContainMetadataException extends PluginException {
 
     public PluginDoesntContainMetadataException(String msg) {
         super(msg);
     }
-
 }

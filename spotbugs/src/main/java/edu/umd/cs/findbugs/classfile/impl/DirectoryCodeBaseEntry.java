@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Codebase entry class for directory codebases.
@@ -113,7 +112,8 @@ public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry {
             return false;
         }
         DirectoryCodeBaseEntry other = (DirectoryCodeBaseEntry) obj;
-        return this.codeBase.equals(other.codeBase) && this.realResourceName.equals(other.realResourceName);
+        return this.codeBase.equals(other.codeBase)
+                && this.realResourceName.equals(other.realResourceName);
     }
 
     /*

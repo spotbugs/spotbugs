@@ -17,19 +17,6 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
 import edu.umd.cs.findbugs.BugInstance;
@@ -41,17 +28,29 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import javax.annotation.CheckForNull;
 
 /**
- * Java main application to compute update a historical bug collection with
- * results from another build/analysis.
+ * Java main application to compute update a historical bug collection with results from another
+ * build/analysis.
  *
  * @author William Pugh
  */
-
 public class CopyBuggySource {
     enum SrcKind {
-        DIR, ZIP, Z0P_GZ;
+        DIR,
+        ZIP,
+        Z0P_GZ;
 
         static SrcKind get(File f) {
             if (f.exists() && f.isDirectory() && f.canWrite()) {
@@ -67,14 +66,10 @@ public class CopyBuggySource {
             }
             throw new IllegalArgumentException("Invalid src destination: " + f);
         }
-
     }
 
-    /**
-     *
-     */
+    /** */
     private static final String USAGE = "Usage: <cmd> " + "  <bugs.xml> <destinationSrc>";
-
 
     public static void main(String[] args) throws Exception {
         FindBugs.setNoAnalysis();
@@ -119,7 +114,6 @@ public class CopyBuggySource {
             zOut.setLevel(0);
             break;
         }
-
     }
 
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
@@ -201,10 +195,12 @@ public class CopyBuggySource {
             zOut.close();
         }
 
-        System.out.printf("All done. %d files not found, %d files copied%n", couldNotFind.size(), copyCount);
+        System.out.printf(
+                "All done. %d files not found, %d files copied%n", couldNotFind.size(), copyCount);
     }
 
-    private @CheckForNull OutputStream getOutputStream(String fullName, long lastModifiedTime) throws IOException {
+    private @CheckForNull OutputStream getOutputStream(String fullName, long lastModifiedTime)
+            throws IOException {
         if (kind == SrcKind.DIR) {
             dstFile = new File(src, fullName);
 
@@ -231,7 +227,6 @@ public class CopyBuggySource {
             zOut.putNextEntry(e);
             return zOut;
         }
-
     }
 
     public static void close(InputStream in) {
@@ -241,7 +236,6 @@ public class CopyBuggySource {
             }
         } catch (IOException e) {
         }
-
     }
 
     public static void close(OutputStream out) {
@@ -253,7 +247,5 @@ public class CopyBuggySource {
             }
         } catch (IOException e) {
         }
-
     }
-
 }

@@ -2,7 +2,6 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Dimension;
 import java.util.Vector;
-
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 

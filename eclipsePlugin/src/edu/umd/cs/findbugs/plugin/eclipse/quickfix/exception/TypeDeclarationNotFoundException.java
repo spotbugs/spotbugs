@@ -24,8 +24,8 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 /**
- * Thrown when no <CODE>FieldDeclaration</CODE> was found in the specified
- * <CODE>TypeDeclaration</CODE>.
+ * Thrown when no <CODE>FieldDeclaration</CODE> was found in the specified <CODE>TypeDeclaration
+ * </CODE>.
  *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -39,8 +39,13 @@ public class TypeDeclarationNotFoundException extends BodyDeclarationNotFoundExc
 
     private final String className;
 
-    public TypeDeclarationNotFoundException(CompilationUnit compilationUnit, String className, String message) {
-        super("Type declaration '" + className + "' not found in the specified compilation unit: " + message);
+    public TypeDeclarationNotFoundException(
+            CompilationUnit compilationUnit, String className, String message) {
+        super(
+                "Type declaration '"
+                        + className
+                        + "' not found in the specified compilation unit: "
+                        + message);
         this.compilationUnit = compilationUnit;
         this.className = className;
     }
@@ -56,5 +61,4 @@ public class TypeDeclarationNotFoundException extends BodyDeclarationNotFoundExc
     public String getClassName() {
         return className;
     }
-
 }

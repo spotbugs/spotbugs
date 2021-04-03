@@ -20,6 +20,32 @@
 
 package de.tobject.findbugs;
 
+import de.tobject.findbugs.builder.FindBugsBuilder;
+import de.tobject.findbugs.builder.FindBugsWorker;
+import de.tobject.findbugs.io.FileOutput;
+import de.tobject.findbugs.io.IO;
+import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.nature.FindBugsNature;
+import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.preferences.FindBugsPreferenceInitializer;
+import de.tobject.findbugs.properties.DetectorProvider;
+import de.tobject.findbugs.properties.DetectorValidator;
+import de.tobject.findbugs.properties.DetectorValidator.ValidationStatus;
+import de.tobject.findbugs.reporter.Reporter;
+import de.tobject.findbugs.view.IMarkerSelectionHandler;
+import de.tobject.findbugs.view.explorer.BugContentProvider;
+import edu.umd.cs.findbugs.BugCode;
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.PluginException;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.Version;
+import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,9 +67,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.annotation.CheckForNull;
-
 import org.dom4j.DocumentException;
 import org.eclipse.core.internal.preferences.EclipsePreferences;
 import org.eclipse.core.resources.IFile;
@@ -79,44 +103,13 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.BundleContext;
 
-import de.tobject.findbugs.builder.FindBugsBuilder;
-import de.tobject.findbugs.builder.FindBugsWorker;
-import de.tobject.findbugs.io.FileOutput;
-import de.tobject.findbugs.io.IO;
-import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.nature.FindBugsNature;
-import de.tobject.findbugs.preferences.FindBugsConstants;
-import de.tobject.findbugs.preferences.FindBugsPreferenceInitializer;
-import de.tobject.findbugs.properties.DetectorProvider;
-import de.tobject.findbugs.properties.DetectorValidator;
-import de.tobject.findbugs.properties.DetectorValidator.ValidationStatus;
-import de.tobject.findbugs.reporter.Reporter;
-import de.tobject.findbugs.view.IMarkerSelectionHandler;
-import de.tobject.findbugs.view.explorer.BugContentProvider;
-import edu.umd.cs.findbugs.BugCode;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.PluginException;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.Version;
-import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
-
-
-/**
- * The main plugin class to be used in the desktop.
- */
+/** The main plugin class to be used in the desktop. */
 public class FindbugsPlugin extends AbstractUIPlugin {
     /**
-     * The plug-in identifier of the FindBugs Plug-in (value
-     * "com.github.spotbugs.plugin.eclipse", was
+     * The plug-in identifier of the FindBugs Plug-in (value "com.github.spotbugs.plugin.eclipse", was
      * <code>"de.tobject.findbugs"</code>).
      */
-    public static final String PLUGIN_ID = "com.github.spotbugs.plugin.eclipse"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "com.github.spotbugs.plugin.eclipse"; // $NON-NLS-1$
 
     private static final String DEFAULT_CLOUD_ID = "edu.umd.cs.findbugs.cloud.doNothingCloud";
 
@@ -124,13 +117,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public static final String ICON_DEFAULT = "buggy-tiny-gray.png";
 
     @SuppressWarnings("restriction")
-    private static final IPath WORKSPACE_PREFS_PATH = Platform.getStateLocation(Platform.getBundle(Platform.PI_RUNTIME))
-            .append(EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME)
-            .append(PLUGIN_ID + "." + EclipsePreferences.PREFS_FILE_EXTENSION);
+    private static final IPath WORKSPACE_PREFS_PATH =
+            Platform.getStateLocation(Platform.getBundle(Platform.PI_RUNTIME))
+                    .append(EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME)
+                    .append(PLUGIN_ID + "." + EclipsePreferences.PREFS_FILE_EXTENSION);
 
     @java.lang.SuppressWarnings("restriction")
-    public static final IPath DEFAULT_PREFS_PATH = new Path(EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME)
-            .append("edu.umd.cs.findbugs.core.prefs");
+    public static final IPath DEFAULT_PREFS_PATH =
+            new Path(EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME)
+                    .append("edu.umd.cs.findbugs.core.prefs");
 
     public static final IPath DEPRECATED_PREFS_PATH = new Path(".fbprefs");
 
@@ -138,7 +133,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     public static final String TREE_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 
-    public static final String BUG_CONTENT_PROVIDER_ID = "de.tobject.findbugs.view.explorer.BugContentProvider";
+    public static final String BUG_CONTENT_PROVIDER_ID =
+            "de.tobject.findbugs.view.explorer.BugContentProvider";
 
     /** Map containing preloaded ImageDescriptors */
     private final Map<String, ImageDescriptor> imageDescriptors = new HashMap<>(13);
@@ -146,50 +142,49 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /** Controls debugging of the plugin */
     public static boolean DEBUG;
 
-
     public static final String OLD_PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse";
 
     /**
-     * The identifier for the FindBugs builder (value
-     * <code>"com.github.spotbugs.plugin.eclipse.findbugsbuilder"</code>).
+     * The identifier for the FindBugs builder (value <code>
+     * "com.github.spotbugs.plugin.eclipse.findbugsbuilder"</code>).
      */
-    public static final String BUILDER_ID = OLD_PLUGIN_ID + ".findbugsBuilder"; //$NON-NLS-1$
+    public static final String BUILDER_ID = OLD_PLUGIN_ID + ".findbugsBuilder"; // $NON-NLS-1$
 
     /**
-     * The identifier for the FindBugs nature (value
-     * <code>"com.github.spotbugs.plugin.eclipse.findbugsnature"</code>).
+     * The identifier for the FindBugs nature (value <code>
+     * "com.github.spotbugs.plugin.eclipse.findbugsnature"</code>).
      *
      * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
      */
-    public static final String NATURE_ID = OLD_PLUGIN_ID + ".findbugsNature"; //$NON-NLS-1$
+    public static final String NATURE_ID = OLD_PLUGIN_ID + ".findbugsNature"; // $NON-NLS-1$
 
     // Debugging options
-    private static final String PLUGIN_DEBUG = PLUGIN_ID + "/debug"; //$NON-NLS-1$
+    private static final String PLUGIN_DEBUG = PLUGIN_ID + "/debug"; // $NON-NLS-1$
 
-    private static final String BUILDER_DEBUG = PLUGIN_ID + "/debug/builder"; //$NON-NLS-1$
+    private static final String BUILDER_DEBUG = PLUGIN_ID + "/debug/builder"; // $NON-NLS-1$
 
-    private static final String NATURE_DEBUG = PLUGIN_ID + "/debug/nature"; //$NON-NLS-1$
+    private static final String NATURE_DEBUG = PLUGIN_ID + "/debug/nature"; // $NON-NLS-1$
 
-    private static final String REPORTER_DEBUG = PLUGIN_ID + "/debug/reporter"; //$NON-NLS-1$
+    private static final String REPORTER_DEBUG = PLUGIN_ID + "/debug/reporter"; // $NON-NLS-1$
 
-    private static final String CONTENT_DEBUG = PLUGIN_ID + "/debug/content"; //$NON-NLS-1$
+    private static final String CONTENT_DEBUG = PLUGIN_ID + "/debug/content"; // $NON-NLS-1$
 
-    private static final String PROFILER_DEBUG = PLUGIN_ID + "/debug/profiler"; //$NON-NLS-1$
+    private static final String PROFILER_DEBUG = PLUGIN_ID + "/debug/profiler"; // $NON-NLS-1$
 
     // Persistent and session property keys
-    public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION = new QualifiedName(FindbugsPlugin.PLUGIN_ID
-            + ".sessionprops", "bugcollection");
+    public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION =
+            new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection");
 
-    public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION_DIRTY = new QualifiedName(FindbugsPlugin.PLUGIN_ID
-            + ".sessionprops", "bugcollection.dirty");
+    public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION_DIRTY =
+            new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection.dirty");
 
-    public static final QualifiedName SESSION_PROPERTY_USERPREFS = new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops",
-            "userprefs");
+    public static final QualifiedName SESSION_PROPERTY_USERPREFS =
+            new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "userprefs");
 
-    public static final QualifiedName SESSION_PROPERTY_SETTINGS_ON = new QualifiedName(
-            FindbugsPlugin.PLUGIN_ID + ".sessionprops", "settingsOn");
+    public static final QualifiedName SESSION_PROPERTY_SETTINGS_ON =
+            new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "settingsOn");
 
-    public static final String LIST_DELIMITER = ";"; //$NON-NLS-1$
+    public static final String LIST_DELIMITER = ";"; // $NON-NLS-1$
 
     /** The shared instance. */
     private static FindbugsPlugin plugin;
@@ -199,9 +194,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /** Resource bundle. */
     private ResourceBundle resourceBundle;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public FindbugsPlugin() {
         plugin = this;
     }
@@ -217,7 +210,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
         // initialize resource strings
         try {
-            resourceBundle = ResourceBundle.getBundle("de.tobject.findbugs.messages"); //this is correct //$NON-NLS-1$
+            resourceBundle =
+                    ResourceBundle.getBundle("de.tobject.findbugs.messages"); // this is correct //$NON-NLS-1$
         } catch (MissingResourceException x) {
             resourceBundle = null;
         }
@@ -259,19 +253,16 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             System.out.printf("  %s %s%n", loader.toString(), loader.getClass().getSimpleName());
             loader = loader.getParent();
         }
-
     }
 
     /**
-     * The complexity of the code below is partly caused by the fact that we
-     * might have multiple ways to install and/or enable custom plugins. There
-     * are plugins discovered by FB itself, plugins contributed to Eclipse and
-     * plugins added by user manually via properties. Plugins can be disabled
-     * via code or properties. The code below is still work in progress, see
-     * also {@link DetectorProvider#getPluginElements(UserPreferences)}.
+     * The complexity of the code below is partly caused by the fact that we might have multiple ways
+     * to install and/or enable custom plugins. There are plugins discovered by FB itself, plugins
+     * contributed to Eclipse and plugins added by user manually via properties. Plugins can be
+     * disabled via code or properties. The code below is still work in progress, see also {@link
+     * DetectorProvider#getPluginElements(UserPreferences)}.
      *
-     * @param force
-     *            true if we MUST set plugins even if the given list is empty
+     * @param force true if we MUST set plugins even if the given list is empty
      */
     public static synchronized void applyCustomDetectors(boolean force) {
         if (customDetectorsInitialized && !force) {
@@ -280,13 +271,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         customDetectorsInitialized = true;
         DetectorValidator validator = new DetectorValidator();
         final SortedSet<String> detectorPaths = new TreeSet<>();
-        SortedMap<String, String> contributedDetectors = DetectorsExtensionHelper.getContributedDetectors();
+        SortedMap<String, String> contributedDetectors =
+                DetectorsExtensionHelper.getContributedDetectors();
         UserPreferences corePreferences = getCorePreferences(null, force);
         detectorPaths.addAll(corePreferences.getCustomPlugins(true));
         if (DEBUG) {
             dumpClassLoader(FindbugsPlugin.class);
             dumpClassLoader(Plugin.class);
-            System.out.println("applyCustomDetectors - going to add " + detectorPaths.size() + " plugin urls...");
+            System.out.println(
+                    "applyCustomDetectors - going to add " + detectorPaths.size() + " plugin urls...");
             for (String url : detectorPaths) {
                 System.out.println("\t" + url);
             }
@@ -352,10 +345,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
 
         if (DEBUG) {
-            System.out.println("applyCustomDetectors - there was " + detectorPaths.size()
-                    + " extra FB plugin urls with " + enabled.size()
-                    + " valid FB plugins and " + allPlugins.size()
-                    + " total plugins registered by FB.");
+            System.out.println(
+                    "applyCustomDetectors - there was "
+                            + detectorPaths.size()
+                            + " extra FB plugin urls with "
+                            + enabled.size()
+                            + " valid FB plugins and "
+                            + allPlugins.size()
+                            + " total plugins registered by FB.");
             for (Entry<URI, Plugin> entry : allPlugins.entrySet()) {
                 Plugin fbPlugin = entry.getValue();
                 if (fbPlugin.isGloballyEnabled()) {
@@ -384,8 +381,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         } catch (PluginException e) {
             getDefault().logException(e, "Failed to load plugin for custom detector: " + uri);
         } catch (DuplicatePluginIdException e) {
-            getDefault().logException(e, e.getPluginId() + " already loaded from " + e.getPreviouslyLoadedFrom()
-                    + ", ignoring: " + uri);
+            getDefault()
+                    .logException(
+                            e,
+                            e.getPluginId()
+                                    + " already loaded from "
+                                    + e.getPreviouslyLoadedFrom()
+                                    + ", ignoring: "
+                                    + uri);
         }
     }
 
@@ -409,37 +412,35 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
     }
 
-    /**
-     * Returns the shared instance.
-     */
+    /** Returns the shared instance. */
     public static FindbugsPlugin getDefault() {
         return plugin;
     }
 
-    /**
-     * @return active window instance, never null
-     */
+    /** @return active window instance, never null */
     public static IWorkbenchWindow getActiveWorkbenchWindow() {
         if (Display.getCurrent() != null) {
             return getDefault().getWorkbench().getActiveWorkbenchWindow();
         }
         // need to call from UI thread
         final IWorkbenchWindow[] window = new IWorkbenchWindow[1];
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                window[0] = getDefault().getWorkbench().getActiveWorkbenchWindow();
-            }
-        });
+        Display.getDefault()
+                .syncExec(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                window[0] = getDefault().getWorkbench().getActiveWorkbenchWindow();
+                            }
+                        });
         return window[0];
     }
 
     /**
-     * Returns the SWT Shell of the active workbench window or <code>null</code>
-     * if no workbench window is active.
+     * Returns the SWT Shell of the active workbench window or <code>null</code> if no workbench
+     * window is active.
      *
-     * @return the SWT Shell of the active workbench window, or
-     *         <code>null</code> if no workbench window is active
+     * @return the SWT Shell of the active workbench window, or <code>null</code> if no workbench
+     *     window is active
      */
     public static Shell getShell() {
         IWorkbenchWindow window = getActiveWorkbenchWindow();
@@ -449,10 +450,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         return window.getShell();
     }
 
-    /**
-     * Returns the string from the plugin's resource bundle, or 'key' if not
-     * found.
-     */
+    /** Returns the string from the plugin's resource bundle, or 'key' if not found. */
     public static String getResourceString(String key) {
         ResourceBundle bundle = FindbugsPlugin.getDefault().getResourceBundle();
         try {
@@ -462,9 +460,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
     }
 
-    /**
-     * Returns the plugin's resource bundle,
-     */
+    /** Returns the plugin's resource bundle, */
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
@@ -502,8 +498,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Find the filesystem path of the FindBugs plugin directory.
      *
-     * @return the filesystem path of the FindBugs plugin directory, or null if
-     *         the FindBugs plugin directory cannot be found
+     * @return the filesystem path of the FindBugs plugin directory, or null if the FindBugs plugin
+     *     directory cannot be found
      */
     public static String getFindBugsEnginePluginLocation() {
         // findbugs.home should be set to the directory the plugin is
@@ -513,7 +509,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             URL bundleRoot = FileLocator.resolve(u);
             String path = bundleRoot.getPath();
             if (FindBugsBuilder.DEBUG) {
-                System.out.println("Pluginpath: " + path); //$NON-NLS-1$
+                System.out.println("Pluginpath: " + path); // $NON-NLS-1$
             }
             if (path.endsWith("/eclipsePlugin/")) {
                 File f = new File(path);
@@ -540,10 +536,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Log an exception.
      *
-     * @param e
-     *            the exception
-     * @param message
-     *            message describing how/why the exception occurred
+     * @param e the exception
+     * @param message message describing how/why the exception occurred
      */
     public void logException(Throwable e, String message) {
         logMessage(IStatus.ERROR, message, e);
@@ -552,8 +546,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Log an error.
      *
-     * @param message
-     *            error message
+     * @param message error message
      */
     public void logError(String message) {
         logMessage(IStatus.ERROR, message, null);
@@ -562,8 +555,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Log a warning.
      *
-     * @param message
-     *            warning message
+     * @param message warning message
      */
     public void logWarning(String message) {
         logMessage(IStatus.WARNING, message, null);
@@ -572,8 +564,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Log an informational message.
      *
-     * @param message
-     *            the informational message
+     * @param message the informational message
      */
     public void logInfo(String message) {
         logMessage(IStatus.INFO, message, null);
@@ -602,10 +593,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Get the file resource used to store findbugs warnings for a project.
      *
-     * @param project
-     *            the project
-     * @return the IPath to the file (which may not actually exist in the
-     *         filesystem yet)
+     * @param project the project
+     * @return the IPath to the file (which may not actually exist in the filesystem yet)
      */
     public static IPath getBugCollectionFile(IProject project) {
         // IPath path = project.getWorkingLocation(PLUGIN_ID); //
@@ -624,8 +613,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         return ((Boolean) dirty).booleanValue();
     }
 
-    public static void markBugCollectionDirty(IProject project, boolean isDirty) throws CoreException {
-        project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION_DIRTY, isDirty ? Boolean.TRUE : Boolean.FALSE);
+    public static void markBugCollectionDirty(IProject project, boolean isDirty)
+            throws CoreException {
+        project.setSessionProperty(
+                SESSION_PROPERTY_BUG_COLLECTION_DIRTY, isDirty ? Boolean.TRUE : Boolean.FALSE);
     }
 
     @CheckForNull
@@ -639,24 +630,24 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Get the stored BugCollection for project. If there is no stored bug
-     * collection for the project, or if an error occurs reading the stored bug
-     * collection, a default empty collection is created and returned.
+     * Get the stored BugCollection for project. If there is no stored bug collection for the project,
+     * or if an error occurs reading the stored bug collection, a default empty collection is created
+     * and returned.
      *
-     * @param project
-     *            the eclipse project
-     * @param monitor
-     *            a progress monitor
+     * @param project the eclipse project
+     * @param monitor a progress monitor
      * @return the stored BugCollection, never null
      * @throws CoreException
      */
     public static SortedBugCollection getBugCollection(IProject project, IProgressMonitor monitor)
             throws CoreException {
-        SortedBugCollection bugCollection = (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
+        SortedBugCollection bugCollection =
+                (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
         if (bugCollection == null) {
             try {
                 readBugCollectionAndProject(project, monitor);
-                bugCollection = (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
+                bugCollection =
+                        (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
             } catch (IOException e) {
                 FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
                 bugCollection = createDefaultEmptyBugCollection(project);
@@ -668,13 +659,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         return bugCollection;
     }
 
-    private static void cacheBugCollectionAndProject(IProject project, SortedBugCollection bugCollection, Project fbProject)
-            throws CoreException {
+    private static void cacheBugCollectionAndProject(
+            IProject project, SortedBugCollection bugCollection, Project fbProject) throws CoreException {
         project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
         markBugCollectionDirty(project, false);
     }
 
-    private static SortedBugCollection createDefaultEmptyBugCollection(IProject project) throws CoreException {
+    private static SortedBugCollection createDefaultEmptyBugCollection(IProject project)
+            throws CoreException {
         SortedBugCollection bugCollection = new SortedBugCollection();
         Project fbProject = bugCollection.getProject();
 
@@ -685,17 +677,13 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Read saved bug collection and findbugs project from file. Will populate
-     * the bug collection and findbugs project session properties if successful.
-     * If there is no saved bug collection and project for the eclipse project,
-     * then FileNotFoundException will be thrown.
+     * Read saved bug collection and findbugs project from file. Will populate the bug collection and
+     * findbugs project session properties if successful. If there is no saved bug collection and
+     * project for the eclipse project, then FileNotFoundException will be thrown.
      *
-     * @param project
-     *            the eclipse project
-     * @param monitor
-     *            a progress monitor
-     * @throws java.io.FileNotFoundException
-     *             the saved bug collection doesn't exist
+     * @param project the eclipse project
+     * @param monitor a progress monitor
+     * @throws java.io.FileNotFoundException the saved bug collection doesn't exist
      * @throws IOException
      * @throws DocumentException
      * @throws CoreException
@@ -729,19 +717,17 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Store a new bug collection for a project. The collection is stored in the
-     * session, and also in a file in the project.
+     * Store a new bug collection for a project. The collection is stored in the session, and also in
+     * a file in the project.
      *
-     * @param project
-     *            the project
-     * @param bugCollection
-     *            the bug collection
-     * @param monitor
-     *            progress monitor
+     * @param project the project
+     * @param bugCollection the bug collection
+     * @param monitor progress monitor
      * @throws IOException
      * @throws CoreException
      */
-    public static void storeBugCollection(IProject project, final SortedBugCollection bugCollection, IProgressMonitor monitor)
+    public static void storeBugCollection(
+            IProject project, final SortedBugCollection bugCollection, IProgressMonitor monitor)
             throws IOException, CoreException {
 
         // Store the bug collection and findbugs project in the session
@@ -755,15 +741,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * If necessary, save current bug collection for project to disk.
      *
-     * @param project
-     *            the project
-     * @param monitor
-     *            a progress monitor
+     * @param project the project
+     * @param monitor a progress monitor
      * @throws CoreException
      */
-    public static void saveCurrentBugCollection(IProject project, IProgressMonitor monitor) throws CoreException {
+    public static void saveCurrentBugCollection(IProject project, IProgressMonitor monitor)
+            throws CoreException {
         if (isBugCollectionDirty(project)) {
-            SortedBugCollection bugCollection = (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
+            SortedBugCollection bugCollection =
+                    (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
 
             if (bugCollection != null) {
                 writeBugCollection(project, bugCollection, monitor);
@@ -771,7 +757,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
     }
 
-    private static void writeBugCollection(IProject project, final SortedBugCollection bugCollection, IProgressMonitor monitor)
+    private static void writeBugCollection(
+            IProject project, final SortedBugCollection bugCollection, IProgressMonitor monitor)
             throws CoreException {
         // Save to file
         IPath bugCollectionPath = getBugCollectionFile(project);
@@ -779,17 +766,18 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         // project.
         // see the javadoc for org.eclipse.core.runtime.Plugin
         File bugCollectionFile = bugCollectionPath.toFile();
-        FileOutput fileOutput = new FileOutput() {
-            @Override
-            public void writeFile(OutputStream os) throws IOException {
-                bugCollection.writeXML(os);
-            }
+        FileOutput fileOutput =
+                new FileOutput() {
+                    @Override
+                    public void writeFile(OutputStream os) throws IOException {
+                        bugCollection.writeXML(os);
+                    }
 
-            @Override
-            public String getTaskDescription() {
-                return "creating XML SpotBugs data file";
-            }
-        };
+                    @Override
+                    public String getTaskDescription() {
+                        return "creating XML SpotBugs data file";
+                    }
+                };
         IO.writeFile(bugCollectionFile, fileOutput, monitor);
         markBugCollectionDirty(project, false);
     }
@@ -797,10 +785,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Get the FindBugs preferences file for a project (which may not exist yet)
      *
-     * @param project
-     *            the project
-     * @return the IFile for the FindBugs preferences file, if any. Can be
-     *         "empty" handle if the real file does not exist yet
+     * @param project the project
+     * @return the IFile for the FindBugs preferences file, if any. Can be "empty" handle if the real
+     *     file does not exist yet
      */
     private static IFile getUserPreferencesFile(IProject project) {
         IFile defaultFile = project.getFile(DEFAULT_PREFS_PATH);
@@ -833,20 +820,22 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             // so if the file is there, we can check if after 1.3.8 the flag is
             // set
             // to use workspace properties instead
-            projectPropsEnabled = !store.contains(FindBugsConstants.PROJECT_PROPS_DISABLED)
-                    || !store.getBoolean(FindBugsConstants.PROJECT_PROPS_DISABLED);
+            projectPropsEnabled =
+                    !store.contains(FindBugsConstants.PROJECT_PROPS_DISABLED)
+                            || !store.getBoolean(FindBugsConstants.PROJECT_PROPS_DISABLED);
         }
         // remember in the session to speedup access, don't touch the store
         setProjectSettingsEnabled(project, null, projectPropsEnabled);
         return projectPropsEnabled;
     }
 
-    public static void setProjectSettingsEnabled(IProject project,
-            @CheckForNull IPreferenceStore store, boolean enabled) {
+    public static void setProjectSettingsEnabled(
+            IProject project, @CheckForNull IPreferenceStore store, boolean enabled) {
         try {
             project.setSessionProperty(SESSION_PROPERTY_SETTINGS_ON, Boolean.valueOf(enabled));
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error setting SpotBugs session property for project");
+            FindbugsPlugin.getDefault()
+                    .logException(e, "Error setting SpotBugs session property for project");
         }
         if (store != null) {
             store.setValue(FindBugsConstants.PROJECT_PROPS_DISABLED, !enabled);
@@ -854,18 +843,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Get the FindBugs core preferences for given project. This method can
-     * return workspace preferences if project preferences are not created yet
-     * or they are disabled.
+     * Get the FindBugs core preferences for given project. This method can return workspace
+     * preferences if project preferences are not created yet or they are disabled.
      *
-     * @param project
-     *            the project (if null, workspace settings are used)
-     * @param forceRead
-     *            true to enforce reading properties from disk
-     *
+     * @param project the project (if null, workspace settings are used)
+     * @param forceRead true to enforce reading properties from disk
      * @return the preferences for the project or prefs from workspace
      */
-    public static UserPreferences getCorePreferences(@CheckForNull IProject project, boolean forceRead) {
+    public static UserPreferences getCorePreferences(
+            @CheckForNull IProject project, boolean forceRead) {
         if (project == null || !isProjectSettingsEnabled(project)) {
             // read workspace (user) settings from instance area
             return getWorkspacePreferences();
@@ -876,13 +862,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Get the Eclipse plugin preferences for given project. This method can
-     * return workspace preferences if project preferences are not created yet
-     * or they are disabled.
+     * Get the Eclipse plugin preferences for given project. This method can return workspace
+     * preferences if project preferences are not created yet or they are disabled.
      *
-     * @param project
-     *            the project (if null, workspace settings are used)
-     *
+     * @param project the project (if null, workspace settings are used)
      * @return the preferences for the project or prefs from workspace
      */
     public static IPreferenceStore getPluginPreferences(@CheckForNull IProject project) {
@@ -898,15 +881,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Get project own preferences set.
      *
-     * @param project
-     *            must be non null, exist and be opened
+     * @param project must be non null, exist and be opened
      * @param forceRead
-     * @return current project preferences, independently if project preferences
-     *         are enabled or disabled for given project.
+     * @return current project preferences, independently if project preferences are enabled or
+     *     disabled for given project.
      */
     public static UserPreferences getProjectPreferences(IProject project, boolean forceRead) {
         try {
-            UserPreferences prefs = (UserPreferences) project.getSessionProperty(SESSION_PROPERTY_USERPREFS);
+            UserPreferences prefs =
+                    (UserPreferences) project.getSessionProperty(SESSION_PROPERTY_USERPREFS);
             if (prefs == null || forceRead) {
                 prefs = readUserPreferences(project);
                 if (prefs == null) {
@@ -934,7 +917,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             in = new FileInputStream(prefsFile);
             userPrefs.read(in);
         } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error reading custom SpotBugs preferences for workspace");
+            FindbugsPlugin.getDefault()
+                    .logException(e, "Error reading custom SpotBugs preferences for workspace");
         }
         return userPrefs;
     }
@@ -942,8 +926,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Get the UserPreferences for given project.
      *
-     * @param project
-     *            the project
+     * @param project the project
      * @return the UserPreferences for the project
      */
     public static UserPreferences getUserPreferences(IProject project) {
@@ -953,23 +936,24 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Save current UserPreferences for given project or workspace.
      *
-     * @param project
-     *            the project or null for workspace
+     * @param project the project or null for workspace
      * @throws CoreException
      */
-    public static void saveUserPreferences(IProject project, final UserPreferences userPrefs) throws CoreException {
+    public static void saveUserPreferences(IProject project, final UserPreferences userPrefs)
+            throws CoreException {
 
-        FileOutput userPrefsOutput = new FileOutput() {
-            @Override
-            public void writeFile(OutputStream os) throws IOException {
-                userPrefs.write(os);
-            }
+        FileOutput userPrefsOutput =
+                new FileOutput() {
+                    @Override
+                    public void writeFile(OutputStream os) throws IOException {
+                        userPrefs.write(os);
+                    }
 
-            @Override
-            public String getTaskDescription() {
-                return "writing user preferences";
-            }
-        };
+                    @Override
+                    public String getTaskDescription() {
+                        return "writing user preferences";
+                    }
+                };
 
         if (project != null) {
             // Make the new user preferences current for the project
@@ -978,9 +962,17 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             ensureReadWrite(userPrefsFile);
             IO.writeFile(userPrefsFile, userPrefsOutput, null);
             if (project.getFile(DEPRECATED_PREFS_PATH).equals(userPrefsFile)) {
-                String message = "Found old style FindBugs preferences for project '" + project.getName()
-                        + "'. This preferences are not at the default location: '" + DEFAULT_PREFS_PATH + "'." + " Please move '"
-                        + DEPRECATED_PREFS_PATH + "' to '" + DEFAULT_PREFS_PATH + "'.";
+                String message =
+                        "Found old style FindBugs preferences for project '"
+                                + project.getName()
+                                + "'. This preferences are not at the default location: '"
+                                + DEFAULT_PREFS_PATH
+                                + "'."
+                                + " Please move '"
+                                + DEPRECATED_PREFS_PATH
+                                + "' to '"
+                                + DEFAULT_PREFS_PATH
+                                + "'.";
                 getDefault().logWarning(message);
             }
         } else {
@@ -1019,9 +1011,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
     }
 
-    /**
-     * Removes all consequent enumerated keys from given store staring with given prefix
-     */
+    /** Removes all consequent enumerated keys from given store staring with given prefix */
     private static void resetStore(IPreferenceStore store, String prefix) {
         int start = 0;
         // 99 is paranoia.
@@ -1037,11 +1027,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Ensure that a file is writable. If not currently writable, check it as so
-     * that we can edit it.
+     * Ensure that a file is writable. If not currently writable, check it as so that we can edit it.
      *
-     * @param file
-     *            - file that should be made writable
+     * @param file - file that should be made writable
      * @throws CoreException
      */
     private static void ensureReadWrite(IFile file) throws CoreException {
@@ -1049,7 +1037,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
          * fix for bug 1683264: we should checkout file before writing to it
          */
         if (file.isReadOnly()) {
-            IStatus checkOutStatus = ResourcesPlugin.getWorkspace().validateEdit(new IFile[] { file }, null);
+            IStatus checkOutStatus =
+                    ResourcesPlugin.getWorkspace().validateEdit(new IFile[] { file }, null);
             if (!checkOutStatus.isOK()) {
                 throw new CoreException(checkOutStatus);
             }
@@ -1057,14 +1046,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Read UserPreferences for project from the file in the project directory.
-     * Returns null if the preferences have not been saved to a file, or if
-     * there is an error reading the preferences file.
+     * Read UserPreferences for project from the file in the project directory. Returns null if the
+     * preferences have not been saved to a file, or if there is an error reading the preferences
+     * file.
      *
-     * @param project
-     *            the project to get the UserPreferences for
-     * @return the UserPreferences, or null if the UserPreferences file could
-     *         not be read
+     * @param project the project to get the UserPreferences for
+     * @return the UserPreferences, or null if the UserPreferences file could not be read
      * @throws CoreException
      */
     private static UserPreferences readUserPreferences(IProject project) throws CoreException {
@@ -1106,12 +1093,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Call this method to retrieve the (cache) ImageDescriptor for the given
-     * id.
+     * Call this method to retrieve the (cache) ImageDescriptor for the given id.
      *
-     * @param id
-     *            the id of the image descriptor or relative icon path if icon
-     *            is inside of default icons folder
+     * @param id the id of the image descriptor or relative icon path if icon is inside of default
+     *     icons folder
      * @return the ImageDescriptor instance.
      */
     public ImageDescriptor getImageDescriptor(String id) {
@@ -1126,7 +1111,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     public static Set<BugPattern> getKnownPatterns() {
         Set<BugPattern> patterns = new TreeSet<>();
-        Iterator<BugPattern> patternIterator = DetectorFactoryCollection.instance().bugPatternIterator();
+        Iterator<BugPattern> patternIterator =
+                DetectorFactoryCollection.instance().bugPatternIterator();
         while (patternIterator.hasNext()) {
             patterns.add(patternIterator.next());
         }
@@ -1145,7 +1131,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugPattern> getFilteredPatterns() {
-        Iterator<BugPattern> patternIterator = DetectorFactoryCollection.instance().bugPatternIterator();
+        Iterator<BugPattern> patternIterator =
+                DetectorFactoryCollection.instance().bugPatternIterator();
         Set<BugPattern> set = new HashSet<>();
         Set<String> patternTypes = getFilteredIds();
         while (patternIterator.hasNext()) {
@@ -1177,7 +1164,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         markBugCollectionDirty(project, true);
         saveCurrentBugCollection(project, null);
     }
-
 
     public static void log(String msg) {
         log(msg, null);

@@ -19,19 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.model.ClassNameRewriter;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import edu.umd.cs.findbugs.model.ClassNameRewriter;
-
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public interface WarningComparator extends Comparator<BugInstance>, Serializable {
 
     public abstract void setClassNameRewriter(ClassNameRewriter classNameRewriter);
 
     @Override
     public abstract int compare(BugInstance lhs, BugInstance rhs);
-
 }

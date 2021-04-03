@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 @Deprecated
 public class CompoundMethodChooser implements JavaClassAndMethodChooser {
     JavaClassAndMethodChooser[] conjunctList;
@@ -56,5 +54,4 @@ public class CompoundMethodChooser implements JavaClassAndMethodChooser {
         }
         return true;
     }
-
 }

@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.anttask;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.apache.tools.ant.BuildException;
 
 /**
@@ -84,8 +83,7 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
     }
 
     /**
-     * Called to create DataFile objects in response to nested &lt;DataFile&gt;
-     * elements.
+     * Called to create DataFile objects in response to nested &lt;DataFile&gt; elements.
      *
      * @return new DataFile object specifying the location of an input data file
      */

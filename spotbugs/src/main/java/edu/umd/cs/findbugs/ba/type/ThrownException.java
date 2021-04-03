@@ -22,14 +22,14 @@ package edu.umd.cs.findbugs.ba.type;
 import org.apache.bcel.generic.ObjectType;
 
 /**
- * An exception thrown from an instruction. These can be implicit (i.e., runtime
- * exceptions and errors), or explicit (athrow, or declared exception from
- * called method). This information is used in TypeAnalysis in order to
- * determine:
+ * An exception thrown from an instruction. These can be implicit (i.e., runtime exceptions and
+ * errors), or explicit (athrow, or declared exception from called method). This information is used
+ * in TypeAnalysis in order to determine:
+ *
  * <ul>
- * <li>what exceptions can be thrown along exception edges, and
- * <li>which exceptions are explicit (declared or explicitly thrown) and which
- * are implicit (result of failed runtime checks)
+ *   <li>what exceptions can be thrown along exception edges, and
+ *   <li>which exceptions are explicit (declared or explicitly thrown) and which are implicit
+ *       (result of failed runtime checks)
  * </ul>
  *
  * @author David Hovemeyer
@@ -44,40 +44,30 @@ public class ThrownException {
     /**
      * Constructor.
      *
-     * @param type
-     *            type of exception
-     * @param explicit
-     *            true if explicit, false if implicit
+     * @param type type of exception
+     * @param explicit true if explicit, false if implicit
      */
     public ThrownException(ObjectType type, boolean explicit) {
         this.type = type;
         this.explicit = explicit;
     }
 
-    /**
-     * Return an identical copy of this object.
-     */
+    /** Return an identical copy of this object. */
     public ThrownException duplicate() {
         return new ThrownException(type, explicit);
     }
 
-    /**
-     * Get the exception type.
-     */
+    /** Get the exception type. */
     public ObjectType getType() {
         return type;
     }
 
-    /**
-     * Return whether or not the exception is explicit.
-     */
+    /** Return whether or not the exception is explicit. */
     public boolean isExplicit() {
         return explicit;
     }
 
-    /**
-     * Set whether or not the exception is explicit.
-     */
+    /** Set whether or not the exception is explicit. */
     public void setExplicit(boolean explicit) {
         this.explicit = explicit;
     }

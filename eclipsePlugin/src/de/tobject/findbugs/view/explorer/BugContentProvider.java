@@ -18,6 +18,10 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -56,19 +59,12 @@ import org.eclipse.ui.navigator.ICommonContentProvider;
 import org.eclipse.ui.navigator.INavigatorContentExtension;
 import org.eclipse.ui.navigator.INavigatorContentService;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.preferences.FindBugsConstants;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.config.UserPreferences;
-
-/**
- * @author Andrei
- */
+/** @author Andrei */
 public class BugContentProvider implements ICommonContentProvider {
 
     public static boolean DEBUG;
 
-    private final static IMarker[] EMPTY = new IMarker[0];
+    private static final IMarker[] EMPTY = new IMarker[0];
 
     private final RefreshJob refreshJob;
 
@@ -77,8 +73,8 @@ public class BugContentProvider implements ICommonContentProvider {
     private Object input;
 
     /**
-     * Root group, either empty OR contains BugGroups OR contains Markers (last
-     * one only if the hierarchy is plain list)
+     * Root group, either empty OR contains BugGroups OR contains Markers (last one only if the
+     * hierarchy is plain list)
      */
     private BugGroup rootElement;
 
@@ -193,7 +189,9 @@ public class BugContentProvider implements ICommonContentProvider {
         // return group.size() > 0 || group.getMarkersCount() !=
         // getFilteredMarkersCount(group);
         // }
-        return element instanceof BugGroup || element instanceof IWorkingSet || element instanceof IWorkspaceRoot;
+        return element instanceof BugGroup
+                || element instanceof IWorkingSet
+                || element instanceof IWorkspaceRoot;
     }
 
     @Override
@@ -316,16 +314,13 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     /**
-     * @param desiredType
-     *            type of the child groups
-     * @param parents
-     *            all the common parents
-     * @param parent
-     *            "empty" root node, which must be filled in with markers from
-     *            set of given parents
+     * @param desiredType type of the child groups
+     * @param parents all the common parents
+     * @param parent "empty" root node, which must be filled in with markers from set of given parents
      * @return
      */
-    private synchronized Object[] createChildren(GroupType desiredType, Set<IResource> parents, BugGroup parent) {
+    private synchronized Object[] createChildren(
+            GroupType desiredType, Set<IResource> parents, BugGroup parent) {
         Set<IMarker> markerSet = new HashSet<>();
         boolean filterActive = isBugFilterActive();
         Set<String> patternFilter = getPatternFilter();
@@ -343,12 +338,11 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     /**
-     * @param <Identifier>
-     *            object type, like String or Integer
-     * @param mapper
-     *            maps between BugInstance and group
+     * @param <Identifier> object type, like String or Integer
+     * @param mapper maps between BugInstance and group
      */
-    private synchronized <Identifier> Object[] createGroups(BugGroup parent, MarkerMapper<Identifier> mapper) {
+    private synchronized <Identifier> Object[] createGroups(
+            BugGroup parent, MarkerMapper<Identifier> mapper) {
         if (mapper == MarkerMapper.NO_MAPPING) {
             return parent.getAllMarkers().toArray(new IMarker[0]);
         }
@@ -375,12 +369,16 @@ public class BugContentProvider implements ICommonContentProvider {
                     }
                     errorMessages.add(debugDescription);
                     if (FindbugsPlugin.getDefault().isDebugging()) {
-                        FindbugsPlugin.getDefault().logWarning(
-                                "BugContentProvider.createGroups: failed to find " + debugDescription + " for marker on file "
-                                        + marker.getResource());
+                        FindbugsPlugin.getDefault()
+                                .logWarning(
+                                        "BugContentProvider.createGroups: failed to find "
+                                                + debugDescription
+                                                + " for marker on file "
+                                                + marker.getResource());
                     }
                 } catch (CoreException e) {
-                    FindbugsPlugin.getDefault().logException(e, "Exception on retrieving debug data for: " + mapper.getType());
+                    FindbugsPlugin.getDefault()
+                            .logException(e, "Exception on retrieving debug data for: " + mapper.getType());
                 }
                 continue;
             }
@@ -473,8 +471,8 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     /**
-     * @return list of the *visible* parents with changed children to refresh
-     *         the viewer. Returns empty list if the full refresh is needed
+     * @return list of the *visible* parents with changed children to refresh the viewer. Returns
+     *     empty list if the full refresh is needed
      */
     public synchronized Set<BugGroup> updateContent(List<DeltaInfo> deltas) {
         int oldRootSize = rootElement.getChildren().length;
@@ -507,9 +505,7 @@ public class BugContentProvider implements ICommonContentProvider {
                 addMarker(changedMarker, changedParents, patternFilter);
                 break;
             default:
-                FindbugsPlugin.getDefault()
-                        .logWarning("UKNOWN delta change kind" + delta.changeKind);
-
+                FindbugsPlugin.getDefault().logWarning("UKNOWN delta change kind" + delta.changeKind);
             }
         }
         if (rootElement.getMarkersCount() == 0 || rootElement.getChildren().length != oldRootSize) {
@@ -545,8 +541,12 @@ public class BugContentProvider implements ICommonContentProvider {
         addMarker(marker, mapper, rootElement, changedParents, patternFilter);
     }
 
-    private <Identifier> void addMarker(IMarker marker, MarkerMapper<Identifier> mapper, BugGroup parent,
-            Set<BugGroup> changedParents, Set<String> patternFilter) {
+    private <Identifier> void addMarker(
+            IMarker marker,
+            MarkerMapper<Identifier> mapper,
+            BugGroup parent,
+            Set<BugGroup> changedParents,
+            Set<String> patternFilter) {
 
         if (mapper == MarkerMapper.NO_MAPPING) {
             return;
@@ -555,9 +555,13 @@ public class BugContentProvider implements ICommonContentProvider {
         Identifier id = mapper.getIdentifier(marker);
         if (id == null) {
             if (FindbugsPlugin.getDefault().isDebugging()) {
-                FindbugsPlugin.getDefault().logWarning(
-                        "BugContentProvider.createPatternGroups: " + "Failed to find bug id of type " + mapper.getType()
-                                + " for marker on file " + marker.getResource());
+                FindbugsPlugin.getDefault()
+                        .logWarning(
+                                "BugContentProvider.createPatternGroups: "
+                                        + "Failed to find bug id of type "
+                                        + mapper.getType()
+                                        + " for marker on file "
+                                        + marker.getResource());
             }
             return;
         }
@@ -615,9 +619,8 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     /**
-     * @return true if the element is accessible from the content viewer point
-     *         of view. After "go into" action parent elements can became
-     *         inaccessible to the viewer
+     * @return true if the element is accessible from the content viewer point of view. After "go
+     *     into" action parent elements can became inaccessible to the viewer
      */
     public boolean isAccessible(BugGroup group) {
         BugGroup rootGroup;
@@ -708,7 +711,8 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     public static BugContentProvider getProvider(INavigatorContentService service) {
-        INavigatorContentExtension extensionById = service.getContentExtensionById(FindbugsPlugin.BUG_CONTENT_PROVIDER_ID);
+        INavigatorContentExtension extensionById =
+                service.getContentExtensionById(FindbugsPlugin.BUG_CONTENT_PROVIDER_ID);
         IContentProvider provider = extensionById.getContentProvider();
         if (provider instanceof BugContentProvider) {
             return (BugContentProvider) provider;
@@ -777,5 +781,4 @@ public class BugContentProvider implements ICommonContentProvider {
         }
         return supported;
     }
-
 }

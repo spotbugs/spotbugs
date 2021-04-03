@@ -18,12 +18,12 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -43,12 +43,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.SelectionDialog;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
-/**
- * @author Andrei
- *
- */
+/** @author Andrei */
 public class GroupSelectionDialog extends SelectionDialog {
 
     private final List<GroupType> allowedGroups;
@@ -92,7 +87,8 @@ public class GroupSelectionDialog extends SelectionDialog {
         Composite composite = new Composite(parent, SWT.NONE);
         int columns = 2;
         composite.setLayout(new GridLayout(columns, false));
-        GridData layoutData = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_HORIZONTAL);
+        GridData layoutData =
+                new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_HORIZONTAL);
         layoutData.minimumHeight = 200;
         layoutData.minimumWidth = 250;
         layoutData.heightHint = 200;
@@ -100,8 +96,9 @@ public class GroupSelectionDialog extends SelectionDialog {
 
         composite.setLayoutData(layoutData);
 
-        checkList = CheckboxTableViewer.newCheckList(composite, SWT.SINGLE | SWT.BORDER | SWT.RESIZE | SWT.V_SCROLL
-                | SWT.H_SCROLL);
+        checkList =
+                CheckboxTableViewer.newCheckList(
+                        composite, SWT.SINGLE | SWT.BORDER | SWT.RESIZE | SWT.V_SCROLL | SWT.H_SCROLL);
 
         Table table = checkList.getTable();
         table.setHeaderVisible(true);
@@ -118,21 +115,23 @@ public class GroupSelectionDialog extends SelectionDialog {
         checkList.setInput(allowedGroups);
         checkList.setCheckedElements(preSelectedGroups.toArray());
 
-        checkList.addCheckStateListener(new ICheckStateListener() {
-            @Override
-            public void checkStateChanged(CheckStateChangedEvent event) {
-                boolean checked = event.getChecked();
-                GroupType element = (GroupType) event.getElement();
-                selectionMap.put(element, Boolean.valueOf(checked));
-            }
-        });
+        checkList.addCheckStateListener(
+                new ICheckStateListener() {
+                    @Override
+                    public void checkStateChanged(CheckStateChangedEvent event) {
+                        boolean checked = event.getChecked();
+                        GroupType element = (GroupType) event.getElement();
+                        selectionMap.put(element, Boolean.valueOf(checked));
+                    }
+                });
 
-        table.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                handleTableSelection();
-            }
-        });
+        table.addSelectionListener(
+                new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        handleTableSelection();
+                    }
+                });
 
         createButtonList(composite);
         return composite;
@@ -150,17 +149,18 @@ public class GroupSelectionDialog extends SelectionDialog {
         upButton = new Button(composite, SWT.PUSH | SWT.CENTER);
         upButton.setText("Up");
         upButton.setEnabled(false);
-        upButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                int index = getSelectionIndex();
-                if (index != -1) {
-                    moveUp(allowedGroups.get(index));
-                    checkList.refresh();
-                    handleTableSelection();
-                }
-            }
-        });
+        upButton.addSelectionListener(
+                new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        int index = getSelectionIndex();
+                        if (index != -1) {
+                            moveUp(allowedGroups.get(index));
+                            checkList.refresh();
+                            handleTableSelection();
+                        }
+                    }
+                });
         GridData data = new GridData();
         data.widthHint = 50;
         data.horizontalAlignment = GridData.FILL;
@@ -169,17 +169,18 @@ public class GroupSelectionDialog extends SelectionDialog {
         downButton = new Button(composite, SWT.PUSH | SWT.CENTER);
         downButton.setText("Down");
         downButton.setEnabled(false);
-        downButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                int index = getSelectionIndex();
-                if (index != -1) {
-                    moveDown(allowedGroups.get(index));
-                    checkList.refresh();
-                    handleTableSelection();
-                }
-            }
-        });
+        downButton.addSelectionListener(
+                new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        int index = getSelectionIndex();
+                        if (index != -1) {
+                            moveDown(allowedGroups.get(index));
+                            checkList.refresh();
+                            handleTableSelection();
+                        }
+                    }
+                });
         data = new GridData();
         data.widthHint = 50;
         data.horizontalAlignment = GridData.FILL;

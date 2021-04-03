@@ -35,17 +35,12 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-
 import javax.annotation.WillCloseWhenClosed;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class UTF8 {
 
-    /**
-     *
-     */
+    /** */
     private static final String UTF_8 = StandardCharsets.UTF_8.name();
 
     public static PrintStream printStream(OutputStream out) {
@@ -75,7 +70,6 @@ public class UTF8 {
     public static PrintWriter printWriter(File fileName) throws IOException {
         return new PrintWriter(bufferedWriter(fileName));
     }
-
 
     public static PrintWriter printWriter(PrintStream printStream) {
         return new PrintWriter(new OutputStreamWriter(printStream, StandardCharsets.UTF_8));

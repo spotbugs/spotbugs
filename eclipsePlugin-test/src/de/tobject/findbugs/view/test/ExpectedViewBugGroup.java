@@ -18,17 +18,15 @@
  */
 package de.tobject.findbugs.view.test;
 
+import de.tobject.findbugs.view.explorer.BugGroup;
+import de.tobject.findbugs.view.explorer.GroupType;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.junit.Assert;
-
-import de.tobject.findbugs.view.explorer.BugGroup;
-import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * Expected object for a bug group.
@@ -45,7 +43,10 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
 
     private final Set<ExpectedViewElement> markers;
 
-    public ExpectedViewBugGroup(GroupType groupType, Object data, Set<ExpectedViewElement> children,
+    public ExpectedViewBugGroup(
+            GroupType groupType,
+            Object data,
+            Set<ExpectedViewElement> children,
             Set<ExpectedViewElement> markers) {
         this.groupType = groupType;
         this.data = data;
@@ -54,7 +55,8 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
     }
 
     @Override
-    public void assertEquals(Object actual, ITreeContentProvider contentProvider) throws CoreException {
+    public void assertEquals(Object actual, ITreeContentProvider contentProvider)
+            throws CoreException {
         Assert.assertTrue(actual instanceof BugGroup);
         BugGroup bugGroup = (BugGroup) actual;
         Assert.assertEquals(groupType, bugGroup.getType());
@@ -81,7 +83,8 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
         return "Expected View Bug Group: " + groupType.toString();
     }
 
-    private void assertChildren(ITreeContentProvider contentProvider, BugGroup bugGroup) throws CoreException {
+    private void assertChildren(ITreeContentProvider contentProvider, BugGroup bugGroup)
+            throws CoreException {
         // Get the actual children
         Object[] bugGroupChildren = contentProvider.getChildren(bugGroup);
         Assert.assertEquals(children.size(), bugGroupChildren.length);
@@ -112,7 +115,8 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
         return result;
     }
 
-    private Object findActualObjectMatch(ExpectedViewElement child, Object[] bugGroupChildren) throws CoreException {
+    private Object findActualObjectMatch(ExpectedViewElement child, Object[] bugGroupChildren)
+            throws CoreException {
         for (int i = 0; i < bugGroupChildren.length; i++) {
             if (child.matches(bugGroupChildren[i])) {
                 return bugGroupChildren[i];

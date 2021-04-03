@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Objects;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import java.util.Objects;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 /**
  * An implementation of {@link BugReporter} that synchronize all method invocations.
- * 
+ *
  * @since 4.0
  */
 class SynchronizedBugReporter implements BugReporter {

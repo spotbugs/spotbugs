@@ -1,7 +1,6 @@
 package de.tobject.findbugs.properties;
 
 import javax.annotation.Nonnull;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -42,6 +41,4 @@ public class PathElementLabelProvider extends LabelProvider implements IColorPro
         }
         return status.getMessage();
     }
-
-
 }

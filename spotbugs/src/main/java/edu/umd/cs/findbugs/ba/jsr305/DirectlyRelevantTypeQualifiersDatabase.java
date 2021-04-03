@@ -19,14 +19,13 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Database of type qualfiers applied directly to methods.
@@ -51,8 +50,7 @@ public class DirectlyRelevantTypeQualifiersDatabase {
     /**
      * Get the directly-relevant type qualifiers applied to given method.
      *
-     * @param m
-     *            MethodDescriptor identifying a method
+     * @param m MethodDescriptor identifying a method
      * @return Collection of type qualifiers applied directly to that method
      */
     public Collection<TypeQualifierValue<?>> getDirectlyRelevantTypeQualifiers(MethodDescriptor m) {
@@ -73,15 +71,13 @@ public class DirectlyRelevantTypeQualifiersDatabase {
     }
 
     /**
-     * Set the collection of directly-relevant type qualifiers for a given
-     * method.
+     * Set the collection of directly-relevant type qualifiers for a given method.
      *
-     * @param methodDescriptor
-     *            MethodDescriptor identifying a method
-     * @param qualifiers
-     *            collection of directly-relevant type qualifiers for the method
+     * @param methodDescriptor MethodDescriptor identifying a method
+     * @param qualifiers collection of directly-relevant type qualifiers for the method
      */
-    public void setDirectlyRelevantTypeQualifiers(MethodDescriptor methodDescriptor, Collection<TypeQualifierValue<?>> qualifiers) {
+    public void setDirectlyRelevantTypeQualifiers(
+            MethodDescriptor methodDescriptor, Collection<TypeQualifierValue<?>> qualifiers) {
         methodToDirectlyRelevantQualifiersMap.put(methodDescriptor, qualifiers);
         allKnownQualifiers.addAll(qualifiers);
     }

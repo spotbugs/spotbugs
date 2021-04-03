@@ -18,11 +18,10 @@
  */
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import org.apache.bcel.Const;
 
 public abstract class AbstractClassMember implements ClassMember {
     private final @DottedClassName String className;
@@ -42,7 +41,8 @@ public abstract class AbstractClassMember implements ClassMember {
     //    static int slashCountSignature = 0;
     //    static int dottedCountSignature = 0;
 
-    protected AbstractClassMember(@DottedClassName String className, String name, String signature, int accessFlags) {
+    protected AbstractClassMember(
+            @DottedClassName String className, String name, String signature, int accessFlags) {
         if (className.indexOf('.') >= 0) {
             // className = className.replace('.','/');
             //            dottedCountClass++;
@@ -187,12 +187,13 @@ public abstract class AbstractClassMember implements ClassMember {
             return false;
         }
         AbstractClassMember other = (AbstractClassMember) o;
-        return className.equals(other.className) && name.equals(other.name) && signature.equals(other.signature);
+        return className.equals(other.className)
+                && name.equals(other.name)
+                && signature.equals(other.signature);
     }
 
     @Override
     public String toString() {
         return className + "." + name;
     }
-
 }

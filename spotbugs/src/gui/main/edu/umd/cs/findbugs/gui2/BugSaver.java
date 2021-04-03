@@ -19,22 +19,19 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-
-import javax.annotation.WillClose;
-import javax.swing.JOptionPane;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.charsets.UTF8;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import javax.annotation.WillClose;
+import javax.swing.JOptionPane;
 
 /**
  * Save bugs here, uses SortedBugCollection.writeXML()
  *
  * @author Dan
- *
  */
 public class BugSaver {
 
@@ -61,5 +58,4 @@ public class BugSaver {
     public static String getLastPlaceSaved() {
         return lastPlaceSaved;
     }
-
 }

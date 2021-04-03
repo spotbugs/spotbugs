@@ -19,16 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Iterator;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.TrainingDetector;
@@ -44,11 +34,18 @@ import edu.umd.cs.findbugs.ba.type.FieldStoreType;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import java.util.Iterator;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 /**
- * Build a database of reference types stored into fields. This can be used in
- * the future to improve the precision of type analysis when values are loaded
- * from fields.
+ * Build a database of reference types stored into fields. This can be used in the future to improve
+ * the precision of type analysis when values are loaded from fields.
  *
  * @author David Hovemeyer
  */
@@ -80,7 +77,8 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -141,8 +139,8 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
     @Override
     public void report() {
         database.purgeBoringEntries();
-        AnalysisContext.currentAnalysisContext().storePropertyDatabase(database, FieldStoreTypeDatabase.DEFAULT_FILENAME,
-                "store type database");
+        AnalysisContext.currentAnalysisContext()
+                .storePropertyDatabase(
+                        database, FieldStoreTypeDatabase.DEFAULT_FILENAME, "store type database");
     }
-
 }

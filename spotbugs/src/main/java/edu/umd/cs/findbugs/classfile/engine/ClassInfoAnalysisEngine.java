@@ -30,8 +30,8 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 
 /**
- * Analysis engine to produce the ClassInfo for a loaded class. We parse just
- * enough information from the classfile to get the needed information.
+ * Analysis engine to produce the ClassInfo for a loaded class. We parse just enough information
+ * from the classfile to get the needed information.
  *
  * @author David Hovemeyer
  */
@@ -51,7 +51,8 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public ClassInfo analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public ClassInfo analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor)
+            throws CheckedAnalysisException {
 
         if (descriptor instanceof ClassInfo) {
             return (ClassInfo) descriptor;
@@ -73,14 +74,16 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
         // Read the class info
 
         FBClassReader reader = analysisCache.getClassAnalysis(FBClassReader.class, descriptor);
-        ClassParserInterface parser = new ClassParserUsingASM(reader, descriptor, classData.getCodeBaseEntry());
+        ClassParserInterface parser =
+                new ClassParserUsingASM(reader, descriptor, classData.getCodeBaseEntry());
 
         ClassInfo.Builder classInfoBuilder = new ClassInfo.Builder();
         parser.parse(classInfoBuilder);
         ClassInfo classInfo = classInfoBuilder.build();
 
         if (!classInfo.getClassDescriptor().equals(descriptor)) {
-            throw new ClassNameMismatchException(descriptor, classInfo.getClassDescriptor(), classData.getCodeBaseEntry());
+            throw new ClassNameMismatchException(
+                    descriptor, classInfo.getClassDescriptor(), classData.getCodeBaseEntry());
         }
         return classInfo;
     }

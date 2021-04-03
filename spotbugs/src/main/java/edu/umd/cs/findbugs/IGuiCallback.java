@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-
 import javax.swing.JComponent;
 
 /**
@@ -36,11 +35,11 @@ public interface IGuiCallback {
 
     void showMessageDialog(String message);
 
-    public final static int YES_OPTION = 0;
+    public static final int YES_OPTION = 0;
 
-    public final static int NO_OPTION = 1;
+    public static final int NO_OPTION = 1;
 
-    public final static int CANCEL_OPTION = 2;
+    public static final int CANCEL_OPTION = 2;
 
     public static final int YES_NO_OPTION = 0;
 
@@ -65,8 +64,8 @@ public interface IGuiCallback {
     boolean showDocument(URL u);
 
     /**
-     * Use this executor to queue bug collection updates without interfering
-     * with the GUI. Runs on the AWT event thread.
+     * Use this executor to queue bug collection updates without interfering with the GUI. Runs on the
+     * AWT event thread.
      */
     ExecutorService getBugUpdateExecutor();
 

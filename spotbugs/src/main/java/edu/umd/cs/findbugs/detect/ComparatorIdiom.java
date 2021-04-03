@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
@@ -30,6 +27,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 
 public class ComparatorIdiom extends PreorderVisitor implements Detector {
 
@@ -47,7 +46,8 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
     @Override
     public void visit(JavaClass obj) {
 
-        if (Subtypes2.instanceOf(obj, "java.util.Comparator") && !ClassName.isLocalOrAnonymous(getClassName())
+        if (Subtypes2.instanceOf(obj, "java.util.Comparator")
+                && !ClassName.isLocalOrAnonymous(getClassName())
                 && !Subtypes2.instanceOf(obj, "java.io.Serializable")) {
             int priority = NORMAL_PRIORITY;
             if (obj.isInterface() || obj.isAbstract()) {
@@ -75,14 +75,12 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
                 priority = LOW_PRIORITY;
             }
 
-            bugReporter.reportBug(new BugInstance(this, "SE_COMPARATOR_SHOULD_BE_SERIALIZABLE", priority).addClass(this));
-
+            bugReporter.reportBug(
+                    new BugInstance(this, "SE_COMPARATOR_SHOULD_BE_SERIALIZABLE", priority).addClass(this));
         }
-
     }
 
     @Override
     public void report() {
-
     }
 }

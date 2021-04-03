@@ -19,18 +19,14 @@
 
 package edu.umd.cs.findbugs;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public abstract class BugAnnotationWithSourceLines implements BugAnnotation {
 
     protected String sourceFileName;
 
     protected SourceLineAnnotation sourceLines;
 
-    /**
-     *
-     */
+    /** */
     public BugAnnotationWithSourceLines() {
         super();
     }
@@ -44,16 +40,13 @@ public abstract class BugAnnotationWithSourceLines implements BugAnnotation {
         }
     }
 
-    /**
-     * Get the source file name.
-     */
+    /** Get the source file name. */
     public final String getSourceFileName() {
         return sourceFileName;
     }
 
     /**
-     * Set a SourceLineAnnotation describing the source lines where the package
-     * element is defined.
+     * Set a SourceLineAnnotation describing the source lines where the package element is defined.
      */
     public void setSourceLines(SourceLineAnnotation sourceLines) {
         this.sourceLines = sourceLines;
@@ -61,11 +54,10 @@ public abstract class BugAnnotationWithSourceLines implements BugAnnotation {
     }
 
     /**
-     * Get the SourceLineAnnotation describing the source lines where the method
-     * is defined.
+     * Get the SourceLineAnnotation describing the source lines where the method is defined.
      *
-     * @return the SourceLineAnnotation, or null if there is no source
-     *         information for this package element
+     * @return the SourceLineAnnotation, or null if there is no source information for this package
+     *     element
      */
     public SourceLineAnnotation getSourceLines() {
         return sourceLines;
@@ -75,5 +67,4 @@ public abstract class BugAnnotationWithSourceLines implements BugAnnotation {
     public String toString(ClassAnnotation primaryClass) {
         return toString();
     }
-
 }

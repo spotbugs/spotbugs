@@ -27,7 +27,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.CheckForNull;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -35,9 +34,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public class DisplayNonmodelMessage {
 
     public static void main(String args[]) {
@@ -54,7 +51,8 @@ public class DisplayNonmodelMessage {
         messageFrame = frame;
     }
 
-    public static void displayNonmodelMessage(String title, String message, @CheckForNull Component centerOver, boolean onTop) {
+    public static void displayNonmodelMessage(
+            String title, String message, @CheckForNull Component centerOver, boolean onTop) {
         boolean positionWindow = false;
         if (messageFrame == null) {
             positionWindow = true;
@@ -75,15 +73,16 @@ public class DisplayNonmodelMessage {
             JScrollPane scrollPane = new JScrollPane(messageTextArea);
 
             contentPane.add(scrollPane, BorderLayout.CENTER);
-            messageFrame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    JFrame tmp = messageFrame;
-                    setMessageFrame(null);
-                    tmp.setVisible(false);
-                    tmp.dispose();
-                }
-            });
+            messageFrame.addWindowListener(
+                    new WindowAdapter() {
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                            JFrame tmp = messageFrame;
+                            setMessageFrame(null);
+                            tmp.setVisible(false);
+                            tmp.dispose();
+                        }
+                    });
         }
         messageTextArea.setText(message);
         messageFrame.setTitle(title);
@@ -112,33 +111,35 @@ public class DisplayNonmodelMessage {
 
     /*
     static Runnable moveToFrontLater = new Runnable() {
-        @Override
-        public void run() {
-            sleep(5);
-            SwingUtilities.invokeLater(moveToFront);
-        }
+    @Override
+    public void run() {
+    sleep(5);
+    SwingUtilities.invokeLater(moveToFront);
+    }
     };
     
     static Runnable moveToFront = new Runnable() {
-        @Override
-        public void run() {
-            JFrame frame = messageFrame;
-            if (frame != null) {
-                frame.toFront();
-            }
-        }
+    @Override
+    public void run() {
+    JFrame frame = messageFrame;
+    if (frame != null) {
+    frame.toFront();
+    }
+    }
     };
      */
 
-    static Runnable clearAlwaysOnTop = () -> {
-        JFrame frame = messageFrame;
-        if (frame != null) {
-            frame.setAlwaysOnTop(false);
-        }
-    };
+    static Runnable clearAlwaysOnTop =
+            () -> {
+                JFrame frame = messageFrame;
+                if (frame != null) {
+                    frame.setAlwaysOnTop(false);
+                }
+            };
 
-    static Runnable clearAlwaysOnTopLater = () -> {
-        sleep(5);
-        SwingUtilities.invokeLater(clearAlwaysOnTop);
-    };
+    static Runnable clearAlwaysOnTopLater =
+            () -> {
+                sleep(5);
+                SwingUtilities.invokeLater(clearAlwaysOnTop);
+            };
 }

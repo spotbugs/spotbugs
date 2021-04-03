@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import org.apache.bcel.Const;
 
 public class FindFloatMath extends BytecodeScanningDetector implements StatelessDetector {
     private final BugReporter bugReporter;
@@ -38,10 +37,13 @@ public class FindFloatMath extends BytecodeScanningDetector implements Stateless
         switch (seen) {
         case Const.FMUL:
         case Const.FDIV:
-            if (getFullyQualifiedMethodName().indexOf("float") == -1 && getFullyQualifiedMethodName().indexOf("Float") == -1
+            if (getFullyQualifiedMethodName().indexOf("float") == -1
+                    && getFullyQualifiedMethodName().indexOf("Float") == -1
                     && getFullyQualifiedMethodName().indexOf("FLOAT") == -1) {
-                bugReporter.reportBug(new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION", LOW_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION", LOW_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this));
             }
             break;
         case Const.FCMPG:
@@ -50,10 +52,13 @@ public class FindFloatMath extends BytecodeScanningDetector implements Stateless
         case Const.FADD:
         case Const.FSUB:
         case Const.FREM:
-            if (getFullyQualifiedMethodName().indexOf("float") == -1 && getFullyQualifiedMethodName().indexOf("Float") == -1
+            if (getFullyQualifiedMethodName().indexOf("float") == -1
+                    && getFullyQualifiedMethodName().indexOf("Float") == -1
                     && getFullyQualifiedMethodName().indexOf("FLOAT") == -1) {
-                bugReporter.reportBug(new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION", NORMAL_PRIORITY).addClassAndMethod(
-                        this).addSourceLine(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION", NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this));
             }
             break;
         default:

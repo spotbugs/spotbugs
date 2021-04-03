@@ -19,17 +19,14 @@
 
 package edu.umd.cs.findbugs.ba;
 
-//import org.apache.bcel.classfile.Method;
+// import org.apache.bcel.classfile.Method;
 import javax.annotation.CheckForNull;
-
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ObjectType;
 
-
 /**
- * Dataflow analysis to determine the nesting of catch and finally blocks within
- * a method.
+ * Dataflow analysis to determine the nesting of catch and finally blocks within a method.
  *
  * @see BlockType
  * @author David Hovemeyer
@@ -40,8 +37,7 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
     /**
      * Constructor.
      *
-     * @param dfs
-     *            a DepthFirstSearch for the method to be analyzed
+     * @param dfs a DepthFirstSearch for the method to be analyzed
      */
     public BlockTypeAnalysis(DepthFirstSearch dfs) {
         this.dfs = dfs;
@@ -88,7 +84,8 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
     }
 
     @Override
-    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, BlockType start, BlockType result)
+    public void transfer(
+            BasicBlock basicBlock, @CheckForNull InstructionHandle end, BlockType start, BlockType result)
             throws DataflowAnalysisException {
         result.copyFrom(start);
 
@@ -108,7 +105,8 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
     }
 
     @Override
-    public void meetInto(BlockType fact, Edge edge, BlockType result) throws DataflowAnalysisException {
+    public void meetInto(BlockType fact, Edge edge, BlockType result)
+            throws DataflowAnalysisException {
         result.mergeWith(fact);
     }
 

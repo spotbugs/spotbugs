@@ -34,7 +34,8 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
 
-public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameModelingVisitor<ResourceValue, ResourceValueFrame> {
+public abstract class ResourceValueFrameModelingVisitor
+        extends AbstractFrameModelingVisitor<ResourceValue, ResourceValueFrame> {
     public ResourceValueFrameModelingVisitor(ConstantPoolGen cpg) {
         super(cpg);
     }
@@ -45,10 +46,11 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
     }
 
     /**
-     * Subclasses must override this to model the effect of the given
-     * instruction on the current frame.
+     * Subclasses must override this to model the effect of the given instruction on the current
+     * frame.
      */
-    public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException;
+    public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock)
+            throws DataflowAnalysisException;
 
     // Things to do:
     // Automatically detect when resource instances escape:
@@ -105,15 +107,11 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
     }
 
     /**
-     * Override this to check for methods that it is legal to pass the instance
-     * to without the instance escaping. By default, we consider all methods to
-     * be possible escape routes.
+     * Override this to check for methods that it is legal to pass the instance to without the
+     * instance escaping. By default, we consider all methods to be possible escape routes.
      *
-     * @param inv
-     *            the InvokeInstruction to which the resource instance is passed
-     *            as an argument
-     * @param instanceArgNum
-     *            the first argument the instance is passed in
+     * @param inv the InvokeInstruction to which the resource instance is passed as an argument
+     * @param instanceArgNum the first argument the instance is passed in
      */
     protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
         return true;
@@ -191,5 +189,4 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 
         handleNormalInstruction(ins);
     }
-
 }

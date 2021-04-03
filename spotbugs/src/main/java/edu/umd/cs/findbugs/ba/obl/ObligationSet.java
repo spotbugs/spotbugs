@@ -24,10 +24,8 @@ import java.util.Arrays;
 /**
  * A multiset of obligations that must be cleaned up by error-handling code.
  *
- * <p>
- * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
- * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
- * </p>
+ * <p>See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011" >Finding and
+ * preventing run-time error handling mistakes</a>, OOPSLA 2004.
  *
  * @author David Hovemeyer
  */
@@ -41,13 +39,12 @@ public class ObligationSet {
 
     private int cachedHashCode;
 
-    public ObligationSet(/* int maxObligationTypes, */ObligationFactory factory) {
+    public ObligationSet(/* int maxObligationTypes, */ ObligationFactory factory) {
         this.countList = new short[factory.getMaxObligationTypes()];
         // this.whereCreated = new short[factory.getMaxObligationTypes()];
         this.factory = factory;
         invalidate();
     }
-
 
     public boolean isEmpty() {
         for (short s : countList) {
@@ -154,7 +151,7 @@ public class ObligationSet {
     }
 
     public ObligationSet duplicate() {
-        ObligationSet dup = new ObligationSet(/* countList.length, */factory);
+        ObligationSet dup = new ObligationSet(/* countList.length, */ factory);
         dup.copyFrom(this);
         return dup;
     }
@@ -164,7 +161,7 @@ public class ObligationSet {
         if (cachedHashCode == INVALID_HASH_CODE) {
             int value = 0;
             for (int i = 0; i < countList.length; ++i) {
-                value += (13 * i * (countList[i]/* + whereCreated[i] */));
+                value += (13 * i * (countList[i] /* + whereCreated[i] */));
             }
             cachedHashCode = value;
         }

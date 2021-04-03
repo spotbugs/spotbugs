@@ -22,10 +22,8 @@ package edu.umd.cs.findbugs.ba;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 
@@ -64,7 +62,6 @@ public class SignatureParser {
                 totalSize += 1;
             }
             offsets.add(totalSize);
-
         }
         totalArgumentSize = totalSize;
         int numParameters = offsets.size();
@@ -152,16 +149,13 @@ public class SignatureParser {
     /**
      * Constructor.
      *
-     * @param signature
-     *            the method signature to be parsed
+     * @param signature the method signature to be parsed
      */
     public SignatureParser(String signature) {
         if (!signature.startsWith("(")) {
             throw new IllegalArgumentException("Bad method signature: " + signature);
         }
         this.signature = signature;
-
-
     }
 
     public String[] getArguments() {
@@ -183,7 +177,6 @@ public class SignatureParser {
 
     public Iterable<String> parameterSignatures() {
         return () -> new ParameterSignatureIterator();
-
     }
 
     /**
@@ -233,8 +226,7 @@ public class SignatureParser {
     /**
      * Determine whether or not given signature denotes a reference type.
      *
-     * @param signature
-     *            a signature
+     * @param signature a signature
      * @return true if signature denotes a reference type, false otherwise
      */
     public static boolean isReferenceType(String signature) {
@@ -254,12 +246,10 @@ public class SignatureParser {
     }
 
     /**
-     * Return how many stack frame slots a type whose signature is given will
-     * occupy. long and double values take 2 slots, while all other kinds of
-     * values take 1 slot.
+     * Return how many stack frame slots a type whose signature is given will occupy. long and double
+     * values take 2 slots, while all other kinds of values take 1 slot.
      *
-     * @param sig
-     *            a type signature
+     * @param sig a type signature
      * @return number of stack frame slots a value of the given type will occupy
      */
     public static int getNumSlotsForType(String sig) {

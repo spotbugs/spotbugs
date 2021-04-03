@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
-
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.Instruction;
@@ -32,13 +31,12 @@ import org.apache.bcel.generic.RET;
 import org.apache.bcel.generic.StoreInstruction;
 
 /**
- * Dataflow analysis to find live stores of locals. This is just a backward
- * analysis to see which loads reach stores of the same local.
+ * Dataflow analysis to find live stores of locals. This is just a backward analysis to see which
+ * loads reach stores of the same local.
  *
- * <p>
- * This analysis also computes which stores that were killed by a subsequent
- * store on any subsequent reachable path. (The FindDeadLocalStores detector
- * uses this information to reduce false positives.)
+ * <p>This analysis also computes which stores that were killed by a subsequent store on any
+ * subsequent reachable path. (The FindDeadLocalStores detector uses this information to reduce
+ * false positives.)
  *
  * @author David Hovemeyer
  */
@@ -47,7 +45,8 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
 
     private final int killedByStoreOffset;
 
-    public LiveLocalStoreAnalysis(MethodGen methodGen, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
+    public LiveLocalStoreAnalysis(
+            MethodGen methodGen, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
         super(rdfs, dfs);
         this.topBit = methodGen.getMaxLocals() * 2;
         this.killedByStoreOffset = methodGen.getMaxLocals();
@@ -138,9 +137,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
         return !isTop(fact);
     }
 
-    /**
-     * @param fact
-     */
+    /** @param fact */
     private void verifyFact(BitSet fact) {
         if (VERIFY_INTEGRITY) {
             if (isTop(fact) && fact.nextSetBit(0) < topBit) {
@@ -178,9 +175,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
         return buf.toString();
     }
 
-    /**
-     * Return whether or not given fact is the special TOP value.
-     */
+    /** Return whether or not given fact is the special TOP value. */
     @Override
     public boolean isTop(BitSet fact) {
         return fact.get(topBit);
@@ -189,19 +184,14 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
     /**
      * Return whether or not a store of given local is alive.
      *
-     * @param fact
-     *            a dataflow fact created by this analysis
-     * @param local
-     *            the local
+     * @param fact a dataflow fact created by this analysis
+     * @param local the local
      */
     public boolean isStoreAlive(BitSet fact, int local) {
         return fact.get(local);
     }
 
-    /**
-     * Return whether or not a store of given local was killed by a subsequent
-     * (dominated) store.
-     */
+    /** Return whether or not a store of given local was killed by a subsequent (dominated) store. */
     public boolean killedByStore(BitSet fact, int local) {
         return fact.get(local + killedByStoreOffset);
     }

@@ -21,9 +21,7 @@ package edu.umd.cs.findbugs.filter;
 
 import javax.annotation.Nonnull;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class VersionMatcher {
 
     protected final long version;
@@ -51,5 +49,4 @@ public class VersionMatcher {
         this.version = version;
         this.relOp = relOp;
     }
-
 }

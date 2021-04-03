@@ -18,12 +18,12 @@
  */
 package de.tobject.findbugs.properties;
 
+import de.tobject.findbugs.builder.FindBugsWorker;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -47,10 +47,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
-import de.tobject.findbugs.builder.FindBugsWorker;
-
-abstract class PathsProvider extends SelectionAdapter implements IStructuredContentProvider,
-        ICheckStateProvider {
+abstract class PathsProvider extends SelectionAdapter
+        implements IStructuredContentProvider, ICheckStateProvider {
     private static IPath lastUsedPath;
 
     protected final List<IPathElement> paths;
@@ -70,15 +68,16 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         if (viewer instanceof CheckboxTableViewer) {
             CheckboxTableViewer tv = (CheckboxTableViewer) viewer;
             tv.setCheckStateProvider(this);
-            tv.addCheckStateListener(new ICheckStateListener() {
-                @Override
-                public void checkStateChanged(CheckStateChangedEvent event) {
-                    boolean checked = event.getChecked();
-                    IPathElement element = (IPathElement) event.getElement();
-                    element.setEnabled(checked);
-                    handleContendChanged();
-                }
-            });
+            tv.addCheckStateListener(
+                    new ICheckStateListener() {
+                        @Override
+                        public void checkStateChanged(CheckStateChangedEvent event) {
+                            boolean checked = event.getChecked();
+                            IPathElement element = (IPathElement) event.getElement();
+                            element.setEnabled(checked);
+                            handleContendChanged();
+                        }
+                    });
         }
         this.control = viewer.getTable();
         listeners = new ListenerList();
@@ -156,7 +155,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         return dialog;
     }
 
-    abstract protected void configureDialog(FileDialog dialog);
+    protected abstract void configureDialog(FileDialog dialog);
 
     protected String openFileDialog(FileDialog dialog) {
         return dialog.open();
@@ -231,7 +230,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         viewer.refresh(true);
     }
 
-    abstract protected IStatus validate();
+    protected abstract IStatus validate();
 
     public void remove(IPathElement holder) {
         paths.remove(holder);
@@ -268,5 +267,4 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         }
         return result;
     }
-
 }

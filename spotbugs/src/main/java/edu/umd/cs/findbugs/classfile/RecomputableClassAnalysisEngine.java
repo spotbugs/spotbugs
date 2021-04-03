@@ -19,15 +19,13 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-/**
- * @author pugh
- */
-public abstract class RecomputableClassAnalysisEngine<ResultType> implements IClassAnalysisEngine<ResultType> {
+/** @author pugh */
+public abstract class RecomputableClassAnalysisEngine<ResultType>
+        implements IClassAnalysisEngine<ResultType> {
 
     @Override
     public boolean canRecompute() {
         // can be recomputed
         return true;
     }
-
 }

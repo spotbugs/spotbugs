@@ -19,15 +19,14 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.util.Bag;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class TestingGround {
     BugCollection bugCollection;
@@ -71,7 +70,9 @@ public class TestingGround {
         DetectorFactoryCollection.instance(); // load plugins
 
         CommandLine commandLine = new CommandLine();
-        int argCount = commandLine.parse(args, 0, 2, "Usage: " + TestingGround.class.getName() + " [options] [<xml results>] ");
+        int argCount =
+                commandLine.parse(
+                        args, 0, 2, "Usage: " + TestingGround.class.getName() + " [options] [<xml results>] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length) {
@@ -112,7 +113,6 @@ public class TestingGround {
                     System.out.printf("%d/%d died at %d for %s%n", buried, total, i, e.getKey());
                 }
             }
-
         }
         SortedBugCollection results = bugCollection.createEmptyCollectionWithMetadata();
         for (BugInstance b : bugCollection) {
@@ -137,8 +137,6 @@ public class TestingGround {
             results.writeXML(System.out);
         } else {
             results.writeXML(args[argCount++]);
-
         }
-
     }
 }

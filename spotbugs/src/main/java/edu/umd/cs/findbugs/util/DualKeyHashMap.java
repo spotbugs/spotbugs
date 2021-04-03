@@ -24,9 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author William Pugh
- */
+/** @author William Pugh */
 public class DualKeyHashMap<K1, K2, V> {
     Map<K1, Map<K2, V>> map = new HashMap<>();
 
@@ -70,9 +68,6 @@ public class DualKeyHashMap<K1, K2, V> {
             m = Util.makeSmallHashMap(m);
             map.put(k1, m);
             return m.put(k2, v);
-
         }
-
     }
-
 }

@@ -34,9 +34,7 @@ public class MetaCharacterMap {
 
     private final Map<String, String> replacementMap;
 
-    /**
-     * Constructor. Creates an empty object.
-     */
+    /** Constructor. Creates an empty object. */
     public MetaCharacterMap() {
         this.metaCharacterSet = new BitSet();
         this.replacementMap = new HashMap<>();
@@ -45,19 +43,15 @@ public class MetaCharacterMap {
     /**
      * Add a metacharacter and its replacement.
      *
-     * @param meta
-     *            the metacharacter
-     * @param replacement
-     *            the String to replace the metacharacter with
+     * @param meta the metacharacter
+     * @param replacement the String to replace the metacharacter with
      */
     public void addMeta(char meta, String replacement) {
         metaCharacterSet.set(meta);
         replacementMap.put(new String(new char[] { meta }), replacement);
     }
 
-    /**
-     * Return whether or not given character is a metacharacter.
-     */
+    /** Return whether or not given character is a metacharacter. */
     boolean isMeta(char c) {
         return metaCharacterSet.get(c);
     }
@@ -65,8 +59,7 @@ public class MetaCharacterMap {
     /**
      * Get the replacement for a metacharacter.
      *
-     * @param c
-     *            a String containing the metacharacter
+     * @param c a String containing the metacharacter
      */
     String getReplacement(String c) {
         return replacementMap.get(c);

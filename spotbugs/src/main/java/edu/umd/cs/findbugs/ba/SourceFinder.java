@@ -19,6 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.util.Util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -47,20 +52,12 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-
 import javax.annotation.WillClose;
 import javax.annotation.WillCloseWhenClosed;
 
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.io.IO;
-import edu.umd.cs.findbugs.util.Util;
-
 /**
- * Class to open input streams on source files. It maintains a "source path",
- * which is like a classpath, but for finding source files instead of class
- * files.
+ * Class to open input streams on source files. It maintains a "source path", which is like a
+ * classpath, but for finding source files instead of class files.
  */
 public class SourceFinder implements AutoCloseable {
     private static final boolean DEBUG = SystemProperties.getBoolean("srcfinder.debug");
@@ -74,13 +71,11 @@ public class SourceFinder implements AutoCloseable {
      */
 
     /**
-     * Cache of SourceFiles. We use this to avoid repeatedly having to read
-     * frequently accessed source files.
+     * Cache of SourceFiles. We use this to avoid repeatedly having to read frequently accessed source
+     * files.
      */
     private static class Cache extends LinkedHashMap<String, SourceFile> {
-        /**
-         *
-         */
+        /** */
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -89,9 +84,7 @@ public class SourceFinder implements AutoCloseable {
         }
     }
 
-    /**
-     * A repository of source files.
-     */
+    /** A repository of source files. */
     private interface SourceRepository extends AutoCloseable {
         public boolean contains(String fileName);
 
@@ -103,9 +96,7 @@ public class SourceFinder implements AutoCloseable {
         void close() throws IOException;
     }
 
-    /**
-     * A directory containing source files.
-     */
+    /** A directory containing source files. */
     private static class DirectorySourceRepository implements SourceRepository {
         private final String baseDir;
 
@@ -186,7 +177,6 @@ public class SourceFinder implements AutoCloseable {
             } finally {
                 Util.closeSilently(in);
             }
-
         }
 
         @Override
@@ -238,46 +228,57 @@ public class SourceFinder implements AutoCloseable {
 
     SourceRepository makeInMemorySourceRepository(final String url) {
         final BlockingSourceRepository r = new BlockingSourceRepository();
-        Util.runInDameonThread(() -> {
-            InputStream in = null;
-            try {
+        Util.runInDameonThread(
+                () -> {
+                    InputStream in = null;
+                    try {
 
-                URLConnection connection = new URL(url).openConnection();
-                in = connection.getInputStream();
-                if (getProject().isGuiAvaliable()) {
-                    in = getProject().getGuiCallback().getProgressMonitorInputStream(in, connection.getContentLength(),
-                            "Downloading project source code...");
-                }
+                        URLConnection connection = new URL(url).openConnection();
+                        in = connection.getInputStream();
+                        if (getProject().isGuiAvaliable()) {
+                            in =
+                                    getProject()
+                                            .getGuiCallback()
+                                            .getProgressMonitorInputStream(
+                                                    in, connection.getContentLength(), "Downloading project source code...");
+                        }
 
-                if (url.endsWith(".z0p.gz")) {
-                    in = new GZIPInputStream(in);
-                }
+                        if (url.endsWith(".z0p.gz")) {
+                            in = new GZIPInputStream(in);
+                        }
 
-                r.setBase(new InMemorySourceRepository(new ZipInputStream(in)));
+                        r.setBase(new InMemorySourceRepository(new ZipInputStream(in)));
 
-            } catch (IOException e) {
-                if (getProject().isGuiAvaliable()) {
-                    getProject().getGuiCallback().setErrorMessage("Unable to load " + url + "; " + e.getMessage());
-                }
-                AnalysisContext.logError("Unable to load " + url, e);
-                Util.closeSilently(in);
-            }
-        }, "Source loading thread");
+                    } catch (IOException e) {
+                        if (getProject().isGuiAvaliable()) {
+                            getProject()
+                                    .getGuiCallback()
+                                    .setErrorMessage("Unable to load " + url + "; " + e.getMessage());
+                        }
+                        AnalysisContext.logError("Unable to load " + url, e);
+                        Util.closeSilently(in);
+                    }
+                },
+                "Source loading thread");
         return r;
     }
 
-    SourceRepository makeJarURLConnectionSourceRepository(final String url) throws MalformedURLException, IOException {
+    SourceRepository makeJarURLConnectionSourceRepository(final String url)
+            throws MalformedURLException, IOException {
         final File file = File.createTempFile("jar_cache", null);
         file.deleteOnExit();
         final BlockingSourceRepository r = new BlockingSourceRepository();
-        Util.runInDameonThread(() -> {
-            try (InputStream in = open(url); OutputStream out = new FileOutputStream(file);) {
-                IO.copy(in, out);
-                r.setBase(new ZipSourceRepository(new ZipFile(file)));
-            } catch (IOException e) {
-                assert true;
-            }
-        }, "Source loading thread");
+        Util.runInDameonThread(
+                () -> {
+                    try (InputStream in = open(url);
+                            OutputStream out = new FileOutputStream(file);) {
+                        IO.copy(in, out);
+                        r.setBase(new ZipSourceRepository(new ZipFile(file)));
+                    } catch (IOException e) {
+                        assert true;
+                    }
+                },
+                "Source loading thread");
         return r;
     }
 
@@ -292,8 +293,11 @@ public class SourceFinder implements AutoCloseable {
         URLConnection connection = new URL(url).openConnection();
         if (getProject().isGuiAvaliable()) {
             int size = connection.getContentLength();
-            in = getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), size,
-                    "Loading source via url");
+            in =
+                    getProject()
+                            .getGuiCallback()
+                            .getProgressMonitorInputStream(
+                                    connection.getInputStream(), size, "Loading source via url");
         } else {
             in = connection.getInputStream();
         }
@@ -349,9 +353,7 @@ public class SourceFinder implements AutoCloseable {
         }
     }
 
-    /**
-     * A zip or jar archive containing source files.
-     */
+    /** A zip or jar archive containing source files. */
     static class ZipSourceRepository implements SourceRepository {
         ZipFile zipFile;
         FileSystem zipFileSystem;
@@ -405,22 +407,20 @@ public class SourceFinder implements AutoCloseable {
         setProject(project);
     }
 
-    /**
-     * @return Returns the project.
-     */
+    /** @return Returns the project. */
     public Project getProject() {
         return project;
     }
 
-    /**
-     * Set the list of source directories.
-     */
+    /** Set the list of source directories. */
     public /* visible for testing */ void setSourceBaseList(Iterable<String> sourceBaseList) {
         for (String repos : sourceBaseList) {
             if (repos.endsWith(".zip") || repos.endsWith(".jar") || repos.endsWith(".z0p.gz")) {
                 // Zip or jar archive
                 try {
-                    if (repos.startsWith("http:") || repos.startsWith("https:") || repos.startsWith("file:")) {
+                    if (repos.startsWith("http:")
+                            || repos.startsWith("https:")
+                            || repos.startsWith("file:")) {
                         String url = SystemProperties.rewriteURLAccordingToProperties(repos);
                         repositoryList.add(makeInMemorySourceRepository(url));
                     } else {
@@ -436,7 +436,6 @@ public class SourceFinder implements AutoCloseable {
                     repositoryList.add(new DirectorySourceRepository(repos));
                 } else {
                     AnalysisContext.logError("Unable to load " + repos);
-
                 }
             }
         }
@@ -445,14 +444,10 @@ public class SourceFinder implements AutoCloseable {
     /**
      * Open an input stream on a source file in given package.
      *
-     * @param packageName
-     *            the name of the package containing the class whose source file
-     *            is given
-     * @param fileName
-     *            the unqualified name of the source file
+     * @param packageName the name of the package containing the class whose source file is given
+     * @param fileName the unqualified name of the source file
      * @return an InputStream on the source file
-     * @throws IOException
-     *             if a matching source file cannot be found
+     * @throws IOException if a matching source file cannot be found
      */
     public InputStream openSource(String packageName, String fileName) throws IOException {
         SourceFile sourceFile = findSourceFile(packageName, fileName);
@@ -471,14 +466,10 @@ public class SourceFinder implements AutoCloseable {
     /**
      * Open a source file in given package.
      *
-     * @param packageName
-     *            the name of the package containing the class whose source file
-     *            is given
-     * @param fileName
-     *            the unqualified name of the source file
+     * @param packageName the name of the package containing the class whose source file is given
+     * @param fileName the unqualified name of the source file
      * @return the source file
-     * @throws IOException
-     *             if a matching source file cannot be found
+     * @throws IOException if a matching source file cannot be found
      */
     public SourceFile findSourceFile(String packageName, String fileName) throws IOException {
         // On windows the fileName specification is different between a file in
@@ -511,7 +502,8 @@ public class SourceFinder implements AutoCloseable {
         // Query each element of the source path to find the requested source
         // file
         for (SourceRepository repos : repositoryList) {
-            if (repos instanceof BlockingSourceRepository && !((BlockingSourceRepository) repos).isReady()) {
+            if (repos instanceof BlockingSourceRepository
+                    && !((BlockingSourceRepository) repos).isReady()) {
                 continue;
             }
             fileName = repos.isPlatformDependent() ? platformName : canonicalName;
@@ -527,16 +519,17 @@ public class SourceFinder implements AutoCloseable {
             }
         }
 
-        String sourceRepositories = repositoryList.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(", "));
-        throw new FileNotFoundException("Can't find source file " + fileName + " (source repositories="
-                + sourceRepositories + ")");
+        String sourceRepositories =
+                repositoryList.stream().map(Object::toString).collect(Collectors.joining(", "));
+        throw new FileNotFoundException(
+                "Can't find source file " + fileName + " (source repositories=" + sourceRepositories + ")");
     }
 
     public static String getPlatformName(String packageName, String fileName) {
-        String platformName = packageName.replace('.', File.separatorChar) + (packageName.length() > 0 ? File.separator : "")
-                + fileName;
+        String platformName =
+                packageName.replace('.', File.separatorChar)
+                        + (packageName.length() > 0 ? File.separator : "")
+                        + fileName;
         return platformName;
     }
 
@@ -549,7 +542,8 @@ public class SourceFinder implements AutoCloseable {
     }
 
     public static String getCanonicalName(String packageName, String fileName) {
-        String canonicalName = packageName.replace('.', '/') + (packageName.length() > 0 ? "/" : "") + fileName;
+        String canonicalName =
+                packageName.replace('.', '/') + (packageName.length() > 0 ? "/" : "") + fileName;
         return canonicalName;
     }
 
@@ -604,7 +598,8 @@ public class SourceFinder implements AutoCloseable {
         // Query each element of the source path to find the requested source
         // file
         for (SourceRepository repos : repositoryList) {
-            if (repos instanceof BlockingSourceRepository && !((BlockingSourceRepository) repos).isReady()) {
+            if (repos instanceof BlockingSourceRepository
+                    && !((BlockingSourceRepository) repos).isReady()) {
                 continue;
             }
             fileName = repos.isPlatformDependent() ? platformName : canonicalName;
@@ -641,6 +636,8 @@ public class SourceFinder implements AutoCloseable {
     public Optional<URI> getBase(String fileName) {
         return repositoryList.stream()
                 .filter(SourceRepository::isPlatformDependent)
-                .filter(repo -> repo.contains(fileName)).map(repo -> repo.getDataSource("").getFullURI()).findFirst();
+                .filter(repo -> repo.contains(fileName))
+                .map(repo -> repo.getDataSource("").getFullURI())
+                .findFirst();
     }
 }

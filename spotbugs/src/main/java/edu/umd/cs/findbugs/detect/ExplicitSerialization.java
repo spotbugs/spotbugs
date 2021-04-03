@@ -19,13 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -39,15 +32,26 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.JavaClass;
 
 public class ExplicitSerialization extends OpcodeStackDetector implements NonReportingDetector {
 
     // The availability of these depends on the current analysis, so they can't be static
-    private final XMethod writeObject = XFactory.createXMethod("java.io.ObjectOutputStream", "writeObject", "(Ljava/lang/Object;)V", false);
-    private final XMethod readObject = XFactory.createXMethod("java.io.ObjectInputStream", "readObject", "()Ljava/lang/Object;", false);
+    private final XMethod writeObject =
+            XFactory.createXMethod(
+                    "java.io.ObjectOutputStream", "writeObject", "(Ljava/lang/Object;)V", false);
+    private final XMethod readObject =
+            XFactory.createXMethod(
+                    "java.io.ObjectInputStream", "readObject", "()Ljava/lang/Object;", false);
 
-    private static final ClassDescriptor ObjectOutputStream = DescriptorFactory.createClassDescriptor(ObjectOutputStream.class);
-    private static final ClassDescriptor ObjectInputStream = DescriptorFactory.createClassDescriptor(ObjectInputStream.class);
+    private static final ClassDescriptor ObjectOutputStream =
+            DescriptorFactory.createClassDescriptor(ObjectOutputStream.class);
+    private static final ClassDescriptor ObjectInputStream =
+            DescriptorFactory.createClassDescriptor(ObjectInputStream.class);
 
     private final UnreadFieldsData unreadFields;
 
@@ -94,7 +98,6 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
             } catch (CheckedAnalysisException e) {
                 bugReporter.logError("Error looking up xClass of " + c, e);
             }
-
         }
         if (seen == Const.CHECKCAST) {
             OpcodeStack.Item top = stack.getStackItem(0);
@@ -121,6 +124,5 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
                 }
             }
         }
-
     }
 }

@@ -26,30 +26,27 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Algorithm to merge a set of vertices into a single vertex. Note that the
- * graph is modified as part of this process.
+ * Algorithm to merge a set of vertices into a single vertex. Note that the graph is modified as
+ * part of this process.
  */
 public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>> {
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public MergeVertices() {
     }
 
     /**
      * Merge the specified set of vertices into a single vertex.
      *
-     * @param vertexSet
-     *            the set of vertices to be merged
-     * @param g
-     *            the graph to be modified
-     * @param combinator
-     *            object used to combine vertices
-     * @param toolkit
-     *            GraphToolkit used to copy auxiliary information for edges
+     * @param vertexSet the set of vertices to be merged
+     * @param g the graph to be modified
+     * @param combinator object used to combine vertices
+     * @param toolkit GraphToolkit used to copy auxiliary information for edges
      */
-    public void mergeVertices(Set<VertexType> vertexSet, GraphType g, VertexCombinator<VertexType> combinator,
+    public void mergeVertices(
+            Set<VertexType> vertexSet,
+            GraphType g,
+            VertexCombinator<VertexType> combinator,
             GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
         // Special case: if the vertex set contains a single vertex
@@ -85,7 +82,9 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
             // Don't create a self edge for the composite vertex
             // unless one of the vertices in the vertex set
             // had a self edge
-            if (source == compositeVertex && target == compositeVertex && e.getSource() != e.getTarget()) {
+            if (source == compositeVertex
+                    && target == compositeVertex
+                    && e.getSource() != e.getTarget()) {
                 continue;
             }
 
@@ -105,7 +104,5 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
         for (VertexType aVertexSet : vertexSet) {
             g.removeVertex(aVertexSet);
         }
-
     }
-
 }

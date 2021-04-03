@@ -1,10 +1,9 @@
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 
 public class NonNullParamPropertyTest {
 

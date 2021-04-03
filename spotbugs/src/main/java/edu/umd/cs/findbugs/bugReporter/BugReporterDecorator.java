@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs.bugReporter;
 
-import java.lang.reflect.Constructor;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.DelegatingBugReporter;
+import java.lang.reflect.Constructor;
 
 /**
  * Abstract base class for bug reporters defined as plugins.
@@ -32,13 +31,14 @@ import edu.umd.cs.findbugs.DelegatingBugReporter;
  */
 public abstract class BugReporterDecorator extends DelegatingBugReporter {
 
-    static public BugReporterDecorator construct(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
+    public static BugReporterDecorator construct(
+            ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
 
         Class<? extends BugReporterDecorator> pluginClass = plugin.getComponentClass();
 
         try {
-            Constructor<? extends BugReporterDecorator> constructor = pluginClass.getConstructor(ComponentPlugin.class,
-                    BugReporter.class);
+            Constructor<? extends BugReporterDecorator> constructor =
+                    pluginClass.getConstructor(ComponentPlugin.class, BugReporter.class);
             return constructor.newInstance(plugin, delegate);
         } catch (InstantiationException e) {
             throw new RuntimeException(e.getCause());
@@ -46,7 +46,6 @@ public abstract class BugReporterDecorator extends DelegatingBugReporter {
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to construct " + plugin.getId(), e);
         }
-
     }
 
     final ComponentPlugin<BugReporterDecorator> plugin;
@@ -54,7 +53,5 @@ public abstract class BugReporterDecorator extends DelegatingBugReporter {
     public BugReporterDecorator(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
         super(delegate);
         this.plugin = plugin;
-
     }
-
 }

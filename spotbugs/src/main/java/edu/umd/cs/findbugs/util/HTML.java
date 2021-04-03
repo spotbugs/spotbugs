@@ -24,7 +24,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.EditorKit;
@@ -66,7 +65,6 @@ public class HTML {
 
         @Override
         protected void writeEmbeddedTags(AttributeSet attr) throws IOException {
-
         }
 
         @Override
@@ -128,7 +126,8 @@ public class HTML {
     private HTML() {
     }
 
-    public static void convertHtmlToText(Reader reader, Writer writer) throws IOException, BadLocationException {
+    public static void convertHtmlToText(Reader reader, Writer writer)
+            throws IOException, BadLocationException {
 
         EditorKit kit = new HTMLEditorKit();
         HTMLDocument doc = new HTMLDocument();
@@ -137,14 +136,13 @@ public class HTML {
         HTMLtoPlainTextWriter2 x = new HTMLtoPlainTextWriter2(writer, doc);
         x.write();
         writer.close();
-
     }
 
-    public static String convertHtmlSnippetToText(String htmlSnippet) throws IOException, BadLocationException {
+    public static String convertHtmlSnippetToText(String htmlSnippet)
+            throws IOException, BadLocationException {
         StringWriter writer = new StringWriter();
         StringReader reader = new StringReader("<HTML><BODY>" + htmlSnippet + "</BODY></HTML>");
         convertHtmlToText(reader, writer);
         return writer.toString();
     }
-
 }

@@ -20,25 +20,22 @@
 package edu.umd.cs.findbugs.ba;
 
 /**
- * Convenience class for defining Dataflow classes which use a
- * BasicAbstractDataflowAnalysis subtype. The main functionality is offering
- * getFact{At,After}Location() methods which forward to the actual analysis
- * object.
+ * Convenience class for defining Dataflow classes which use a BasicAbstractDataflowAnalysis
+ * subtype. The main functionality is offering getFact{At,After}Location() methods which forward to
+ * the actual analysis object.
  *
  * @see edu.umd.cs.findbugs.ba.Dataflow
  * @see edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis
  * @author David Hovemeyer
  */
-public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>> extends
-        Dataflow<Fact, AnalysisType> {
+public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>>
+        extends Dataflow<Fact, AnalysisType> {
 
     /**
      * Constructor.
      *
-     * @param cfg
-     *            CFG of the method on which dfa is performed
-     * @param analysis
-     *            the dataflow analysis
+     * @param cfg CFG of the method on which dfa is performed
+     * @param analysis the dataflow analysis
      */
     public AbstractDataflow(CFG cfg, AnalysisType analysis) {
         super(cfg, analysis);
@@ -47,8 +44,7 @@ public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAn
     /**
      * Get the fact that is true on the given control edge.
      *
-     * @param edge
-     *            the edge
+     * @param edge the edge
      * @return the fact that is true on the edge
      * @throws DataflowAnalysisException
      */
@@ -56,5 +52,4 @@ public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAn
     public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
         return getAnalysis().getFactOnEdge(edge);
     }
-
 }

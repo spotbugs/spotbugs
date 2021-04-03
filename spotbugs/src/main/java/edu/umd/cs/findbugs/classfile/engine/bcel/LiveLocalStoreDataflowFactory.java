@@ -18,8 +18,6 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
@@ -28,17 +26,15 @@ import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.generic.MethodGen;
 
 /**
- * Analysis engine to produce LiveLocalStoreDataflow objects for analyzed
- * methods.
+ * Analysis engine to produce LiveLocalStoreDataflow objects for analyzed methods.
  *
  * @author David Hovemeyer
  */
 public class LiveLocalStoreDataflowFactory extends AnalysisFactory<LiveLocalStoreDataflow> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public LiveLocalStoreDataflowFactory() {
         super("live local stores analysis", LiveLocalStoreDataflow.class);
     }
@@ -61,14 +57,13 @@ public class LiveLocalStoreDataflowFactory extends AnalysisFactory<LiveLocalStor
 
         ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(analysisCache, descriptor);
 
-        LiveLocalStoreAnalysis analysis = new LiveLocalStoreAnalysis(methodGen, rdfs, getDepthFirstSearch(analysisCache,
-                descriptor));
+        LiveLocalStoreAnalysis analysis =
+                new LiveLocalStoreAnalysis(methodGen, rdfs, getDepthFirstSearch(analysisCache, descriptor));
         LiveLocalStoreDataflow dataflow = new LiveLocalStoreDataflow(cfg, analysis);
 
         dataflow.execute();
         if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
             ClassContext.dumpLiveLocalStoreDataflow(descriptor, cfg, dataflow);
-
         }
         return dataflow;
     }

@@ -43,10 +43,8 @@ public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, Ve
     /**
      * Constructor.
      *
-     * @param source
-     *            the source vertex of the edge
-     * @param target
-     *            the target vertex of the edge
+     * @param source the source vertex of the edge
+     * @param target the target vertex of the edge
      */
     public AbstractEdge(VertexType source, VertexType target) {
         this.source = source;
@@ -111,5 +109,4 @@ public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, Ve
     ActualEdgeType getNextIncomingEdge() {
         return nextIncomingEdge;
     }
-
 }

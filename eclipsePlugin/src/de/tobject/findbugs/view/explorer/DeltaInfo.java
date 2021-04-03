@@ -26,9 +26,7 @@ class DeltaInfo {
 
     final IMarker marker;
 
-    /**
-     * @see IResourceDelta#getKind()
-     */
+    /** @see IResourceDelta#getKind() */
     final int changeKind;
 
     public DeltaInfo(IMarker marker, int kind) {
@@ -68,7 +66,8 @@ class DeltaInfo {
             sb.append(" ? ").append(changeKind);
             break;
         }
-        sb.append(" marker id ").append(marker.getId())
+        sb.append(" marker id ")
+                .append(marker.getId())
                 .append(marker.toString().replace("org.eclipse.core.internal.resources.Marker@", "/"));
         return sb.toString();
     }

@@ -19,9 +19,8 @@
 
 package edu.umd.cs.findbugs.asm;
 
-import org.objectweb.asm.MethodVisitor;
-
 import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
+import org.objectweb.asm.MethodVisitor;
 
 public abstract class FBMethodVisitor extends MethodVisitor {
 

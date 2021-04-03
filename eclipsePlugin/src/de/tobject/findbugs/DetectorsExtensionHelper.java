@@ -18,16 +18,15 @@
  */
 package de.tobject.findbugs;
 
+import de.tobject.findbugs.io.IO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
@@ -36,19 +35,17 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
-import de.tobject.findbugs.io.IO;
-
-/**
- * Helper class to read contributions for the "detectorPlugins" extension point
- */
+/** Helper class to read contributions for the "detectorPlugins" extension point */
 public class DetectorsExtensionHelper {
 
     private static final String DEFAULT_USE_PLUGIN_JAR = ".";
 
     /**
-     * The extension point ID defined by <strong>FindBugs</strong>, unchanged for compatibility reasons.
+     * The extension point ID defined by <strong>FindBugs</strong>, unchanged for compatibility
+     * reasons.
      */
-    private static final String EXTENSION_POINT_ID = "edu.umd.cs.findbugs.plugin.eclipse.findbugsPlugins";
+    private static final String EXTENSION_POINT_ID =
+            "edu.umd.cs.findbugs.plugin.eclipse.findbugsPlugins";
 
     private static final String LIBRARY_PATH = "libraryPath";
     private static final String PLUGIN_ID = "fbPluginId";
@@ -71,7 +68,8 @@ public class DetectorsExtensionHelper {
         return new TreeMap<>(contributedDetectors);
     }
 
-    private static void addContribution(TreeMap<String, String> set, IConfigurationElement configElt) {
+    private static void addContribution(
+            TreeMap<String, String> set, IConfigurationElement configElt) {
         IContributor contributor = configElt.getContributor();
         try {
             if (contributor == null) {
@@ -95,18 +93,18 @@ public class DetectorsExtensionHelper {
             set.put(pluginId, libPathAsString);
         } catch (Throwable e) {
             String cName = contributor != null ? contributor.getName() : "unknown contributor";
-            String message = "Failed to read contribution for '" + EXTENSION_POINT_ID
-                    + "' extension point from " + cName;
+            String message =
+                    "Failed to read contribution for '"
+                            + EXTENSION_POINT_ID
+                            + "' extension point from "
+                            + cName;
             FindbugsPlugin.getDefault().logException(e, message);
         }
     }
 
     /**
-     *
-     * @param contributor
-     *            non null
-     * @param libPathAsString
-     *            non null
+     * @param contributor non null
+     * @param libPathAsString non null
      * @return resolved absolute path for the detector package
      */
     @CheckForNull
@@ -120,7 +118,8 @@ public class DetectorsExtensionHelper {
         try {
             bundleFile = FileLocator.getBundleFile(bundle);
         } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to resolve detector library for " + bundle.getSymbolicName());
+            FindbugsPlugin.getDefault()
+                    .logException(e, "Failed to resolve detector library for " + bundle.getSymbolicName());
             return null;
         }
         boolean runningInDebugger = Boolean.getBoolean("eclipse.pde.launch");
@@ -136,55 +135,65 @@ public class DetectorsExtensionHelper {
         }
 
         // it's a directory, and we are in the production environment.
-        IllegalArgumentException e = new IllegalArgumentException("Failed to resolve detector library for "
-                + bundle.getSymbolicName());
-        String message = "Failed to resolve detector library. '" + bundleFile
-                + "' is a directory and can't be used as SpotBugs detector package." + " Please specify '" + LIBRARY_PATH
-                + "' argument as a relative path to the detectors jar file.";
+        IllegalArgumentException e =
+                new IllegalArgumentException(
+                        "Failed to resolve detector library for " + bundle.getSymbolicName());
+        String message =
+                "Failed to resolve detector library. '"
+                        + bundleFile
+                        + "' is a directory and can't be used as SpotBugs detector package."
+                        + " Please specify '"
+                        + LIBRARY_PATH
+                        + "' argument as a relative path to the detectors jar file.";
         FindbugsPlugin.getDefault().logException(e, message);
         return null;
     }
 
     /**
-     * Used for Eclipse instances running inside debugger. During development Eclipse plugins
-     * are just directories. The code below tries to locate plugin's
-     * "bin" directory. It doesn't work if the plugin build.properties are not
-     * existing or contain invalid content
+     * Used for Eclipse instances running inside debugger. During development Eclipse plugins are just
+     * directories. The code below tries to locate plugin's "bin" directory. It doesn't work if the
+     * plugin build.properties are not existing or contain invalid content
      */
     @CheckForNull
     private static String resolvePluginClassesDir(String bundleName, File sourceDir) {
         if (sourceDir.listFiles() == null) {
-            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle!"),
-                    "Failed to create temporary detector package for bundle " + sourceDir);
+            FindbugsPlugin.getDefault()
+                    .logException(
+                            new IllegalStateException("No files in the bundle!"),
+                            "Failed to create temporary detector package for bundle " + sourceDir);
             return null;
         }
 
         String outputDir = getBuildDirectory(bundleName, sourceDir);
         if (outputDir.length() == 0) {
-            FindbugsPlugin.getDefault().logException(new IllegalStateException("No output directory in build.properties"),
-                    "No output directory in build.properties " + sourceDir);
+            FindbugsPlugin.getDefault()
+                    .logException(
+                            new IllegalStateException("No output directory in build.properties"),
+                            "No output directory in build.properties " + sourceDir);
             return null;
         }
 
         File classDir = new File(sourceDir, outputDir);
 
         if (classDir.listFiles() == null) {
-            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle output dir!"),
-                    "Failed to create temporary detector package for bundle " + sourceDir);
+            FindbugsPlugin.getDefault()
+                    .logException(
+                            new IllegalStateException("No files in the bundle output dir!"),
+                            "Failed to create temporary detector package for bundle " + sourceDir);
             return null;
         }
         File etcDir = new File(sourceDir, "etc");
         if (etcDir.listFiles() == null) {
-            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle etc dir!"),
-                    "Failed to create temporary detector package for bundle " + sourceDir);
+            FindbugsPlugin.getDefault()
+                    .logException(
+                            new IllegalStateException("No files in the bundle etc dir!"),
+                            "Failed to create temporary detector package for bundle " + sourceDir);
             return null;
         }
         return classDir.getAbsolutePath();
     }
 
-    /**
-     * @return possible deployment root directory of a plugin project
-     */
+    /** @return possible deployment root directory of a plugin project */
     @Nonnull
     private static String getBuildDirectory(String bundleName, File sourceDir) {
         Properties props = new Properties();
@@ -195,7 +204,8 @@ public class DetectorsExtensionHelper {
                 inStream = new FileInputStream(buildProps);
                 props.load(inStream);
             } catch (IOException e) {
-                FindbugsPlugin.getDefault().logException(e, "Failed to read build.properties for bundle " + bundleName);
+                FindbugsPlugin.getDefault()
+                        .logException(e, "Failed to read build.properties for bundle " + bundleName);
             } finally {
                 IO.closeQuietly(inStream);
             }

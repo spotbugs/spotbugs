@@ -25,20 +25,15 @@
 
 package edu.umd.cs.findbugs.log;
 
+import edu.umd.cs.findbugs.L10N;
 import java.util.Date;
 
-import edu.umd.cs.findbugs.L10N;
-
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class ConsoleLogger implements Logger {
 
     private final LogSync logSync;
 
-    /**
-     * Creates a new instance of ConsoleLogger
-     */
+    /** Creates a new instance of ConsoleLogger */
     public ConsoleLogger(LogSync logSync) {
         this.logSync = logSync;
     }
@@ -64,5 +59,4 @@ public class ConsoleLogger implements Logger {
         buf.append(message);
         logSync.writeToLog(buf.toString());
     }
-
 }

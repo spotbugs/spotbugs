@@ -19,33 +19,26 @@
 
 package edu.umd.cs.findbugs.ba.generic;
 
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.util.ClassName;
-
 /**
- * Extension to ObjectType that includes additional information about the
- * generic signature.
- * <p>
+ * Extension to ObjectType that includes additional information about the generic signature.
  *
- * A GenericObjectType is either a parameterized type e.g.
- * <code>List&lt;String&gt;</code>, or a type variable e.g. <code>T</code>.
- * <p>
+ * <p>A GenericObjectType is either a parameterized type e.g. <code>List&lt;String&gt;</code>, or a
+ * type variable e.g. <code>T</code>.
  *
- * This class cannot be initialized directly. Instead, create a
- * GenericObjectType by calling GenericUtilities.getType(String) and passing in
- * the bytecode signature for the type.
+ * <p>This class cannot be initialized directly. Instead, create a GenericObjectType by calling
+ * GenericUtilities.getType(String) and passing in the bytecode signature for the type.
  *
  * @author Nat Ayewah
  */
@@ -63,7 +56,9 @@ public class GenericObjectType extends ObjectType {
 
     @Override
     public int hashCode() {
-        return 13 * super.hashCode() + 9 * Objects.hashCode(parameters) + 7 * Objects.hashCode(variable)
+        return 13 * super.hashCode()
+                + 9 * Objects.hashCode(parameters)
+                + 7 * Objects.hashCode(variable)
                 + Objects.hashCode(extension);
     }
 
@@ -76,7 +71,8 @@ public class GenericObjectType extends ObjectType {
             return false;
         }
         GenericObjectType that = (GenericObjectType) o;
-        return Objects.equals(parameters, that.parameters) && Objects.equals(variable, that.variable)
+        return Objects.equals(parameters, that.parameters)
+                && Objects.equals(variable, that.variable)
                 && Objects.equals(extension, that.extension);
     }
 
@@ -87,16 +83,12 @@ public class GenericObjectType extends ObjectType {
         return this;
     }
 
-    /**
-     * @return Returns the extension.
-     */
+    /** @return Returns the extension. */
     public Type getExtension() {
         return extension;
     }
 
-    /**
-     * @return Returns the variable.
-     */
+    /** @return Returns the variable. */
     public String getVariable() {
         return variable;
     }
@@ -123,32 +115,26 @@ public class GenericObjectType extends ObjectType {
             } else if ("-".equals(variable)) {
                 return GenericUtilities.TypeCategory.WILDCARD_SUPER;
             }
-
         }
         // this should never happen
         throw new IllegalStateException("The Generic Object Type is badly initialized");
     }
 
     /**
-     * @return true if this GenericObjectType represents a parameterized type
-     *         e.g. <code>List&lt;String&gt;</code>. This implies that
-     *         isVariable() is falses
+     * @return true if this GenericObjectType represents a parameterized type e.g. <code>
+     *     List&lt;String&gt;</code>. This implies that isVariable() is falses
      */
     public boolean hasParameters() {
         return parameters != null && parameters.size() > 0;
     }
 
-    /**
-     * @return the number of parameters if this is a parameterized class, 0
-     *         otherwise
-     */
+    /** @return the number of parameters if this is a parameterized class, 0 otherwise */
     public int getNumParameters() {
         return parameters != null ? parameters.size() : 0;
     }
 
     /**
-     * @param index
-     *            should be less than getNumParameters()
+     * @param index should be less than getNumParameters()
      * @return the type parameter at index
      */
     public ReferenceType getParameterAt(int index) {
@@ -169,20 +155,16 @@ public class GenericObjectType extends ObjectType {
     // Package Level constructors
 
     /**
-     * Create a GenericObjectType that represents a Simple Type Variable or a
-     * simple wildcard with no extensions
+     * Create a GenericObjectType that represents a Simple Type Variable or a simple wildcard with no
+     * extensions
      *
-     * @param variable
-     *            the type variable e.g. <code>T</code>
+     * @param variable the type variable e.g. <code>T</code>
      */
     GenericObjectType(@Nonnull String variable) {
         this(variable, (ReferenceType) null);
     }
 
-    /**
-     * Create a GenericObjectType that represents a Wildcard with extensions
-     *
-     */
+    /** Create a GenericObjectType that represents a Wildcard with extensions */
     GenericObjectType(@Nonnull String wildcard, @CheckForNull ReferenceType extension) {
         super(Type.OBJECT.getClassName());
         this.variable = wildcard;
@@ -193,11 +175,8 @@ public class GenericObjectType extends ObjectType {
     /**
      * Create a GenericObjectType that represents a parameterized class
      *
-     * @param class_name
-     *            the class that is parameterized. e.g.
-     *            <code>java.util.List</code>
-     * @param parameters
-     *            the parameters of this class, must be at least 1 parameter
+     * @param class_name the class that is parameterized. e.g. <code>java.util.List</code>
+     * @param parameters the parameters of this class, must be at least 1 parameter
      */
     GenericObjectType(@DottedClassName String class_name, List<? extends ReferenceType> parameters) {
         super(class_name);
@@ -209,9 +188,7 @@ public class GenericObjectType extends ObjectType {
         this.parameters = parameters;
     }
 
-    /**
-     * @return the underlying ObjectType for this Generic Object
-     */
+    /** @return the underlying ObjectType for this Generic Object */
     public ObjectType getObjectType() {
         String cName = ClassName.fromFieldSignature(getSignature());
         if (cName == null) {
@@ -223,15 +200,12 @@ public class GenericObjectType extends ObjectType {
     }
 
     /**
-     * Return a string representation of this object. (I do not override
-     * <code>toString()</code> in case any existing code assumes that this
-     * object is an ObjectType and expects similar string representation. i.e.
-     * <code>toString()</code> is equivalent to <code>toString(false)</code>)
+     * Return a string representation of this object. (I do not override <code>toString()</code> in
+     * case any existing code assumes that this object is an ObjectType and expects similar string
+     * representation. i.e. <code>toString()</code> is equivalent to <code>toString(false)</code>)
      *
-     * @param includeGenerics
-     *            if true then the string includes generic information in this
-     *            object. Otherwise this returns the same value as
-     *            ObjectType.toString()
+     * @param includeGenerics if true then the string includes generic information in this object.
+     *     Otherwise this returns the same value as ObjectType.toString()
      */
     public String toString(boolean includeGenerics) {
         // if (!includeGenerics) return super.toString();

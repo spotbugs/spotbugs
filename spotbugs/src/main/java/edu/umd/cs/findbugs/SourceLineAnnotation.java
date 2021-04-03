@@ -19,22 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LineNumber;
-import org.apache.bcel.classfile.LineNumberTable;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
@@ -52,10 +36,22 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
+import javax.annotation.CheckForNull;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumber;
+import org.apache.bcel.classfile.LineNumberTable;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.CheckReturnValue;
 
 /**
  * A BugAnnotation that records a range of source lines in a class.
@@ -74,7 +70,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     public static final String ROLE_ANOTHER_INSTANCE = "SOURCE_LINE_ANOTHER_INSTANCE";
 
-    public static final String ROLE_CALLED_FROM_SUPERCLASS_AT = "SOURCE_LINE_CALLED_FROM_SUPERCLASS_AT";
+    public static final String ROLE_CALLED_FROM_SUPERCLASS_AT =
+            "SOURCE_LINE_CALLED_FROM_SUPERCLASS_AT";
 
     public static final String ROLE_FIELD_SET_TOO_LATE_AT = "SOURCE_LINE_FIELD_SET_TOO_LATE_AT";
 
@@ -82,7 +79,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     public static final String ROLE_OBLIGATION_CREATED = "SOURCE_LINE_OBLIGATION_CREATED";
 
-    public static final String ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER = "SOURCE_LINE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER";
+    public static final String ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER =
+            "SOURCE_LINE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER";
 
     public static final String ROLE_PATH_CONTINUES = "SOURCE_LINE_PATH_CONTINUES";
 
@@ -91,8 +89,8 @@ public class SourceLineAnnotation implements BugAnnotation {
     public static final String ROLE_UNREACHABLE_CODE = "SOURCE_UNREACHABLE_CODE";
 
     /**
-     * String returned if the source file is unknown. This must match what BCEL
-     * uses when the source file is unknown.
+     * String returned if the source file is unknown. This must match what BCEL uses when the source
+     * file is unknown.
      */
     public static final String UNKNOWN_SOURCE_FILE = "<Unknown>";
 
@@ -100,17 +98,17 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     private String description;
 
-    final private @DottedClassName String className;
+    private final @DottedClassName String className;
 
     private String sourceFile;
 
-    final private int startLine;
+    private final int startLine;
 
-    final private int endLine;
+    private final int endLine;
 
-    final private int startBytecode;
+    private final int startBytecode;
 
-    final private int endBytecode;
+    private final int endBytecode;
 
     private boolean synthetic;
 
@@ -127,21 +125,20 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Constructor.
      *
-     * @param className
-     *            the class to which the line number(s) refer
-     * @param sourceFile
-     *            the name of the source file
-     * @param startLine
-     *            the first line (inclusive)
-     * @param endLine
-     *            the ending line (inclusive)
-     * @param startBytecode
-     *            the first bytecode offset (inclusive)
-     * @param endBytecode
-     *            the end bytecode offset (inclusive)
+     * @param className the class to which the line number(s) refer
+     * @param sourceFile the name of the source file
+     * @param startLine the first line (inclusive)
+     * @param endLine the ending line (inclusive)
+     * @param startBytecode the first bytecode offset (inclusive)
+     * @param endBytecode the end bytecode offset (inclusive)
      */
-    public SourceLineAnnotation(@Nonnull @DottedClassName String className, @Nonnull String sourceFile, int startLine, int endLine,
-            int startBytecode, int endBytecode) {
+    public SourceLineAnnotation(
+            @Nonnull @DottedClassName String className,
+            @Nonnull String sourceFile,
+            int startLine,
+            int endLine,
+            int startBytecode,
+            int endBytecode) {
         Objects.requireNonNull(className, "class name is null");
         Objects.requireNonNull(sourceFile, "source file is null");
         this.description = DEFAULT_ROLE;
@@ -165,35 +162,32 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Factory method to create an unknown source line annotation.
      *
-     * @param className
-     *            the class name
-     * @param sourceFile
-     *            the source file name
+     * @param className the class name
+     * @param sourceFile the source file name
      * @return the SourceLineAnnotation
      */
-    public static SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile) {
+    public static SourceLineAnnotation createUnknown(
+            @DottedClassName String className, String sourceFile) {
         return createUnknown(className, sourceFile, -1, -1);
     }
 
     /**
-     * Factory method to create an unknown source line annotation. This variant
-     * looks up the source filename automatically based on the class using best
-     * effort.
+     * Factory method to create an unknown source line annotation. This variant looks up the source
+     * filename automatically based on the class using best effort.
      *
-     * @param className
-     *            the class name
+     * @param className the class name
      * @return the SourceLineAnnotation
      */
     public static SourceLineAnnotation createUnknown(@DottedClassName String className) {
-        return createUnknown(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className), -1, -1);
+        return createUnknown(
+                className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className), -1, -1);
     }
 
     /**
-     * Factory method to create an unknown source line annotation. This doesn't
-     * use the analysis context.
+     * Factory method to create an unknown source line annotation. This doesn't use the analysis
+     * context.
      *
-     * @param className
-     *            the class name
+     * @param className the class name
      * @return the SourceLineAnnotation
      */
     public static SourceLineAnnotation createReallyUnknown(@DottedClassName String className) {
@@ -201,45 +195,42 @@ public class SourceLineAnnotation implements BugAnnotation {
     }
 
     /**
-     * Factory method to create an unknown source line annotation. This variant
-     * is used when bytecode offsets are known, but not source lines.
+     * Factory method to create an unknown source line annotation. This variant is used when bytecode
+     * offsets are known, but not source lines.
      *
-     * @param className
-     *            the class name
-     * @param sourceFile
-     *            the source file name
+     * @param className the class name
+     * @param sourceFile the source file name
      * @return the SourceLineAnnotation
      */
     @Nonnull
-    public static SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile, int startBytecode, int endBytecode) {
-        SourceLineAnnotation result = new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
+    public static SourceLineAnnotation createUnknown(
+            @DottedClassName String className, String sourceFile, int startBytecode, int endBytecode) {
+        SourceLineAnnotation result =
+                new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
         // result.setDescription("SOURCE_LINE_UNKNOWN");
         return result;
     }
 
     /**
-     * Factory method for creating a source line annotation describing an entire
-     * method.
+     * Factory method for creating a source line annotation describing an entire method.
      *
-     * @param visitor
-     *            a BetterVisitor which is visiting the method
+     * @param visitor a BetterVisitor which is visiting the method
      * @return the SourceLineAnnotation
      */
     public static SourceLineAnnotation fromVisitedMethod(PreorderVisitor visitor) {
 
-        SourceLineAnnotation sourceLines = getSourceAnnotationForMethod(visitor.getDottedClassName(), visitor.getMethodName(),
-                visitor.getMethodSig());
+        SourceLineAnnotation sourceLines =
+                getSourceAnnotationForMethod(
+                        visitor.getDottedClassName(), visitor.getMethodName(), visitor.getMethodSig());
         return sourceLines;
     }
 
     /**
-     * Factory method for creating a source line annotation describing an entire
-     * method.
+     * Factory method for creating a source line annotation describing an entire method.
      *
-     * @param methodGen
-     *            the method being visited
-     * @return the SourceLineAnnotation, or null if we do not have line number
-     *         information for the method
+     * @param methodGen the method being visited
+     * @return the SourceLineAnnotation, or null if we do not have line number information for the
+     *     method
      */
     public static SourceLineAnnotation fromVisitedMethod(MethodGen methodGen, String sourceFile) {
         LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
@@ -254,23 +245,23 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Create a SourceLineAnnotation covering an entire method.
      *
-     * @param className
-     *            name of the class the method is in
-     * @param sourceFile
-     *            source file containing the method
-     * @param lineNumberTable
-     *            the method's LineNumberTable
-     * @param codeSize
-     *            size in bytes of the method's code
+     * @param className name of the class the method is in
+     * @param sourceFile source file containing the method
+     * @param lineNumberTable the method's LineNumberTable
+     * @param codeSize size in bytes of the method's code
      * @return a SourceLineAnnotation covering the entire method
      */
-    public static SourceLineAnnotation forEntireMethod(@DottedClassName String className, String sourceFile, LineNumberTable lineNumberTable,
+    public static SourceLineAnnotation forEntireMethod(
+            @DottedClassName String className,
+            String sourceFile,
+            LineNumberTable lineNumberTable,
             int codeSize) {
         LineNumber[] table = lineNumberTable.getLineNumberTable();
         if (table != null && table.length > 0) {
             LineNumber first = table[0];
             LineNumber last = table[table.length - 1];
-            return new SourceLineAnnotation(className, sourceFile, first.getLineNumber(), last.getLineNumber(), 0, codeSize - 1);
+            return new SourceLineAnnotation(
+                    className, sourceFile, first.getLineNumber(), last.getLineNumber(), 0, codeSize - 1);
         } else {
             return createUnknown(className, sourceFile, 0, codeSize - 1);
         }
@@ -279,13 +270,12 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Create a SourceLineAnnotation covering an entire method.
      *
-     * @param javaClass
-     *            JavaClass containing the method
-     * @param method
-     *            the method
+     * @param javaClass JavaClass containing the method
+     * @param method the method
      * @return a SourceLineAnnotation for the entire method
      */
-    public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, @CheckForNull Method method) {
+    public static SourceLineAnnotation forEntireMethod(
+            JavaClass javaClass, @CheckForNull Method method) {
         String sourceFile = javaClass.getSourceFileName();
         if (method == null) {
             return createUnknown(javaClass.getClassName(), sourceFile);
@@ -302,14 +292,13 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Create a SourceLineAnnotation covering an entire method.
      *
-     * @param javaClass
-     *            JavaClass containing the method
-     * @param xmethod
-     *            the method
+     * @param javaClass JavaClass containing the method
+     * @param xmethod the method
      * @return a SourceLineAnnotation for the entire method
      */
     public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, XMethod xmethod) {
-        JavaClassAndMethod m = Hierarchy.findMethod(javaClass, xmethod.getName(), xmethod.getSignature());
+        JavaClassAndMethod m =
+                Hierarchy.findMethod(javaClass, xmethod.getName(), xmethod.getSignature());
         if (m == null) {
             return createUnknown(javaClass.getClassName(), javaClass.getSourceFileName());
         } else {
@@ -318,20 +307,20 @@ public class SourceLineAnnotation implements BugAnnotation {
     }
 
     /**
-     * Make a best-effort attempt to create a SourceLineAnnotation for the first
-     * line of a method.
+     * Make a best-effort attempt to create a SourceLineAnnotation for the first line of a method.
      *
-     * @param methodDescriptor
-     *            a method
-     * @return SourceLineAnnotation describing the first line of the method
-     *         (insofar as we can actually figure that out from the bytecode)
+     * @param methodDescriptor a method
+     * @return SourceLineAnnotation describing the first line of the method (insofar as we can
+     *     actually figure that out from the bytecode)
      */
     public static SourceLineAnnotation forFirstLineOfMethod(MethodDescriptor methodDescriptor) {
         SourceLineAnnotation result = null;
 
         try {
             Method m = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
-            XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, methodDescriptor.getClassDescriptor());
+            XClass xclass =
+                    Global.getAnalysisCache()
+                            .getClassAnalysis(XClass.class, methodDescriptor.getClassDescriptor());
             LineNumberTable lnt = m.getLineNumberTable();
             String sourceFile = xclass.getSource();
             if (sourceFile != null && lnt != null) {
@@ -346,8 +335,14 @@ public class SourceLineAnnotation implements BugAnnotation {
                 }
                 if (firstLine < Integer.MAX_VALUE) {
 
-                    result = new SourceLineAnnotation(methodDescriptor.getClassDescriptor().toDottedClassName(), sourceFile,
-                            firstLine, firstLine, bytecode, bytecode);
+                    result =
+                            new SourceLineAnnotation(
+                                    methodDescriptor.getClassDescriptor().toDottedClassName(),
+                                    sourceFile,
+                                    firstLine,
+                                    firstLine,
+                                    bytecode,
+                                    bytecode);
                 }
             }
         } catch (CheckedAnalysisException e) {
@@ -361,84 +356,78 @@ public class SourceLineAnnotation implements BugAnnotation {
     }
 
     /**
-     * Factory method for creating a source line annotation describing the
-     * source line number for the instruction being visited by given visitor.
+     * Factory method for creating a source line annotation describing the source line number for the
+     * instruction being visited by given visitor.
      *
-     * @param visitor
-     *            a BetterVisitor which is visiting the method
-     * @param pc
-     *            the bytecode offset of the instruction in the method
-     * @return the SourceLineAnnotation, or null if we do not have line number
-     *         information for the instruction
+     * @param visitor a BetterVisitor which is visiting the method
+     * @param pc the bytecode offset of the instruction in the method
+     * @return the SourceLineAnnotation, or null if we do not have line number information for the
+     *     instruction
      */
-    public static SourceLineAnnotation fromVisitedInstruction(BytecodeScanningDetector visitor, int pc) {
+    public static SourceLineAnnotation fromVisitedInstruction(
+            BytecodeScanningDetector visitor, int pc) {
         return fromVisitedInstructionRange(visitor.getClassContext(), visitor, pc, pc);
     }
 
     /**
-     * Factory method for creating a source line annotation describing the
-     * source line number for the instruction being visited by given visitor.
+     * Factory method for creating a source line annotation describing the source line number for the
+     * instruction being visited by given visitor.
      *
-     * @param classContext
-     *            the ClassContext
-     * @param visitor
-     *            a BetterVisitor which is visiting the method
-     * @param pc
-     *            the bytecode offset of the instruction in the method
-     * @return the SourceLineAnnotation, or null if we do not have line number
-     *         information for the instruction
+     * @param classContext the ClassContext
+     * @param visitor a BetterVisitor which is visiting the method
+     * @param pc the bytecode offset of the instruction in the method
+     * @return the SourceLineAnnotation, or null if we do not have line number information for the
+     *     instruction
      */
-    public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, PreorderVisitor visitor, int pc) {
+    public static SourceLineAnnotation fromVisitedInstruction(
+            ClassContext classContext, PreorderVisitor visitor, int pc) {
         return fromVisitedInstructionRange(classContext, visitor, pc, pc);
     }
 
     /**
      * Create from Method and Location in a visited class.
      *
-     * @param classContext
-     *            ClassContext of visited class
-     * @param method
-     *            Method in visited class
-     * @param loc
-     *            Location in visited class
+     * @param classContext ClassContext of visited class
+     * @param method Method in visited class
+     * @param loc Location in visited class
      * @return SourceLineAnnotation describing visited Location
      */
-    public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, Location loc) {
+    public static SourceLineAnnotation fromVisitedInstruction(
+            ClassContext classContext, Method method, Location loc) {
         return fromVisitedInstruction(classContext, method, loc.getHandle());
     }
 
     /**
      * Create from Method and InstructionHandle in a visited class.
      *
-     * @param classContext
-     *            ClassContext of visited class
-     * @param method
-     *            Method in visited class
-     * @param handle
-     *            InstructionHandle in visited class
+     * @param classContext ClassContext of visited class
+     * @param method Method in visited class
+     * @param handle InstructionHandle in visited class
      * @return SourceLineAnnotation describing visited instruction
      */
-    public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, InstructionHandle handle) {
+    public static SourceLineAnnotation fromVisitedInstruction(
+            ClassContext classContext, Method method, InstructionHandle handle) {
         return fromVisitedInstruction(classContext, method, handle.getPosition());
     }
 
     /**
      * Create from MethodDescriptor and Location of visited instruction.
      *
-     * @param methodDescriptor
-     *            MethodDescriptor identifying analyzed method
-     * @param location
-     *            Location of instruction within analyed method
+     * @param methodDescriptor MethodDescriptor identifying analyzed method
+     * @param location Location of instruction within analyed method
      * @return SourceLineAnnotation describing visited instruction
      */
-    public static SourceLineAnnotation fromVisitedInstruction(MethodDescriptor methodDescriptor, Location location) {
+    public static SourceLineAnnotation fromVisitedInstruction(
+            MethodDescriptor methodDescriptor, Location location) {
         return fromVisitedInstruction(methodDescriptor, location.getHandle().getPosition());
     }
 
-    public static SourceLineAnnotation fromVisitedInstruction(MethodDescriptor methodDescriptor, int position) {
+    public static SourceLineAnnotation fromVisitedInstruction(
+            MethodDescriptor methodDescriptor, int position) {
         try {
             IAnalysisCache analysisCache = Global.getAnalysisCache();
-            JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, methodDescriptor.getClassDescriptor());
+            JavaClass jclass =
+                    analysisCache.getClassAnalysis(JavaClass.class, methodDescriptor.getClassDescriptor());
             Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
             return fromVisitedInstruction(jclass, method, position);
         } catch (CheckedAnalysisException e) {
@@ -449,30 +438,26 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Create from Method and bytecode offset in a visited class.
      *
-     * @param classContext
-     *            ClassContext of visited class
-     * @param method
-     *            Method in visited class
-     * @param pc
-     *            bytecode offset in visited method
+     * @param classContext ClassContext of visited class
+     * @param method Method in visited class
+     * @param pc bytecode offset in visited method
      * @return SourceLineAnnotation describing visited instruction
      */
-    public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, int pc) {
+    public static SourceLineAnnotation fromVisitedInstruction(
+            ClassContext classContext, Method method, int pc) {
         return fromVisitedInstruction(classContext.getJavaClass(), method, pc);
     }
 
     /**
      * Create from Method and bytecode offset in a visited class.
      *
-     * @param jclass
-     *            JavaClass of visited class
-     * @param method
-     *            Method in visited class
-     * @param pc
-     *            bytecode offset in visited method
+     * @param jclass JavaClass of visited class
+     * @param method Method in visited class
+     * @param pc bytecode offset in visited method
      * @return SourceLineAnnotation describing visited instruction
      */
-    public static SourceLineAnnotation fromVisitedInstruction(JavaClass jclass, Method method, int pc) {
+    public static SourceLineAnnotation fromVisitedInstruction(
+            JavaClass jclass, Method method, int pc) {
         LineNumberTable lineNumberTable = method.getCode().getLineNumberTable();
         String className = jclass.getClassName();
         String sourceFile = jclass.getSourceFileName();
@@ -485,20 +470,17 @@ public class SourceLineAnnotation implements BugAnnotation {
     }
 
     /**
-     * Factory method for creating a source line annotation describing the
-     * source line numbers for a range of instructions in the method being
-     * visited by the given visitor.
+     * Factory method for creating a source line annotation describing the source line numbers for a
+     * range of instructions in the method being visited by the given visitor.
      *
-     * @param visitor
-     *            a BetterVisitor which is visiting the method
-     * @param startPC
-     *            the bytecode offset of the start instruction in the range
-     * @param endPC
-     *            the bytecode offset of the end instruction in the range
-     * @return the SourceLineAnnotation, or null if we do not have line number
-     *         information for the instruction
+     * @param visitor a BetterVisitor which is visiting the method
+     * @param startPC the bytecode offset of the start instruction in the range
+     * @param endPC the bytecode offset of the end instruction in the range
+     * @return the SourceLineAnnotation, or null if we do not have line number information for the
+     *     instruction
      */
-    public static SourceLineAnnotation fromVisitedInstructionRange(BytecodeScanningDetector visitor, int startPC, int endPC) {
+    public static SourceLineAnnotation fromVisitedInstructionRange(
+            BytecodeScanningDetector visitor, int startPC, int endPC) {
         LineNumberTable lineNumberTable = getLineNumberTable(visitor);
         String className = visitor.getDottedClassName();
         String sourceFile = visitor.getSourceFile();
@@ -513,23 +495,18 @@ public class SourceLineAnnotation implements BugAnnotation {
     }
 
     /**
-     * Factory method for creating a source line annotation describing the
-     * source line numbers for a range of instructions in the method being
-     * visited by the given visitor.
+     * Factory method for creating a source line annotation describing the source line numbers for a
+     * range of instructions in the method being visited by the given visitor.
      *
-     * @param classContext
-     *            the ClassContext
-     * @param visitor
-     *            a BetterVisitor which is visiting the method
-     * @param startPC
-     *            the bytecode offset of the start instruction in the range
-     * @param endPC
-     *            the bytecode offset of the end instruction in the range
-     * @return the SourceLineAnnotation, or null if we do not have line number
-     *         information for the instruction
+     * @param classContext the ClassContext
+     * @param visitor a BetterVisitor which is visiting the method
+     * @param startPC the bytecode offset of the start instruction in the range
+     * @param endPC the bytecode offset of the end instruction in the range
+     * @return the SourceLineAnnotation, or null if we do not have line number information for the
+     *     instruction
      */
-    public static @Nonnull SourceLineAnnotation fromVisitedInstructionRange(ClassContext classContext, PreorderVisitor visitor,
-            int startPC, int endPC) {
+    public static @Nonnull SourceLineAnnotation fromVisitedInstructionRange(
+            ClassContext classContext, PreorderVisitor visitor, int startPC, int endPC) {
         if (startPC > endPC) {
             throw new IllegalArgumentException("Start pc " + startPC + " greater than end pc " + endPC);
         }
@@ -547,8 +524,8 @@ public class SourceLineAnnotation implements BugAnnotation {
         return new SourceLineAnnotation(className, sourceFile, startLine, endLine, startPC, endPC);
     }
 
-    public static SourceLineAnnotation fromRawData(String className, String sourceFile, int startLine, int endLine, int startPC,
-            int endPC) {
+    public static SourceLineAnnotation fromRawData(
+            String className, String sourceFile, int startLine, int endLine, int startPC, int endPC) {
         if (startLine == -1) {
             return createUnknown(className, sourceFile, startPC, endPC);
         }
@@ -557,33 +534,32 @@ public class SourceLineAnnotation implements BugAnnotation {
     }
 
     /**
-     * Factory method for creating a source line annotation describing the
-     * source line number for the instruction being visited by given visitor.
+     * Factory method for creating a source line annotation describing the source line number for the
+     * instruction being visited by given visitor.
      *
-     * @param visitor
-     *            a DismantleBytecode visitor which is visiting the method
-     * @return the SourceLineAnnotation, or null if we do not have line number
-     *         information for the instruction
+     * @param visitor a DismantleBytecode visitor which is visiting the method
+     * @return the SourceLineAnnotation, or null if we do not have line number information for the
+     *     instruction
      */
     public static SourceLineAnnotation fromVisitedInstruction(BytecodeScanningDetector visitor) {
         return fromVisitedInstruction(visitor.getClassContext(), visitor, visitor.getPC());
     }
 
     /**
-     * Factory method for creating a source line annotation describing the
-     * source line number for a visited instruction.
+     * Factory method for creating a source line annotation describing the source line number for a
+     * visited instruction.
      *
-     * @param classContext
-     *            the ClassContext
-     * @param methodGen
-     *            the MethodGen object representing the method
-     * @param handle
-     *            the InstructionHandle containing the visited instruction
-     * @return the SourceLineAnnotation, or null if we do not have line number
-     *         information for the instruction
+     * @param classContext the ClassContext
+     * @param methodGen the MethodGen object representing the method
+     * @param handle the InstructionHandle containing the visited instruction
+     * @return the SourceLineAnnotation, or null if we do not have line number information for the
+     *     instruction
      */
     @Nonnull
-    public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, MethodGen methodGen, String sourceFile,
+    public static SourceLineAnnotation fromVisitedInstruction(
+            ClassContext classContext,
+            MethodGen methodGen,
+            String sourceFile,
             @Nonnull InstructionHandle handle) {
         LineNumberTable table = methodGen.getLineNumberTable(methodGen.getConstantPool());
         String className = methodGen.getClassName();
@@ -595,24 +571,25 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
 
         int lineNumber = table.getSourceLine(handle.getPosition());
-        return new SourceLineAnnotation(className, sourceFile, lineNumber, lineNumber, bytecodeOffset, bytecodeOffset);
+        return new SourceLineAnnotation(
+                className, sourceFile, lineNumber, lineNumber, bytecodeOffset, bytecodeOffset);
     }
 
     /**
-     * Factory method for creating a source line annotation describing the
-     * source line numbers for a range of instruction in a method.
+     * Factory method for creating a source line annotation describing the source line numbers for a
+     * range of instruction in a method.
      *
-     * @param classContext
-     *            theClassContext
-     * @param methodGen
-     *            the method
-     * @param start
-     *            the start instruction
-     * @param end
-     *            the end instruction (inclusive)
+     * @param classContext theClassContext
+     * @param methodGen the method
+     * @param start the start instruction
+     * @param end the end instruction (inclusive)
      */
-    public static SourceLineAnnotation fromVisitedInstructionRange(ClassContext classContext, MethodGen methodGen,
-            String sourceFile, InstructionHandle start, InstructionHandle end) {
+    public static SourceLineAnnotation fromVisitedInstructionRange(
+            ClassContext classContext,
+            MethodGen methodGen,
+            String sourceFile,
+            InstructionHandle start,
+            InstructionHandle end) {
         LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
         String className = methodGen.getClassName();
 
@@ -622,7 +599,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 
         int startLine = lineNumberTable.getSourceLine(start.getPosition());
         int endLine = lineNumberTable.getSourceLine(end.getPosition());
-        return new SourceLineAnnotation(className, sourceFile, startLine, endLine, start.getPosition(), end.getPosition());
+        return new SourceLineAnnotation(
+                className, sourceFile, startLine, endLine, start.getPosition(), end.getPosition());
     }
 
     private static LineNumberTable getLineNumberTable(PreorderVisitor visitor) {
@@ -639,17 +617,13 @@ public class SourceLineAnnotation implements BugAnnotation {
         return className;
     }
 
-    /**
-     * Get the source file name.
-     */
+    /** Get the source file name. */
     @Nonnull
     public String getSourceFile() {
         return sourceFile;
     }
 
-    /**
-     * Is the source file known?
-     */
+    /** Is the source file known? */
     public boolean isSourceFileKnown() {
         return !UNKNOWN_SOURCE_FILE.equals(sourceFile);
     }
@@ -657,16 +631,13 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Set the source file name.
      *
-     * @param sourceFile
-     *            the source file name
+     * @param sourceFile the source file name
      */
     public void setSourceFile(String sourceFile) {
         this.sourceFile = sourceFile;
     }
 
-    /**
-     * Get the simple class name (the part of the name after the dot)
-     */
+    /** Get the simple class name (the part of the name after the dot) */
     public String getSimpleClassName() {
         int lastDot = className.lastIndexOf('.');
         return className.substring(lastDot + 1);
@@ -681,37 +652,27 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
     }
 
-    /**
-     * Get the start line (inclusive).
-     */
+    /** Get the start line (inclusive). */
     public int getStartLine() {
         return startLine;
     }
 
-    /**
-     * Get the ending line (inclusive).
-     */
+    /** Get the ending line (inclusive). */
     public int getEndLine() {
         return endLine;
     }
 
-    /**
-     * Get start bytecode (inclusive).
-     */
+    /** Get start bytecode (inclusive). */
     public int getStartBytecode() {
         return startBytecode;
     }
 
-    /**
-     * Get end bytecode (inclusive).
-     */
+    /** Get end bytecode (inclusive). */
     public int getEndBytecode() {
         return endBytecode;
     }
 
-    /**
-     * Is this an unknown source line annotation?
-     */
+    /** Is this an unknown source line annotation? */
     public boolean isUnknown() {
         return startLine < 0 || endLine < 0;
     }
@@ -772,7 +733,6 @@ public class SourceLineAnnotation implements BugAnnotation {
             buf.append('-');
             buf.append(endLine);
         }
-
     }
 
     @Override
@@ -845,10 +805,13 @@ public class SourceLineAnnotation implements BugAnnotation {
             return false;
         }
         if (startLine != -1) {
-            return className.equals(other.className) && startLine == other.startLine && endLine == other.endLine;
+            return className.equals(other.className)
+                    && startLine == other.startLine
+                    && endLine == other.endLine;
         }
-        return className.equals(other.className) && startBytecode == other.startBytecode && endBytecode == other.endBytecode;
-
+        return className.equals(other.className)
+                && startBytecode == other.startBytecode
+                && endBytecode == other.endBytecode;
     }
 
     /*
@@ -877,7 +840,8 @@ public class SourceLineAnnotation implements BugAnnotation {
     }
 
     @Override
-    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
+    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary)
+            throws IOException {
         String classname = getClassName();
         String sourcePath = getSourcePath();
 
@@ -912,10 +876,13 @@ public class SourceLineAnnotation implements BugAnnotation {
             if (project != null) {
                 try {
                     SourceFinder mySourceFinder = project.getSourceFinder();
-                    String fullPath = new File(mySourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
+                    String fullPath =
+                            new File(mySourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
                     String myRelativeSourceBase = relativeSourceBase.get();
-                    if (fullPath.startsWith(myRelativeSourceBase) && fullPath.length() > myRelativeSourceBase.length()) {
-                        attributeList.addAttribute("relSourcepath", fullPath.substring(myRelativeSourceBase.length() + 1));
+                    if (fullPath.startsWith(myRelativeSourceBase)
+                            && fullPath.length() > myRelativeSourceBase.length()) {
+                        attributeList.addAttribute(
+                                "relSourcepath", fullPath.substring(myRelativeSourceBase.length() + 1));
                     }
                 } catch (IOException e) {
                     assert true;
@@ -952,11 +919,12 @@ public class SourceLineAnnotation implements BugAnnotation {
     }
 
     /**
-     * Returns the complete path of the source file the analyzed class has been generated from,
-     * if this information is available to the current AnalysisContext, otherwise falls back to getSourcePath().
+     * Returns the complete path of the source file the analyzed class has been generated from, if
+     * this information is available to the current AnalysisContext, otherwise falls back to
+     * getSourcePath().
      *
      * @return the complete path of the source file the analyzed class has been generated from,
-     * otherwise falls back to getSourcePath().
+     *     otherwise falls back to getSourcePath().
      */
     public String getRealSourcePath() {
         if (isSourceFileKnown()) {
@@ -965,20 +933,22 @@ public class SourceLineAnnotation implements BugAnnotation {
                 try {
                     return new File(sourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
                 } catch (IOException e) {
-                    LOG.debug("Error resolving Real SourcePath (only relative source path will be available) ", e);
+                    LOG.debug(
+                            "Error resolving Real SourcePath (only relative source path will be available) ", e);
                 }
             } else {
-                AnalysisContext.logError("No SourceFinder found (only relative source path will be available) ");
+                AnalysisContext.logError(
+                        "No SourceFinder found (only relative source path will be available) ");
             }
         }
         return getSourcePath();
     }
 
     /**
-     * This method hands back a SourceFinder for this SourceLineAnnotation.
-     * It can be used to identify the full path of a source file rather than
-     * just the class name. The method either tries to find it in the currently
-     * set project or in the Analysis Context.
+     * This method hands back a SourceFinder for this SourceLineAnnotation. It can be used to identify
+     * the full path of a source file rather than just the class name. The method either tries to find
+     * it in the currently set project or in the Analysis Context.
+     *
      * @return the currently available SourceFinder, or null if it could not be found
      */
     private @CheckReturnValue SourceFinder getSourceFinder() {
@@ -1006,7 +976,8 @@ public class SourceLineAnnotation implements BugAnnotation {
         return false;
     }
 
-    static SourceLineAnnotation getSourceAnnotationForMethod(String className, String methodName, String methodSig) {
+    static SourceLineAnnotation getSourceAnnotationForMethod(
+            String className, String methodName, String methodSig) {
         JavaClassAndMethod targetMethod = null;
         Code code = null;
 
@@ -1024,11 +995,17 @@ public class SourceLineAnnotation implements BugAnnotation {
             AnalysisContext.reportMissingClass(e);
         }
         SourceInfoMap sourceInfoMap = AnalysisContext.currentAnalysisContext().getSourceInfoMap();
-        SourceInfoMap.SourceLineRange range = sourceInfoMap.getMethodLine(className, methodName, methodSig);
+        SourceInfoMap.SourceLineRange range =
+                sourceInfoMap.getMethodLine(className, methodName, methodSig);
 
         if (range != null) {
-            return new SourceLineAnnotation(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
-                    range.getStart(), range.getEnd(), 0, code == null ? -1 : code.getLength());
+            return new SourceLineAnnotation(
+                    className,
+                    AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
+                    range.getStart(),
+                    range.getEnd(),
+                    0,
+                    code == null ? -1 : code.getLength());
         }
 
         if (sourceInfoMap.fallBackToClassfile() && targetMethod != null) {

@@ -25,9 +25,8 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
 /**
- * A really simple forward dataflow analysis to find the depth of the Java
- * operand stack. This is more of a proof of concept for the dataflow analysis
- * framework than anything useful.
+ * A really simple forward dataflow analysis to find the depth of the Java operand stack. This is
+ * more of a proof of concept for the dataflow analysis framework than anything useful.
  *
  * @see Dataflow
  * @see DataflowAnalysis
@@ -42,11 +41,8 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
     /**
      * Constructor.
      *
-     * @param cpg
-     *            the ConstantPoolGen of the method whose CFG we're performing
-     *            the analysis on
-     * @param dfs
-     *            DepthFirstSearch of the method's CFG
+     * @param cpg the ConstantPoolGen of the method whose CFG we're performing the analysis on
+     * @param dfs DepthFirstSearch of the method's CFG
      */
     public StackDepthAnalysis(ConstantPoolGen cpg, DepthFirstSearch dfs) {
         super(dfs);

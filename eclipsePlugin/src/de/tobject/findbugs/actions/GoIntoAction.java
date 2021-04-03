@@ -18,15 +18,14 @@
  */
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.view.BugExplorerView;
+import de.tobject.findbugs.view.explorer.BugGroup;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.navigator.CommonViewer;
-
-import de.tobject.findbugs.view.BugExplorerView;
-import de.tobject.findbugs.view.explorer.BugGroup;
 
 public class GoIntoAction implements IViewActionDelegate {
 

@@ -22,14 +22,10 @@ package edu.umd.cs.findbugs.gui2;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-
 import javax.annotation.CheckForNull;
 import javax.swing.tree.TreePath;
 
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class FilterActivity {
 
     private static final HashSet<FilterListener> listeners = new HashSet<>();
@@ -42,7 +38,8 @@ public class FilterActivity {
         listeners.remove(toRemove);
     }
 
-    public static void notifyListeners(FilterListener.Action whatsGoingOnCode, @CheckForNull TreePath optionalPath) {
+    public static void notifyListeners(
+            FilterListener.Action whatsGoingOnCode, @CheckForNull TreePath optionalPath) {
         Collection<FilterListener> currentListeners = new ArrayList<>(FilterActivity.listeners);
         switch (whatsGoingOnCode) {
         case FILTERING:
@@ -51,7 +48,6 @@ public class FilterActivity {
                 i.clearCache();
             }
             break;
-
         }
         MainFrame.getInstance().updateStatusBar();
     }
@@ -61,5 +57,4 @@ public class FilterActivity {
             FilterActivity.notifyListeners(whatsGoingOnCode, optionalPath);
         }
     }
-
 }

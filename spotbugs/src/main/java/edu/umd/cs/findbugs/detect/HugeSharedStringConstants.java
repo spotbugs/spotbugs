@@ -19,28 +19,24 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantString;
-import org.apache.bcel.classfile.ConstantValue;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantString;
+import org.apache.bcel.classfile.ConstantValue;
 
 public class HugeSharedStringConstants extends BytecodeScanningDetector {
 
-    /**
-     *
-     */
+    /** */
     private static final int SIZE_OF_HUGE_CONSTANT = 500;
 
     String getStringKey(String s) {
@@ -86,7 +82,6 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
             definition.put(key, XFactory.createXField(this));
             stringSize.put(key, value.length());
         }
-
     }
 
     @Override
@@ -107,10 +102,18 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
             }
             String className = field.getClassName();
 
-            BugInstance bug = new BugInstance(this, "HSC_HUGE_SHARED_STRING_CONSTANT",
-                    overhead > 20 * SIZE_OF_HUGE_CONSTANT ? HIGH_PRIORITY
-                            : (overhead > 8 * SIZE_OF_HUGE_CONSTANT ? NORMAL_PRIORITY : LOW_PRIORITY)).addClass(className)
-                                    .addField(field).addInt(length).addInt(occursIn.size()).describe(IntAnnotation.INT_OCCURRENCES);
+            BugInstance bug =
+                    new BugInstance(
+                            this,
+                            "HSC_HUGE_SHARED_STRING_CONSTANT",
+                            overhead > 20 * SIZE_OF_HUGE_CONSTANT
+                                    ? HIGH_PRIORITY
+                                    : (overhead > 8 * SIZE_OF_HUGE_CONSTANT ? NORMAL_PRIORITY : LOW_PRIORITY))
+                                            .addClass(className)
+                                            .addField(field)
+                                            .addInt(length)
+                                            .addInt(occursIn.size())
+                                            .describe(IntAnnotation.INT_OCCURRENCES);
             for (String c : occursIn) {
                 if (!c.equals(className)) {
                     bug.addClass(c);
@@ -118,9 +121,6 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
             }
 
             bugReporter.reportBug(bug);
-
         }
-
     }
-
 }

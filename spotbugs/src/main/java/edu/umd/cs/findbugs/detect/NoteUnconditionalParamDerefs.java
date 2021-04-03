@@ -25,13 +25,12 @@ import edu.umd.cs.findbugs.InterproceduralFirstPassDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 
 /**
- * Make a note of unconditionally dereferenced parameters for later use by
- * FindNullDerefs.
+ * Make a note of unconditionally dereferenced parameters for later use by FindNullDerefs.
  *
  * @author David Hovemeyer
  */
-public class NoteUnconditionalParamDerefs extends BuildUnconditionalParamDerefDatabase implements NonReportingDetector,
-        InterproceduralFirstPassDetector {
+public class NoteUnconditionalParamDerefs extends BuildUnconditionalParamDerefDatabase
+        implements NonReportingDetector, InterproceduralFirstPassDetector {
 
     final BugReporter reporter;
 
@@ -51,7 +50,5 @@ public class NoteUnconditionalParamDerefs extends BuildUnconditionalParamDerefDa
     @Override
     protected void reportBug(BugInstance bug) {
         reporter.reportBug(bug);
-
     }
-
 }

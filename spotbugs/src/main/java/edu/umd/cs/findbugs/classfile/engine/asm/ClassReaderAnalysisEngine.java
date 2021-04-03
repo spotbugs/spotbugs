@@ -41,7 +41,8 @@ public class ClassReaderAnalysisEngine extends RecomputableClassAnalysisEngine<F
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public FBClassReader analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public FBClassReader analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor)
+            throws CheckedAnalysisException {
 
         ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
 
@@ -61,5 +62,4 @@ public class ClassReaderAnalysisEngine extends RecomputableClassAnalysisEngine<F
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(FBClassReader.class, this);
     }
-
 }

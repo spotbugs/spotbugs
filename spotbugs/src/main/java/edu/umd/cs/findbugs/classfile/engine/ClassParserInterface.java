@@ -24,9 +24,8 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 
 /**
- * Interface implemented by ClassParsers - objects that take the raw bytes of a
- * classfile and parse the important symbolic information to produce
- * ClassNameAndSuperclassInfo and ClassInfo objects.
+ * Interface implemented by ClassParsers - objects that take the raw bytes of a classfile and parse
+ * the important symbolic information to produce ClassNameAndSuperclassInfo and ClassInfo objects.
  *
  * @author Bill Pugh
  * @author David Hovemeyer
@@ -34,25 +33,23 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 public interface ClassParserInterface {
 
     /**
-     * Parse the class data into a ClassNameAndSuperclassInfo object containing
-     * (some of) the class's symbolic information.
+     * Parse the class data into a ClassNameAndSuperclassInfo object containing (some of) the class's
+     * symbolic information.
      *
-     * @param classInfo
-     *            a ClassNameAndSuperclassInfo object to be filled in with (some
-     *            of) the class's symbolic information
+     * @param classInfo a ClassNameAndSuperclassInfo object to be filled in with (some of) the class's
+     *     symbolic information
      * @throws InvalidClassFileFormatException
      */
-    public void parse(ClassNameAndSuperclassInfo.Builder classInfo) throws InvalidClassFileFormatException;
+    public void parse(ClassNameAndSuperclassInfo.Builder classInfo)
+            throws InvalidClassFileFormatException;
 
     /**
-     * Parse the class data into a ClassInfo object containing (some of) the
-     * class's symbolic information.
+     * Parse the class data into a ClassInfo object containing (some of) the class's symbolic
+     * information.
      *
-     * @param classInfo
-     *            a ClassInfo object to be filled in with (some of) the class's
-     *            symbolic information
+     * @param classInfo a ClassInfo object to be filled in with (some of) the class's symbolic
+     *     information
      * @throws InvalidClassFileFormatException
      */
     public void parse(ClassInfo.Builder classInfo) throws InvalidClassFileFormatException;
-
 }

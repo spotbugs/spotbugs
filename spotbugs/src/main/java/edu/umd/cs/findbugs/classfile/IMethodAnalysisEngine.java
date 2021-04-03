@@ -24,5 +24,6 @@ package edu.umd.cs.findbugs.classfile;
  *
  * @author David Hovemeyer
  */
-public interface IMethodAnalysisEngine<ResultType> extends IAnalysisEngine<MethodDescriptor, ResultType> {
+public interface IMethodAnalysisEngine<ResultType>
+        extends IAnalysisEngine<MethodDescriptor, ResultType> {
 }

@@ -25,17 +25,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Collections;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import org.apache.tools.ant.filters.StringInputStream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Project;
@@ -43,6 +32,15 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import org.apache.tools.ant.filters.StringInputStream;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class SourceMatcherTest {
 
@@ -79,12 +77,14 @@ public class SourceMatcherTest {
         SourceMatcher sm = new SourceMatcher(fileName);
 
         String xml = writeXMLAndGetStringOutput(sm, false);
-        xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "\n<FindBugsFilter>"
-                + "\n<Match>"
-                + "\n" + xml
-                + "\n</Match>"
-                + "\n</FindBugsFilter>\n";
+        xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                        + "\n<FindBugsFilter>"
+                        + "\n<Match>"
+                        + "\n"
+                        + xml
+                        + "\n</Match>"
+                        + "\n</FindBugsFilter>\n";
 
         Filter filter = new Filter(new StringInputStream(xml));
 
@@ -93,7 +93,6 @@ public class SourceMatcherTest {
         bug.addClass("bla", fileName);
         assertTrue(filter.match(bug));
     }
-
 
     @Test
     public void match() throws Exception {
@@ -137,9 +136,11 @@ public class SourceMatcherTest {
         ClassAnnotation primaryClass = bug.getPrimaryClass();
 
         // set source file
-        primaryClass.setSourceLines(SourceLineAnnotation.createUnknown("SourceMatcherTest", "SourceMatcherTest.java"));
+        primaryClass.setSourceLines(
+                SourceLineAnnotation.createUnknown("SourceMatcherTest", "SourceMatcherTest.java"));
 
-        // setup a testing project with source directory, as of right now the source directory should really exist!!
+        // setup a testing project with source directory, as of right now the source directory should
+        // really exist!!
         Project testProject = new Project();
         String sourceDir = "src/test/java/edu/umd/cs/findbugs/filter";
         testProject.addSourceDirs(Collections.singletonList(sourceDir));
@@ -151,7 +152,8 @@ public class SourceMatcherTest {
         SourceMatcher sm = new SourceMatcher("~.*findbugs.*.java");
         assertTrue("The regex matches the source directory of the given java file", sm.match(bug));
         sm = new SourceMatcher("~.*notfound.*.java");
-        assertFalse("The regex does not match the source directory of the given java file", sm.match(bug));
+        assertFalse(
+                "The regex does not match the source directory of the given java file", sm.match(bug));
     }
 
     @Test
@@ -161,9 +163,11 @@ public class SourceMatcherTest {
         ClassAnnotation primaryClass = bug.getPrimaryClass();
 
         // set source file
-        primaryClass.setSourceLines(SourceLineAnnotation.createUnknown("SourceMatcherTest", "SourceMatcherTest.java"));
+        primaryClass.setSourceLines(
+                SourceLineAnnotation.createUnknown("SourceMatcherTest", "SourceMatcherTest.java"));
 
-        // setup a testing project with source directory, as of right now the source directory should really exist!!
+        // setup a testing project with source directory, as of right now the source directory should
+        // really exist!!
         Project testProject = new Project();
         String sourceDir = "src/test/java/edu/umd/cs/findbugs/filter";
         testProject.addSourceDirs(Collections.singletonList(sourceDir));
@@ -175,10 +179,12 @@ public class SourceMatcherTest {
         SourceMatcher sm = new SourceMatcher("~.*findbugs.*.java");
         assertTrue("The regex matches the source directory of the given java file", sm.match(bug));
         sm = new SourceMatcher("~.*notfound.*.java");
-        assertFalse("The regex does not match the source directory of the given java file", sm.match(bug));
+        assertFalse(
+                "The regex does not match the source directory of the given java file", sm.match(bug));
     }
 
-    private String writeXMLAndGetStringOutput(SourceMatcher matcher, boolean disabled) throws IOException {
+    private String writeXMLAndGetStringOutput(SourceMatcher matcher, boolean disabled)
+            throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         XMLOutput xmlOutput = new OutputStreamXMLOutput(outputStream);
 
@@ -187,5 +193,4 @@ public class SourceMatcherTest {
 
         return outputStream.toString(StandardCharsets.UTF_8.name()).trim();
     }
-
 }

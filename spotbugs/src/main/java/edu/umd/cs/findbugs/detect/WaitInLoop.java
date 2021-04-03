@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class WaitInLoop extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -59,24 +58,30 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
         super.visit(obj);
         if ((sawWait || sawAwait) && waitAt < earliestJump) {
             String bugType = sawWait ? "WA_NOT_IN_LOOP" : "WA_AWAIT_NOT_IN_LOOP";
-            bugReporter.reportBug(new BugInstance(this, bugType, waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addSourceLine(this, waitAt));
+            bugReporter.reportBug(
+                    new BugInstance(this, bugType, waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addSourceLine(this, waitAt));
         }
         if (sawNotify) {
-            bugReporter.reportBug(new BugInstance(this, "NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY).addClassAndMethod(this)
-                    .addSourceLine(this, notifyPC));
+            bugReporter.reportBug(
+                    new BugInstance(this, "NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addSourceLine(this, notifyPC));
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
 
-        if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) && "notify".equals(getNameConstantOperand())
+        if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
+                && "notify".equals(getNameConstantOperand())
                 && "()V".equals(getSigConstantOperand())) {
             sawNotify = true;
             notifyPC = getPC();
         }
-        if (!(sawWait || sawAwait) && (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
+        if (!(sawWait || sawAwait)
+                && (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
                 && (isMonitorWait() || isConditionAwait())) {
 
             if ("wait".equals(getNameConstantOperand())) {
@@ -103,7 +108,8 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
         }
 
         String sig = getSigConstantOperand();
-        return ("await".equals(name) && ("()V".equals(sig) || "(JLjava/util/concurrent/TimeUnit;)V".equals(sig)))
+        return ("await".equals(name)
+                && ("()V".equals(sig) || "(JLjava/util/concurrent/TimeUnit;)V".equals(sig)))
                 || ("awaitNanos".equals(name) && "(J)V".equals(sig))
                 || ("awaitUninterruptibly".equals(name) && "()V".equals(sig))
                 || ("awaitUntil".equals(name) && "(Ljava/util/Date;)V".equals(sig));
@@ -115,5 +121,4 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 
         return "wait".equals(name) && ("()V".equals(sig) || "(J)V".equals(sig) || "(JI)V".equals(sig));
     }
-
 }

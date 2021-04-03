@@ -19,14 +19,13 @@
 
 package de.tobject.findbugs.util;
 
+import edu.umd.cs.findbugs.util.Archive;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
 import javax.annotation.CheckForNull;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
@@ -36,8 +35,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Display;
-
-import edu.umd.cs.findbugs.util.Archive;
 
 /**
  * Eclipse-specific utilities.
@@ -51,26 +48,24 @@ public class Util {
     /**
      * Checks whether the given resource is a Java source file.
      *
-     * @param resource
-     *            The resource to check.
-     * @return <code>true</code> if the given resource is a Java source file,
-     *         <code>false</code> otherwise.
+     * @param resource The resource to check.
+     * @return <code>true</code> if the given resource is a Java source file, <code>false</code>
+     *     otherwise.
      */
     public static boolean isJavaFile(IResource resource) {
         if (resource == null || (resource.getType() != IResource.FILE)) {
             return false;
         }
         String ex = resource.getFileExtension();
-        return "java".equalsIgnoreCase(ex); //$NON-NLS-1$
+        return "java".equalsIgnoreCase(ex); // $NON-NLS-1$
     }
 
     /**
      * Checks whether the given resource is a Java source file.
      *
-     * @param resource
-     *            The resource to check.
-     * @return <code>true</code> if the given resource is a Java source file,
-     *         <code>false</code> otherwise.
+     * @param resource The resource to check.
+     * @return <code>true</code> if the given resource is a Java source file, <code>false</code>
+     *     otherwise.
      */
     public static boolean isJavaArchive(IResource resource) {
         if (resource == null || (resource.getType() != IResource.FILE)) {
@@ -83,44 +78,37 @@ public class Util {
     /**
      * Checks whether the given resource is a Java class file.
      *
-     * @param resource
-     *            The resource to check.
-     * @return <code>true</code> if the given resource is a class file,
-     *         <code>false</code> otherwise.
+     * @param resource The resource to check.
+     * @return <code>true</code> if the given resource is a class file, <code>false</code> otherwise.
      */
     public static boolean isClassFile(IResource resource) {
         if (resource == null || (resource.getType() != IResource.FILE)) {
             return false;
         }
         String ex = resource.getFileExtension();
-        return "class".equalsIgnoreCase(ex); //$NON-NLS-1$
-
+        return "class".equalsIgnoreCase(ex); // $NON-NLS-1$
     }
 
     /**
      * Checks whether the given java element is a Java class file.
      *
-     * @param elt
-     *            The resource to check.
-     * @return <code>true</code> if the given resource is a class file,
-     *         <code>false</code> otherwise.
+     * @param elt The resource to check.
+     * @return <code>true</code> if the given resource is a class file, <code>false</code> otherwise.
      */
     public static boolean isClassFile(IJavaElement elt) {
         if (elt == null) {
             return false;
         }
         return elt instanceof IClassFile || elt instanceof ICompilationUnit;
-
     }
 
     /**
-     * Checks whether the given resource is a Java artifact (i.e. either a Java
-     * source file or a Java class file).
+     * Checks whether the given resource is a Java artifact (i.e. either a Java source file or a Java
+     * class file).
      *
-     * @param resource
-     *            The resource to check.
-     * @return <code>true</code> if the given resource is a Java artifact.
-     *         <code>false</code> otherwise.
+     * @param resource The resource to check.
+     * @return <code>true</code> if the given resource is a Java artifact. <code>false</code>
+     *     otherwise.
      */
     public static boolean isJavaArtifact(IResource resource) {
         if (resource == null || (resource.getType() != IResource.FILE)) {
@@ -135,8 +123,8 @@ public class Util {
     }
 
     /**
-     * A countdown timer which starts to work with the first entry and prints
-     * the results ascending with the overall time.
+     * A countdown timer which starts to work with the first entry and prints the results ascending
+     * with the overall time.
      */
     public static class StopTimer {
         TreeMap<Long, String> stopTimes = new TreeMap<>();
@@ -174,8 +162,7 @@ public class Util {
     /**
      * Copies given string to the system clipboard
      *
-     * @param content
-     *            non null String
+     * @param content non null String
      */
     public static void copyToClipboard(String content) {
         if (content == null) {
@@ -210,26 +197,28 @@ public class Util {
 
     /**
      * Sorts an array of IMarkers based on their underlying resource name
+     *
      * @param markers
      */
     public static void sortIMarkers(IMarker[] markers) {
-        Arrays.sort(markers, new Comparator<IMarker>() {
-            @Override
-            public int compare(IMarker arg0, IMarker arg1) {
-                IResource resource0 = arg0.getResource();
-                IResource resource1 = arg1.getResource();
-                if (resource0 != null && resource1 != null) {
-                    return resource0.getName().compareTo(resource1.getName());
-                }
-                if (resource0 != null && resource1 == null) {
-                    return 1;
-                }
-                if (resource0 == null && resource1 != null) {
-                    return -1;
-                }
-                return 0;
-            }
-        });
+        Arrays.sort(
+                markers,
+                new Comparator<IMarker>() {
+                    @Override
+                    public int compare(IMarker arg0, IMarker arg1) {
+                        IResource resource0 = arg0.getResource();
+                        IResource resource1 = arg1.getResource();
+                        if (resource0 != null && resource1 != null) {
+                            return resource0.getName().compareTo(resource1.getName());
+                        }
+                        if (resource0 != null && resource1 == null) {
+                            return 1;
+                        }
+                        if (resource0 == null && resource1 != null) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                });
     }
-
 }

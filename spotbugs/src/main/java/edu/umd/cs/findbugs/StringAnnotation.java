@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
 /**
  * Bug annotation class for string values.
@@ -57,15 +56,14 @@ public class StringAnnotation implements BugAnnotation {
 
     public static final String FORMAT_SPECIFIER_ROLE = "STRING_FORMAT_SPECIFIER";
 
-    final private String value;
+    private final String value;
 
     private String description;
 
     /**
      * Constructor.
      *
-     * @param value
-     *            the String value
+     * @param value the String value
      */
     public StringAnnotation(String value) {
         this.value = value;
@@ -74,12 +72,10 @@ public class StringAnnotation implements BugAnnotation {
 
     public static StringAnnotation fromRawString(String value) {
         return new StringAnnotation(Strings.escapeLFCRBackSlash(value));
-
     }
 
     public static StringAnnotation fromXMLEscapedString(String value) {
         return new StringAnnotation(Strings.unescapeXml(value));
-
     }
 
     @Override
@@ -165,7 +161,8 @@ public class StringAnnotation implements BugAnnotation {
     }
 
     @Override
-    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
+    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary)
+            throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("value", value);
 
         String role = getDescription();

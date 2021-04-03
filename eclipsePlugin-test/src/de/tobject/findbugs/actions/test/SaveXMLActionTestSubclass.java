@@ -18,13 +18,11 @@
  */
 package de.tobject.findbugs.actions.test;
 
+import de.tobject.findbugs.actions.SaveXmlAction;
 import org.eclipse.swt.widgets.FileDialog;
 
-import de.tobject.findbugs.actions.SaveXmlAction;
-
 /**
- * Test subclass of SaveXmlAction that overrides the opening of the FileDialog
- * for testing purposes.
+ * Test subclass of SaveXmlAction that overrides the opening of the FileDialog for testing purposes.
  *
  * @author Tomás Pollak
  */
@@ -39,5 +37,4 @@ public class SaveXMLActionTestSubclass extends SaveXmlAction {
     protected String openFileDialog(FileDialog dialog) {
         return filePath;
     }
-
 }

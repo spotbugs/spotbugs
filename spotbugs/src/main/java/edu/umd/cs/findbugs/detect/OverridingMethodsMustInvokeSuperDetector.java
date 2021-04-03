@@ -19,11 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Lookup;
@@ -32,12 +27,16 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class OverridingMethodsMustInvokeSuperDetector extends OpcodeStackDetector {
 
     private final BugReporter bugReporter;
 
-    ClassDescriptor mustOverrideAnnotation = DescriptorFactory.createClassDescriptor(OverridingMethodsMustInvokeSuper.class);
+    ClassDescriptor mustOverrideAnnotation =
+            DescriptorFactory.createClassDescriptor(OverridingMethodsMustInvokeSuper.class);
 
     public OverridingMethodsMustInvokeSuperDetector(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -51,7 +50,9 @@ public class OverridingMethodsMustInvokeSuperDetector extends OpcodeStackDetecto
             return;
         }
 
-        XMethod overrides = Lookup.findSuperImplementorAsXMethod(getThisClass(), getMethodName(), getEffectiveMethodSig(), bugReporter);
+        XMethod overrides =
+                Lookup.findSuperImplementorAsXMethod(
+                        getThisClass(), getMethodName(), getEffectiveMethodSig(), bugReporter);
 
         if (overrides == null) {
             return;
@@ -67,8 +68,10 @@ public class OverridingMethodsMustInvokeSuperDetector extends OpcodeStackDetecto
         super.visit(code);
 
         if (!sawCallToSuper) {
-            bugReporter.reportBug(new BugInstance(this, "OVERRIDING_METHODS_MUST_INVOKE_SUPER", NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addString("Method must invoke override method in superclass"));
+            bugReporter.reportBug(
+                    new BugInstance(this, "OVERRIDING_METHODS_MUST_INVOKE_SUPER", NORMAL_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addString("Method must invoke override method in superclass"));
         }
     }
 
@@ -100,7 +103,8 @@ public class OverridingMethodsMustInvokeSuperDetector extends OpcodeStackDetecto
         String calledMethodName = getNameConstantOperand();
         String calledMethodSig = getSigConstantOperand();
 
-        if (calledClassName.equals(getSuperclassName()) && calledMethodName.equals(getMethodName())
+        if (calledClassName.equals(getSuperclassName())
+                && calledMethodName.equals(getMethodName())
                 && calledMethodSig.equals(getEffectiveMethodSig())) {
             sawCallToSuper = true;
         }

@@ -18,6 +18,7 @@
  */
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.view.explorer.BugContentProvider;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.action.IAction;
@@ -27,8 +28,6 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
-
-import de.tobject.findbugs.view.explorer.BugContentProvider;
 
 public class RefreshAction implements IViewActionDelegate {
 
@@ -45,7 +44,8 @@ public class RefreshAction implements IViewActionDelegate {
     public void run(IAction action) {
         if (navigator != null) {
             CommonViewer viewer = navigator.getCommonViewer();
-            BugContentProvider provider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
+            BugContentProvider provider =
+                    BugContentProvider.getProvider(navigator.getNavigatorContentService());
             // provider.setRefreshRequested(true);
 
             Object[] expandedElements = viewer.getExpandedElements();

@@ -19,24 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import java.util.Iterator;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.meta.When;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.generic.ACONST_NULL;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.ConstantPushInstruction;
-import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.INVOKEDYNAMIC;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.LDC;
-import org.apache.bcel.generic.LDC2_W;
-import org.apache.bcel.generic.LocalVariableInstruction;
-
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -51,6 +33,21 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.Global;
+import java.util.Iterator;
+import javax.annotation.CheckForNull;
+import javax.annotation.meta.When;
+import org.apache.bcel.Const;
+import org.apache.bcel.generic.ACONST_NULL;
+import org.apache.bcel.generic.CHECKCAST;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.ConstantPushInstruction;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.LDC;
+import org.apache.bcel.generic.LDC2_W;
+import org.apache.bcel.generic.LocalVariableInstruction;
 
 /**
  * Forward type qualifier dataflow analysis.
@@ -63,22 +60,21 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
     /**
      * Constructor.
      *
-     * @param dfs
-     *            DepthFirstSearch on the analyzed method
-     * @param xmethod
-     *            XMethod for the analyzed method
-     * @param cfg
-     *            CFG of the analyzed method
-     * @param vnaDataflow
-     *            ValueNumberDataflow on the analyzed method
-     * @param cpg
-     *            ConstantPoolGen of the analyzed method
-     * @param typeQualifierValue
-     *            TypeQualifierValue representing type qualifier the analysis
-     *            should check
+     * @param dfs DepthFirstSearch on the analyzed method
+     * @param xmethod XMethod for the analyzed method
+     * @param cfg CFG of the analyzed method
+     * @param vnaDataflow ValueNumberDataflow on the analyzed method
+     * @param cpg ConstantPoolGen of the analyzed method
+     * @param typeQualifierValue TypeQualifierValue representing type qualifier the analysis should
+     *     check
      */
-    public ForwardTypeQualifierDataflowAnalysis(DepthFirstSearch dfs, XMethod xmethod, CFG cfg, ValueNumberDataflow vnaDataflow,
-            ConstantPoolGen cpg, TypeQualifierValue<?> typeQualifierValue) {
+    public ForwardTypeQualifierDataflowAnalysis(
+            DepthFirstSearch dfs,
+            XMethod xmethod,
+            CFG cfg,
+            ValueNumberDataflow vnaDataflow,
+            ConstantPoolGen cpg,
+            TypeQualifierValue<?> typeQualifierValue) {
         super(xmethod, cfg, vnaDataflow, cpg, typeQualifierValue);
         this.dfs = dfs;
     }
@@ -124,7 +120,8 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
             } else if (instruction instanceof ACONST_NULL) {
                 // Model constant values
                 registerPushNullSource(location);
-            } else if ((produces == 1 || produces == 2) && !(instruction instanceof LocalVariableInstruction)
+            } else if ((produces == 1 || produces == 2)
+                    && !(instruction instanceof LocalVariableInstruction)
                     && !(instruction instanceof CHECKCAST)) {
                 // Model other sources
                 registerOtherSource(location);
@@ -150,7 +147,8 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         registerConstantSource(location, null);
     }
 
-    private void registerConstantSource(Location location, @CheckForNull Object constantValue) throws DataflowAnalysisException {
+    private void registerConstantSource(Location location, @CheckForNull Object constantValue)
+            throws DataflowAnalysisException {
 
         When w;
         if (typeQualifierValue.canValidate(constantValue)) {
@@ -171,7 +169,8 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
     private void registerConstantPushSource(Location location) throws DataflowAnalysisException {
 
-        ConstantPushInstruction instruction = (ConstantPushInstruction) location.getHandle().getInstruction();
+        ConstantPushInstruction instruction =
+                (ConstantPushInstruction) location.getHandle().getInstruction();
         Number constantValue = instruction.getValue();
         registerConstantSource(location, constantValue);
     }
@@ -193,14 +192,16 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         }
 
         if (calledXMethod.isResolved()) {
-            TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledXMethod,
-                    typeQualifierValue);
+            TypeQualifierAnnotation tqa =
+                    TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                            calledXMethod, typeQualifierValue);
 
             boolean interproc = false;
             if (TypeQualifierDatabase.USE_DATABASE && tqa == null) {
                 // See if there's an entry in the interprocedural
                 // type qualifier database.
-                TypeQualifierDatabase tqdb = Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
+                TypeQualifierDatabase tqdb =
+                        Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
                 tqa = tqdb.getReturnValue(calledXMethod.getMethodDescriptor(), typeQualifierValue);
                 if (tqa != null) {
                     interproc = true;
@@ -208,23 +209,30 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
             }
 
             When when = (tqa != null) ? tqa.when : When.UNKNOWN;
-            registerTopOfStackSource(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location, when, interproc, null);
+            registerTopOfStackSource(
+                    SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location, when, interproc, null);
         }
     }
 
     private void registerFieldLoadSource(Location location) throws DataflowAnalysisException {
-        XField loadedField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
+        XField loadedField =
+                XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
         if (loadedField.isResolved()) {
-            TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(loadedField,
-                    typeQualifierValue);
+            TypeQualifierAnnotation tqa =
+                    TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                            loadedField, typeQualifierValue);
             When when = (tqa != null) ? tqa.when : When.UNKNOWN;
             registerTopOfStackSource(SourceSinkType.FIELD_LOAD, location, when, false, null);
         }
-
     }
 
-    private void registerTopOfStackSource(SourceSinkType sourceSinkType, Location location, When when, boolean interproc,
-            @CheckForNull Object constantValue) throws DataflowAnalysisException {
+    private void registerTopOfStackSource(
+            SourceSinkType sourceSinkType,
+            Location location,
+            When when,
+            boolean interproc,
+            @CheckForNull Object constantValue)
+            throws DataflowAnalysisException {
         if (when == When.UNKNOWN && !typeQualifierValue.isStrictQualifier()) {
             return;
         }
@@ -251,8 +259,9 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
             // Get the TypeQualifierAnnotation for this parameter
             SourceSinkInfo info;
-            TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xmethod, param,
-                    typeQualifierValue);
+            TypeQualifierAnnotation tqa =
+                    TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                            xmethod, param, typeQualifierValue);
             When when = (tqa != null) ? tqa.when : When.UNKNOWN;
             ValueNumber vn = vnaFrameAtEntry.getValue(slotOffset + firstParamSlot);
             info = new SourceSinkInfo(SourceSinkType.PARAMETER, cfg.getLocationAtEntry(), vn, when);
@@ -265,7 +274,8 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
     }
 
     @Override
-    protected void propagateAcrossPhiNode(TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN) {
+    protected void propagateAcrossPhiNode(
+            TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN) {
         // Forward analysis - propagate from source to target
         fact.propagateAcrossPhiNode(sourceVN, targetVN);
     }

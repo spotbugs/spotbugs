@@ -17,20 +17,6 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import org.dom4j.DocumentException;
-
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -46,20 +32,33 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.model.MovedClassMap;
+import java.io.File;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import org.dom4j.DocumentException;
 
 /**
- * Java main application to compute update a historical bug collection with
- * results from another build/analysis.
+ * Java main application to compute update a historical bug collection with results from another
+ * build/analysis.
  *
  * @author William Pugh
  */
-
 public class Update {
-    static final boolean doMatchFixedBugs = SystemProperties.getBoolean("findbugs.matchFixedBugs", true);
+    static final boolean doMatchFixedBugs =
+            SystemProperties.getBoolean("findbugs.matchFixedBugs", true);
 
     static final int maxResurrection = SystemProperties.getInt("findbugs.maxResurrection", 90);
 
-    private static final String USAGE = "Usage: " + Update.class.getName() + " [options]  data1File data2File data3File ... ";
+    private static final String USAGE =
+            "Usage: " + Update.class.getName() + " [options]  data1File data2File data3File ... ";
 
     private final Map<BugInstance, BugInstance> mapFromNewToOldBug = new IdentityHashMap<>();
 
@@ -90,19 +89,29 @@ public class Update {
         boolean withMessages = false;
 
         UpdateCommandLine() {
-            addSwitch("-overrideRevisionNames", "override revision names for each version with names computed filenames");
-            addSwitch("-noPackageMoves",
+            addSwitch(
+                    "-overrideRevisionNames",
+                    "override revision names for each version with names computed filenames");
+            addSwitch(
+                    "-noPackageMoves",
                     "if a class seems to have moved from one package to another, treat warnings in that class as two separate warnings");
-            addSwitch("-noResurrections",
+            addSwitch(
+                    "-noResurrections",
                     "if an issue had been detected in two versions but not in an intermediate version, record as two separate issues");
             addSwitch("-preciseMatch", "require bug patterns to match precisely");
-            addSwitch("-precisePriorityMatch", "only consider two warnings to be the same if their priorities match exactly");
+            addSwitch(
+                    "-precisePriorityMatch",
+                    "only consider two warnings to be the same if their priorities match exactly");
             addSwitch("-sloppyMatch", "very relaxed matching of bugs");
-            addOption("-output", "output file", "explicit filename for merged results (standard out used if not specified)");
+            addOption(
+                    "-output",
+                    "output file",
+                    "explicit filename for merged results (standard out used if not specified)");
             addOption("-maxRank", "max rank", "maximum rank for issues to store");
 
             addSwitch("-quiet", "don't generate any outout to standard out unless there is an error");
-            addSwitch("-useAnalysisTimes", "use analysis timestamp rather than code timestamp in history");
+            addSwitch(
+                    "-useAnalysisTimes", "use analysis timestamp rather than code timestamp in history");
             addSwitch("-withMessages", "Add bug description");
             addOption("-onlyMostRecent", "number", "only use the last # input files");
         }
@@ -144,7 +153,6 @@ public class Update {
             } else {
                 throw new IllegalArgumentException("no option " + option);
             }
-
         }
 
         @Override
@@ -158,14 +166,14 @@ public class Update {
             } else {
                 throw new IllegalArgumentException("Can't handle option " + option);
             }
-
         }
-
     }
 
-    VersionInsensitiveBugComparator versionInsensitiveBugComparator = new VersionInsensitiveBugComparator();
+    VersionInsensitiveBugComparator versionInsensitiveBugComparator =
+            new VersionInsensitiveBugComparator();
 
     VersionInsensitiveBugComparator fuzzyBugPatternMatcher = new VersionInsensitiveBugComparator();
+
     {
         fuzzyBugPatternMatcher.setExactBugPatternMatch(false);
     }
@@ -183,18 +191,22 @@ public class Update {
     public void removeBaselineBugs(BugCollection baselineCollection, BugCollection bugCollection) {
 
         matchBugs(baselineCollection, bugCollection);
-        matchBugs(SortedBugCollection.BugInstanceComparator.instance, baselineCollection, bugCollection);
+        matchBugs(
+                SortedBugCollection.BugInstanceComparator.instance, baselineCollection, bugCollection);
         matchBugs(versionInsensitiveBugComparator, baselineCollection, bugCollection);
         bugCollection.getCollection().removeIf(matchedOldBugs::containsKey);
-
     }
 
-    public BugCollection mergeCollections(BugCollection origCollection, BugCollection newCollection, boolean copyDeadBugs,
+    public BugCollection mergeCollections(
+            BugCollection origCollection,
+            BugCollection newCollection,
+            boolean copyDeadBugs,
             boolean incrementalAnalysis) {
 
         for (BugInstance b : newCollection) {
             if (b.isDead()) {
-                throw new IllegalArgumentException("Can't merge bug collections if the newer collection contains dead bugs: " + b);
+                throw new IllegalArgumentException(
+                        "Can't merge bug collections if the newer collection contains dead bugs: " + b);
             }
         }
 
@@ -256,8 +268,9 @@ public class Update {
                         ClassAnnotation classBugFoundIn = bug.getPrimaryClass();
                         String className = classBugFoundIn.getClassName();
                         String sourceFile = classBugFoundIn.getSourceFileName();
-                        boolean fixed = sourceFile != null && analyzedSourceFiles.contains(sourceFile)
-                                || newCollection.getProjectStats().getClassStats(className) != null;
+                        boolean fixed =
+                                sourceFile != null && analyzedSourceFiles.contains(sourceFile)
+                                        || newCollection.getProjectStats().getClassStats(className) != null;
                         if (fixed) {
                             if (!copyDeadBugs) {
                                 continue;
@@ -272,8 +285,11 @@ public class Update {
                         }
 
                         if (newBug.isDead() && newBug.getFirstVersion() > newBug.getLastVersion()) {
-                            throw new IllegalStateException("Illegal Version range: " + newBug.getFirstVersion() + ".."
-                                    + newBug.getLastVersion());
+                            throw new IllegalStateException(
+                                    "Illegal Version range: "
+                                            + newBug.getFirstVersion()
+                                            + ".."
+                                            + newBug.getLastVersion());
                         }
                         resultCollection.add(newBug, false);
                     }
@@ -306,8 +322,8 @@ public class Update {
                 }
             }
             if (newBug.isDead()) {
-                throw new IllegalStateException("Illegal Version range: " + newBug.getFirstVersion() + ".."
-                        + newBug.getLastVersion());
+                throw new IllegalStateException(
+                        "Illegal Version range: " + newBug.getFirstVersion() + ".." + newBug.getLastVersion());
             }
             int oldSize = resultCollection.getCollection().size();
             resultCollection.add(newBug, false);
@@ -318,21 +334,18 @@ public class Update {
         }
         /*
         if (false && verbose) {
-            System.out.println(origCollection.getCollection().size() + " orig bugs, " + newCollection.getCollection().size()
-                    + " new bugs");
-            System.out.println("Bugs: " + oldBugs + " old, " + deadBugInDeadCode + " in removed code, "
-                    + (newlyDeadBugs - deadBugInDeadCode) + " died, " + persistantBugs + " persist, " + addedInNewCode
-                    + " in new code, " + (addedBugs - addedInNewCode) + " added");
-            System.out.println(resultCollection.getCollection().size() + " resulting bugs");
+        System.out.println(origCollection.getCollection().size() + " orig bugs, " + newCollection.getCollection().size()
+        + " new bugs");
+        System.out.println("Bugs: " + oldBugs + " old, " + deadBugInDeadCode + " in removed code, "
+        + (newlyDeadBugs - deadBugInDeadCode) + " died, " + persistantBugs + " persist, " + addedInNewCode
+        + " in new code, " + (addedBugs - addedInNewCode) + " added");
+        System.out.println(resultCollection.getCollection().size() + " resulting bugs");
         }
          */
         return resultCollection;
-
     }
 
-    /**
-     * @param newCollection
-     */
+    /** @param newCollection */
     private void discardUnwantedBugs(BugCollection newCollection) {
         BugRanker.trimToMaxRank(newCollection, maxRank);
         if (sloppyMatch) {
@@ -347,12 +360,12 @@ public class Update {
 
     /*
     private static int size(BugCollection b) {
-        int count = 0;
-        for (Iterator<BugInstance> i = b.iterator(); i.hasNext();) {
-            i.next();
-            count++;
-        }
-        return count;
+    int count = 0;
+    for (Iterator<BugInstance> i = b.iterator(); i.hasNext();) {
+    i.next();
+    count++;
+    }
+    return count;
     }
      */
 
@@ -363,9 +376,14 @@ public class Update {
         matchedOldBugs.clear();
 
         matchBugs(versionInsensitiveBugComparator, origCollection, newCollection);
-        matchBugs(versionInsensitiveBugComparator, origCollection, newCollection, MatchOldBugs.IF_CLASS_NOT_SEEN_UNTIL_NOW);
+        matchBugs(
+                versionInsensitiveBugComparator,
+                origCollection,
+                newCollection,
+                MatchOldBugs.IF_CLASS_NOT_SEEN_UNTIL_NOW);
         if (doMatchFixedBugs) {
-            matchBugs(versionInsensitiveBugComparator, origCollection, newCollection, MatchOldBugs.ALWAYS);
+            matchBugs(
+                    versionInsensitiveBugComparator, origCollection, newCollection, MatchOldBugs.ALWAYS);
         }
 
         if (!preciseMatch) {
@@ -422,7 +440,8 @@ public class Update {
         int commonPrefix = firstPathParts.length;
         for (int i = argCount + 1; i <= (args.length - 1); i++) {
 
-            commonPrefix = Math.min(commonPrefix, lengthCommonPrefix(firstPathParts, getFilePathParts(args[i])));
+            commonPrefix =
+                    Math.min(commonPrefix, lengthCommonPrefix(firstPathParts, getFilePathParts(args[i])));
         }
 
         String origFilename = args[argCount++];
@@ -455,7 +474,8 @@ public class Update {
             }
         }
 
-        if (commandLine.overrideRevisionNames || origCollection.getReleaseName() == null
+        if (commandLine.overrideRevisionNames
+                || origCollection.getReleaseName() == null
                 || origCollection.getReleaseName().length() == 0) {
 
             if (commonPrefix >= firstPathParts.length) {
@@ -477,7 +497,8 @@ public class Update {
 
         for (BugInstance bug : origCollection.getCollection()) {
             if (bug.getLastVersion() >= 0 && bug.getFirstVersion() > bug.getLastVersion()) {
-                throw new IllegalStateException("Illegal Version range: " + bug.getFirstVersion() + ".." + bug.getLastVersion());
+                throw new IllegalStateException(
+                        "Illegal Version range: " + bug.getFirstVersion() + ".." + bug.getLastVersion());
             }
         }
 
@@ -501,7 +522,8 @@ public class Update {
                 }
                 newCollection.readXML(newFilename);
 
-                if (commandLine.overrideRevisionNames || newCollection.getReleaseName() == null
+                if (commandLine.overrideRevisionNames
+                        || newCollection.getReleaseName() == null
                         || newCollection.getReleaseName().length() == 0) {
                     newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
                 }
@@ -529,11 +551,11 @@ public class Update {
         }
         /*
         if (false) {
-            for (Iterator<BugInstance> i = origCollection.iterator(); i.hasNext();) {
-                if (!resurrected.contains(i.next().getInstanceKey())) {
-                    i.remove();
-                }
-            }
+        for (Iterator<BugInstance> i = origCollection.iterator(); i.hasNext();) {
+        if (!resurrected.contains(i.next().getInstanceKey())) {
+        i.remove();
+        }
+        }
         }
          */
         origCollection.setWithMessages(commandLine.withMessages);
@@ -545,7 +567,6 @@ public class Update {
         } else {
             origCollection.writeXML(System.out);
         }
-
     }
 
     private static int lengthCommonPrefix(String[] string, String[] string2) {
@@ -562,11 +583,12 @@ public class Update {
 
         newer.setFirstVersion(older.getFirstVersion());
         newer.setIntroducedByChangeOfExistingClass(older.isIntroducedByChangeOfExistingClass());
-
     }
 
     enum MatchOldBugs {
-        IF_LIVE, IF_CLASS_NOT_SEEN_UNTIL_NOW, ALWAYS;
+        IF_LIVE,
+        IF_CLASS_NOT_SEEN_UNTIL_NOW,
+        ALWAYS;
 
         boolean match(BugInstance b) {
             switch (this) {
@@ -581,17 +603,20 @@ public class Update {
         }
     }
 
-    private void matchBugs(Comparator<BugInstance> bugInstanceComparator, BugCollection origCollection,
+    private void matchBugs(
+            Comparator<BugInstance> bugInstanceComparator,
+            BugCollection origCollection,
             BugCollection newCollection) {
         matchBugs(bugInstanceComparator, origCollection, newCollection, MatchOldBugs.IF_LIVE);
-
     }
 
-    private void matchBugs(Comparator<BugInstance> bugInstanceComparator, BugCollection origCollection,
-            BugCollection newCollection, MatchOldBugs matchOld) {
+    private void matchBugs(
+            Comparator<BugInstance> bugInstanceComparator,
+            BugCollection origCollection,
+            BugCollection newCollection,
+            MatchOldBugs matchOld) {
 
-        TreeMap<BugInstance, LinkedList<BugInstance>> set = new TreeMap<>(
-                bugInstanceComparator);
+        TreeMap<BugInstance, LinkedList<BugInstance>> set = new TreeMap<>(bugInstanceComparator);
         //        int oldBugs = 0;
         //        int newBugs = 0;
         //        int matchedBugs = 0;
@@ -602,7 +627,6 @@ public class Update {
                     LinkedList<BugInstance> q = set.computeIfAbsent(bug, k -> new LinkedList<>());
                     q.add(bug);
                 }
-
             }
         }
         long newVersion = origCollection.getCurrentAppVersion().getSequenceNumber() + 1;
@@ -619,8 +643,9 @@ public class Update {
                     BugInstance matchedBug = i.next();
 
                     if (matchedBug.isDead()) {
-                        if (noResurrections || matchedBug.isRemovedByChangeOfPersistingClass()
-                                && newVersion - matchedBug.getLastVersion() > maxResurrection) {
+                        if (noResurrections
+                                || matchedBug.isRemovedByChangeOfPersistingClass()
+                                        && newVersion - matchedBug.getLastVersion() > maxResurrection) {
                             continue;
                         }
                         resurrected.add(bug.getInstanceKey());
@@ -642,5 +667,4 @@ public class Update {
             }
         }
     }
-
 }

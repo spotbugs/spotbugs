@@ -19,14 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.NoSuchElementException;
-
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
@@ -40,6 +32,13 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.engine.ClassParser;
 import edu.umd.cs.findbugs.classfile.engine.ClassParserInterface;
 import edu.umd.cs.findbugs.io.IO;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.NoSuchElementException;
 
 /**
  * Implementation of ICodeBase for a single classfile.
@@ -233,11 +232,10 @@ public class SingleFileCodeBase implements IScannableCodeBase {
     }
 
     /**
-     * Get the resource name of the single file. We have to open the file and
-     * parse the constant pool in order to find this out.
+     * Get the resource name of the single file. We have to open the file and parse the constant pool
+     * in order to find this out.
      *
-     * @return the resource name (e.g., "java/lang/String.class" if the class is
-     *         java.lang.String)
+     * @return the resource name (e.g., "java/lang/String.class" if the class is java.lang.String)
      */
     String getResourceName() {
         if (!resourceNameKnown) {
@@ -258,12 +256,14 @@ public class SingleFileCodeBase implements IScannableCodeBase {
         return resourceName;
     }
 
-    ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
+    ClassDescriptor getClassDescriptor()
+            throws ResourceNotFoundException, InvalidClassFileFormatException {
         DataInputStream in = null;
         try {
             try {
                 in = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
-                ClassParserInterface classParser = new ClassParser(in, null, new SingleFileCodeBaseEntry(this));
+                ClassParserInterface classParser =
+                        new ClassParser(in, null, new SingleFileCodeBaseEntry(this));
                 ClassNameAndSuperclassInfo.Builder builder = new ClassNameAndSuperclassInfo.Builder();
 
                 classParser.parse(builder);
@@ -283,8 +283,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
     /**
      * Return the number of bytes in the file.
      *
-     * @return the number of bytes in the file, or -1 if the file's length can't
-     *         be determined
+     * @return the number of bytes in the file, or -1 if the file's length can't be determined
      */
     int getNumBytes() {
         File file = new File(fileName);

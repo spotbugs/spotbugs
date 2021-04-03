@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -30,6 +28,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import org.apache.bcel.Const;
 
 public class IntCast2LongAsInstant extends OpcodeStackDetector {
 
@@ -37,12 +36,13 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
 
     int lastConstantForSIPUSH;
 
-    TrainLongInstantfParams.LongInstantParameterDatabase database = new TrainLongInstantfParams.LongInstantParameterDatabase();
+    TrainLongInstantfParams.LongInstantParameterDatabase database =
+            new TrainLongInstantfParams.LongInstantParameterDatabase();
 
     public IntCast2LongAsInstant(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        AnalysisContext.currentAnalysisContext().loadPropertyDatabaseFromResource(database, "longInstant.db",
-                "long instant database");
+        AnalysisContext.currentAnalysisContext()
+                .loadPropertyDatabaseFromResource(database, "longInstant.db", "long instant database");
     }
 
     @Override
@@ -50,7 +50,10 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
         if (seen == Const.SIPUSH) {
             lastConstantForSIPUSH = getIntConstant();
         }
-        if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL || seen == Const.INVOKESTATIC) {
+        if (seen == Const.INVOKEINTERFACE
+                || seen == Const.INVOKEVIRTUAL
+                || seen == Const.INVOKESPECIAL
+                || seen == Const.INVOKESTATIC) {
             String signature = getSigConstantOperand();
 
             int numberArguments = PreorderVisitor.getNumberArguments(signature);
@@ -62,22 +65,28 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
                     if (property != null && property.hasProperty(i)) {
                         int priority = NORMAL_PRIORITY;
 
-                        if (getPrevOpcode(1) == Const.I2L && getPrevOpcode(2) == Const.IMUL && getPrevOpcode(3) == Const.SIPUSH
+                        if (getPrevOpcode(1) == Const.I2L
+                                && getPrevOpcode(2) == Const.IMUL
+                                && getPrevOpcode(3) == Const.SIPUSH
                                 && lastConstantForSIPUSH == 1000) {
                             priority = HIGH_PRIORITY;
 
-                        } else if (getPrevOpcode(1) == Const.I2L && getPrevOpcode(2) == Const.IMUL && getPrevOpcode(4) == Const.SIPUSH
+                        } else if (getPrevOpcode(1) == Const.I2L
+                                && getPrevOpcode(2) == Const.IMUL
+                                && getPrevOpcode(4) == Const.SIPUSH
                                 && lastConstantForSIPUSH == 1000) {
                             priority = HIGH_PRIORITY;
                         }
-                        BugInstance bug = new BugInstance(this, "ICAST_INT_2_LONG_AS_INSTANT", priority).addClassAndMethod(this)
-                                .addCalledMethod(this).addValueSource(item, this).addSourceLine(this);
+                        BugInstance bug =
+                                new BugInstance(this, "ICAST_INT_2_LONG_AS_INSTANT", priority)
+                                        .addClassAndMethod(this)
+                                        .addCalledMethod(this)
+                                        .addValueSource(item, this)
+                                        .addSourceLine(this);
                         bugReporter.reportBug(bug);
                     }
-
                 }
             }
-
         }
     }
 
@@ -88,12 +97,10 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
      */
     @Override
     public void report() {
-
     }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
     }
-
 }

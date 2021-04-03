@@ -22,14 +22,10 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.Nonnull;
-
 import org.dom4j.DocumentException;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class ExcludingHashesBugReporter extends DelegatingBugReporter {
 
     Set<String> excludedHashes = new HashSet<>();
@@ -39,7 +35,8 @@ public class ExcludingHashesBugReporter extends DelegatingBugReporter {
      * @throws DocumentException
      * @throws IOException
      */
-    public ExcludingHashesBugReporter(BugReporter delegate, String baseline) throws IOException, DocumentException {
+    public ExcludingHashesBugReporter(BugReporter delegate, String baseline)
+            throws IOException, DocumentException {
         super(delegate);
         addToExcludedInstanceHashes(excludedHashes, baseline);
     }
@@ -49,8 +46,8 @@ public class ExcludingHashesBugReporter extends DelegatingBugReporter {
      * @throws IOException
      * @throws DocumentException
      */
-    public static void addToExcludedInstanceHashes(Set<String> instanceHashesToExclude, String baseline) throws IOException,
-            DocumentException {
+    public static void addToExcludedInstanceHashes(
+            Set<String> instanceHashesToExclude, String baseline) throws IOException, DocumentException {
         Project project = new Project();
         BugCollection origCollection;
         origCollection = new SortedBugCollection(project);

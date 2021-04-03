@@ -19,52 +19,39 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
-
 /**
- * Class to launch the appropriate textUI or GUI. This class is the Main-Class
- * in the findbugs.jar manifest, and is responsible for running an appropriate
- * main() method.
+ * Class to launch the appropriate textUI or GUI. This class is the Main-Class in the findbugs.jar
+ * manifest, and is responsible for running an appropriate main() method.
  *
  * @author Bill Pugh
  * @author David Hovemeyer
  */
 public class LaunchAppropriateUI {
-    /**
-     * UI code for the text (command line) UI.
-     */
+    /** UI code for the text (command line) UI. */
     public static final int TEXTUI = 0;
 
-    /**
-     * UI code for the old Swing GUI. This is deprecated now.
-     */
+    /** UI code for the old Swing GUI. This is deprecated now. */
     public static final int GUI1 = 1;
 
-    /**
-     * UI code for the new Swing GUI.
-     */
+    /** UI code for the new Swing GUI. */
     public static final int GUI2 = 2;
 
-    /**
-     * UI code for displaying command line help.
-     */
+    /** UI code for displaying command line help. */
     public static final int SHOW_HELP = 1000;
 
-    /**
-     * UI code for displaying command line version information.
-     */
+    /** UI code for displaying command line version information. */
     public static final int SHOW_VERSION = 1001;
 
-    /**
-     * Map of UI name strings to integer UI codes.
-     */
+    /** Map of UI name strings to integer UI codes. */
     @StaticConstant
     public static final Map<String, Integer> uiNameToCodeMap;
+
     static {
         uiNameToCodeMap = new HashMap<>();
         uiNameToCodeMap.put("textui", TEXTUI);
@@ -82,8 +69,7 @@ public class LaunchAppropriateUI {
     /**
      * Constructor.
      *
-     * @param args
-     *            command line arguments
+     * @param args command line arguments
      */
     public LaunchAppropriateUI(String[] args) {
         this.args = args;
@@ -113,34 +99,30 @@ public class LaunchAppropriateUI {
             Method mainMethod = launchClass.getMethod("main", args.getClass());
             mainMethod.invoke(null, (Object) args);
         }
-
     }
 
     /**
      * Find out what UI should be launched.
      *
-     * <p>
-     * First, we check the command line arguments to see if the first argument
-     * specifies the UI (e.g., "-textui", "-gui", etc.)
+     * <p>First, we check the command line arguments to see if the first argument specifies the UI
+     * (e.g., "-textui", "-gui", etc.)
      *
-     * <p>
-     * If the first command line argument does not specify the UI, then we check
-     * the <code>findbugs.launchUI</code> system property to one of the
-     * following values:
+     * <p>If the first command line argument does not specify the UI, then we check the <code>
+     * findbugs.launchUI</code> system property to one of the following values:
      *
      * <ul>
-     * <li>-Dfindbugs.launchUI=textui for textui,</li>
-     * <li>-Dfindbugs.launchUI=gui1 for the original swing gui,</li>
-     * <li>-Dfindbugs.launchUI=gui2 for the new swing gui,</li>
-     * <li>-Dfindbugs.launchUI=version for the ShowVersion main() method, or</li>
-     * <li>-Dfindbugs.launchUI=help for the ShowHelp main() method.</li>
+     *   <li>-Dfindbugs.launchUI=textui for textui,
+     *   <li>-Dfindbugs.launchUI=gui1 for the original swing gui,
+     *   <li>-Dfindbugs.launchUI=gui2 for the new swing gui,
+     *   <li>-Dfindbugs.launchUI=version for the ShowVersion main() method, or
+     *   <li>-Dfindbugs.launchUI=help for the ShowHelp main() method.
      * </ul>
      *
-     * Any other value (or the absence of any value) will not change the default
-     * behavior, which is to launch the newer "gui2" on systems that support it.
+     * Any other value (or the absence of any value) will not change the default behavior, which is to
+     * launch the newer "gui2" on systems that support it.
      *
-     * @return an integer UI code: TEXTUI, GUI1, GUI2, SHOW_VERSION, SHOW_HELP,
-     *         or possibly another user-set int value
+     * @return an integer UI code: TEXTUI, GUI1, GUI2, SHOW_VERSION, SHOW_HELP, or possibly another
+     *     user-set int value
      */
     private int getLaunchProperty() {
         // See if the first command line argument specifies the UI.
@@ -189,8 +171,7 @@ public class LaunchAppropriateUI {
     /**
      * main() method. This is where execution of FindBugs (any UI) starts.
      *
-     * @param args
-     *            command line arguments
+     * @param args command line arguments
      * @throws java.lang.Exception
      */
     public static void main(String args[]) throws Exception {

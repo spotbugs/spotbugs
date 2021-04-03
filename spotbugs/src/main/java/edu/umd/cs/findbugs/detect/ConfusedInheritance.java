@@ -19,15 +19,14 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 
 public class ConfusedInheritance extends PreorderVisitor implements Detector {
 
@@ -50,8 +49,12 @@ public class ConfusedInheritance extends PreorderVisitor implements Detector {
     @Override
     public void visitField(Field obj) {
         if (obj.isProtected()) {
-            bugReporter.reportBug(new BugInstance(this, "CI_CONFUSED_INHERITANCE", LOW_PRIORITY).addClass(cls).addField(
-                    new FieldAnnotation(cls.getClassName(), obj.getName(), obj.getSignature(), obj.isStatic())));
+            bugReporter.reportBug(
+                    new BugInstance(this, "CI_CONFUSED_INHERITANCE", LOW_PRIORITY)
+                            .addClass(cls)
+                            .addField(
+                                    new FieldAnnotation(
+                                            cls.getClassName(), obj.getName(), obj.getSignature(), obj.isStatic())));
         }
     }
 

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.io.File;
@@ -30,7 +31,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.TreeSet;
-
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -41,22 +41,43 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
-import edu.umd.cs.findbugs.SystemProperties;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class TestDesktopIntegration extends JPanel {
 
-    private static String[] propertyNames = { "java.version", "java.vendor", "java.vendor.url", "java.home",
-        "java.vm.specification.version", "java.vm.specification.vendor", "java.vm.specification.name", "java.vm.version",
-        "java.vm.vendor", "java.vm.name", "java.specification.version", "java.specification.vendor",
-        "java.specification.name", "java.class.version", "java.class.path", "java.library.path", "java.io.tmpdir",
-        "java.compiler", "java.ext.dirs", "os.name", "os.arch", "os.version", "file.separator", "path.separator",
-        "line.separator", "user.name", "user.home", "user.dir" };
+    private static String[] propertyNames = {
+        "java.version",
+        "java.vendor",
+        "java.vendor.url",
+        "java.home",
+        "java.vm.specification.version",
+        "java.vm.specification.vendor",
+        "java.vm.specification.name",
+        "java.vm.version",
+        "java.vm.vendor",
+        "java.vm.name",
+        "java.specification.version",
+        "java.specification.vendor",
+        "java.specification.name",
+        "java.class.version",
+        "java.class.path",
+        "java.library.path",
+        "java.io.tmpdir",
+        "java.compiler",
+        "java.ext.dirs",
+        "os.name",
+        "os.arch",
+        "os.version",
+        "file.separator",
+        "path.separator",
+        "line.separator",
+        "user.name",
+        "user.home",
+        "user.dir"
+    };
 
     public static void main(String args[]) throws Exception {
-        String u = SystemProperties.getProperty("findbugs.browserTestURL", "http://findbugs.sourceforge.net/");
+        String u =
+                SystemProperties.getProperty("findbugs.browserTestURL", "http://findbugs.sourceforge.net/");
         url = new URL(u);
 
         SwingUtilities.invokeLater(() -> createAndShowGUI());
@@ -84,7 +105,6 @@ public class TestDesktopIntegration extends JPanel {
 
         @Override
         public void close() throws IOException {
-
         }
 
         /*
@@ -94,7 +114,6 @@ public class TestDesktopIntegration extends JPanel {
          */
         @Override
         public void flush() throws IOException {
-
         }
 
         /*
@@ -121,8 +140,11 @@ public class TestDesktopIntegration extends JPanel {
         add(top, SHOW_CONSOLE ? BorderLayout.NORTH : BorderLayout.CENTER);
 
         if (SHOW_CONSOLE) {
-            JScrollPane scrollPane = new JScrollPane(console, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+            JScrollPane scrollPane =
+                    new JScrollPane(
+                            console,
+                            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
             console.setEditable(false);
             console.setLineWrap(true);
             add(scrollPane);
@@ -131,20 +153,21 @@ public class TestDesktopIntegration extends JPanel {
         }
         if (LaunchBrowser.desktopFeasible()) {
             JButton desktop = new JButton("Use java.awt.Desktop");
-            desktop.addActionListener(e -> {
-                try {
+            desktop.addActionListener(
+                    e -> {
+                        try {
 
-                    writer.println("Launch via desktop of " + url);
-                    LaunchBrowser.viaDesktop(url.toURI());
-                    writer.println("Launch via desktop completed");
+                            writer.println("Launch via desktop of " + url);
+                            LaunchBrowser.viaDesktop(url.toURI());
+                            writer.println("Launch via desktop completed");
 
-                } catch (Throwable e1) {
-                    writer.println("Launch via desktop failed");
+                        } catch (Throwable e1) {
+                            writer.println("Launch via desktop failed");
 
-                    e1.printStackTrace(writer);
-                }
-                writer.flush();
-            });
+                            e1.printStackTrace(writer);
+                        }
+                        writer.flush();
+                    });
             top.add(desktop);
         } else {
             writer.println("Desktop unavailable");
@@ -152,42 +175,44 @@ public class TestDesktopIntegration extends JPanel {
         }
         if (LaunchBrowser.webstartFeasible()) {
             JButton jnlp = new JButton("Use jnlp");
-            jnlp.addActionListener(e -> {
-                try {
+            jnlp.addActionListener(
+                    e -> {
+                        try {
 
-                    writer.println("Launch via jnlp of " + url);
-                    JavaWebStart.viaWebStart(url);
-                    writer.println("Launch via jnlp completed");
+                            writer.println("Launch via jnlp of " + url);
+                            JavaWebStart.viaWebStart(url);
+                            writer.println("Launch via jnlp completed");
 
-                } catch (Throwable e1) {
-                    writer.println("Launch via jnlp failed");
+                        } catch (Throwable e1) {
+                            writer.println("Launch via jnlp failed");
 
-                    e1.printStackTrace(writer);
-                }
-                writer.flush();
-            });
+                            e1.printStackTrace(writer);
+                        }
+                        writer.flush();
+                    });
             top.add(jnlp);
         }
 
         JButton exec = new JButton("exec " + LaunchBrowser.execCommand);
         top.add(exec);
         if (LaunchBrowser.launchViaExec) {
-            exec.addActionListener(e -> {
-                try {
-                    writer.println("Launch via exec " + LaunchBrowser.execCommand);
-                    writer.println("url: " + url);
-                    Process p = LaunchBrowser.launchViaExec(url);
-                    Thread.sleep(3000);
-                    int exitValue = p.exitValue();
-                    writer.println("Exit code: " + exitValue);
-                    writer.println("Launch via exec completed");
+            exec.addActionListener(
+                    e -> {
+                        try {
+                            writer.println("Launch via exec " + LaunchBrowser.execCommand);
+                            writer.println("url: " + url);
+                            Process p = LaunchBrowser.launchViaExec(url);
+                            Thread.sleep(3000);
+                            int exitValue = p.exitValue();
+                            writer.println("Exit code: " + exitValue);
+                            writer.println("Launch via exec completed");
 
-                } catch (Throwable e1) {
-                    writer.println("Launch via exec threw exception");
-                    e1.printStackTrace(writer);
-                }
-                writer.flush();
-            });
+                        } catch (Throwable e1) {
+                            writer.println("Launch via exec threw exception");
+                            e1.printStackTrace(writer);
+                        }
+                        writer.flush();
+                    });
 
         } else {
             exec.setEnabled(false);
@@ -196,25 +221,26 @@ public class TestDesktopIntegration extends JPanel {
         if (SHOW_FILE_CHOOSER) {
             JButton chooseFile = new JButton("Choose file");
             top.add(chooseFile);
-            chooseFile.addActionListener(e -> {
-                final JFileChooser fc = new JFileChooser();
-                int retvel = fc.showOpenDialog(TestDesktopIntegration.this);
-                if (retvel == JFileChooser.APPROVE_OPTION) {
-                    File file = fc.getSelectedFile();
-                    try {
-                        writer.println("File chosen:");
-                        writer.println("File path: " + file.getAbsolutePath());
-                        writer.println("File canonical path: " + file.getCanonicalPath());
+            chooseFile.addActionListener(
+                    e -> {
+                        final JFileChooser fc = new JFileChooser();
+                        int retvel = fc.showOpenDialog(TestDesktopIntegration.this);
+                        if (retvel == JFileChooser.APPROVE_OPTION) {
+                            File file = fc.getSelectedFile();
+                            try {
+                                writer.println("File chosen:");
+                                writer.println("File path: " + file.getAbsolutePath());
+                                writer.println("File canonical path: " + file.getCanonicalPath());
 
-                        writer.println("File uri: " + file.toURI());
+                                writer.println("File uri: " + file.toURI());
 
-                        writer.println("File url: " + file.toURI().toURL());
-                    } catch (Exception e1) {
-                        e1.printStackTrace(writer);
-                    }
-                    writer.flush();
-                }
-            });
+                                writer.println("File url: " + file.toURI().toURL());
+                            } catch (Exception e1) {
+                                e1.printStackTrace(writer);
+                            }
+                            writer.flush();
+                        }
+                    });
         }
 
         if (SHOW_CONSOLE) {
@@ -237,7 +263,8 @@ public class TestDesktopIntegration extends JPanel {
 
             try {
                 Class<?> serviceManagerClass = Class.forName("javax.jnlp.ServiceManager");
-                Method getServiceNamesMethod = serviceManagerClass.getMethod("getServiceNames", new Class[] {});
+                Method getServiceNamesMethod =
+                        serviceManagerClass.getMethod("getServiceNames", new Class[] {});
                 Method lookupMethod = serviceManagerClass.getMethod("lookup", new Class[] { String.class });
                 String[] serviceNames = (String[]) getServiceNamesMethod.invoke(null, new Object[] {});
                 writer.println("JNLP service providers:");
@@ -248,7 +275,6 @@ public class TestDesktopIntegration extends JPanel {
             } catch (Exception e) {
                 writer.println("unable to get JNLP service provider:");
                 e.printStackTrace(writer);
-
             }
 
             String sampleURL = System.getProperty("findbugs.sampleURL");
@@ -262,9 +288,7 @@ public class TestDesktopIntegration extends JPanel {
                 } catch (Throwable e) {
                     e.printStackTrace(writer);
                 }
-
             }
         }
     }
-
 }

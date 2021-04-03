@@ -19,18 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.net.URL;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.annotation.WillClose;
-import javax.annotation.WillCloseWhenClosed;
-import javax.annotation.WillNotClose;
-
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -62,12 +50,20 @@ import edu.umd.cs.findbugs.util.RegexStringMatcher;
 import edu.umd.cs.findbugs.util.SplitCamelCaseIdentifier;
 import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
 import edu.umd.cs.findbugs.util.Values;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import javax.annotation.WillClose;
+import javax.annotation.WillCloseWhenClosed;
+import javax.annotation.WillNotClose;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
 /**
- * Build the ObligationPolicyDatabase used by ObligationAnalysis. We preload the
- * database with some known resources types needing to be released, and augment
- * the database with additional entries discovered through scanning referenced
- * classes for annotations.
+ * Build the ObligationPolicyDatabase used by ObligationAnalysis. We preload the database with some
+ * known resources types needing to be released, and augment the database with additional entries
+ * discovered through scanning referenced classes for annotations.
  *
  * @author David Hovemeyer
  */
@@ -98,12 +94,13 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         protected String encodeProperty(String property) {
             return property;
         }
-
     }
 
-    public static final boolean INFER_CLOSE_METHODS = SystemProperties.getBoolean("oa.inferclose", true);
+    public static final boolean INFER_CLOSE_METHODS =
+            SystemProperties.getBoolean("oa.inferclose", true);
 
-    private static final boolean DEBUG_ANNOTATIONS = SystemProperties.getBoolean("oa.debug.annotations");
+    private static final boolean DEBUG_ANNOTATIONS =
+            SystemProperties.getBoolean("oa.debug.annotations");
 
     private static final boolean DUMP_DB = SystemProperties.getBoolean("oa.dumpdb");
 
@@ -124,8 +121,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
     private final ClassDescriptor dischargesObligation;
 
     /**
-     * Did we see any WillClose, WillNotClose, or WillCloseWhenClosed
-     * annotations in application code?
+     * Did we see any WillClose, WillNotClose, or WillCloseWhenClosed annotations in application code?
      */
     private boolean sawAnnotationsInApplicationCode;
 
@@ -152,10 +148,13 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                     if (obligation == null) {
                         obligation = database.getFactory().addObligation(v[2]);
                     }
-                    database.addEntry(new MatchMethodEntry(e.getKey(), ObligationPolicyDatabaseActionType.valueOf(v[0]),
-                            ObligationPolicyDatabaseEntryType.valueOf(v[1]), obligation));
+                    database.addEntry(
+                            new MatchMethodEntry(
+                                    e.getKey(),
+                                    ObligationPolicyDatabaseActionType.valueOf(v[0]),
+                                    ObligationPolicyDatabaseEntryType.valueOf(v[1]),
+                                    obligation));
                 }
-
             }
         } catch (Exception e) {
             AnalysisContext.logError("Unable to read " + u, e);
@@ -171,21 +170,30 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
 
         // Is this class an obligation type?
-        Obligation thisClassObligation = database.getFactory().getObligationByType(xclass.getClassDescriptor());
+        Obligation thisClassObligation =
+                database.getFactory().getObligationByType(xclass.getClassDescriptor());
 
         // Scan methods for uses of obligation-related annotations
         for (XMethod xmethod : xclass.getXMethods()) {
             // Is this method marked with @CreatesObligation?
             if (thisClassObligation != null) {
                 if (xmethod.getAnnotation(createsObligation) != null) {
-                    database.addEntry(new MatchMethodEntry(xmethod, ObligationPolicyDatabaseActionType.ADD,
-                            ObligationPolicyDatabaseEntryType.STRONG, thisClassObligation));
+                    database.addEntry(
+                            new MatchMethodEntry(
+                                    xmethod,
+                                    ObligationPolicyDatabaseActionType.ADD,
+                                    ObligationPolicyDatabaseEntryType.STRONG,
+                                    thisClassObligation));
                 }
 
                 // Is this method marked with @DischargesObligation?
                 if (xmethod.getAnnotation(dischargesObligation) != null) {
-                    database.addEntry(new MatchMethodEntry(xmethod, ObligationPolicyDatabaseActionType.DEL,
-                            ObligationPolicyDatabaseEntryType.STRONG, thisClassObligation));
+                    database.addEntry(
+                            new MatchMethodEntry(
+                                    xmethod,
+                                    ObligationPolicyDatabaseActionType.DEL,
+                                    ObligationPolicyDatabaseEntryType.STRONG,
+                                    thisClassObligation));
                 }
             }
 
@@ -193,9 +201,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         }
     }
 
-    /**
-     * @param xmethod
-     */
+    /** @param xmethod */
     public void addObligations(XMethod xmethod) {
         // See what obligation parameters there are
         Obligation[] paramObligationTypes = database.getFactory().getParameterObligationTypes(xmethod);
@@ -224,8 +230,8 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                     //
                     handleWillCloseWhenClosed(xmethod, obligationType);
                 } else if (xmethod.getParameterAnnotation(i, willClose) != null) {
-                    addParameterDeletesObligationDatabaseEntry(xmethod, obligationType,
-                            ObligationPolicyDatabaseEntryType.STRONG);
+                    addParameterDeletesObligationDatabaseEntry(
+                            xmethod, obligationType, ObligationPolicyDatabaseEntryType.STRONG);
                     sawAnnotationsInApplicationCode = true;
                 } else if (xmethod.getParameterAnnotation(i, willNotClose) != null) {
                     // No database entry needs to be added
@@ -233,8 +239,8 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                 } else if (INFER_CLOSE_METHODS && methodHasCloseInName) {
                     // Method has "close" in its name.
                     // Assume that it deletes the obligation.
-                    addParameterDeletesObligationDatabaseEntry(xmethod, obligationType,
-                            ObligationPolicyDatabaseEntryType.STRONG);
+                    addParameterDeletesObligationDatabaseEntry(
+                            xmethod, obligationType, ObligationPolicyDatabaseEntryType.STRONG);
                 } else {
                     /*
                      * // Interesting case: we have a parameter which is // an
@@ -244,17 +250,16 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                      * obligation. If strict checking is performed, // weak
                      * entries are ignored.
                      */
-                    if ("<init>".equals(xmethod.getName()) || xmethod.isStatic()
+                    if ("<init>".equals(xmethod.getName())
+                            || xmethod.isStatic()
                             || xmethod.getName().toLowerCase().indexOf("close") >= 0
                             || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) {
-                        addParameterDeletesObligationDatabaseEntry(xmethod, obligationType,
-                                ObligationPolicyDatabaseEntryType.WEAK);
+                        addParameterDeletesObligationDatabaseEntry(
+                                xmethod, obligationType, ObligationPolicyDatabaseEntryType.WEAK);
                     }
                 }
             }
         }
-
-
     }
 
     @Override
@@ -268,7 +273,8 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
         if (DUMP_DB || ObligationPolicyDatabase.DEBUG) {
             System.out.println("======= Completed ObligationPolicyDatabase ======= ");
-            System.out.println("Strict checking is " + (database.isStrictChecking() ? "ENABLED" : "disabled"));
+            System.out.println(
+                    "Strict checking is " + (database.isStrictChecking() ? "ENABLED" : "disabled"));
             for (ObligationPolicyDatabaseEntry entry : database.getEntries()) {
                 System.out.println("  * " + entry);
             }
@@ -290,26 +296,48 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         addFileStreamEntries("Reader");
         addFileStreamEntries("Writer");
 
-        Obligation javaIoInputStreamObligation = database.getFactory().getObligationByName("java.io.InputStream");
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.lang.Class")),
-                new ExactStringMatcher("getResourceAsStream"),
-                new ExactStringMatcher("(Ljava/lang/String;)Ljava/io/InputStream;"), false,
-                ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, javaIoInputStreamObligation));
-        Obligation javaIoOutputStreamObligation = database.getFactory().getObligationByName("java.io.OutputStream");
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil
-                .getObjectTypeInstance("java.util.logging.StreamHandler")), new ExactStringMatcher("setOutputStream"),
-                new ExactStringMatcher("(Ljava/io/OutputStream;)V"), false, ObligationPolicyDatabaseActionType.DEL,
-                ObligationPolicyDatabaseEntryType.STRONG, javaIoOutputStreamObligation));
+        Obligation javaIoInputStreamObligation =
+                database.getFactory().getObligationByName("java.io.InputStream");
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.lang.Class")),
+                        new ExactStringMatcher("getResourceAsStream"),
+                        new ExactStringMatcher("(Ljava/lang/String;)Ljava/io/InputStream;"),
+                        false,
+                        ObligationPolicyDatabaseActionType.ADD,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        javaIoInputStreamObligation));
+        Obligation javaIoOutputStreamObligation =
+                database.getFactory().getObligationByName("java.io.OutputStream");
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(
+                                BCELUtil.getObjectTypeInstance("java.util.logging.StreamHandler")),
+                        new ExactStringMatcher("setOutputStream"),
+                        new ExactStringMatcher("(Ljava/io/OutputStream;)V"),
+                        false,
+                        ObligationPolicyDatabaseActionType.DEL,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        javaIoOutputStreamObligation));
 
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil
-                .getObjectTypeInstance("java.io.FileOutputStream")), new ExactStringMatcher("getChannel"),
-                new ExactStringMatcher("()Ljava/nio/channels/FileChannel;"), false, ObligationPolicyDatabaseActionType.DEL,
-                ObligationPolicyDatabaseEntryType.STRONG, javaIoOutputStreamObligation));
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil
-                .getObjectTypeInstance("java.io.FileInputStream")), new ExactStringMatcher("getChannel"),
-                new ExactStringMatcher("()Ljava/nio/channels/FileChannel;"), false, ObligationPolicyDatabaseActionType.DEL,
-                ObligationPolicyDatabaseEntryType.STRONG, javaIoInputStreamObligation));
-
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.io.FileOutputStream")),
+                        new ExactStringMatcher("getChannel"),
+                        new ExactStringMatcher("()Ljava/nio/channels/FileChannel;"),
+                        false,
+                        ObligationPolicyDatabaseActionType.DEL,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        javaIoOutputStreamObligation));
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.io.FileInputStream")),
+                        new ExactStringMatcher("getChannel"),
+                        new ExactStringMatcher("()Ljava/nio/channels/FileChannel;"),
+                        false,
+                        ObligationPolicyDatabaseActionType.DEL,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        javaIoInputStreamObligation));
 
         // Database obligation types
         Obligation connection = database.getFactory().addObligation("java.sql.Connection");
@@ -317,72 +345,123 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         Obligation resultSet = database.getFactory().addObligation("java.sql.ResultSet");
 
         // Add factory method entries for database obligation types
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.DriverManager")),
-                new ExactStringMatcher("getConnection"), new RegexStringMatcher("^.*\\)Ljava/sql/Connection;$"), false,
-                ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, connection));
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
-                new ExactStringMatcher("createStatement"), new RegexStringMatcher("^.*\\)Ljava/sql/Statement;$"), false,
-                ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, statement));
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
-                new ExactStringMatcher("prepareStatement"), new RegexStringMatcher("^.*\\)Ljava/sql/PreparedStatement;$"), false,
-                ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, statement));
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Statement")),
-                new ExactStringMatcher("executeQuery"), new RegexStringMatcher("^.*\\)Ljava/sql/ResultSet;$"), false,
-                ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, resultSet));
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.DriverManager")),
+                        new ExactStringMatcher("getConnection"),
+                        new RegexStringMatcher("^.*\\)Ljava/sql/Connection;$"),
+                        false,
+                        ObligationPolicyDatabaseActionType.ADD,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        connection));
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
+                        new ExactStringMatcher("createStatement"),
+                        new RegexStringMatcher("^.*\\)Ljava/sql/Statement;$"),
+                        false,
+                        ObligationPolicyDatabaseActionType.ADD,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        statement));
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
+                        new ExactStringMatcher("prepareStatement"),
+                        new RegexStringMatcher("^.*\\)Ljava/sql/PreparedStatement;$"),
+                        false,
+                        ObligationPolicyDatabaseActionType.ADD,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        statement));
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Statement")),
+                        new ExactStringMatcher("executeQuery"),
+                        new RegexStringMatcher("^.*\\)Ljava/sql/ResultSet;$"),
+                        false,
+                        ObligationPolicyDatabaseActionType.ADD,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        resultSet));
 
         // Add close method entries for database obligation types
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
-                new ExactStringMatcher("close"), new ExactStringMatcher("()V"), false, ObligationPolicyDatabaseActionType.DEL,
-                ObligationPolicyDatabaseEntryType.STRONG, connection));
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Statement")),
-                new ExactStringMatcher("close"), new ExactStringMatcher("()V"), false, ObligationPolicyDatabaseActionType.DEL,
-                ObligationPolicyDatabaseEntryType.STRONG, statement, resultSet));
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.ResultSet")),
-                new ExactStringMatcher("close"), new ExactStringMatcher("()V"), false, ObligationPolicyDatabaseActionType.DEL,
-                ObligationPolicyDatabaseEntryType.STRONG, resultSet));
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
+                        new ExactStringMatcher("close"),
+                        new ExactStringMatcher("()V"),
+                        false,
+                        ObligationPolicyDatabaseActionType.DEL,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        connection));
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Statement")),
+                        new ExactStringMatcher("close"),
+                        new ExactStringMatcher("()V"),
+                        false,
+                        ObligationPolicyDatabaseActionType.DEL,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        statement,
+                        resultSet));
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.ResultSet")),
+                        new ExactStringMatcher("close"),
+                        new ExactStringMatcher("()V"),
+                        false,
+                        ObligationPolicyDatabaseActionType.DEL,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        resultSet));
     }
 
-    /**
-     * General method for adding entries for File
-     * InputStream/OutputStream/Reader/Writer classes.
-     */
+    /** General method for adding entries for File InputStream/OutputStream/Reader/Writer classes. */
     private void addFileStreamEntries(String kind) {
         Obligation obligation = database.getFactory().addObligation("java.io." + kind);
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance(Values.DOTTED_JAVA_IO_FILE + kind)),
-                new ExactStringMatcher("<init>"), new RegexStringMatcher(".*"), false, ObligationPolicyDatabaseActionType.ADD,
-                ObligationPolicyDatabaseEntryType.STRONG, obligation));
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.io." + kind)),
-                new ExactStringMatcher("close"), new ExactStringMatcher("()V"), false, ObligationPolicyDatabaseActionType.DEL,
-                ObligationPolicyDatabaseEntryType.STRONG, obligation));
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(
+                                BCELUtil.getObjectTypeInstance(Values.DOTTED_JAVA_IO_FILE + kind)),
+                        new ExactStringMatcher("<init>"),
+                        new RegexStringMatcher(".*"),
+                        false,
+                        ObligationPolicyDatabaseActionType.ADD,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        obligation));
+        database.addEntry(
+                new MatchMethodEntry(
+                        new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.io." + kind)),
+                        new ExactStringMatcher("close"),
+                        new ExactStringMatcher("()V"),
+                        false,
+                        ObligationPolicyDatabaseActionType.DEL,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        obligation));
     }
 
     /**
-     * Add an appropriate policy database entry for parameters marked with the
-     * WillClose annotation.
+     * Add an appropriate policy database entry for parameters marked with the WillClose annotation.
      *
-     * @param xmethod
-     *            a method
-     * @param obligation
-     *            the Obligation deleted by the method
-     * @param entryType
-     *            type of entry (STRONG or WEAK)
+     * @param xmethod a method
+     * @param obligation the Obligation deleted by the method
+     * @param entryType type of entry (STRONG or WEAK)
      */
-    private void addParameterDeletesObligationDatabaseEntry(XMethod xmethod, Obligation obligation,
-            ObligationPolicyDatabaseEntryType entryType) {
-        ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod, obligation, entryType);
+    private void addParameterDeletesObligationDatabaseEntry(
+            XMethod xmethod, Obligation obligation, ObligationPolicyDatabaseEntryType entryType) {
+        ObligationPolicyDatabaseEntry entry =
+                database.addParameterDeletesObligationDatabaseEntry(xmethod, obligation, entryType);
         if (DEBUG_ANNOTATIONS) {
             System.out.println("Added entry: " + entry);
         }
     }
 
-    /**
-     * Handle a method with a WillCloseWhenClosed parameter annotation.
-     */
+    /** Handle a method with a WillCloseWhenClosed parameter annotation. */
     private void handleWillCloseWhenClosed(XMethod xmethod, Obligation deletedObligation) {
         if (deletedObligation == null) {
             if (DEBUG_ANNOTATIONS) {
-                System.out.println("Method " + xmethod.toString() + " is marked @WillCloseWhenClosed, "
-                        + "but its parameter is not an obligation");
+                System.out.println(
+                        "Method "
+                                + xmethod.toString()
+                                + " is marked @WillCloseWhenClosed, "
+                                + "but its parameter is not an obligation");
             }
             return;
         }
@@ -404,12 +483,14 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                     return;
                 }
             }
-
         }
         if (createdObligation == null) {
             if (DEBUG_ANNOTATIONS) {
-                System.out.println("Method " + xmethod.toString() + " is marked @WillCloseWhenClosed, "
-                        + "but its return type is not an obligation");
+                System.out.println(
+                        "Method "
+                                + xmethod.toString()
+                                + " is marked @WillCloseWhenClosed, "
+                                + "but its return type is not an obligation");
             }
             return;
         }
@@ -417,10 +498,18 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         // Add database entries:
         // - parameter obligation is deleted
         // - return value obligation is added
-        database.addEntry(new MatchMethodEntry(xmethod, ObligationPolicyDatabaseActionType.DEL,
-                ObligationPolicyDatabaseEntryType.STRONG, deletedObligation));
-        database.addEntry(new MatchMethodEntry(xmethod, ObligationPolicyDatabaseActionType.ADD,
-                ObligationPolicyDatabaseEntryType.STRONG, createdObligation));
+        database.addEntry(
+                new MatchMethodEntry(
+                        xmethod,
+                        ObligationPolicyDatabaseActionType.DEL,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        deletedObligation));
+        database.addEntry(
+                new MatchMethodEntry(
+                        xmethod,
+                        ObligationPolicyDatabaseActionType.ADD,
+                        ObligationPolicyDatabaseEntryType.STRONG,
+                        createdObligation));
     }
 
     private void scanForResourceTypes() {

@@ -21,9 +21,7 @@ package de.tobject.findbugs.view.explorer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.ui.ResourceWorkingSetFilter;
 
-/**
- * @author Andrei
- */
+/** @author Andrei */
 public class WorkingSetsFilter extends ResourceWorkingSetFilter {
 
     public WorkingSetsFilter() {
@@ -33,5 +31,4 @@ public class WorkingSetsFilter extends ResourceWorkingSetFilter {
     boolean contains(IResource resource) {
         return super.select(null, null, resource);
     }
-
 }

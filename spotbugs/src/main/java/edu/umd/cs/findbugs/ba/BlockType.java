@@ -22,37 +22,26 @@ package edu.umd.cs.findbugs.ba;
 import java.util.BitSet;
 
 /**
- * Dataflow value representing the current nesting of catch and finally blocks.
- * We assume that any catch block with a non-empty catch type is a user catch
- * block, and any catch block with an empty catch type (i.e., catch all
- * exceptions) is a finally block. This assumption isn't quite accurate, but it
- * seems to be a reasonable first approximation.
+ * Dataflow value representing the current nesting of catch and finally blocks. We assume that any
+ * catch block with a non-empty catch type is a user catch block, and any catch block with an empty
+ * catch type (i.e., catch all exceptions) is a finally block. This assumption isn't quite accurate,
+ * but it seems to be a reasonable first approximation.
  *
- * <p>
- * If valid (isValid() returns true), a BlockType value is a stack of elements,
- * which are either CATCH or FINALLY values. Call getDepth() to get the current
- * nesting depth. Call get(int <i>n</i>) to get the <i>n</i>th stack item. Call
- * getTopValue() to get the current top of the stack.
- * </p>
+ * <p>If valid (isValid() returns true), a BlockType value is a stack of elements, which are either
+ * CATCH or FINALLY values. Call getDepth() to get the current nesting depth. Call get(int <i>n</i>)
+ * to get the <i>n</i>th stack item. Call getTopValue() to get the current top of the stack.
  *
- * <p>
- * If invalid (isValid() returns false), a BlockType value is either <i>top</i>
- * or <i>bottom</i>. These are the special values at the top and bottom of the
- * dataflow lattice.
- * </p>
+ * <p>If invalid (isValid() returns false), a BlockType value is either <i>top</i> or <i>bottom</i>.
+ * These are the special values at the top and bottom of the dataflow lattice.
  *
- * <p>
- * The dataflow lattice is effectively finite-height because real Java methods
- * are guaranteed to have a finite catch and finally block nesting level.
- * </p>
+ * <p>The dataflow lattice is effectively finite-height because real Java methods are guaranteed to
+ * have a finite catch and finally block nesting level.
  *
  * @see BlockTypeAnalysis
  * @author David Hovemeyer
  */
 public class BlockType extends BitSet {
-    /**
-     *
-     */
+    /** */
     private static final long serialVersionUID = 1L;
 
     private static final int PRIME = 31;
@@ -67,9 +56,7 @@ public class BlockType extends BitSet {
 
     private int depth;
 
-    /**
-     * Constructor. Should only be called by BlockTypeAnalysis.
-     */
+    /** Constructor. Should only be called by BlockTypeAnalysis. */
     BlockType() {
     }
 
@@ -97,21 +84,18 @@ public class BlockType extends BitSet {
         if (depth != other.depth) {
             return false;
         }
-        return isTop == other.isTop
-                && isValid == other.isValid;
+        return isTop == other.isTop && isValid == other.isValid;
     }
 
     /**
-     * Return whether or not this value is valid, meaning it contains a valid
-     * representation of the nesting of catch and finally blocks.
+     * Return whether or not this value is valid, meaning it contains a valid representation of the
+     * nesting of catch and finally blocks.
      */
     public boolean isValid() {
         return isValid;
     }
 
-    /**
-     * Get the current nesting depth. The value must be valid.
-     */
+    /** Get the current nesting depth. The value must be valid. */
     public int getDepth() {
         if (!isValid) {
             throw new IllegalStateException();
@@ -119,9 +103,7 @@ public class BlockType extends BitSet {
         return depth;
     }
 
-    /**
-     * Get the top value on the catch and finally block nesting stack.
-     */
+    /** Get the top value on the catch and finally block nesting stack. */
     public boolean getTopValue() {
         if (depth == 0) {
             throw new IllegalStateException();
@@ -130,8 +112,8 @@ public class BlockType extends BitSet {
     }
 
     /**
-     * Return whether or not this value represents "normal" control-flow. Normal
-     * control flow are all blocks outside any catch or finally block.
+     * Return whether or not this value represents "normal" control-flow. Normal control flow are all
+     * blocks outside any catch or finally block.
      */
     public boolean isNormal() {
         if (!isValid) {
@@ -140,39 +122,29 @@ public class BlockType extends BitSet {
         return getDepth() == 0;
     }
 
-    /**
-     * Make this value represent "normal" control flow.
-     */
+    /** Make this value represent "normal" control flow. */
     public void setNormal() {
         this.isValid = true;
         this.depth = 0;
     }
 
-    /**
-     * Return whether or not this is the special "top" dataflow value.
-     */
+    /** Return whether or not this is the special "top" dataflow value. */
     public boolean isTop() {
         return !isValid && isTop;
     }
 
-    /**
-     * Make this the special "top" dataflow value.
-     */
+    /** Make this the special "top" dataflow value. */
     public void setTop() {
         this.isValid = false;
         this.isTop = true;
     }
 
-    /**
-     * Return whether or not this is the special "bottom" dataflow value.
-     */
+    /** Return whether or not this is the special "bottom" dataflow value. */
     public boolean isBottom() {
         return !isValid && !isTop;
     }
 
-    /**
-     * Make this the special "bottom" dataflow value.
-     */
+    /** Make this the special "bottom" dataflow value. */
     public void setBottom() {
         this.isValid = false;
         this.isTop = false;
@@ -181,8 +153,7 @@ public class BlockType extends BitSet {
     /**
      * Make this object an exact duplicate of given object.
      *
-     * @param other
-     *            the other BlockType object
+     * @param other the other BlockType object
      */
     public void copyFrom(BlockType other) {
         this.isValid = other.isValid;
@@ -197,10 +168,8 @@ public class BlockType extends BitSet {
     /**
      * Return whether or not this object is identical to the one given.
      *
-     * @param other
-     *            the other BlockType object
-     * @return true if this object is identical to the one given, false
-     *         otherwise
+     * @param other the other BlockType object
+     * @return true if this object is identical to the one given, false otherwise
      */
     public boolean sameAs(BlockType other) {
         if (!this.isValid) {
@@ -229,8 +198,7 @@ public class BlockType extends BitSet {
     /**
      * Merge other dataflow value into this value.
      *
-     * @param other
-     *            the other BlockType value
+     * @param other the other BlockType value
      */
     public void mergeWith(BlockType other) {
         if (this.isTop() || other.isBottom()) {
@@ -248,16 +216,12 @@ public class BlockType extends BitSet {
         }
     }
 
-    /**
-     * Enter a catch block.
-     */
+    /** Enter a catch block. */
     public void pushCatch() {
         push(CATCH);
     }
 
-    /**
-     * Enter a finally block.
-     */
+    /** Enter a finally block. */
     public void pushFinally() {
         push(FINALLY);
     }

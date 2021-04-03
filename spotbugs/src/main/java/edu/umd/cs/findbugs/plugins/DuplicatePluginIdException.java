@@ -21,11 +21,8 @@ package edu.umd.cs.findbugs.plugins;
 
 import java.net.URL;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class DuplicatePluginIdException extends RuntimeException {
-
 
     final String pluginId;
     final URL loadedFrom;
@@ -53,5 +50,4 @@ public class DuplicatePluginIdException extends RuntimeException {
         this.loadedFrom = loadedFrom;
         this.previouslyLoadedFrom = previouslyLoadedFrom;
     }
-
 }

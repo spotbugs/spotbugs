@@ -19,14 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.ElementValue;
-
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class JCIPAnnotationDatabase {
     Map<ClassMember, Map<String, ElementValue>> memberAnnotations = new HashMap<>();
@@ -34,12 +31,14 @@ public class JCIPAnnotationDatabase {
     Map<String, Map<String, ElementValue>> classAnnotations = new HashMap<>();
 
     @CheckForNull
-    public ElementValue getClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
+    public ElementValue getClassAnnotation(
+            @DottedClassName String dottedClassName, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClass(dottedClassName);
         return map == null ? null : map.get(annotationClass);
     }
 
-    public boolean hasClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
+    public boolean hasClassAnnotation(
+            @DottedClassName String dottedClassName, String annotationClass) {
         assert dottedClassName.indexOf('/') == -1;
         Map<String, ElementValue> map = getEntryForClass(dottedClassName);
         return map != null && map.containsKey(annotationClass);
@@ -72,8 +71,8 @@ public class JCIPAnnotationDatabase {
         return memberAnnotations.get(member);
     }
 
-    public void addEntryForClassMember(ClassMember member,
-            String annotationClass, ElementValue value) {
+    public void addEntryForClassMember(
+            ClassMember member, String annotationClass, ElementValue value) {
         Map<String, ElementValue> map = memberAnnotations.computeIfAbsent(member, k -> new HashMap<>());
         map.put(annotationClass, value);
     }
@@ -84,8 +83,8 @@ public class JCIPAnnotationDatabase {
         return classAnnotations.get(dottedClassName);
     }
 
-    public void addEntryForClass(@DottedClassName String dottedClassName,
-            String annotationClass, ElementValue value) {
+    public void addEntryForClass(
+            @DottedClassName String dottedClassName, String annotationClass, ElementValue value) {
         Map<String, ElementValue> map = getEntryForClass(dottedClassName);
         if (map == null) {
             map = new HashMap<>(3);
@@ -93,5 +92,4 @@ public class JCIPAnnotationDatabase {
         }
         map.put(annotationClass, value);
     }
-
 }

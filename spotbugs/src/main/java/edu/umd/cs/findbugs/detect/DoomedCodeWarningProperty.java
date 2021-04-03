@@ -23,8 +23,8 @@ import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
 
 /**
- * A WarningProperty for warnings that are reported at a "doomed" Location; one
- * that cannot return normally.
+ * A WarningProperty for warnings that are reported at a "doomed" Location; one that cannot return
+ * normally.
  *
  * @author David Hovemeyer
  */
@@ -33,9 +33,7 @@ public class DoomedCodeWarningProperty extends AbstractWarningProperty {
         super(shortName, priorityAdjustment);
     }
 
-    /**
-     * Singleton instance of DoomedCodeWarningProperty.
-     */
-    public static final DoomedCodeWarningProperty DOOMED_CODE = new DoomedCodeWarningProperty("DOOMED_CODE",
-            PriorityAdjustment.AT_MOST_MEDIUM);
+    /** Singleton instance of DoomedCodeWarningProperty. */
+    public static final DoomedCodeWarningProperty DOOMED_CODE =
+            new DoomedCodeWarningProperty("DOOMED_CODE", PriorityAdjustment.AT_MOST_MEDIUM);
 }

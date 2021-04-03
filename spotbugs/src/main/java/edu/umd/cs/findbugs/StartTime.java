@@ -21,14 +21,10 @@ package edu.umd.cs.findbugs;
 
 import java.lang.management.ManagementFactory;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class StartTime {
 
-    /**
-     * The start time this FindBugs instance was started
-     */
+    /** The start time this FindBugs instance was started */
     public static final long START_TIME = System.currentTimeMillis();
 
     public static final long VM_START_TIME;
@@ -42,5 +38,4 @@ public class StartTime {
         }
         VM_START_TIME = vmStartTime;
     }
-
 }

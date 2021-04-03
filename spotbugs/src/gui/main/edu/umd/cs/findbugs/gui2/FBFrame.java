@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.gui2;
 import java.awt.Component;
 import java.awt.Container;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
@@ -43,9 +42,7 @@ public class FBFrame extends JFrame {
     /*
      * Helps above method, runs through all components recursively.
      */
-    /**
-     * @deprecated Use {@link #setFontSizeHelper(float,Component[])} instead
-     */
+    /** @deprecated Use {@link #setFontSizeHelper(float,Component[])} instead */
     @Deprecated
     protected void setFontSizeHelper(Component[] comps, float size) {
         setFontSizeHelper(size, comps);

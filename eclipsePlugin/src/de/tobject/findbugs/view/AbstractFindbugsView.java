@@ -18,6 +18,7 @@
  */
 package de.tobject.findbugs.view;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
@@ -41,12 +42,9 @@ import org.eclipse.ui.part.IContributedContentsView;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
-/**
- * @author Andrei Loskutov
- */
-public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSelectionHandler, IContributedContentsView {
+/** @author Andrei Loskutov */
+public abstract class AbstractFindbugsView extends ViewPart
+        implements IMarkerSelectionHandler, IContributedContentsView {
     static final String DETAILS_VIEW_IMG = "detailsView.png";
 
     static final String USER_ANNOTATIONS_VIEW_IMG = "annotationsView.png";
@@ -69,17 +67,15 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         super();
     }
 
-    /**
-     * activates view if it is not visible
-     */
-    final protected void activate() {
+    /** activates view if it is not visible */
+    protected final void activate() {
         if (!isVisible()) {
             getSite().getPage().activate(this);
         }
     }
 
     @Override
-    final public boolean isVisible() {
+    public final boolean isVisible() {
         return getSite().getPage().isPartVisible(this);
     }
 
@@ -115,7 +111,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         contributeToActionBars();
     }
 
-    final public Composite getRootControl() {
+    public final Composite getRootControl() {
         return root;
     }
 
@@ -123,17 +119,18 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
      * @param parent
      * @return
      */
-    abstract protected Composite createRootControl(Composite parent);
+    protected abstract Composite createRootControl(Composite parent);
 
     private void hookContextMenu() {
-        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+        MenuManager menuMgr = new MenuManager("#PopupMenu"); // $NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(new IMenuListener() {
-            @Override
-            public void menuAboutToShow(IMenuManager manager) {
-                fillContextMenu(manager);
-            }
-        });
+        menuMgr.addMenuListener(
+                new IMenuListener() {
+                    @Override
+                    public void menuAboutToShow(IMenuManager manager) {
+                        fillContextMenu(manager);
+                    }
+                });
         Menu menu = menuMgr.createContextMenu(getRootControl());
         getRootControl().setMenu(menu);
         // TODO
@@ -147,29 +144,37 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
     }
 
     protected void makeActions() {
-        actionShowBugTreeView = new Action() {
-            @Override
-            public void run() {
-                showBugTreeView();
-            }
-        };
-        configureAction(actionShowBugTreeView, "Show Bug Explorer View", "Show Bug Explorer View", TREE_VIEW_IMG);
+        actionShowBugTreeView =
+                new Action() {
+                    @Override
+                    public void run() {
+                        showBugTreeView();
+                    }
+                };
+        configureAction(
+                actionShowBugTreeView, "Show Bug Explorer View", "Show Bug Explorer View", TREE_VIEW_IMG);
 
-        actionShowDetailsView = new Action() {
-            @Override
-            public void run() {
-                showDetailsView();
-            }
-        };
-        configureAction(actionShowDetailsView, "Show Bug Info View", "Show Bug Info View", DETAILS_VIEW_IMG);
+        actionShowDetailsView =
+                new Action() {
+                    @Override
+                    public void run() {
+                        showDetailsView();
+                    }
+                };
+        configureAction(
+                actionShowDetailsView, "Show Bug Info View", "Show Bug Info View", DETAILS_VIEW_IMG);
 
-        actionShowPerspective = new Action() {
-            @Override
-            public void run() {
-                showPerspective();
-            }
-        };
-        configureAction(actionShowPerspective, "Switch to SpotBugs Perspective", "Switch to SpotBugs Perspective",
+        actionShowPerspective =
+                new Action() {
+                    @Override
+                    public void run() {
+                        showPerspective();
+                    }
+                };
+        configureAction(
+                actionShowPerspective,
+                "Switch to SpotBugs Perspective",
+                "Switch to SpotBugs Perspective",
                 PERSPECTIVE_IMG);
     }
 
@@ -182,7 +187,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 
     protected void fillContextMenu(IMenuManager manager) {
         // Other plug-ins can contribute there actions here
-        manager.add(new Separator("additions")); //$NON-NLS-1$
+        manager.add(new Separator("additions")); // $NON-NLS-1$
     }
 
     protected void fillLocalToolBar(IToolBarManager manager) {
@@ -204,7 +209,8 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         // TODO should refactor dirty code in views to common
     }
 
-    protected final void configureAction(Action action, String textKey, String tooltipKey, String imageKey) {
+    protected final void configureAction(
+            Action action, String textKey, String tooltipKey, String imageKey) {
         action.setText(FindbugsPlugin.getResourceString(textKey));
         action.setToolTipText(FindbugsPlugin.getResourceString(tooltipKey));
         action.setImageDescriptor(FindbugsPlugin.getDefault().getImageDescriptor(imageKey));
@@ -216,14 +222,12 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
      * @return IWorkbenchSiteProgressService or <code>null</code>.
      */
     protected IWorkbenchSiteProgressService getProgressService() {
-        IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) getSite().getAdapter(
-                IWorkbenchSiteProgressService.class);
+        IWorkbenchSiteProgressService service =
+                (IWorkbenchSiteProgressService) getSite().getAdapter(IWorkbenchSiteProgressService.class);
         return service;
     }
 
-    /**
-     * @return instance of annotations view or null if view couldn't be opened
-     */
+    /** @return instance of annotations view or null if view couldn't be opened */
     static IViewPart showDetailsView() {
         IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
         try {
@@ -234,9 +238,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         return null;
     }
 
-    /**
-     * @return instance of annotations view or null if view couldn't be opened
-     */
+    /** @return instance of annotations view or null if view couldn't be opened */
     static IViewPart showBugTreeView() {
         IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
         try {
@@ -247,9 +249,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         return null;
     }
 
-    /**
-     *
-     */
+    /** */
     final void showPerspective() {
         IWorkbenchPage page = getSite().getPage();
         IWorkbenchWindow window = getSite().getWorkbenchWindow();
@@ -267,12 +267,9 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
     }
 
     /**
-     * @param thePart
-     *            non null part in which the marker was selected
-     * @param marker
-     *            may be null or existing FindBugs marker
+     * @param thePart non null part in which the marker was selected
+     * @param marker may be null or existing FindBugs marker
      */
     @Override
     public abstract void markerSelected(IWorkbenchPart thePart, IMarker marker);
-
 }

@@ -19,15 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SystemProperties;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
 
 public class FindSpinLoop extends BytecodeScanningDetector implements StatelessDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("findspinloop.debug");
@@ -93,11 +92,15 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
         case Const.IFNULL:
         case Const.IFNONNULL:
             if (DEBUG) {
-                System.out.println("   conditional branch in stage " + stage + " to " + getBranchTarget());
+                System.out.println(
+                        "   conditional branch in stage " + stage + " to " + getBranchTarget());
             }
             if (stage == 2 && getBranchTarget() == start) {
-                bugReporter.reportBug(new BugInstance(this, "SP_SPIN_ON_FIELD", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addReferencedField(lastFieldSeen).addSourceLine(this, start));
+                bugReporter.reportBug(
+                        new BugInstance(this, "SP_SPIN_ON_FIELD", NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addReferencedField(lastFieldSeen)
+                                .addSourceLine(this, start));
                 stage = 0;
             } else if (getBranchTarget() < getPC()) {
                 stage = 0;
@@ -107,6 +110,5 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
             stage = 0;
             break;
         }
-
     }
 }

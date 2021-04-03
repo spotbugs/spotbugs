@@ -18,13 +18,12 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.ba.BytecodeScanner;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 
 /**
  * Analysis engine to produce UnpackedCode objects for analyzed methods.
@@ -32,9 +31,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class UnpackedCodeFactory extends AnalysisFactory<UnpackedCode> {
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public UnpackedCodeFactory() {
         super("unpacked bytecode", UnpackedCode.class);
     }
@@ -47,7 +44,8 @@ public class UnpackedCodeFactory extends AnalysisFactory<UnpackedCode> {
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public UnpackedCode analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public UnpackedCode analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         Method method = getMethod(analysisCache, descriptor);
         Code code = method.getCode();
         if (code == null) {
@@ -64,6 +62,5 @@ public class UnpackedCodeFactory extends AnalysisFactory<UnpackedCode> {
         scanner.scan(instructionList, callback);
 
         return callback.getUnpackedCode();
-
     }
 }

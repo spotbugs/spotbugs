@@ -19,16 +19,6 @@
 
 package edu.umd.cs.findbugs.bugReporter;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.URL;
-import java.util.HashSet;
-
-import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -36,10 +26,16 @@ import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.HashSet;
+import javax.annotation.Nonnull;
+import javax.annotation.WillClose;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class SuppressionDecorator extends BugReporterDecorator {
 
     final String category;
@@ -65,7 +61,8 @@ public class SuppressionDecorator extends BugReporterDecorator {
             if (adjustmentSource != null) {
                 URL u;
 
-                if (adjustmentSource.startsWith("file:") || adjustmentSource.startsWith("http:")
+                if (adjustmentSource.startsWith("file:")
+                        || adjustmentSource.startsWith("http:")
                         || adjustmentSource.startsWith("https:")) {
                     u = new URL(adjustmentSource);
                 } else {
@@ -73,16 +70,15 @@ public class SuppressionDecorator extends BugReporterDecorator {
                     if (u == null) {
                         u = DetectorFactoryCollection.getCoreResource(adjustmentSource);
                     }
-
                 }
                 if (u != null) {
                     Reader rawIn = UserTextFile.bufferedReader(u.openStream());
                     processPackageList(rawIn);
                 }
-
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to load " + category + " filters from " + adjustmentSource, e);
+            throw new RuntimeException(
+                    "Unable to load " + category + " filters from " + adjustmentSource, e);
         }
     }
 
@@ -142,7 +138,5 @@ public class SuppressionDecorator extends BugReporterDecorator {
             }
             packageName = packageName.substring(0, i);
         }
-
     }
-
 }

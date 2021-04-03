@@ -19,11 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import java.lang.annotation.ElementType;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -33,6 +28,10 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
+import java.lang.annotation.ElementType;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Resolve annotations into type qualifiers.
@@ -40,58 +39,70 @@ import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
  * @author William Pugh
  */
 public class TypeQualifierResolver {
-    static final ClassDescriptor typeQualifier = DescriptorFactory.createClassDescriptor(javax.annotation.meta.TypeQualifier.class);
+    static final ClassDescriptor typeQualifier =
+            DescriptorFactory.createClassDescriptor(javax.annotation.meta.TypeQualifier.class);
 
-    static final ClassDescriptor typeQualifierNickname = DescriptorFactory
-            .createClassDescriptor(javax.annotation.meta.TypeQualifierNickname.class);
+    static final ClassDescriptor typeQualifierNickname =
+            DescriptorFactory.createClassDescriptor(javax.annotation.meta.TypeQualifierNickname.class);
 
-    static final ClassDescriptor typeQualifierDefault = DescriptorFactory
-            .createClassDescriptor(javax.annotation.meta.TypeQualifierDefault.class);
+    static final ClassDescriptor typeQualifierDefault =
+            DescriptorFactory.createClassDescriptor(javax.annotation.meta.TypeQualifierDefault.class);
 
-    static final ClassDescriptor elementTypeDescriptor = DescriptorFactory
-            .createClassDescriptor(ElementType.class);
+    static final ClassDescriptor elementTypeDescriptor =
+            DescriptorFactory.createClassDescriptor(ElementType.class);
 
-    static final ClassDescriptor androidNullable = DescriptorFactory.createClassDescriptor("android/support/annotation/Nullable");
+    static final ClassDescriptor androidNullable =
+            DescriptorFactory.createClassDescriptor("android/support/annotation/Nullable");
 
-    static final ClassDescriptor androidNonNull = DescriptorFactory.createClassDescriptor("android/support/annotation/NonNull");
+    static final ClassDescriptor androidNonNull =
+            DescriptorFactory.createClassDescriptor("android/support/annotation/NonNull");
 
-    static final ClassDescriptor androidxNullable = DescriptorFactory.createClassDescriptor("androidx/annotation/Nullable");
+    static final ClassDescriptor androidxNullable =
+            DescriptorFactory.createClassDescriptor("androidx/annotation/Nullable");
 
-    static final ClassDescriptor androidxNonNull = DescriptorFactory.createClassDescriptor("androidx/annotation/NonNull");
+    static final ClassDescriptor androidxNonNull =
+            DescriptorFactory.createClassDescriptor("androidx/annotation/NonNull");
 
-    static final ClassDescriptor googleNullable = DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable");
+    static final ClassDescriptor googleNullable =
+            DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable");
 
-    static final ClassDescriptor intellijNullable = DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable");
+    static final ClassDescriptor intellijNullable =
+            DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable");
 
-    static final ClassDescriptor intellijNotNull = DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/NotNull");
+    static final ClassDescriptor intellijNotNull =
+            DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/NotNull");
 
-    static final ClassDescriptor eclipseNullable = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/Nullable");
+    static final ClassDescriptor eclipseNullable =
+            DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/Nullable");
 
-    static final ClassDescriptor eclipseNonNull = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNull");
+    static final ClassDescriptor eclipseNonNull =
+            DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNull");
 
-    static final ClassDescriptor checkerFrameworkNullable = DescriptorFactory.createClassDescriptor(
-            "org/checkerframework/checker/nullness/qual/Nullable");
+    static final ClassDescriptor checkerFrameworkNullable =
+            DescriptorFactory.createClassDescriptor(
+                    "org/checkerframework/checker/nullness/qual/Nullable");
 
-    static final ClassDescriptor checkerFrameworkNullableDecl = DescriptorFactory.createClassDescriptor(
-            "org/checkerframework/checker/nullness/compatqual/NullableDecl");
+    static final ClassDescriptor checkerFrameworkNullableDecl =
+            DescriptorFactory.createClassDescriptor(
+                    "org/checkerframework/checker/nullness/compatqual/NullableDecl");
 
-    static final ClassDescriptor checkerFrameworkNonNull = DescriptorFactory.createClassDescriptor(
-            "org/checkerframework/checker/nullness/qual/NonNull");
+    static final ClassDescriptor checkerFrameworkNonNull =
+            DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/qual/NonNull");
 
-    static final ClassDescriptor checkerFrameworkNonNullDecl = DescriptorFactory.createClassDescriptor(
-            "org/checkerframework/checker/nullness/compatqual/NonNullDecl");
+    static final ClassDescriptor checkerFrameworkNonNullDecl =
+            DescriptorFactory.createClassDescriptor(
+                    "org/checkerframework/checker/nullness/compatqual/NonNullDecl");
 
     // javax.annotations.ParametersAreNonnullByDefault ?
-    static final ClassDescriptor eclipseNonNullByDefault = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNullByDefault");
+    static final ClassDescriptor eclipseNonNullByDefault =
+            DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNullByDefault");
 
     /**
-     * Resolve an AnnotationValue into a list of AnnotationValues representing
-     * type qualifier annotations.
+     * Resolve an AnnotationValue into a list of AnnotationValues representing type qualifier
+     * annotations.
      *
-     * @param value
-     *            AnnotationValue representing the use of an annotation
-     * @return Collection of AnnotationValues representing resolved
-     *         TypeQualifier annotations
+     * @param value AnnotationValue representing the use of an annotation
+     * @return Collection of AnnotationValues representing resolved TypeQualifier annotations
      */
     public static Collection<AnnotationValue> resolveTypeQualifiers(AnnotationValue value) {
         LinkedList<AnnotationValue> result = new LinkedList<>();
@@ -100,17 +111,15 @@ public class TypeQualifierResolver {
     }
 
     /**
-     * Resolve collection of AnnotationValues (which have been used to annotate
-     * an AnnotatedObject or method parameter) into collection of resolved type
-     * qualifier AnnotationValues.
+     * Resolve collection of AnnotationValues (which have been used to annotate an AnnotatedObject or
+     * method parameter) into collection of resolved type qualifier AnnotationValues.
      *
-     * @param values
-     *            Collection of AnnotationValues used to annotate an
-     *            AnnotatedObject or method parameter
+     * @param values Collection of AnnotationValues used to annotate an AnnotatedObject or method
+     *     parameter
      * @return Collection of resolved type qualifier AnnotationValues
      */
-    public static Collection<AnnotationValue> resolveTypeQualifierDefaults(Collection<AnnotationValue> values,
-            ElementType elementType) {
+    public static Collection<AnnotationValue> resolveTypeQualifierDefaults(
+            Collection<AnnotationValue> values, ElementType elementType) {
         LinkedList<AnnotationValue> result = new LinkedList<>();
         for (AnnotationValue value : values) {
             resolveTypeQualifierDefaults(value, elementType, result);
@@ -119,20 +128,18 @@ public class TypeQualifierResolver {
     }
 
     /**
-     * Resolve an annotation into AnnotationValues representing any type
-     * qualifier(s) the annotation resolves to. Detects annotations which are
-     * directly marked as TypeQualifier annotations, and also resolves the use
-     * of TypeQualifierNickname annotations.
+     * Resolve an annotation into AnnotationValues representing any type qualifier(s) the annotation
+     * resolves to. Detects annotations which are directly marked as TypeQualifier annotations, and
+     * also resolves the use of TypeQualifierNickname annotations.
      *
-     * @param value
-     *            AnnotationValue representing the use of an annotation
-     * @param result
-     *            LinkedList containing resolved type qualifier AnnotationValues
-     * @param onStack
-     *            stack of annotations being processed; used to detect cycles in
-     *            type qualifier nicknames
+     * @param value AnnotationValue representing the use of an annotation
+     * @param result LinkedList containing resolved type qualifier AnnotationValues
+     * @param onStack stack of annotations being processed; used to detect cycles in type qualifier
+     *     nicknames
      */
-    private static void resolveTypeQualifierNicknames(AnnotationValue value, LinkedList<AnnotationValue> result,
+    private static void resolveTypeQualifierNicknames(
+            AnnotationValue value,
+            LinkedList<AnnotationValue> result,
             LinkedList<ClassDescriptor> onStack) {
         ClassDescriptor annotationClass = value.getAnnotationClass();
 
@@ -151,7 +158,8 @@ public class TypeQualifierResolver {
                         || annotationClass.equals(intellijNullable)
                         || annotationClass.equals(checkerFrameworkNullable)
                         || annotationClass.equals(checkerFrameworkNullableDecl)) {
-                    resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.CHECK_FOR_NULL), result, onStack);
+                    resolveTypeQualifierNicknames(
+                            new AnnotationValue(JSR305NullnessAnnotations.CHECK_FOR_NULL), result, onStack);
                     return;
                 }
                 if (annotationClass.equals(androidNonNull)
@@ -161,7 +169,8 @@ public class TypeQualifierResolver {
                         || annotationClass.equals(intellijNotNull)
                         || annotationClass.equals(checkerFrameworkNonNull)
                         || annotationClass.equals(checkerFrameworkNonNullDecl)) {
-                    resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.NONNULL), result, onStack);
+                    resolveTypeQualifierNicknames(
+                            new AnnotationValue(JSR305NullnessAnnotations.NONNULL), result, onStack);
                     return;
                 }
 
@@ -186,7 +195,6 @@ public class TypeQualifierResolver {
         } finally {
             onStack.removeLast();
         }
-
     }
 
     public static void logMissingAnnotationClass(MissingClassException e) {
@@ -197,16 +205,15 @@ public class TypeQualifierResolver {
     }
 
     /**
-     * Resolve collection of AnnotationValues (which have been used to annotate
-     * an AnnotatedObject or method parameter) into collection of resolved type
-     * qualifier AnnotationValues.
+     * Resolve collection of AnnotationValues (which have been used to annotate an AnnotatedObject or
+     * method parameter) into collection of resolved type qualifier AnnotationValues.
      *
-     * @param values
-     *            Collection of AnnotationValues used to annotate an
-     *            AnnotatedObject or method parameter
+     * @param values Collection of AnnotationValues used to annotate an AnnotatedObject or method
+     *     parameter
      * @return Collection of resolved type qualifier AnnotationValues
      */
-    public static Collection<AnnotationValue> resolveTypeQualifiers(Collection<AnnotationValue> values) {
+    public static Collection<AnnotationValue> resolveTypeQualifiers(
+            Collection<AnnotationValue> values) {
         if (values.isEmpty()) {
             return Collections.emptyList();
         }
@@ -219,21 +226,19 @@ public class TypeQualifierResolver {
     }
 
     /**
-     * Resolve an annotation into AnnotationValues representing any type
-     * qualifier(s) the annotation resolves to. Detects annotations which are
-     * directly marked as TypeQualifier annotations, and also resolves the use
-     * of TypeQualifierNickname annotations.
+     * Resolve an annotation into AnnotationValues representing any type qualifier(s) the annotation
+     * resolves to. Detects annotations which are directly marked as TypeQualifier annotations, and
+     * also resolves the use of TypeQualifierNickname annotations.
      *
-     * @param value
-     *            AnnotationValue representing the use of an annotation
-     * @param result
-     *            LinkedList containing resolved type qualifier AnnotationValues
+     * @param value AnnotationValue representing the use of an annotation
+     * @param result LinkedList containing resolved type qualifier AnnotationValues
      */
-    private static void resolveTypeQualifierDefaults(AnnotationValue value, ElementType defaultFor,
-            LinkedList<AnnotationValue> result) {
+    private static void resolveTypeQualifierDefaults(
+            AnnotationValue value, ElementType defaultFor, LinkedList<AnnotationValue> result) {
 
         try {
-            XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, value.getAnnotationClass());
+            XClass c =
+                    Global.getAnalysisCache().getClassAnalysis(XClass.class, value.getAnnotationClass());
             AnnotationValue defaultAnnotation = c.getAnnotation(typeQualifierDefault);
             if (defaultAnnotation == null) {
                 return;
@@ -244,7 +249,8 @@ public class TypeQualifierResolver {
                     if (e.desc.equals(elementTypeDescriptor) && e.value.equals(defaultFor.name())) {
                         for (ClassDescriptor d : c.getAnnotationDescriptors()) {
                             if (!d.equals(typeQualifierDefault)) {
-                                resolveTypeQualifierNicknames(c.getAnnotation(d), result, new LinkedList<ClassDescriptor>());
+                                resolveTypeQualifierNicknames(
+                                        c.getAnnotation(d), result, new LinkedList<ClassDescriptor>());
                             }
                         }
                         break;
@@ -259,9 +265,6 @@ public class TypeQualifierResolver {
 
         } catch (ClassCastException e) {
             AnalysisContext.logError("ClassCastException " + value.getAnnotationClass(), e);
-
         }
-
     }
-
 }

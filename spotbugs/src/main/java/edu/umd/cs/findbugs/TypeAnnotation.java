@@ -18,20 +18,18 @@
  */
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
+import org.apache.bcel.generic.Type;
 
 /**
- * Bug annotation class for java types. This is of lighter weight than
- * ClassAnnotation, and can be used for things like array types.
+ * Bug annotation class for java types. This is of lighter weight than ClassAnnotation, and can be
+ * used for things like array types.
  *
  * @see ClassAnnotation
  */
@@ -48,7 +46,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 
     public static final String UNHASHABLE_ROLE = "TYPE_UNHASHABLE";
 
-    final private String descriptor; // jvm type descriptor, such as "[I"
+    private final String descriptor; // jvm type descriptor, such as "[I"
 
     private String roleDescription;
 
@@ -57,15 +55,11 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
     /**
      * constructor.
      *
-     * <p>
-     * For information on type descriptors, <br>
-     * see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.
-     * html#14152 <br>
-     * or http://www.murrayc.com/learning/java/java_classfileformat.shtml#
-     * TypeDescriptors
+     * <p>For information on type descriptors, <br>
+     * see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc. html#14152 <br>
+     * or http://www.murrayc.com/learning/java/java_classfileformat.shtml# TypeDescriptors
      *
-     * @param typeDescriptor
-     *            a jvm type descriptor, such as "[I"
+     * @param typeDescriptor a jvm type descriptor, such as "[I"
      */
     public TypeAnnotation(String typeDescriptor) {
         this(typeDescriptor, DEFAULT_ROLE);
@@ -91,7 +85,8 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         if (descriptor.startsWith("L")) {
             AnalysisContext context = AnalysisContext.currentAnalysisContext();
             if (context != null) {
-                String className = typeDescriptor.substring(1, typeDescriptor.length() - 1).replace('/', '.');
+                String className =
+                        typeDescriptor.substring(1, typeDescriptor.length() - 1).replace('/', '.');
                 this.sourceFileName = context.lookupSourceFile(className);
                 this.sourceLines = ClassAnnotation.getSourceLinesForClass(className, sourceFileName);
             } else {
@@ -192,7 +187,8 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
     }
 
     @Override
-    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
+    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary)
+            throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("descriptor", descriptor);
 
         String role = getDescription();

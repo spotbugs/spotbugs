@@ -19,12 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import java.io.IOException;
-
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.ClassParser;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -33,6 +27,10 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
+import java.io.IOException;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.JavaClass;
 
 /**
  * Analysis engine to produce a BCEL JavaClass object for a named class.
@@ -40,7 +38,8 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
  * @author David Hovemeyer
  */
 public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> {
-    private static final boolean DEBUG_MISSING_CLASSES = SystemProperties.getBoolean("findbugs.debug.missingclasses");
+    private static final boolean DEBUG_MISSING_CLASSES =
+            SystemProperties.getBoolean("findbugs.debug.missingclasses");
 
     private static final String JVM_VERSION = SystemProperties.getProperty("java.runtime.version");
 
@@ -52,16 +51,19 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> 
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public JavaClass analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public JavaClass analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor)
+            throws CheckedAnalysisException {
         try {
             ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
-            JavaClass javaClass = new ClassParser(classData.getInputStream(), descriptor.toResourceName()).parse();
+            JavaClass javaClass =
+                    new ClassParser(classData.getInputStream(), descriptor.toResourceName()).parse();
 
             // Make sure that the JavaClass object knows the repository
             // it was loaded from.
             javaClass.setRepository(Repository.getRepository());
 
-            if (DEBUG_MISSING_CLASSES && !(javaClass.getRepository() instanceof AnalysisCacheToRepositoryAdapter)) {
+            if (DEBUG_MISSING_CLASSES
+                    && !(javaClass.getRepository() instanceof AnalysisCacheToRepositoryAdapter)) {
                 throw new IllegalStateException("this should not happen");
             }
 

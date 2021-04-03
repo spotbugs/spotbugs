@@ -23,8 +23,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
- * A special Detector2 class designed to run some JUnit test code. Only used by
- * FindBugsTestCase.
+ * A special Detector2 class designed to run some JUnit test code. Only used by FindBugsTestCase.
  *
  * @author David Hovemeyer
  * @see FindBugsTestCase
@@ -35,9 +34,11 @@ public class JUnitDetectorAdapter implements Detector2 {
 
     private boolean testExecuted;
 
-    private static InheritableThreadLocal<JUnitDetectorAdapter> instance = new InheritableThreadLocal<>();
+    private static InheritableThreadLocal<JUnitDetectorAdapter> instance =
+            new InheritableThreadLocal<>();
 
-    private static InheritableThreadLocal<RunnableWithExceptions> runnableInstance = new InheritableThreadLocal<>();
+    private static InheritableThreadLocal<RunnableWithExceptions> runnableInstance =
+            new InheritableThreadLocal<>();
 
     public JUnitDetectorAdapter(BugReporter bugReporter) {
         instance.set(this);
@@ -47,10 +48,7 @@ public class JUnitDetectorAdapter implements Detector2 {
         return instance.get();
     }
 
-    /**
-     * @param runnable
-     *            The runnable to set.
-     */
+    /** @param runnable The runnable to set. */
     public static void setRunnable(RunnableWithExceptions runnable) {
         runnableInstance.set(runnable);
     }
@@ -65,7 +63,6 @@ public class JUnitDetectorAdapter implements Detector2 {
         if (throwable != null) {
             throw new Error(throwable);
         }
-
     }
 
     /*
@@ -109,5 +106,4 @@ public class JUnitDetectorAdapter implements Detector2 {
             throwable = e;
         }
     }
-
 }

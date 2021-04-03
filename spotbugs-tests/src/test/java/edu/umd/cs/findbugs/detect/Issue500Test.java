@@ -21,15 +21,12 @@ package edu.umd.cs.findbugs.detect;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
-
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+import org.junit.Test;
 
-/**
- * @author William R. Price
- */
+/** @author William R. Price */
 public class Issue500Test extends AbstractIntegrationTest {
 
     @Test
@@ -38,5 +35,4 @@ public class Issue500Test extends AbstractIntegrationTest {
         BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder().build();
         assertThat(getBugCollection(), containsExactly(0, bugMatcher));
     }
-
 }

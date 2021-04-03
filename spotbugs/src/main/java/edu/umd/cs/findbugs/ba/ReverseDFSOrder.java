@@ -22,9 +22,9 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Comparator;
 
 /**
- * A BlockOrder for visiting the blocks of a CFG in the order they would be
- * visited in a depth first search of the reversed CFG. This is the most
- * efficient visitation order for backwards dataflow analyses.
+ * A BlockOrder for visiting the blocks of a CFG in the order they would be visited in a depth first
+ * search of the reversed CFG. This is the most efficient visitation order for backwards dataflow
+ * analyses.
  *
  * @see BlockOrder
  * @see ReverseDepthFirstSearch
@@ -56,12 +56,9 @@ public class ReverseDFSOrder extends AbstractBlockOrder {
     /**
      * Constructor.
      *
-     * @param cfg
-     *            the CFG
-     * @param rdfs
-     *            the ReverseDepthFirstSearch of the CFG
-     * @param dfs
-     *            TODO
+     * @param cfg the CFG
+     * @param rdfs the ReverseDepthFirstSearch of the CFG
+     * @param dfs TODO
      */
     public ReverseDFSOrder(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
         super(cfg, new ReverseDFSComparator(rdfs, dfs));

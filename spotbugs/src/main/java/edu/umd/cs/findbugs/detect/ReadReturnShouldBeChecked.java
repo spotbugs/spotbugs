@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -30,8 +26,12 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
 
-public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implements StatelessDetector {
+public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
+        implements StatelessDetector {
 
     boolean sawRead = false;
 
@@ -68,9 +68,9 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
             return false;
         }
         return (Subtypes2.instanceOf(lastCallClass, "java.io.InputStream")
-                || Subtypes2.instanceOf(lastCallClass, "java.io.DataInput") || Subtypes2.instanceOf(lastCallClass,
-                        "java.io.Reader")) && !Subtypes2.instanceOf(lastCallClass, "java.io.ByteArrayInputStream");
-
+                || Subtypes2.instanceOf(lastCallClass, "java.io.DataInput")
+                || Subtypes2.instanceOf(lastCallClass, "java.io.Reader"))
+                && !Subtypes2.instanceOf(lastCallClass, "java.io.ByteArrayInputStream");
     }
 
     private boolean isBufferedInputStream() {
@@ -106,9 +106,12 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
         if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) {
             if ("available".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand())
-                    || getNameConstantOperand().startsWith("get") && getNameConstantOperand().endsWith("Length")
-                            && "()I".equals(getSigConstantOperand()) || "java/io/File".equals(getClassConstantOperand())
-                                    && "length".equals(getNameConstantOperand()) && "()J".equals(getSigConstantOperand())) {
+                    || getNameConstantOperand().startsWith("get")
+                            && getNameConstantOperand().endsWith("Length")
+                            && "()I".equals(getSigConstantOperand())
+                    || "java/io/File".equals(getClassConstantOperand())
+                            && "length".equals(getNameConstantOperand())
+                            && "()J".equals(getSigConstantOperand())) {
                 sawAvailable = 70;
                 return;
             }
@@ -116,9 +119,10 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
         sawAvailable--;
         if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
                 && "read".equals(getNameConstantOperand())
-
-                && ("([B)I".equals(getSigConstantOperand()) || "([BII)I".equals(getSigConstantOperand())
-                        || "([C)I".equals(getSigConstantOperand()) || "([CII)I".equals(getSigConstantOperand()))
+                && ("([B)I".equals(getSigConstantOperand())
+                        || "([BII)I".equals(getSigConstantOperand())
+                        || "([C)I".equals(getSigConstantOperand())
+                        || "([CII)I".equals(getSigConstantOperand()))
                 && isInputStream()) {
             sawRead = true;
             recentCallToAvailable = sawAvailable > 0;
@@ -126,8 +130,10 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
             return;
         }
         if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
-                && ("skip".equals(getNameConstantOperand()) && "(J)J".equals(getSigConstantOperand()) || "skipBytes".equals(getNameConstantOperand())
-                        && "(I)I".equals(getSigConstantOperand())) && isInputStream()
+                && ("skip".equals(getNameConstantOperand()) && "(J)J".equals(getSigConstantOperand())
+                        || "skipBytes".equals(getNameConstantOperand())
+                                && "(I)I".equals(getSigConstantOperand()))
+                && isInputStream()
                 && !isImageIOInputStream()) {
             // if not ByteArrayInput Stream
             // and either no recent calls to length
@@ -138,24 +144,30 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
             locationOfCall = getPC();
             recentCallToAvailable = sawAvailable > 0 && !wasBufferedInputStream;
             return;
-
         }
 
         if ((seen == Const.POP) || (seen == Const.POP2)) {
 
             if (sawRead) {
                 accumulator.accumulateBug(
-                        new BugInstance(this, "RR_NOT_CHECKED", recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY)
-                                .addClassAndMethod(this).addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false),
+                        new BugInstance(
+                                this, "RR_NOT_CHECKED", recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                        .addClassAndMethod(this)
+                                        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false),
                         SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, locationOfCall));
 
             } else if (sawSkip) {
 
                 accumulator.accumulateBug(
-                        new BugInstance(this, "SR_NOT_CHECKED", (wasBufferedInputStream ? HIGH_PRIORITY
-                                : recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY)).addClassAndMethod(this)
-                                        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false), SourceLineAnnotation
-                                                .fromVisitedInstruction(getClassContext(), this, locationOfCall));
+                        new BugInstance(
+                                this,
+                                "SR_NOT_CHECKED",
+                                (wasBufferedInputStream
+                                        ? HIGH_PRIORITY
+                                        : recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY))
+                                                .addClassAndMethod(this)
+                                                .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false),
+                        SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, locationOfCall));
             }
         }
         sawRead = false;

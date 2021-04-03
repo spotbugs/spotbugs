@@ -19,21 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import java.util.HashSet;
-import java.util.Iterator;
-
-import javax.annotation.meta.When;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.INVOKEDYNAMIC;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.RETURN;
-import org.apache.bcel.generic.ReturnInstruction;
-
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -51,6 +36,18 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.Global;
+import java.util.HashSet;
+import java.util.Iterator;
+import javax.annotation.meta.When;
+import org.apache.bcel.Const;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.RETURN;
+import org.apache.bcel.generic.ReturnInstruction;
 
 /**
  * Backwards type qualifier dataflow analysis.
@@ -58,7 +55,8 @@ import edu.umd.cs.findbugs.classfile.Global;
  * @author David Hovemeyer
  */
 public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowAnalysis {
-    private static final boolean PRUNE_CONFLICTING_VALUES = true; // SystemProperties.getBoolean("ctq.pruneconflicting");
+    private static final boolean PRUNE_CONFLICTING_VALUES =
+            true; // SystemProperties.getBoolean("ctq.pruneconflicting");
 
     private final DepthFirstSearch dfs;
 
@@ -69,34 +67,31 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
     /**
      * Constructor.
      *
-     * @param dfs
-     *            DepthFirstSearch on the analyzed method
-     * @param rdfs
-     *            ReverseDepthFirstSearch on the analyzed method
-     * @param xmethod
-     *            XMethod for the analyzed method
-     * @param cfg
-     *            CFG of the analyzed method
-     * @param vnaDataflow
-     *            ValueNumberDataflow on the analyzed method
-     * @param cpg
-     *            ConstantPoolGen of the analyzed method
-     * @param typeQualifierValue
-     *            TypeQualifierValue representing type qualifier the analysis
-     *            should check
+     * @param dfs DepthFirstSearch on the analyzed method
+     * @param rdfs ReverseDepthFirstSearch on the analyzed method
+     * @param xmethod XMethod for the analyzed method
+     * @param cfg CFG of the analyzed method
+     * @param vnaDataflow ValueNumberDataflow on the analyzed method
+     * @param cpg ConstantPoolGen of the analyzed method
+     * @param typeQualifierValue TypeQualifierValue representing type qualifier the analysis should
+     *     check
      */
-    public BackwardTypeQualifierDataflowAnalysis(DepthFirstSearch dfs, ReverseDepthFirstSearch rdfs, XMethod xmethod, CFG cfg,
-            ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg, TypeQualifierValue<?> typeQualifierValue) {
+    public BackwardTypeQualifierDataflowAnalysis(
+            DepthFirstSearch dfs,
+            ReverseDepthFirstSearch rdfs,
+            XMethod xmethod,
+            CFG cfg,
+            ValueNumberDataflow vnaDataflow,
+            ConstantPoolGen cpg,
+            TypeQualifierValue<?> typeQualifierValue) {
         super(xmethod, cfg, vnaDataflow, cpg, typeQualifierValue);
         this.dfs = dfs;
         this.rdfs = rdfs;
     }
 
-    /**
-     * @param forwardTypeQualifierDataflow
-     *            The forwardTypeQualifierDataflow to set.
-     */
-    public void setForwardTypeQualifierDataflow(ForwardTypeQualifierDataflow forwardTypeQualifierDataflow) {
+    /** @param forwardTypeQualifierDataflow The forwardTypeQualifierDataflow to set. */
+    public void setForwardTypeQualifierDataflow(
+            ForwardTypeQualifierDataflow forwardTypeQualifierDataflow) {
         this.forwardTypeQualifierDataflow = forwardTypeQualifierDataflow;
     }
 
@@ -110,7 +105,8 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
     }
 
     @Override
-    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeQualifierValueSet fact)
+    public void transferInstruction(
+            InstructionHandle handle, BasicBlock basicBlock, TypeQualifierValueSet fact)
             throws DataflowAnalysisException {
 
         if (!fact.isValid()) {
@@ -125,14 +121,17 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
         super.transferInstruction(handle, basicBlock, fact);
     }
 
-    private void pruneConflictingValues(TypeQualifierValueSet fact, TypeQualifierValueSet forwardFact) {
+    private void pruneConflictingValues(
+            TypeQualifierValueSet fact, TypeQualifierValueSet forwardFact) {
         if (forwardFact.isValid()) {
             HashSet<ValueNumber> valueNumbers = new HashSet<>(fact.getValueNumbers());
             valueNumbers.retainAll(forwardFact.getValueNumbers());
 
             for (ValueNumber vn : valueNumbers) {
-                if (FlowValue.valuesConflict(typeQualifierValue.isStrictQualifier() && !xmethod.isIdentity(),
-                        forwardFact.getValue(vn), fact.getValue(vn))) {
+                if (FlowValue.valuesConflict(
+                        typeQualifierValue.isStrictQualifier() && !xmethod.isIdentity(),
+                        forwardFact.getValue(vn),
+                        fact.getValue(vn))) {
                     fact.pruneValue(vn);
                 }
             }
@@ -157,7 +156,9 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
     private void registerInstructionSinks() throws DataflowAnalysisException {
         TypeQualifierAnnotation returnValueAnnotation = null;
         if (!xmethod.getSignature().endsWith(")V")) {
-            returnValueAnnotation = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xmethod, typeQualifierValue);
+            returnValueAnnotation =
+                    TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                            xmethod, typeQualifierValue);
         }
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
@@ -180,23 +181,27 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
         }
     }
 
-    private void modelReturn(TypeQualifierAnnotation returnValueAnnotation, Location location) throws DataflowAnalysisException {
+    private void modelReturn(TypeQualifierAnnotation returnValueAnnotation, Location location)
+            throws DataflowAnalysisException {
         When when = (returnValueAnnotation != null) ? returnValueAnnotation.when : When.UNKNOWN;
 
         // Model return statement
         ValueNumberFrame vnaFrameAtReturn = vnaDataflow.getFactAtLocation(location);
         if (vnaFrameAtReturn.isValid()) {
             ValueNumber topValue = vnaFrameAtReturn.getTopValue();
-            SourceSinkInfo sink = new SourceSinkInfo(SourceSinkType.RETURN_VALUE, location, topValue, when);
+            SourceSinkInfo sink =
+                    new SourceSinkInfo(SourceSinkType.RETURN_VALUE, location, topValue, when);
             registerSourceSink(sink);
         }
     }
 
     private void modelFieldStore(Location location) throws DataflowAnalysisException {
         // Model field stores
-        XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
-        TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(writtenField,
-                typeQualifierValue);
+        XField writtenField =
+                XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
+        TypeQualifierAnnotation tqa =
+                TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                        writtenField, typeQualifierValue);
         When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 
         // The ValueNumberFrame *before* the FieldInstruction should
@@ -235,14 +240,16 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
         }
 
         for (int param = 0; param < calledMethod.getNumParams(); param++) {
-            TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledMethod, param,
-                    typeQualifierValue);
+            TypeQualifierAnnotation tqa =
+                    TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                            calledMethod, param, typeQualifierValue);
 
             boolean interproc = false;
             if (TypeQualifierDatabase.USE_DATABASE && tqa == null) {
                 // See if there's an entry for this parameter
                 // in the interprocedural type qualifier database.
-                TypeQualifierDatabase tqdb = Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
+                TypeQualifierDatabase tqdb =
+                        Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
                 tqa = tqdb.getParameter(calledMethod.getMethodDescriptor(), param, typeQualifierValue);
                 if (tqa != null) {
                     interproc = true;
@@ -253,12 +260,12 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
             ValueNumber vn = vnaFrame.getArgument(inv, cpg, param, sigParser);
 
-            SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location, vn, when);
+            SourceSinkInfo info =
+                    new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location, vn, when);
             info.setParameter(param);
             info.setInterproc(interproc);
 
             registerSourceSink(info);
-
         }
     }
 
@@ -272,7 +279,8 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
      * edu.umd.cs.findbugs.ba.vna.ValueNumber)
      */
     @Override
-    protected void propagateAcrossPhiNode(TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN) {
+    protected void propagateAcrossPhiNode(
+            TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN) {
         // Backwards analysis - propagate value from target to source
         fact.propagateAcrossPhiNode(targetVN, sourceVN);
     }

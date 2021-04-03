@@ -19,13 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -39,6 +32,11 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 
 public class FieldItemSummary extends OpcodeStackDetector implements NonReportingDetector {
 
@@ -71,7 +69,8 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
                         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
                         for (XMethod called : targets) {
-                            if (!called.isAbstract() && !called.equals(m)
+                            if (!called.isAbstract()
+                                    && !called.equals(m)
                                     && subtypes2.isSubtype(called.getClassDescriptor(), getClassDescriptor())) {
                                 fieldSummary.setCalledFromSuperConstructor(new ProgramPoint(this), called);
                             }
@@ -79,15 +78,13 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
                     } catch (ClassNotFoundException e) {
                         AnalysisContext.reportMissingClass(e);
                     }
-
                 }
-
             }
-
         }
 
-        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getMethodName()) && Const.CONSTRUCTOR_NAME.equals(
-                getNameConstantOperand())) {
+        if (seen == Const.INVOKESPECIAL
+                && Const.CONSTRUCTOR_NAME.equals(getMethodName())
+                && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
 
             String classOperand = getClassConstantOperand();
             OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
@@ -98,7 +95,6 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
                     fieldSummary.sawSuperCall(getXMethod(), invoked);
                 }
             }
-
         }
 
         if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
@@ -116,13 +112,13 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
                         fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
                     }
                 }
-            } else if (seen == Const.PUTSTATIC && !Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
+            } else if (seen == Const.PUTSTATIC
+                    && !Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
                 fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
             }
             OpcodeStack.Item top = stack.getStackItem(0);
             fieldSummary.mergeSummary(fieldOperand, top);
         }
-
     }
 
     @Override
@@ -156,5 +152,4 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
     public void report() {
         fieldSummary.setComplete(true);
     }
-
 }

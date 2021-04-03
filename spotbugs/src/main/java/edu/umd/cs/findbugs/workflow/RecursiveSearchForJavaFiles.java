@@ -48,13 +48,9 @@ public class RecursiveSearchForJavaFiles {
                     } else if (f.isDirectory() && directories.add(f)) {
                         worklist.add(f);
                     }
-
                 }
             }
-
         }
         return result;
-
     }
-
 }

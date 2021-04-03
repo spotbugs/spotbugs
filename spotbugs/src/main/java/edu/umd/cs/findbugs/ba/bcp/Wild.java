@@ -19,16 +19,14 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionHandle;
-
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
- * A wildcard PatternElement, which matches any kind of instruction
- * indiscriminately.
+ * A wildcard PatternElement, which matches any kind of instruction indiscriminately.
  *
  * @author David Hovemeyer
  * @see PatternElement
@@ -37,8 +35,7 @@ public class Wild extends PatternElement {
     private int min, max;
 
     /**
-     * Default constructor. Creates a wildcard that matches from 0 to
-     * Integer.MAX_VALUE instructions.
+     * Default constructor. Creates a wildcard that matches from 0 to Integer.MAX_VALUE instructions.
      */
     public Wild() {
         this.min = 0;
@@ -46,11 +43,9 @@ public class Wild extends PatternElement {
     }
 
     /**
-     * Constructor. Matches any number of instructions from 0 to the maximum
-     * specified.
+     * Constructor. Matches any number of instructions from 0 to the maximum specified.
      *
-     * @param max
-     *            the maximum number of instructions the wildcard may match
+     * @param max the maximum number of instructions the wildcard may match
      */
     public Wild(int max) {
         this.min = 0;
@@ -60,10 +55,8 @@ public class Wild extends PatternElement {
     /**
      * Constructor.
      *
-     * @param min
-     *            minimum number of times the wildcard must match
-     * @param max
-     *            maximum number of times the wildcard may match
+     * @param min minimum number of times the wildcard must match
+     * @param max maximum number of times the wildcard may match
      */
     public Wild(int min, int max) {
         this.min = min;
@@ -73,10 +66,8 @@ public class Wild extends PatternElement {
     /**
      * Set min and max values.
      *
-     * @param min
-     *            minimum number of times the wildcard must match
-     * @param max
-     *            maximum number of times the wildcard may match
+     * @param min minimum number of times the wildcard must match
+     * @param max maximum number of times the wildcard may match
      */
     public void setMinAndMax(int min, int max) {
         this.min = min;
@@ -99,8 +90,13 @@ public class Wild extends PatternElement {
     }
 
     @Override
-    public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
-            BindingSet bindingSet) throws DataflowAnalysisException {
+    public MatchResult match(
+            InstructionHandle handle,
+            ConstantPoolGen cpg,
+            ValueNumberFrame before,
+            ValueNumberFrame after,
+            BindingSet bindingSet)
+            throws DataflowAnalysisException {
         return new MatchResult(this, bindingSet);
     }
 }

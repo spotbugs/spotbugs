@@ -22,54 +22,49 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
-
 import org.junit.Test;
 
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class ValidationSecurityManagerTest {
 
-
-    private static final SlashedClassName ANNOTATION = AnnotationTemplate.class.getAnnotation(SlashedClassName.class);
+    private static final SlashedClassName ANNOTATION =
+            AnnotationTemplate.class.getAnnotation(SlashedClassName.class);
 
     static class BadValidator implements TypeQualifierValidator<SlashedClassName> {
 
         @Override
         public @Nonnull When forConstantValue(@Nonnull SlashedClassName annotation, Object value) {
-            Thread t = new Thread() {
-                @Override
-                public void run() {
-                    System.out.println("bang");
-                }
-            };
+            Thread t =
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            System.out.println("bang");
+                        }
+                    };
             t.start();
             return When.NEVER;
         }
-
     }
 
     public When test(TypeQualifierValidator<SlashedClassName> validator) {
         return ValidationSecurityManager.sandboxedValidation(ANNOTATION, validator, "java/lang/String");
-
     }
 
     public void havePermissions() throws InterruptedException {
         final AtomicBoolean b = new AtomicBoolean(false);
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                b.set(true);
-            }
-        };
+        Thread t =
+                new Thread() {
+                    @Override
+                    public void run() {
+                        b.set(true);
+                    }
+                };
         t.start();
         t.join();
         assertEquals(true, b.get());
@@ -99,8 +94,5 @@ public class ValidationSecurityManagerTest {
         havePermissions();
         System.setSecurityManager(old);
         havePermissions();
-
-
     }
-
 }

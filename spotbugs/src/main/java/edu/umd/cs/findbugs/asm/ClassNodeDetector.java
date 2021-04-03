@@ -19,33 +19,30 @@
 
 package edu.umd.cs.findbugs.asm;
 
-import java.util.ArrayList;
-
-import org.objectweb.asm.tree.ClassNode;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
+import java.util.ArrayList;
+import org.objectweb.asm.tree.ClassNode;
 
 /**
- * Abstract base class to to reduce boilerplate needed for writing ASM-based
- * Detectors implemented as ClassNode visitors
+ * Abstract base class to to reduce boilerplate needed for writing ASM-based Detectors implemented
+ * as ClassNode visitors
  *
  * @author pugh
  */
-abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
+public abstract class ClassNodeDetector extends ClassNode implements Detector2 {
 
     protected final BugReporter bugReporter;
 
     /**
-     * Construct a ClassNodeDetector. The bugReporter is passed to the
-     * constructor and stored in a protected final field.
+     * Construct a ClassNodeDetector. The bugReporter is passed to the constructor and stored in a
+     * protected final field.
      *
-     * @param bugReporter
-     *            the BugReporter that bug should be reporter to.
+     * @param bugReporter the BugReporter that bug should be reporter to.
      */
     public ClassNodeDetector(BugReporter bugReporter) {
         super(FindBugsASM.ASM_VERSION);
@@ -60,7 +57,8 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
     @Override
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 
-        FBClassReader cr = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
+        FBClassReader cr =
+                Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
         this.interfaces = new ArrayList<>();
         this.innerClasses = new ArrayList<>();
         this.fields = new ArrayList<>();
@@ -72,5 +70,4 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
     public void finishPass() {
         // do nothing
     }
-
 }

@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -29,6 +26,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 
 public class CheckImmutableAnnotation extends PreorderVisitor implements Detector {
 
@@ -40,8 +39,10 @@ public class CheckImmutableAnnotation extends PreorderVisitor implements Detecto
 
     @Override
     public void visitJavaClass(JavaClass obj) {
-        JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
-        if (jcipAnotationDatabase.hasClassAnnotation(obj.getClassName().replace('/', '.'), "Immutable")) {
+        JCIPAnnotationDatabase jcipAnotationDatabase =
+                AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
+        if (jcipAnotationDatabase.hasClassAnnotation(
+                obj.getClassName().replace('/', '.'), "Immutable")) {
             super.visitJavaClass(obj);
         }
     }
@@ -49,20 +50,19 @@ public class CheckImmutableAnnotation extends PreorderVisitor implements Detecto
     @Override
     public void visit(Field obj) {
         if (!obj.isFinal() && !obj.isTransient() && !obj.isVolatile()) {
-            bugReporter.reportBug(new BugInstance(this, "JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS", NORMAL_PRIORITY).addClass(
-                    this).addVisitedField(this));
+            bugReporter.reportBug(
+                    new BugInstance(this, "JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS", NORMAL_PRIORITY)
+                            .addClass(this)
+                            .addVisitedField(this));
         }
     }
 
     @Override
     public void report() {
-
     }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
-
     }
-
 }

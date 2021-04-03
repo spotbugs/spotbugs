@@ -19,15 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.LineNumberTable;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LineNumberTable;
 
 public class FindBadForLoop extends OpcodeStackDetector implements StatelessDetector {
 
@@ -50,13 +49,21 @@ public class FindBadForLoop extends OpcodeStackDetector implements StatelessDete
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.ISTORE || seen == Const.ISTORE_0 || seen == Const.ISTORE_1 || seen == Const.ISTORE_2 || seen == Const.ISTORE_3) {
+        if (seen == Const.ISTORE
+                || seen == Const.ISTORE_0
+                || seen == Const.ISTORE_1
+                || seen == Const.ISTORE_2
+                || seen == Const.ISTORE_3) {
             lastRegStore = getRegisterOperand();
         }
         if (lineNumbers != null
                 && stack.getStackDepth() >= 2
-                && (seen == Const.IF_ICMPGE || seen == Const.IF_ICMPGT || seen == Const.IF_ICMPLT || seen == Const.IF_ICMPLE
-                        || seen == Const.IF_ICMPNE || seen == Const.IF_ICMPEQ)) {
+                && (seen == Const.IF_ICMPGE
+                        || seen == Const.IF_ICMPGT
+                        || seen == Const.IF_ICMPLT
+                        || seen == Const.IF_ICMPLE
+                        || seen == Const.IF_ICMPNE
+                        || seen == Const.IF_ICMPEQ)) {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             OpcodeStack.Item item1 = stack.getStackItem(1);
             int r0 = item0.getRegisterNumber();
@@ -76,16 +83,19 @@ public class FindBadForLoop extends OpcodeStackDetector implements StatelessDete
                     int testLineNumber = lineNumbers.getSourceLine(getPC());
                     int incLineNumber = lineNumbers.getSourceLine(branchTarget - 6);
                     int beforeIncLineNumber = lineNumbers.getSourceLine(branchTarget - 7);
-                    if (backTarget < getPC() && getPC() - 8 < backTarget && reg != rMax && incLineNumber < testLineNumber + 3
+                    if (backTarget < getPC()
+                            && getPC() - 8 < backTarget
+                            && reg != rMax
+                            && incLineNumber < testLineNumber + 3
                             && beforeIncLineNumber > incLineNumber) {
 
-                        bugReporter.reportBug(new BugInstance(this, "QF_QUESTIONABLE_FOR_LOOP", NORMAL_PRIORITY)
-                                .addClassAndMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, "QF_QUESTIONABLE_FOR_LOOP", NORMAL_PRIORITY)
+                                        .addClassAndMethod(this)
+                                        .addSourceLine(this));
                     }
                 }
-
             }
         }
     }
-
 }

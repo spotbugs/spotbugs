@@ -19,6 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.ProgramPoint;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.util.MultiMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,15 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import edu.umd.cs.findbugs.ProgramPoint;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.util.MultiMap;
-
-/**
- * @author  pugh
- */
+/** @author pugh */
 public class UnreadFieldsData {
     final Map<XField, Set<ProgramPoint>> assumedNonNull = new HashMap<>();
 
@@ -65,7 +62,6 @@ public class UnreadFieldsData {
     final Set<XField> myFields = new TreeSet<>();
 
     final Set<XField> writtenFields = new HashSet<>();
-
 
     final Map<XField, SourceLineAnnotation> fieldAccess = new HashMap<>();
 
@@ -124,5 +120,4 @@ public class UnreadFieldsData {
     public boolean isWrittenDuringInitialization(XField f) {
         return writtenInInitializationFields.contains(f);
     }
-
 }

@@ -18,13 +18,11 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import de.tobject.findbugs.reporter.MarkerUtil;
 import java.text.Collator;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
-
-import de.tobject.findbugs.reporter.MarkerUtil;
 
 public class BugPrioritySorter extends ViewerSorter {
 
@@ -68,9 +66,7 @@ public class BugPrioritySorter extends ViewerSorter {
         return super.category(element);
     }
 
-    /**
-     * Sorts bug groups on severity first, then on bug pattern name.
-     */
+    /** Sorts bug groups on severity first, then on bug pattern name. */
     static int compareGroups(BugGroup m1, BugGroup m2) {
         int result = m1.compareTo(m2);
         if (result == 0) {
@@ -106,5 +102,4 @@ public class BugPrioritySorter extends ViewerSorter {
         String a2 = m2.getAttribute(IMarker.MESSAGE, "");
         return a1.compareToIgnoreCase(a2);
     }
-
 }

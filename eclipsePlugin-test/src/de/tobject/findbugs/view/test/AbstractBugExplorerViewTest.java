@@ -21,23 +21,21 @@ package de.tobject.findbugs.view.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.ui.PartInitException;
-import org.junit.After;
-import org.junit.Before;
-
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 import de.tobject.findbugs.view.BugExplorerView;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
 import de.tobject.findbugs.view.explorer.GroupType;
 import de.tobject.findbugs.view.explorer.Grouping;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.ui.PartInitException;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * This is an abstract class for tests that interact with the BugExplorerView.
@@ -77,7 +75,8 @@ public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
         BugExplorerView view = (BugExplorerView) showBugExplorerView();
         assertNotNull(view);
 
-        ITreeContentProvider contentProvider = (ITreeContentProvider) view.getCommonViewer().getContentProvider();
+        ITreeContentProvider contentProvider =
+                (ITreeContentProvider) view.getCommonViewer().getContentProvider();
         return contentProvider;
     }
 
@@ -109,5 +108,4 @@ public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
         bugContentProvider.setGrouping(grouping);
         bugContentProvider.reSetInput();
     }
-
 }

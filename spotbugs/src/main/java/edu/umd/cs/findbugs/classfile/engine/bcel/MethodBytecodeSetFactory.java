@@ -19,18 +19,15 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.ba.BytecodeScanner;
 import edu.umd.cs.findbugs.ba.MethodBytecodeSet;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class MethodBytecodeSetFactory extends AnalysisFactory<MethodBytecodeSet> {
 
     /**
@@ -49,7 +46,8 @@ public class MethodBytecodeSetFactory extends AnalysisFactory<MethodBytecodeSet>
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public MethodBytecodeSet analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public MethodBytecodeSet analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
         Code code = method.getCode();
         if (code == null) {
@@ -85,5 +83,4 @@ public class MethodBytecodeSetFactory extends AnalysisFactory<MethodBytecodeSet>
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerMethodAnalysisEngine(MethodBytecodeSet.class, this);
     }
-
 }

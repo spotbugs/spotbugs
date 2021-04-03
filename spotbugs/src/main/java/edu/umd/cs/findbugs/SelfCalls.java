@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -35,14 +38,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-
-/**
- * Build a call graph of the self calls in a class.
- */
+/** Build a call graph of the self calls in a class. */
 public class SelfCalls {
     private static final Logger LOG = LoggerFactory.getLogger(SelfCalls.class);
 
@@ -57,8 +53,7 @@ public class SelfCalls {
     /**
      * Constructor.
      *
-     * @param classContext
-     *            the ClassContext for the class
+     * @param classContext the ClassContext for the class
      */
     public SelfCalls(ClassContext classContext) {
         this.classContext = classContext;
@@ -67,9 +62,7 @@ public class SelfCalls {
         this.hasSynchronization = false;
     }
 
-    /**
-     * Find the self calls.
-     */
+    /** Find the self calls. */
     public void execute() throws CFGBuilderException {
         JavaClass jclass = classContext.getJavaClass();
         Method[] methods = jclass.getMethods();
@@ -95,36 +88,28 @@ public class SelfCalls {
         LOG.debug("Found {} self calls", callGraph.getNumEdges());
     }
 
-    /**
-     * Get the self call graph for the class.
-     */
+    /** Get the self call graph for the class. */
     public CallGraph getCallGraph() {
         return callGraph;
     }
 
-    /**
-     * Get an Iterator over self-called methods.
-     */
+    /** Get an Iterator over self-called methods. */
     public Iterator<Method> calledMethodIterator() {
         return calledMethodSet.iterator();
     }
 
     /**
-     * Determine whether we are interested in calls for the given method.
-     * Subclasses may override. The default version returns true for every
-     * method.
+     * Determine whether we are interested in calls for the given method. Subclasses may override. The
+     * default version returns true for every method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return true if we want call sites for the method, false if not
      */
     public boolean wantCallsFor(Method method) {
         return true;
     }
 
-    /**
-     * Get an Iterator over all self call sites.
-     */
+    /** Get an Iterator over all self call sites. */
     public Iterator<CallSite> callSiteIterator() {
         return new Iterator<CallSite>() {
             private final Iterator<CallGraphEdge> iter = callGraph.edgeIterator();
@@ -146,9 +131,7 @@ public class SelfCalls {
         };
     }
 
-    /**
-     * Does this class contain any explicit synchronization?
-     */
+    /** Does this class contain any explicit synchronization? */
     public boolean hasSynchronization() {
         return hasSynchronization;
     }
@@ -156,8 +139,7 @@ public class SelfCalls {
     /**
      * Scan a method for self call sites.
      *
-     * @param node
-     *            the CallGraphNode for the method to be scanned
+     * @param node the CallGraphNode for the method to be scanned
      */
     private void scan(CallGraphNode node) throws CFGBuilderException {
         Method method = node.getMethod();
@@ -193,9 +175,7 @@ public class SelfCalls {
         }
     }
 
-    /**
-     * Is the given instruction a self-call?
-     */
+    /** Is the given instruction a self-call? */
     private Method isSelfCall(InvokeInstruction inv) {
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
         JavaClass jclass = classContext.getJavaClass();
@@ -221,7 +201,9 @@ public class SelfCalls {
             String signature = method.getSignature();
             boolean isStatic = method.isStatic();
 
-            if (methodName.equals(calledMethodName) && signature.equals(calledMethodSignature) && isStatic == isStaticCall) {
+            if (methodName.equals(calledMethodName)
+                    && signature.equals(calledMethodSignature)
+                    && isStatic == isStaticCall) {
                 // This method looks like a match.
                 return wantCallsFor(method) ? method : null;
             }
@@ -230,7 +212,8 @@ public class SelfCalls {
         // Hmm...no matching method found.
         // This is almost certainly because the named method
         // was inherited from a superclass.
-        LOG.debug("No method found for {}.{} : {}", calledClassName, calledMethodName, calledMethodSignature);
+        LOG.debug(
+                "No method found for {}.{} : {}", calledClassName, calledMethodName, calledMethodSignature);
         return null;
     }
 }

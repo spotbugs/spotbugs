@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class BadUseOfReturnValue extends BytecodeScanningDetector {
 
@@ -49,30 +48,36 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.INVOKEVIRTUAL && "indexOf".equals(getNameConstantOperand())
+        if (seen == Const.INVOKEVIRTUAL
+                && "indexOf".equals(getNameConstantOperand())
                 && "java/lang/String".equals(getClassConstantOperand())
                 && "(Ljava/lang/String;)I".equals(getSigConstantOperand())) {
             stringIndexOfOnTOS = true;
         } else if (stringIndexOfOnTOS) {
             if (seen == Const.IFLE || seen == Const.IFGT) {
                 bugAccumulator.accumulateBug(
-                        new BugInstance(this, "RV_CHECK_FOR_POSITIVE_INDEXOF", LOW_PRIORITY).addClassAndMethod(this), this);
+                        new BugInstance(this, "RV_CHECK_FOR_POSITIVE_INDEXOF", LOW_PRIORITY)
+                                .addClassAndMethod(this),
+                        this);
             }
             stringIndexOfOnTOS = false;
         }
 
-        if (seen == Const.INVOKEVIRTUAL && "readLine".equals(getNameConstantOperand())
-                && "()Ljava/lang/String;".equals(getSigConstantOperand()) && getClassConstantOperand().startsWith("java/io")
+        if (seen == Const.INVOKEVIRTUAL
+                && "readLine".equals(getNameConstantOperand())
+                && "()Ljava/lang/String;".equals(getSigConstantOperand())
+                && getClassConstantOperand().startsWith("java/io")
                 && !"java/io/LineNumberReader".equals(getClassConstantOperand())) {
             readLineOnTOS = true;
         } else if (readLineOnTOS) {
             if (seen == Const.IFNULL || seen == Const.IFNONNULL) {
                 bugAccumulator.accumulateBug(
-                        new BugInstance(this, "RV_DONT_JUST_NULL_CHECK_READLINE", NORMAL_PRIORITY).addClassAndMethod(this), this);
+                        new BugInstance(this, "RV_DONT_JUST_NULL_CHECK_READLINE", NORMAL_PRIORITY)
+                                .addClassAndMethod(this),
+                        this);
             }
 
             readLineOnTOS = false;
         }
     }
-
 }

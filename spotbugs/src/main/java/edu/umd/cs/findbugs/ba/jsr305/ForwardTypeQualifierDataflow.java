@@ -26,18 +26,16 @@ import edu.umd.cs.findbugs.ba.CFG;
  *
  * @author David Hovemeyer
  */
-public class ForwardTypeQualifierDataflow extends TypeQualifierDataflow<ForwardTypeQualifierDataflowAnalysis> {
+public class ForwardTypeQualifierDataflow
+        extends TypeQualifierDataflow<ForwardTypeQualifierDataflowAnalysis> {
 
     /**
      * Constructor.
      *
-     * @param cfg
-     *            CFG of analyzed method
-     * @param analysis
-     *            ForwardTypeQualifierDataflowAnalysis to perform on method
+     * @param cfg CFG of analyzed method
+     * @param analysis ForwardTypeQualifierDataflowAnalysis to perform on method
      */
     public ForwardTypeQualifierDataflow(CFG cfg, ForwardTypeQualifierDataflowAnalysis analysis) {
         super(cfg, analysis);
     }
-
 }

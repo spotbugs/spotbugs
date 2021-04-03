@@ -19,31 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.Component;
-import java.awt.Cursor;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.TreeSet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -62,6 +37,29 @@ import edu.umd.cs.findbugs.log.LogSync;
 import edu.umd.cs.findbugs.log.Logger;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 import edu.umd.cs.findbugs.util.Multiset;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 
 @SuppressWarnings("serial")
 /*
@@ -75,13 +73,14 @@ import edu.umd.cs.findbugs.util.Multiset;
 public class MainFrame extends FBFrame implements LogSync {
     public static final boolean GUI2_DEBUG = SystemProperties.getBoolean("gui2.debug");
 
-    public static final boolean MAC_OS_X = SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
+    public static final boolean MAC_OS_X =
+            SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
 
     private static final int SEARCH_TEXT_FIELD_SIZE = 32;
 
     public static final String TITLE_START_TXT = "SpotBugs";
 
-    private final static String WINDOW_MODIFIED = "windowModified";
+    private static final String WINDOW_MODIFIED = "windowModified";
 
     public static final boolean USE_WINDOWS_LAF = false;
 
@@ -131,7 +130,8 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private final JButton findNextButton = MainFrameHelper.newButton("button.findNext", "Next");
 
-    private final JButton findPreviousButton = MainFrameHelper.newButton("button.findPrev", "Previous");
+    private final JButton findPreviousButton =
+            MainFrameHelper.newButton("button.findPrev", "Previous");
 
     private final NavigableTextPane sourceCodeTextPane = new NavigableTextPane();
 
@@ -153,7 +153,8 @@ public class MainFrame extends FBFrame implements LogSync {
 
     final MainFrameMenu mainFrameMenu = new MainFrameMenu(this);
 
-    private final MainFrameComponentFactory mainFrameComponentFactory = new MainFrameComponentFactory(this);
+    private final MainFrameComponentFactory mainFrameComponentFactory =
+            new MainFrameComponentFactory(this);
 
     public static void makeInstance(FindBugsLayoutManagerFactory factory) {
         if (instance != null) {
@@ -206,7 +207,8 @@ public class MainFrame extends FBFrame implements LogSync {
         synchronized (waitLock) {
             if (waitCount <= 0) {
                 if (previousDecrementToZero != null) {
-                    throw new IllegalStateException("Can't decrease wait count; already zero", previousDecrementToZero);
+                    throw new IllegalStateException(
+                            "Can't decrease wait count; already zero", previousDecrementToZero);
                 } else {
                     throw new IllegalStateException("Can't decrease wait count; never incremented");
                 }
@@ -247,9 +249,8 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     /**
-     * Called when something in the project is changed and the change needs to
-     * be saved. This method should be called instead of using projectChanged =
-     * b.
+     * Called when something in the project is changed and the change needs to be saved. This method
+     * should be called instead of using projectChanged = b.
      */
     public void setProjectChanged(boolean b) {
         if (curProject == null) {
@@ -264,20 +265,15 @@ public class MainFrame extends FBFrame implements LogSync {
         mainFrameMenu.setSaveMenu(this);
 
         getRootPane().putClientProperty(WINDOW_MODIFIED, b);
-
     }
 
-    /**
-     * Show an error dialog.
-     */
+    /** Show an error dialog. */
     @Override
     public void error(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    /**
-     * Write a message to stdout.
-     */
+    /** Write a message to stdout. */
     @Override
     public void writeToLog(String message) {
         if (GUI2_DEBUG) {
@@ -324,8 +320,11 @@ public class MainFrame extends FBFrame implements LogSync {
         if (countFilteredBugs == 1) {
             msg = "  1 " + L10N.getLocalString("statusbar.bug_hidden", "bug hidden (see view menu)");
         } else if (countFilteredBugs > 1) {
-            msg = "  " + countFilteredBugs + " "
-                    + L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden (see view menu)");
+            msg =
+                    "  "
+                            + countFilteredBugs
+                            + " "
+                            + L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden (see view menu)");
         }
         if (errorMsg != null && errorMsg.length() > 0) {
             msg = join(msg, errorMsg);
@@ -339,8 +338,8 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     /**
-     * This method is called when the application is closing. This is either by
-     * the exit menuItem or by clicking on the window's system menu.
+     * This method is called when the application is closing. This is either by the exit menuItem or
+     * by clicking on the window's system menu.
      */
     void callOnClose() {
         if (projectChanged && !SystemProperties.getBoolean("findbugs.skipSaveChangesWarning")) {
@@ -349,9 +348,16 @@ public class MainFrame extends FBFrame implements LogSync {
                 L10N.getLocalString("dlg.dontsave_btn", "Don't Save"),
                 L10N.getLocalString("dlg.cancel_btn", "Cancel"),
             };
-            int value = JOptionPane.showOptionDialog(this, getActionWithoutSavingMsg("closing"),
-                    L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"),
-                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            int value =
+                    JOptionPane.showOptionDialog(
+                            this,
+                            getActionWithoutSavingMsg("closing"),
+                            L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"),
+                            JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[0]);
 
             if (value == 2 || value == JOptionPane.CLOSED_OPTION) {
                 return;
@@ -382,9 +388,8 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     /**
-     * Opens the analysis. Also clears the source and summary panes. Makes
-     * comments enabled false. Sets the saveType and adds the file to the recent
-     * menu.
+     * Opens the analysis. Also clears the source and summary panes. Makes comments enabled false.
+     * Sets the saveType and adds the file to the recent menu.
      *
      * @param f
      * @return whether the operation was successful
@@ -412,7 +417,6 @@ public class MainFrame extends FBFrame implements LogSync {
         } finally {
             releaseDisplayWait();
         }
-
     }
 
     void clearBugCollection() {
@@ -430,19 +434,22 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     @SwingThread
-    private void setProjectAndBugCollection(@CheckForNull Project project, @CheckForNull BugCollection bugCollection) {
+    private void setProjectAndBugCollection(
+            @CheckForNull Project project, @CheckForNull BugCollection bugCollection) {
         if (GUI2_DEBUG) {
             if (bugCollection == null) {
                 System.out.println("Setting bug collection to null");
             } else {
-                System.out.println("Setting bug collection; contains " + bugCollection.getCollection().size() + " bugs");
+                System.out.println(
+                        "Setting bug collection; contains " + bugCollection.getCollection().size() + " bugs");
             }
-
         }
         if (bugCollection != null && bugCollection.getProject() != project) {
             Project p2 = bugCollection.getProject();
-            throw new IllegalArgumentException(String.format("project %x and bug collection %x don't match",
-                    System.identityHashCode(project), System.identityHashCode(p2)));
+            throw new IllegalArgumentException(
+                    String.format(
+                            "project %x and bug collection %x don't match",
+                            System.identityHashCode(project), System.identityHashCode(p2)));
         }
         acquireDisplayWait();
         try {
@@ -454,21 +461,22 @@ public class MainFrame extends FBFrame implements LogSync {
             displayer.clearCache();
             mainFrameTree.updateBugTree();
             setProjectChanged(false);
-            Runnable runnable = () -> {
-                PreferencesFrame.getInstance().updateFilterPanel();
-                mainFrameMenu.getReconfigMenuItem().setEnabled(true);
-                mainFrameMenu.setViewMenu();
-                newProject();
-                clearSourcePane();
-                clearSummaryTab();
+            Runnable runnable =
+                    () -> {
+                        PreferencesFrame.getInstance().updateFilterPanel();
+                        mainFrameMenu.getReconfigMenuItem().setEnabled(true);
+                        mainFrameMenu.setViewMenu();
+                        newProject();
+                        clearSourcePane();
+                        clearSummaryTab();
 
-                /*
-                 * This is here due to a threading issue. It can only be
-                 * called after curProject has been changed. Since this
-                 * method is called by both open methods it is put here.
-                 */
-                updateTitle();
-            };
+                        /*
+                         * This is here due to a threading issue. It can only be
+                         * called after curProject has been changed. Since this
+                         * method is called by both open methods it is put here.
+                         */
+                        updateTitle();
+                    };
             if (SwingUtilities.isEventDispatchThread()) {
                 runnable.run();
             } else {
@@ -578,10 +586,11 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     void clearSourcePane() {
-        SwingUtilities.invokeLater(() -> {
-            mainFrameComponentFactory.setSourceTab("", null);
-            sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
-        });
+        SwingUtilities.invokeLater(
+                () -> {
+                    mainFrameComponentFactory.setSourceTab("", null);
+                    sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
+                });
     }
 
     // =============================== component creation
@@ -607,10 +616,7 @@ public class MainFrame extends FBFrame implements LogSync {
         return mainFrameComponentFactory.createSourceSearchPanel();
     }
 
-    /**
-     * Sets the title of the source tabs for either docking or non-docking
-     * versions.
-     */
+    /** Sets the title of the source tabs for either docking or non-docking versions. */
     void setSourceTab(String title, @CheckForNull BugInstance bug) {
         mainFrameComponentFactory.setSourceTab(title, bug);
     }
@@ -624,7 +630,8 @@ public class MainFrame extends FBFrame implements LogSync {
         if (msg != null) {
             return msg;
         }
-        return L10N.getLocalString("msg.you_are_" + action + "_txt", "You are " + action) + " "
+        return L10N.getLocalString("msg.you_are_" + action + "_txt", "You are " + action)
+                + " "
                 + L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
     }
 
@@ -636,9 +643,7 @@ public class MainFrame extends FBFrame implements LogSync {
         ((BugTreeModel) mainFrameTree.getTree().getModel()).clearViewCache();
     }
 
-    /**
-     * Changes the title based on curProject and saveFile.
-     */
+    /** Changes the title based on curProject and saveFile. */
     public void updateTitle() {
         Project project = getProject();
         String name = project.getProjectName();
@@ -646,7 +651,7 @@ public class MainFrame extends FBFrame implements LogSync {
             name = saveFile.getAbsolutePath();
         }
         if (name == null) {
-            name = "";//Project.UNNAMED_PROJECT;
+            name = ""; // Project.UNNAMED_PROJECT;
         }
         String oldTitle = this.getTitle();
         String newTitle = TITLE_START_TXT + ("".equals(name.trim()) ? "" : " - " + name);
@@ -672,7 +677,8 @@ public class MainFrame extends FBFrame implements LogSync {
         int total = 0;
         for (BugInstance b : getBugCollection().getCollection()) {
             if (shouldDisplayIssueIgnoringPackagePrefixes(b)) {
-                TreeSet<String> projectsForThisBug = projectPackagePrefixes.getProjects(b.getPrimaryClass().getClassName());
+                TreeSet<String> projectsForThisBug =
+                        projectPackagePrefixes.getProjects(b.getPrimaryClass().getClassName());
                 projects.addAll(projectsForThisBug);
                 count.addAll(projectsForThisBug);
                 total++;
@@ -687,11 +693,18 @@ public class MainFrame extends FBFrame implements LogSync {
         selectors.add(everything);
         for (String projectName : projects) {
             ProjectPackagePrefixes.PrefixFilter filter = projectPackagePrefixes.getFilter(projectName);
-            selectors.add(new ProjectSelector(projectName, filter.toString(), count.getCount(projectName)));
+            selectors.add(
+                    new ProjectSelector(projectName, filter.toString(), count.getCount(projectName)));
         }
-        ProjectSelector choice = (ProjectSelector) JOptionPane.showInputDialog(null,
-                "Choose a project to set appropriate package prefix(es)", "Select package prefixes by package",
-                JOptionPane.QUESTION_MESSAGE, null, selectors.toArray(), everything);
+        ProjectSelector choice =
+                (ProjectSelector) JOptionPane.showInputDialog(
+                        null,
+                        "Choose a project to set appropriate package prefix(es)",
+                        "Select package prefixes by package",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        selectors.toArray(),
+                        everything);
         if (choice == null) {
             return;
         }
@@ -699,7 +712,6 @@ public class MainFrame extends FBFrame implements LogSync {
         mainFrameTree.setFieldForPackagesToDisplayText(choice.filter);
         viewFilter.setPackagesToDisplay(choice.filter);
         resetViewCache();
-
     }
 
     private static String join(String s1, String s2) {
@@ -715,30 +727,35 @@ public class MainFrame extends FBFrame implements LogSync {
     private void updateSummaryTab(BugLeafNode node) {
         final BugInstance bug = node.getBug();
 
-        SwingUtilities.invokeLater(() -> {
-            summaryTopPanel.removeAll();
+        SwingUtilities.invokeLater(
+                () -> {
+                    summaryTopPanel.removeAll();
 
-            summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(bug.getAbridgedMessage(), bug));
+                    summaryTopPanel.add(
+                            mainFrameComponentFactory.bugSummaryComponent(bug.getAbridgedMessage(), bug));
 
-            for (BugAnnotation b : bug.getAnnotationsForMessage(true)) {
-                summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(b, bug));
-            }
+                    for (BugAnnotation b : bug.getAnnotationsForMessage(true)) {
+                        summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(b, bug));
+                    }
 
+                    BugPattern bugPattern = bug.getBugPattern();
+                    String detailText =
+                            bugPattern.getDetailText()
+                                    + "<br><p> <b>Bug kind and pattern: "
+                                    + bugPattern.getAbbrev()
+                                    + " - "
+                                    + bugPattern.getType();
+                    String txt = bugPattern.getDetailHTML(detailText);
+                    summaryHtmlArea.setText(txt);
 
-            BugPattern bugPattern = bug.getBugPattern();
-            String detailText =
-                    bugPattern.getDetailText()
-                            + "<br><p> <b>Bug kind and pattern: " +
-                            bugPattern.getAbbrev() + " - " + bugPattern.getType();
-            String txt = bugPattern.getDetailHTML(detailText);
-            summaryHtmlArea.setText(txt);
+                    summaryTopPanel.add(Box.createVerticalGlue());
+                    summaryTopPanel.revalidate();
 
-            summaryTopPanel.add(Box.createVerticalGlue());
-            summaryTopPanel.revalidate();
-
-            SwingUtilities.invokeLater(() -> summaryHtmlScrollPane.getVerticalScrollBar().setValue(
-                    summaryHtmlScrollPane.getVerticalScrollBar().getMinimum()));
-        });
+                    SwingUtilities.invokeLater(
+                            () -> summaryHtmlScrollPane
+                                    .getVerticalScrollBar()
+                                    .setValue(summaryHtmlScrollPane.getVerticalScrollBar().getMinimum()));
+                });
     }
 
     public void clearSummaryTab() {
@@ -926,7 +943,8 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     enum BugCard {
-        TREECARD, WAITCARD
+        TREECARD,
+        WAITCARD
     }
 
     private static class ProjectSelector {

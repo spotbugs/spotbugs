@@ -47,5 +47,4 @@ public class BodyDeclarationNotFoundException extends ASTNodeNotFoundException {
     public BodyDeclarationNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

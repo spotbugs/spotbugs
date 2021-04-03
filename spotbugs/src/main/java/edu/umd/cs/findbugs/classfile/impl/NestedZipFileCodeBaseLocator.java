@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import java.io.IOException;
 
 /**
  * Codebase locator for a zip/jar archive nested inside a parent codebase.
@@ -40,16 +39,12 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
         this.resourceName = resourceName;
     }
 
-    /**
-     * @return Returns the parentCodeBase.
-     */
+    /** @return Returns the parentCodeBase. */
     public ICodeBase getParentCodeBase() {
         return parentCodeBase;
     }
 
-    /**
-     * @return Returns the resourceName.
-     */
+    /** @return Returns the resourceName. */
     public String getResourceName() {
         return resourceName;
     }
@@ -99,7 +94,8 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
             return false;
         }
         NestedZipFileCodeBaseLocator other = (NestedZipFileCodeBaseLocator) obj;
-        return this.parentCodeBase.equals(other.parentCodeBase) && this.resourceName.equals(other.resourceName);
+        return this.parentCodeBase.equals(other.parentCodeBase)
+                && this.resourceName.equals(other.resourceName);
     }
 
     /*

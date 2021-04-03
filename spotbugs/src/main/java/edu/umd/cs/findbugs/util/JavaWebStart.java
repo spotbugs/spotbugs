@@ -23,14 +23,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import javax.annotation.CheckForNull;
 import javax.swing.JOptionPane;
 
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class JavaWebStart {
 
     static final @CheckForNull Method jnlpShowDocumentMethod;
@@ -66,7 +62,6 @@ public class JavaWebStart {
         jnlpShowDocumentMethod = showMethod;
         jnlpGetCodeBaseMethod = getCodeBase;
         jnlpBasicService = showObject;
-
     }
 
     public static boolean isRunningViaJavaWebstart() {
@@ -89,7 +84,8 @@ public class JavaWebStart {
         return new URL(s);
     }
 
-    static Boolean viaWebStart(URL url) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+    static Boolean viaWebStart(URL url)
+            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         if (JavaWebStart.jnlpShowDocumentMethod == null) {
             throw new UnsupportedOperationException("Launch via web start not available");
         }
@@ -119,5 +115,4 @@ public class JavaWebStart {
         }
         return false;
     }
-
 }

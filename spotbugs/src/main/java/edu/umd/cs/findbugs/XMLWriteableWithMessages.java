@@ -18,10 +18,9 @@
  */
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
+import java.io.IOException;
 
 /**
  * Write an object to XMLOutput while optionally adding descriptive messages.
@@ -29,5 +28,6 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author David Hovemeyer
  */
 public interface XMLWriteableWithMessages extends XMLWriteable {
-    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException;
+    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary)
+            throws IOException;
 }

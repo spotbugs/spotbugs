@@ -19,22 +19,19 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.CommandLine;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
-/**
- * @author William Pugh
- */
+/** @author William Pugh */
 public class Churn {
     BugCollection bugCollection;
 
@@ -145,7 +142,9 @@ public class Churn {
     public void dump(PrintStream out) {
         for (int t = 1; t < aliveAt.length; t++) {
             if (aliveAt[t] != 0) {
-                System.out.printf("%3d%% %4d %5d %3d #decay%n", diedAfter[t] * 100 / aliveAt[t], diedAfter[t], aliveAt[t], t);
+                System.out.printf(
+                        "%3d%% %4d %5d %3d #decay%n",
+                        diedAfter[t] * 100 / aliveAt[t], diedAfter[t], aliveAt[t], t);
             }
         }
         System.out.printf("%7s %3s %5s %5s %5s  %s%n", "chi", "%", "const", "fix", "max", "kind");
@@ -179,17 +178,23 @@ public class Churn {
                 }
                 double expectedFixed = baseFixRate * total;
                 double expectedPersist = (1 - baseFixRate) * total;
-                chiValue = (d.fixed - expectedFixed) * (d.fixed - expectedFixed) / expectedFixed + (d.persist - expectedPersist)
-                        * (d.persist - expectedPersist) / expectedPersist;
+                chiValue =
+                        (d.fixed - expectedFixed) * (d.fixed - expectedFixed) / expectedFixed
+                                + (d.persist - expectedPersist) * (d.persist - expectedPersist) / expectedPersist;
                 if (rawFixRate < lowFixRate) {
                     chiValue = -chiValue;
                 }
             }
 
-            System.out.printf("%7d %3d %5d %5d %5d %s%n", (int) chiValue, d.fixed * 100 / total, d.persist, d.fixed,
-                    d.maxRemovedAtOnce(), e.getKey());
+            System.out.printf(
+                    "%7d %3d %5d %5d %5d %s%n",
+                    (int) chiValue,
+                    d.fixed * 100 / total,
+                    d.persist,
+                    d.fixed,
+                    d.maxRemovedAtOnce(),
+                    e.getKey());
         }
-
     }
 
     class ChurnCommandLine extends CommandLine {
@@ -218,8 +223,12 @@ public class Churn {
 
         Churn churn = new Churn();
         ChurnCommandLine commandLine = churn.new ChurnCommandLine();
-        int argCount = commandLine
-                .parse(args, 0, 2, "Usage: " + Churn.class.getName() + " [options] [<xml results> [<history>]] ");
+        int argCount =
+                commandLine.parse(
+                        args,
+                        0,
+                        2,
+                        "Usage: " + Churn.class.getName() + " [options] [<xml results> [<history>]] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length) {
@@ -238,6 +247,5 @@ public class Churn {
         } finally {
             out.close();
         }
-
     }
 }

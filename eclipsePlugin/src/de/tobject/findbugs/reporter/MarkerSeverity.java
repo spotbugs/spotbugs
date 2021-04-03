@@ -26,8 +26,9 @@ import org.eclipse.core.resources.IMarker;
  * @author Andrei Loskutov
  */
 public enum MarkerSeverity {
-
-    Error(IMarker.SEVERITY_ERROR), Warning(IMarker.SEVERITY_WARNING), Info(IMarker.SEVERITY_INFO);
+    Error(IMarker.SEVERITY_ERROR),
+    Warning(IMarker.SEVERITY_WARNING),
+    Info(IMarker.SEVERITY_INFO);
 
     public final Integer value;
 
@@ -36,8 +37,8 @@ public enum MarkerSeverity {
     }
 
     /**
-     * @return never return null. In case given argument is unknown or null,
-     *         returns {@link #Warning} severity.
+     * @return never return null. In case given argument is unknown or null, returns {@link #Warning}
+     *     severity.
      */
     public static MarkerSeverity get(String markerSeverity) {
         if (markerSeverity == null || markerSeverity.length() == 0) {

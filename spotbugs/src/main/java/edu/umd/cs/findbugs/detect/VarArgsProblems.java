@@ -19,26 +19,24 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.regex.Pattern;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.TypeAnnotation;
+import java.util.regex.Pattern;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 /* Look for sequences of the form:
- *   ICONST_1
- ANEWARRAY int[]
- DUP
- ICONST_0
- ALOAD 1: a
- AASTORE
- INVOKESTATIC Arrays.asList(Object[]) : List
- */
+*   ICONST_1
+ANEWARRAY int[]
+DUP
+ICONST_0
+ALOAD 1: a
+AASTORE
+INVOKESTATIC Arrays.asList(Object[]) : List
+*/
 
 public class VarArgsProblems extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -90,7 +88,8 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                 break;
 
             case SEEN_ICONST_1:
-                if (seen == Const.ANEWARRAY && primitiveArray.matcher(getClassConstantOperand()).matches()) {
+                if (seen == Const.ANEWARRAY
+                        && primitiveArray.matcher(getClassConstantOperand()).matches()) {
                     // System.out.println("Allocation of array of type " +
                     // getClassConstantOperand());
                     primitiveArraySig = getClassConstantOperand();
@@ -131,7 +130,10 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                 break;
 
             case SEEN_AASTORE:
-                if (seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE || seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL) {
+                if (seen == Const.INVOKESTATIC
+                        || seen == Const.INVOKEINTERFACE
+                        || seen == Const.INVOKESPECIAL
+                        || seen == Const.INVOKEVIRTUAL) {
                     // System.out.println(getClassConstantOperand());
                     // System.out.println(getNameConstantOperand());
                     // System.out.println(getSigConstantOperand());
@@ -139,12 +141,17 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                         break;
                     }
                     int priority = NORMAL_PRIORITY;
-                    if ("asList".equals(getNameConstantOperand()) && "java/util/Arrays".equals(getClassConstantOperand())) {
+                    if ("asList".equals(getNameConstantOperand())
+                            && "java/util/Arrays".equals(getClassConstantOperand())) {
                         priority = HIGH_PRIORITY;
                     }
-                    bugReporter.reportBug(new BugInstance(this, "VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG", priority)
-                            .addClassAndMethod(this).addType(primitiveArraySig).describe(TypeAnnotation.FOUND_ROLE)
-                            .addCalledMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, "VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG", priority)
+                                    .addClassAndMethod(this)
+                                    .addType(primitiveArraySig)
+                                    .describe(TypeAnnotation.FOUND_ROLE)
+                                    .addCalledMethod(this)
+                                    .addSourceLine(this));
                 }
                 state = SEEN_NOTHING;
                 break;
@@ -154,7 +161,6 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                 break;
             default:
                 throw new IllegalStateException("State " + state + " not expected");
-
             }
         }
     }

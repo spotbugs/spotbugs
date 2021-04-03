@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import java.util.BitSet;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -28,15 +31,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
-import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-
-/**
- * StreamFactory for streams that are created as the result of calling a method
- * on an object.
- */
+/** StreamFactory for streams that are created as the result of calling a method on an object. */
 public class MethodReturnValueStreamFactory implements StreamFactory {
     private static final BitSet invokeOpcodeSet = new BitSet();
 
@@ -60,13 +55,10 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
     /**
      * Constructor. The Streams created will be marked as uninteresting.
      *
-     * @param baseClass
-     *            base class through which the method will be called (we check
-     *            instances of the base class and all subtypes)
-     * @param methodName
-     *            name of the method called
-     * @param methodSig
-     *            signature of the method called
+     * @param baseClass base class through which the method will be called (we check instances of the
+     *     base class and all subtypes)
+     * @param methodName name of the method called
+     * @param methodSig signature of the method called
      */
     public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig) {
         this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
@@ -78,18 +70,15 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
     /**
      * Constructor. The Streams created will be marked as interesting.
      *
-     * @param baseClass
-     *            base class through which the method will be called (we check
-     *            instances of the base class and all subtypes)
-     * @param methodName
-     *            name of the method called
-     * @param methodSig
-     *            signature of the method called
-     * @param bugType
-     *            the bug type that should be reported if the stream is not
-     *            closed on all paths out of the method
+     * @param baseClass base class through which the method will be called (we check instances of the
+     *     base class and all subtypes)
+     * @param methodName name of the method called
+     * @param methodSig signature of the method called
+     * @param bugType the bug type that should be reported if the stream is not closed on all paths
+     *     out of the method
      */
-    public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig, String bugType) {
+    public MethodReturnValueStreamFactory(
+            String baseClass, String methodName, String methodSig, String bugType) {
         this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
         this.methodName = methodName;
         this.methodSig = methodSig;
@@ -98,7 +87,10 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
     }
 
     @Override
-    public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
+    public Stream createStream(
+            Location location,
+            ObjectType type,
+            ConstantPoolGen cpg,
             RepositoryLookupFailureCallback lookupFailureCallback) {
 
         try {
@@ -130,8 +122,10 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
             if ("java.sql.CallableStatement".equals(streamClass)) {
                 streamClass = "java.sql.PreparedStatement";
             }
-            Stream result = new Stream(location, streamClass, streamClass).setIgnoreImplicitExceptions(true).setIsOpenOnCreation(
-                    true);
+            Stream result =
+                    new Stream(location, streamClass, streamClass)
+                            .setIgnoreImplicitExceptions(true)
+                            .setIsOpenOnCreation(true);
             if (!isUninteresting) {
                 result.setInteresting(bugType);
             }

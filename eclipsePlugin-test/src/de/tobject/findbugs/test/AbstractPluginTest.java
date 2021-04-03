@@ -28,9 +28,21 @@ import static org.eclipse.jdt.testplugin.JavaProjectHelper.performDummySearch;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.FindbugsTestPlugin;
+import de.tobject.findbugs.builder.FindBugsWorker;
+import de.tobject.findbugs.builder.WorkItem;
+import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.view.BugExplorerView;
+import de.tobject.findbugs.view.explorer.BugContentProvider;
+import de.tobject.findbugs.view.explorer.ResourceChangeListener;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import java.util.Collections;
 import java.util.Set;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -57,31 +69,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.osgi.framework.Bundle;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.FindbugsTestPlugin;
-import de.tobject.findbugs.builder.FindBugsWorker;
-import de.tobject.findbugs.builder.WorkItem;
-import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.preferences.FindBugsConstants;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.view.BugExplorerView;
-import de.tobject.findbugs.view.explorer.BugContentProvider;
-import de.tobject.findbugs.view.explorer.ResourceChangeListener;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.config.UserPreferences;
-
 /**
  * Base class for FindBugs tests.
- * <p>
- * Subclasses must:
+ *
+ * <p>Subclasses must:
+ *
  * <ul>
- * <li>implement getTestScenario() to return the required TestScenario.</li>
- * <li>call setUpTestProject(TestScenario) and tearDownTestProject() during
- * setUp and tearDown respectively. The argument for the setup must be the same
- * test scenario as returned by getTestScenario(). The fixture may be shared by
- * all tests in the same class, if the tests don't modify the project or are
- * independent from the modifications.</li>
+ *   <li>implement getTestScenario() to return the required TestScenario.
+ *   <li>call setUpTestProject(TestScenario) and tearDownTestProject() during setUp and tearDown
+ *       respectively. The argument for the setup must be the same test scenario as returned by
+ *       getTestScenario(). The fixture may be shared by all tests in the same class, if the tests
+ *       don't modify the project or are independent from the modifications.
  * </ul>
  *
  * @author Tomás Pollak
@@ -95,8 +93,8 @@ public abstract class AbstractPluginTest {
     protected static final String TEST_PROJECT = "TestProject";
 
     /**
-     * Hook for subclasses to add extra classpath entries to the test project
-     * during the setup of the test.
+     * Hook for subclasses to add extra classpath entries to the test project during the setup of the
+     * test.
      */
     protected static void addExtraClassPathEntries(TestScenario scenario) throws CoreException {
         // Add JUnit if the test scenario requires it
@@ -133,8 +131,8 @@ public abstract class AbstractPluginTest {
     }
 
     /**
-     * Create a new Java project with a source folder and copy the test files of
-     * the plugin to the source folder. Compile the project.
+     * Create a new Java project with a source folder and copy the test files of the plugin to the
+     * source folder. Compile the project.
      */
     protected static void setUpTestProject(TestScenario scenario) throws Exception {
         // Create the test project
@@ -222,7 +220,8 @@ public abstract class AbstractPluginTest {
     public void setUp() throws Exception {
         // Start with a clean FindBugs state
         clearBugsState();
-        IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        IWorkbenchPage activePage =
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         activePage.closeAllEditors(false);
         IViewPart view = activePage.findView("org.eclipse.ui.internal.introview");
         if (view != null) {
@@ -244,10 +243,8 @@ public abstract class AbstractPluginTest {
     /**
      * Assert the total number of bugs in the given resource.
      *
-     * @param expected
-     *            The expected number of bugs.
-     * @param project
-     *            The IProject that contains the bugs.
+     * @param expected The expected number of bugs.
+     * @param project The IProject that contains the bugs.
      * @throws CoreException
      */
     protected void assertBugsCount(int expected, IProject project) throws CoreException {
@@ -279,18 +276,15 @@ public abstract class AbstractPluginTest {
     }
 
     /**
-     * Asserts that the number of present markers of the given type match the
-     * given expected count.
+     * Asserts that the number of present markers of the given type match the given expected count.
      *
-     * @param expectedBugType
-     *            The expected bug type.
-     * @param expectedBugTypeCount
-     *            The expected bug type count.
-     * @param markers
-     *            The array of markers to assert on.
+     * @param expectedBugType The expected bug type.
+     * @param expectedBugTypeCount The expected bug type count.
+     * @param markers The array of markers to assert on.
      * @throws CoreException
      */
-    protected void assertMarkers(String expectedBugType, int expectedBugTypeCount, IMarker[] markers) throws CoreException {
+    protected void assertMarkers(String expectedBugType, int expectedBugTypeCount, IMarker[] markers)
+            throws CoreException {
         int seenBugTypeCount = 0;
         for (int i = 0; i < markers.length; i++) {
             IMarker marker = markers[i];
@@ -298,8 +292,15 @@ public abstract class AbstractPluginTest {
                 seenBugTypeCount++;
             }
         }
-        assertEquals("Expected " + expectedBugTypeCount + " of markers " + expectedBugType + " but seen " + seenBugTypeCount,
-                expectedBugTypeCount, seenBugTypeCount);
+        assertEquals(
+                "Expected "
+                        + expectedBugTypeCount
+                        + " of markers "
+                        + expectedBugType
+                        + " but seen "
+                        + seenBugTypeCount,
+                expectedBugTypeCount,
+                seenBugTypeCount);
     }
 
     protected void assertNoBugs() throws CoreException {
@@ -311,18 +312,15 @@ public abstract class AbstractPluginTest {
     }
 
     /**
-     * Asserts that the number of detected bugs of the given type match the
-     * given expected count.
+     * Asserts that the number of detected bugs of the given type match the given expected count.
      *
-     * @param expectedBugType
-     *            The expected bug type.
-     * @param expectedBugCount
-     *            The expected bug type count.
-     * @param project
-     *            The IProject that contains the bugs.
+     * @param expectedBugType The expected bug type.
+     * @param expectedBugCount The expected bug type count.
+     * @param project The IProject that contains the bugs.
      * @throws CoreException
      */
-    protected void assertReportedBugs(String expectedBugType, int expectedBugCount, IProject project) throws CoreException {
+    protected void assertReportedBugs(String expectedBugType, int expectedBugCount, IProject project)
+            throws CoreException {
         int seenBugCount = 0;
         SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
         for (BugInstance bug : bugs) {
@@ -330,8 +328,15 @@ public abstract class AbstractPluginTest {
                 seenBugCount++;
             }
         }
-        assertEquals("Expected " + expectedBugCount + " of bugs " + expectedBugType + " but seen " + seenBugCount,
-                expectedBugCount, seenBugCount);
+        assertEquals(
+                "Expected "
+                        + expectedBugCount
+                        + " of bugs "
+                        + expectedBugType
+                        + " but seen "
+                        + seenBugCount,
+                expectedBugCount,
+                seenBugCount);
     }
 
     protected void clearBugsState() throws CoreException {
@@ -346,7 +351,8 @@ public abstract class AbstractPluginTest {
 
     protected BugContentProvider getBugContentProvider() throws PartInitException {
         BugExplorerView navigator = (BugExplorerView) showBugExplorerView();
-        BugContentProvider bugContentProvider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
+        BugContentProvider bugContentProvider =
+                BugContentProvider.getProvider(navigator.getNavigatorContentService());
         return bugContentProvider;
     }
 
@@ -374,9 +380,7 @@ public abstract class AbstractPluginTest {
         return FindbugsPlugin.getProjectPreferences(getProject(), true);
     }
 
-    /**
-     * Returns the TestScenario for this test.
-     */
+    /** Returns the TestScenario for this test. */
     protected abstract TestScenario getTestScenario();
 
     protected final int getVisibleBugsCount() {
@@ -384,13 +388,11 @@ public abstract class AbstractPluginTest {
     }
 
     /**
-     * Suspend the calling thread until all the background jobs belonging to the
-     * given family are done.
+     * Suspend the calling thread until all the background jobs belonging to the given family are
+     * done.
      *
      * @see org.eclipse.core.runtime.jobs.Job#belongsTo(Object)
-     *
-     * @param family
-     *            The family object that groups the jobs.
+     * @param family The family object that groups the jobs.
      */
     protected void joinJobFamily(Object family) {
         boolean finished = false;
@@ -411,19 +413,18 @@ public abstract class AbstractPluginTest {
     }
 
     protected IViewPart showBugExplorerView() throws PartInitException {
-        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(BUG_EXPLORER_VIEW_ID);
+        return PlatformUI.getWorkbench()
+                .getActiveWorkbenchWindow()
+                .getActivePage()
+                .showView(BUG_EXPLORER_VIEW_ID);
     }
 
-    /**
-     * Runs the FindBugs worker on the test project.
-     */
+    /** Runs the FindBugs worker on the test project. */
     protected void work(FindBugsWorker worker) throws CoreException {
         work(worker, getJavaProject());
     }
 
-    /**
-     * Runs the FindBugs worker on the given Java element.
-     */
+    /** Runs the FindBugs worker on the given Java element. */
     protected void work(FindBugsWorker worker, IJavaElement element) throws CoreException {
         worker.work(Collections.singletonList(new WorkItem(element)));
         processUiEvents(ResourceChangeListener.SHORT_DELAY);
@@ -432,9 +433,7 @@ public abstract class AbstractPluginTest {
         processUiEvents();
     }
 
-    /**
-     * Runs the FindBugs worker on the given resource.
-     */
+    /** Runs the FindBugs worker on the given resource. */
     protected void work(FindBugsWorker worker, IResource resource) throws CoreException {
         worker.work(Collections.singletonList(new WorkItem(resource)));
         waitForJobs();

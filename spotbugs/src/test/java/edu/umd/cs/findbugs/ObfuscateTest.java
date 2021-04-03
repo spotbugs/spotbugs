@@ -23,9 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class ObfuscateTest {
 
     @Test

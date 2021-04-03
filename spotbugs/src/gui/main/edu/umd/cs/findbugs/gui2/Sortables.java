@@ -19,11 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -33,18 +28,19 @@ import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 
 /**
- * A useful enum for dealing with all the types of filterable and sortable data
- * in BugInstances This is the preferred way for getting the information out of
- * a BugInstance and formatting it for display It also has the comparators for
- * the different types of data
+ * A useful enum for dealing with all the types of filterable and sortable data in BugInstances This
+ * is the preferred way for getting the information out of a BugInstance and formatting it for
+ * display It also has the comparators for the different types of data
  *
  * @author Reuven
  */
-
 public enum Sortables implements Comparator<String> {
-
     FIRSTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version", "First Version")) {
         @Override
         public String getFrom(BugInstance bug) {
@@ -61,7 +57,10 @@ public enum Sortables implements Comparator<String> {
             AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
             if (appVersion != null) {
                 String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
-                return appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
+                return appVersion.getReleaseName()
+                        + " ("
+                        + timestamp.substring(0, timestamp.indexOf(' '))
+                        + ")";
             } else {
                 return "#" + seqNum;
             }
@@ -81,7 +80,6 @@ public enum Sortables implements Comparator<String> {
             }
             long sequenceNumber = bugCollection.getCurrentAppVersion().getSequenceNumber();
             return sequenceNumber > 0;
-
         }
     },
 
@@ -105,7 +103,10 @@ public enum Sortables implements Comparator<String> {
             AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
             if (appVersion != null) {
                 String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
-                return appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
+                return appVersion.getReleaseName()
+                        + " ("
+                        + timestamp.substring(0, timestamp.indexOf(' '))
+                        + ")";
             } else {
                 return "#" + seqNum;
             }
@@ -142,9 +143,7 @@ public enum Sortables implements Comparator<String> {
                 return true;
             }
             return bugCollection.getCurrentAppVersion().getSequenceNumber() > 0;
-
         }
-
     },
 
     PRIORITY(edu.umd.cs.findbugs.L10N.getLocalString("sort.priority", "Confidence")) {
@@ -165,7 +164,8 @@ public enum Sortables implements Comparator<String> {
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
             }
             if (value.equals(String.valueOf(Priorities.EXP_PRIORITY))) {
-                return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
+                return edu.umd.cs.findbugs.L10N.getLocalString(
+                        "sort.priority_experimental", "Experimental");
             }
             return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This
             // probably
@@ -199,10 +199,12 @@ public enum Sortables implements Comparator<String> {
             // If both have dollar signs and are of the same outer class,
             // compare the numbers after the dollar signs.
             try {
-                if (one.contains("$") && two.contains("$")
-                        && one.substring(0, one.lastIndexOf('$')).equals(two.substring(0, two.lastIndexOf('$')))) {
-                    return Integer.valueOf(one.substring(one.lastIndexOf('$'))).compareTo(
-                            Integer.valueOf(two.substring(two.lastIndexOf('$'))));
+                if (one.contains("$")
+                        && two.contains("$")
+                        && one.substring(0, one.lastIndexOf('$'))
+                                .equals(two.substring(0, two.lastIndexOf('$')))) {
+                    return Integer.valueOf(one.substring(one.lastIndexOf('$')))
+                            .compareTo(Integer.valueOf(two.substring(two.lastIndexOf('$'))));
                 }
             } catch (NumberFormatException e) {
             } // Somebody's playing silly buggers with dollar signs, just do it
@@ -271,9 +273,7 @@ public enum Sortables implements Comparator<String> {
                 return 1;
             }
             return compare;
-
         }
-
     },
     BUGCODE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_kind", "Bug Kind")) {
         @Override
@@ -306,6 +306,7 @@ public enum Sortables implements Comparator<String> {
 
     BUG_RANK(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugrank", "Bug Rank")) {
         String[] values;
+
         {
             values = new String[40];
             for (int i = 0; i < values.length; i++) {
@@ -343,7 +344,6 @@ public enum Sortables implements Comparator<String> {
         public boolean isAvailable(MainFrame mf) {
             return mf.getProjectPackagePrefixes().size() > 0;
         }
-
     },
 
     DIVIDER(" ") {
@@ -372,7 +372,9 @@ public enum Sortables implements Comparator<String> {
 
     Sortables(String prettyName) {
         this.prettyName = prettyName;
-        this.bugLeafNodeComparator = (one, two) -> Sortables.this.compare(Sortables.this.getFrom(one.getBug()), Sortables.this.getFrom(two.getBug()));
+        this.bugLeafNodeComparator =
+                (one, two) -> Sortables.this.compare(
+                        Sortables.this.getFrom(one.getBug()), Sortables.this.getFrom(two.getBug()));
     }
 
     @Override

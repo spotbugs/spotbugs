@@ -19,6 +19,13 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
+import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
+import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
+import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,20 +46,10 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
-import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
-import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
-import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
-import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
-
 /**
- *
  * Code base supporting Java 9 new jimage packed modules
  *
  * @author andrey
@@ -66,9 +63,9 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
 
     /**
      * Key is package name in bytecode notation (e.g. 'java/lang').
-     * <p>
-     * Values are either plain Strings for single-module packages, or sets of
-     * Strings for packages spread over multiple modules
+     *
+     * <p>Values are either plain Strings for single-module packages, or sets of Strings for packages
+     * spread over multiple modules
      */
     private Map<String, Object> packageToModuleMap;
 
@@ -90,29 +87,31 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     public Map<String, Object> createPackageToModuleMap(FileSystem fs) throws IOException {
         HashMap<String, Object> packageToModule = new LinkedHashMap<>();
         Path path = fs.getPath("packages");
-        Files.list(path).forEach(p -> {
-            try {
-                Iterator<Path> modIter = Files.list(p).iterator();
-                while (modIter.hasNext()) {
-                    Path module = modIter.next();
-                    String packageKey = fileName(p).replace('.', '/');
-                    String modulePath = fileName(module);
-                    if (!modIter.hasNext() && !packageToModule.containsKey(packageKey)) {
-                        packageToModule.put(packageKey, modulePath);
-                    } else {
-                        @SuppressWarnings("unchecked")
-                        Set<Object> modules = (Set<Object>) packageToModule.get(packageKey);
-                        if (modules == null) {
-                            modules = new LinkedHashSet<>();
-                            packageToModule.put(packageKey, modules);
-                        }
-                        modules.add(modulePath);
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        Files.list(path)
+                .forEach(
+                        p -> {
+                            try {
+                                Iterator<Path> modIter = Files.list(p).iterator();
+                                while (modIter.hasNext()) {
+                                    Path module = modIter.next();
+                                    String packageKey = fileName(p).replace('.', '/');
+                                    String modulePath = fileName(module);
+                                    if (!modIter.hasNext() && !packageToModule.containsKey(packageKey)) {
+                                        packageToModule.put(packageKey, modulePath);
+                                    } else {
+                                        @SuppressWarnings("unchecked")
+                                        Set<Object> modules = (Set<Object>) packageToModule.get(packageKey);
+                                        if (modules == null) {
+                                            modules = new LinkedHashSet<>();
+                                            packageToModule.put(packageKey, modules);
+                                        }
+                                        modules.add(modulePath);
+                                    }
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
         return packageToModule;
     }
 
@@ -178,7 +177,6 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         return fileName.equals(((JrtfsCodeBase) obj).fileName);
     }
 
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -242,7 +240,6 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
             Path next = iterator.next();
             return new JrtfsCodebaseEntry(next, root, JrtfsCodeBase.this);
         }
-
     }
 
     public static class JrtfsCodebaseEntry extends AbstractScannableCodeBaseEntry {
@@ -278,7 +275,8 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         }
 
         @Override
-        public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
+        public ClassDescriptor getClassDescriptor()
+                throws ResourceNotFoundException, InvalidClassFileFormatException {
             return DescriptorFactory.createClassDescriptorFromResourceName(getResourceName());
         }
 
@@ -325,8 +323,5 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
             builder.append("]");
             return builder.toString();
         }
-
     }
-
-
 }

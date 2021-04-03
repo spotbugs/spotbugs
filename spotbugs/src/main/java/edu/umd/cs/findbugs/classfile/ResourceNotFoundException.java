@@ -32,8 +32,7 @@ public class ResourceNotFoundException extends CheckedAnalysisException {
     /**
      * Constructor.
      *
-     * @param resourceName
-     *            name of the missing resource
+     * @param resourceName name of the missing resource
      */
     public ResourceNotFoundException(String resourceName) {
         super(MESSAGE_PREFIX + resourceName);
@@ -43,10 +42,8 @@ public class ResourceNotFoundException extends CheckedAnalysisException {
     /**
      * Constructor.
      *
-     * @param resourceName
-     *            name of the missing resource
-     * @param cause
-     *            underlying cause of the exception
+     * @param resourceName name of the missing resource
+     * @param cause underlying cause of the exception
      */
     public ResourceNotFoundException(String resourceName, Throwable cause) {
         super(MESSAGE_PREFIX + resourceName, cause);
@@ -63,13 +60,17 @@ public class ResourceNotFoundException extends CheckedAnalysisException {
     }
 
     /**
-     * Convert this exception to a ClassNotFoundException. This method should
-     * only be called if the ResourceNotFoundException occurs while looking for
-     * a class. The message format is parseable by ClassNotFoundExceptionParser.
+     * Convert this exception to a ClassNotFoundException. This method should only be called if the
+     * ResourceNotFoundException occurs while looking for a class. The message format is parseable by
+     * ClassNotFoundExceptionParser.
      */
     public ClassNotFoundException toClassNotFoundException() {
-        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
-        return new ClassNotFoundException("ResourceNotFoundException while looking for class "
-                + classDescriptor.toDottedClassName() + ": " + getMessage());
+        ClassDescriptor classDescriptor =
+                DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
+        return new ClassNotFoundException(
+                "ResourceNotFoundException while looking for class "
+                        + classDescriptor.toDottedClassName()
+                        + ": "
+                        + getMessage());
     }
 }

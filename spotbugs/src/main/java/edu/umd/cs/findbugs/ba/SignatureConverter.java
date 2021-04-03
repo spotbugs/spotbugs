@@ -19,59 +19,50 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-
 /**
- * Convert part or all of a Java type signature into something closer to what
- * types look like in the source code. Both field and method signatures may be
- * processed by this class. For a field signature, just call parseNext() once.
- * For a method signature, parseNext() must be called multiple times, and the
- * parens around the arguments must be skipped manually (by calling the skip()
- * method).
+ * Convert part or all of a Java type signature into something closer to what types look like in the
+ * source code. Both field and method signatures may be processed by this class. For a field
+ * signature, just call parseNext() once. For a method signature, parseNext() must be called
+ * multiple times, and the parens around the arguments must be skipped manually (by calling the
+ * skip() method).
  *
  * @author David Hovemeyer
  */
-
 public class SignatureConverter {
     private String signature;
 
     /**
      * Constructor.
      *
-     * @param signature
-     *            the field or method signature to convert
+     * @param signature the field or method signature to convert
      */
     public SignatureConverter(String signature) {
         this.signature = signature;
     }
 
-    /**
-     * Get the first character of the remaining part of the signature.
-     */
+    /** Get the first character of the remaining part of the signature. */
     public char getFirst() {
         return signature.charAt(0);
     }
 
-    /**
-     * Skip the first character of the remaining part of the signature.
-     */
+    /** Skip the first character of the remaining part of the signature. */
     public void skip() {
         signature = signature.substring(1);
     }
 
     /**
-     * Parse a single type out of the signature, starting at the beginning of
-     * the remaining part of the signature. For example, if the first character
-     * of the remaining part is "I", then this method will return "int", and the
-     * "I" will be consumed. Arrays, reference types, and basic types are all
-     * handled.
+     * Parse a single type out of the signature, starting at the beginning of the remaining part of
+     * the signature. For example, if the first character of the remaining part is "I", then this
+     * method will return "int", and the "I" will be consumed. Arrays, reference types, and basic
+     * types are all handled.
      *
      * @return the parsed type string
      */
@@ -135,63 +126,52 @@ public class SignatureConverter {
     }
 
     /**
-     * Convenience method for generating a method signature in human readable
-     * form.
+     * Convenience method for generating a method signature in human readable form.
      *
-     * @param javaClass
-     *            the class
-     * @param method
-     *            the method
+     * @param javaClass the class
+     * @param method the method
      */
     public static String convertMethodSignature(JavaClass javaClass, Method method) {
-        return convertMethodSignature(javaClass.getClassName(), method.getName(), method.getSignature());
+        return convertMethodSignature(
+                javaClass.getClassName(), method.getName(), method.getSignature());
     }
 
     /**
-     * Convenience method for generating a method signature in human readable
-     * form.
+     * Convenience method for generating a method signature in human readable form.
      *
-     * @param methodGen
-     *            the method to produce a method signature for
+     * @param methodGen the method to produce a method signature for
      */
     public static String convertMethodSignature(MethodGen methodGen) {
-        return convertMethodSignature(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
+        return convertMethodSignature(
+                methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
     }
 
     /**
-     * Convenience method for generating a method signature in human readable
-     * form.
+     * Convenience method for generating a method signature in human readable form.
      *
-     * @param inv
-     *            an InvokeInstruction
-     * @param cpg
-     *            the ConstantPoolGen for the class the instruction belongs to
+     * @param inv an InvokeInstruction
+     * @param cpg the ConstantPoolGen for the class the instruction belongs to
      */
     public static String convertMethodSignature(InvokeInstruction inv, ConstantPoolGen cpg) {
         return convertMethodSignature(inv.getClassName(cpg), inv.getName(cpg), inv.getSignature(cpg));
     }
 
     /**
-     * Convenience method for generating a method signature in human readable
-     * form.
+     * Convenience method for generating a method signature in human readable form.
      *
-     * @param className
-     *            name of the class containing the method
-     * @param methodName
-     *            the name of the method
-     * @param methodSig
-     *            the signature of the method
+     * @param className name of the class containing the method
+     * @param methodName the name of the method
+     * @param methodSig the signature of the method
      */
-    public static String convertMethodSignature(String className, String methodName, String methodSig) {
+    public static String convertMethodSignature(
+            String className, String methodName, String methodSig) {
         return convertMethodSignature(className, methodName, methodSig, "");
     }
 
     /**
-     * Convenience method for generating a method signature in human readable
-     * form.
+     * Convenience method for generating a method signature in human readable form.
      *
-     * @param xmethod
-     *            an XMethod
+     * @param xmethod an XMethod
      * @return the formatted version of that signature
      */
     public static String convertMethodSignature(XMethod xmethod) {
@@ -202,33 +182,28 @@ public class SignatureConverter {
     }
 
     /**
-     * Convenience method for generating a method signature in human readable
-     * form.
+     * Convenience method for generating a method signature in human readable form.
      *
-     * @param methodDescriptor
-     *            a MethodDescriptor
+     * @param methodDescriptor a MethodDescriptor
      * @return the formatted version of that signature
      */
     public static String convertMethodSignature(MethodDescriptor methodDescriptor) {
-        return convertMethodSignature(methodDescriptor.getClassDescriptor().toDottedClassName(), methodDescriptor.getName(),
+        return convertMethodSignature(
+                methodDescriptor.getClassDescriptor().toDottedClassName(),
+                methodDescriptor.getName(),
                 methodDescriptor.getSignature());
     }
 
     /**
-     * Convenience method for generating a method signature in human readable
-     * form.
+     * Convenience method for generating a method signature in human readable form.
      *
-     * @param className
-     *            name of the class containing the method
-     * @param methodName
-     *            the name of the method
-     * @param methodSig
-     *            the signature of the method
-     * @param pkgName
-     *            the name of the package the method is in (used to shorten
-     *            class names)
+     * @param className name of the class containing the method
+     * @param methodName the name of the method
+     * @param methodSig the signature of the method
+     * @param pkgName the name of the package the method is in (used to shorten class names)
      */
-    public static String convertMethodSignature(String className, String methodName, String methodSig, String pkgName) {
+    public static String convertMethodSignature(
+            String className, String methodName, String methodSig, String pkgName) {
         StringBuilder args = new StringBuilder();
         SignatureConverter converter = new SignatureConverter(methodSig);
 
@@ -256,11 +231,9 @@ public class SignatureConverter {
     }
 
     /**
-     * Convenience method for converting a single signature component to
-     * human-readable form.
+     * Convenience method for converting a single signature component to human-readable form.
      *
-     * @param signature
-     *            the signature
+     * @param signature the signature
      */
     public static String convert(String signature) {
         return new SignatureConverter(signature).parseNext();

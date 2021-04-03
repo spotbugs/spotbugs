@@ -19,16 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -44,8 +34,16 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 
-public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends OpcodeStackDetector {
+public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass
+        extends OpcodeStackDetector {
 
     final BugAccumulator accumulator;
 
@@ -97,8 +95,10 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
         }
         FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 
-        ClassDescriptor superClassDescriptor = DescriptorFactory.createClassDescriptor(getSuperclassName());
-        Set<ProgramPoint> calledFrom = fieldSummary.getCalledFromSuperConstructor(superClassDescriptor, getXMethod());
+        ClassDescriptor superClassDescriptor =
+                DescriptorFactory.createClassDescriptor(getSuperclassName());
+        Set<ProgramPoint> calledFrom =
+                fieldSummary.getCalledFromSuperConstructor(superClassDescriptor, getXMethod());
         if (calledFrom.isEmpty()) {
             return;
         }
@@ -111,14 +111,18 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 
         if (f.isFinal()) {
             priority = HIGH_PRIORITY;
-        } else if (unreadFields.isWrittenDuringInitialization(f) || unreadFields.isWrittenOutsideOfInitialization(f)) {
+        } else if (unreadFields.isWrittenDuringInitialization(f)
+                || unreadFields.isWrittenOutsideOfInitialization(f)) {
             priority = NORMAL_PRIORITY;
         } else {
             priority = HIGH_PRIORITY;
         }
 
         int nextOpcode = getNextOpcode();
-        if (nullCheckedFields.contains(f) || nextOpcode == Const.IFNULL || nextOpcode == Const.IFNONNULL || nextOpcode == Const.IFEQ
+        if (nullCheckedFields.contains(f)
+                || nextOpcode == Const.IFNULL
+                || nextOpcode == Const.IFNONNULL
+                || nextOpcode == Const.IFEQ
                 || nextOpcode == Const.IFNE) {
             priority++;
             nullCheckedFields.add(f);
@@ -131,7 +135,8 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
             }
             Method upcallMethod = null;
             for (Method m : getThisClass().getMethods()) {
-                if (m.getName().equals(upcall.getName()) && m.getSignature().equals(upcall.getSignature())) {
+                if (m.getName().equals(upcall.getName())
+                        && m.getSignature().equals(upcall.getSignature())) {
                     upcallMethod = m;
                     break;
                 }
@@ -139,7 +144,8 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
             if (upcallMethod == null) {
                 continue;
             }
-            Map<Integer, OpcodeStack.Item> putfieldsAt = PutfieldScanner.getPutfieldsFor(getThisClass(), upcallMethod, f);
+            Map<Integer, OpcodeStack.Item> putfieldsAt =
+                    PutfieldScanner.getPutfieldsFor(getThisClass(), upcallMethod, f);
             if (putfieldsAt.isEmpty()) {
                 continue;
             }
@@ -150,18 +156,24 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
                 priority++;
             }
 
-            SourceLineAnnotation fieldSetAt = SourceLineAnnotation.fromVisitedInstruction(getThisClass(), upcallMethod, pc);
+            SourceLineAnnotation fieldSetAt =
+                    SourceLineAnnotation.fromVisitedInstruction(getThisClass(), upcallMethod, pc);
 
-            BugInstance bug = new BugInstance(this, "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", priority).addClassAndMethod(
-                    this).addField(f);
-            bug.addMethod(p.method).describe(MethodAnnotation.METHOD_SUPERCLASS_CONSTRUCTOR)
-                    .addSourceLine(p.getSourceLineAnnotation()).describe(SourceLineAnnotation.ROLE_CALLED_FROM_SUPERCLASS_AT)
-                    .addMethod(upcall).describe(MethodAnnotation.METHOD_CONSTRUCTOR).add(fieldSetAt)
+            BugInstance bug =
+                    new BugInstance(this, "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", priority)
+                            .addClassAndMethod(this)
+                            .addField(f);
+            bug.addMethod(p.method)
+                    .describe(MethodAnnotation.METHOD_SUPERCLASS_CONSTRUCTOR)
+                    .addSourceLine(p.getSourceLineAnnotation())
+                    .describe(SourceLineAnnotation.ROLE_CALLED_FROM_SUPERCLASS_AT)
+                    .addMethod(upcall)
+                    .describe(MethodAnnotation.METHOD_CONSTRUCTOR)
+                    .add(fieldSetAt)
                     .describe(SourceLineAnnotation.ROLE_FIELD_SET_TOO_LATE_AT);
 
             accumulator.accumulateBug(bug, this);
         }
-
     }
 
     private @CheckForNull XMethod getConstructorThatCallsSuperConstructor(XMethod superConstructor) {
@@ -177,5 +189,4 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
         }
         return null;
     }
-
 }

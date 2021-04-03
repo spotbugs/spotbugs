@@ -19,16 +19,13 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
+import java.util.ArrayList;
 
-/**
- * A list of all bugs to filter out, only we call it suppressing them
- */
+/** A list of all bugs to filter out, only we call it suppressing them */
 @Deprecated
 public class SuppressionMatcher extends ArrayList<BugInstance> implements Matcher {
     private static final long serialVersionUID = -689204051024507484L;

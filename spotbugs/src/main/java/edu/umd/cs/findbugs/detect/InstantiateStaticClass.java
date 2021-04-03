@@ -20,10 +20,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.List;
-
-import org.apache.bcel.Const;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -31,6 +27,8 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import java.util.List;
+import org.apache.bcel.Const;
 
 public class InstantiateStaticClass extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -42,7 +40,9 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if ((seen == Const.INVOKESPECIAL) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+        if ((seen == Const.INVOKESPECIAL)
+                && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
+                && "()V".equals(getSigConstantOperand())) {
             XClass xClass = getXClassOperand();
             if (xClass == null) {
                 return;
@@ -58,16 +58,18 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
             }
 
             // ignore the typesafe enumerated constant pattern
-            if (Const.STATIC_INITIALIZER_NAME.equals(getMethodName()) && (getClassName().equals(clsName))) {
+            if (Const.STATIC_INITIALIZER_NAME.equals(getMethodName())
+                    && (getClassName().equals(clsName))) {
                 return;
             }
 
             if (isStaticOnlyClass(xClass)) {
-                bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY).addClassAndMethod(
-                        this).addSourceLine(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this));
             }
         }
-
     }
 
     private boolean isStaticOnlyClass(XClass xClass) {
@@ -87,7 +89,8 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 
         List<? extends XMethod> methods = xClass.getXMethods();
         for (XMethod m : methods) {
-            // !m.isSynthetic(): bug #1282: No warning should be generated if only static methods are synthetic
+            // !m.isSynthetic(): bug #1282: No warning should be generated if only static methods are
+            // synthetic
             if (m.isStatic() && !m.isSynthetic()) {
                 staticCount++;
             } else if (!Const.CONSTRUCTOR_NAME.equals(m.getName()) || !"()V".equals(m.getSignature())) {
@@ -106,5 +109,4 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 
         return staticCount != 0;
     }
-
 }

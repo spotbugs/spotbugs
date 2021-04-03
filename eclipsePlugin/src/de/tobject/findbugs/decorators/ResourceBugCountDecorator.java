@@ -18,21 +18,19 @@
  */
 package de.tobject.findbugs.decorators;
 
+import de.tobject.findbugs.builder.ResourceUtils;
+import de.tobject.findbugs.builder.WorkItem;
+import de.tobject.findbugs.util.Util;
 import java.util.Set;
-
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IWorkingSet;
 
-import de.tobject.findbugs.builder.ResourceUtils;
-import de.tobject.findbugs.builder.WorkItem;
-import de.tobject.findbugs.util.Util;
-
 /**
- * A simple decorator which adds (in currently hardcoded way) bug counts to the
- * resources. There are 3 different decorators configured via plugin.xml
- * (project/folder/file), current implementation is the same for all.
+ * A simple decorator which adds (in currently hardcoded way) bug counts to the resources. There are
+ * 3 different decorators configured via plugin.xml (project/folder/file), current implementation is
+ * the same for all.
  *
  * @author Andrei
  */
@@ -91,5 +89,4 @@ public class ResourceBugCountDecorator implements ILabelDecorator {
     public void removeListener(ILabelProviderListener listener) {
         // noop
     }
-
 }

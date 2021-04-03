@@ -24,8 +24,8 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 /**
- * Thrown when no <CODE>Statement</CODE> was found in the specified
- * <CODE>CompilationUnit</CODE> between the specified start- and end-line.
+ * Thrown when no <CODE>Statement</CODE> was found in the specified <CODE>CompilationUnit</CODE>
+ * between the specified start- and end-line.
  *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -42,7 +42,12 @@ public class StatementNotFoundException extends ASTNodeNotFoundException {
     private final int endLine;
 
     public StatementNotFoundException(CompilationUnit compilationUnit, int startLine, int endLine) {
-        super("Statement at source line '" + startLine + "-" + endLine + "' not found in the compilation unit.");
+        super(
+                "Statement at source line '"
+                        + startLine
+                        + "-"
+                        + endLine
+                        + "' not found in the compilation unit.");
         this.compilationUnit = compilationUnit;
         this.startLine = startLine;
         this.endLine = endLine;
@@ -59,5 +64,4 @@ public class StatementNotFoundException extends ASTNodeNotFoundException {
     public int getEndLine() {
         return endLine;
     }
-
 }

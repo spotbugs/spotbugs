@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -28,6 +26,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
 /**
  * A BugAnnotation object specifying a Java class involved in the bug.
@@ -57,12 +56,10 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
     public static final String TYPE_QUALIFIER_ROLE = "CLASS_TYPE_QUALIFIER";
 
-
     /**
      * Constructor.
      *
-     * @param className
-     *            the name of the class
+     * @param className the name of the class
      */
     public ClassAnnotation(@DottedClassName String className) {
         super(className, DEFAULT_ROLE);
@@ -80,8 +77,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
     /**
      * Factory method to create a ClassAnnotation from a ClassDescriptor.
      *
-     * @param classDescriptor
-     *            the ClassDescriptor
+     * @param classDescriptor the ClassDescriptor
      * @return the ClassAnnotation
      */
     public static ClassAnnotation fromClassDescriptor(ClassDescriptor classDescriptor) {
@@ -132,7 +128,6 @@ public class ClassAnnotation extends PackageMemberAnnotation {
             return this;
         }
         return new ClassAnnotation(className.substring(0, firstDollar));
-
     }
 
     @Override
@@ -159,7 +154,8 @@ public class ClassAnnotation extends PackageMemberAnnotation {
         return sourceLines;
     }
 
-    public static SourceLineAnnotation getSourceLinesForClass(@DottedClassName String className, String sourceFileName) {
+    public static SourceLineAnnotation getSourceLinesForClass(
+            @DottedClassName String className, String sourceFileName) {
 
         // Create source line annotation for class on demand
 
@@ -169,12 +165,14 @@ public class ClassAnnotation extends PackageMemberAnnotation {
             return new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
         }
 
-        SourceInfoMap.SourceLineRange classLine = currentAnalysisContext.getSourceInfoMap().getClassLine(className);
+        SourceInfoMap.SourceLineRange classLine =
+                currentAnalysisContext.getSourceInfoMap().getClassLine(className);
 
         if (classLine == null) {
             return SourceLineAnnotation.getSourceAnnotationForClass(className, sourceFileName);
         } else {
-            return new SourceLineAnnotation(className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
+            return new SourceLineAnnotation(
+                    className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
         }
     }
 
@@ -192,8 +190,10 @@ public class ClassAnnotation extends PackageMemberAnnotation {
     }
 
     @Override
-    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
-        XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName());
+    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary)
+            throws IOException {
+        XMLAttributeList attributeList =
+                new XMLAttributeList().addAttribute("classname", getClassName());
         if (isPrimary) {
             attributeList.addAttribute("primary", "true");
         }
@@ -211,6 +211,5 @@ public class ClassAnnotation extends PackageMemberAnnotation {
             xmlOutput.closeTag(BugAnnotation.MESSAGE_TAG);
         }
         xmlOutput.closeTag(ELEMENT_NAME);
-
     }
 }

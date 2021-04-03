@@ -1,19 +1,15 @@
 package edu.umd.cs.findbugs.test;
 
+import edu.umd.cs.findbugs.BugCollection;
 import java.nio.file.Path;
-
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-
 import org.junit.rules.ExternalResource;
 
-import edu.umd.cs.findbugs.BugCollection;
-
 /**
- * <p>
- * A JUnit rule to execute integration test for SpotBugs. This is basically
- * designed to help SpotBugs plugin developer to test their product. Basic usage:
- * </p>
+ * A JUnit rule to execute integration test for SpotBugs. This is basically designed to help
+ * SpotBugs plugin developer to test their product. Basic usage:
+ *
  * <pre><code>
  * public class MyIntegrationTest {
  *     &#064;Rule
@@ -37,6 +33,7 @@ import edu.umd.cs.findbugs.BugCollection;
  *     }
  * }
  * </code></pre>
+ *
  * @since 3.1
  */
 @ParametersAreNonnullByDefault
@@ -54,11 +51,9 @@ public class SpotBugsRule extends ExternalResource {
     }
 
     /**
-     * <p>
      * Add an entry to aux classpath of SpotBugs analysis.
-     * </p>
-     * @param path
-     *      A path of the target class file or jar file. Non-null.
+     *
+     * @param path A path of the target class file or jar file. Non-null.
      * @return callee itself, so caller can chain another method in fluent interface.
      */
     // TODO let users specify "groupId:artifactId:packaging:version:classifier" like Grape in Groovy
@@ -73,11 +68,9 @@ public class SpotBugsRule extends ExternalResource {
     }
 
     /**
-     * <p>
      * Run SpotBugs under given condition, and return its result.
-     * </p>
-     * @param paths
-     *     Paths of target class files
+     *
+     * @param paths Paths of target class files
      * @return a {@link BugCollection} which contains all detected bugs.
      */
     // TODO let users specify SlashedClassName, then find its file path automatically

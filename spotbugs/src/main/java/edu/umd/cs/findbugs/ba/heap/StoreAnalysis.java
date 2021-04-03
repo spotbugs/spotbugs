@@ -19,14 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.heap;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XField;
+import org.apache.bcel.generic.ConstantPoolGen;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class StoreAnalysis extends FieldSetAnalysis {
     public StoreAnalysis(DepthFirstSearch dfs, ConstantPoolGen cpg) {
         super(dfs, cpg);
@@ -56,5 +53,4 @@ public class StoreAnalysis extends FieldSetAnalysis {
     protected void sawStore(FieldSet fact, XField field) {
         fact.addField(field);
     }
-
 }

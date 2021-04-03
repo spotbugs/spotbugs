@@ -19,16 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.FirstPassDetector;
@@ -46,14 +36,22 @@ import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.util.HashSet;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.generic.Type;
 
-public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetector implements FirstPassDetector {
+public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetector
+        implements FirstPassDetector {
 
     final BugReporter bugReporter;
 
     private final boolean testingEnabled;
 
-    final static boolean REPORT_INFERRED_METHODS = SystemProperties.getBoolean("mrc.inferred.report");
+    static final boolean REPORT_INFERRED_METHODS = SystemProperties.getBoolean("mrc.inferred.report");
 
     public FunctionsThatMightBeMistakenForProcedures(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -67,7 +65,6 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
     public void visit(JavaClass obj) {
         isInnerClass = false;
         hasNonFinalFields = false;
-
     }
 
     @Override
@@ -86,7 +83,6 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         doNotIgnore.clear();
         doNotIgnoreHigh.clear();
         methodsSeen.clear();
-
     }
 
     HashSet<XMethod> okToIgnore = new HashSet<>();
@@ -124,7 +120,6 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             if (getClassName().equals(p)) {
                 funky = true;
             }
-
         }
         //
         XMethod m = getXMethod();
@@ -148,20 +143,25 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         //         System.out.println("Investigating " + getFullyQualifiedMethodName());
         returnSelf = returnOther = updates = returnNew = returnUnknown = 0;
 
-        if (testingEnabled && REPORT_INFERRED_METHODS
+        if (testingEnabled
+                && REPORT_INFERRED_METHODS
                 && AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
             inferredMethod = new BugInstance("TESTING", NORMAL_PRIORITY).addClassAndMethod(this);
         } else {
             inferredMethod = null;
         }
         super.visit(code); // make callbacks to sawOpcode for all opcodes
-        //         System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates, returnOther, returnNew);
+        //         System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates, returnOther,
+        // returnNew);
 
         if (returnSelf > 0 && returnOther == 0) {
             okToIgnore.add(m);
         } else if (funky) {
             okToIgnore.add(m);
-        } else if (returnOther > 0 && returnOther >= returnSelf && returnNew > 0 && returnNew >= returnOther - 1) {
+        } else if (returnOther > 0
+                && returnOther >= returnSelf
+                && returnNew > 0
+                && returnNew >= returnOther - 1) {
 
             int priority = HIGH_PRIORITY;
             if (returnSelf > 0 || updates > 0) {
@@ -188,17 +188,15 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                     xFactory.addFunctionThatMightBeMistakenForProcedures(getMethodDescriptor());
                     if (inferredMethod != null) {
                         inferredMethod.setPriority(priority);
-                        inferredMethod.addString(String.format("%3d %3d %5d %3d", returnOther, returnSelf, returnNew, updates));
+                        inferredMethod.addString(
+                                String.format("%3d %3d %5d %3d", returnOther, returnSelf, returnNew, updates));
                         bugReporter.reportBug(inferredMethod);
                     }
                 }
             }
 
-
             inferredMethod = null;
-
         }
-
     }
 
     @Override
@@ -263,15 +261,14 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                     returnNew++;
                 }
                 break;
-
             }
-
 
             if (xMethod.isAbstract() && !xMethod.getClassDescriptor().equals(getClassDescriptor())) {
                 returnUnknown++;
                 break;
             }
-            if (Const.CONSTRUCTOR_NAME.equals(xMethod.getName()) || doNotIgnoreHigh.contains(xMethod)) {
+            if (Const.CONSTRUCTOR_NAME.equals(xMethod.getName())
+                    || doNotIgnoreHigh.contains(xMethod)) {
                 returnOther++;
                 // System.out.println("  calls " + xMethod);
                 // System.out.println("  at " +
@@ -288,18 +285,15 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             } else {
                 returnUnknown++;
             }
-
         }
             break;
         case Const.PUTFIELD: {
-
             OpcodeStack.Item rv = stack.getStackItem(1);
             if (rv.getRegisterNumber() == 0 && rv.isInitialParameter()) {
                 if (inferredMethod != null) {
                     inferredMethod.addReferencedField(this);
                 }
                 updates++;
-
             }
         }
             break;

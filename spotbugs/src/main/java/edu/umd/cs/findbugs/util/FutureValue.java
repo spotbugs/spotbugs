@@ -24,9 +24,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class FutureValue<V> implements Future<V> {
 
     final CountDownLatch latch = new CountDownLatch(1);
@@ -55,7 +53,8 @@ public class FutureValue<V> implements Future<V> {
     }
 
     @Override
-    public synchronized V get(long arg0, TimeUnit arg1) throws InterruptedException, TimeoutException {
+    public synchronized V get(long arg0, TimeUnit arg1)
+            throws InterruptedException, TimeoutException {
         if (!latch.await(arg0, arg1)) {
             throw new TimeoutException();
         }
@@ -65,7 +64,8 @@ public class FutureValue<V> implements Future<V> {
         return value;
     }
 
-    public synchronized V get(long arg0, TimeUnit arg1, V valueOnTimeout) throws InterruptedException {
+    public synchronized V get(long arg0, TimeUnit arg1, V valueOnTimeout)
+            throws InterruptedException {
         if (!latch.await(arg0, arg1)) {
             return valueOnTimeout;
         }
@@ -96,5 +96,4 @@ public class FutureValue<V> implements Future<V> {
         this.value = value;
         latch.countDown();
     }
-
 }

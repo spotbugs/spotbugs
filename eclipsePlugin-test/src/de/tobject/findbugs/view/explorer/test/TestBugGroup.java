@@ -21,10 +21,9 @@ package de.tobject.findbugs.view.explorer.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import org.junit.Test;
-
 import de.tobject.findbugs.view.explorer.BugGroup;
 import de.tobject.findbugs.view.explorer.GroupType;
+import org.junit.Test;
 
 public class TestBugGroup {
 
@@ -54,5 +53,4 @@ public class TestBugGroup {
         bg2 = new BugGroup(null, "", GroupType.Marker);
         assertEquals(bg1, bg2);
     }
-
 }

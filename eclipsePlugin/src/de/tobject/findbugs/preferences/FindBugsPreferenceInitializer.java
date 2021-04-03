@@ -34,14 +34,12 @@ import static de.tobject.findbugs.preferences.FindBugsConstants.RUN_ANALYSIS_ON_
 import static de.tobject.findbugs.preferences.FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS;
 import static de.tobject.findbugs.preferences.FindBugsConstants.decodeIds;
 
-import java.util.Set;
-
-import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.jface.preference.IPreferenceStore;
-
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerSeverity;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import java.util.Set;
+import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer {
 
@@ -110,5 +108,4 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         store.setToDefault(KEY_CACHE_CLASS_DATA);
         store.setToDefault(KEY_RUN_ANALYSIS_AS_EXTRA_JOB);
     }
-
 }

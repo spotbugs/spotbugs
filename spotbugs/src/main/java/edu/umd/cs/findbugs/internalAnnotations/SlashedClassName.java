@@ -23,20 +23,20 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifier;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
 
 /**
- * Denotes a class name or package name where the / character is used to
- * separate package/class name components.
+ * Denotes a class name or package name where the / character is used to separate package/class name
+ * components.
  *
- * e.g. {@code java/util/Collection}, {@code foo/Bar$Baz}
+ * <p>e.g. {@code java/util/Collection}, {@code foo/Bar$Baz}
  *
  * @author pugh
- * @see edu.umd.cs.findbugs.util.ClassName An utility class provides utility methods to handle this format
+ * @see edu.umd.cs.findbugs.util.ClassName An utility class provides utility methods to handle this
+ *     format
  * @see DottedClassName Another format of class name
  */
 @Documented
@@ -49,13 +49,14 @@ public @interface SlashedClassName {
     When when() default When.ALWAYS;
 
     static class Checker implements TypeQualifierValidator<SlashedClassName> {
-        final static String simpleName = "(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|\\$)*)";
+        static final String simpleName =
+                "(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|\\$)*)";
 
-        final static String slashedClassName = simpleName + "(/" + simpleName + ")*";
+        static final String slashedClassName = simpleName + "(/" + simpleName + ")*";
 
-        final static Pattern simplePattern = Pattern.compile(simpleName);
+        static final Pattern simplePattern = Pattern.compile(simpleName);
 
-        final static Pattern pattern = Pattern.compile(slashedClassName);
+        static final Pattern pattern = Pattern.compile(slashedClassName);
 
         @Override
         @Nonnull
@@ -73,8 +74,6 @@ public @interface SlashedClassName {
             }
 
             return When.NEVER;
-
         }
-
     }
 }

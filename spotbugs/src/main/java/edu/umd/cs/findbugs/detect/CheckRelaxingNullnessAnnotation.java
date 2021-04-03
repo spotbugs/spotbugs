@@ -24,25 +24,6 @@ import static edu.umd.cs.findbugs.ba.NullnessAnnotation.NONNULL;
 import static edu.umd.cs.findbugs.ba.NullnessAnnotation.NULLABLE;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.tree.AnnotationNode;
-import org.objectweb.asm.tree.LocalVariableNode;
-import org.objectweb.asm.tree.MethodNode;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
@@ -62,14 +43,29 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.LocalVariableNode;
+import org.objectweb.asm.tree.MethodNode;
 
 /**
- * Checks that overriding methods do not relax {@link Nonnull} (made
- * {@link CheckForNull}) on return values or {@link CheckForNull} (made
- * {@link Nonnull}) on parameters.
+ * Checks that overriding methods do not relax {@link Nonnull} (made {@link CheckForNull}) on return
+ * values or {@link CheckForNull} (made {@link Nonnull}) on parameters.
  *
- * The code accepts also old (deprecated) nullness annotations from
- * {@code edu.umd.cs.findbugs.annotations} package.
+ * <p>The code accepts also old (deprecated) nullness annotations from {@code
+ * edu.umd.cs.findbugs.annotations} package.
  *
  * @author alienisty (Alessandro Nistico)
  * @author Andrey Loskutov
@@ -104,7 +100,12 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
     }
 
     @Override
-    public MethodVisitor visitMethod(int methodAccess, String methodName, String desc, String methodSignature, String[] exceptions) {
+    public MethodVisitor visitMethod(
+            int methodAccess,
+            String methodName,
+            String desc,
+            String methodSignature,
+            String[] exceptions) {
         if ((methodAccess & ACC_STATIC) != 0) {
             // skip static methods
             return null;
@@ -112,8 +113,9 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         final XMethod xmethod = xclass.findMethod(methodName, desc, false);
         if (xmethod == null) {
             // unable to continue the analysis
-            bugReporter.reportSkippedAnalysis(new MethodDescriptor(xclass.getClassDescriptor().getClassName(), methodName, desc,
-                    false));
+            bugReporter.reportSkippedAnalysis(
+                    new MethodDescriptor(
+                            xclass.getClassDescriptor().getClassName(), methodName, desc, false));
             return null;
         }
         return new DetectorNode(methodAccess, methodName, desc, methodSignature, exceptions, xmethod);
@@ -127,7 +129,13 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
 
         private boolean relaxedNullReturn;
 
-        DetectorNode(int access, String name, String desc, String signature, String[] exceptions, XMethod xmethod) {
+        DetectorNode(
+                int access,
+                String name,
+                String desc,
+                String signature,
+                String[] exceptions,
+                XMethod xmethod) {
             super(FindBugsASM.ASM_VERSION, access, name, desc, signature, exceptions);
             this.xmethod = xmethod;
         }
@@ -143,7 +151,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             boolean needsCheck = relaxedNullReturn;
             if (invisibleParameterAnnotations != null || visibleParameterAnnotations != null) {
                 nonNullParameter = getNonnullOrNullableParams(visibleParameterAnnotations);
-                Map<Integer, NullnessAnnotation> nnp = getNonnullOrNullableParams(invisibleParameterAnnotations);
+                Map<Integer, NullnessAnnotation> nnp =
+                        getNonnullOrNullableParams(invisibleParameterAnnotations);
                 if (nnp != null) {
                     if (nonNullParameter == null) {
                         nonNullParameter = nnp;
@@ -174,7 +183,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                     done = checkMethod(method);
                 } else {
                     for (XMethod superMethod : superClass.getXMethods()) {
-                        if (name.equals(superMethod.getName()) && compatibleParameters(desc, superMethod.getSignature())) {
+                        if (name.equals(superMethod.getName())
+                                && compatibleParameters(desc, superMethod.getSignature())) {
                             if (checkMethod(superMethod)) {
                                 done = true;
                                 break;
@@ -188,8 +198,11 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         private final boolean checkMethod(@Nonnull XMethod method) {
             boolean foundAny = false;
             if (relaxedNullReturn && containsNullness(method.getAnnotations(), NONNULL)) {
-                BugInstance bug = new BugInstance(CheckRelaxingNullnessAnnotation.this, "NP_METHOD_RETURN_RELAXING_ANNOTATION",
-                        HIGH_PRIORITY);
+                BugInstance bug =
+                        new BugInstance(
+                                CheckRelaxingNullnessAnnotation.this,
+                                "NP_METHOD_RETURN_RELAXING_ANNOTATION",
+                                HIGH_PRIORITY);
                 bug.addClassAndMethod(xmethod);
                 bugReporter.reportBug(bug);
                 foundAny = true;
@@ -199,8 +212,11 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                     int i = e.getKey();
                     if (containsNullness(method.getParameterAnnotations(i), CHECK_FOR_NULL)) {
                         NullnessAnnotation a = e.getValue();
-                        BugInstance bug = new BugInstance(CheckRelaxingNullnessAnnotation.this,
-                                "NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION", a.equals(NONNULL) ? HIGH_PRIORITY : NORMAL_PRIORITY);
+                        BugInstance bug =
+                                new BugInstance(
+                                        CheckRelaxingNullnessAnnotation.this,
+                                        "NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION",
+                                        a.equals(NONNULL) ? HIGH_PRIORITY : NORMAL_PRIORITY);
                         bug.addClassAndMethod(xmethod);
                         LocalVariableAnnotation lva = null;
                         if (localVariables != null) {
@@ -221,7 +237,6 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                         foundAny = true;
                     }
                 }
-
             }
             return foundAny;
         }
@@ -257,7 +272,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             // compute next one
             superclass = getClassInfo(superclass.getSuperclassDescriptor());
             if (superclass != null) {
-                interfacesToVisit = new LinkedList<>(Arrays.asList(superclass.getInterfaceDescriptorList()));
+                interfacesToVisit =
+                        new LinkedList<>(Arrays.asList(superclass.getInterfaceDescriptorList()));
             }
             return currentSuperclass;
         }
@@ -277,7 +293,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
     }
 
     @CheckForNull
-    static Map<Integer, NullnessAnnotation> getNonnullOrNullableParams(@CheckForNull List<AnnotationNode>[] parameterAnnotations) {
+    static Map<Integer, NullnessAnnotation> getNonnullOrNullableParams(
+            @CheckForNull List<AnnotationNode>[] parameterAnnotations) {
         if (parameterAnnotations == null) {
             return null;
         }
@@ -308,7 +325,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         return Parser.parse(ClassName.toDottedClassName(substring));
     }
 
-    static boolean containsNullness(Collection<AnnotationValue> annotations, NullnessAnnotation nullness) {
+    static boolean containsNullness(
+            Collection<AnnotationValue> annotations, NullnessAnnotation nullness) {
         for (AnnotationValue annotation : annotations) {
             NullnessAnnotation check = Parser.parse(annotation.getAnnotationClass().getDottedClassName());
             if (check == nullness) {

@@ -22,11 +22,10 @@ package edu.umd.cs.findbugs.util;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.similarity.LevenshteinDistance;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 
 /**
  * Utility methods for working with class names.
@@ -90,10 +89,8 @@ public abstract class ClassName {
     }
 
     /**
-     * Converts from signature to slashed class name
-     * (e.g., from Ljava/lang/String; to java/lang/String).
-     * Returns null if it is the signature for an array or
-     * primitive type.
+     * Converts from signature to slashed class name (e.g., from Ljava/lang/String; to
+     * java/lang/String). Returns null if it is the signature for an array or primitive type.
      */
     public static @CheckForNull @SlashedClassName String fromFieldSignature(String signature) {
         if (signature.charAt(0) != 'L') {
@@ -103,11 +100,10 @@ public abstract class ClassName {
     }
 
     /**
-     * Convert class name to slashed format. If the class name is already in
-     * slashed format, it is returned unmodified.
+     * Convert class name to slashed format. If the class name is already in slashed format, it is
+     * returned unmodified.
      *
-     * @param className
-     *            a class name
+     * @param className a class name
      * @return the same class name in slashed format
      */
     @SlashedClassName
@@ -120,11 +116,10 @@ public abstract class ClassName {
     }
 
     /**
-     * Convert class name to dotted format. If the class name is already in
-     * dotted format, it is returned unmodified.
+     * Convert class name to dotted format. If the class name is already in dotted format, it is
+     * returned unmodified.
      *
-     * @param className
-     *            a class name
+     * @param className a class name
      * @return the same class name in dotted format
      */
     @DottedClassName
@@ -137,11 +132,9 @@ public abstract class ClassName {
     }
 
     /**
-     * extract the package name from a dotted class name. Package names are
-     * always in dotted format.
+     * extract the package name from a dotted class name. Package names are always in dotted format.
      *
-     * @param className
-     *            a dotted class name
+     * @param className a dotted class name
      * @return the name of the package containing the class
      */
     public static @DottedClassName String extractPackageName(@DottedClassName String className) {
@@ -170,8 +163,7 @@ public abstract class ClassName {
     /**
      * Return whether or not the given class name is valid.
      *
-     * @param className
-     *            a possible class name
+     * @param className a possible class name
      * @return true if it's a valid class name, false otherwise
      */
     public static boolean isValidClassName(String className) {
@@ -181,12 +173,10 @@ public abstract class ClassName {
     }
 
     /**
-     * Does a class name appear to designate an anonymous or local (defined
-     * inside method) class? Only the name is analyzed. No classes are loaded or
-     * looked up.
+     * Does a class name appear to designate an anonymous or local (defined inside method) class? Only
+     * the name is analyzed. No classes are loaded or looked up.
      *
-     * @param className
-     *            class name, slashed or dotted, fully qualified or unqualified
+     * @param className class name, slashed or dotted, fully qualified or unqualified
      * @return true if className is the name of an anonymous or local class
      */
     public static boolean isLocalOrAnonymous(String className) {
@@ -198,11 +188,10 @@ public abstract class ClassName {
     }
 
     /**
-     * Does a class name appear to designate an anonymous class? Only
-     * the name is analyzed. No classes are loaded or looked up.
+     * Does a class name appear to designate an anonymous class? Only the name is analyzed. No classes
+     * are loaded or looked up.
      *
-     * @param className
-     *            class name, slashed or dotted, fully qualified or unqualified
+     * @param className class name, slashed or dotted, fully qualified or unqualified
      * @return true if className is the name of an anonymous class
      */
     public static boolean isAnonymous(String className) {
@@ -222,8 +211,7 @@ public abstract class ClassName {
     /**
      * Extract a slashed classname from a JVM classname or signature.
      *
-     * @param originalName
-     *            JVM classname or signature
+     * @param originalName JVM classname or signature
      * @return a slashed classname
      */
     public static @SlashedClassName String extractClassName(String originalName) {
@@ -260,14 +248,16 @@ public abstract class ClassName {
         return packageName.substring(0, prefixLength - 1);
     }
 
-    public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
+    public static boolean matchedPrefixes(
+            String[] classSearchStrings, @DottedClassName String className) {
         String[] pp = classSearchStrings;
         if (pp == null || pp.length == 0) {
             return true;
         }
 
         for (String p : pp) {
-            if (p.length() > 0 && (StringUtils.containsIgnoreCase(className, p) || fuzzyMatch(className, p))) {
+            if (p.length() > 0
+                    && (StringUtils.containsIgnoreCase(className, p) || fuzzyMatch(className, p))) {
                 return true;
             }
         }
@@ -276,16 +266,17 @@ public abstract class ClassName {
     }
 
     /**
-     * Perform a fuzzy matching, by comparing the Levenshtein distance of the
-     * simple class name and the search string. A maximum distance of 3 is used.
-     * This means the searchString and the className may differ by 3 single-character
-     * edits (insertions, deletions or substitutions). This limit also speeds up the computation.
-     * <p>
-     * For more information on the Levenshtein distance see
-     * <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Wikipedia</a> and the 
-     * <a href="https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/similarity/LevenshteinDistance.html">Apache Commons Text JavaDoc</a>.
+     * Perform a fuzzy matching, by comparing the Levenshtein distance of the simple class name and
+     * the search string. A maximum distance of 3 is used. This means the searchString and the
+     * className may differ by 3 single-character edits (insertions, deletions or substitutions). This
+     * limit also speeds up the computation.
      *
-     * @param className    the full class name
+     * <p>For more information on the Levenshtein distance see <a
+     * href="https://en.wikipedia.org/wiki/Levenshtein_distance">Wikipedia</a> and the <a
+     * href="https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/similarity/LevenshteinDistance.html">Apache
+     * Commons Text JavaDoc</a>.
+     *
+     * @param className the full class name
      * @param searchString the search string
      * @return true, if the strings are similar, false otherwise
      */
@@ -294,7 +285,6 @@ public abstract class ClassName {
         LevenshteinDistance ld = new LevenshteinDistance(3);
         return ld.apply(extractSimpleName(className), searchString) != -1;
     }
-
 
     public static @SlashedClassName String toSlashedClassName(Class<?> class1) {
         return toSlashedClassName(class1.getName());

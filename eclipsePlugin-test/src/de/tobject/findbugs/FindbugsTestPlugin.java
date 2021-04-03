@@ -21,7 +21,6 @@ package de.tobject.findbugs;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -30,9 +29,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-/**
- * The activator class controls the plug-in life cycle
- */
+/** The activator class controls the plug-in life cycle */
 public class FindbugsTestPlugin extends AbstractUIPlugin {
 
     // The plug-in ID
@@ -41,9 +38,7 @@ public class FindbugsTestPlugin extends AbstractUIPlugin {
     // The shared instance
     private static FindbugsTestPlugin plugin;
 
-    /**
-     * The constructor
-     */
+    /** The constructor */
     public FindbugsTestPlugin() {
     }
 
@@ -88,7 +83,8 @@ public class FindbugsTestPlugin extends AbstractUIPlugin {
             URL localURL = FileLocator.toFileURL(installURL);
             return new File(localURL.getFile());
         } catch (IOException e) {
-            throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
+            throw new CoreException(
+                    new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
         }
     }
 }

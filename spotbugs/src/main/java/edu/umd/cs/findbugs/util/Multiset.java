@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,11 +28,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public class Multiset<K> {
     final Map<K, Integer> map;
 
@@ -112,8 +109,10 @@ public class Multiset<K> {
         TreeSet<Map.Entry<K, Integer>> result = new TreeSet<>(new EntryComparator<K>());
         result.addAll(map.entrySet());
         if (result.size() != map.size()) {
-            throw new IllegalStateException("Map " + map.getClass().getSimpleName()
-                    + " reuses Map.Entry objects; entrySet can't be passed to addAll");
+            throw new IllegalStateException(
+                    "Map "
+                            + map.getClass().getSimpleName()
+                            + " reuses Map.Entry objects; entrySet can't be passed to addAll");
         }
         return result;
     }
@@ -132,7 +131,5 @@ public class Multiset<K> {
             }
             return System.identityHashCode(o1.getKey()) - System.identityHashCode(o2.getKey());
         }
-
     }
-
 }

@@ -20,17 +20,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.LocalVariableTable;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -44,6 +33,15 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.classfile.Method;
 
 public class FindMaskedFields extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -118,19 +116,24 @@ public class FindMaskedFields extends BytecodeScanningDetector {
                     }
                     String superClassName = s.getClassName();
                     if (superClassName.startsWith("java/io")
-                            && (superClassName.endsWith("InputStream") && "in".equals(fieldName) || superClassName
-                                    .endsWith("OutputStream") && "out".equals(fieldName))) {
+                            && (superClassName.endsWith("InputStream") && "in".equals(fieldName)
+                                    || superClassName.endsWith("OutputStream") && "out".equals(fieldName))) {
                         continue;
                     }
                     if (classFields.containsKey(fieldName)) {
                         Field maskingField = classFields.get(fieldName);
                         String mClassName = getDottedClassName();
-                        FieldAnnotation fa = new FieldAnnotation(mClassName, maskingField.getName(), maskingField.getSignature(),
-                                maskingField.isStatic());
+                        FieldAnnotation fa =
+                                new FieldAnnotation(
+                                        mClassName,
+                                        maskingField.getName(),
+                                        maskingField.getSignature(),
+                                        maskingField.isStatic());
                         int priority = NORMAL_PRIORITY;
                         if (maskingField.isStatic() || maskingField.isFinal()) {
                             priority++;
-                        } else if (fld.getSignature().charAt(0) == 'L' && !fld.getSignature().startsWith("Ljava/lang/")
+                        } else if (fld.getSignature().charAt(0) == 'L'
+                                && !fld.getSignature().startsWith("Ljava/lang/")
                                 || fld.getSignature().charAt(0) == '[') {
                             priority--;
                         }
@@ -143,11 +146,16 @@ public class FindMaskedFields extends BytecodeScanningDetector {
                             priority++;
                         }
 
-                        FieldAnnotation maskedFieldAnnotation = FieldAnnotation.fromFieldDescriptor(fld.getFieldDescriptor());
-                        BugInstance bug = new BugInstance(this, "MF_CLASS_MASKS_FIELD", priority).addClass(this).addField(fa)
-                                .describe("FIELD_MASKING").addField(maskedFieldAnnotation).describe("FIELD_MASKED");
+                        FieldAnnotation maskedFieldAnnotation =
+                                FieldAnnotation.fromFieldDescriptor(fld.getFieldDescriptor());
+                        BugInstance bug =
+                                new BugInstance(this, "MF_CLASS_MASKS_FIELD", priority)
+                                        .addClass(this)
+                                        .addField(fa)
+                                        .describe("FIELD_MASKING")
+                                        .addField(maskedFieldAnnotation)
+                                        .describe("FIELD_MASKED");
                         rememberedBugs.add(new RememberedBug(bug, fa, maskedFieldAnnotation));
-
                     }
                 }
             }
@@ -168,11 +176,9 @@ public class FindMaskedFields extends BytecodeScanningDetector {
         staticMethod = obj.isStatic();
     }
 
-    /**
-     * This property enables production of warnings for locals which obscure
-     * fields.
-     */
-    private static final boolean ENABLE_LOCALS = SystemProperties.getBoolean("findbugs.maskedfields.locals");
+    /** This property enables production of warnings for locals which obscure fields. */
+    private static final boolean ENABLE_LOCALS =
+            SystemProperties.getBoolean("findbugs.maskedfields.locals");
 
     @Override
     public void visit(LocalVariableTable obj) {
@@ -201,8 +207,11 @@ public class FindMaskedFields extends BytecodeScanningDetector {
                 if (f != null) {
                     FieldAnnotation fa = FieldAnnotation.fromBCELField(getDottedClassName(), f);
                     if (true || var.getStartPC() > 0) {
-                        bugReporter.reportBug(new BugInstance(this, "MF_METHOD_MASKS_FIELD", LOW_PRIORITY)
-                                .addClassAndMethod(this).addField(fa).addSourceLine(this, var.getStartPC() - 1));
+                        bugReporter.reportBug(
+                                new BugInstance(this, "MF_METHOD_MASKS_FIELD", LOW_PRIORITY)
+                                        .addClassAndMethod(this)
+                                        .addField(fa)
+                                        .addSourceLine(this, var.getStartPC() - 1));
                     }
                 }
             }

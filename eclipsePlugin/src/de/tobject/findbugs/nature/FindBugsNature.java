@@ -19,14 +19,13 @@
 
 package de.tobject.findbugs.nature;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
 
 /**
  * This is the nature for FindBugs-enabled projects.
@@ -72,9 +71,7 @@ public class FindBugsNature implements IProjectNature {
         removeFromBuildSpec(FindbugsPlugin.BUILDER_ID);
     }
 
-    /**
-     * Removes the given builder from the build spec for the given project.
-     */
+    /** Removes the given builder from the build spec for the given project. */
     protected void removeFromBuildSpec(String builderID) throws CoreException {
         MarkerUtil.removeMarkers(getProject());
         IProjectDescription description = getProject().getDescription();
@@ -91,9 +88,7 @@ public class FindBugsNature implements IProjectNature {
         }
     }
 
-    /**
-     * Adds a builder to the build spec for the given project.
-     */
+    /** Adds a builder to the build spec for the given project. */
     protected void addToBuildSpec(String builderID) throws CoreException {
         IProjectDescription description = getProject().getDescription();
         ICommand findBugsCommand = getFindBugsCommand(description);
@@ -105,10 +100,7 @@ public class FindBugsNature implements IProjectNature {
         }
     }
 
-    /**
-     * Find the specific FindBugs command amongst the build spec of a given
-     * description
-     */
+    /** Find the specific FindBugs command amongst the build spec of a given description */
     private ICommand getFindBugsCommand(IProjectDescription description) {
         ICommand[] commands = description.getBuildSpec();
         for (int i = 0; i < commands.length; ++i) {
@@ -120,10 +112,11 @@ public class FindBugsNature implements IProjectNature {
     }
 
     /**
-     * Update the FindBugs command in the build spec (replace existing one if
-     * present, add one first if none).
+     * Update the FindBugs command in the build spec (replace existing one if present, add one first
+     * if none).
      */
-    private void setFindBugsCommand(IProjectDescription description, ICommand newCommand) throws CoreException {
+    private void setFindBugsCommand(IProjectDescription description, ICommand newCommand)
+            throws CoreException {
         ICommand[] oldCommands = description.getBuildSpec();
         ICommand oldFindBugsCommand = getFindBugsCommand(description);
         ICommand[] newCommands;
@@ -165,5 +158,4 @@ public class FindBugsNature implements IProjectNature {
     public void setProject(IProject project) {
         this.project = project;
     }
-
 }

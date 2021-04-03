@@ -20,21 +20,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.CodeException;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.InstructionHandle;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -60,6 +45,19 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * RuntimeExceptionCapture
@@ -123,7 +121,8 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         for (ExceptionCaught caughtException : catchList) {
             Set<String> thrownSet = new HashSet<>();
             for (ExceptionThrown thrownException : throwList) {
-                if (thrownException.offset >= caughtException.startOffset && thrownException.offset < caughtException.endOffset) {
+                if (thrownException.offset >= caughtException.startOffset
+                        && thrownException.offset < caughtException.endOffset) {
                     thrownSet.add(thrownException.exceptionClass);
                     if (thrownException.exceptionClass.equals(caughtException.exceptionClass)) {
                         caughtException.seen = true;
@@ -160,8 +159,10 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                     if (caughtException.dead) {
                         priority--;
                     }
-                    accumulator.accumulateBug(new BugInstance(this, "REC_CATCH_EXCEPTION", priority).addClassAndMethod(this),
-                            SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, caughtException.sourcePC));
+                    accumulator.accumulateBug(
+                            new BugInstance(this, "REC_CATCH_EXCEPTION", priority).addClassAndMethod(this),
+                            SourceLineAnnotation.fromVisitedInstruction(
+                                    getClassContext(), this, caughtException.sourcePC));
                 }
             }
         }
@@ -179,7 +180,8 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             }
             String name = getConstantPool().constantToString(getConstantPool().getConstant(type));
 
-            ExceptionCaught caughtException = new ExceptionCaught(name, obj.getStartPC(), obj.getEndPC(), obj.getHandlerPC());
+            ExceptionCaught caughtException =
+                    new ExceptionCaught(name, obj.getStartPC(), obj.getEndPC(), obj.getHandlerPC());
             catchList.add(caughtException);
 
             // See if the store that saves the exception object
@@ -188,10 +190,13 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             // the caught exception.
             LiveLocalStoreDataflow dataflow = getClassContext().getLiveLocalStoreDataflow(getMethod());
             CFG cfg = getClassContext().getCFG(getMethod());
-            Collection<BasicBlock> blockList = cfg.getBlocksContainingInstructionWithOffset(obj.getHandlerPC());
+            Collection<BasicBlock> blockList =
+                    cfg.getBlocksContainingInstructionWithOffset(obj.getHandlerPC());
             for (BasicBlock block : blockList) {
                 InstructionHandle first = block.getFirstInstruction();
-                if (first != null && first.getPosition() == obj.getHandlerPC() && first.getInstruction() instanceof ASTORE) {
+                if (first != null
+                        && first.getPosition() == obj.getHandlerPC()
+                        && first.getInstruction() instanceof ASTORE) {
                     ASTORE astore = (ASTORE) first.getInstruction();
                     BitSet liveStoreSet = dataflow.getFactAtLocation(new Location(first, block));
                     if (!liveStoreSet.get(astore.getIndex())) {
@@ -206,8 +211,9 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             }
         } catch (MethodUnprofitableException e) {
             Method m = getMethod();
-            bugReporter.reportSkippedAnalysis(DescriptorFactory.instance().getMethodDescriptor(getClassName(), getMethodName(),
-                    getMethodSig(), m.isStatic()));
+            bugReporter.reportSkippedAnalysis(
+                    DescriptorFactory.instance()
+                            .getMethodDescriptor(getClassName(), getMethodName(), getMethodSig(), m.isStatic()));
         } catch (DataflowAnalysisException e) {
             bugReporter.logError("Error checking for dead exception store", e);
         } catch (CFGBuilderException e) {
@@ -239,10 +245,17 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             String className = getClassConstantOperand();
             if (!className.startsWith("[")) {
                 try {
-                    XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                            DescriptorFactory.createClassDescriptor(className));
-                    XMethod m = Hierarchy2.findInvocationLeastUpperBound(c, getNameConstantOperand(), getSigConstantOperand(),
-                            seen == Const.INVOKESTATIC, seen == Const.INVOKEINTERFACE);
+                    XClass c =
+                            Global.getAnalysisCache()
+                                    .getClassAnalysis(
+                                            XClass.class, DescriptorFactory.createClassDescriptor(className));
+                    XMethod m =
+                            Hierarchy2.findInvocationLeastUpperBound(
+                                    c,
+                                    getNameConstantOperand(),
+                                    getSigConstantOperand(),
+                                    seen == Const.INVOKESTATIC,
+                                    seen == Const.INVOKEINTERFACE);
                     if (m == null) {
                         break;
                     }
@@ -262,7 +275,5 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         default:
             break;
         }
-
     }
-
 }

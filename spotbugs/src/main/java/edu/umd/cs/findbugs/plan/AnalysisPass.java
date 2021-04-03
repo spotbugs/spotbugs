@@ -19,20 +19,19 @@
 
 package edu.umd.cs.findbugs.plan;
 
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.Detector2;
+import edu.umd.cs.findbugs.DetectorFactory;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.Detector2;
-import edu.umd.cs.findbugs.DetectorFactory;
-
 /**
- * An analysis pass in the overall ExecutionPlan. This is a list of Detectors to
- * be applied to analyzed classes.
+ * An analysis pass in the overall ExecutionPlan. This is a list of Detectors to be applied to
+ * analyzed classes.
  *
  * @see ExecutionPlan
  * @author David Hovemeyer
@@ -47,7 +46,7 @@ public class AnalysisPass {
     /**
      * Constructor.
      *
-     * Creates an empty analysis pass.
+     * <p>Creates an empty analysis pass.
      */
     public AnalysisPass() {
         this.orderedFactoryList = new LinkedList<>();
@@ -55,26 +54,25 @@ public class AnalysisPass {
     }
 
     /**
-     * Make given DetectorFactory a member of this pass. Does not position the
-     * factory within the overall list of detectors.
+     * Make given DetectorFactory a member of this pass. Does not position the factory within the
+     * overall list of detectors.
      *
-     * @param factory
-     *            a DetectorFactory
+     * @param factory a DetectorFactory
      */
     public void addToPass(DetectorFactory factory) {
         this.memberSet.add(factory);
     }
 
     /**
-     * Append the given DetectorFactory to the end of the ordered detector list.
-     * The factory must be a member of the pass.
+     * Append the given DetectorFactory to the end of the ordered detector list. The factory must be a
+     * member of the pass.
      *
-     * @param factory
-     *            a DetectorFactory
+     * @param factory a DetectorFactory
      */
     public void append(DetectorFactory factory) {
         if (!memberSet.contains(factory)) {
-            throw new IllegalArgumentException("Detector " + factory.getFullName() + " appended to pass it doesn't belong to");
+            throw new IllegalArgumentException(
+                    "Detector " + factory.getFullName() + " appended to pass it doesn't belong to");
         }
         this.orderedFactoryList.addLast(factory);
     }
@@ -88,20 +86,14 @@ public class AnalysisPass {
         return memberSet;
     }
 
-    /**
-     * Get Set of pass members which haven't been assigned a position in the
-     * pass.
-     */
+    /** Get Set of pass members which haven't been assigned a position in the pass. */
     public Set<DetectorFactory> getUnpositionedMembers() {
         HashSet<DetectorFactory> result = new HashSet<>(memberSet);
         result.removeAll(orderedFactoryList);
         return result;
     }
 
-    /**
-     * Get an Iterator over the DetectorFactory objects in the pass, in their
-     * assigned order.
-     */
+    /** Get an Iterator over the DetectorFactory objects in the pass, in their assigned order. */
     public Iterator<DetectorFactory> iterator() {
         return orderedFactoryList.iterator();
     }
@@ -109,8 +101,7 @@ public class AnalysisPass {
     /**
      * Return whether or not this pass contains the given DetectorFactory.
      *
-     * @param factory
-     *            the DetectorFactory
+     * @param factory the DetectorFactory
      * @return true if this pass contains the DetectorFactory, false if not
      */
     public boolean contains(DetectorFactory factory) {
@@ -118,11 +109,9 @@ public class AnalysisPass {
     }
 
     /**
-     * Instantiate all of the Detector2s in this pass and return them in a
-     * (correctly-ordered) array.
+     * Instantiate all of the Detector2s in this pass and return them in a (correctly-ordered) array.
      *
-     * @param bugReporter
-     *            the BugReporter
+     * @param bugReporter the BugReporter
      * @return array of Detector2s
      */
     public Detector2[] instantiateDetector2sInPass(BugReporter bugReporter) {
@@ -135,13 +124,11 @@ public class AnalysisPass {
     }
 
     /**
-     * Instantiate all of the detectors in this pass as objects implementing the
-     * BCEL-only Detector interface. Detectors that do not support this
-     * interface will not be created. Therefore, new code should use the
-     * instantiateDetector2sInPass() method, which can support all detectors.
+     * Instantiate all of the detectors in this pass as objects implementing the BCEL-only Detector
+     * interface. Detectors that do not support this interface will not be created. Therefore, new
+     * code should use the instantiateDetector2sInPass() method, which can support all detectors.
      *
-     * @param bugReporter
-     *            the BugReporter
+     * @param bugReporter the BugReporter
      * @return array of Detectors
      * @deprecated call instantiateDetector2sInPass() instead
      */

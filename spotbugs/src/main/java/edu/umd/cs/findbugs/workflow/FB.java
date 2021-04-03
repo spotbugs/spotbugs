@@ -23,9 +23,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugsMain;
 import edu.umd.cs.findbugs.Plugin;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class FB {
 
     public static void main(String args[]) throws Throwable {
@@ -54,10 +52,8 @@ public class FB {
                 }
                 return;
             }
-
         }
 
         throw new IllegalArgumentException("Unable to find FindBugs main for " + cmd);
     }
-
 }

@@ -19,15 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class FindRunInvocations extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -63,7 +62,8 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Stat
         if (alreadySawStart) {
             return;
         }
-        if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) && "()V".equals(getSigConstantOperand())
+        if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
+                && "()V".equals(getSigConstantOperand())
                 && isThread(getDottedClassConstantOperand())) {
             if ("start".equals(getNameConstantOperand())) {
                 alreadySawStart = true;
@@ -72,8 +72,10 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Stat
                 if (amVisitingMainMethod() && getPC() == getCode().getLength() - 4 && isJustThread) {
                     return;
                 } else if ("run".equals(getNameConstantOperand())) {
-                    bugAccumulator.accumulateBug(new BugInstance(this, "RU_INVOKE_RUN", isJustThread ? HIGH_PRIORITY
-                            : NORMAL_PRIORITY).addClassAndMethod(this), this);
+                    bugAccumulator.accumulateBug(
+                            new BugInstance(this, "RU_INVOKE_RUN", isJustThread ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                                    .addClassAndMethod(this),
+                            this);
                 }
             }
         }

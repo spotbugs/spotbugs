@@ -19,14 +19,12 @@
 
 package edu.umd.cs.findbugs.xml;
 
+import edu.umd.cs.findbugs.util.Strings;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * Helper class to format attributes in an XML tag.
@@ -56,9 +54,7 @@ public class XMLAttributeList {
     // Fields
     private final List<NameValuePair> nameValuePairList;
 
-    /**
-     * Constructor. Creates an empty object.
-     */
+    /** Constructor. Creates an empty object. */
     public XMLAttributeList() {
         this.nameValuePairList = new LinkedList<>();
     }
@@ -66,10 +62,8 @@ public class XMLAttributeList {
     /**
      * Add a single attribute name and value.
      *
-     * @param name
-     *            the attribute name
-     * @param value
-     *            the attribute value
+     * @param name the attribute name
+     * @param value the attribute value
      * @return this object (so calls to addAttribute() can be chained)
      */
     public XMLAttributeList addAttribute(@Nonnull String name, @Nonnull String value) {
@@ -86,10 +80,8 @@ public class XMLAttributeList {
     /**
      * Add a single attribute name and value.
      *
-     * @param name
-     *            the attribute name
-     * @param value
-     *            the attribute value
+     * @param name the attribute name
+     * @param value the attribute value
      * @return this object (so calls to addAttribute() can be chained)
      */
     public XMLAttributeList addOptionalAttribute(@Nonnull String name, @CheckForNull String value) {
@@ -99,10 +91,7 @@ public class XMLAttributeList {
         return addAttribute(name, value);
     }
 
-    /**
-     * Return the attribute list as a String which can be directly output as
-     * part of an XML tag.
-     */
+    /** Return the attribute list as a String which can be directly output as part of an XML tag. */
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
@@ -117,9 +106,7 @@ public class XMLAttributeList {
         return buf.toString();
     }
 
-    /**
-     * Return an Iterator over NameValuePairs.
-     */
+    /** Return an Iterator over NameValuePairs. */
     public Iterator<NameValuePair> iterator() {
         return nameValuePairList.iterator();
     }
@@ -127,8 +114,7 @@ public class XMLAttributeList {
     /**
      * Return a properly quoted form for an attribute value.
      *
-     * @param rawValue
-     *            the raw value of the attribute
+     * @param rawValue the raw value of the attribute
      * @return a properly quoted representation of the value
      */
     public static String getQuotedAttributeValue(@Nonnull String rawValue) {

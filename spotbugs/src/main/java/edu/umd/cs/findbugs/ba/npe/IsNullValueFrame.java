@@ -19,22 +19,20 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.util.Util;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 public class IsNullValueFrame extends Frame<IsNullValue> {
 
@@ -68,9 +66,10 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
                 return false;
             }
             PointerEqualityInfo other = (PointerEqualityInfo) obj;
-            return this.addr1.equals(other.addr1) && this.addr2.equals(other.addr2) && this.areEqual == other.areEqual;
+            return this.addr1.equals(other.addr1)
+                    && this.addr2.equals(other.addr2)
+                    && this.areEqual == other.areEqual;
         }
-
     }
 
     private IsNullConditionDecision decision;
@@ -110,7 +109,6 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
                 i.remove();
             }
         }
-
     }
 
     @Override
@@ -214,14 +212,12 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
                 System.out.println("Updated information for " + entry.getKey());
                 System.out.println("                    was " + entry.getValue());
                 System.out.println("           merged value " + mergedValue);
-
             }
         }
         knownValueMap.clear();
         knownValueMap.putAll(replaceMap);
         if (IsNullValueAnalysis.DEBUG) {
             System.out.println("resulting in " + this);
-
         }
     }
 
@@ -286,8 +282,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
     }
 
     /**
-     * Downgrade all NSP values in frame. Should be called when a non-exception
-     * control split occurs.
+     * Downgrade all NSP values in frame. Should be called when a non-exception control split occurs.
      */
     public void downgradeOnControlSplit() {
         final int numSlots = getNumSlots();

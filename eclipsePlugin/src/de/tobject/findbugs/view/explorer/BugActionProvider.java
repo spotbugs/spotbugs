@@ -18,6 +18,9 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.util.EditorUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -50,10 +53,6 @@ import org.eclipse.ui.navigator.ICommonActionConstants;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonMenuConstants;
 import org.eclipse.ui.texteditor.ITextEditor;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.util.EditorUtil;
 
 public class BugActionProvider extends CommonActionProvider {
 
@@ -92,7 +91,9 @@ public class BugActionProvider extends CommonActionProvider {
                     // if we have both java element AND line info, go to the
                     // line
                     if (editor instanceof ITextEditor && marker != null) {
-                        EditorUtil.goToLine(editor, marker.getAttribute(IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR));
+                        EditorUtil.goToLine(
+                                editor,
+                                marker.getAttribute(IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR));
                     }
                 } else if (marker != null) {
                     IDE.openEditor(FindbugsPlugin.getActiveWorkbenchWindow().getActivePage(), marker, true);
@@ -102,7 +103,8 @@ public class BugActionProvider extends CommonActionProvider {
             } catch (PartInitException e) {
                 FindbugsPlugin.getDefault().logException(e, "Cannot open editor for marker: " + marker);
             } catch (JavaModelException e) {
-                FindbugsPlugin.getDefault().logException(e, "Cannot open editor for java element: " + javaElement);
+                FindbugsPlugin.getDefault()
+                        .logException(e, "Cannot open editor for java element: " + javaElement);
             }
         }
 
@@ -145,7 +147,6 @@ public class BugActionProvider extends CommonActionProvider {
             file = null;
             javaElement = null;
         }
-
     }
 
     @Override
@@ -155,32 +156,34 @@ public class BugActionProvider extends CommonActionProvider {
         final StructuredViewer viewer = aSite.getStructuredViewer();
         final BugContentProvider provider = BugContentProvider.getProvider(site.getContentService());
 
-        filterChangeListener = new IPropertyChangeListener() {
+        filterChangeListener =
+                new IPropertyChangeListener() {
 
-            @Override
-            public void propertyChange(PropertyChangeEvent event) {
-                if (!initDone) {
-                    return;
-                }
-                IWorkingSet oldWorkingSet = provider.getCurrentWorkingSet();
-                IWorkingSet oldWorkingSet1 = (IWorkingSet) event.getOldValue();
-                IWorkingSet newWorkingSet = (IWorkingSet) event.getNewValue();
-                if (newWorkingSet != null && (oldWorkingSet == newWorkingSet || oldWorkingSet1 == newWorkingSet)) {
-                    return;
-                }
-                if (viewer != null) {
-                    provider.setCurrentWorkingSet(newWorkingSet);
-                    if (newWorkingSet == null) {
-                        viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
-                    } else if (oldWorkingSet != newWorkingSet) {
-                        viewer.setInput(newWorkingSet);
+                    @Override
+                    public void propertyChange(PropertyChangeEvent event) {
+                        if (!initDone) {
+                            return;
+                        }
+                        IWorkingSet oldWorkingSet = provider.getCurrentWorkingSet();
+                        IWorkingSet oldWorkingSet1 = (IWorkingSet) event.getOldValue();
+                        IWorkingSet newWorkingSet = (IWorkingSet) event.getNewValue();
+                        if (newWorkingSet != null
+                                && (oldWorkingSet == newWorkingSet || oldWorkingSet1 == newWorkingSet)) {
+                            return;
+                        }
+                        if (viewer != null) {
+                            provider.setCurrentWorkingSet(newWorkingSet);
+                            if (newWorkingSet == null) {
+                                viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
+                            } else if (oldWorkingSet != newWorkingSet) {
+                                viewer.setInput(newWorkingSet);
+                            }
+                        }
                     }
-                }
-            }
-        };
+                };
 
-
-        workingSetActionGroup = new WorkingSetFilterActionGroup(aSite.getViewSite().getShell(), filterChangeListener);
+        workingSetActionGroup =
+                new WorkingSetFilterActionGroup(aSite.getViewSite().getShell(), filterChangeListener);
         if (provider == null)
             throw new NullPointerException("no provider");
         workingSetActionGroup.setWorkingSet(provider.getCurrentWorkingSet());
@@ -229,7 +232,6 @@ public class BugActionProvider extends CommonActionProvider {
             hasContributedToViewMenu = true;
         }
         actionBars.setGlobalActionHandler(ICommonActionConstants.OPEN, doubleClickAction);
-
     }
 
     @Override

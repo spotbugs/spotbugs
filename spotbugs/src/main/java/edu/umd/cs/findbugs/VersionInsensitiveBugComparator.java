@@ -19,16 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import edu.umd.cs.findbugs.model.ClassNameRewriter;
 import edu.umd.cs.findbugs.model.ClassNameRewriterUtil;
 import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
- * Compare bug instances by only those criteria which we would expect to remain
- * constant between versions.
+ * Compare bug instances by only those criteria which we would expect to remain constant between
+ * versions.
  */
 public class VersionInsensitiveBugComparator implements WarningComparator {
 
@@ -50,10 +49,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         comparePriorities = b;
     }
 
-    /**
-     * Wrapper for BugAnnotation iterators, which filters out annotations we
-     * don't care about.
-     */
+    /** Wrapper for BugAnnotation iterators, which filters out annotations we don't care about. */
     private class FilteringAnnotationIterator implements Iterator<BugAnnotation> {
         private final Iterator<BugAnnotation> iter;
 
@@ -98,7 +94,6 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
                 }
             }
         }
-
     }
 
     private boolean isBoring(BugAnnotation annotation) {
@@ -107,28 +102,28 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 
     /*
     private static int compareNullElements(Object a, Object b) {
-        if (a != null)
-            return 1;
-        else if (b != null)
-            return -1;
-        else
-            return 0;
+    if (a != null)
+    return 1;
+    else if (b != null)
+    return -1;
+    else
+    return 0;
     }
     
     private static String getCode(String pattern) {
-        int sep = pattern.indexOf('_');
-        if (sep < 0) {
-            return "";
-        }
-        return pattern.substring(0, sep);
+    int sep = pattern.indexOf('_');
+    if (sep < 0) {
+    return "";
+    }
+    return pattern.substring(0, sep);
     }
     
     private void dump(BugInstance bug) {
-        System.out.println(bug.getMessage());
-        Iterator<BugAnnotation> i = bug.annotationIterator();
-        while (i.hasNext()) {
-            System.out.println("  " + i.next());
-        }
+    System.out.println(bug.getMessage());
+    Iterator<BugAnnotation> i = bug.annotationIterator();
+    while (i.hasNext()) {
+    System.out.println("  " + i.next());
+    }
     }*/
 
     @Override
@@ -156,7 +151,8 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0) {
             return cmp;
         }
-        if (isExactBugPatternMatch() && (cmp = lhsPattern.getType().compareTo(rhsPattern.getType())) != 0) {
+        if (isExactBugPatternMatch()
+                && (cmp = lhsPattern.getType().compareTo(rhsPattern.getType())) != 0) {
             return cmp;
         }
 
@@ -182,10 +178,12 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
                 if (lhsClass == rhsClass) {
                     break;
                 }
-                if (lhsClass == LocalVariableAnnotation.class && !((LocalVariableAnnotation) lhsAnnotation).isSignificant()
+                if (lhsClass == LocalVariableAnnotation.class
+                        && !((LocalVariableAnnotation) lhsAnnotation).isSignificant()
                         && lhsIter.hasNext()) {
                     lhsAnnotation = lhsIter.next();
-                } else if (rhsClass == LocalVariableAnnotation.class && !((LocalVariableAnnotation) rhsAnnotation).isSignificant()
+                } else if (rhsClass == LocalVariableAnnotation.class
+                        && !((LocalVariableAnnotation) rhsAnnotation).isSignificant()
                         && rhsIter.hasNext()) {
                     rhsAnnotation = rhsIter.next();
                 } else {
@@ -197,25 +195,31 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
                 // ClassAnnotations should have their class names rewritten to
                 // handle moved and renamed classes.
 
-                String lhsClassName = classNameRewriter.rewriteClassName(((ClassAnnotation) lhsAnnotation).getClassName());
-                String rhsClassName = classNameRewriter.rewriteClassName(((ClassAnnotation) rhsAnnotation).getClassName());
+                String lhsClassName =
+                        classNameRewriter.rewriteClassName(((ClassAnnotation) lhsAnnotation).getClassName());
+                String rhsClassName =
+                        classNameRewriter.rewriteClassName(((ClassAnnotation) rhsAnnotation).getClassName());
 
                 cmp = lhsClassName.compareTo(rhsClassName);
 
             } else if (lhsClass == MethodAnnotation.class) {
                 // Rewrite class names in MethodAnnotations
-                MethodAnnotation lhsMethod = ClassNameRewriterUtil.convertMethodAnnotation(classNameRewriter,
-                        (MethodAnnotation) lhsAnnotation);
-                MethodAnnotation rhsMethod = ClassNameRewriterUtil.convertMethodAnnotation(classNameRewriter,
-                        (MethodAnnotation) rhsAnnotation);
+                MethodAnnotation lhsMethod =
+                        ClassNameRewriterUtil.convertMethodAnnotation(
+                                classNameRewriter, (MethodAnnotation) lhsAnnotation);
+                MethodAnnotation rhsMethod =
+                        ClassNameRewriterUtil.convertMethodAnnotation(
+                                classNameRewriter, (MethodAnnotation) rhsAnnotation);
                 cmp = lhsMethod.compareTo(rhsMethod);
 
             } else if (lhsClass == FieldAnnotation.class) {
                 // Rewrite class names in FieldAnnotations
-                FieldAnnotation lhsField = ClassNameRewriterUtil.convertFieldAnnotation(classNameRewriter,
-                        (FieldAnnotation) lhsAnnotation);
-                FieldAnnotation rhsField = ClassNameRewriterUtil.convertFieldAnnotation(classNameRewriter,
-                        (FieldAnnotation) rhsAnnotation);
+                FieldAnnotation lhsField =
+                        ClassNameRewriterUtil.convertFieldAnnotation(
+                                classNameRewriter, (FieldAnnotation) lhsAnnotation);
+                FieldAnnotation rhsField =
+                        ClassNameRewriterUtil.convertFieldAnnotation(
+                                classNameRewriter, (FieldAnnotation) rhsAnnotation);
                 cmp = lhsField.compareTo(rhsField);
 
             } else if (lhsClass == StringAnnotation.class) {

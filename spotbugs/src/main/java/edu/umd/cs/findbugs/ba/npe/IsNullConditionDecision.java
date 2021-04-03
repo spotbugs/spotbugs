@@ -19,18 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.util.Objects;
-
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.util.Strings;
+import java.util.Objects;
+import javax.annotation.CheckForNull;
 
 /**
- * A control decision which resulted in information being gained about whether a
- * particular value is null or non-null on the IFCMP_EDGE and FALL_THROUGH_EDGE
- * branches.
+ * A control decision which resulted in information being gained about whether a particular value is
+ * null or non-null on the IFCMP_EDGE and FALL_THROUGH_EDGE branches.
  *
  * @see IsNullValue
  * @see IsNullValueFrame
@@ -46,17 +43,14 @@ public class IsNullConditionDecision {
     /**
      * Constructor.
      *
-     * @param value
-     *            the ValueNumber for which we have new information; null if no
-     *            new information
-     * @param ifcmpDecision
-     *            the decision for the IFCMP_EDGE; null if that edge is not
-     *            feasible
-     * @param fallThroughDecision
-     *            the decision for the FALL_THROUGH_EDGE; null if that edge is
-     *            not feasible
+     * @param value the ValueNumber for which we have new information; null if no new information
+     * @param ifcmpDecision the decision for the IFCMP_EDGE; null if that edge is not feasible
+     * @param fallThroughDecision the decision for the FALL_THROUGH_EDGE; null if that edge is not
+     *     feasible
      */
-    public IsNullConditionDecision(@CheckForNull ValueNumber value, @CheckForNull IsNullValue ifcmpDecision,
+    public IsNullConditionDecision(
+            @CheckForNull ValueNumber value,
+            @CheckForNull IsNullValue ifcmpDecision,
             @CheckForNull IsNullValue fallThroughDecision) {
         this.value = value;
 
@@ -68,8 +62,9 @@ public class IsNullConditionDecision {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(value) + 5 * Objects.hashCode(ifcmpDecision) + 17
-                * Objects.hashCode(fallThroughDecision);
+        return Objects.hashCode(value)
+                + 5 * Objects.hashCode(ifcmpDecision)
+                + 17 * Objects.hashCode(fallThroughDecision);
     }
 
     @Override
@@ -78,31 +73,26 @@ public class IsNullConditionDecision {
             return false;
         }
         IsNullConditionDecision other = (IsNullConditionDecision) o;
-        return Objects.equals(value, other.value) && Objects.equals(ifcmpDecision, other.ifcmpDecision)
+        return Objects.equals(value, other.value)
+                && Objects.equals(ifcmpDecision, other.ifcmpDecision)
                 && Objects.equals(fallThroughDecision, other.fallThroughDecision);
     }
 
-    /**
-     * Get the value about which the branch yields information.
-     */
+    /** Get the value about which the branch yields information. */
     public ValueNumber getValue() {
         return value;
     }
 
-    /**
-     * Determine whether or not the comparison is redundant.
-     */
+    /** Determine whether or not the comparison is redundant. */
     public boolean isRedundant() {
         return ifcmpDecision == null || fallThroughDecision == null;
     }
 
     /**
-     * Determine whether or not the given edge is feasible. An edge may be
-     * infeasible if the comparison is redundant (i.e., can only be determined
-     * one way)
+     * Determine whether or not the given edge is feasible. An edge may be infeasible if the
+     * comparison is redundant (i.e., can only be determined one way)
      *
-     * @param edgeType
-     *            the type of edge; must be IFCMP_EDGE or FALL_THROUGH_EDGE
+     * @param edgeType the type of edge; must be IFCMP_EDGE or FALL_THROUGH_EDGE
      * @return true if the edge is feasible, false if infeasible
      */
     public boolean isEdgeFeasible(int edgeType) {
@@ -113,10 +103,8 @@ public class IsNullConditionDecision {
     /**
      * Get the decision reached about the value on outgoing edge of given type.
      *
-     * @param edgeType
-     *            the type of edge; must be IFCMP_EDGE or FALL_THROUGH_EDGE
-     * @return the IsNullValue representing the decision, or null if the edge is
-     *         infeasible
+     * @param edgeType the type of edge; must be IFCMP_EDGE or FALL_THROUGH_EDGE
+     * @return the IsNullValue representing the decision, or null if the edge is infeasible
      */
     public @CheckForNull IsNullValue getDecision(int edgeType) {
         switch (edgeType) {
@@ -136,7 +124,10 @@ public class IsNullConditionDecision {
         buf.append("ifcmp=");
         buf.append(ifcmpDecision != null ? Strings.trimComma(ifcmpDecision.toString()) : "INFEASIBLE");
         buf.append(",fallthru=");
-        buf.append(fallThroughDecision != null ? Strings.trimComma(fallThroughDecision.toString()) : "INFEASIBLE");
+        buf.append(
+                fallThroughDecision != null
+                        ? Strings.trimComma(fallThroughDecision.toString())
+                        : "INFEASIBLE");
         return buf.toString();
     }
 }

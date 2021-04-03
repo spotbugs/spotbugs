@@ -19,6 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.util.Util;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,14 +33,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.annotation.CheckForNull;
-
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * A set of values unconditionally dereferenced in the future.
@@ -61,14 +59,12 @@ public class UnconditionalValueDerefSet {
     /**
      * Constructor.
      *
-     * @param numValueNumbersInMethod
-     *            number of distinct value numbers in method
+     * @param numValueNumbersInMethod number of distinct value numbers in method
      */
     public UnconditionalValueDerefSet(int numValueNumbersInMethod) {
         this.numValueNumbersInMethod = numValueNumbersInMethod;
         this.valueNumbersUnconditionallyDereferenced = new BitSet();
         this.derefLocationSetMap = new HashMap<>(3);
-
     }
 
     /**
@@ -80,9 +76,7 @@ public class UnconditionalValueDerefSet {
         return valueNumbersUnconditionallyDereferenced.get(numValueNumbersInMethod);
     }
 
-    /**
-     * Make this dataflow fact the bottom value.
-     */
+    /** Make this dataflow fact the bottom value. */
     public void setIsBottom() {
         clear();
         valueNumbersUnconditionallyDereferenced.set(numValueNumbersInMethod);
@@ -97,9 +91,7 @@ public class UnconditionalValueDerefSet {
         return valueNumbersUnconditionallyDereferenced.get(numValueNumbersInMethod + 1);
     }
 
-    /**
-     * Make this dataflow fact the top value.
-     */
+    /** Make this dataflow fact the top value. */
     public void setIsTop() {
         clear();
         valueNumbersUnconditionallyDereferenced.set(numValueNumbersInMethod + 1);
@@ -107,8 +99,8 @@ public class UnconditionalValueDerefSet {
     }
 
     /**
-     * Clear the deref set. This sets the fact so it is valid as the dataflow
-     * entry fact: no future dereferences are guaranteed.
+     * Clear the deref set. This sets the fact so it is valid as the dataflow entry fact: no future
+     * dereferences are guaranteed.
      */
     void clear() {
         valueNumbersUnconditionallyDereferenced.clear();
@@ -118,8 +110,7 @@ public class UnconditionalValueDerefSet {
     /**
      * Make this dataflow fact the same as the given one.
      *
-     * @param source
-     *            another dataflow fact
+     * @param source another dataflow fact
      */
     public void makeSameAs(UnconditionalValueDerefSet source) {
         // Copy value numbers
@@ -139,31 +130,34 @@ public class UnconditionalValueDerefSet {
     /**
      * Return whether or not this dataflow fact is identical to the one given.
      *
-     * @param otherFact
-     *            another dataflow fact
-     * @return true if the other dataflow fact is identical to this one, false
-     *         otherwise
+     * @param otherFact another dataflow fact
+     * @return true if the other dataflow fact is identical to this one, false otherwise
      */
     public boolean isSameAs(UnconditionalValueDerefSet otherFact) {
-        return valueNumbersUnconditionallyDereferenced.equals(otherFact.valueNumbersUnconditionallyDereferenced)
+        return valueNumbersUnconditionallyDereferenced.equals(
+                otherFact.valueNumbersUnconditionallyDereferenced)
                 && derefLocationSetMap.equals(otherFact.derefLocationSetMap);
     }
 
     /**
-     * Merge given dataflow fact into this one. We take the intersection of the
-     * unconditional deref value number set, and union the deref locations.
+     * Merge given dataflow fact into this one. We take the intersection of the unconditional deref
+     * value number set, and union the deref locations.
      *
-     * @param fact
-     *            another dataflow fact
-     * @param skipMe
-     *            TODO
+     * @param fact another dataflow fact
+     * @param skipMe TODO
      */
-    public void mergeWith(UnconditionalValueDerefSet fact, @CheckForNull ValueNumber skipMe, ValueNumberFactory valueNumberFactory) {
+    public void mergeWith(
+            UnconditionalValueDerefSet fact,
+            @CheckForNull ValueNumber skipMe,
+            ValueNumberFactory valueNumberFactory) {
         if (UnconditionalValueDerefAnalysis.DEBUG) {
-            System.out.println("merge update of # " + System.identityHashCode(this) + " from " + System.identityHashCode(fact));
+            System.out.println(
+                    "merge update of # "
+                            + System.identityHashCode(this)
+                            + " from "
+                            + System.identityHashCode(fact));
             System.out.println("update " + this);
             System.out.println("with " + fact);
-
         }
         boolean resultForSkippedValue = false;
         if (skipMe != null) {
@@ -187,7 +181,8 @@ public class UnconditionalValueDerefSet {
                 if (factDerefLocationSet != null && !factDerefLocationSet.isEmpty()) {
                     // Compute the union of the dereference locations for
                     // this value number.
-                    Set<Location> derefLocationSet = derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
+                    Set<Location> derefLocationSet =
+                            derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
                     derefLocationSet.addAll(fact.derefLocationSetMap.get(vn));
                 }
             } else {
@@ -205,7 +200,11 @@ public class UnconditionalValueDerefSet {
 
     public void unionWith(UnconditionalValueDerefSet fact, ValueNumberFactory valueNumberFactory) {
         if (UnconditionalValueDerefAnalysis.DEBUG) {
-            System.out.println("union update of # " + System.identityHashCode(this) + " from " + System.identityHashCode(fact));
+            System.out.println(
+                    "union update of # "
+                            + System.identityHashCode(this)
+                            + " from "
+                            + System.identityHashCode(fact));
         }
         // Compute the union of the unconditionally dereferenced value sets
         valueNumbersUnconditionallyDereferenced.or(fact.valueNumbersUnconditionallyDereferenced);
@@ -217,7 +216,8 @@ public class UnconditionalValueDerefSet {
             if (fact.valueNumbersUnconditionallyDereferenced.get(i)) {
                 // Compute the union of the dereference locations for
                 // this value number.
-                Set<Location> derefLocationSet = derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
+                Set<Location> derefLocationSet =
+                        derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
                 derefLocationSet.addAll(fact.derefLocationSetMap.get(vn));
             } else {
                 derefLocationSetMap.put(vn, new HashSet<>(fact.getDerefLocationSet(vn)));
@@ -228,14 +228,18 @@ public class UnconditionalValueDerefSet {
     /**
      * Mark a value as being dereferenced at given Location.
      *
-     * @param vn
-     *            the value
-     * @param location
-     *            the Location
+     * @param vn the value
+     * @param location the Location
      */
     public void addDeref(ValueNumber vn, Location location) {
         if (UnconditionalValueDerefAnalysis.DEBUG) {
-            System.out.println("Adding dereference of " + vn + " to # " + System.identityHashCode(this) + " @ " + location);
+            System.out.println(
+                    "Adding dereference of "
+                            + vn
+                            + " to # "
+                            + System.identityHashCode(this)
+                            + " @ "
+                            + location);
         }
         valueNumbersUnconditionallyDereferenced.set(vn.getNumber());
 
@@ -244,17 +248,20 @@ public class UnconditionalValueDerefSet {
     }
 
     /**
-     * Set a value as being unconditionally dereferenced at the given set of
-     * locations.
+     * Set a value as being unconditionally dereferenced at the given set of locations.
      *
-     * @param vn
-     *            the value
-     * @param derefSet
-     *            the Set of dereference Locations
+     * @param vn the value
+     * @param derefSet the Set of dereference Locations
      */
     public void setDerefSet(ValueNumber vn, Set<Location> derefSet) {
         if (UnconditionalValueDerefAnalysis.DEBUG) {
-            System.out.println("Adding dereference of " + vn + " for # " + System.identityHashCode(this) + " to " + derefSet);
+            System.out.println(
+                    "Adding dereference of "
+                            + vn
+                            + " for # "
+                            + System.identityHashCode(this)
+                            + " to "
+                            + derefSet);
         }
         valueNumbersUnconditionallyDereferenced.set(vn.getNumber());
 
@@ -266,12 +273,12 @@ public class UnconditionalValueDerefSet {
     /**
      * Clear the set of dereferences for given ValueNumber
      *
-     * @param value
-     *            the ValueNumber
+     * @param value the ValueNumber
      */
     public void clearDerefSet(ValueNumber value) {
         if (UnconditionalValueDerefAnalysis.DEBUG) {
-            System.out.println("Clearing dereference of " + value + " for # " + System.identityHashCode(this));
+            System.out.println(
+                    "Clearing dereference of " + value + " for # " + System.identityHashCode(this));
         }
         valueNumbersUnconditionallyDereferenced.clear(value.getNumber());
         derefLocationSetMap.remove(value);
@@ -280,8 +287,7 @@ public class UnconditionalValueDerefSet {
     /**
      * Get the set of dereference Locations for given value number.
      *
-     * @param vn
-     *            the value number
+     * @param vn the value number
      * @return the set of dereference Locations
      */
     public Set<Location> getDerefLocationSet(ValueNumber vn) {
@@ -290,13 +296,10 @@ public class UnconditionalValueDerefSet {
     }
 
     /**
-     * Return whether or not the given value number is unconditionally
-     * dereferenced.
+     * Return whether or not the given value number is unconditionally dereferenced.
      *
-     * @param vn
-     *            the value number
-     * @return true if the value is unconditionally dereferenced, false
-     *         otherwise
+     * @param vn the value number
+     * @return true if the value is unconditionally dereferenced, false otherwise
      */
     public boolean isUnconditionallyDereferenced(ValueNumber vn) {
         return valueNumbersUnconditionallyDereferenced.get(vn.getNumber());
@@ -323,14 +326,12 @@ public class UnconditionalValueDerefSet {
     }
 
     /**
-     * Get the set of Locations where given value is guaranteed to be
-     * dereferenced. (I.e., if non-implicit-exception control paths are
-     * followed, one of these locations will be reached).
+     * Get the set of Locations where given value is guaranteed to be dereferenced. (I.e., if
+     * non-implicit-exception control paths are followed, one of these locations will be reached).
      *
-     * @param vn
-     *            the value
-     * @return set of Locations, one of which will definitely be reached if
-     *         non-implicit-exception control paths are followed
+     * @param vn the value
+     * @return set of Locations, one of which will definitely be reached if non-implicit-exception
+     *     control paths are followed
      */
     public Set<Location> getUnconditionalDerefLocationSet(ValueNumber vn) {
         Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
@@ -381,7 +382,12 @@ public class UnconditionalValueDerefSet {
                 } else {
                     buf.append(',');
                 }
-                buf.append("(" + location.getBasicBlock().getLabel() + ":" + location.getHandle().getPosition() + ")");
+                buf.append(
+                        "("
+                                + location.getBasicBlock().getLabel()
+                                + ":"
+                                + location.getHandle().getPosition()
+                                + ")");
             }
             buf.append('}');
         }
@@ -411,36 +417,32 @@ public class UnconditionalValueDerefSet {
         if (UnconditionalValueDerefAnalysis.DEBUG) {
             for (ValueNumber v : getValueNumbersThatAreUnconditionallyDereferenced()) {
                 if (!valueNumbers.contains(v)) {
-                    System.out.println("\nWhy is " + v + " unconditionally dereferenced in #" + System.identityHashCode(this));
+                    System.out.println(
+                            "\nWhy is "
+                                    + v
+                                    + " unconditionally dereferenced in #"
+                                    + System.identityHashCode(this));
                     System.out.println("VN: " + vnaFrame);
                     System.out.println("UD: " + this);
                     System.out.println("Location: " + location);
                     System.out.println();
                 }
             }
-
         }
         retainOnlyTheseValueNumbers(valueNumbers);
     }
 
-    /**
-     * @param lastUpdateTimestamp
-     *            The lastUpdateTimestamp to set.
-     */
+    /** @param lastUpdateTimestamp The lastUpdateTimestamp to set. */
     public void setLastUpdateTimestamp(int lastUpdateTimestamp) {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
     }
 
-    /**
-     * @return Returns the lastUpdateTimestamp.
-     */
+    /** @return Returns the lastUpdateTimestamp. */
     public int getLastUpdateTimestamp() {
         return lastUpdateTimestamp;
     }
 
-    /**
-     * @return {@code true} if the set is empty
-     */
+    /** @return {@code true} if the set is empty */
     public boolean isEmpty() {
         return valueNumbersUnconditionallyDereferenced.isEmpty();
     }

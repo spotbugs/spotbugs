@@ -20,15 +20,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class FormatStringChecker extends OpcodeStackDetector {
 
@@ -39,7 +38,9 @@ public class FormatStringChecker extends OpcodeStackDetector {
     }
 
     enum FormatState {
-        NONE, READY_FOR_FORMAT, EXPECTING_ASSIGNMENT
+        NONE,
+        READY_FOR_FORMAT,
+        EXPECTING_ASSIGNMENT
     }
 
     FormatState state;
@@ -82,7 +83,9 @@ public class FormatStringChecker extends OpcodeStackDetector {
             }
         } else if (state == FormatState.READY_FOR_FORMAT && seen == Const.DUP) {
             state = FormatState.EXPECTING_ASSIGNMENT;
-        } else if (state == FormatState.EXPECTING_ASSIGNMENT && stack.getStackDepth() == stackDepth + 3 && seen == Const.AASTORE) {
+        } else if (state == FormatState.EXPECTING_ASSIGNMENT
+                && stack.getStackDepth() == stackDepth + 3
+                && seen == Const.AASTORE) {
             Object pos = stack.getStackItem(1).getConstant();
             OpcodeStack.Item value = stack.getStackItem(0);
             if (pos instanceof Integer) {
@@ -97,7 +100,10 @@ public class FormatStringChecker extends OpcodeStackDetector {
                 state = FormatState.NONE;
             }
         } else if (state == FormatState.READY_FOR_FORMAT
-                && (seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE)
+                && (seen == Const.INVOKESPECIAL
+                        || seen == Const.INVOKEVIRTUAL
+                        || seen == Const.INVOKESTATIC
+                        || seen == Const.INVOKEINTERFACE)
                 && stack.getStackDepth() == stackDepth) {
 
             String cl = getClassConstantOperand();
@@ -106,20 +112,24 @@ public class FormatStringChecker extends OpcodeStackDetector {
             XMethod m = getXMethodOperand();
             if ((m == null || m.isVarArgs())
                     && sig.indexOf("Ljava/lang/String;[Ljava/lang/Object;)") >= 0
-                    && ("java/util/Formatter".equals(cl) && "format".equals(nm) || "java/lang/String".equals(cl)
-                            && "format".equals(nm) || "java/io/PrintStream".equals(cl) && "format".equals(nm)
-                            || "java/io/PrintStream".equals(cl) && "printf".equals(nm) || cl.endsWith("Writer")
-                                    && "format".equals(nm) || cl.endsWith("Writer") && "printf".equals(nm)) || cl.endsWith("Logger")
-                                            && nm.endsWith("fmt")) {
+                    && ("java/util/Formatter".equals(cl) && "format".equals(nm)
+                            || "java/lang/String".equals(cl) && "format".equals(nm)
+                            || "java/io/PrintStream".equals(cl) && "format".equals(nm)
+                            || "java/io/PrintStream".equals(cl) && "printf".equals(nm)
+                            || cl.endsWith("Writer") && "format".equals(nm)
+                            || cl.endsWith("Writer") && "printf".equals(nm))
+                    || cl.endsWith("Logger") && nm.endsWith("fmt")) {
 
                 if (formatString.indexOf('\n') >= 0) {
-                    bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_USES_NEWLINE", NORMAL_PRIORITY)
-                            .addClassAndMethod(this).addCalledMethod(this).addString(formatString)
-                            .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, "VA_FORMAT_STRING_USES_NEWLINE", NORMAL_PRIORITY)
+                                    .addClassAndMethod(this)
+                                    .addCalledMethod(this)
+                                    .addString(formatString)
+                                    .describe(StringAnnotation.FORMAT_STRING_ROLE)
+                                    .addSourceLine(this));
                 }
             }
-
         }
     }
-
 }

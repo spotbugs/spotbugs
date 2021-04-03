@@ -21,19 +21,19 @@ package edu.umd.cs.findbugs;
 
 import static org.junit.Assert.assertTrue;
 
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.test.AnalysisRunner;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.test.AnalysisRunner;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-
 /**
- * Abstract class for integration testing. Extend, call {@code performAnalysis("com/company/classname.class")},
- * and finally assert the issues found over {@code getBugCollection()} by creating appropriate matchers with {@link BugInstanceMatcherBuilder}
- * For example:
+ * Abstract class for integration testing. Extend, call {@code
+ * performAnalysis("com/company/classname.class")}, and finally assert the issues found over {@code
+ * getBugCollection()} by creating appropriate matchers with {@link BugInstanceMatcherBuilder} For
+ * example:
  *
  * <pre>
  * <code>
@@ -63,20 +63,17 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  */
 public abstract class AbstractIntegrationTest {
 
-    /**
-     * Build path if running command line build
-     */
+    /** Build path if running command line build */
     private static final String BUILD_CLASSES_CLI = "/build/classes/java/main/";
 
-    /**
-     * Build path if running in Eclipse
-     */
+    /** Build path if running in Eclipse */
     private static final String BUILD_CLASSES_ECLIPSE = "/classesEclipse/";
 
     private BugCollectionBugReporter bugReporter;
 
     private static File getFindbugsTestCases() {
-        final File f = new File(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
+        final File f =
+                new File(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
         assertTrue("'spotbugsTestCases' directory not found", f.exists());
         assertTrue(f.isDirectory());
         assertTrue(f.canRead());
@@ -105,9 +102,8 @@ public abstract class AbstractIntegrationTest {
     }
 
     /**
-     * Sets up a FB engine to run on the 'spotbugsTestCases' project. It enables
-     * all the available detectors and reports all the bug categories. Uses a
-     * low priority threshold.
+     * Sets up a FB engine to run on the 'spotbugsTestCases' project. It enables all the available
+     * detectors and reports all the bug categories. Uses a low priority threshold.
      */
     protected void performAnalysis(@SlashedClassName final String... analyzeMe) {
         AnalysisRunner runner = new AnalysisRunner();
@@ -121,10 +117,11 @@ public abstract class AbstractIntegrationTest {
         }
 
         // TODO : Unwire this once we move bug samples to a proper sourceset
-        Path[] paths = Arrays.stream(analyzeMe)
-                .map(s -> getFindbugsTestCasesFile(BUILD_CLASSES_CLI + s).toPath())
-                .collect(Collectors.toList())
-                .toArray(new Path[analyzeMe.length]);
+        Path[] paths =
+                Arrays.stream(analyzeMe)
+                        .map(s -> getFindbugsTestCasesFile(BUILD_CLASSES_CLI + s).toPath())
+                        .collect(Collectors.toList())
+                        .toArray(new Path[analyzeMe.length]);
         bugReporter = runner.run(paths);
     }
 }

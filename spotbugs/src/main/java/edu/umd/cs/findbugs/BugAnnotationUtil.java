@@ -18,10 +18,9 @@
  */
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
 /**
  * Utility methods for BugAnnotation classes.
@@ -32,20 +31,20 @@ public abstract class BugAnnotationUtil {
     /**
      * Write a BugAnnotation as XML.
      *
-     * @param xmlOutput
-     *            the XMLOutput
-     * @param elementName
-     *            name of element for BugAnnotation
-     * @param annotation
-     *            the BugAnnotation
-     * @param attributeList
-     *            the XML attribute list
-     * @param addMessages
-     *            true if descriptive messages should be added
+     * @param xmlOutput the XMLOutput
+     * @param elementName name of element for BugAnnotation
+     * @param annotation the BugAnnotation
+     * @param attributeList the XML attribute list
+     * @param addMessages true if descriptive messages should be added
      * @throws IOException
      */
-    public static void writeXML(XMLOutput xmlOutput, String elementName, BugAnnotation annotation,
-            XMLAttributeList attributeList, boolean addMessages) throws IOException {
+    public static void writeXML(
+            XMLOutput xmlOutput,
+            String elementName,
+            BugAnnotation annotation,
+            XMLAttributeList attributeList,
+            boolean addMessages)
+            throws IOException {
 
         SourceLineAnnotation src = null;
         if (annotation instanceof BugAnnotationWithSourceLines) {
@@ -66,6 +65,5 @@ public abstract class BugAnnotationUtil {
         } else {
             xmlOutput.openCloseTag(elementName, attributeList);
         }
-
     }
 }

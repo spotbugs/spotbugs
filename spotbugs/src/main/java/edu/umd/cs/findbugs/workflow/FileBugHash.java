@@ -17,15 +17,6 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PackageStats;
@@ -34,11 +25,18 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.util.Util;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javax.annotation.CheckForNull;
 
 /**
- * For each source file that has reported bugs, compute a hash of all the issues
- * reported for that file. These hashes use line numbers, so a change that only
- * changes the line number of an issue will cause the hash to be different.
+ * For each source file that has reported bugs, compute a hash of all the issues reported for that
+ * file. These hashes use line numbers, so a change that only changes the line number of an issue
+ * will cause the hash to be different.
  *
  * @author William Pugh
  */
@@ -60,7 +58,9 @@ public class FileBugHash {
                 if (path.indexOf('.') == -1) {
                     path = cStat.getSourceFile();
                 } else {
-                    path = path.substring(0, path.lastIndexOf('.') + 1).replace('.', '/') + cStat.getSourceFile();
+                    path =
+                            path.substring(0, path.lastIndexOf('.') + 1).replace('.', '/')
+                                    + cStat.getSourceFile();
                 }
                 counts.put(path, 0);
                 Integer size = sizes.get(path);
@@ -85,8 +85,12 @@ public class FileBugHash {
                 buf = new StringBuilder();
                 hashes.put(key, buf);
             }
-            buf.append(bug.getInstanceKey()).append("-").append(source.getStartLine()).append(".")
-                    .append(source.getStartBytecode()).append(" ");
+            buf.append(bug.getInstanceKey())
+                    .append("-")
+                    .append(source.getStartLine())
+                    .append(".")
+                    .append(source.getStartBytecode())
+                    .append(" ");
             Integer count = counts.get(key);
             if (count == null) {
                 counts.put(key, 1);
@@ -146,7 +150,6 @@ public class FileBugHash {
         for (String sourceFile : result.getSourceFiles()) {
             System.out.println(result.getHash(sourceFile) + "\t" + sourceFile);
         }
-
     }
 
     public static FileBugHash compute(BugCollection origCollection) {

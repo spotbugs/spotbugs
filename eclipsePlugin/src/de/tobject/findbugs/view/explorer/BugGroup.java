@@ -20,19 +20,15 @@ package de.tobject.findbugs.view.explorer;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
 
-/**
- * @author Andrei
- */
+/** @author Andrei */
 public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup> {
 
     private String shortDescription;
@@ -83,9 +79,7 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
         return children.contains(elt);
     }
 
-    /**
-     * @return the short group description
-     */
+    /** @return the short group description */
     @SuppressWarnings("unchecked")
     public String getShortDescription() {
         if (shortDescription == null) {

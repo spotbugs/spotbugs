@@ -36,14 +36,12 @@ public class ParameterAnnotationAccumulator extends AbstractMethodAnnotationAccu
     /**
      * Constructor.
      *
-     * @param typeQualifierValue
-     *            TypeQualifierValue specifying kind of application to lookup
-     * @param xmethod
-     *            method we want to find parameter annotation for
-     * @param parameter
-     *            the parameter (0 == first parameter)
+     * @param typeQualifierValue TypeQualifierValue specifying kind of application to lookup
+     * @param xmethod method we want to find parameter annotation for
+     * @param parameter the parameter (0 == first parameter)
      */
-    protected ParameterAnnotationAccumulator(TypeQualifierValue<?> typeQualifierValue, XMethod xmethod, int parameter) {
+    protected ParameterAnnotationAccumulator(
+            TypeQualifierValue<?> typeQualifierValue, XMethod xmethod, int parameter) {
         super(typeQualifierValue, xmethod);
         this.parameter = parameter;
         this.result = new ParameterAnnotationLookupResult();
@@ -54,10 +52,7 @@ public class ParameterAnnotationAccumulator extends AbstractMethodAnnotationAccu
         return result;
     }
 
-    /**
-     * Returns true if the method overrides/implements a method in a superclass
-     * or interface
-     */
+    /** Returns true if the method overrides/implements a method in a superclass or interface */
     @Override
     public boolean overrides() {
         return overrides;
@@ -66,13 +61,12 @@ public class ParameterAnnotationAccumulator extends AbstractMethodAnnotationAccu
     @Override
     protected TypeQualifierAnnotation lookupAnnotation(XMethod xm) {
         overrides = true;
-        TypeQualifierAnnotation result1 = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xm, parameter,
-                getTypeQualifierValue());
+        TypeQualifierAnnotation result1 =
+                TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+                        xm, parameter, getTypeQualifierValue());
         if (TypeQualifierApplications.DEBUG && result1 != null) {
             System.out.println("Inherit " + result1.when + " from " + xm);
         }
         return result1;
-
     }
-
 }

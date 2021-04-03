@@ -68,7 +68,8 @@ public class OSXAdapter extends ApplicationAdapter {
             mainApp.preferences();
             ae.setHandled(true);
         } else {
-            throw new IllegalStateException("handlePreferences: MyApp instance " + "detached from listener");
+            throw new IllegalStateException(
+                    "handlePreferences: MyApp instance " + "detached from listener");
         }
     }
 

@@ -19,9 +19,14 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.util.Values;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -33,13 +38,6 @@ import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.util.Values;
 
 public class MultithreadedInstanceAccess extends OpcodeStackDetector {
     private static final String STRUTS_ACTION_NAME = "org.apache.struts.action.Action";
@@ -128,11 +126,9 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
         writingField = false;
     }
 
-
     @Override
     public boolean shouldVisitCode(Code code) {
         return !Const.CONSTRUCTOR_NAME.equals(getMethodName()) && !"init".equals(getMethodName());
-
     }
 
     @Override
@@ -165,12 +161,21 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
                                 return;
                             }
                             alreadyReported.add(nameCons.getBytes());
-                            bugReporter.reportBug(new BugInstance(this,
-                                    STRUTS_ACTION_NAME.equals(mtClassName) ? "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD"
-                                            : "MTIA_SUSPECT_SERVLET_INSTANCE_FIELD", LOW_PRIORITY)
+                            bugReporter.reportBug(
+                                    new BugInstance(
+                                            this,
+                                            STRUTS_ACTION_NAME.equals(mtClassName)
+                                                    ? "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD"
+                                                    : "MTIA_SUSPECT_SERVLET_INSTANCE_FIELD",
+                                            LOW_PRIORITY)
                                                     .addField(
-                                                            new FieldAnnotation(getDottedClassName(), nameCons.getBytes(), typeCons.getBytes(),
-                                                                    false)).addClass(this).addSourceLine(this));
+                                                            new FieldAnnotation(
+                                                                    getDottedClassName(),
+                                                                    nameCons.getBytes(),
+                                                                    typeCons.getBytes(),
+                                                                    false))
+                                                    .addClass(this)
+                                                    .addSourceLine(this));
                         }
                         break;
                     }
@@ -187,7 +192,9 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
             monitorCount--;
         }
 
-        writingField = ((seen == Const.PUTFIELD) || (seen == Const.PUTFIELD_QUICK) || (seen == Const.PUTFIELD_QUICK_W));
+        writingField =
+                ((seen == Const.PUTFIELD)
+                        || (seen == Const.PUTFIELD_QUICK)
+                        || (seen == Const.PUTFIELD_QUICK_W));
     }
-
 }

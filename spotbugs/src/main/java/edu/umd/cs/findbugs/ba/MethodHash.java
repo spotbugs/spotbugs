@@ -19,16 +19,14 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.util.Util;
 import java.security.MessageDigest;
 import java.util.Arrays;
-
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.util.Util;
-
 /**
- * Compute a hash of the bytecode for given method. This can find methods which
- * have not been changed other than accessing different constant pool entries.
+ * Compute a hash of the bytecode for given method. This can find methods which have not been
+ * changed other than accessing different constant pool entries.
  *
  * @author David Hovemeyer
  */
@@ -43,23 +41,17 @@ public class MethodHash implements Comparable<MethodHash> {
 
     private boolean isStatic;
 
-    /**
-     * Constructor. computeHash(Method) must be used to initialize the contents.
-     */
+    /** Constructor. computeHash(Method) must be used to initialize the contents. */
     public MethodHash() {
     }
 
     /**
      * Constructor.
      *
-     * @param methodName
-     *            method name
-     * @param methodSig
-     *            method signature
-     * @param isStatic
-     *            true if the method is static, false if not
-     * @param hash
-     *            the pre-computed hash
+     * @param methodName method name
+     * @param methodSig method signature
+     * @param isStatic true if the method is static, false if not
+     * @param hash the pre-computed hash
      */
     public MethodHash(String methodName, String methodSig, boolean isStatic, byte[] hash) {
         this.methodName = methodName;
@@ -69,23 +61,17 @@ public class MethodHash implements Comparable<MethodHash> {
         System.arraycopy(hash, 0, this.hash, 0, hash.length);
     }
 
-    /**
-     * @return Returns the method name.
-     */
+    /** @return Returns the method name. */
     public String getMethodName() {
         return methodName;
     }
 
-    /**
-     * @return Returns the method signature.
-     */
+    /** @return Returns the method signature. */
     public String getMethodSig() {
         return methodSig;
     }
 
-    /**
-     * @return Returns whether the method is static.
-     */
+    /** @return Returns whether the method is static. */
     public boolean isStatic() {
         return isStatic;
     }
@@ -102,8 +88,7 @@ public class MethodHash implements Comparable<MethodHash> {
     /**
      * Compute hash on given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return this object
      */
     public MethodHash computeHash(Method method) {
@@ -127,11 +112,9 @@ public class MethodHash implements Comparable<MethodHash> {
     }
 
     /**
-     * Return whether or not this method hash has the same value as the one
-     * given.
+     * Return whether or not this method hash has the same value as the one given.
      *
-     * @param other
-     *            another MethodHash
+     * @param other another MethodHash
      * @return true if the hash values are the same, false if not
      */
     public boolean isSameHash(MethodHash other) {
@@ -179,8 +162,7 @@ public class MethodHash implements Comparable<MethodHash> {
     /**
      * Convert a byte to an unsigned int.
      *
-     * @param b
-     *            a byte value
+     * @param b a byte value
      * @return the unsigned integer value of the byte
      */
     private static int toUnsigned(byte b) {
@@ -190,5 +172,4 @@ public class MethodHash implements Comparable<MethodHash> {
         }
         return value;
     }
-
 }

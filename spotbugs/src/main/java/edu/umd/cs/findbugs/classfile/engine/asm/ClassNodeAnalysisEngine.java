@@ -19,15 +19,14 @@
 
 package edu.umd.cs.findbugs.classfile.engine.asm;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.ClassNode;
-
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
 
 /**
  * Analysis engine to produce the ClassNode (ASM tree format) for a class.
@@ -44,7 +43,8 @@ public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public ClassNode analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public ClassNode analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor)
+            throws CheckedAnalysisException {
         ClassReader classReader = analysisCache.getClassAnalysis(ClassReader.class, descriptor);
 
         ICodeBaseEntry entry = analysisCache.getClassPath().lookupResource(descriptor.toResourceName());
@@ -73,5 +73,4 @@ public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(ClassNode.class, this);
     }
-
 }

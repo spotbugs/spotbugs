@@ -19,18 +19,15 @@
 package edu.umd.cs.findbugs.test;
 
 import java.nio.file.Paths;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-/**
- * Test class to ensure that {@link SpotBugsExtension} really work as expected.
- *
- */
+/** Test class to ensure that {@link SpotBugsExtension} really work as expected. */
 @ExtendWith(SpotBugsExtension.class)
 public class SpotBugsExtensionTest {
     @Test
     public void test(SpotBugsRunner spotbugs) {
-        spotbugs.performAnalysis(Paths.get("build/classes/java/main/edu/umd/cs/findbugs/test/SpotBugsRunner.class"));
+        spotbugs.performAnalysis(
+                Paths.get("build/classes/java/main/edu/umd/cs/findbugs/test/SpotBugsRunner.class"));
     }
 }

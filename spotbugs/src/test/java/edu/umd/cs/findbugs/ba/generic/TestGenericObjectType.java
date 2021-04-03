@@ -25,21 +25,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
+import edu.umd.cs.findbugs.util.Values;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.annotation.Nullable;
-
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.junit.Test;
 
-import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
-import edu.umd.cs.findbugs.util.Values;
-
-/**
- * @author Nat Ayewah
- */
+/** @author Nat Ayewah */
 public class TestGenericObjectType {
 
     GenericObjectType obj;
@@ -58,9 +53,14 @@ public class TestGenericObjectType {
 
     List<ReferenceType> parameters;
 
-    public void initTest(String bytecodeSignature, String javaSignature, String underlyingClass,
+    public void initTest(
+            String bytecodeSignature,
+            String javaSignature,
+            String underlyingClass,
             GenericUtilities.TypeCategory typeCategory,
-            @Nullable String variable, @Nullable Type extension, @Nullable List<ReferenceType> parameters) {
+            @Nullable String variable,
+            @Nullable Type extension,
+            @Nullable List<ReferenceType> parameters) {
         this.obj = (GenericObjectType) GenericUtilities.getType(bytecodeSignature);
         this.javaSignature = javaSignature;
         this.underlyingClass = underlyingClass;
@@ -93,7 +93,8 @@ public class TestGenericObjectType {
             assertNull(obj.getExtension());
             assertNotNull(obj.getVariable());
             assertEquals(obj.getVariable(), "*");
-        } else if (typeCategory == TypeCategory.WILDCARD_EXTENDS || typeCategory == TypeCategory.WILDCARD_SUPER) {
+        } else if (typeCategory == TypeCategory.WILDCARD_EXTENDS
+                || typeCategory == TypeCategory.WILDCARD_SUPER) {
             assertFalse(obj.hasParameters());
             assertNotNull(obj.getExtension());
             assertNotNull(obj.getVariable());
@@ -112,37 +113,80 @@ public class TestGenericObjectType {
 
     @Test
     public void testParameterizedList() {
-        initTest("Ljava/util/List<Ljava/lang/Comparable;>;", "java.util.List<java.lang.Comparable>", "java.util.List",
-                GenericUtilities.TypeCategory.PARAMETERIZED, null, null,
+        initTest(
+                "Ljava/util/List<Ljava/lang/Comparable;>;",
+                "java.util.List<java.lang.Comparable>",
+                "java.util.List",
+                GenericUtilities.TypeCategory.PARAMETERIZED,
+                null,
+                null,
                 GenericUtilities.getTypeParameters("Ljava/lang/Comparable;"));
         processTest();
     }
 
     public void notestCreateTypes() {
-        initTest("LDummyClass<Ljava/lang/Comparable;TE;>;", "DummyClass<java.lang.Comparable,E>", "DummyClass",
-                GenericUtilities.TypeCategory.PARAMETERIZED, null, null, Arrays.asList(
+        initTest(
+                "LDummyClass<Ljava/lang/Comparable;TE;>;",
+                "DummyClass<java.lang.Comparable,E>",
+                "DummyClass",
+                GenericUtilities.TypeCategory.PARAMETERIZED,
+                null,
+                null,
+                Arrays.asList(
                         (ReferenceType) GenericUtilities.getType("Ljava/lang/Comparable;"),
                         (ReferenceType) GenericUtilities.getType("TE;")));
         processTest();
     }
 
     public void notestTypeVariables() {
-        initTest("TE;", "E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.TYPE_VARIABLE, "E", null, null);
+        initTest(
+                "TE;",
+                "E",
+                Values.DOTTED_JAVA_LANG_OBJECT,
+                GenericUtilities.TypeCategory.TYPE_VARIABLE,
+                "E",
+                null,
+                null);
         processTest();
 
-        initTest("*", "?", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD, "*", null, null);
+        initTest(
+                "*",
+                "?",
+                Values.DOTTED_JAVA_LANG_OBJECT,
+                GenericUtilities.TypeCategory.WILDCARD,
+                "*",
+                null,
+                null);
         processTest();
 
-        initTest("+TE;", "? extends E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_EXTENDS, "+",
-                GenericUtilities.getType("TE;"), null);
+        initTest(
+                "+TE;",
+                "? extends E",
+                Values.DOTTED_JAVA_LANG_OBJECT,
+                GenericUtilities.TypeCategory.WILDCARD_EXTENDS,
+                "+",
+                GenericUtilities.getType("TE;"),
+                null);
         processTest();
 
-        initTest("-TE;", "? super E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
-                GenericUtilities.getType("TE;"), null);
+        initTest(
+                "-TE;",
+                "? super E",
+                Values.DOTTED_JAVA_LANG_OBJECT,
+                GenericUtilities.TypeCategory.WILDCARD_SUPER,
+                "-",
+                GenericUtilities.getType("TE;"),
+                null);
         processTest();
 
-        initTest("-[TE;", "? super E[]", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
-                GenericUtilities.getType("[TE;"), null);
+        initTest(
+                "-[TE;",
+                "? super E[]",
+                Values.DOTTED_JAVA_LANG_OBJECT,
+                GenericUtilities.TypeCategory.WILDCARD_SUPER,
+                "-",
+                GenericUtilities.getType("[TE;"),
+                null);
         processTest();
     }
 }

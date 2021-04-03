@@ -18,18 +18,15 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
+import static org.junit.Assert.assertThat;
+
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.junit.Assert.assertThat;
-
-
-/**
- * @see <a href="https://github.com/spotbugs/spotbugs/issues/374">GitHub issue</a>
- */
+/** @see <a href="https://github.com/spotbugs/spotbugs/issues/374">GitHub issue</a> */
 public class Issue374Test extends AbstractIntegrationTest {
     @Test
     public void test() {
@@ -38,9 +35,10 @@ public class Issue374Test extends AbstractIntegrationTest {
                 "ghIssues/issue374/ClassLevel.class",
                 "ghIssues/issue374/MethodLevel.class",
                 "ghIssues/issue374/PackageLevel.class");
-        BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
-                .build();
+        BugInstanceMatcher matcher =
+                new BugInstanceMatcherBuilder()
+                        .bugType("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
+                        .build();
         assertThat(getBugCollection(), containsExactly(3, matcher));
     }
 }

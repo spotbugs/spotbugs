@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -30,10 +27,12 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 /**
- * Base class for simple type checking detectors which tests if the method
- * returns null references for specific types.
+ * Base class for simple type checking detectors which tests if the method returns null references
+ * for specific types.
  *
  * @author alison
  * @author Andrey Loskutov
@@ -65,7 +64,8 @@ public abstract class TypeReturnNull extends OpcodeStackDetector {
 
     private boolean isExplicitlyNullable() {
         AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
-        INullnessAnnotationDatabase nullnessAnnotationDatabase = analysisContext.getNullnessAnnotationDatabase();
+        INullnessAnnotationDatabase nullnessAnnotationDatabase =
+                analysisContext.getNullnessAnnotationDatabase();
         XMethod xMethod = getXMethod();
         NullnessAnnotation na = nullnessAnnotationDatabase.getResolvedAnnotation(xMethod, true);
         return na != null && na != NullnessAnnotation.NONNULL;
@@ -78,14 +78,9 @@ public abstract class TypeReturnNull extends OpcodeStackDetector {
         }
     }
 
-    /**
-     * @return true if the given return signature matches expected type
-     */
+    /** @return true if the given return signature matches expected type */
     protected abstract boolean matchesReturnSignature(String returnSignature);
 
-    /**
-     * creates individual bug instance on match
-     */
+    /** creates individual bug instance on match */
     protected abstract void accumulateBug();
-
 }

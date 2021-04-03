@@ -34,8 +34,7 @@ public class DepthFirstSearch<GraphType extends Graph<EdgeType, VertexType>, Edg
     /**
      * Constructor.
      *
-     * @param graph
-     *            the graph to perform a depth first search of
+     * @param graph the graph to perform a depth first search of
      */
     public DepthFirstSearch(GraphType graph) {
         super(graph);
@@ -55,5 +54,4 @@ public class DepthFirstSearch<GraphType extends Graph<EdgeType, VertexType>, Edg
     protected VertexType getSource(EdgeType edge) {
         return edge.getSource();
     }
-
 }

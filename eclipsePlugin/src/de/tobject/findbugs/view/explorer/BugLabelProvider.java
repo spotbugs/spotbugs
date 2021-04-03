@@ -18,15 +18,17 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerRank;
+import edu.umd.cs.findbugs.SortedBugCollection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.annotation.CheckForNull;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -43,16 +45,9 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
-import de.tobject.findbugs.marker.FindBugsMarker.MarkerRank;
-import edu.umd.cs.findbugs.SortedBugCollection;
-
-/**
- * @author Andrei
- */
-public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabelProvider,
-        IColorProvider {
+/** @author Andrei */
+public class BugLabelProvider
+        implements /* IStyledLabelProvider, */ ICommonLabelProvider, IColorProvider {
 
     private final WorkbenchLabelProvider wbProvider;
 
@@ -93,7 +88,6 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
                 ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
                 return imageRegistry.get(FindbugsPlugin.ICON_DEFAULT);
             }
-
         }
         if (element instanceof IMarker) {
             if (!((IMarker) element).exists()) {
@@ -124,7 +118,12 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             }
             int filtered = getFilteredMarkersCount(group);
             String filterCount = filtered > 0 ? "/" + filtered + " filtered" : "";
-            String str = group.getShortDescription() + " (" + (group.getMarkersCount() - filtered) + filterCount + ")";
+            String str =
+                    group.getShortDescription()
+                            + " ("
+                            + (group.getMarkersCount() - filtered)
+                            + filterCount
+                            + ")";
             return str;
         }
         if (element instanceof IMarker) {
@@ -182,15 +181,16 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             }
         }
         if (groups.size() > 1 && !isStandalone()) {
-            Collections.sort(groups, new Comparator<BugGroup>() {
-                Grouping grouping = getGrouping();
+            Collections.sort(
+                    groups,
+                    new Comparator<BugGroup>() {
+                        Grouping grouping = getGrouping();
 
-                @Override
-                public int compare(BugGroup o1, BugGroup o2) {
-                    return grouping.compare(o1.getType(), o2.getType());
-                }
-
-            });
+                        @Override
+                        public int compare(BugGroup o1, BugGroup o2) {
+                            return grouping.compare(o1.getType(), o2.getType());
+                        }
+                    });
         }
         Set<BugGroup> finalGroups = new HashSet<>();
         int count = 0;
@@ -287,5 +287,4 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
         }
         return null;
     }
-
 }

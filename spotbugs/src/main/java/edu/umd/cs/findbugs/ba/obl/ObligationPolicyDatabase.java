@@ -19,25 +19,21 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.XMethod;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.bcel.generic.ReferenceType;
-
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * Policy database which defines which methods create and remove obligations.
  *
- * <p>
- * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
- * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
- * </p>
+ * <p>See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011" >Finding and
+ * preventing run-time error handling mistakes</a>, OOPSLA 2004.
  *
  * @author David Hovemeyer
  */
@@ -55,7 +51,6 @@ public class ObligationPolicyDatabase {
     public ObligationPolicyDatabase() {
         this.factory = new ObligationFactory();
         this.entryList = new LinkedList<>();
-
     }
 
     public ObligationFactory getFactory() {
@@ -75,22 +70,19 @@ public class ObligationPolicyDatabase {
     }
 
     /**
-     * Add an appropriate policy database entry for parameters marked with the
-     * WillClose annotation.
+     * Add an appropriate policy database entry for parameters marked with the WillClose annotation.
      *
-     * @param xmethod
-     *            a method
-     * @param obligation
-     *            the Obligation deleted by the method
-     * @param entryType
-     *            type of entry (STRONG or WEAK)
+     * @param xmethod a method
+     * @param obligation the Obligation deleted by the method
+     * @param entryType type of entry (STRONG or WEAK)
      */
-    public ObligationPolicyDatabaseEntry addParameterDeletesObligationDatabaseEntry(XMethod xmethod, Obligation obligation,
-            ObligationPolicyDatabaseEntryType entryType) {
+    public ObligationPolicyDatabaseEntry addParameterDeletesObligationDatabaseEntry(
+            XMethod xmethod, Obligation obligation, ObligationPolicyDatabaseEntryType entryType) {
         // Add a policy database entry noting that this method
         // will delete one instance of the obligation type.
-        ObligationPolicyDatabaseEntry entry = new MatchMethodEntry(xmethod, ObligationPolicyDatabaseActionType.DEL, entryType,
-                obligation);
+        ObligationPolicyDatabaseEntry entry =
+                new MatchMethodEntry(
+                        xmethod, ObligationPolicyDatabaseActionType.DEL, entryType, obligation);
         addEntry(entry);
         return entry;
     }
@@ -106,10 +98,23 @@ public class ObligationPolicyDatabase {
         return strictChecking;
     }
 
-    public void getActions(ReferenceType receiverType, String methodName, String signature, boolean isStatic,
+    public void getActions(
+            ReferenceType receiverType,
+            String methodName,
+            String signature,
+            boolean isStatic,
             Collection<ObligationPolicyDatabaseAction> actionList) {
         if (DEBUG) {
-            System.out.println("Lookup for " + receiverType + "," + methodName + "," + signature + "," + isStatic + ": ");
+            System.out.println(
+                    "Lookup for "
+                            + receiverType
+                            + ","
+                            + methodName
+                            + ","
+                            + signature
+                            + ","
+                            + isStatic
+                            + ": ");
         }
         for (ObligationPolicyDatabaseEntry entry : entryList) {
 

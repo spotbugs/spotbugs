@@ -21,6 +21,9 @@ package de.tobject.findbugs.view.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.AbstractPluginTest;
+import de.tobject.findbugs.test.TestScenario;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -30,10 +33,6 @@ import org.eclipse.ui.WorkbenchException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import de.tobject.findbugs.test.AbstractFindBugsTest;
-import de.tobject.findbugs.test.AbstractPluginTest;
-import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the FindBugsPerspectiveFactory.
@@ -69,7 +68,8 @@ public class FindBugsPerspectiveTest extends AbstractFindBugsTest {
 
     private IWorkbenchPage showFindBugsPerspective() throws WorkbenchException {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        IWorkbenchPage page = PlatformUI.getWorkbench().showPerspective(FINDBUGS_PERSPECTIVE_ID, window);
+        IWorkbenchPage page =
+                PlatformUI.getWorkbench().showPerspective(FINDBUGS_PERSPECTIVE_ID, window);
         return page;
     }
 }

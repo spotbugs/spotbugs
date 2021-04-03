@@ -4,7 +4,8 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
 
     MethodAnnotation method;
 
-    public MethodWarningSuppressor(String bugPattern, ClassAnnotation clazz, MethodAnnotation method) {
+    public MethodWarningSuppressor(
+            String bugPattern, ClassAnnotation clazz, MethodAnnotation method) {
         super(bugPattern, clazz);
         this.method = method;
     }

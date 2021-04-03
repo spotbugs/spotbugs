@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-/**
- * Support for finding out what version of Java we're running on.
- */
+/** Support for finding out what version of Java we're running on. */
 public class JavaVersion {
 
     private final int major;
@@ -30,9 +28,7 @@ public class JavaVersion {
 
     private final String rest;
 
-    /**
-     * StaticConstant for the Java version we're currently running on.
-     */
+    /** StaticConstant for the Java version we're currently running on. */
     private static JavaVersion runtimeVersion;
 
     static {
@@ -45,17 +41,14 @@ public class JavaVersion {
         }
     }
 
-    /**
-     * StaticConstant for Java 1.5 (Tiger).
-     */
+    /** StaticConstant for Java 1.5 (Tiger). */
     public static final JavaVersion JAVA_1_5 = new JavaVersion(1, 5);
 
     /**
      * Constructor.
      *
-     * @param versionString
-     *            a version string, as returned from the
-     *            <code>java.version</code> system property: e.g., "1.4.2_04"
+     * @param versionString a version string, as returned from the <code>java.version</code> system
+     *     property: e.g., "1.4.2_04"
      */
     public JavaVersion(String versionString) throws JavaVersionException {
         // See https://bugs.openjdk.java.net/browse/JDK-8061493 for http://openjdk.java.net/jeps/223
@@ -92,10 +85,8 @@ public class JavaVersion {
     /**
      * Constructor.
      *
-     * @param major
-     *            major version
-     * @param minor
-     *            minor version
+     * @param major major version
+     * @param minor minor version
      */
     public JavaVersion(int major, int minor) {
         this.major = major;
@@ -103,23 +94,17 @@ public class JavaVersion {
         this.rest = "";
     }
 
-    /**
-     * Get the major version number.
-     */
+    /** Get the major version number. */
     public int getMajor() {
         return major;
     }
 
-    /**
-     * Get the minor version number.
-     */
+    /** Get the minor version number. */
     public int getMinor() {
         return minor;
     }
 
-    /**
-     * Get the rest of the version string after the major and minor numbers.
-     */
+    /** Get the rest of the version string after the major and minor numbers. */
     public String getRest() {
         return rest;
     }
@@ -137,19 +122,16 @@ public class JavaVersion {
         return buf.toString();
     }
 
-    /**
-     * Get the version of Java that we are currently running under.
-     */
+    /** Get the version of Java that we are currently running under. */
     public static JavaVersion getRuntimeVersion() {
         return runtimeVersion;
     }
 
     /**
-     * Return whether the Java version represented by this object is at least as
-     * recent as the one given.
+     * Return whether the Java version represented by this object is at least as recent as the one
+     * given.
      *
-     * @param other
-     *            another JavaVersion
+     * @param other another JavaVersion
      * @return true if this Java version is at least as recent as the one given
      */
     public boolean isSameOrNewerThan(JavaVersion other) {

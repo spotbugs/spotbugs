@@ -20,15 +20,11 @@
 package edu.umd.cs.findbugs;
 
 import java.util.Set;
-
 import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Filter reported warnings by category.
- */
+/** Filter reported warnings by category. */
 public class CategoryFilteringBugReporter extends DelegatingBugReporter {
     private static final Logger LOG = LoggerFactory.getLogger(CategoryFilteringBugReporter.class);
 

@@ -19,12 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -33,10 +27,17 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 public class VolatileUsage extends BytecodeScanningDetector {
     enum IncrementState {
-        START, GETFIELD, LOADCONSTANT, ADD
+        START,
+        GETFIELD,
+        LOADCONSTANT,
+        ADD
     }
 
     private final BugReporter bugReporter;
@@ -93,9 +94,16 @@ public class VolatileUsage extends BytecodeScanningDetector {
             break;
         case ADD:
             if (seen == Const.PUTFIELD && incrementField.equals(getXFieldOperand())) {
-                bugReporter.reportBug(new BugInstance(this, "VO_VOLATILE_INCREMENT",
-                        "J".equals(incrementField.getSignature()) ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY)
-                                .addClassAndMethod(this).addField(incrementField).addSourceLine(this));
+                bugReporter.reportBug(
+                        new BugInstance(
+                                this,
+                                "VO_VOLATILE_INCREMENT",
+                                "J".equals(incrementField.getSignature())
+                                        ? Priorities.HIGH_PRIORITY
+                                        : Priorities.NORMAL_PRIORITY)
+                                                .addClassAndMethod(this)
+                                                .addField(incrementField)
+                                                .addSourceLine(this));
             }
             resetIncrementState();
             break;
@@ -131,9 +139,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
         }
     }
 
-    /**
-     *
-     */
+    /** */
     private void resetIncrementState() {
         state = IncrementState.START;
         incrementField = null;
@@ -144,13 +150,17 @@ public class VolatileUsage extends BytecodeScanningDetector {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
         for (XField f : AnalysisContext.currentXFactory().allFields()) {
-            if (!f.isSynthetic() && isVolatileArray(f) && subtypes2.isApplicationClass(f.getClassDescriptor())) {
+            if (!f.isSynthetic()
+                    && isVolatileArray(f)
+                    && subtypes2.isApplicationClass(f.getClassDescriptor())) {
                 int priority = LOW_PRIORITY;
                 if (initializationWrites.contains(f) && !otherWrites.contains(f)) {
                     priority = NORMAL_PRIORITY;
                 }
-                bugReporter.reportBug(new BugInstance(this, "VO_VOLATILE_REFERENCE_TO_ARRAY", priority).addClass(
-                        f.getClassDescriptor()).addField(f));
+                bugReporter.reportBug(
+                        new BugInstance(this, "VO_VOLATILE_REFERENCE_TO_ARRAY", priority)
+                                .addClass(f.getClassDescriptor())
+                                .addField(f));
             }
         }
     }

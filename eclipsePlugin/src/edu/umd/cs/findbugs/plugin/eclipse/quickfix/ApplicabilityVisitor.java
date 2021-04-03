@@ -17,13 +17,12 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-
 /**
- * This visitor should traverse the AST as much as needed to determine the nature of the
- * replacement string, and then return it through <code>isApplicable()</code>.
+ * This visitor should traverse the AST as much as needed to determine the nature of the replacement
+ * string, and then return it through <code>isApplicable()</code>.
  *
- * This typically is the visitor that would be used anyway to perform the resolution, but
- * could be a more efficient variation.
+ * <p>This typically is the visitor that would be used anyway to perform the resolution, but could
+ * be a more efficient variation.
  *
  * @author <a href="mailto:kjlubick@ncsu.edu">Kevin Lubick</a>
  */

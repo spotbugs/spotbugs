@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -40,10 +39,11 @@ public class CurrentThreadExecutorServiceTest {
         ExecutorService executorService = new CurrentThreadExecutorService();
         AtomicBoolean isCalled = new AtomicBoolean();
         try {
-            executorService.execute(() -> {
-                assertEquals(currentThread, Thread.currentThread());
-                isCalled.set(true);
-            });
+            executorService.execute(
+                    () -> {
+                        assertEquals(currentThread, Thread.currentThread());
+                        isCalled.set(true);
+                    });
             assertTrue(isCalled.get());
         } finally {
             executorService.shutdown();

@@ -19,15 +19,13 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.meta.When;
-
-import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
  * A type qualifier applied to a field, method, parameter, or return value.
@@ -46,12 +44,13 @@ public class TypeQualifierAnnotation {
         this.when = when;
     }
 
-    public static final TypeQualifierAnnotation OVERRIDES_BUT_NO_ANNOTATION = new TypeQualifierAnnotation(null, null) {
-        @Override
-        public String toString() {
-            return "Overrides but no annotation";
-        }
-    };
+    public static final TypeQualifierAnnotation OVERRIDES_BUT_NO_ANNOTATION =
+            new TypeQualifierAnnotation(null, null) {
+                @Override
+                public String toString() {
+                    return "Overrides but no annotation";
+                }
+            };
 
     // private static DualKeyHashMap <TypeQualifierValue, When,
     // TypeQualifierAnnotation> map = new DualKeyHashMap <TypeQualifierValue,
@@ -95,48 +94,57 @@ public class TypeQualifierAnnotation {
 
     private static final When[][] combineReturnValueMatrix = {
         // ALWAYS UNKNOWN MAYBE NEVER
-        /* ALWAYS */{ When.ALWAYS, },
-        /* UNKNOWN */{ When.ALWAYS, When.UNKNOWN, },
-        /* MAYBE */{ When.ALWAYS, When.UNKNOWN, When.MAYBE, },
-        /* NEVER */{ TOP, TOP, When.NEVER, When.NEVER }, };
+        /* ALWAYS */ {
+            When.ALWAYS,
+        },
+        /* UNKNOWN */ {
+            When.ALWAYS, When.UNKNOWN,
+        },
+        /* MAYBE */ {
+            When.ALWAYS, When.UNKNOWN, When.MAYBE,
+        },
+        /* NEVER */ { TOP, TOP, When.NEVER, When.NEVER },
+    };
 
     private static final When[][] combineParameterMatrix = {
         // ALWAYS UNKNOWN MAYBE NEVER
-        /* ALWAYS */{ When.ALWAYS, },
-        /* UNKNOWN */{ When.UNKNOWN, When.UNKNOWN, },
-        /* MAYBE */{ When.MAYBE, When.MAYBE, When.MAYBE, },
-        /* NEVER */{ When.MAYBE, When.UNKNOWN, When.MAYBE, When.NEVER }, };
+        /* ALWAYS */ {
+            When.ALWAYS,
+        },
+        /* UNKNOWN */ {
+            When.UNKNOWN, When.UNKNOWN,
+        },
+        /* MAYBE */ {
+            When.MAYBE, When.MAYBE, When.MAYBE,
+        },
+        /* NEVER */ { When.MAYBE, When.UNKNOWN, When.MAYBE, When.NEVER },
+    };
 
     /**
      * Combine return type annotations.
      *
-     * @param a
-     *            a TypeQualifierAnnotation used on a return value
-     * @param b
-     *            another TypeQualifierAnnotation used on a return value
-     * @return combined return type annotation that is at least as narrow as
-     *         both <code>a</code> or <code>b</code>, or null if no such
-     *         TypeQualifierAnnotation exists
+     * @param a a TypeQualifierAnnotation used on a return value
+     * @param b another TypeQualifierAnnotation used on a return value
+     * @return combined return type annotation that is at least as narrow as both <code>a</code> or
+     *     <code>b</code>, or null if no such TypeQualifierAnnotation exists
      */
-    public static @CheckForNull TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+    public static @CheckForNull TypeQualifierAnnotation combineReturnTypeAnnotations(
+            TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return combineAnnotations(a, b, combineReturnValueMatrix);
     }
 
     /**
-     *
-     * @param a
-     *            a TypeQualifierAnnotation used on a method parameter
-     * @param b
-     *            another TypeQualifierAnnotation used on a method parameter
-     * @return combined parameter annotation that is at least as wide as both a
-     *         and b
+     * @param a a TypeQualifierAnnotation used on a method parameter
+     * @param b another TypeQualifierAnnotation used on a method parameter
+     * @return combined parameter annotation that is at least as wide as both a and b
      */
-    public static @Nonnull TypeQualifierAnnotation combineParameterAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+    public static @Nonnull TypeQualifierAnnotation combineParameterAnnotations(
+            TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return combineAnnotations(a, b, combineParameterMatrix);
     }
 
-    private static TypeQualifierAnnotation combineAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b,
-            When[][] mergeMatrix) {
+    private static TypeQualifierAnnotation combineAnnotations(
+            TypeQualifierAnnotation a, TypeQualifierAnnotation b, When[][] mergeMatrix) {
         assert a.typeQualifier.equals(b.typeQualifier);
 
         When aWhen = a.when;
@@ -155,7 +163,8 @@ public class TypeQualifierAnnotation {
         }
     }
 
-    public static @Nonnull Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue<?>, When> map) {
+    public static @Nonnull Collection<TypeQualifierAnnotation> getValues(
+            Map<TypeQualifierValue<?>, When> map) {
         Collection<TypeQualifierAnnotation> result = new LinkedList<>();
         for (Map.Entry<TypeQualifierValue<?>, When> e : map.entrySet()) {
             result.add(getValue(e.getKey(), e.getValue()));
@@ -192,5 +201,4 @@ public class TypeQualifierAnnotation {
     public String toString() {
         return typeQualifier + ":" + when;
     }
-
 }

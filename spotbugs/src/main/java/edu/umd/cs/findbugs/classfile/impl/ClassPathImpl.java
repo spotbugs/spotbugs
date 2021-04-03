@@ -19,18 +19,17 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import edu.umd.cs.findbugs.classfile.IClassPath;
+import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
+import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import edu.umd.cs.findbugs.classfile.IClassPath;
-import edu.umd.cs.findbugs.classfile.ICodeBase;
-import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
-import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
-import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Implementation of IClassPath.
@@ -172,12 +171,9 @@ public class ClassPathImpl implements IClassPath {
     /**
      * Search list of codebases for named resource.
      *
-     * @param codeBaseList
-     *            list of codebases to search
-     * @param resourceName
-     *            name of resourse
-     * @return codebase entry for the named resource, or null if the named
-     *         resource cannot be found
+     * @param codeBaseList list of codebases to search
+     * @param resourceName name of resourse
+     * @return codebase entry for the named resource, or null if the named resource cannot be found
      */
     private ICodeBaseEntry search(List<? extends ICodeBase> codeBaseList, String resourceName) {
         for (ICodeBase codeBase : codeBaseList) {

@@ -25,12 +25,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
- * A generic database factory that tries to create the database by (in order of
- * preference)
+ * A generic database factory that tries to create the database by (in order of preference)
  *
  * <ol>
- * <li>Invoking a static <b>create</b> method</li>
- * <li>Invoking a no-arg constructor
+ *   <li>Invoking a static <b>create</b> method
+ *   <li>Invoking a no-arg constructor
  * </ol>
  *
  * @author David Hovemeyer
@@ -61,7 +60,8 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
             return database;
         }
 
-        throw new CheckedAnalysisException("Could not find a way to create database " + databaseClass.getName());
+        throw new CheckedAnalysisException(
+                "Could not find a way to create database " + databaseClass.getName());
     }
 
     /**
@@ -131,5 +131,4 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerDatabaseFactory(databaseClass, this);
     }
-
 }

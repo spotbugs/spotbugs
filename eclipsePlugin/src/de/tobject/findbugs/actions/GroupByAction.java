@@ -18,19 +18,17 @@
  */
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.view.explorer.BugContentProvider;
+import de.tobject.findbugs.view.explorer.GroupType;
+import de.tobject.findbugs.view.explorer.Grouping;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
-
-import de.tobject.findbugs.view.explorer.BugContentProvider;
-import de.tobject.findbugs.view.explorer.GroupType;
-import de.tobject.findbugs.view.explorer.Grouping;
 
 public class GroupByAction implements IViewActionDelegate {
 
@@ -54,7 +52,8 @@ public class GroupByAction implements IViewActionDelegate {
         if (grouping == null) {
             return;
         }
-        BugContentProvider provider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
+        BugContentProvider provider =
+                BugContentProvider.getProvider(navigator.getNavigatorContentService());
         provider.setGrouping(grouping);
         CommonViewer viewer = navigator.getCommonViewer();
         Object[] expandedElements = viewer.getExpandedElements();
@@ -83,5 +82,4 @@ public class GroupByAction implements IViewActionDelegate {
     public void selectionChanged(IAction action, ISelection selection) {
         // noop
     }
-
 }

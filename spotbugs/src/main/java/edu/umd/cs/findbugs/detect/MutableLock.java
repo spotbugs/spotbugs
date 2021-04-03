@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 public class MutableLock extends BytecodeScanningDetector implements StatelessDetector {
     Set<String> setFields = new HashSet<>();
@@ -82,12 +80,17 @@ public class MutableLock extends BytecodeScanningDetector implements StatelessDe
             }
             break;
         case Const.GETFIELD:
-            if (thisOnTOS && getClassConstantOperand().equals(getClassName()) && setFields.contains(getNameConstantOperand())
-                    && asUnsignedByte(codeBytes[getPC() + 3]) == Const.DUP && asUnsignedByte(codeBytes[getPC() + 5]) == Const.MONITORENTER
-
+            if (thisOnTOS
+                    && getClassConstantOperand().equals(getClassName())
+                    && setFields.contains(getNameConstantOperand())
+                    && asUnsignedByte(codeBytes[getPC() + 3]) == Const.DUP
+                    && asUnsignedByte(codeBytes[getPC() + 5]) == Const.MONITORENTER
                     && !finalFields.contains(getNameConstantOperand())) {
-                bugReporter.reportBug(new BugInstance(this, "ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addReferencedField(this).addSourceLine(this, getPC() + 5));
+                bugReporter.reportBug(
+                        new BugInstance(this, "ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addReferencedField(this)
+                                .addSourceLine(this, getPC() + 5));
             }
             break;
         default:

@@ -20,24 +20,22 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
 
 /**
- * Find occurrences of using the String "+" or "+=" operators within a loop.
- * This is much less efficient than creating a dedicated StringBuffer object
- * outside the loop, and then appending to it.
+ * Find occurrences of using the String "+" or "+=" operators within a loop. This is much less
+ * efficient than creating a dedicated StringBuffer object outside the loop, and then appending to
+ * it.
  *
  * @author Dave Brosius
  * @author William Pugh
@@ -165,12 +163,15 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
             break;
 
         case SEEN_NEW:
-            if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
+            if (seen == Const.INVOKESPECIAL
+                    && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
                     && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
-                    && getClassConstantOperand().startsWith("java/lang/StringBu") && registerOnStack >= 0) {
+                    && getClassConstantOperand().startsWith("java/lang/StringBu")
+                    && registerOnStack >= 0) {
                 state = SEEN_APPEND1;
                 stringSource = registerOnStack;
-            } else if (seen == Const.INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
+            } else if (seen == Const.INVOKEVIRTUAL
+                    && "append".equals(getNameConstantOperand())
                     && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 if (DEBUG) {
                     System.out.println("Saw string being appended from register " + registerOnStack);
@@ -189,7 +190,8 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
         case SEEN_APPEND1:
             if (storeIntoRegister(seen, stringSource)) {
                 reset();
-            } else if (seen == Const.INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
+            } else if (seen == Const.INVOKEVIRTUAL
+                    && "append".equals(getNameConstantOperand())
                     && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = SEEN_APPEND2;
             }
@@ -198,7 +200,8 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
         case SEEN_APPEND2:
             if (storeIntoRegister(seen, stringSource)) {
                 reset();
-            } else if (seen == Const.INVOKEVIRTUAL && "toString".equals(getNameConstantOperand())
+            } else if (seen == Const.INVOKEVIRTUAL
+                    && "toString".equals(getNameConstantOperand())
                     && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = CONSTRUCTED_STRING_ON_STACK;
             }
@@ -217,7 +220,9 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
             // one sourceforge bug (Bug1811106) pointed out that for
             // do/while loops, it may be a if_icmpge. I generalized
             // it to any branch.
-            if (DismantleBytecode.isBranch(seen) && (getPC() - getBranchTarget()) < 300 && getBranchTarget() <= createPC) {
+            if (DismantleBytecode.isBranch(seen)
+                    && (getPC() - getBranchTarget()) < 300
+                    && getBranchTarget() <= createPC) {
 
                 // Next check: was the destination register clobbered
                 // elsewhere in this loop?
@@ -238,13 +243,16 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
                     break;
                 }
 
-                bugReporter.reportBug(new BugInstance(this, "SBSC_USE_STRINGBUFFER_CONCATENATION", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this, createPC));
+                bugReporter.reportBug(
+                        new BugInstance(this, "SBSC_USE_STRINGBUFFER_CONCATENATION", NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this, createPC));
                 // System.out.println("SBSC spread: " + (getPC() -
                 // getBranchTarget()));
                 reset();
                 reportedThisMethod = true;
-            } else if ((seen == Const.NEW) && getClassConstantOperand().startsWith("java/lang/StringBu")) {
+            } else if ((seen == Const.NEW)
+                    && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = SEEN_NEW;
                 createPC = getPC();
             } else {
@@ -260,7 +268,8 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
             break;
         }
 
-        if (seen == Const.INVOKESTATIC && "valueOf".equals(getNameConstantOperand())
+        if (seen == Const.INVOKESTATIC
+                && "valueOf".equals(getNameConstantOperand())
                 && "java/lang/String".equals(getClassConstantOperand())
                 && "(Ljava/lang/Object;)Ljava/lang/String;".equals(getSigConstantOperand())) {
             // leave registerOnStack unchanged
@@ -287,8 +296,15 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
             }
         }
         if (DEBUG && state != oldState) {
-            System.out.println("At PC " + getPC() + " changing from state " + oldState + " to state " + state + ", regOnStack = "
-                    + registerOnStack);
+            System.out.println(
+                    "At PC "
+                            + getPC()
+                            + " changing from state "
+                            + oldState
+                            + " to state "
+                            + state
+                            + ", regOnStack = "
+                            + registerOnStack);
         }
     }
 }

@@ -23,15 +23,13 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 
-/**
- * @author Andrei
- */
+/** @author Andrei */
 public class BugCountsExportWizard extends Wizard implements IExportWizard {
 
     private static final String TITLE = "Export bug counts to clipboard";
 
-    private static final String DESCRIPTION = "All bugs from analyzed Java projects will "
-            + "be exported as CSV table to the clipboard";
+    private static final String DESCRIPTION =
+            "All bugs from analyzed Java projects will " + "be exported as CSV table to the clipboard";
 
     private ExportWizardPage mainPage;
 
@@ -68,9 +66,9 @@ public class BugCountsExportWizard extends Wizard implements IExportWizard {
     @Override
     public void addPages() {
         super.addPages();
-        mainPage = new ExportWizardPage("Bug Counts Export", TITLE, DESCRIPTION, "icons/export_bugs.png");
+        mainPage =
+                new ExportWizardPage("Bug Counts Export", TITLE, DESCRIPTION, "icons/export_bugs.png");
         addPage(mainPage);
         setWindowTitle(mainPage.getName());
     }
-
 }

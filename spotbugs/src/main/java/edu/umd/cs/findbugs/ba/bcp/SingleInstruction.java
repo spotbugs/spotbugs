@@ -19,14 +19,13 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import edu.umd.cs.findbugs.ba.Edge;
 import org.apache.bcel.generic.InstructionHandle;
 
-import edu.umd.cs.findbugs.ba.Edge;
-
 /**
- * An abstract PatternElement subclass for pattern elements which must match
- * exactly one instruction and accept any kind of branch. (Subclasses may
- * override acceptBranch() to implement more selective handling of branches.)
+ * An abstract PatternElement subclass for pattern elements which must match exactly one instruction
+ * and accept any kind of branch. (Subclasses may override acceptBranch() to implement more
+ * selective handling of branches.)
  *
  * @author David Hovemeyer
  * @see PatternElement
@@ -46,5 +45,4 @@ public abstract class SingleInstruction extends PatternElement {
     public int maxOccur() {
         return 1;
     }
-
 }

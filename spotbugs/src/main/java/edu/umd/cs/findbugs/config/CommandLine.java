@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs.config;
 
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,14 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.charsets.UTF8;
-
-/**
- * Helper class for parsing command line arguments.
- */
+/** Helper class for parsing command line arguments. */
 public abstract class CommandLine {
 
     private static final String SPACES = "                    ";
@@ -76,21 +73,17 @@ public abstract class CommandLine {
     /**
      * Start a new group of related command-line options.
      *
-     * @param description
-     *            description of the group
+     * @param description description of the group
      */
     public void startOptionGroup(String description) {
         optionGroups.put(optionList.size(), description);
     }
 
     /**
-     * Add a command line switch. This method is for adding options that do not
-     * require an argument.
+     * Add a command line switch. This method is for adding options that do not require an argument.
      *
-     * @param option
-     *            the option, must start with "-"
-     * @param description
-     *            single line description of the option
+     * @param option the option, must start with "-"
+     * @param description single line description of the option
      */
     public void addSwitch(String option, String description) {
         optionList.add(option);
@@ -102,17 +95,14 @@ public abstract class CommandLine {
     }
 
     /**
-     * Add a command line switch that allows optional extra information to be
-     * specified as part of it.
+     * Add a command line switch that allows optional extra information to be specified as part of it.
      *
-     * @param option
-     *            the option, must start with "-"
-     * @param optionExtraPartSynopsis
-     *            synopsis of the optional extra information
-     * @param description
-     *            single-line description of the option
+     * @param option the option, must start with "-"
+     * @param optionExtraPartSynopsis synopsis of the optional extra information
+     * @param description single-line description of the option
      */
-    public void addSwitchWithOptionalExtraPart(String option, String optionExtraPartSynopsis, String description) {
+    public void addSwitchWithOptionalExtraPart(
+            String option, String optionExtraPartSynopsis, String description) {
         optionList.add(option);
         optionExtraPartSynopsisMap.put(option, optionExtraPartSynopsis);
         optionDescriptionMap.put(option, description);
@@ -127,12 +117,9 @@ public abstract class CommandLine {
     /**
      * Add an option requiring an argument.
      *
-     * @param option
-     *            the option, must start with "-"
-     * @param argumentDesc
-     *            brief (one or two word) description of the argument
-     * @param description
-     *            single line description of the option
+     * @param option the option, must start with "-"
+     * @param argumentDesc brief (one or two word) description of the argument
+     * @param description single line description of the option
      */
     public void addOption(String option, String argumentDesc, String description) {
         optionList.add(option);
@@ -156,21 +143,16 @@ public abstract class CommandLine {
     }
 
     /**
-     * Expand option files in given command line. Any token beginning with "@"
-     * is assumed to be an option file. Option files contain one command line
-     * option per line.
+     * Expand option files in given command line. Any token beginning with "@" is assumed to be an
+     * option file. Option files contain one command line option per line.
      *
-     * @param argv
-     *            the original command line
-     * @param ignoreComments
-     *            ignore comments (lines starting with "#")
-     * @param ignoreBlankLines
-     *            ignore blank lines
+     * @param argv the original command line
+     * @param ignoreComments ignore comments (lines starting with "#")
+     * @param ignoreBlankLines ignore blank lines
      * @return the expanded command line
      */
-
-    public String[] expandOptionFiles(String[] argv, boolean ignoreComments, boolean ignoreBlankLines) throws IOException,
-            HelpRequestedException {
+    public String[] expandOptionFiles(String[] argv, boolean ignoreComments, boolean ignoreBlankLines)
+            throws IOException, HelpRequestedException {
         // Add all expanded options at the end of the options list, before the
         // list of
         // jar/zip/class files and directories.
@@ -179,7 +161,8 @@ public abstract class CommandLine {
         // must always come after -pluginList).
         int lastOptionIndex = parse(argv, true);
         ArrayList<String> resultList = new ArrayList<>();
-        ArrayList<String> expandedOptionsList = getAnalysisOptionProperties(ignoreComments, ignoreBlankLines);
+        ArrayList<String> expandedOptionsList =
+                getAnalysisOptionProperties(ignoreComments, ignoreBlankLines);
         for (int i = 0; i < lastOptionIndex; i++) {
             String arg = argv[i];
             if (!arg.startsWith("@")) {
@@ -200,7 +183,8 @@ public abstract class CommandLine {
         return resultList.toArray(new String[0]);
     }
 
-    public static ArrayList<String> getAnalysisOptionProperties(boolean ignoreComments, boolean ignoreBlankLines) {
+    public static ArrayList<String> getAnalysisOptionProperties(
+            boolean ignoreComments, boolean ignoreBlankLines) {
         ArrayList<String> resultList = new ArrayList<>();
         URL u = DetectorFactoryCollection.getCoreResource("analysisOptions.properties");
         if (u != null) {
@@ -213,8 +197,12 @@ public abstract class CommandLine {
         return resultList;
     }
 
-    private static void addCommandLineOptions(ArrayList<String> resultList, BufferedReader reader, boolean ignoreComments,
-            boolean ignoreBlankLines) throws IOException {
+    private static void addCommandLineOptions(
+            ArrayList<String> resultList,
+            BufferedReader reader,
+            boolean ignoreComments,
+            boolean ignoreBlankLines)
+            throws IOException {
         String line;
         while ((line = reader.readLine()) != null) {
             line = line.trim();
@@ -235,24 +223,16 @@ public abstract class CommandLine {
     }
 
     public static class HelpRequestedException extends Exception {
-
     }
 
     /**
-     * Parse switches/options, showing usage information if they can't be
-     * parsed, or if we have the wrong number of remaining arguments after
-     * parsing. Calls parse(String[]).
+     * Parse switches/options, showing usage information if they can't be parsed, or if we have the
+     * wrong number of remaining arguments after parsing. Calls parse(String[]).
      *
-     * @param argv
-     *            command line arguments
-     * @param minArgs
-     *            allowed minimum number of arguments remaining after
-     *            switches/options are parsed
-     * @param maxArgs
-     *            allowed maximum number of arguments remaining after
-     *            switches/options are parsed
-     * @param usage
-     *            usage synopsis
+     * @param argv command line arguments
+     * @param minArgs allowed minimum number of arguments remaining after switches/options are parsed
+     * @param maxArgs allowed maximum number of arguments remaining after switches/options are parsed
+     * @param usage usage synopsis
      * @return number of arguments parsed
      */
     @SuppressFBWarnings("DM_EXIT")
@@ -262,7 +242,8 @@ public abstract class CommandLine {
             int remaining = argv.length - count;
             if (remaining < minArgs || remaining > maxArgs) {
                 System.out.println(usage);
-                System.out.println("Expected " + minArgs + "..." + maxArgs + " file arguments, found " + remaining);
+                System.out.println(
+                        "Expected " + minArgs + "..." + maxArgs + " file arguments, found " + remaining);
                 System.out.println("Options:");
                 printUsage(System.out);
                 System.exit(1);
@@ -283,15 +264,13 @@ public abstract class CommandLine {
     }
 
     /**
-     * Parse a command line. Calls down to handleOption() and
-     * handleOptionWithArgument() methods. Stops parsing when it reaches the end
-     * of the command line, or when a command line argument not starting with
-     * "-" is seen.
+     * Parse a command line. Calls down to handleOption() and handleOptionWithArgument() methods.
+     * Stops parsing when it reaches the end of the command line, or when a command line argument not
+     * starting with "-" is seen.
      *
-     * @param argv
-     *            the arguments
-     * @return the number of arguments parsed; if equal to argv.length, then the
-     *         entire command line was parsed
+     * @param argv the arguments
+     * @return the number of arguments parsed; if equal to argv.length, then the entire command line
+     *     was parsed
      * @throws HelpRequestedException
      */
     public int parse(String argv[]) throws IOException, HelpRequestedException {
@@ -348,30 +327,25 @@ public abstract class CommandLine {
     /**
      * Callback method for handling an option.
      *
-     * @param option
-     *            the option
-     * @param optionExtraPart
-     *            the "extra" part of the option (everything after the colon:
-     *            e.g., "withMessages" in "-xml:withMessages"); the empty string
-     *            if there was no extra part
+     * @param option the option
+     * @param optionExtraPart the "extra" part of the option (everything after the colon: e.g.,
+     *     "withMessages" in "-xml:withMessages"); the empty string if there was no extra part
      */
     protected abstract void handleOption(String option, String optionExtraPart) throws IOException;
 
     /**
      * Callback method for handling an option with an argument.
      *
-     * @param option
-     *            the option
-     * @param argument
-     *            the argument
+     * @param option the option
+     * @param argument the argument
      */
-    protected abstract void handleOptionWithArgument(String option, String argument) throws IOException;
+    protected abstract void handleOptionWithArgument(String option, String argument)
+            throws IOException;
 
     /**
      * Print command line usage information to given stream.
      *
-     * @param os
-     *            the output stream
+     * @param os the output stream
      */
     public void printUsage(OutputStream os) {
         int count = 0;

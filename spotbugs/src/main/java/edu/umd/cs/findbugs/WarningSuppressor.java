@@ -1,13 +1,12 @@
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.io.IOException;
 
-abstract public class WarningSuppressor implements Matcher {
+public abstract class WarningSuppressor implements Matcher {
 
-    final static boolean DEBUG = SystemProperties.getBoolean("warning.suppressor");
+    static final boolean DEBUG = SystemProperties.getBoolean("warning.suppressor");
 
     String bugPattern;
 
@@ -25,11 +24,11 @@ abstract public class WarningSuppressor implements Matcher {
             System.out.println("Checking " + bugInstance);
             System.out.println("    type:" + bugInstance.getType());
             System.out.println(" against: " + bugPattern);
-
         }
-        if (!(bugPattern == null || bugInstance.getType().startsWith(bugPattern)
-                || bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern) || bugInstance.getBugPattern()
-                        .getAbbrev().equalsIgnoreCase(bugPattern))) {
+        if (!(bugPattern == null
+                || bugInstance.getType().startsWith(bugPattern)
+                || bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern)
+                || bugInstance.getBugPattern().getAbbrev().equalsIgnoreCase(bugPattern))) {
             return false;
         }
         if (DEBUG) {

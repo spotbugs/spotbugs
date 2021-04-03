@@ -22,8 +22,7 @@ package edu.umd.cs.findbugs.ba.npe;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 
 /**
- * Method property database storing which methods return values guaranteed to be
- * nonnull
+ * Method property database storing which methods return values guaranteed to be nonnull
  *
  * @author David Hovemeyer
  */
@@ -40,7 +39,6 @@ public class ReturnValueNullnessPropertyDatabase extends MethodPropertyDatabase<
     @Override
     protected Boolean decodeProperty(String propStr) {
         return Boolean.parseBoolean(propStr);
-
     }
 
     /*
@@ -55,5 +53,4 @@ public class ReturnValueNullnessPropertyDatabase extends MethodPropertyDatabase<
     protected String encodeProperty(Boolean property) {
         return property.toString();
     }
-
 }

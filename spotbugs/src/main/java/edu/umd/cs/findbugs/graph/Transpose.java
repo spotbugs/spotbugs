@@ -24,34 +24,29 @@ package edu.umd.cs.findbugs.graph;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
-/**
- * Algorithm to transpose a graph.
- */
+/** Algorithm to transpose a graph. */
 public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>> {
 
     private final IdentityHashMap<VertexType, VertexType> m_origToTransposeMap;
 
     private final IdentityHashMap<VertexType, VertexType> m_transposeToOrigMap;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public Transpose() {
         m_origToTransposeMap = new IdentityHashMap<>();
         m_transposeToOrigMap = new IdentityHashMap<>();
     }
 
     /**
-     * Transpose a graph. Note that the original graph is not modified; the new
-     * graph and its vertices and edges are new objects.
+     * Transpose a graph. Note that the original graph is not modified; the new graph and its vertices
+     * and edges are new objects.
      *
-     * @param orig
-     *            the graph to transpose
-     * @param toolkit
-     *            a GraphToolkit to be used to create the transposed Graph
+     * @param orig the graph to transpose
+     * @param toolkit a GraphToolkit to be used to create the transposed Graph
      * @return the transposed Graph
      */
-    public GraphType transpose(GraphType orig, GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
+    public GraphType transpose(
+            GraphType orig, GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
         GraphType trans = toolkit.createGraph();
 
@@ -91,15 +86,13 @@ public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType e
         trans.setNumEdgeLabels(orig.getNumEdgeLabels());
 
         return trans;
-
     }
 
     /**
-     * Get the vertex in the transposed graph which corresponds to the given
-     * vertex in the original graph.
+     * Get the vertex in the transposed graph which corresponds to the given vertex in the original
+     * graph.
      *
-     * @param v
-     *            the vertex in the original graph
+     * @param v the vertex in the original graph
      * @return the equivalent vertex in the transposed graph
      */
     public VertexType getTransposedGraphVertex(VertexType v) {
@@ -107,15 +100,13 @@ public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType e
     }
 
     /**
-     * Get the vertex in the original graph which corresponds to the given
-     * vertex in the transposed graph.
+     * Get the vertex in the original graph which corresponds to the given vertex in the transposed
+     * graph.
      *
-     * @param v
-     *            the vertex in the transposed graph
+     * @param v the vertex in the transposed graph
      * @return the equivalent vertex in the original graph
      */
     public VertexType getOriginalGraphVertex(VertexType v) {
         return m_transposeToOrigMap.get(v);
     }
-
 }

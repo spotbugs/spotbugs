@@ -19,56 +19,45 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.UncheckedAnalysisException;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.classfile.UncheckedAnalysisException;
-
 /**
- * A kind of runtime exception that can be thrown to indicate a fatal error in
- * an analysis. It would be nice to make this a checked exception, but we can't
- * throw those from BCEL visitors.
+ * A kind of runtime exception that can be thrown to indicate a fatal error in an analysis. It would
+ * be nice to make this a checked exception, but we can't throw those from BCEL visitors.
  */
 public class AnalysisException extends UncheckedAnalysisException {
-    /**
-     *
-     */
+    /** */
     private static final long serialVersionUID = 1L;
 
     /**
      * Constructor.
      *
-     * @param message
-     *            reason for the error
+     * @param message reason for the error
      */
     public AnalysisException(String message) {
         super(message);
     }
 
     /**
-     * Constructor from another Throwable object. This is useful for chaining
-     * exceptions.
+     * Constructor from another Throwable object. This is useful for chaining exceptions.
      *
-     * @param message
-     *            reason for the error
-     * @param throwable
-     *            cause of the error
+     * @param message reason for the error
+     * @param throwable cause of the error
      */
     public AnalysisException(String message, Throwable throwable) {
         super(message, throwable);
     }
 
     /**
-     * Constructor from MethodGen and another Throwable object. This is useful
-     * for chaining exceptions.
+     * Constructor from MethodGen and another Throwable object. This is useful for chaining
+     * exceptions.
      *
-     * @param message
-     *            reason for the error
-     * @param methodGen
-     *            the method
-     * @param throwable
-     *            cause of the error
+     * @param message reason for the error
+     * @param methodGen the method
+     * @param throwable cause of the error
      */
     public AnalysisException(String message, MethodGen methodGen, Throwable throwable) {
         super(message + " in " + SignatureConverter.convertMethodSignature(methodGen), throwable);
@@ -77,26 +66,21 @@ public class AnalysisException extends UncheckedAnalysisException {
     /**
      * Constructor from method and instruction.
      *
-     * @param message
-     *            reason for the error
-     * @param methodGen
-     *            the method
-     * @param handle
-     *            the instruction
+     * @param message reason for the error
+     * @param methodGen the method
+     * @param handle the instruction
      */
     public AnalysisException(String message, MethodGen methodGen, InstructionHandle handle) {
-        super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
+        super(
+                message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
     }
 
     /**
      * Constructor from method and instruction.
      *
-     * @param message
-     *            reason for the error
-     * @param methodGen
-     *            the method
-     * @param ins
-     *            the instruction
+     * @param message reason for the error
+     * @param methodGen the method
+     * @param ins the instruction
      */
     public AnalysisException(String message, MethodGen methodGen, Instruction ins) {
         super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + ins);
@@ -105,32 +89,30 @@ public class AnalysisException extends UncheckedAnalysisException {
     /**
      * Constructor from method, instruction, and causing Throwable object.
      *
-     * @param message
-     *            reason for the error
-     * @param methodGen
-     *            the method
-     * @param handle
-     *            the instruction
-     * @param throwable
-     *            the cause of the error
+     * @param message reason for the error
+     * @param methodGen the method
+     * @param handle the instruction
+     * @param throwable the cause of the error
      */
-    public AnalysisException(String message, MethodGen methodGen, InstructionHandle handle, Throwable throwable) {
-        super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle, throwable);
+    public AnalysisException(
+            String message, MethodGen methodGen, InstructionHandle handle, Throwable throwable) {
+        super(
+                message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle,
+                throwable);
     }
 
     /**
      * Constructor from method, instruction, and causing Throwable object.
      *
-     * @param message
-     *            reason for the error
-     * @param methodGen
-     *            the method
-     * @param ins
-     *            the instruction
-     * @param throwable
-     *            the cause of the error
+     * @param message reason for the error
+     * @param methodGen the method
+     * @param ins the instruction
+     * @param throwable the cause of the error
      */
-    public AnalysisException(String message, MethodGen methodGen, Instruction ins, Throwable throwable) {
-        super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + ins, throwable);
+    public AnalysisException(
+            String message, MethodGen methodGen, Instruction ins, Throwable throwable) {
+        super(
+                message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + ins,
+                throwable);
     }
 }

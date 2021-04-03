@@ -18,6 +18,7 @@
  */
 package edu.umd.cs.findbugs.ba.constant;
 
+import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import org.apache.bcel.generic.BIPUSH;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ICONST;
@@ -28,20 +29,16 @@ import org.apache.bcel.generic.SIPUSH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
-
 /**
  * Visitor to model the effect of bytecode instructions on ConstantFrames.
  *
- * <p>
- * For now, only String constants are modeled. In the future we can add other
- * kinds of Constants.
- * </p>
+ * <p>For now, only String constants are modeled. In the future we can add other kinds of Constants.
  *
  * @see edu.umd.cs.findbugs.ba.constant.ConstantAnalysis
  * @author David Hovemeyer
  */
-public class ConstantFrameModelingVisitor extends AbstractFrameModelingVisitor<Constant, ConstantFrame> {
+public class ConstantFrameModelingVisitor
+        extends AbstractFrameModelingVisitor<Constant, ConstantFrame> {
     private static final Logger LOG = LoggerFactory.getLogger(ConstantFrameModelingVisitor.class);
 
     public ConstantFrameModelingVisitor(ConstantPoolGen cpg) {
@@ -103,5 +100,4 @@ public class ConstantFrameModelingVisitor extends AbstractFrameModelingVisitor<C
         getFrame().pushValue(c);
         getFrame().pushValue(c);
     }
-
 }

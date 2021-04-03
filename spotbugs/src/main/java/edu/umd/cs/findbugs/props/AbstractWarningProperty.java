@@ -32,11 +32,9 @@ public abstract class AbstractWarningProperty implements WarningProperty {
     /**
      * Constructor.
      *
-     * @param shortName
-     *            the short name of the property; will be qualified with the
-     *            full name of the warning property class
-     * @param priorityAdjustment
-     *            the priority adjustment
+     * @param shortName the short name of the property; will be qualified with the full name of the
+     *     warning property class
+     * @param priorityAdjustment the priority adjustment
      */
     protected AbstractWarningProperty(String shortName, PriorityAdjustment priorityAdjustment) {
         this.shortName = shortName;
@@ -62,5 +60,4 @@ public abstract class AbstractWarningProperty implements WarningProperty {
     public String getName() {
         return this.getClass().getName() + "." + shortName;
     }
-
 }

@@ -23,24 +23,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Flags returned in the process exit code returned when the FindBugs text UI is
- * invoked with the -exitcode command line argument. These are combined in a bit
- * set.
+ * Flags returned in the process exit code returned when the FindBugs text UI is invoked with the
+ * -exitcode command line argument. These are combined in a bit set.
  */
 public interface ExitCodes {
-    /**
-     * Serious analysis errors occurred.
-     */
+    /** Serious analysis errors occurred. */
     public static final int ERROR_FLAG = 4;
 
-    /**
-     * Classes needed for analysis were missing.
-     */
+    /** Classes needed for analysis were missing. */
     public static final int MISSING_CLASS_FLAG = 2;
 
-    /**
-     * Bugs were reported.
-     */
+    /** Bugs were reported. */
     public static final int BUGS_FOUND_FLAG = 1;
 
     public static int from(int errors, int missingClasses, int bugs) {

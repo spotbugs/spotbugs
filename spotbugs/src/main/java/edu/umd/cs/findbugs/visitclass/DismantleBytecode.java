@@ -19,13 +19,25 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.text.NumberFormat;
-
 import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -44,22 +56,7 @@ import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.LineNumberTable;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.Hierarchy2;
-import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.FieldDescriptor;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.util.ClassName;
-
-abstract public class DismantleBytecode extends AnnotationVisitor {
+public abstract class DismantleBytecode extends AnnotationVisitor {
 
     private int opcode;
 
@@ -135,9 +132,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         return c.replace('/', '.');
     }
 
-    /**
-     * Meaning of bytecode operands
-     */
+    /** Meaning of bytecode operands */
     public static final byte M_INT = 1;
 
     public static final byte M_UINT = 2;
@@ -150,35 +145,269 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     public static final byte M_PAD = 6;
 
-    /**
-     * Meaning of bytecode operands
-     */
+    /** Meaning of bytecode operands */
     static final byte[][] MEANING_OF_OPERANDS = {
         // 0 1 2 3 4 5 6 7 8 9
-        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { M_INT }, { M_INT }, { M_CP }, { M_CP }, { M_CP },
-        { M_R }, { M_R }, { M_R }, { M_R }, { M_R }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { M_R }, { M_R }, { M_R }, { M_R }, { M_R }, {}, {}, {}, {}, {}, {}, {}, {},
-        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        { M_INT },
+        { M_INT },
+        { M_CP },
+        { M_CP },
+        { M_CP },
+        { M_R },
+        { M_R },
+        { M_R },
+        { M_R },
+        { M_R },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        { M_R },
+        { M_R },
+        { M_R },
+        { M_R },
+        { M_R },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
         {},
         {},
         {},
         {},
         {},
         // 130 1 2 3 4 5 6 7 8 9
-        {}, {}, { M_R, M_INT }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { M_BR },
-        { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR },
-        { M_BR }, { M_BR }, { M_BR },
+        {},
+        {},
+        { M_R, M_INT },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
         { M_BR },
         { M_R },
         // 170 1 2 3 4 5 6 7 8 9
-        {}, {}, {}, {}, {}, {}, {}, {}, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP },
-        { M_CP, M_PAD, M_PAD }, { M_CP, M_PAD, M_PAD }, { M_CP }, { M_UINT },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        { M_CP },
+        { M_CP },
+        { M_CP },
+        { M_CP },
+        { M_CP },
+        { M_CP },
+        { M_CP },
+        { M_CP, M_PAD, M_PAD },
+        { M_CP, M_PAD, M_PAD },
+        { M_CP },
+        { M_UINT },
         { M_CP },
         // 190 1 2 3 4 5 6 7 8 9
-        {}, {}, { M_CP }, { M_CP }, {}, {}, { M_PAD }, { M_CP, M_UINT }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, {}, {}, {},
-        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} };
+        {},
+        {},
+        { M_CP },
+        { M_CP },
+        {},
+        {},
+        { M_PAD },
+        { M_CP, M_UINT },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        { M_BR },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+    };
 
     protected byte[] codeBytes;
 
@@ -206,7 +435,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         case Const.INVOKEVIRTUAL:
         case Const.INVOKESTATIC:
             return true;
-
         }
     }
 
@@ -217,8 +445,13 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         }
 
         if (referencedMethod == null) {
-            referencedMethod = DescriptorFactory.instance().getMethodDescriptor(classConstantOperand, nameConstantOperand,
-                    sigConstantOperand, opcode == Const.INVOKESTATIC);
+            referencedMethod =
+                    DescriptorFactory.instance()
+                            .getMethodDescriptor(
+                                    classConstantOperand,
+                                    nameConstantOperand,
+                                    sigConstantOperand,
+                                    opcode == Const.INVOKESTATIC);
         }
         return referencedMethod;
     }
@@ -229,8 +462,13 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         }
 
         if (getReferencedXClass() != null && referencedXMethod == null) {
-            referencedXMethod = Hierarchy2.findInvocationLeastUpperBound(getReferencedXClass(), nameConstantOperand,
-                    sigConstantOperand, opcode == Const.INVOKESTATIC, opcode == Const.INVOKEINTERFACE);
+            referencedXMethod =
+                    Hierarchy2.findInvocationLeastUpperBound(
+                            getReferencedXClass(),
+                            nameConstantOperand,
+                            sigConstantOperand,
+                            opcode == Const.INVOKESTATIC,
+                            opcode == Const.INVOKEINTERFACE);
         }
 
         return referencedXMethod;
@@ -243,25 +481,31 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         }
 
         if (referencedField == null) {
-            referencedField = DescriptorFactory.instance().getFieldDescriptor(classConstantOperand, nameConstantOperand,
-                    sigConstantOperand, opcode == Const.GETSTATIC || opcode == Const.PUTSTATIC);
+            referencedField =
+                    DescriptorFactory.instance()
+                            .getFieldDescriptor(
+                                    classConstantOperand,
+                                    nameConstantOperand,
+                                    sigConstantOperand,
+                                    opcode == Const.GETSTATIC || opcode == Const.PUTSTATIC);
         }
         return referencedField;
     }
 
     public @CheckForNull XField getXFieldOperand() {
         if (getReferencedXClass() != null && referencedXField == null) {
-            referencedXField = getReferencedXClass().findField(nameConstantOperand, sigConstantOperand,
-                    opcode == Const.GETSTATIC || opcode == Const.PUTSTATIC);
+            referencedXField =
+                    getReferencedXClass()
+                            .findField(
+                                    nameConstantOperand,
+                                    sigConstantOperand,
+                                    opcode == Const.GETSTATIC || opcode == Const.PUTSTATIC);
         }
 
         return referencedXField;
     }
 
-    /**
-     * If the current opcode has a class operand, get the associated class
-     * constant, dot-formatted
-     */
+    /** If the current opcode has a class operand, get the associated class constant, dot-formatted */
     @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getDottedClassConstantOperand() {
         if (dottedClassConstantOperand != null) {
@@ -269,16 +513,14 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
             return dottedClassConstantOperand;
         }
         if (classConstantOperand == NOT_AVAILABLE) {
-            throw new IllegalStateException("getDottedClassConstantOperand called but value not available");
+            throw new IllegalStateException(
+                    "getDottedClassConstantOperand called but value not available");
         }
         dottedClassConstantOperand = ClassName.toDottedClassName(classConstantOperand);
         return dottedClassConstantOperand;
     }
 
-    /**
-     * If the current opcode has a reference constant operand, get its string
-     * representation
-     */
+    /** If the current opcode has a reference constant operand, get its string representation */
     @Deprecated
     @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getRefConstantOperand() {
@@ -287,9 +529,16 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         }
         if (refConstantOperand == null) {
             String dottedClassConstantOperand = getDottedClassConstantOperand();
-            StringBuilder ref = new StringBuilder(dottedClassConstantOperand.length() + nameConstantOperand.length()
-                    + sigConstantOperand.length() + 5);
-            ref.append(dottedClassConstantOperand).append(".").append(nameConstantOperand).append(" : ")
+            StringBuilder ref =
+                    new StringBuilder(
+                            dottedClassConstantOperand.length()
+                                    + nameConstantOperand.length()
+                                    + sigConstantOperand.length()
+                                    + 5);
+            ref.append(dottedClassConstantOperand)
+                    .append(".")
+                    .append(nameConstantOperand)
+                    .append(" : ")
                     .append(replaceSlashesWithDots(sigConstantOperand));
             refConstantOperand = ref.toString();
         }
@@ -305,10 +554,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         return nameConstantOperand;
     }
 
-    /**
-     * If the current opcode has a reference constant operand, get its
-     * signature, slash-formatted
-     */
+    /** If the current opcode has a reference constant operand, get its signature, slash-formatted */
     @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getSigConstantOperand() {
         if (sigConstantOperand == NOT_AVAILABLE) {
@@ -317,10 +563,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         return sigConstantOperand;
     }
 
-    /**
-     * If the current opcode has a class constant operand, get the classname,
-     * slash-formatted.
-     */
+    /** If the current opcode has a class constant operand, get the classname, slash-formatted. */
     public @SlashedClassName @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ") String getClassConstantOperand() {
         if (classConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getClassConstantOperand called but value not available");
@@ -408,8 +651,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     /**
      * return previous opcode;
      *
-     * @param offset
-     *            0 for current opcode, 1 for one before that, etc.
+     * @param offset 0 for current opcode, 1 for one before that, etc.
      */
     public int getPrevOpcode(int offset) {
         if (offset < 0) {
@@ -432,8 +674,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     /**
      * Return whether or not given opcode is a branch instruction.
      *
-     * @param opcode
-     *            the opcode
+     * @param opcode the opcode
      * @return true if instruction is a branch, false if not
      */
     public static boolean isBranch(int opcode) {
@@ -444,8 +685,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     /**
      * Return whether or not given opcode is a switch instruction.
      *
-     * @param opcode
-     *            the opcode
+     * @param opcode the opcode
      * @return true if instruction is a switch, false if not
      */
     public static boolean isSwitch(int opcode) {
@@ -469,7 +709,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     private void resetState() {
-        classConstantOperand = nameConstantOperand = sigConstantOperand = stringConstantOperand = refConstantOperand = NOT_AVAILABLE;
+        classConstantOperand =
+                nameConstantOperand =
+                        sigConstantOperand = stringConstantOperand = refConstantOperand = NOT_AVAILABLE;
         refFieldIsStatic = false;
         constantRefOperand = null;
         registerOperand = -1;
@@ -531,7 +773,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     @Override
     public void visit(Code obj) {
         //        if (getXMethod().usesInvokeDynamic()) {
-        //            AnalysisContext.currentAnalysisContext().analysisSkippedDueToInvokeDynamic(getXMethod());
+        //
+        // AnalysisContext.currentAnalysisContext().analysisSkippedDueToInvokeDynamic(getXMethod());
         //            return;
         //        }
         sizePrevOpcodeBuffer = 0;
@@ -639,14 +882,19 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                             i += 2;
                             break;
                         default:
-                            throw new IllegalStateException(String.format("bad wide bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
+                            throw new IllegalStateException(
+                                    String.format("bad wide bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
                         }
                     } else {
-                        throw new IllegalStateException(String.format("bad unpredicatable bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
+                        throw new IllegalStateException(
+                                String.format(
+                                        "bad unpredicatable bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
                     }
                 } else {
                     if (byteStreamArgCount < 0) {
-                        throw new IllegalStateException(String.format("bad length for bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
+                        throw new IllegalStateException(
+                                String.format(
+                                        "bad length for bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
                     }
                     for (int k = 0; k < Const.getOperandTypeCount(opcode); k++) {
 
@@ -709,18 +957,19 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                                 stringConstantOperand = getStringFromIndex(s);
                             } else if (constantRefOperand instanceof ConstantInvokeDynamic) {
                                 ConstantInvokeDynamic id = (ConstantInvokeDynamic) constantRefOperand;
-                                ConstantNameAndType sig = (ConstantNameAndType) getConstantPool().getConstant(
-                                        id.getNameAndTypeIndex());
+                                ConstantNameAndType sig =
+                                        (ConstantNameAndType) getConstantPool().getConstant(id.getNameAndTypeIndex());
                                 nameConstantOperand = getStringFromIndex(sig.getNameIndex());
                                 sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
                             } else if (constantRefOperand instanceof ConstantCP) {
                                 ConstantCP cp = (ConstantCP) constantRefOperand;
-                                ConstantClass clazz = (ConstantClass) getConstantPool().getConstant(cp.getClassIndex());
+                                ConstantClass clazz =
+                                        (ConstantClass) getConstantPool().getConstant(cp.getClassIndex());
                                 classConstantOperand = getStringFromIndex(clazz.getNameIndex());
                                 referencedClass = DescriptorFactory.createClassDescriptor(classConstantOperand);
                                 referencedXClass = null;
-                                ConstantNameAndType sig = (ConstantNameAndType) getConstantPool().getConstant(
-                                        cp.getNameAndTypeIndex());
+                                ConstantNameAndType sig =
+                                        (ConstantNameAndType) getConstantPool().getConstant(cp.getNameAndTypeIndex());
                                 nameConstantOperand = getStringFromIndex(sig.getNameIndex());
                                 sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
                                 refConstantOperand = null;
@@ -739,7 +988,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                             throw new IllegalStateException("Unexpecting meaning " + m);
                         }
                     }
-
                 }
                 switch (opcode) {
                 case Const.IINC:
@@ -993,16 +1241,32 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     public void sawClass() {
     }
 
-    static private NumberFormat formatter = NumberFormat.getIntegerInstance();
+    private static NumberFormat formatter = NumberFormat.getIntegerInstance();
+
     static {
         formatter.setMinimumIntegerDigits(4);
         formatter.setGroupingUsed(false);
     }
 
     public void printOpCode(int seen) {
-        System.out.print("  " + this.getClass().getSimpleName() + ": [" + formatter.format(getPC()) + "]  " + Const.getOpcodeName(seen));
-        if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKESPECIAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKESTATIC)) {
-            System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
+        System.out.print(
+                "  "
+                        + this.getClass().getSimpleName()
+                        + ": ["
+                        + formatter.format(getPC())
+                        + "]  "
+                        + Const.getOpcodeName(seen));
+        if ((seen == Const.INVOKEVIRTUAL)
+                || (seen == Const.INVOKESPECIAL)
+                || (seen == Const.INVOKEINTERFACE)
+                || (seen == Const.INVOKESTATIC)) {
+            System.out.print(
+                    "   "
+                            + getClassConstantOperand()
+                            + "."
+                            + getNameConstantOperand()
+                            + " "
+                            + getSigConstantOperand());
         } else if (seen == Const.LDC || seen == Const.LDC_W || seen == Const.LDC2_W) {
             Constant c = getConstantRefOperand();
             if (c instanceof ConstantString) {
@@ -1014,12 +1278,24 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
             }
         } else if ((seen == Const.ALOAD) || (seen == Const.ASTORE)) {
             System.out.print("   " + getRegisterOperand());
-        } else if ((seen == Const.GOTO) || (seen == Const.GOTO_W) || (seen == Const.IF_ACMPEQ) || (seen == Const.IF_ACMPNE)
+        } else if ((seen == Const.GOTO)
+                || (seen == Const.GOTO_W)
+                || (seen == Const.IF_ACMPEQ)
+                || (seen == Const.IF_ACMPNE)
                 || (seen == Const.IF_ICMPEQ)
-                || (seen == Const.IF_ICMPGE) || (seen == Const.IF_ICMPGT) || (seen == Const.IF_ICMPLE) || (seen == Const.IF_ICMPLT)
-                || (seen == Const.IF_ICMPNE) || (seen == Const.IFEQ) || (seen == Const.IFGE) || (seen == Const.IFGT) || (seen == Const.IFLE)
+                || (seen == Const.IF_ICMPGE)
+                || (seen == Const.IF_ICMPGT)
+                || (seen == Const.IF_ICMPLE)
+                || (seen == Const.IF_ICMPLT)
+                || (seen == Const.IF_ICMPNE)
+                || (seen == Const.IFEQ)
+                || (seen == Const.IFGE)
+                || (seen == Const.IFGT)
+                || (seen == Const.IFLE)
                 || (seen == Const.IFLT)
-                || (seen == Const.IFNE) || (seen == Const.IFNONNULL) || (seen == Const.IFNULL)) {
+                || (seen == Const.IFNE)
+                || (seen == Const.IFNONNULL)
+                || (seen == Const.IFNULL)) {
             System.out.print("   " + getBranchTarget());
         } else if ((seen == Const.NEW) || (seen == Const.INSTANCEOF)) {
             System.out.print("   " + getClassConstantOperand());
@@ -1036,9 +1312,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         System.out.println();
     }
 
-    /**
-     * @return Returns the nextPC.
-     */
+    /** @return Returns the nextPC. */
     public int getNextPC() {
         return nextPC;
     }
@@ -1108,7 +1382,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
             return opcode2 == Const.IFNONNULL;
         default:
             return false;
-
         }
     }
 
@@ -1150,21 +1423,17 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         }
     }
 
-    /**
-     * @param referencedXClass
-     *            The referencedXClass to set.
-     */
+    /** @param referencedXClass The referencedXClass to set. */
     private void setReferencedXClass(XClass referencedXClass) {
         this.referencedXClass = referencedXClass;
     }
 
-    /**
-     * @return Returns the referencedXClass.
-     */
+    /** @return Returns the referencedXClass. */
     private XClass getReferencedXClass() {
         if (referencedXClass == null && referencedClass != null) {
             try {
-                referencedXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, referencedClass);
+                referencedXClass =
+                        Global.getAnalysisCache().getClassAnalysis(XClass.class, referencedClass);
             } catch (CheckedAnalysisException e) {
                 assert true;
             }

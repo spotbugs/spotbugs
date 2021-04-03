@@ -22,14 +22,11 @@ package edu.umd.cs.findbugs.gui2;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-/**
- * @author pwilliam
- */
+/** @author pwilliam */
 public class ClearGuiSaveState {
 
     public static void main(String args[]) throws BackingStoreException {
         Preferences p = Preferences.userNodeForPackage(GUISaveState.class);
         p.clear();
     }
-
 }

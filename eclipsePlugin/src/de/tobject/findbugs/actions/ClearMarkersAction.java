@@ -19,17 +19,15 @@
 
 package de.tobject.findbugs.actions;
 
+import de.tobject.findbugs.FindBugsJob;
+import de.tobject.findbugs.builder.WorkItem;
 import java.util.List;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.ui.IWorkbenchPart;
-
-import de.tobject.findbugs.FindBugsJob;
-import de.tobject.findbugs.builder.WorkItem;
 
 /**
  * Remove all bug markers for the given selection.
@@ -43,18 +41,20 @@ import de.tobject.findbugs.builder.WorkItem;
 public class ClearMarkersAction extends FindBugsAction {
 
     /**
-     * Clear the FindBugs markers on each project in the given selection,
-     * displaying a progress monitor.
+     * Clear the FindBugs markers on each project in the given selection, displaying a progress
+     * monitor.
      */
     @Override
-    protected void work(final IWorkbenchPart part, IResource resource, final List<WorkItem> resources) {
+    protected void work(
+            final IWorkbenchPart part, IResource resource, final List<WorkItem> resources) {
         FindBugsJob clearMarkersJob = new ClearMarkersJob(resource, resources);
-        clearMarkersJob.addJobChangeListener(new JobChangeAdapter() {
-            @Override
-            public void done(IJobChangeEvent event) {
-                refreshViewer(part, resources);
-            }
-        });
+        clearMarkersJob.addJobChangeListener(
+                new JobChangeAdapter() {
+                    @Override
+                    public void done(IJobChangeEvent event) {
+                        refreshViewer(part, resources);
+                    }
+                });
         clearMarkersJob.scheduleInteractive();
     }
 }

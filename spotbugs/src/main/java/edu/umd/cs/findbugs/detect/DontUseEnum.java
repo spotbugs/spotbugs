@@ -19,17 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.FieldOrMethod;
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.bcel.PreorderDetector;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.FieldOrMethod;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.Method;
 
 public class DontUseEnum extends PreorderDetector {
 
@@ -42,14 +41,19 @@ public class DontUseEnum extends PreorderDetector {
     @Override
     public void visit(Method obj) {
         if (isReservedName(obj.getName())) {
-            BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER", isVisible(obj) ? HIGH_PRIORITY
-                    : NORMAL_PRIORITY).addClassAndMethod(this);
+            BugInstance bug =
+                    new BugInstance(
+                            this,
+                            "NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER",
+                            isVisible(obj) ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                                    .addClassAndMethod(this);
             bugReporter.reportBug(bug);
         }
     }
 
     private boolean isVisible(FieldOrMethod obj) {
-        return (obj.getAccessFlags() & Const.ACC_PUBLIC) != 0 || (obj.getAccessFlags() & Const.ACC_PROTECTED) != 0;
+        return (obj.getAccessFlags() & Const.ACC_PUBLIC) != 0
+                || (obj.getAccessFlags() & Const.ACC_PROTECTED) != 0;
     }
 
     private boolean isReservedName(String name) {
@@ -59,8 +63,13 @@ public class DontUseEnum extends PreorderDetector {
     @Override
     public void visit(Field obj) {
         if (isReservedName(obj.getName())) {
-            BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER", isVisible(obj) ? HIGH_PRIORITY
-                    : NORMAL_PRIORITY).addClass(this).addField(this);
+            BugInstance bug =
+                    new BugInstance(
+                            this,
+                            "NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER",
+                            isVisible(obj) ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                                    .addClass(this)
+                                    .addField(this);
             bugReporter.reportBug(bug);
         }
     }
@@ -68,12 +77,16 @@ public class DontUseEnum extends PreorderDetector {
     @Override
     public void visit(LocalVariable obj) {
         if (isReservedName(obj.getName())) {
-            LocalVariableAnnotation var = new LocalVariableAnnotation(obj.getName(), obj.getIndex(), obj.getStartPC());
-            SourceLineAnnotation source = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, obj.getStartPC());
-            BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER", NORMAL_PRIORITY)
-                    .addClassAndMethod(this).add(var).add(source);
+            LocalVariableAnnotation var =
+                    new LocalVariableAnnotation(obj.getName(), obj.getIndex(), obj.getStartPC());
+            SourceLineAnnotation source =
+                    SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, obj.getStartPC());
+            BugInstance bug =
+                    new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER", NORMAL_PRIORITY)
+                            .addClassAndMethod(this)
+                            .add(var)
+                            .add(source);
             bugReporter.reportBug(bug);
         }
     }
-
 }

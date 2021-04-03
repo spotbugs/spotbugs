@@ -18,9 +18,17 @@
  */
 package de.tobject.findbugs.properties;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.reporter.MarkerSeverity;
+import edu.umd.cs.findbugs.BugRankCategory;
+import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.config.ProjectFilterSettings;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
@@ -39,19 +47,7 @@ import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.preferences.FindBugsConstants;
-import de.tobject.findbugs.reporter.MarkerSeverity;
-import edu.umd.cs.findbugs.BugRankCategory;
-import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.config.ProjectFilterSettings;
-import edu.umd.cs.findbugs.config.UserPreferences;
-
-/**
- * @author Andrei Loskutov
- */
+/** @author Andrei Loskutov */
 public class ReportConfigurationTab extends Composite {
 
     private final FindbugsPropertyPage propertyPage;
@@ -64,17 +60,13 @@ public class ReportConfigurationTab extends Composite {
 
     private Combo minPriorityCombo;
 
-
-
     private Combo scariestRankCombo;
 
     private MarkerSeverity initialScariestRank;
 
-
     private Combo scaryRankCombo;
 
     private MarkerSeverity initialScaryRank;
-
 
     private Combo troublingRankCombo;
 
@@ -83,7 +75,6 @@ public class ReportConfigurationTab extends Composite {
     private Combo ofConcernRankCombo;
 
     private MarkerSeverity initialOfConcernRank;
-
 
     public ReportConfigurationTab(TabFolder parent, FindbugsPropertyPage page, int style) {
         super(parent, style);
@@ -121,7 +112,8 @@ public class ReportConfigurationTab extends Composite {
         for (MarkerSeverity markerSeverity : markerSeverities) {
             scariestRankCombo.add(markerSeverity.name());
         }
-        initialScariestRank = MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY));
+        initialScariestRank =
+                MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY));
         scariestRankCombo.setText(initialScariestRank.name());
 
         bugSeverityLabel = new Label(rankGroup, SWT.NONE);
@@ -131,7 +123,8 @@ public class ReportConfigurationTab extends Composite {
         for (MarkerSeverity markerSeverity : markerSeverities) {
             scaryRankCombo.add(markerSeverity.name());
         }
-        initialScaryRank = MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARY_MARKER_SEVERITY));
+        initialScaryRank =
+                MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARY_MARKER_SEVERITY));
         scaryRankCombo.setText(initialScaryRank.name());
 
         bugSeverityLabel = new Label(rankGroup, SWT.NONE);
@@ -141,7 +134,8 @@ public class ReportConfigurationTab extends Composite {
         for (MarkerSeverity markerSeverity : markerSeverities) {
             troublingRankCombo.add(markerSeverity.name());
         }
-        initialTroublingRank = MarkerSeverity.get(store.getString(FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY));
+        initialTroublingRank =
+                MarkerSeverity.get(store.getString(FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY));
         troublingRankCombo.setText(initialTroublingRank.name());
 
         bugSeverityLabel = new Label(rankGroup, SWT.NONE);
@@ -151,9 +145,9 @@ public class ReportConfigurationTab extends Composite {
         for (MarkerSeverity markerSeverity : markerSeverities) {
             ofConcernRankCombo.add(markerSeverity.name());
         }
-        initialOfConcernRank = MarkerSeverity.get(store.getString(FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY));
+        initialOfConcernRank =
+                MarkerSeverity.get(store.getString(FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY));
         ofConcernRankCombo.setText(initialOfConcernRank.name());
-
     }
 
     private void createPriorityGroup(Composite parent) {
@@ -168,39 +162,41 @@ public class ReportConfigurationTab extends Composite {
         minPriorityCombo.add(ProjectFilterSettings.HIGH_PRIORITY);
         minPriorityCombo.add(ProjectFilterSettings.MEDIUM_PRIORITY);
         minPriorityCombo.add(ProjectFilterSettings.LOW_PRIORITY);
-        minPriorityCombo.setText(propertyPage.getOriginalUserPreferences().getFilterSettings().getMinPriority());
+        minPriorityCombo.setText(
+                propertyPage.getOriginalUserPreferences().getFilterSettings().getMinPriority());
         minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        minPriorityCombo.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                String data = minPriorityCombo.getText();
-                getCurrentProps().getFilterSettings().setMinPriority(data);
-            }
-        });
-
-
+        minPriorityCombo.addSelectionListener(
+                new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent event) {
+                        String data = minPriorityCombo.getText();
+                        getCurrentProps().getFilterSettings().setMinPriority(data);
+                    }
+                });
     }
-
 
     private void createRankGroup(Composite parent) {
         Composite prioGroup = new Composite(parent, SWT.NONE);
         prioGroup.setLayout(new GridLayout(2, false));
 
         Label minRankLabel = new Label(prioGroup, SWT.NONE);
-        minRankLabel.setText(getMessage("property.minRank") + System.getProperty("line.separator")
-                + getMessage("property.minRank.line2"));
+        minRankLabel.setText(
+                getMessage("property.minRank")
+                        + System.getProperty("line.separator")
+                        + getMessage("property.minRank.line2"));
         minRankLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
         minRankSlider = new Scale(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
         minRankSlider.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false));
-        minRankSlider.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                int rank = minRankSlider.getSelection();
-                getCurrentProps().getFilterSettings().setMinRank(rank);
-                updateRankValueLabel();
-            }
-        });
+        minRankSlider.addSelectionListener(
+                new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent event) {
+                        int rank = minRankSlider.getSelection();
+                        getCurrentProps().getFilterSettings().setMinRank(rank);
+                        updateRankValueLabel();
+                    }
+                });
         minRankSlider.setMinimum(BugRanker.VISIBLE_RANK_MIN);
         minRankSlider.setMaximum(BugRanker.VISIBLE_RANK_MAX);
         minRankSlider.setSelection(getCurrentProps().getFilterSettings().getMinRank());
@@ -224,8 +220,7 @@ public class ReportConfigurationTab extends Composite {
     /**
      * Helper method to shorten message access
      *
-     * @param key
-     *            a message key
+     * @param key a message key
      * @return requested message
      */
     protected String getMessage(String key) {
@@ -233,13 +228,11 @@ public class ReportConfigurationTab extends Composite {
     }
 
     /**
-     * Build list of bug categories to be enabled or disabled. Populates
-     * chkEnableBugCategoryList and bugCategoryList fields.
+     * Build list of bug categories to be enabled or disabled. Populates chkEnableBugCategoryList and
+     * bugCategoryList fields.
      *
-     * @param parent
-     *            control checkboxes should be added to
-     * @param project
-     *            the project being configured
+     * @param parent control checkboxes should be added to
+     * @param project the project being configured
      */
     private void createBugCategoriesGroup(Composite parent, final IProject project) {
         Group checkBoxGroup = new Group(parent, SWT.SHADOW_ETCHED_OUT);
@@ -247,9 +240,11 @@ public class ReportConfigurationTab extends Composite {
         checkBoxGroup.setLayout(new GridLayout(1, true));
         checkBoxGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, true));
 
-        List<String> bugCategoryList = new LinkedList<>(DetectorFactoryCollection.instance().getBugCategories());
+        List<String> bugCategoryList =
+                new LinkedList<>(DetectorFactoryCollection.instance().getBugCategories());
         chkEnableBugCategoryList = new LinkedList<>();
-        ProjectFilterSettings origFilterSettings = propertyPage.getOriginalUserPreferences().getFilterSettings();
+        ProjectFilterSettings origFilterSettings =
+                propertyPage.getOriginalUserPreferences().getFilterSettings();
         for (String category : bugCategoryList) {
             Button checkBox = new Button(checkBoxGroup, SWT.CHECK);
             checkBox.setText(I18N.instance().getBugCategoryDescription(category));
@@ -261,21 +256,20 @@ public class ReportConfigurationTab extends Composite {
             // Every time a checkbox is clicked, rebuild the detector factory
             // table
             // to show only relevant entries
-            checkBox.addListener(SWT.Selection, new Listener() {
-                @Override
-                public void handleEvent(Event e) {
-                    syncSelectedCategories();
-                }
-            });
+            checkBox.addListener(
+                    SWT.Selection,
+                    new Listener() {
+                        @Override
+                        public void handleEvent(Event e) {
+                            syncSelectedCategories();
+                        }
+                    });
             checkBox.setData(category);
             chkEnableBugCategoryList.add(checkBox);
         }
     }
 
-    /**
-     * Synchronize selected bug category checkboxes with the current user
-     * preferences.
-     */
+    /** Synchronize selected bug category checkboxes with the current user preferences. */
     protected void syncSelectedCategories() {
         ProjectFilterSettings filterSettings = getCurrentProps().getFilterSettings();
         for (Button checkBox : chkEnableBugCategoryList) {
@@ -316,34 +310,42 @@ public class ReportConfigurationTab extends Composite {
     }
 
     public boolean isMarkerSeveritiesChanged() {
-        if (isMarkerSeveritiesChanged(FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY, initialScariestRank)) {
+        if (isMarkerSeveritiesChanged(
+                FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY, initialScariestRank)) {
             return true;
         }
         if (isMarkerSeveritiesChanged(FindBugsConstants.RANK_SCARY_MARKER_SEVERITY, initialScaryRank)) {
             return true;
         }
-        if (isMarkerSeveritiesChanged(FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY, initialTroublingRank)) {
+        if (isMarkerSeveritiesChanged(
+                FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY, initialTroublingRank)) {
             return true;
         }
-        if (isMarkerSeveritiesChanged(FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY, initialOfConcernRank)) {
+        if (isMarkerSeveritiesChanged(
+                FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY, initialOfConcernRank)) {
             return true;
         }
         return false;
-
     }
 
     private boolean isMarkerSeveritiesChanged(String propertyName, MarkerSeverity marker) {
         IPreferenceStore store = propertyPage.getPreferenceStore();
         return !store.getString(propertyName).equals(marker.name());
-
     }
 
     void refreshUI(UserPreferences prefs) {
         IPreferenceStore store = propertyPage.getPreferenceStore();
-        scariestRankCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY)).name());
-        scaryRankCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARY_MARKER_SEVERITY)).name());
-        troublingRankCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY)).name());
-        ofConcernRankCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY)).name());
+        scariestRankCombo.setText(
+                MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY))
+                        .name());
+        scaryRankCombo.setText(
+                MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARY_MARKER_SEVERITY)).name());
+        troublingRankCombo.setText(
+                MarkerSeverity.get(store.getString(FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY))
+                        .name());
+        ofConcernRankCombo.setText(
+                MarkerSeverity.get(store.getString(FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY))
+                        .name());
 
         ProjectFilterSettings filterSettings = prefs.getFilterSettings();
         minRankSlider.setSelection(filterSettings.getMinRank());
@@ -372,7 +374,5 @@ public class ReportConfigurationTab extends Composite {
 
         String ofConcern = ofConcernRankCombo.getText();
         store.setValue(FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY, ofConcern);
-
     }
-
 }

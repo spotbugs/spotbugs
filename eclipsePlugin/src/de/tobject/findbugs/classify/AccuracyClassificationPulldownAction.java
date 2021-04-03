@@ -22,6 +22,11 @@
  */
 package de.tobject.findbugs.classify;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugProperty;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -38,15 +43,8 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugProperty;
-import edu.umd.cs.findbugs.config.UserPreferences;
-
 /**
- * Pulldown toolbar action for classifying a FindBugs warning as "bug" or
- * "not a bug".
+ * Pulldown toolbar action for classifying a FindBugs warning as "bug" or "not a bug".
  *
  * @author David Hovemeyer
  */
@@ -92,58 +90,59 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
         return menu;
     }
 
-    /**
-     * Fill the classification menu.
-     */
+    /** Fill the classification menu. */
     private void fillMenu() {
         isBugItem = new MenuItem(menu, SWT.RADIO);
         isBugItem.setText("Bug");
         notBugItem = new MenuItem(menu, SWT.RADIO);
         notBugItem.setText("Not Bug");
 
-        isBugItem.addSelectionListener(new SelectionAdapter() {
-            /*
-             * (non-Javadoc)
-             *
-             * @see
-             * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse
-             * .swt.events.SelectionEvent)
-             */
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (bugInstance != null) {
-                    classifyWarning(bugInstance, true);
-                }
-            }
-        });
+        isBugItem.addSelectionListener(
+                new SelectionAdapter() {
+                    /*
+                     * (non-Javadoc)
+                     *
+                     * @see
+                     * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse
+                     * .swt.events.SelectionEvent)
+                     */
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (bugInstance != null) {
+                            classifyWarning(bugInstance, true);
+                        }
+                    }
+                });
 
-        notBugItem.addSelectionListener(new SelectionAdapter() {
-            /*
-             * (non-Javadoc)
-             *
-             * @see
-             * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse
-             * .swt.events.SelectionEvent)
-             */
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (bugInstance != null) {
-                    classifyWarning(bugInstance, false);
-                }
-            }
-        });
+        notBugItem.addSelectionListener(
+                new SelectionAdapter() {
+                    /*
+                     * (non-Javadoc)
+                     *
+                     * @see
+                     * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse
+                     * .swt.events.SelectionEvent)
+                     */
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (bugInstance != null) {
+                            classifyWarning(bugInstance, false);
+                        }
+                    }
+                });
 
-        menu.addMenuListener(new MenuAdapter() {
-            @Override
-            public void menuShown(MenuEvent e) {
-                // Before showing the menu, sync its contents
-                // with the current BugInstance (if any)
-                if (DEBUG) {
-                    System.out.println("Synchronizing menu!");
-                }
-                syncMenu();
-            }
-        });
+        menu.addMenuListener(
+                new MenuAdapter() {
+                    @Override
+                    public void menuShown(MenuEvent e) {
+                        // Before showing the menu, sync its contents
+                        // with the current BugInstance (if any)
+                        if (DEBUG) {
+                            System.out.println("Synchronizing menu!");
+                        }
+                        syncMenu();
+                    }
+                });
     }
 
     private void classifyWarning(BugInstance warning, boolean isBug) {
@@ -181,7 +180,8 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
                     marker.delete();
                 }
             } catch (CoreException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not get SpotBugs preferences for project");
+                FindbugsPlugin.getDefault()
+                        .logException(e, "Could not get SpotBugs preferences for project");
             }
         }
     }
@@ -251,9 +251,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
         }
     }
 
-    /**
-     * Update menu to match currently selected BugInstance.
-     */
+    /** Update menu to match currently selected BugInstance. */
     private void syncMenu() {
         if (bugInstance != null) {
             isBugItem.setEnabled(true);
@@ -280,5 +278,4 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
             notBugItem.setSelection(false);
         }
     }
-
 }

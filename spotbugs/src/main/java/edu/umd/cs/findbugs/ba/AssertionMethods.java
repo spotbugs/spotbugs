@@ -19,11 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.StringTokenizer;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.Constant;
@@ -40,11 +40,9 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.SIPUSH;
 
-import edu.umd.cs.findbugs.SystemProperties;
-
 /**
- * Mark methodref constant pool entries of methods that are likely to implement
- * assertions. This is useful for pruning likely false paths.
+ * Mark methodref constant pool entries of methods that are likely to implement assertions. This is
+ * useful for pruning likely false paths.
  *
  * @author David Hovemeyer
  */
@@ -52,10 +50,7 @@ public class AssertionMethods {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("assertionmethods.debug");
 
-    /**
-     * Bitset of methodref constant pool indexes referring to likely assertion
-     * methods.
-     */
+    /** Bitset of methodref constant pool indexes referring to likely assertion methods. */
     private final BitSet assertionMethodRefSet;
 
     private static class UserAssertionMethod {
@@ -100,8 +95,7 @@ public class AssertionMethods {
     /**
      * Constructor.
      *
-     * @param jclass
-     *            the JavaClass containing the methodrefs
+     * @param jclass the JavaClass containing the methodrefs
      */
     public AssertionMethods(JavaClass jclass) {
         this.assertionMethodRefSet = new BitSet();
@@ -116,11 +110,15 @@ public class AssertionMethods {
                 Constant c = cp.getConstant(i);
                 if (c instanceof ConstantMethodref) {
                     ConstantMethodref cmr = (ConstantMethodref) c;
-                    ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex(),
-                            Const.CONSTANT_NameAndType);
-                    String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), Const.CONSTANT_Utf8)).getBytes();
-                    String className = cp.getConstantString(cmr.getClassIndex(), Const.CONSTANT_Class).replace('/', '.');
-                    String methodSig = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex(), Const.CONSTANT_Utf8)).getBytes();
+                    ConstantNameAndType cnat =
+                            (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex(), Const.CONSTANT_NameAndType);
+                    String methodName =
+                            ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), Const.CONSTANT_Utf8)).getBytes();
+                    String className =
+                            cp.getConstantString(cmr.getClassIndex(), Const.CONSTANT_Class).replace('/', '.');
+                    String methodSig =
+                            ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex(), Const.CONSTANT_Utf8))
+                                    .getBytes();
 
                     String classNameLC = className.toLowerCase();
                     String methodNameLC = methodName.toLowerCase();
@@ -128,26 +126,32 @@ public class AssertionMethods {
                     boolean voidReturnType = methodSig.endsWith(")V");
                     boolean boolReturnType = methodSig.endsWith(")Z");
 
-
-
                     if (DEBUG) {
-                        System.out.print("Is " + className + "." + methodName + " assertion method: " + voidReturnType);
+                        System.out.print(
+                                "Is " + className + "." + methodName + " assertion method: " + voidReturnType);
                     }
 
                     if (isUserAssertionMethod(className, methodName)
-                            || className.endsWith("Assert")
-                                    && methodName.startsWith("is")
+                            || className.endsWith("Assert") && methodName.startsWith("is")
                             || (voidReturnType || boolReturnType)
-                                    && (classNameLC.indexOf("assert") >= 0 || methodNameLC.startsWith("throw")
-                                            || methodName.startsWith("affirm") || methodName.startsWith("panic")
-                                            || "logTerminal".equals(methodName) || methodName.startsWith("logAndThrow")
-                                            || "insist".equals(methodNameLC) || "usage".equals(methodNameLC)
-                                            || "exit".equals(methodNameLC) || methodNameLC.startsWith("fail")
-                                            || methodNameLC.startsWith("fatal") || methodNameLC.indexOf("assert") >= 0
-                                            || methodNameLC.indexOf("legal") >= 0 || methodNameLC.indexOf("error") >= 0
+                                    && (classNameLC.indexOf("assert") >= 0
+                                            || methodNameLC.startsWith("throw")
+                                            || methodName.startsWith("affirm")
+                                            || methodName.startsWith("panic")
+                                            || "logTerminal".equals(methodName)
+                                            || methodName.startsWith("logAndThrow")
+                                            || "insist".equals(methodNameLC)
+                                            || "usage".equals(methodNameLC)
+                                            || "exit".equals(methodNameLC)
+                                            || methodNameLC.startsWith("fail")
+                                            || methodNameLC.startsWith("fatal")
+                                            || methodNameLC.indexOf("assert") >= 0
+                                            || methodNameLC.indexOf("legal") >= 0
+                                            || methodNameLC.indexOf("error") >= 0
                                             || methodNameLC.indexOf("abort") >= 0
                                             // || methodNameLC.indexOf("check") >= 0
-                                            || methodNameLC.indexOf("failed") >= 0) || "addOrThrowException".equals(methodName)) {
+                                            || methodNameLC.indexOf("failed") >= 0)
+                            || "addOrThrowException".equals(methodName)) {
                         assertionMethodRefSet.set(i);
                         if (DEBUG) {
                             System.out.println("==> YES");
@@ -187,10 +191,10 @@ public class AssertionMethods {
                     INVOKEINTERFACE iInterface = (INVOKEINTERFACE) next;
                     String className = iInterface.getClassName(cpg);
                     String fieldName = iInterface.getMethodName(cpg);
-                    if ("javax.servlet.http.HttpServletResponse".equals(className) && "setStatus".equals(fieldName)) {
+                    if ("javax.servlet.http.HttpServletResponse".equals(className)
+                            && "setStatus".equals(fieldName)) {
                         return true;
                     }
-
                 }
             }
         }
@@ -200,12 +204,9 @@ public class AssertionMethods {
     /**
      * Does the given instruction refer to a likely assertion method?
      *
-     * @param ins
-     *            the instruction
-     * @return true if the instruction likely refers to an assertion, false if
-     *         not
+     * @param ins the instruction
+     * @return true if the instruction likely refers to an assertion, false if not
      */
-
     public boolean isAssertionInstruction(Instruction ins, ConstantPoolGen cpg) {
 
         if (ins instanceof InvokeInstruction) {

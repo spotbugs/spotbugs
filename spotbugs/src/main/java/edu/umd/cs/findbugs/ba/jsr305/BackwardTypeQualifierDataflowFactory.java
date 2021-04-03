@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import javax.annotation.meta.When;
-
-import org.apache.bcel.generic.ConstantPoolGen;
-
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -35,22 +31,22 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import javax.annotation.meta.When;
+import org.apache.bcel.generic.ConstantPoolGen;
 
 /**
- * Factory for BackwardTypeQualifierDataflow objects for given type qualifier
- * values.
+ * Factory for BackwardTypeQualifierDataflow objects for given type qualifier values.
  *
  * @author David Hovemeyer
  */
-public class BackwardTypeQualifierDataflowFactory extends
-        TypeQualifierDataflowFactory<BackwardTypeQualifierDataflowAnalysis, BackwardTypeQualifierDataflow> {
+public class BackwardTypeQualifierDataflowFactory
+        extends TypeQualifierDataflowFactory<BackwardTypeQualifierDataflowAnalysis, BackwardTypeQualifierDataflow> {
 
     /**
      * Constructor.
      *
-     * @param methodDescriptor
-     *            MethodDescriptor of the method for which we want to create
-     *            BackwardTypeQualifierDataflow objects
+     * @param methodDescriptor MethodDescriptor of the method for which we want to create
+     *     BackwardTypeQualifierDataflow objects
      */
     public BackwardTypeQualifierDataflowFactory(MethodDescriptor methodDescriptor) {
         super(methodDescriptor);
@@ -70,19 +66,29 @@ public class BackwardTypeQualifierDataflowFactory extends
      * edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue)
      */
     @Override
-    protected BackwardTypeQualifierDataflow getDataflow(DepthFirstSearch dfs, XMethod xmethod, CFG cfg,
-            ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg, IAnalysisCache analysisCache,
-            MethodDescriptor methodDescriptor, TypeQualifierValue<?> typeQualifierValue) throws CheckedAnalysisException {
-        ReverseDepthFirstSearch rdfs = analysisCache.getMethodAnalysis(ReverseDepthFirstSearch.class, methodDescriptor);
+    protected BackwardTypeQualifierDataflow getDataflow(
+            DepthFirstSearch dfs,
+            XMethod xmethod,
+            CFG cfg,
+            ValueNumberDataflow vnaDataflow,
+            ConstantPoolGen cpg,
+            IAnalysisCache analysisCache,
+            MethodDescriptor methodDescriptor,
+            TypeQualifierValue<?> typeQualifierValue)
+            throws CheckedAnalysisException {
+        ReverseDepthFirstSearch rdfs =
+                analysisCache.getMethodAnalysis(ReverseDepthFirstSearch.class, methodDescriptor);
 
-        BackwardTypeQualifierDataflowAnalysis analysis = new BackwardTypeQualifierDataflowAnalysis(dfs, rdfs, xmethod, cfg,
-                vnaDataflow, cpg, typeQualifierValue);
+        BackwardTypeQualifierDataflowAnalysis analysis =
+                new BackwardTypeQualifierDataflowAnalysis(
+                        dfs, rdfs, xmethod, cfg, vnaDataflow, cpg, typeQualifierValue);
 
         // Get the corresponding forward dataflow.
         // We use it to halt tracking of backwards values once we know
         // that they encounter a conflicting forward value.
-        ForwardTypeQualifierDataflowFactory forwardFactory = analysisCache.getMethodAnalysis(
-                ForwardTypeQualifierDataflowFactory.class, methodDescriptor);
+        ForwardTypeQualifierDataflowFactory forwardFactory =
+                analysisCache.getMethodAnalysis(
+                        ForwardTypeQualifierDataflowFactory.class, methodDescriptor);
         ForwardTypeQualifierDataflow forwardDataflow = forwardFactory.getDataflow(typeQualifierValue);
         analysis.setForwardTypeQualifierDataflow(forwardDataflow);
         analysis.registerSourceSinkLocations();
@@ -97,8 +103,12 @@ public class BackwardTypeQualifierDataflowFactory extends
     }
 
     @Override
-    protected void populateDatabase(BackwardTypeQualifierDataflow dataflow, ValueNumberDataflow vnaDataflow, XMethod xmethod,
-            TypeQualifierValue<?> tqv) throws CheckedAnalysisException {
+    protected void populateDatabase(
+            BackwardTypeQualifierDataflow dataflow,
+            ValueNumberDataflow vnaDataflow,
+            XMethod xmethod,
+            TypeQualifierValue<?> tqv)
+            throws CheckedAnalysisException {
         assert TypeQualifierDatabase.USE_DATABASE;
 
         // Get the dataflow fact that propagated
@@ -123,9 +133,11 @@ public class BackwardTypeQualifierDataflowFactory extends
 
             FlowValue paramFlowValue = entryFact.getValue(paramVN);
             if (paramFlowValue == FlowValue.ALWAYS || paramFlowValue == FlowValue.NEVER) {
-                TypeQualifierDatabase tqdb = Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
-                TypeQualifierAnnotation tqa = TypeQualifierAnnotation.getValue(tqv,
-                        paramFlowValue == FlowValue.ALWAYS ? When.ALWAYS : When.NEVER);
+                TypeQualifierDatabase tqdb =
+                        Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
+                TypeQualifierAnnotation tqa =
+                        TypeQualifierAnnotation.getValue(
+                                tqv, paramFlowValue == FlowValue.ALWAYS ? When.ALWAYS : When.NEVER);
                 tqdb.setParameter(xmethod.getMethodDescriptor(), i, tqv, tqa);
             }
         }

@@ -21,32 +21,6 @@ package edu.umd.cs.findbugs.detect;
 
 import static org.apache.bcel.Const.*;
 
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-import java.util.Set;
-
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.LocalVariableTable;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ANEWARRAY;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.IINC;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MULTIANEWARRAY;
-import org.apache.bcel.generic.NEWARRAY;
-import org.apache.bcel.generic.POP;
-import org.apache.bcel.generic.POP2;
-import org.apache.bcel.generic.StoreInstruction;
-import org.apache.bcel.generic.Type;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -71,10 +45,32 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.MethodSideEffectStatus;
 import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.NoSideEffectMethodsDatabase;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ANEWARRAY;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.IINC;
+import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MULTIANEWARRAY;
+import org.apache.bcel.generic.NEWARRAY;
+import org.apache.bcel.generic.POP;
+import org.apache.bcel.generic.POP2;
+import org.apache.bcel.generic.StoreInstruction;
+import org.apache.bcel.generic.Type;
 
-/**
- * @author Tagir Valeev
- */
+/** @author Tagir Valeev */
 public class FindUselessObjects implements Detector {
     private static final int MAX_ITERATIONS = 50;
     private final BugReporter reporter;
@@ -100,8 +96,16 @@ public class FindUselessObjects implements Detector {
 
         @Override
         public String toString() {
-            return "[" + (escaped ? "E" : "-") + (hasObjectOnlyCall ? "O" : "-") + (used ? "U" : "-")
-                    + (derivedEscaped ? "D" : "-") + "] " + (var == null ? "" : var + " ") + type + " " + created;
+            return "["
+                    + (escaped ? "E" : "-")
+                    + (hasObjectOnlyCall ? "O" : "-")
+                    + (used ? "U" : "-")
+                    + (derivedEscaped ? "D" : "-")
+                    + "] "
+                    + (var == null ? "" : var + " ")
+                    + type
+                    + " "
+                    + created;
         }
     }
 
@@ -130,7 +134,9 @@ public class FindUselessObjects implements Detector {
             for (Iterator<Location> iterator = cfg.locationIterator(); iterator.hasNext();) {
                 Location location = iterator.next();
                 Instruction instruction = location.getHandle().getInstruction();
-                if (instruction instanceof ANEWARRAY || instruction instanceof NEWARRAY || instruction instanceof MULTIANEWARRAY) {
+                if (instruction instanceof ANEWARRAY
+                        || instruction instanceof NEWARRAY
+                        || instruction instanceof MULTIANEWARRAY) {
                     int number = vna.getFactAfterLocation(location).getTopValue().getNumber();
                     TypeFrame typeFrame = ta.getFactAfterLocation(location);
                     if (typeFrame.isValid()) {
@@ -141,7 +147,10 @@ public class FindUselessObjects implements Detector {
                     InvokeInstruction inv = (InvokeInstruction) instruction;
                     if (inv.getMethodName(cpg).equals(CONSTRUCTOR_NAME)
                             && noSideEffectMethods.hasNoSideEffect(new MethodDescriptor(inv, cpg))) {
-                        int number = vna.getFactAtLocation(location).getStackValue(inv.consumeStack(cpg) - 1).getNumber();
+                        int number =
+                                vna.getFactAtLocation(location)
+                                        .getStackValue(inv.consumeStack(cpg) - 1)
+                                        .getNumber();
                         TypeFrame typeFrame = ta.getFactAtLocation(location);
                         if (typeFrame.isValid()) {
                             Type type = typeFrame.getStackValue(inv.consumeStack(cpg) - 1);
@@ -203,7 +212,8 @@ public class FindUselessObjects implements Detector {
         boolean setObjectOnly(Set<ValueInfo> vals, ValueNumber vn) {
             boolean result = false;
             for (ValueInfo vi : vals) {
-                if (vi.origValues.get(vn.getNumber()) || (!vi.derivedEscaped && vi.derivedValues.get(vn.getNumber()))) {
+                if (vi.origValues.get(vn.getNumber())
+                        || (!vi.derivedEscaped && vi.derivedValues.get(vn.getNumber()))) {
                     result |= !vi.hasObjectOnlyCall;
                     vi.hasObjectOnlyCall = true;
                 } else {
@@ -239,20 +249,27 @@ public class FindUselessObjects implements Detector {
             return result;
         }
 
-        boolean propagateToReturnValue(Set<ValueInfo> vals, ValueNumber vn, GenLocation location, MethodDescriptor m)
+        boolean propagateToReturnValue(
+                Set<ValueInfo> vals, ValueNumber vn, GenLocation location, MethodDescriptor m)
                 throws DataflowAnalysisException {
             for (ValueInfo vi : vals) {
-                if (vi.type.getSignature().startsWith("[") && vi.hasObjectOnlyCall && vi.var == null && vn.getNumber() == vi.origValue) {
+                if (vi.type.getSignature().startsWith("[")
+                        && vi.hasObjectOnlyCall
+                        && vi.var == null
+                        && vn.getNumber() == vi.origValue) {
                     // Ignore initialized arrays passed to methods
                     vi.escaped = true;
                     count--;
                 }
             }
-            if (Type.getReturnType(m.getSignature()) == Type.VOID || location instanceof ExceptionLocation) {
+            if (Type.getReturnType(m.getSignature()) == Type.VOID
+                    || location instanceof ExceptionLocation) {
                 return false;
             }
             InstructionHandle nextHandle = location.getHandle().getNext();
-            if (nextHandle == null || (nextHandle.getInstruction() instanceof POP || nextHandle.getInstruction() instanceof POP2)) {
+            if (nextHandle == null
+                    || (nextHandle.getInstruction() instanceof POP
+                            || nextHandle.getInstruction() instanceof POP2)) {
                 return false;
             }
             return propagateValues(vals, null, location.frameAfter().getTopValue());
@@ -274,7 +291,8 @@ public class FindUselessObjects implements Detector {
                     }
                     while (blockIterator.hasNext()) {
                         BasicBlock block = blockIterator.next();
-                        if (block.isExceptionThrower() && cfg.getOutgoingEdgeWithType(block, EdgeTypes.FALL_THROUGH_EDGE) == null) {
+                        if (block.isExceptionThrower()
+                                && cfg.getOutgoingEdgeWithType(block, EdgeTypes.FALL_THROUGH_EDGE) == null) {
                             return new ExceptionLocation(ta, vna, block);
                         }
                     }
@@ -340,12 +358,16 @@ public class FindUselessObjects implements Detector {
                         continue;
                     }
                     if (vi.hasObjectOnlyCall || (vi.used && vi.var != null)) {
-                        BugInstance bug = new BugInstance(vi.var == null ? "UC_USELESS_OBJECT_STACK" : "UC_USELESS_OBJECT",
-                                NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method);
+                        BugInstance bug =
+                                new BugInstance(
+                                        vi.var == null ? "UC_USELESS_OBJECT_STACK" : "UC_USELESS_OBJECT",
+                                        NORMAL_PRIORITY)
+                                                .addClassAndMethod(classContext.getJavaClass(), method);
                         if (vi.var != null) {
                             bug.add(new StringAnnotation(vi.var));
                         }
-                        reporter.reportBug(bug.addType(vi.type).addSourceLine(classContext, method, vi.created));
+                        reporter.reportBug(
+                                bug.addType(vi.type).addSourceLine(classContext, method, vi.created));
                     }
                 }
             }
@@ -438,7 +460,8 @@ public class FindUselessObjects implements Detector {
 
     public FindUselessObjects(BugReporter reporter) {
         this.reporter = reporter;
-        this.noSideEffectMethods = Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class);
+        this.noSideEffectMethods =
+                Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class);
     }
 
     @Override
@@ -450,12 +473,19 @@ public class FindUselessObjects implements Detector {
             try {
                 analyzeMethod(classContext, method);
             } catch (CheckedAnalysisException e) {
-                reporter.logError("Error analyzing " + method + " (class: " + classContext.getJavaClass().getClassName() + ")", e);
+                reporter.logError(
+                        "Error analyzing "
+                                + method
+                                + " (class: "
+                                + classContext.getJavaClass().getClassName()
+                                + ")",
+                        e);
             }
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CheckedAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CheckedAnalysisException {
         LocalVariableTable lvt = method.getLocalVariableTable();
         UselessValuesContext context = new UselessValuesContext(classContext, method);
         context.initObservedValues();
@@ -468,9 +498,15 @@ public class FindUselessObjects implements Detector {
         do {
             changed = false;
             if (++iteration > MAX_ITERATIONS) {
-                AnalysisContext.logError("FindUselessObjects: " + classContext.getClassDescriptor().getDottedClassName() + "."
-                        + method.getName() + method.getSignature() + ": cannot converge after " + MAX_ITERATIONS
-                        + " iterations; method is skipped");
+                AnalysisContext.logError(
+                        "FindUselessObjects: "
+                                + classContext.getClassDescriptor().getDottedClassName()
+                                + "."
+                                + method.getName()
+                                + method.getSignature()
+                                + ": cannot converge after "
+                                + MAX_ITERATIONS
+                                + " iterations; method is skipped");
                 return;
             }
             for (Iterator<GenLocation> iterator = context.genIterator(); iterator.hasNext() && !context.isEmpty();) {
@@ -505,8 +541,11 @@ public class FindUselessObjects implements Detector {
                                 for (ValueInfo vi : vals) {
                                     if (vi.var == null && vi.origValue == vn.getNumber()) {
                                         int index = ((StoreInstruction) inst).getIndex();
-                                        LocalVariable lv = lvt == null ? null
-                                                : lvt.getLocalVariable(index, location.getHandle().getNext().getPosition());
+                                        LocalVariable lv =
+                                                lvt == null
+                                                        ? null
+                                                        : lvt.getLocalVariable(
+                                                                index, location.getHandle().getNext().getPosition());
                                         vi.var = lv == null ? "var$" + index : lv.getName();
                                         vi.hasObjectOnlyCall = false;
                                         changed = true;
@@ -602,7 +641,8 @@ public class FindUselessObjects implements Detector {
                             case DCMPL:
                             case DCMPG:
                             case ARRAYLENGTH:
-                                changed |= context.propagateValues(vals, null, location.frameAfter().getTopValue());
+                                changed |=
+                                        context.propagateValues(vals, null, location.frameAfter().getTopValue());
                                 break;
                             case GETFIELD:
                             case AALOAD:
@@ -624,8 +664,9 @@ public class FindUselessObjects implements Detector {
                             case PUTFIELD:
                                 if (i == 0) {
                                     ValueNumber value = vns[vns.length - 1];
-                                    if (!value.hasFlag(ValueNumber.CONSTANT_VALUE) && !value.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT) &&
-                                            !context.observedValues.containsKey(value.getNumber())) {
+                                    if (!value.hasFlag(ValueNumber.CONSTANT_VALUE)
+                                            && !value.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)
+                                            && !context.observedValues.containsKey(value.getNumber())) {
                                         changed |= context.setDerivedEscape(vals, vn);
                                     }
                                     changed |= context.setObjectOnly(vals, vn);
@@ -645,11 +686,13 @@ public class FindUselessObjects implements Detector {
                                 XMethod xMethod = null;
                                 try {
                                     Type type = location.typeFrameBefore().getStackValue(nconsumed - 1);
-                                    xMethod = Global
-                                            .getAnalysisCache()
-                                            .getClassAnalysis(XClass.class,
-                                                    DescriptorFactory.createClassDescriptorFromSignature(type.getSignature()))
-                                            .findMatchingMethod(m);
+                                    xMethod =
+                                            Global.getAnalysisCache()
+                                                    .getClassAnalysis(
+                                                            XClass.class,
+                                                            DescriptorFactory.createClassDescriptorFromSignature(
+                                                                    type.getSignature()))
+                                                    .findMatchingMethod(m);
                                 } catch (CheckedAnalysisException e) {
                                     // ignore
                                 }
@@ -657,7 +700,8 @@ public class FindUselessObjects implements Detector {
                                     m = xMethod.getMethodDescriptor();
                                 }
                                 MethodSideEffectStatus status = noSideEffectMethods.status(m);
-                                if (status == MethodSideEffectStatus.NSE || status == MethodSideEffectStatus.SE_CLINIT) {
+                                if (status == MethodSideEffectStatus.NSE
+                                        || status == MethodSideEffectStatus.SE_CLINIT) {
                                     if (m.getName().equals(CONSTRUCTOR_NAME)) {
                                         if (vns[0].equals(context.thisValue)) {
                                             changed |= context.setEscape(vals);
@@ -700,5 +744,4 @@ public class FindUselessObjects implements Detector {
     @Override
     public void report() {
     }
-
 }

@@ -18,29 +18,6 @@
  */
 package de.tobject.findbugs.builder;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.ref.SoftReference;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.concurrent.TimeUnit;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ui.console.IOConsoleOutputStream;
-
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.FindBugsConsole;
@@ -58,14 +35,34 @@ import edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.impl.AnalysisCache;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.log.Profiler.Profile;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.ref.SoftReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ui.console.IOConsoleOutputStream;
 
 public class FindBugs2Eclipse extends FindBugs2 {
 
     private static WeakHashMap<IProject, SoftReference<List<String>>> auxClassPaths =
             new WeakHashMap<>();
 
-    private static WeakHashMap<IProject, SoftReference<Map<ClassDescriptor, Object>>> classAnalysisCache =
-            new WeakHashMap<>();
+    private static WeakHashMap<IProject, SoftReference<Map<ClassDescriptor, Object>>> classAnalysisCache = new WeakHashMap<>();
 
     private AnalysisCache analysisCache;
     private final IProject project;
@@ -74,40 +71,44 @@ public class FindBugs2Eclipse extends FindBugs2 {
 
     private final Reporter reporter;
 
-    private static IResourceChangeListener resourceListener = new IResourceChangeListener() {
-        @Override
-        public void resourceChanged(IResourceChangeEvent event) {
-            if (event.getSource() instanceof IProject) {
-                cleanClassClache((IProject) event.getSource());
-            } else if (event.getResource() instanceof IProject) {
-                cleanClassClache((IProject) event.getResource());
-            } else if (event.getDelta() != null) {
-                final Set<IProject> affectedProjects = new HashSet<>();
-                final IResourceDelta delta = event.getDelta();
-                try {
-                    delta.accept(new IResourceDeltaVisitor() {
-                        @Override
-                        public boolean visit(IResourceDelta d1) throws CoreException {
-                            if (d1 == delta || d1.getFlags() == 0 || d1.getFlags() == IResourceDelta.MARKERS) {
-                                return true;
-                            }
-                            IResource resource = d1.getResource();
-                            if (resource instanceof IProject) {
-                                affectedProjects.add((IProject) resource);
-                                return false;
-                            }
-                            return true;
+    private static IResourceChangeListener resourceListener =
+            new IResourceChangeListener() {
+                @Override
+                public void resourceChanged(IResourceChangeEvent event) {
+                    if (event.getSource() instanceof IProject) {
+                        cleanClassClache((IProject) event.getSource());
+                    } else if (event.getResource() instanceof IProject) {
+                        cleanClassClache((IProject) event.getResource());
+                    } else if (event.getDelta() != null) {
+                        final Set<IProject> affectedProjects = new HashSet<>();
+                        final IResourceDelta delta = event.getDelta();
+                        try {
+                            delta.accept(
+                                    new IResourceDeltaVisitor() {
+                                        @Override
+                                        public boolean visit(IResourceDelta d1) throws CoreException {
+                                            if (d1 == delta
+                                                    || d1.getFlags() == 0
+                                                    || d1.getFlags() == IResourceDelta.MARKERS) {
+                                                return true;
+                                            }
+                                            IResource resource = d1.getResource();
+                                            if (resource instanceof IProject) {
+                                                affectedProjects.add((IProject) resource);
+                                                return false;
+                                            }
+                                            return true;
+                                        }
+                                    });
+                        } catch (CoreException e) {
+                            FindbugsPlugin.getDefault().logException(e, "Error traversing resource delta");
                         }
-                    });
-                } catch (CoreException e) {
-                    FindbugsPlugin.getDefault().logException(e, "Error traversing resource delta");
+                        for (IProject iProject : affectedProjects) {
+                            cleanClassClache(iProject);
+                        }
+                    }
                 }
-                for (IProject iProject : affectedProjects) {
-                    cleanClassClache(iProject);
-                }
-            }
-        }
-    };
+            };
 
     public FindBugs2Eclipse(IProject project, boolean cacheClassData, Reporter bugReporter) {
         super();
@@ -178,7 +179,8 @@ public class FindBugs2Eclipse extends FindBugs2 {
             ClassData cd = (ClassData) entry.getValue();
             data.byteSize += cd.getData().length;
         }
-        Set<Entry<String, ICodeBaseEntry>> entrySet2 = classPath.getApplicationCodebaseEntries().entrySet();
+        Set<Entry<String, ICodeBaseEntry>> entrySet2 =
+                classPath.getApplicationCodebaseEntries().entrySet();
         DescriptorFactory descriptorFactory = DescriptorFactory.instance();
         for (Entry<String, ICodeBaseEntry> entry : entrySet2) {
             String className = entry.getKey();
@@ -214,10 +216,12 @@ public class FindBugs2Eclipse extends FindBugs2 {
         Footprint footprint = new Footprint(stats.getBaseFootprint());
         Profiler profiler = stats.getProfiler();
         Profile profile = profiler.getProfile(ClassDataAnalysisEngine.class);
-        long totalClassReadTime = TimeUnit.MILLISECONDS.convert(profile.getTotalTime(), TimeUnit.NANOSECONDS);
+        long totalClassReadTime =
+                TimeUnit.MILLISECONDS.convert(profile.getTotalTime(), TimeUnit.NANOSECONDS);
         long totalTime = TimeUnit.MILLISECONDS.convert(footprint.getClockTime(), TimeUnit.MILLISECONDS);
 
-        double classReadSpeed = totalClassReadTime > 0 ? data.byteSize * 1000.0 / totalClassReadTime : 0;
+        double classReadSpeed =
+                totalClassReadTime > 0 ? data.byteSize * 1000.0 / totalClassReadTime : 0;
         double classCountSpeed = totalTime > 0 ? data.classCount * 1000.0 / totalTime : 0;
         double classPart = totalTime > 0 ? totalClassReadTime * 100.0 / totalTime : 0;
         double appPart = data.byteSize > 0 ? data.byteSizeApp * 100.0 / data.byteSize : 0;
@@ -240,7 +244,6 @@ public class FindBugs2Eclipse extends FindBugs2 {
         pw.flush();
 
         pw.close();
-
     }
 
     static class AnalysisData {

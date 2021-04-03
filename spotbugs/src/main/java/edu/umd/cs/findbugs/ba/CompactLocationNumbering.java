@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 /**
- * Compute a compact numbering of Locations in a CFG. This is useful for
- * analyses that want to use a BitSet to keep track of Locations.
+ * Compute a compact numbering of Locations in a CFG. This is useful for analyses that want to use a
+ * BitSet to keep track of Locations.
  *
  * @author David Hovemeyer
  */
@@ -36,8 +36,7 @@ public class CompactLocationNumbering {
     /**
      * Constructor.
      *
-     * @param cfg
-     *            the CFG containing the Locations to number
+     * @param cfg the CFG containing the Locations to number
      */
     public CompactLocationNumbering(CFG cfg) {
         this.locationToNumberMap = new HashMap<>();
@@ -46,8 +45,7 @@ public class CompactLocationNumbering {
     }
 
     /**
-     * Get the size of the numbering, which is the maximum number assigned plus
-     * one.
+     * Get the size of the numbering, which is the maximum number assigned plus one.
      *
      * @return the maximum number assigned plus one
      */
@@ -56,8 +54,8 @@ public class CompactLocationNumbering {
     }
 
     /**
-     * Get the number of given Location, which will be a non-negative integer in
-     * the range 0..getSize() - 1.
+     * Get the number of given Location, which will be a non-negative integer in the range
+     * 0..getSize() - 1.
      *
      * @param location
      * @return the number of the location
@@ -69,8 +67,7 @@ public class CompactLocationNumbering {
     /**
      * Get the Location given its number.
      *
-     * @param number
-     *            the number
+     * @param number the number
      * @return Location corresponding to that number
      */
     public Location getLocation(int number) {

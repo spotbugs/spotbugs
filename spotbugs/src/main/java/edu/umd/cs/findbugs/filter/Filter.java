@@ -19,6 +19,11 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SAXBugCollectionHandler;
+import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,41 +32,27 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
-
 import javax.annotation.WillClose;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.SAXBugCollectionHandler;
-import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-
 /**
- * Filter to match a subset of BugInstances. The filter criteria are read from
- * an XML file.
+ * Filter to match a subset of BugInstances. The filter criteria are read from an XML file.
  *
  * @author David Hovemeyer
  */
-
 public class Filter extends OrMatcher {
     private static final int PRIME = 31;
 
     private final IdentityHashMap<Matcher, Boolean> disabled = new IdentityHashMap<>();
 
-    /**
-     * Constructor for empty filter
-     *
-     */
+    /** Constructor for empty filter */
     public Filter() {
-
     }
 
     @Override
@@ -124,8 +115,7 @@ public class Filter extends OrMatcher {
     /**
      * Constructor.
      *
-     * @param fileName
-     *            name of the filter file
+     * @param fileName name of the filter file
      * @throws IOException
      */
     public Filter(String fileName) throws IOException {
@@ -139,8 +129,7 @@ public class Filter extends OrMatcher {
     /**
      * Constructor.
      *
-     * @param stream
-     *            content of the filter file
+     * @param stream content of the filter file
      * @throws IOException
      */
     public Filter(InputStream stream) throws IOException {
@@ -172,7 +161,7 @@ public class Filter extends OrMatcher {
 
     @Override
     public void removeChild(Matcher child) {
-        enable(child);// Remove from disabled before removing it
+        enable(child); // Remove from disabled before removing it
         super.removeChild(child);
     }
 
@@ -197,13 +186,13 @@ public class Filter extends OrMatcher {
     /**
      * Parse and load the given filter file.
      *
-     * @param fileName
-     *            name of the filter file
+     * @param fileName name of the filter file
      * @throws IOException
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    private void parse(String fileName) throws IOException, SAXException, ParserConfigurationException {
+    private void parse(String fileName)
+            throws IOException, SAXException, ParserConfigurationException {
         FileInputStream fileInputStream = new FileInputStream(new File(fileName));
         parse(fileName, fileInputStream);
     }
@@ -211,21 +200,25 @@ public class Filter extends OrMatcher {
     /**
      * Parse and load the given filter file.
      *
-     * @param fileName
-     *            name of the filter file
+     * @param fileName name of the filter file
      * @throws IOException
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    private void parse(String fileName, @WillClose InputStream stream) throws IOException, SAXException, ParserConfigurationException {
+    private void parse(String fileName, @WillClose InputStream stream)
+            throws IOException, SAXException, ParserConfigurationException {
         try {
             SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, new File(fileName));
             SAXParserFactory parserFactory = SAXParserFactory.newInstance();
             parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
-            parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
-            parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
-            parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
+            parserFactory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+            parserFactory.setFeature(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
+            parserFactory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
+            parserFactory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
             SAXParser parser = parserFactory.newSAXParser();
             XMLReader xr = parser.getXMLReader();
             xr.setContentHandler(handler);
@@ -292,5 +285,4 @@ public class Filter extends OrMatcher {
             child.writeXML(xmlOutput, disabled.containsKey(child));
         }
     }
-
 }

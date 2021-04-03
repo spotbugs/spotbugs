@@ -19,17 +19,14 @@
 
 package edu.umd.cs.findbugs.launchGUI;
 
-import java.awt.GraphicsEnvironment;
-
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.gui2.FindBugsLayoutManagerFactory;
 import edu.umd.cs.findbugs.gui2.GUISaveState;
 import edu.umd.cs.findbugs.gui2.MainFrame;
 import edu.umd.cs.findbugs.gui2.SplitLayout;
+import java.awt.GraphicsEnvironment;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class LaunchGUI {
 
     public static void launchGUI(SortedBugCollection bugs) {
@@ -38,7 +35,8 @@ public class LaunchGUI {
         }
         GUISaveState.loadInstance();
         try {
-            FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
+            FindBugsLayoutManagerFactory factory =
+                    new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
             MainFrame.makeInstance(factory);
             MainFrame instance = MainFrame.getInstance();
             instance.waitUntilReady();
@@ -49,5 +47,4 @@ public class LaunchGUI {
             throw new RuntimeException(e);
         }
     }
-
 }

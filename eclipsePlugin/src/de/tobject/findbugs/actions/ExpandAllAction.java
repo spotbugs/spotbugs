@@ -50,5 +50,4 @@ public class ExpandAllAction implements IViewActionDelegate {
     public void selectionChanged(IAction action, ISelection selection) {
         // noop
     }
-
 }

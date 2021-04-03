@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -29,30 +32,21 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLWriteable;
-
 /**
- * Compute a hash of method names and signatures. This allows us to find out
- * when a class has been renamed, but not changed in any other obvious way.
+ * Compute a hash of method names and signatures. This allows us to find out when a class has been
+ * renamed, but not changed in any other obvious way.
  *
  * @author David Hovemeyer
  */
 public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
-    /**
-     * XML element name for a ClassHash.
-     */
+    /** XML element name for a ClassHash. */
     public static final String CLASS_HASH_ELEMENT_NAME = "ClassHash";
 
-    /**
-     * XML element name for a MethodHash.
-     */
+    /** XML element name for a MethodHash. */
     public static final String METHOD_HASH_ELEMENT_NAME = "MethodHash";
 
     // Fields
@@ -62,9 +56,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     private final Map<XMethod, MethodHash> methodHashMap;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public ClassHash() {
         this.methodHashMap = new HashMap<>();
     }
@@ -72,8 +64,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
     /**
      * Constructor.
      *
-     * @param classHash
-     *            pre-computed class hash
+     * @param classHash pre-computed class hash
      */
     public ClassHash(String className, byte[] classHash) {
         this();
@@ -85,18 +76,16 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
     /**
      * Set method hash for given method.
      *
-     * @param method
-     *            the method
-     * @param methodHash
-     *            the method hash
+     * @param method the method
+     * @param methodHash the method hash
      */
     public void setMethodHash(XMethod method, byte[] methodHash) {
-        methodHashMap.put(method, new MethodHash(method.getName(), method.getSignature(), method.isStatic(), methodHash));
+        methodHashMap.put(
+                method,
+                new MethodHash(method.getName(), method.getSignature(), method.isStatic(), methodHash));
     }
 
-    /**
-     * @return Returns the className.
-     */
+    /** @return Returns the className. */
     public String getClassName() {
         return className;
     }
@@ -113,8 +102,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
     /**
      * Set class hash.
      *
-     * @param classHash
-     *            the class hash value to set
+     * @param classHash the class hash value to set
      */
     public void setClassHash(byte[] classHash) {
         this.classHash = new byte[classHash.length];
@@ -124,8 +112,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
     /**
      * Get method hash for given method.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return the MethodHash
      */
     public MethodHash getMethodHash(XMethod method) {
@@ -135,8 +122,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
     /**
      * Compute hash for given class and all of its methods.
      *
-     * @param javaClass
-     *            the class
+     * @param javaClass the class
      * @return this object
      */
     public ClassHash computeHash(JavaClass javaClass) {
@@ -146,27 +132,30 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
         // Sort methods
         System.arraycopy(javaClass.getMethods(), 0, methodList, 0, javaClass.getMethods().length);
-        Arrays.sort(methodList, (o1, o2) -> {
-            // sort by name, then signature
-            int cmp = o1.getName().compareTo(o2.getName());
-            if (cmp != 0) {
-                return cmp;
-            }
-            return o1.getSignature().compareTo(o2.getSignature());
-
-        });
+        Arrays.sort(
+                methodList,
+                (o1, o2) -> {
+                    // sort by name, then signature
+                    int cmp = o1.getName().compareTo(o2.getName());
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+                    return o1.getSignature().compareTo(o2.getSignature());
+                });
 
         Field[] fieldList = new Field[javaClass.getFields().length];
 
         // Sort fields
         System.arraycopy(javaClass.getFields(), 0, fieldList, 0, javaClass.getFields().length);
-        Arrays.sort(fieldList, (o1, o2) -> {
-            int cmp = o1.getName().compareTo(o2.getName());
-            if (cmp != 0) {
-                return cmp;
-            }
-            return o1.getSignature().compareTo(o2.getSignature());
-        });
+        Arrays.sort(
+                fieldList,
+                (o1, o2) -> {
+                    int cmp = o1.getName().compareTo(o2.getName());
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+                    return o1.getSignature().compareTo(o2.getSignature());
+                });
 
         MessageDigest digest = Util.getMD5Digest();
 
@@ -230,13 +219,14 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
         xmlOutput.closeTag(CLASS_HASH_ELEMENT_NAME);
     }
 
-    private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', };
+    private static final char[] HEX_CHARS = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+    };
 
     /**
      * Convert a hash to a string of hex digits.
      *
-     * @param hash
-     *            the hash
+     * @param hash the hash
      * @return a String representation of the hash
      */
     public static String hashToString(byte[] hash) {
@@ -263,8 +253,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
     /**
      * Convert a string of hex digits to a hash.
      *
-     * @param s
-     *            string of hex digits
+     * @param s string of hex digits
      * @return the hash value represented by the string
      */
     public static byte[] stringToHash(String s) {
@@ -280,11 +269,9 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
     }
 
     /**
-     * Return whether or not this class hash has the same hash value as the one
-     * given.
+     * Return whether or not this class hash has the same hash value as the one given.
      *
-     * @param other
-     *            another ClassHash
+     * @param other another ClassHash
      * @return true if the hash values are the same, false if not
      */
     public boolean isSameHash(ClassHash other) {
@@ -303,7 +290,6 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
         }
 
         return result;
-
     }
 
     @Override

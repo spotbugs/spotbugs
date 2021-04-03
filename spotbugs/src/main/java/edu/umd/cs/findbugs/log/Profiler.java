@@ -19,6 +19,13 @@
 
 package edu.umd.cs.findbugs.log;
 
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
@@ -34,45 +41,31 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
 import javax.annotation.concurrent.NotThreadSafe;
 
-import edu.umd.cs.findbugs.FindBugs2;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckReturnValue;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLWriteable;
-
 /**
- * <p>
- * This class is mutable and not synchronized, so create independent {@link Profiler} instance for each worker thread.
- * </p>
+ * This class is mutable and not synchronized, so create independent {@link Profiler} instance for
+ * each worker thread.
  *
  * @author pugh
  */
 @NotThreadSafe
 public class Profiler implements IProfiler, XMLWriteable {
 
-    final static boolean REPORT = SystemProperties.getBoolean("profiler.report");
-    final static boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
+    static final boolean REPORT = SystemProperties.getBoolean("profiler.report");
+    static final boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
 
     private final Stack<Clock> startTimes = new Stack<>();
 
     private final Stack<Object> context = new Stack<>();
 
     /**
-     * <p>
-     * Using {@link ConcurrentMap} just for historical reason. It can be {@link Map} because the Profiler class itself
-     * is not thread-safe.
-     * </p>
+     * Using {@link ConcurrentMap} just for historical reason. It can be {@link Map} because the
+     * Profiler class itself is not thread-safe.
      */
     private final ConcurrentMap<Class<?>, Profile> profile = new ConcurrentHashMap<>();
 
-    /**
-     * The default constructor for {@link Profiler}.
-     */
+    /** The default constructor for {@link Profiler}. */
     public Profiler() {
         if (REPORT) {
             System.err.println("Profiling activated");
@@ -141,10 +134,7 @@ public class Profiler implements IProfiler, XMLWriteable {
 
         Object maxContext;
 
-        /**
-         * @param className
-         *            non null full qualified class name
-         */
+        /** @param className non null full qualified class name */
         public Profile(String className) {
             this.className = className;
         }
@@ -171,7 +161,6 @@ public class Profiler implements IProfiler, XMLWriteable {
          * @param xmlOutput
          * @throws IOException
          */
-
         @Override
         public void writeXML(XMLOutput xmlOutput) throws IOException {
             long time = totalTime.get();
@@ -196,7 +185,8 @@ public class Profiler implements IProfiler, XMLWriteable {
                 if (maxContext != null) {
                     xmlOutput.addAttribute("maxContext", String.valueOf(maxContext));
                 }
-                xmlOutput.addAttribute("standardDeviationMicrosecondsPerInvocation", String.valueOf(timeStandardDeviation));
+                xmlOutput.addAttribute(
+                        "standardDeviationMicrosecondsPerInvocation", String.valueOf(timeStandardDeviation));
                 xmlOutput.stopTag(true);
             }
         }
@@ -221,7 +211,6 @@ public class Profiler implements IProfiler, XMLWriteable {
         void restartClock(long currentNanoTime) {
             startTimeNanos = currentNanoTime;
         }
-
     }
 
     public void startContext(Object context) {
@@ -244,10 +233,7 @@ public class Profiler implements IProfiler, XMLWriteable {
         }
     }
 
-    /**
-     * @param c
-     *            The class of detector, analyzer or others that is NOT shared among worker threads.
-     */
+    /** @param c The class of detector, analyzer or others that is NOT shared among worker threads. */
     public void start(Class<?> c) {
         long currentNanoTime = System.nanoTime();
 
@@ -260,10 +246,7 @@ public class Profiler implements IProfiler, XMLWriteable {
 
     }
 
-    /**
-     * @param c
-     *            The class of detector, analyzer or others that is NOT shared among worker threads.
-     */
+    /** @param c The class of detector, analyzer or others that is NOT shared among worker threads. */
     public void end(Class<?> c) {
         // System.err.println("pop " + c.getSimpleName());
         long currentNanoTime = System.nanoTime();
@@ -271,8 +254,13 @@ public class Profiler implements IProfiler, XMLWriteable {
         Stack<Clock> stack = startTimes;
         Clock ending = stack.pop();
         if (ending.clazz != c) {
-            throw new AssertionError("Asked to end timing for " + c + " but top of stack is " + ending.clazz
-                    + ", remaining stack is " + stack);
+            throw new AssertionError(
+                    "Asked to end timing for "
+                            + c
+                            + " but top of stack is "
+                            + ending.clazz
+                            + ", remaining stack is "
+                            + stack);
         }
         ending.accumulateTime(currentNanoTime);
         if (!stack.isEmpty()) {
@@ -292,11 +280,10 @@ public class Profiler implements IProfiler, XMLWriteable {
             }
         }
         counter.handleCall(accumulatedTime, getContext());
-
     }
 
     public static class ClassNameComparator implements Comparator<Class<?>> {
-        final protected IProfiler profiler;
+        protected final IProfiler profiler;
 
         public ClassNameComparator(IProfiler p) {
             this.profiler = p;
@@ -384,8 +371,9 @@ public class Profiler implements IProfiler, XMLWriteable {
     }
 
     /**
-     * Default implementation uses {@link TotalTimeComparator} and prints out
-     * class statistics based on total time spent fot a class
+     * Default implementation uses {@link TotalTimeComparator} and prints out class statistics based
+     * on total time spent fot a class
+     *
      * @deprecated use {@link ProfileSummary#report} instead.
      */
     @Deprecated
@@ -397,8 +385,8 @@ public class Profiler implements IProfiler, XMLWriteable {
     }
 
     /**
-     * @param reportComparator
-     *            non null comparator instance which will be used to sort the report statistics
+     * @param reportComparator non null comparator instance which will be used to sort the report
+     *     statistics
      * @deprecated use {@link ProfileSummary#report} instead.
      */
     @Deprecated
@@ -416,12 +404,13 @@ public class Profiler implements IProfiler, XMLWriteable {
                 long time = p.totalTime.get();
                 int callCount = p.totalCalls.get();
                 if (filter.accepts(p)) {
-                    stream.printf("%8d  %8d  %8d %s%n", Long.valueOf(TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS)),
+                    stream.printf(
+                            "%8d  %8d  %8d %s%n",
+                            Long.valueOf(TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS)),
                             Integer.valueOf(callCount),
                             Long.valueOf(TimeUnit.MICROSECONDS.convert(time / callCount, TimeUnit.NANOSECONDS)),
                             c.getSimpleName());
                 }
-
             }
             stream.flush();
         } catch (RuntimeException e) {
@@ -430,12 +419,11 @@ public class Profiler implements IProfiler, XMLWriteable {
     }
 
     /**
-     * Clears the previously accumulated data. This method is public because it
-     * can be accessed explicitely from clients (like Eclipse).
-     * <p>
-     * There is no need to clear profiler data after each run, because a new
-     * profiler instance is used for each analysis run (see
-     * {@link FindBugs2#execute()}).
+     * Clears the previously accumulated data. This method is public because it can be accessed
+     * explicitely from clients (like Eclipse).
+     *
+     * <p>There is no need to clear profiler data after each run, because a new profiler instance is
+     * used for each analysis run (see {@link FindBugs2#execute()}).
      */
     public void clear() {
         profile.clear();
@@ -446,7 +434,8 @@ public class Profiler implements IProfiler, XMLWriteable {
     public Profile getProfile(Class<?> c) {
         Profile result = profile.get(c);
         if (result == null) {
-            AnalysisContext.logError("Unexpected null profile for " + c.getName(), new NullPointerException());
+            AnalysisContext.logError(
+                    "Unexpected null profile for " + c.getName(), new NullPointerException());
             result = new Profile(c.getName());
             Profile tmp = profile.putIfAbsent(c, result);
             if (tmp != null) {
@@ -456,9 +445,7 @@ public class Profiler implements IProfiler, XMLWriteable {
         return result;
     }
 
-    /**
-     * @deprecated use {@link ProfileSummary#writeXML} instead.
-     */
+    /** @deprecated use {@link ProfileSummary#writeXML} instead. */
     @Deprecated
     @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {

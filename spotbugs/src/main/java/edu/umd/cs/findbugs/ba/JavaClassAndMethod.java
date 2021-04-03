@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-
 /**
- * A JavaClass and a Method belonging to the class. This is useful for answering
- * a method lookup query which must concretely identify both the class and the
- * method.
+ * A JavaClass and a Method belonging to the class. This is useful for answering a method lookup
+ * query which must concretely identify both the class and the method.
  *
  * @author David Hovemeyer
  */
@@ -42,10 +40,8 @@ public class JavaClassAndMethod {
     /**
      * Constructor.
      *
-     * @param javaClass
-     *            the JavaClass
-     * @param method
-     *            a Method belonging to the JavaClass
+     * @param javaClass the JavaClass
+     * @param method a Method belonging to the JavaClass
      */
     public JavaClassAndMethod(JavaClass javaClass, Method method) {
         this.javaClass = javaClass;
@@ -55,15 +51,15 @@ public class JavaClassAndMethod {
     /**
      * Constructor.
      *
-     * @param method
-     *            an XMethod specifying a specific method in a specific class
+     * @param method an XMethod specifying a specific method in a specific class
      * @throws ClassNotFoundException
      */
     public JavaClassAndMethod(XMethod method) throws ClassNotFoundException {
 
         this.javaClass = Repository.lookupClass(method.getClassName());
         for (Method m : javaClass.getMethods()) {
-            if (m.getName().equals(method.getName()) && m.getSignature().equals(method.getSignature())
+            if (m.getName().equals(method.getName())
+                    && m.getSignature().equals(method.getSignature())
                     && m.isStatic() == method.isStatic()) {
                 this.method = m;
                 return;
@@ -72,23 +68,17 @@ public class JavaClassAndMethod {
         throw new IllegalArgumentException("Can't find " + method);
     }
 
-    /**
-     * Get the JavaClass.
-     */
+    /** Get the JavaClass. */
     public JavaClass getJavaClass() {
         return javaClass;
     }
 
-    /**
-     * Get the Method.
-     */
+    /** Get the Method. */
     public Method getMethod() {
         return method;
     }
 
-    /**
-     * Convert to an XMethod.
-     */
+    /** Convert to an XMethod. */
     public XMethod toXMethod() {
         return XFactory.createXMethod(javaClass, method);
     }
@@ -99,12 +89,15 @@ public class JavaClassAndMethod {
      * @return the MethodDescriptor uniquely naming this method
      */
     public MethodDescriptor toMethodDescriptor() {
-        return DescriptorFactory.instance().getMethodDescriptor(getSlashedClassName(), method.getName(), method.getSignature(),
-                method.isStatic());
+        return DescriptorFactory.instance()
+                .getMethodDescriptor(
+                        getSlashedClassName(), method.getName(), method.getSignature(), method.isStatic());
     }
 
     private String getSlashedClassName() {
-        return javaClass.getConstantPool().getConstantString(javaClass.getClassNameIndex(), Const.CONSTANT_Class);
+        return javaClass
+                .getConstantPool()
+                .getConstantString(javaClass.getClassNameIndex(), Const.CONSTANT_Class);
     }
 
     @Override

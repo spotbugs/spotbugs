@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs.sourceViewer;
 
+import edu.umd.cs.findbugs.ba.SourceFile;
+import edu.umd.cs.findbugs.gui2.Debug;
+import edu.umd.cs.findbugs.gui2.Driver;
+import edu.umd.cs.findbugs.gui2.GUISaveState;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -26,7 +30,6 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
@@ -35,11 +38,6 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
-
-import edu.umd.cs.findbugs.ba.SourceFile;
-import edu.umd.cs.findbugs.gui2.Debug;
-import edu.umd.cs.findbugs.gui2.Driver;
-import edu.umd.cs.findbugs.gui2.GUISaveState;
 
 public class JavaSourceDocument {
 
@@ -55,16 +53,16 @@ public class JavaSourceDocument {
 
     static Font sourceFont = new Font("Monospaced", Font.PLAIN, (int) Driver.getFontSize());
 
-    final static Color HIGHLIGHT_COLOR = new Color(1f, 1f, .3f);
+    static final Color HIGHLIGHT_COLOR = new Color(1f, 1f, .3f);
 
     TabSet TAB_SET;
+
     static {
         commentAttributes.addAttribute(StyleConstants.Foreground, new Color(0.0f, 0.5f, 0.0f));
         javadocAttributes.addAttribute(StyleConstants.Foreground, new Color(0.25f, 0.37f, 0.75f));
         quotesAttributes.addAttribute(StyleConstants.Foreground, new Color(0.0f, 0.0f, 1.0f));
         keywordsAttributes.addAttribute(StyleConstants.Foreground, new Color(0.5f, 0.0f, 0.5f));
         keywordsAttributes.addAttribute(StyleConstants.Bold, true);
-
     }
 
     final HighlightInformation highlights = new HighlightInformation();
@@ -144,38 +142,41 @@ public class JavaSourceDocument {
             int kind = parser.getKind();
             switch (kind) {
             case JavaScanner.COMMENT:
-                doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), commentAttributes, true);
+                doc.setCharacterAttributes(
+                        parser.getStartPosition(), parser.getLength(), commentAttributes, true);
                 break;
 
             case JavaScanner.KEYWORD:
-                doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), keywordsAttributes, true);
+                doc.setCharacterAttributes(
+                        parser.getStartPosition(), parser.getLength(), keywordsAttributes, true);
                 break;
 
             case JavaScanner.JAVADOC:
-                doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), javadocAttributes, true);
+                doc.setCharacterAttributes(
+                        parser.getStartPosition(), parser.getLength(), javadocAttributes, true);
                 break;
 
             case JavaScanner.QUOTE:
-                doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), quotesAttributes, true);
+                doc.setCharacterAttributes(
+                        parser.getStartPosition(), parser.getLength(), quotesAttributes, true);
                 break;
 
             default:
                 break;
             }
-
         }
-
     }
 
     //    private static final long serialVersionUID = 0L;
 
     public static final JavaSourceDocument UNKNOWNSOURCE;
+
     static {
         try {
-            UNKNOWNSOURCE = new JavaSourceDocument("Unknown source", new StringReader("Unable to find source"), null);
+            UNKNOWNSOURCE =
+                    new JavaSourceDocument("Unknown source", new StringReader("Unable to find source"), null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
 }

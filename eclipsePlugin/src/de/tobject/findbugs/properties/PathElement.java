@@ -18,11 +18,10 @@
  */
 package de.tobject.findbugs.properties;
 
+import de.tobject.findbugs.properties.DetectorValidator.ValidationStatus;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-
-import de.tobject.findbugs.properties.DetectorValidator.ValidationStatus;
 
 public class PathElement implements IPathElement {
 

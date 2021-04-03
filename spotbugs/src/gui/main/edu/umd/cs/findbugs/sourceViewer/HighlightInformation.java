@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.sourceViewer;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.CheckForNull;
-
 
 public class HighlightInformation {
 

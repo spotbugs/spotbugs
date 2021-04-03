@@ -33,14 +33,12 @@ public class NonExceptionPostdominatorsAnalysis extends PostDominatorsAnalysis {
     /**
      * Constructor.
      *
-     * @param cfg
-     *            the CFG to compute dominator relationships for
-     * @param rdfs
-     *            the ReverseDepthFirstSearch on the CFG
-     * @param dfs
-     *            the DepthFirstSearch on the CFG
+     * @param cfg the CFG to compute dominator relationships for
+     * @param rdfs the ReverseDepthFirstSearch on the CFG
+     * @param dfs the DepthFirstSearch on the CFG
      */
-    public NonExceptionPostdominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
+    public NonExceptionPostdominatorsAnalysis(
+            CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
         super(cfg, rdfs, dfs, true);
     }
 }

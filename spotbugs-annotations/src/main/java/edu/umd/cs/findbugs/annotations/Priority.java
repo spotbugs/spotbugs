@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-
 /**
  * @author pugh
  * @deprecated use {@link Confidence} instead
@@ -27,7 +26,7 @@ package edu.umd.cs.findbugs.annotations;
 @Deprecated
 public enum Priority {
     HIGH(1 /* Priorities.HIGH_PRIORITY */),
-    MEDIUM(2 /* Priorities.NORMAL_PRIORITY */ ),
+    MEDIUM(2 /* Priorities.NORMAL_PRIORITY */),
     LOW(3 /* Priorities.LOW_PRIORITY */),
     IGNORE(5 /*Priorities.IGNORE_PRIORITY */);
 

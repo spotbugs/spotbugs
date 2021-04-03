@@ -19,18 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-
-import javax.annotation.meta.When;
-
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEDYNAMIC;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InvokeInstruction;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -45,6 +33,15 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.UncheckedAnalysisException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import javax.annotation.meta.When;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InvokeInstruction;
 
 /**
  * Find relevant type qualifiers needing to be checked for a given method.
@@ -55,27 +52,26 @@ public class Analysis {
     private static final boolean DEBUG = SystemProperties.getBoolean("ctq.debug.analysis");
 
     /**
-     * This system property enables additional work to try to detect all
-     * *effective* type qualifiers (direct, inherited, and default) applied to
-     * methods and called methods.
+     * This system property enables additional work to try to detect all *effective* type qualifiers
+     * (direct, inherited, and default) applied to methods and called methods.
      *
-     * This step uses an interprocedural call graph.
+     * <p>This step uses an interprocedural call graph.
      */
-    public static final boolean FIND_EFFECTIVE_RELEVANT_QUALIFIERS = true; // SystemProperties.getBoolean("ctq.findeffective");
+    public static final boolean FIND_EFFECTIVE_RELEVANT_QUALIFIERS =
+            true; // SystemProperties.getBoolean("ctq.findeffective");
 
-    public static final boolean DEBUG_FIND_EFFECTIVE_RELEVANT_QUALIFIERS = FIND_EFFECTIVE_RELEVANT_QUALIFIERS
-            && SystemProperties.getBoolean("ctq.findeffective.debug");
+    public static final boolean DEBUG_FIND_EFFECTIVE_RELEVANT_QUALIFIERS =
+            FIND_EFFECTIVE_RELEVANT_QUALIFIERS && SystemProperties.getBoolean("ctq.findeffective.debug");
 
     /**
      * Find relevant type qualifiers needing to be checked for a given method.
      *
-     * @param methodDescriptor
-     *            a method
+     * @param methodDescriptor a method
      * @return Collection of relevant type qualifiers needing to be checked
      * @throws CheckedAnalysisException
      */
-    public static Collection<TypeQualifierValue<?>> getRelevantTypeQualifiers(MethodDescriptor methodDescriptor, CFG cfg)
-            throws CheckedAnalysisException {
+    public static Collection<TypeQualifierValue<?>> getRelevantTypeQualifiers(
+            MethodDescriptor methodDescriptor, CFG cfg) throws CheckedAnalysisException {
 
         final HashSet<TypeQualifierValue<?>> result = new HashSet<>();
 
@@ -101,7 +97,9 @@ public class Analysis {
             addEffectiveRelevantQualifiers(result, xmethod);
 
             IAnalysisCache analysisCache = Global.getAnalysisCache();
-            ConstantPoolGen cpg = analysisCache.getClassAnalysis(ConstantPoolGen.class, methodDescriptor.getClassDescriptor());
+            ConstantPoolGen cpg =
+                    analysisCache.getClassAnalysis(
+                            ConstantPoolGen.class, methodDescriptor.getClassDescriptor());
             for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
                 Location location = i.next();
                 Instruction ins = location.getHandle().getInstruction();
@@ -127,29 +125,32 @@ public class Analysis {
                 // Instance method - must consider type qualifiers inherited
                 // from superclasses
 
-                SupertypeTraversalVisitor visitor = new OverriddenMethodsVisitor(xmethod) {
-                    /*
-                     * (non-Javadoc)
-                     *
-                     * @see edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor#
-                     * visitOverriddenMethod(edu.umd.cs.findbugs.ba.XMethod)
-                     */
+                SupertypeTraversalVisitor visitor =
+                        new OverriddenMethodsVisitor(xmethod) {
+                            /*
+                             * (non-Javadoc)
+                             *
+                             * @see edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor#
+                             * visitOverriddenMethod(edu.umd.cs.findbugs.ba.XMethod)
+                             */
 
-                    @Override
-                    protected boolean visitOverriddenMethod(XMethod xmethod) {
-                        getDirectlyRelevantTypeQualifiers(xmethod, result);
-                        return true;
-                    }
-                };
+                            @Override
+                            protected boolean visitOverriddenMethod(XMethod xmethod) {
+                                getDirectlyRelevantTypeQualifiers(xmethod, result);
+                                return true;
+                            }
+                        };
 
                 try {
-                    AnalysisContext.currentAnalysisContext().getSubtypes2()
+                    AnalysisContext.currentAnalysisContext()
+                            .getSubtypes2()
                             .traverseSupertypesDepthFirst(xmethod.getClassDescriptor(), visitor);
                 } catch (ClassNotFoundException e) {
                     AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
                     return Collections.<TypeQualifierValue<?>>emptySet();
                 } catch (UncheckedAnalysisException e) {
-                    AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
+                    AnalysisContext.currentAnalysisContext()
+                            .getLookupFailureCallback()
                             .logError("Error getting relevant type qualifiers for " + xmethod.toString(), e);
                     return Collections.<TypeQualifierValue<?>>emptySet();
                 }
@@ -157,10 +158,10 @@ public class Analysis {
         }
 
         return result;
-
     }
 
-    private static void addEffectiveRelevantQualifiers(HashSet<TypeQualifierValue<?>> result, XMethod xmethod) {
+    private static void addEffectiveRelevantQualifiers(
+            HashSet<TypeQualifierValue<?>> result, XMethod xmethod) {
         if (DEBUG_FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
             System.out.println("  Finding effective qualifiers for " + xmethod);
         }
@@ -203,17 +204,20 @@ public class Analysis {
     // // TODO
     // }
 
-    private static void getDirectlyRelevantTypeQualifiers(XMethod xmethod, HashSet<TypeQualifierValue<?>> result) {
-        result.addAll(AnalysisContext.currentAnalysisContext().getDirectlyRelevantTypeQualifiersDatabase()
-                .getDirectlyRelevantTypeQualifiers(xmethod.getMethodDescriptor()));
-
+    private static void getDirectlyRelevantTypeQualifiers(
+            XMethod xmethod, HashSet<TypeQualifierValue<?>> result) {
+        result.addAll(
+                AnalysisContext.currentAnalysisContext()
+                        .getDirectlyRelevantTypeQualifiersDatabase()
+                        .getDirectlyRelevantTypeQualifiers(xmethod.getMethodDescriptor()));
     }
 
     /**
      * @param result
      * @param m
      */
-    public static void addKnownTypeQualifiersForParameters(HashSet<? super TypeQualifierValue<?>> result, XMethod m) {
+    public static void addKnownTypeQualifiersForParameters(
+            HashSet<? super TypeQualifierValue<?>> result, XMethod m) {
         int numParameters = new SignatureParser(m.getSignature()).getNumParameters();
         for (int p = 0; p < numParameters; p++) {
             addKnownTypeQualifiers(result, TypeQualifierApplications.getApplicableApplications(m, p));
@@ -224,7 +228,8 @@ public class Analysis {
      * @param result
      * @param applicableApplications
      */
-    public static void addKnownTypeQualifiers(HashSet<? super TypeQualifierValue<?>> result,
+    public static void addKnownTypeQualifiers(
+            HashSet<? super TypeQualifierValue<?>> result,
             Collection<TypeQualifierAnnotation> applicableApplications) {
         for (TypeQualifierAnnotation t : applicableApplications) {
             if (t.when != When.UNKNOWN) {
@@ -232,5 +237,4 @@ public class Analysis {
             }
         }
     }
-
 }

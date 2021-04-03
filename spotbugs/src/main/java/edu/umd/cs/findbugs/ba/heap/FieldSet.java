@@ -19,14 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.heap;
 
+import edu.umd.cs.findbugs.ba.XField;
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.ba.XField;
-
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public class FieldSet {
     private boolean isTop, isBottom;
 
@@ -92,7 +89,9 @@ public class FieldSet {
     }
 
     public boolean sameAs(FieldSet other) {
-        return this.isTop == other.isTop && this.isBottom == other.isBottom && this.fieldSet.equals(other.fieldSet);
+        return this.isTop == other.isTop
+                && this.isBottom == other.isBottom
+                && this.fieldSet.equals(other.fieldSet);
     }
 
     public void copyFrom(FieldSet other) {

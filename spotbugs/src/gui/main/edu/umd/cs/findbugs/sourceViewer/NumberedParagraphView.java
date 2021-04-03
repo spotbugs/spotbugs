@@ -19,23 +19,21 @@
 
 package edu.umd.cs.findbugs.sourceViewer;
 
+import edu.umd.cs.findbugs.gui2.Driver;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.WeakHashMap;
-
 import javax.swing.text.Element;
 import javax.swing.text.ParagraphView;
 import javax.swing.text.View;
 
-import edu.umd.cs.findbugs.gui2.Driver;
-
 // Code inspired by http://www.developer.com/java/other/article.php/3318421
 
 class NumberedParagraphView extends ParagraphView {
-    public final static int NUMBERS_WIDTH = (int) Driver.getFontSize() * 3 + 9;
+    public static final int NUMBERS_WIDTH = (int) Driver.getFontSize() * 3 + 9;
 
     HighlightInformation highlight;
 
@@ -51,7 +49,8 @@ class NumberedParagraphView extends ParagraphView {
     // }
     @Override
     public void paint(Graphics g, Shape allocation) {
-        Rectangle r = (allocation instanceof Rectangle) ? (Rectangle) allocation : allocation.getBounds();
+        Rectangle r =
+                (allocation instanceof Rectangle) ? (Rectangle) allocation : allocation.getBounds();
 
         Color oldColor = g.getColor();
         Integer lineNumber = getLineNumber();
@@ -114,6 +113,5 @@ class NumberedParagraphView extends ParagraphView {
             return result;
         }
         return -1;
-
     }
 }

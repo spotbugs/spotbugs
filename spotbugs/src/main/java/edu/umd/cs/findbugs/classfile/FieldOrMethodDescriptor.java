@@ -19,9 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import java.util.Objects;
-
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import java.util.Objects;
 
 /**
  * Common superclass for FieldDescriptor and MethodDescriptor.
@@ -42,7 +41,8 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 
     private final int nameSigHashCode;
 
-    public FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
+    public FieldOrMethodDescriptor(
+            @SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
         assert slashedClassName.indexOf('.') == -1 : "class name not in VM format: " + slashedClassName;
 
         this.slashedClassName = slashedClassName;
@@ -60,42 +60,30 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
         return nameSigHashCode;
     }
 
-    /**
-     *
-     *
-     * @return Returns the class name
-     */
+    /** @return Returns the class name */
     public @SlashedClassName String getSlashedClassName() {
         return slashedClassName;
     }
 
-    /**
-     * @return a ClassDescriptor for the method's class
-     */
+    /** @return a ClassDescriptor for the method's class */
     @Override
     public ClassDescriptor getClassDescriptor() {
         return DescriptorFactory.createClassDescriptor(slashedClassName);
     }
 
-    /**
-     * @return Returns the method name
-     */
+    /** @return Returns the method name */
     @Override
     public String getName() {
         return name;
     }
 
-    /**
-     * @return Returns the method signature
-     */
+    /** @return Returns the method signature */
     @Override
     public String getSignature() {
         return signature;
     }
 
-    /**
-     * @return Returns true if method is static, false if not
-     */
+    /** @return Returns true if method is static, false if not */
     @Override
     public boolean isStatic() {
         return isStatic;
@@ -118,10 +106,11 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
         return (this.isStatic ? 1 : 0) - (o.isStatic() ? 1 : 0);
     }
 
-
     protected boolean haveEqualFields(FieldOrMethodDescriptor other) {
-        return this.isStatic == other.isStatic && this.slashedClassName.equals(other.slashedClassName)
-                && this.name.equals(other.name) && this.signature.equals(other.signature);
+        return this.isStatic == other.isStatic
+                && this.slashedClassName.equals(other.slashedClassName)
+                && this.name.equals(other.name)
+                && this.signature.equals(other.signature);
     }
 
     /*
@@ -144,7 +133,11 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
      */
     @Override
     public String toString() {
-        return (isStatic ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + name + signature;
+        return (isStatic ? "static " : "")
+                + getClassDescriptor().getDottedClassName()
+                + "."
+                + name
+                + signature;
     }
 
     public static int compareTo(FieldOrMethodDescriptor thas, FieldOrMethodDescriptor that) {

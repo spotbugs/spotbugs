@@ -1,13 +1,12 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Codebase entry for a single-file codebase.
@@ -22,8 +21,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
     /**
      * Constructor.
      *
-     * @param codeBase
-     *            parent codebase
+     * @param codeBase parent codebase
      */
     public SingleFileCodeBaseEntry(SingleFileCodeBase codeBase) {
         this.codeBase = codeBase;
@@ -78,7 +76,8 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
     @Override
-    public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
+    public ClassDescriptor getClassDescriptor()
+            throws ResourceNotFoundException, InvalidClassFileFormatException {
         return codeBase.getClassDescriptor();
     }
 

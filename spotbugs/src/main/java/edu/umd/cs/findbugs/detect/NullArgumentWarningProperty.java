@@ -23,8 +23,7 @@ import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
 
 /**
- * Warning property for a null argument being passed to a method which might
- * dereference it.
+ * Warning property for a null argument being passed to a method which might dereference it.
  *
  * @author David Hovemeyer
  */
@@ -33,15 +32,16 @@ public class NullArgumentWarningProperty extends AbstractWarningProperty {
         super(name, priorityAdjustment);
     }
 
-    public static final NullArgumentWarningProperty ARG_DEFINITELY_NULL = new NullArgumentWarningProperty("ARG_DEFINITELY_NULL",
-            PriorityAdjustment.NO_ADJUSTMENT);
+    public static final NullArgumentWarningProperty ARG_DEFINITELY_NULL =
+            new NullArgumentWarningProperty("ARG_DEFINITELY_NULL", PriorityAdjustment.NO_ADJUSTMENT);
 
-    public static final NullArgumentWarningProperty MONOMORPHIC_CALL_SITE = new NullArgumentWarningProperty(
-            "MONOMORPHIC_CALL_SITE", PriorityAdjustment.NO_ADJUSTMENT);
+    public static final NullArgumentWarningProperty MONOMORPHIC_CALL_SITE =
+            new NullArgumentWarningProperty("MONOMORPHIC_CALL_SITE", PriorityAdjustment.NO_ADJUSTMENT);
 
-    public static final NullArgumentWarningProperty ALL_DANGEROUS_TARGETS = new NullArgumentWarningProperty(
-            "ALL_DANGEROUS_TARGETS", PriorityAdjustment.NO_ADJUSTMENT);
+    public static final NullArgumentWarningProperty ALL_DANGEROUS_TARGETS =
+            new NullArgumentWarningProperty("ALL_DANGEROUS_TARGETS", PriorityAdjustment.NO_ADJUSTMENT);
 
-    public static final NullArgumentWarningProperty ACTUAL_PARAMETER_GUARANTEED_NULL = new NullArgumentWarningProperty(
-            "ACTUAL_PARAMETER_GUARANTEED_NULL", PriorityAdjustment.NO_ADJUSTMENT);
+    public static final NullArgumentWarningProperty ACTUAL_PARAMETER_GUARANTEED_NULL =
+            new NullArgumentWarningProperty(
+                    "ACTUAL_PARAMETER_GUARANTEED_NULL", PriorityAdjustment.NO_ADJUSTMENT);
 }

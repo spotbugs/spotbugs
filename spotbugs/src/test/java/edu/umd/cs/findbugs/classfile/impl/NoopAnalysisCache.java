@@ -35,61 +35,53 @@ import javax.annotation.Nonnull;
 
 public class NoopAnalysisCache implements IAnalysisCache {
     @Override
-    public <E> void registerClassAnalysisEngine(Class<E> analysisResultType,
-            IClassAnalysisEngine<E> classAnalysisEngine) {
-
+    public <E> void registerClassAnalysisEngine(
+            Class<E> analysisResultType, IClassAnalysisEngine<E> classAnalysisEngine) {
     }
 
     @Override
-    public <E> void registerMethodAnalysisEngine(Class<E> analysisResultType,
-            IMethodAnalysisEngine<E> methodAnalysisEngine) {
-
+    public <E> void registerMethodAnalysisEngine(
+            Class<E> analysisResultType, IMethodAnalysisEngine<E> methodAnalysisEngine) {
     }
 
     @Override
-    public <E> E getClassAnalysis(Class<E> analysisClass,
-            @Nonnull ClassDescriptor classDescriptor)
+    public <E> E getClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor)
             throws CheckedAnalysisException {
         return null;
     }
 
     @Override
-    public <E> E probeClassAnalysis(Class<E> analysisClass,
-            @Nonnull ClassDescriptor classDescriptor) {
+    public <E> E probeClassAnalysis(
+            Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor) {
         return null;
     }
 
     @Override
-    public <E> E getMethodAnalysis(Class<E> analysisClass,
-            @Nonnull MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
+    public <E> E getMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor)
+            throws CheckedAnalysisException {
         return null;
     }
 
     @Override
-    public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass,
-            @Nonnull MethodDescriptor methodDescriptor, E analysisObject) {
-
+    public <E> void eagerlyPutMethodAnalysis(
+            Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor, E analysisObject) {
     }
 
     @Override
     public void purgeMethodAnalyses(@Nonnull MethodDescriptor methodDescriptor) {
-
     }
 
     @Override
     public void purgeAllMethodAnalysis() {
-
     }
 
     @Override
     public void purgeClassAnalysis(Class<?> analysisClass) {
-
     }
 
     @Override
-    public <E> void registerDatabaseFactory(Class<E> databaseClass,
-            IDatabaseFactory<E> databaseFactory) {
-
+    public <E> void registerDatabaseFactory(
+            Class<E> databaseClass, IDatabaseFactory<E> databaseFactory) {
     }
 
     @Override
@@ -105,7 +97,6 @@ public class NoopAnalysisCache implements IAnalysisCache {
 
     @Override
     public <E> void eagerlyPutDatabase(Class<E> databaseClass, E database) {
-
     }
 
     @Override

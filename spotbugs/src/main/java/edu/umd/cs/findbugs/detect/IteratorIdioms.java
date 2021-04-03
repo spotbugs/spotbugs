@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -32,10 +28,14 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 
 public class IteratorIdioms extends BytecodeScanningDetector implements StatelessDetector {
 
-    private final ClassDescriptor iteratorDescriptor = DescriptorFactory.createClassDescriptor(java.util.Iterator.class);
+    private final ClassDescriptor iteratorDescriptor =
+            DescriptorFactory.createClassDescriptor(java.util.Iterator.class);
 
     private final BugReporter bugReporter;
 
@@ -61,10 +61,11 @@ public class IteratorIdioms extends BytecodeScanningDetector implements Stateles
         }
     }
 
-
     @Override
     public void visit(Method method) {
-        if (method.isPublic() && "next".equals(method.getName()) && method.getArgumentTypes().length == 0) {
+        if (method.isPublic()
+                && "next".equals(method.getName())
+                && method.getArgumentTypes().length == 0) {
             shouldVisitCode = true;
             super.visit(method);
         } else {
@@ -81,7 +82,8 @@ public class IteratorIdioms extends BytecodeScanningDetector implements Stateles
         sawCall = false;
         super.visit(obj);
         if (!sawNoSuchElement) {
-            BugInstance bug = new BugInstance(this, "IT_NO_SUCH_ELEMENT", sawCall ? LOW_PRIORITY : NORMAL_PRIORITY);
+            BugInstance bug =
+                    new BugInstance(this, "IT_NO_SUCH_ELEMENT", sawCall ? LOW_PRIORITY : NORMAL_PRIORITY);
             bug.addClassAndMethod(this);
             bugReporter.reportBug(bug);
         }
@@ -91,11 +93,12 @@ public class IteratorIdioms extends BytecodeScanningDetector implements Stateles
     public void sawOpcode(int seen) {
         if (seen == Const.NEW && "java/util/NoSuchElementException".equals(getClassConstantOperand())) {
             sawNoSuchElement = true;
-        } else if (seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) {
+        } else if (seen == Const.INVOKESPECIAL
+                || seen == Const.INVOKEVIRTUAL
+                || seen == Const.INVOKEINTERFACE) {
             sawCall = true;
             String name = getNameConstantOperand().toLowerCase();
-            if (name.indexOf("next") >= 0
-                    || name.indexOf("previous") >= 0) {
+            if (name.indexOf("next") >= 0 || name.indexOf("previous") >= 0) {
                 sawNoSuchElement = true;
             }
         }

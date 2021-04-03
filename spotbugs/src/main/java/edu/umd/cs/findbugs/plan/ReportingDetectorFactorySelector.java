@@ -33,9 +33,8 @@ public class ReportingDetectorFactorySelector implements DetectorFactorySelector
     /**
      * Constructor.
      *
-     * @param plugin
-     *            Plugin containing detector factories to be selected; if null,
-     *            factories from any Plugin may be selected
+     * @param plugin Plugin containing detector factories to be selected; if null, factories from any
+     *     Plugin may be selected
      */
     public ReportingDetectorFactorySelector(Plugin plugin) {
         this.plugin = plugin;

@@ -19,17 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.heap;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
@@ -37,10 +26,16 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.XField;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.CheckForNull;
+import org.apache.bcel.Const;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 
-/**
- * @author David Hovemeyer
- */
+/** @author David Hovemeyer */
 public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet> {
     private final ConstantPoolGen cpg;
 
@@ -108,7 +103,6 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         }
 
         handleInstruction(handle, basicBlock, fact);
-
     }
 
     private void handleInstruction(InstructionHandle handle, BasicBlock basicBlock, FieldSet fact) {

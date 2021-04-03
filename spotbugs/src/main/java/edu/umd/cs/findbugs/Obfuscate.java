@@ -19,20 +19,17 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Iterator;
 
-import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-
-/**
- * @author pugh
- */
+/** @author pugh */
 public class Obfuscate {
 
-    final static String HASH_SEED = SystemProperties.getProperty("hashSeed", "");
+    static final String HASH_SEED = SystemProperties.getProperty("hashSeed", "");
 
     public static String hashData(String in) {
         MessageDigest md;
@@ -110,7 +107,6 @@ public class Obfuscate {
         buf.append(")");
         buf.append(hashSignature(parser.getReturnTypeSignature()));
         return buf.toString();
-
     }
 
     static MethodAnnotation obfuscate(MethodAnnotation m) {
@@ -122,29 +118,33 @@ public class Obfuscate {
         String methodName = m.getMethodName();
         String methodSignature = m.getMethodSignature();
 
-        if ("hashCode".equals(methodName) && "()I".equals(methodSignature) || "equals".equals(methodName)
-                && "(Ljava/lang/Object;)Z".equals(methodSignature) || "compareTo".equals(methodName)
-                        && "(Ljava/lang/Object;)I".equals(methodSignature) || "<init>".equals(methodName)
+        if ("hashCode".equals(methodName) && "()I".equals(methodSignature)
+                || "equals".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSignature)
+                || "compareTo".equals(methodName) && "(Ljava/lang/Object;)I".equals(methodSignature)
+                || "<init>".equals(methodName)
                 || "<clinit>".equals(methodName)) {
             // don't need to obfuscate method name
         } else {
             methodName = hashData(methodName);
         }
 
-        MethodAnnotation result = new MethodAnnotation(hashClass(className), methodName, hashMethodSignature(methodSignature),
-                m.isStatic());
+        MethodAnnotation result =
+                new MethodAnnotation(
+                        hashClass(className), methodName, hashMethodSignature(methodSignature), m.isStatic());
         result.setDescription(m.getDescription());
         return result;
     }
 
     static FieldAnnotation obfuscate(FieldAnnotation m) {
-        FieldAnnotation result = new FieldAnnotation(hashClass(m.getClassName()), hashData(m.getFieldName()),
-                hashSignature(m.getFieldSignature()), m.isStatic());
+        FieldAnnotation result =
+                new FieldAnnotation(
+                        hashClass(m.getClassName()),
+                        hashData(m.getFieldName()),
+                        hashSignature(m.getFieldSignature()),
+                        m.isStatic());
         result.setDescription(m.getDescription());
         return result;
-
     }
-
 
     static ClassAnnotation obfuscate(ClassAnnotation m) {
         ClassAnnotation result = new ClassAnnotation(hashClass(m.getClassName()));
@@ -156,91 +156,86 @@ public class Obfuscate {
         TypeAnnotation result = new TypeAnnotation(hashSignature(m.getTypeDescriptor()));
         result.setDescription(m.getDescription());
         return result;
-
     }
 
     static IntAnnotation obfuscate(IntAnnotation m) {
         IntAnnotation result = new IntAnnotation(m.getValue());
         result.setDescription(m.getDescription());
         return result;
-
     }
 
     static StringAnnotation obfuscate(StringAnnotation m) {
         StringAnnotation result = new StringAnnotation("obfuscated: " + hashData(m.getValue()));
         result.setDescription(m.getDescription());
         return result;
-
     }
 
     static SourceLineAnnotation obfuscate(SourceLineAnnotation m) {
-        SourceLineAnnotation result = new SourceLineAnnotation(hashClass(m.getClassName()), hashFilename(m.getSourceFile()),
-                m.getStartLine(), m.getEndLine(), m.getStartBytecode(), m.getEndBytecode());
+        SourceLineAnnotation result =
+                new SourceLineAnnotation(
+                        hashClass(m.getClassName()),
+                        hashFilename(m.getSourceFile()),
+                        m.getStartLine(),
+                        m.getEndLine(),
+                        m.getStartBytecode(),
+                        m.getEndBytecode());
         result.setDescription(m.getDescription());
         return result;
-
     }
 
     static LocalVariableAnnotation obfuscate(LocalVariableAnnotation m) {
 
-        LocalVariableAnnotation result = new LocalVariableAnnotation(hashData(m.getName()), m.getRegister(), m.getPC());
+        LocalVariableAnnotation result =
+                new LocalVariableAnnotation(hashData(m.getName()), m.getRegister(), m.getPC());
         result.setDescription(m.getDescription());
         return result;
-
     }
 
     public static BugInstance obfuscate(BugInstance b) {
         final BugInstance result = new BugInstance(b.getType(), b.getPriority());
-        BugAnnotationVisitor visitor = new BugAnnotationVisitor() {
+        BugAnnotationVisitor visitor =
+                new BugAnnotationVisitor() {
 
-            @Override
-            public void visitTypeAnnotation(TypeAnnotation typeAnnotation) {
-                result.add(obfuscate(typeAnnotation));
+                    @Override
+                    public void visitTypeAnnotation(TypeAnnotation typeAnnotation) {
+                        result.add(obfuscate(typeAnnotation));
+                    }
 
-            }
+                    @Override
+                    public void visitStringAnnotation(StringAnnotation stringAnnotation) {
+                        result.add(obfuscate(stringAnnotation));
+                    }
 
-            @Override
-            public void visitStringAnnotation(StringAnnotation stringAnnotation) {
-                result.add(obfuscate(stringAnnotation));
+                    @Override
+                    public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation) {
+                        result.add(obfuscate(sourceLineAnnotation));
+                    }
 
-            }
+                    @Override
+                    public void visitMethodAnnotation(MethodAnnotation methodAnnotation) {
+                        result.add(obfuscate(methodAnnotation));
+                    }
 
-            @Override
-            public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation) {
-                result.add(obfuscate(sourceLineAnnotation));
+                    @Override
+                    public void visitLocalVariableAnnotation(LocalVariableAnnotation fieldAnnotation) {
+                        result.add(obfuscate(fieldAnnotation));
+                    }
 
-            }
+                    @Override
+                    public void visitIntAnnotation(IntAnnotation fieldAnnotation) {
+                        result.add(obfuscate(fieldAnnotation));
+                    }
 
-            @Override
-            public void visitMethodAnnotation(MethodAnnotation methodAnnotation) {
-                result.add(obfuscate(methodAnnotation));
+                    @Override
+                    public void visitFieldAnnotation(FieldAnnotation fieldAnnotation) {
+                        result.add(obfuscate(fieldAnnotation));
+                    }
 
-            }
-
-            @Override
-            public void visitLocalVariableAnnotation(LocalVariableAnnotation fieldAnnotation) {
-                result.add(obfuscate(fieldAnnotation));
-
-            }
-
-            @Override
-            public void visitIntAnnotation(IntAnnotation fieldAnnotation) {
-                result.add(obfuscate(fieldAnnotation));
-
-            }
-
-            @Override
-            public void visitFieldAnnotation(FieldAnnotation fieldAnnotation) {
-                result.add(obfuscate(fieldAnnotation));
-
-            }
-
-            @Override
-            public void visitClassAnnotation(ClassAnnotation classAnnotation) {
-                result.add(obfuscate(classAnnotation));
-
-            }
-        };
+                    @Override
+                    public void visitClassAnnotation(ClassAnnotation classAnnotation) {
+                        result.add(obfuscate(classAnnotation));
+                    }
+                };
         for (BugAnnotation a : b.getAnnotations()) {
             a.accept(visitor);
         }
@@ -248,5 +243,4 @@ public class Obfuscate {
         result.setHistory(b);
         return result;
     }
-
 }

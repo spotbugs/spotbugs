@@ -18,17 +18,15 @@
  */
 package de.tobject.findbugs.test;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import java.util.HashMap;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Base class for the default test scenario of the FindBugs UI tests.
@@ -52,18 +50,22 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
     }
 
     protected ICompilationUnit getClassA() throws JavaModelException {
-        ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject().findElement(new Path("A.java"));
+        ICompilationUnit compilationUnit =
+                (ICompilationUnit) getJavaProject().findElement(new Path("A.java"));
         return compilationUnit;
     }
 
     protected ICompilationUnit getClassB() throws JavaModelException {
-        ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject().findElement(new Path("B.java"));
+        ICompilationUnit compilationUnit =
+                (ICompilationUnit) getJavaProject().findElement(new Path("B.java"));
         return compilationUnit;
     }
 
     protected IPackageFragment getDefaultPackageInSrc() throws JavaModelException {
-        IPackageFragment fragment = getJavaProject().findPackageFragment(
-                new Path("/" + AbstractPluginTest.TEST_PROJECT + "/" + AbstractPluginTest.SRC));
+        IPackageFragment fragment =
+                getJavaProject()
+                        .findPackageFragment(
+                                new Path("/" + AbstractPluginTest.TEST_PROJECT + "/" + AbstractPluginTest.SRC));
         return fragment;
     }
 
@@ -82,9 +84,7 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
         return TestScenario.DEFAULT;
     }
 
-    /**
-     * Configures the test project to use the baseline bugs file.
-     */
+    /** Configures the test project to use the baseline bugs file. */
     protected void setBaselineBugsFile(boolean on) throws CoreException {
         // per default, workspace settings are used. We enable project settings
         // here
@@ -100,9 +100,7 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
         FindbugsPlugin.saveUserPreferences(getProject(), preferences);
     }
 
-    /**
-     * Configures the test project to use the filter file.
-     */
+    /** Configures the test project to use the filter file. */
     protected void setFilterFile(boolean on) throws CoreException {
         // per default, workspace settings are used. We enable project settings
         // here
@@ -117,5 +115,4 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
         }
         FindbugsPlugin.saveUserPreferences(getProject(), preferences);
     }
-
 }

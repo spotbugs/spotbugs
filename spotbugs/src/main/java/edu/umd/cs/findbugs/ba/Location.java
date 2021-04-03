@@ -20,23 +20,18 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Objects;
-
 import javax.annotation.Nonnull;
-
 import org.apache.bcel.generic.InstructionHandle;
 
-
 /**
- * <p>A class representing a location in the CFG for a method. Essentially, it
- * represents a static instruction, <em>with the important caveat</em> that CFGs
- * have inlined JSR subroutines, meaning that a single InstructionHandle in a
- * CFG may represent several static locations. To this end, a Location is
- * comprised of both an InstructionHandle and the BasicBlock that contains it.
- * </p>
- * <p>
- * Location objects may be compared with each other using the equals() method,
- * and may be used as keys in tree and hash maps and sets. Note that
- * <em>it is only valid to compare Locations produced from the same CFG</em>.</p>
+ * A class representing a location in the CFG for a method. Essentially, it represents a static
+ * instruction, <em>with the important caveat</em> that CFGs have inlined JSR subroutines, meaning
+ * that a single InstructionHandle in a CFG may represent several static locations. To this end, a
+ * Location is comprised of both an InstructionHandle and the BasicBlock that contains it.
+ *
+ * <p>Location objects may be compared with each other using the equals() method, and may be used as
+ * keys in tree and hash maps and sets. Note that <em>it is only valid to compare Locations produced
+ * from the same CFG</em>.
  *
  * @author David Hovemeyer
  * @see CFG
@@ -51,10 +46,8 @@ public class Location implements Comparable<Location> {
     /**
      * Constructor.
      *
-     * @param handle
-     *            the instruction
-     * @param basicBlock
-     *            the basic block containing the instruction
+     * @param handle the instruction
+     * @param basicBlock the basic block containing the instruction
      */
     public Location(@Nonnull InstructionHandle handle, @Nonnull BasicBlock basicBlock) {
         Objects.requireNonNull(handle, "handle cannot be null");
@@ -84,33 +77,27 @@ public class Location implements Comparable<Location> {
         return new Location(lastInstruction, basicBlock);
     }
 
-    /**
-     * Get the instruction handle.
-     */
+    /** Get the instruction handle. */
     @Nonnull
     public InstructionHandle getHandle() {
         return handle;
     }
 
-    /**
-     * Get the basic block.
-     */
+    /** Get the basic block. */
     @Nonnull
     public BasicBlock getBasicBlock() {
         return basicBlock;
     }
 
     /**
-     * Return whether or not the Location is positioned at the first instruction
-     * in the basic block.
+     * Return whether or not the Location is positioned at the first instruction in the basic block.
      */
     public boolean isFirstInstructionInBasicBlock() {
         return !basicBlock.isEmpty() && handle == basicBlock.getFirstInstruction();
     }
 
     /**
-     * Return whether or not the Location is positioned at the last instruction
-     * in the basic block.
+     * Return whether or not the Location is positioned at the last instruction in the basic block.
      */
     public boolean isLastInstructionInBasicBlock() {
         return !basicBlock.isEmpty() && handle == basicBlock.getLastInstruction();
@@ -145,8 +132,8 @@ public class Location implements Comparable<Location> {
     }
 
     /**
-     * @return a compact string of the form "bb:xx", where "bb" is the basic
-     *         block number and "xx" is the bytecode offset
+     * @return a compact string of the form "bb:xx", where "bb" is the basic block number and "xx" is
+     *     the bytecode offset
      */
     public String toCompactString() {
         return basicBlock.getLabel() + ":" + handle.getPosition();

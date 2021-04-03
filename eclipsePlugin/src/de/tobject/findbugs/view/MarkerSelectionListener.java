@@ -18,12 +18,11 @@
  */
 package de.tobject.findbugs.view;
 
+import de.tobject.findbugs.reporter.MarkerUtil;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
-
-import de.tobject.findbugs.reporter.MarkerUtil;
 
 class MarkerSelectionListener implements ISelectionListener {
     private final IMarkerSelectionHandler handler;

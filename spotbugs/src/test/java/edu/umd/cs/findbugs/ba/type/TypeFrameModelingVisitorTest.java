@@ -22,14 +22,13 @@ package edu.umd.cs.findbugs.ba.type;
 import org.junit.Ignore;
 import org.junit.Test;
 
-/**
- * @author pugh
- */
+/** @author pugh */
 public class TypeFrameModelingVisitorTest {
 
     @Ignore
     @Test
     public void testMapSignaturePattern() {
-        //        assertTrue(TypeFrameModelingVisitor.mapSignaturePattern.matcher("<") && !sourceSignature.contains("Map<TK;TV;>"))
+        //        assertTrue(TypeFrameModelingVisitor.mapSignaturePattern.matcher("<") &&
+        // !sourceSignature.contains("Map<TK;TV;>"))
     }
 }
