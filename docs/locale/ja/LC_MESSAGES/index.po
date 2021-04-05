@@ -23,7 +23,7 @@ msgstr "SpotBugs マニュアル"
 msgid ""
 "This manual is licensed under the Creative Commons Attribution-"
 "NonCommercial-ShareAlike License. To view a copy of this license, visit "
-"http://creativecommons.org/licenses/by-nc-sa/1.0/ or send a letter to "
+"https://creativecommons.org/licenses/by-nc-sa/1.0/ or send a letter to "
 "Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA."
 msgstr "このマニュアルは Creative Commons Attribution-NonCommercial-ShareAlike License の下で使用許諾されています。この使用許諾のコピーを見るためには http://creativecommons.org/licenses/by-nc-sa/1.0/ を参照するか Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA に書簡を送付してください。"
 
