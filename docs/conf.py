@@ -273,7 +273,7 @@ gettext_compact = False
 gettext_additional_targets = ['raw']
 
 def setup(app):
-    app.add_stylesheet('custom.css')
+    app.add_css_file('custom.css')
 
 sys.path.append(os.path.abspath('extensions'))
 extensions += ['generate_bug_description']
