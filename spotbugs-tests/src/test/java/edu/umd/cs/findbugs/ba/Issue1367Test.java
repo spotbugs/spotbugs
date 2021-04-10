@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs.ba;
 
-import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.test.SpotBugsRule;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
