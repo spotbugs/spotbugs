@@ -742,6 +742,10 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
                 }
                 switch (opcode) {
+                case Const.CONSTANT_Dynamic:
+                    registerOperand = opcode - Const.CONSTANT_Dynamic;
+                    isRegisterLoad = true;
+                    break;
                 case Const.IINC:
                     isRegisterLoad = true;
                     isRegisterStore = true;
