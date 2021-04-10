@@ -83,7 +83,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 && EQUALS_SIGNATURE.equals(getMethodSig())) {
             sawCheckedCast = sawSuperEquals = sawInstanceOf = sawGetClass = sawReturnSuper = sawCompare = sawReturnNonSuper = prevWasSuperEquals =
                     sawGoodEqualsClass = sawBadEqualsClass = dangerDanger = sawInstanceOfSupertype = alwaysTrue = alwaysFalse = sawStaticDelegate =
-                            sawEqualsBuilder = false;
+                            sawEqualsBuilder = isRecord = false;
             sawInitialIdentityCheck = obj.getCode().length == 11 || obj.getCode().length == 9;
             equalsCalls = 0;
             super.visit(obj);
@@ -114,6 +114,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 kind = EqualsKindSummary.KindOfEquals.CHECKED_CAST_EQUALS;
             } else if (sawCompare) {
                 kind = EqualsKindSummary.KindOfEquals.COMPARE_EQUALS;
+            } else if (isRecord) {
+                kind = EqualsKindSummary.KindOfEquals.RECORD;
             } else {
                 if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
                     bugReporter
@@ -193,6 +195,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
     boolean sawStaticDelegate;
 
     boolean sawEqualsBuilder;
+
+    boolean isRecord;
 
     private final EnumMap<EqualsKindSummary.KindOfEquals, Integer> count = new EnumMap<>(
             EqualsKindSummary.KindOfEquals.class);
@@ -322,7 +326,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
             sawGetClass = true;
         }
-
+        if (seen == Const.INVOKEDYNAMIC && "java/lang/Record".equals(getSuperclassName())) {
+            isRecord = true;
+        }
     }
 
     private boolean callToInvoke(int seen) {
