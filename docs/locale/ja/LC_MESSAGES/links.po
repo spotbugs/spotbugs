@@ -57,7 +57,7 @@ msgid ""
 msgstr "Java バイトコードの静的コード解析を行う FindBugs/SpotBugs プラグインです。"
 
 #: ../../links.rst:19
-msgid "`Find Security Bugs <http://find-sec-bugs.github.io/>`_"
+msgid "`Find Security Bugs <https://find-sec-bugs.github.io/>`_"
 msgstr ""
 
 #: ../../links.rst:19
@@ -101,7 +101,7 @@ msgstr ""
 "<https://www.sonarqube.org/>`_ プラグインです。"
 
 #: ../../links.rst:34
-msgid "`Checkstyle <http://checkstyle.sourceforge.net/>`_"
+msgid "`Checkstyle <https://checkstyle.sourceforge.io/>`_"
 msgstr ""
 
 #: ../../links.rst:34
@@ -123,11 +123,11 @@ msgstr ""
 #: ../../links.rst:40
 msgid ""
 "New Java bytecode static analyzer tool based on `Procyon Compiler Tools "
-"<https://bitbucket.org/mstrobel/procyon/overview>`_ aimed to supersede "
+"<https://github.com/mstrobel/procyon>`_ aimed to supersede "
 "the FindBugs."
 msgstr ""
 "`Procyon Compiler Tools "
-"<https://bitbucket.org/mstrobel/procyon/overview>`_ "
+"<https://github.com/mstrobel/procyon>`_ "
 "に基づいた新しいバイトコード静的解析ツールで，FindBugs を置き換えることを目指しています。"
 
 #: ../../links.rst:43

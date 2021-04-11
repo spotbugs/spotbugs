@@ -322,7 +322,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 bugAccumulator.accumulateBug(bug, this);
             }
 
-            else if (opCode == Const.IXOR && item0.sameValue(item1)) {
+            else if (item0.sameValue(item1)) {
                 LocalVariableAnnotation localVariableAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(this, item0);
                 if (localVariableAnnotation != null) {
                     bugAccumulator.accumulateBug(

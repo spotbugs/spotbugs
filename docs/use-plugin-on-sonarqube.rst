@@ -1,12 +1,12 @@
 Use SpotBugs Plugin on SonarQube
 ================================
 
-`The SpotBugs SonarQube Plugin <https://github.com/spotbugs/sonar-findbugs>`_ uses major SpotBugs plugins such as `fb-contrib <http://fb-contrib.sourceforge.net/>`_ and `Find Security Bugs <http://h3xstream.github.io/find-sec-bugs/>`_. However, if you want to use another SpotBugs plugin, you need to build your own SonarQube plugin. For detailed requirements on SonarQube plugins, see `the SonarQube official guidelines <https://docs.sonarqube.org/display/DEV/Developing+a+Plugin>`_.
+`The SpotBugs SonarQube Plugin <https://github.com/spotbugs/sonar-findbugs>`_ uses major SpotBugs plugins such as `fb-contrib <http://fb-contrib.sourceforge.net/>`_ and `Find Security Bugs <http://h3xstream.github.io/find-sec-bugs/>`_. However, if you want to use another SpotBugs plugin, you need to build your own SonarQube plugin. For detailed requirements on SonarQube plugins, see `the SonarQube official guidelines`_.
 
 Create Maven Project
 --------------------
 
-Follow the interaction in the `SonarQube official guidelines <https://docs.sonarqube.org/display/DEV/Build+Plugin#BuildPlugin-CreateaMavenProject>`_.
+Follow the interaction in the `SonarQube official guidelines <https://docs.sonarqube.org/latest/extend/developing-plugin/>`_.
 It is recommended to use sub-modules, to manage both the SpotBugs plugin and the SonarQube plugin in one project. You can refer to `this module <https://github.com/KengoTODA/guava-helper-for-java-8/tree/master/sonarqube-plugin>`_ as an example.
 
 You also need to configure the ``sonar-packaging-maven-plugin``, to make your plugin depend on `the SpotBugs SonarQube Plugin <https://github.com/spotbugs/sonar-findbugs>`_. For instance, if you're using SonarQube 6.7 LTS, your plugin requires SpotBugs SonarQube Plugin version 3.7, so your configuration should be like below:
@@ -64,6 +64,8 @@ Update Plugin.java
 Deploy onto SonarQube
 ---------------------
 
-``mvn package`` will generate a ``.jar`` file that works as a SonarQube plugin. Follow `the SonarQube official guidelines <https://docs.sonarqube.org/display/DEV/Build+Plugin#BuildPlugin-Deploy>`_ to deploy it onto SonarQube.
+``mvn package`` will generate a ``.jar`` file that works as a SonarQube plugin. Follow `the SonarQube official guidelines`_ to deploy it onto SonarQube.
 
 Note that you need to enable new rules manually in your SonarQube profile, or newly added rules will not be used at analysis.
+
+.. _the SonarQube official guidelines: https://docs.sonarqube.org/latest/extend/developing-plugin/
