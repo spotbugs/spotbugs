@@ -13,6 +13,8 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -143,52 +145,61 @@ public class PublicAttributes
                 "_jspDestroy".equals(methodName);
     }
 
-    private static Field getClassField(XField field, String className) {
+    private static @CheckReturnValue Field getClassField(XField field, String dottedClassName) {
         try {
-            JavaClass cls = Repository.lookupClass(className);
+            JavaClass cls = Repository.lookupClass(dottedClassName);
             for (Field clsField : cls.getFields()) {
                 if (field.getName().equals(clsField.getName())) {
                     return clsField;
                 }
             }
         } catch (ClassNotFoundException cnfe) {
-            assert false;
+            AnalysisContext.reportMissingClass(cnfe);
         }
         return null;
     }
 
-    private static boolean isImmutable(String className) {
-        if ("java.lang.String".equals(className) ||
-                "java.lang.Character".equals(className) ||
-                "java.lang.Byte".equals(className) ||
-                "java.lang.Short".equals(className) ||
-                "java.lang.Integer".equals(className) ||
-                "java.lang.Long".equals(className) ||
-                "java.lang.Float".equals(className) ||
-                "java.lang.Double".equals(className) ||
-                "java.lang.Boolean".equals(className)) {
+    private static boolean isImmutable(String dottedClassName) {
+        if ("java.lang.String".equals(dottedClassName) ||
+                "java.lang.Character".equals(dottedClassName) ||
+                "java.lang.Byte".equals(dottedClassName) ||
+                "java.lang.Short".equals(dottedClassName) ||
+                "java.lang.Integer".equals(dottedClassName) ||
+                "java.lang.Long".equals(dottedClassName) ||
+                "java.lang.Float".equals(dottedClassName) ||
+                "java.lang.Double".equals(dottedClassName) ||
+                "java.lang.Boolean".equals(dottedClassName)) {
             return true;
         }
 
         try {
-            JavaClass cls = Repository.lookupClass(className);
+            JavaClass cls = Repository.lookupClass(dottedClassName);
 
-            if (!cls.isFinal()) {
-                return false;
-            }
-
-            for (Field field : cls.getFields()) {
-                if (!field.isStatic() &&
-                        (!field.isFinal() || !field.isPrivate())) {
-                    return false;
-                }
-            }
-
-            return true;
+            return isImmutable(cls);
         } catch (ClassNotFoundException cnfe) {
-            assert false;
+            AnalysisContext.reportMissingClass(cnfe);
         }
         return false;
+    }
+
+    private static boolean isImmutable(JavaClass cls) {
+        if (!cls.isFinal()) {
+            return false;
+        }
+
+        for (Field field : cls.getFields()) {
+            if (!field.isStatic() &&
+                    (!field.isFinal() || !field.isPrivate())) {
+                return false;
+            }
+        }
+
+        try {
+            JavaClass sup = cls.getSuperClass();
+            return isImmutable(sup);
+        } catch (ClassNotFoundException cnfe) {
+            return true;
+        }
     }
 
     private static boolean looksLikeASetter(String methodName) {
