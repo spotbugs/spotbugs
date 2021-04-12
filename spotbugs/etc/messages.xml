@@ -7112,8 +7112,7 @@ just use the constant. Methods detected are:
     <Details>
    <![CDATA[
     <p>
-    SEI CERT rule OBJ01-J requires that accessibility of fields must be limited:
-    https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields"> SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited:
     In general, requiring that no fields must be public is overkill and unrealistic. Even the rule
     mentions that final fields may be public, except if the type of the field is a mutable reference
     type which can be modified despite the reference itself being final. Besides final fields, there
