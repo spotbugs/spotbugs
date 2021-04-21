@@ -62,7 +62,8 @@ public class PublicAttributes
                 return;
             }
 
-            bugReporter.reportBug(new BugInstance(this, "PA_PUBLIC_ATTRIBUTES",
+            bugReporter.reportBug(new BugInstance(this,
+                    "PA_PUBLIC_PRIMITIVE_ATTRIBUTE",
                     NORMAL_PRIORITY)
                             .addClass(this).addField(field));
             writtenFields.add(field);
@@ -82,7 +83,8 @@ public class PublicAttributes
                 return;
             }
 
-            bugReporter.reportBug(new BugInstance(this, "PA_PUBLIC_ATTRIBUTES",
+            bugReporter.reportBug(new BugInstance(this,
+                    "PA_PUBLIC_ARRAY_ATTRIBUTE",
                     NORMAL_PRIORITY)
                             .addClass(this).addField(field));
             writtenFields.add(field);
@@ -125,7 +127,8 @@ public class PublicAttributes
                 return;
             }
 
-            bugReporter.reportBug(new BugInstance(this, "PA_PUBLIC_ATTRIBUTES",
+            bugReporter.reportBug(new BugInstance(this,
+                    "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE",
                     NORMAL_PRIORITY)
                             .addClass(this).addField(field));
             writtenFields.add(field);

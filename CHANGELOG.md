@@ -52,7 +52,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - False positive `EQ_UNUSUAL` with record classes ([#1367](https://github.com/spotbugs/spotbugs/issues/1367))
 
 ### Added
-- New rule `PA_PUBLIC_ATTRIBUTES` to warn for public attributes which are written by the methods of the class. This rule is lossely based on SEI CERT rule `OBJ01-J Limit accessibility of fields`. ([#OBJ01-J](https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields))
+- New rule set `PA_PUBLIC_PRIMITIVE_ATTRIBUTE`, `PA_PUBLIC_ARRAY_ATTRIBUTE` AND `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` to warn for public attributes which are written by the methods of the class. This rule is losely based on SEI CERT rule `OBJ01-J Limit accessibility of fields`. ([#OBJ01-J](https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields))
 
 ## 4.2.2 - 2021-03-03
 
