@@ -9,6 +9,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 * Bump Saxon-HE from 10.3 to 10.5 ([#1513](https://github.com/spotbugs/spotbugs/pull/1513))
 
+### Added
+* Add new detector `CT_CONSTRUCTOR_THROW` for detecting constructors that throw exceptions. 
+
 ## 4.2.3 - 2021-04-12
 
 ### Fixed
