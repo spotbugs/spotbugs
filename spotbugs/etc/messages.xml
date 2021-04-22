@@ -166,6 +166,14 @@ This plugin contains all of the standard SpotBugs detectors.
   Detectors
   **********************************************************************
    -->
+  <Detector class="edu.umd.cs.findbugs.detect.ConstructorThrow">
+    <Details>
+<![CDATA[
+<p> Finds constructors that throw exceptions.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector">
     <Details>
 <![CDATA[
@@ -1694,6 +1702,21 @@ factory pattern to create these objects.</p>
   BugPatterns
   **********************************************************************
    -->
+  <BugPattern type="CT_CONSTRUCTOR_THROW">
+    <ShortDescription> Be wary of letting constructors throw exceptions. </ShortDescription>
+    <LongDescription> Exception thrown in class {0} at {1} will leave the constructor. </LongDescription>
+    <Details>
+      <![CDATA[
+            <p>Classes that throw exceptions in their constructors are vulnerable to Finalizer attacks</p>
+
+            <p>A finalizer attack can be prevented, by declaring the class final, using an empty finalizer declared as final, or by a clever use of a private constructor.</p>
+
+            <p>See <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ11-J.+Be+wary+of+letting+constructors+throw+exceptions"><code>SEI CERT Rule OBJ-11</code></a>
+            for more information.
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS">
     <ShortDescription> Asserting value of instanceof in tests is not recommended. </ShortDescription>
@@ -8635,4 +8658,5 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
   <BugCode abbrev="EOS">Bad End of Stream check</BugCode>
+  <BugCode abbrev="CT">Constructor throws</BugCode>
 </MessageCollection>

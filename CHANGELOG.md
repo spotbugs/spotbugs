@@ -20,6 +20,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix annotation check for `jdk.internal.ValueBased` ([#1706](https://github.com/spotbugs/spotbugs/pull/1706))
 - `DMI_RANDOM_USED_ONLY_ONCE` false positive ([#1539](https://github.com/spotbugs/spotbugs/issues/1539))
 
+### Added
+* Add new detector `CT_CONSTRUCTOR_THROW` for detecting constructors that throw exceptions.
+
 ## 4.4.1 - 2021-09-07
 ### Changed
 - Bump gson from 2.8.7 to 2.8.8 ([#1658](https://github.com/spotbugs/spotbugs/pull/1658))

@@ -651,6 +651,8 @@
                     reports="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadEndOfStreamCheck" speed="fast"
                     reports="EOS_BAD_END_OF_STREAM_CHECK"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ConstructorThrow" speed="fast"
+                    reports="CT_CONSTRUCTOR_THROW"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -676,10 +678,12 @@
           <BugCode abbrev="STCAL" cweid="366"/>
           <BugCode abbrev="ICAST" cweid="192"/>
           <BugCode abbrev="FB"/>
+          <BugCode abbrev="CT"/>
           <BugCode abbrev="AT"/>
           <BugCode abbrev="JUA"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
+          <BugPattern abbrev="CT" type="CT_CONSTRUCTOR_THROW" category="BAD_PRACTICE" />
           <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
           <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
 
