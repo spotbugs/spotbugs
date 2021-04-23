@@ -2,12 +2,12 @@ import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class FindReturnRefTest {
     private Date date;
     private Date[] dateArray;
-    private Hashtable<Integer, String> ht = new Hashtable<Integer, String>();
+    private HashMap<Integer, String> hm = new HashMap<Integer, String>();
 
     private static Date sDate = new Date();
     private static Date[] sDateArray = new Date[20];
@@ -16,15 +16,15 @@ public class FindReturnRefTest {
             sDateArray[i] = new Date();
         }
     }
-    private static Hashtable<Integer, String> sht = new Hashtable<Integer, String>();
+    private static HashMap<Integer, String> shm = new HashMap<Integer, String>();
     static {
-        sht.put(1, "123-45-6789");
+        shm.put(1, "123-45-6789");
     }
 
     public FindReturnRefTest() {
         date = new Date();
         dateArray = new Date[20];
-        ht.put(1, "123-45-6789");
+        hm.put(1, "123-45-6789");
         for (int i = 0; i < dateArray.length; i++) {
             dateArray[i] = new Date();
         }
@@ -42,13 +42,13 @@ public class FindReturnRefTest {
         return sDate;
     }
 
-    @DesireWarning("EI") // Indirect way of returning reference
+    @ExpectWarning("EI") // Indirect way of returning reference
     public Date getDate2() {
         Date d = date;
         return d;
     }
 
-    @DesireWarning("MS") // Indirect way of returning reference
+    @ExpectWarning("MS") // Indirect way of returning reference
     public static Date getStaticDate2() {
         Date d = sDate;
         return d;
@@ -75,13 +75,13 @@ public class FindReturnRefTest {
     }
 
     @ExpectWarning("EI")
-    public Hashtable<Integer, String> getValues() {
-        return ht;
+    public HashMap<Integer, String> getValues() {
+        return hm;
     }
 
     @ExpectWarning("MS")
-    public static Hashtable<Integer, String> getStaticValues() {
-        return sht;
+    public static HashMap<Integer, String> getStaticValues() {
+        return shm;
     }
 
     @ExpectWarning("EI2")
@@ -129,12 +129,12 @@ public class FindReturnRefTest {
     }
 
     @ExpectWarning("EI2")
-    public void setValues(Hashtable<Integer, String> values) {
-        ht = values;
+    public void setValues(HashMap<Integer, String> values) {
+        hm = values;
     }
 
     @ExpectWarning("MS")
-    public static void getStaticValues(Hashtable<Integer, String>  values) {
-        sht = values;
+    public static void getStaticValues(HashMap<Integer, String>  values) {
+        shm = values;
     }
 }
