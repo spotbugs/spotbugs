@@ -31,29 +31,19 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.MutableClasses;
 
 public class FindReturnRef extends OpcodeStackDetector {
     boolean check = false;
 
-    boolean thisOnTOS = false;
-
-    boolean fieldOnTOS = false;
-
     boolean publicClass = false;
 
     boolean staticMethod = false;
 
-    String nameOnStack;
-
-    String classNameOnStack;
-
-    String sigOnStack;
-
     int parameterCount;
-
-    boolean fieldIsStatic;
 
     private final BugAccumulator bugAccumulator;
 
@@ -88,11 +78,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             parameterCount++;
         }
 
-        thisOnTOS = false;
-        fieldOnTOS = false;
         super.visit(obj);
-        thisOnTOS = false;
-        fieldOnTOS = false;
     }
 
     @Override
@@ -135,46 +121,21 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         }
 
-        if (seen == Const.ALOAD_0 && !staticMethod) {
-            thisOnTOS = true;
-            fieldOnTOS = false;
-            return;
-        }
-
-        if (thisOnTOS && seen == Const.GETFIELD && getClassConstantOperand().equals(getClassName()) && nonPublicFieldOperand()
-                && !AnalysisContext.currentXFactory().isEmptyArrayField(getXFieldOperand())) {
-            fieldOnTOS = true;
-            thisOnTOS = false;
-            nameOnStack = getNameConstantOperand();
-            classNameOnStack = getDottedClassConstantOperand();
-            sigOnStack = getSigConstantOperand();
-            fieldIsStatic = false;
-            return;
-        }
-        if (seen == Const.GETSTATIC && getClassConstantOperand().equals(getClassName()) && nonPublicFieldOperand()
-                && !AnalysisContext.currentXFactory().isEmptyArrayField(getXFieldOperand())) {
-            fieldOnTOS = true;
-            thisOnTOS = false;
-            nameOnStack = getNameConstantOperand();
-            classNameOnStack = getDottedClassConstantOperand();
-            sigOnStack = getSigConstantOperand();
-            fieldIsStatic = true;
-
-            return;
-        }
-        thisOnTOS = false;
-        if (check && fieldOnTOS && seen == Const.ARETURN
-        /*
-         * && !sigOnStack.equals("Ljava/lang/String;") &&
-         * sigOnStack.indexOf("Exception") == -1 && sigOnStack.indexOf("[") >= 0
-         */
-                && nameOnStack.indexOf("EMPTY") == -1 && MutableClasses.mutableSignature(sigOnStack)) {
+        if (seen == Const.ARETURN) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            XField field = item.getXField();
+            if (field == null ||
+                    !isFieldOf(field, getClassDescriptor()) ||
+                    field.isPublic() ||
+                    AnalysisContext.currentXFactory().isEmptyArrayField(field) ||
+                    field.getName().indexOf("EMPTY") != -1 ||
+                    !MutableClasses.mutableSignature(field.getSignature())) {
+                return;
+            }
             bugAccumulator.accumulateBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic), this);
-        }
+                    .addClassAndMethod(this).addField(field.getClassName(), field.getName(), field.getSignature(), field.isStatic()), this);
 
-        fieldOnTOS = false;
-        thisOnTOS = false;
+        }
     }
 
     private boolean nonPublicFieldOperand() {
@@ -192,5 +153,20 @@ public class FindReturnRef extends OpcodeStackDetector {
         // var-arg parameter
         return top.getRegisterNumber() != parameterCount - 1;
 
+    }
+
+    private boolean isFieldOf(XField field, ClassDescriptor klass) {
+        do {
+            if (field.getClassDescriptor().equals(klass)) {
+                return true;
+            }
+            try {
+                klass = klass.getXClass().getSuperclassDescriptor();
+            } catch (CheckedAnalysisException e) {
+                AnalysisContext.logError("Error checking for class " + klass, e);
+                return false;
+            }
+        } while (klass != null);
+        return false;
     }
 }
