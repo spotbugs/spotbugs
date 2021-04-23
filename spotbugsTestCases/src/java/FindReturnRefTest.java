@@ -42,13 +42,13 @@ public class FindReturnRefTest {
         return sDate;
     }
 
-    @DesireWarning("EI") // Indirect way of returning reference
+    @ExpectWarning("EI") // Indirect way of returning reference
     public Date getDate2() {
         Date d = date;
         return d;
     }
 
-    @DesireWarning("MS") // Indirect way of returning reference
+    @ExpectWarning("MS") // Indirect way of returning reference
     public static Date getStaticDate2() {
         Date d = sDate;
         return d;
