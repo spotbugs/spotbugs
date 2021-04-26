@@ -10,6 +10,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Bump Saxon-HE from 10.3 to 10.5 ([#1513](https://github.com/spotbugs/spotbugs/pull/1513))
 * Function `mutableSignature()` improved and factored out from the `MutableStaticFields` detector
 
+### Added
+- New rule set `PA_PUBLIC_PRIMITIVE_ATTRIBUTE`, `PA_PUBLIC_ARRAY_ATTRIBUTE` and `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` to warn for public attributes which are written by the methods of the class. This rule is loosely based on the SEI CERT rule *OBJ01-J Limit accessibility of fields*. ([#OBJ01-J](https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields))
+
 ## 4.2.3 - 2021-04-12
 
 ### Fixed
@@ -18,9 +21,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - False positive OBL_UNSATIFIED_OBLIGATION with try with resources ([#79](https://github.com/spotbugs/spotbugs/issues/79))
 - `SA_LOCAL_SELF_COMPUTATION` bug  ([#1472](https://github.com/spotbugs/spotbugs/issues/1472))
 - False positive `EQ_UNUSUAL` with record classes ([#1367](https://github.com/spotbugs/spotbugs/issues/1367))
-
-### Added
-- New rule set `PA_PUBLIC_PRIMITIVE_ATTRIBUTE`, `PA_PUBLIC_ARRAY_ATTRIBUTE` AND `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` to warn for public attributes which are written by the methods of the class. This rule is losely based on SEI CERT rule `OBJ01-J Limit accessibility of fields`. ([#OBJ01-J](https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields))
 
 ## 4.2.2 - 2021-03-03
 

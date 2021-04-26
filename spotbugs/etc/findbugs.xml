@@ -562,11 +562,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.MultithreadedInstanceAccess" speed="fast"
                     reports="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD,MTIA_SUSPECT_SERVLET_INSTANCE_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.PublicAttributes" speed="fast"
-                    reports="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
-          <Detector class="edu.umd.cs.findbugs.detect.PublicAttributes" speed="fast"
-                    reports="PA_PUBLIC_ARRAY_ATTRIBUTE"/>
-          <Detector class="edu.umd.cs.findbugs.detect.PublicAttributes" speed="fast"
-                    reports="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE"/>
+                    reports="PA_PUBLIC_PRIMITIVE_ATTRIBUTE,PA_PUBLIC_ARRAY_ATTRIBUTE,PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE"/>
           <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores" speed="fast" disabled="true"
                     reports="PS_PUBLIC_SEMAPHORES"/>
           <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue" speed="fast"
