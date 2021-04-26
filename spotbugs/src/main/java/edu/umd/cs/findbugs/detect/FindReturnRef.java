@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -34,6 +37,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.MutableClasses;
 
 public class FindReturnRef extends OpcodeStackDetector {
@@ -44,6 +48,16 @@ public class FindReturnRef extends OpcodeStackDetector {
     boolean staticMethod = false;
 
     int parameterCount;
+
+    private OpcodeStack.Item paramUnderClone = null;
+    private OpcodeStack.Item paramCloneUnderCast = null;
+    private Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamClones =
+            new HashMap<OpcodeStack.Item, OpcodeStack.Item>();
+
+    private XField fieldUnderClone = null;
+    private XField fieldCloneUnderCast = null;
+    private Map<OpcodeStack.Item, XField> arrayFieldClones =
+            new HashMap<OpcodeStack.Item, XField>();
 
     private final BugAccumulator bugAccumulator;
 
@@ -95,6 +109,11 @@ public class FindReturnRef extends OpcodeStackDetector {
             return;
         }
 
+        paramUnderClone = null;
+        paramCloneUnderCast = null;
+        fieldUnderClone = null;
+        fieldCloneUnderCast = null;
+
         if (staticMethod && seen == Const.PUTSTATIC && nonPublicFieldOperand()
                 && MutableClasses.mutableSignature(getSigConstantOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
@@ -124,6 +143,9 @@ public class FindReturnRef extends OpcodeStackDetector {
         if (seen == Const.ARETURN) {
             OpcodeStack.Item item = stack.getStackItem(0);
             XField field = item.getXField();
+            if (field == null) {
+                field = arrayFieldClones.get(item);
+            }
             if (field == null ||
                     !isFieldOf(field, getClassDescriptor()) ||
                     field.isPublic() ||
@@ -134,7 +156,62 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
             bugAccumulator.accumulateBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
                     .addClassAndMethod(this).addField(field.getClassName(), field.getName(), field.getSignature(), field.isStatic()), this);
+        }
 
+        if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
+            MethodDescriptor method = getMethodDescriptorOperand();
+            OpcodeStack.Item item = stack.getStackItem(0);
+            XField field = item.getXField();
+            if (method == null || !"clone".equals(method.getName()) ||
+                    !item.isArray() ||
+                    !MutableClasses.mutableSignature(item.getSignature().substring(1))) {
+                return;
+            }
+
+            if (field != null && field.getClassDescriptor().equals(getClassDescriptor()) &&
+                    !field.isPublic()) {
+                fieldUnderClone = field;
+            } else if (item.isInitialParameter()) {
+                System.err.println("Cloning: " + item);
+                paramUnderClone = item;
+            }
+        }
+
+        if (seen == Const.CHECKCAST) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            XField field = arrayFieldClones.get(item);
+            if (field != null) {
+                fieldCloneUnderCast = field;
+            }
+            OpcodeStack.Item param = arrayParamClones.get(item);
+            if (param != null) {
+                System.err.println("Casting: " + item + " which is a clone of " + param);
+                paramCloneUnderCast = param;
+            }
+        }
+    }
+
+    @Override
+    public void afterOpcode(int seen) {
+        super.afterOpcode(seen);
+
+        if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
+            if (fieldUnderClone != null) {
+                arrayFieldClones.put(stack.getStackItem(0), fieldUnderClone);
+            }
+            if (paramUnderClone != null) {
+                arrayParamClones.put(stack.getStackItem(0), paramUnderClone);
+            }
+        }
+
+        if (seen == Const.CHECKCAST) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            if (fieldCloneUnderCast != null) {
+                arrayFieldClones.put(item, fieldCloneUnderCast);
+            }
+            if (paramCloneUnderCast != null) {
+                arrayParamClones.put(item, paramCloneUnderCast);
+            }
         }
     }
 
@@ -144,6 +221,13 @@ public class FindReturnRef extends OpcodeStackDetector {
     }
 
     private boolean isPotentialCapture(OpcodeStack.Item top) {
+        if (!top.isInitialParameter()) {
+            top = arrayParamClones.get(top);
+            if (top == null) {
+                return false;
+            }
+            System.err.println("This is a clone:" + top);
+        }
         if (!top.isInitialParameter()) {
             return false;
         }
