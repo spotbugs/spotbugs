@@ -7112,16 +7112,16 @@ just use the constant. Methods detected are:
     <Details>
    <![CDATA[
     <p>
-    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields"> SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
-    In general, requiring that no fields must be public is overkill and unrealistic. Even the rule
-    mentions that final fields may be public. Besides final fields, there may be other usages for
-    public fields: some public fields may serve as "flags" which affect the behavior of the class.
-    These fields are expected to be read by the containing class itself and written by other classes.
-    If a field is both written by the methods of the containing class itself and from outside is
-    suspicious. Consider making these fields private and provide setters if necessary. Please note
-    that constructors, initializers and finalizers are exceptions, if only they write the field
-    inside the class, the field is not considered as written by the class itself.
-    suggests modification.
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that access to fields is limited.
+    In general, requiring that no fields are allowed to be public is overkill and unrealistic. Even
+    the rule mentions that final fields may be public. Besides final fields, there may be other
+    usages for public fields: some public fields may serve as "flags" that affect the behavior of
+    the class. Such flag fields are expected to be read by the current instance, but written by
+    others. If a field is both written by the methods of the current instance and from the outside,
+    the code is suspicious. Consider making these fields private and provide appropriate setters,
+    if necessary. Please note that constructors, initializers and finalizers are exceptions, if only
+    they write the field inside the class, the field is not considered as written by the class
+    itself.
     </p>
     ]]>
       </Details>
@@ -7132,16 +7132,16 @@ just use the constant. Methods detected are:
     <Details>
    <![CDATA[
     <p>
-    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields"> SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
     Making an array-type field final does not prevent other classes in modifying the contents of the
-    array. However, in general, requiring that no fields must be public is overkill and unrealistic.
-    There may be usages for public fields: some public fields may serve as "flags" which affect the
-    behavior of the class. These fields are expected to be read by the containing class itself and
-    written by other classes. If a field is both written by the methods of the containing class
-    itself and from outside is suspicious. Consider making these fields private and provide setters
-    if necessary. Please note that constructors, initializers and finalizers are exceptions, if only
-    they write the field inside the class, the field is not considered as written by the class
-    itself.
+    array. However, in general, requiring that no fields are allowed to be public is overkill and
+    unrealistic. There may be usages for public fields: some public fields may serve as "flags"
+    that affect the behavior of the class. Such flag fields are expected to be read by the current
+    instance, but written by others. If a field is both written by the methods of the current
+    instance and from the outside, the code is suspicious. Consider making these fields private and
+    provide appropriate setters, if necessary. Please note that constructors, initializers and
+    finalizers are exceptions, if only they write the field inside the class, the field is not
+    considered as written by the class itself.
     </p>
     ]]>
       </Details>
@@ -7152,17 +7152,17 @@ just use the constant. Methods detected are:
     <Details>
    <![CDATA[
     <p>
-    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields"> SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
     Making a mutable object-type field final does not prevent other classes in modifying the contents
-    of the object. However, in general, requiring that no fields must be public is overkill and
-    unrealistic. There may be usages for public fields: some public fields may serve as "flags"
-    which affect the behavior of the class. These fields are expected to be read by the containing
-    class itself and written by other classes. If a field is both written by the methods of the
-    containing class itself and from outside is suspicious. Consider making these fields private and
-    provide setters if necessary. Please note that constructors, initializers and finalizers are
-    exceptions, if only they write the field inside the class, the field is not considered as written
-    by the class itself. In case of object-type fields "writing" means calling methods whose name
-    suggests modification.
+    of the object. However, in general, requiring that no fields are allowed to be public is overkill
+    and unrealistic. There may be usages for public fields: some public fields may serve as "flags"
+    that affect the behavior of the class. Such flag fields are expected to be read by the current
+    instance, but written by others. If a field is both written by the methods of the current
+    instance and from the outside, the code is suspicious. Consider making these fields private and
+    provide appropriate setters, if necessary. Please note that constructors, initializers and
+    finalizers are exceptions, if only they write the field inside the class, the field is not
+    considered as written by the class itself.In case of object-type fields "writing" means calling
+    methods whose name suggests modification.
     </p>
     ]]>
       </Details>

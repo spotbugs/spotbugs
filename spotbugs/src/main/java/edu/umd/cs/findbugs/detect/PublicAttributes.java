@@ -1,20 +1,15 @@
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Set;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.annotations.CheckReturnValue;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -100,6 +95,7 @@ public class PublicAttributes
             // If the verb does not hint that the method writes the object
             // then we skip it.
             if (!looksLikeASetter(xmo.getName())) {
+                System.err.println("Not a setter: " + xmo.getName());
                 return;
             }
 
@@ -118,12 +114,8 @@ public class PublicAttributes
                 return;
             }
 
-            Field clsField = getClassField(field, getClassName());
-            Type type = clsField.getType();
-            // Instances of an immutable classes cannot be modified, thus
-            // the method is not a modifier, despite its name.
-            if (type instanceof ObjectType &&
-                    isImmutable(((ObjectType) type).getClassName())) {
+            if (!MutableStaticFields.mutableSignature(field.getSignature())) {
+                System.err.println("Immutable: " + field);
                 return;
             }
 
@@ -135,90 +127,25 @@ public class PublicAttributes
         }
     }
 
-    private static boolean isConstructorLikeMethod(String methodName) {
-        return Const.CONSTRUCTOR_NAME.equals(methodName) ||
-                Const.STATIC_INITIALIZER_NAME.equals(methodName) ||
-                "clone".equals(methodName) ||
-                "init".equals(methodName) ||
-                "initialize".equals(methodName) ||
-                "dispose".equals(methodName) ||
-                "finalize".equals(methodName) ||
-                "this".equals(methodName) ||
-                "_jspInit".equals(methodName) ||
-                "_jspDestroy".equals(methodName);
+    private final Set<String> constructorLikeNames = new HashSet<String>(Arrays.asList(
+            Const.CONSTRUCTOR_NAME, Const.STATIC_INITIALIZER_NAME,
+            "clone", "init", "initialize", "dispose", "finalize", "this",
+            "_jspInit", "jspDestroy"));
+
+    private boolean isConstructorLikeMethod(String methodName) {
+        return constructorLikeNames.contains(methodName);
     }
 
-    private static @CheckReturnValue Field getClassField(XField field, String dottedClassName) {
-        try {
-            JavaClass cls = Repository.lookupClass(dottedClassName);
-            for (Field clsField : cls.getFields()) {
-                if (field.getName().equals(clsField.getName())) {
-                    return clsField;
-                }
+    private final List<String> setterLikeNames = Arrays.asList(
+            "set", "put", "add", "insert", "delete", "remove", "erase", "clear",
+            "push", "pop", "enqueue", "dequeue", "write", "append");
+
+    private boolean looksLikeASetter(String methodName) {
+        for (String name : setterLikeNames) {
+            if (methodName.startsWith(name)) {
+                return true;
             }
-        } catch (ClassNotFoundException cnfe) {
-            AnalysisContext.reportMissingClass(cnfe);
-        }
-        return null;
-    }
-
-    private static boolean isImmutable(String dottedClassName) {
-        if ("java.lang.String".equals(dottedClassName) ||
-                "java.lang.Character".equals(dottedClassName) ||
-                "java.lang.Byte".equals(dottedClassName) ||
-                "java.lang.Short".equals(dottedClassName) ||
-                "java.lang.Integer".equals(dottedClassName) ||
-                "java.lang.Long".equals(dottedClassName) ||
-                "java.lang.Float".equals(dottedClassName) ||
-                "java.lang.Double".equals(dottedClassName) ||
-                "java.lang.Boolean".equals(dottedClassName)) {
-            return true;
-        }
-
-        try {
-            JavaClass cls = Repository.lookupClass(dottedClassName);
-
-            return isImmutable(cls);
-        } catch (ClassNotFoundException cnfe) {
-            AnalysisContext.reportMissingClass(cnfe);
         }
         return false;
-    }
-
-    private static boolean isImmutable(JavaClass cls) {
-        if (!cls.isFinal()) {
-            return false;
-        }
-
-        for (Field field : cls.getFields()) {
-            if (!field.isStatic() &&
-                    (!field.isFinal() || !field.isPrivate())) {
-                return false;
-            }
-        }
-
-        try {
-            JavaClass sup = cls.getSuperClass();
-            return isImmutable(sup);
-        } catch (ClassNotFoundException cnfe) {
-            return true;
-        }
-    }
-
-    private static boolean looksLikeASetter(String methodName) {
-        return methodName.startsWith("set") ||
-                methodName.startsWith("put") ||
-                methodName.startsWith("add") ||
-                methodName.startsWith("insert") ||
-                methodName.startsWith("delete") ||
-                methodName.startsWith("remove") ||
-                methodName.startsWith("erase") ||
-                methodName.startsWith("clear") ||
-                methodName.startsWith("push") ||
-                methodName.startsWith("pop") ||
-                methodName.startsWith("enqueue") ||
-                methodName.startsWith("dequeue") ||
-                methodName.startsWith("write") ||
-                methodName.startsWith("append");
     }
 }
