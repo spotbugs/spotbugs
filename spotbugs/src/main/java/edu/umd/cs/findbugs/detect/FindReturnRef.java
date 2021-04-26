@@ -51,14 +51,21 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     int parameterCount;
 
+    private XField fieldUnderClone = null;
+    private OpcodeStack.Item paramUnderClone = null;
+    private XField fieldCloneUnderCast = null;
+    private OpcodeStack.Item paramCloneUnderCast = null;
     private XField bufferFieldUnderDuplication = null;
     private OpcodeStack.Item bufferParamUnderDuplication = null;
     private XField fieldUnderWrapToBuffer = null;
     private OpcodeStack.Item paramUnderWrapToBuffer = null;
+
     private Map<OpcodeStack.Item, XField> bufferFieldDuplicates = new HashMap<OpcodeStack.Item, XField>();
     private Map<OpcodeStack.Item, OpcodeStack.Item> bufferParamDuplicates = new HashMap<OpcodeStack.Item, OpcodeStack.Item>();
     private Map<OpcodeStack.Item, XField> arrayFieldsWrappedToBuffers = new HashMap<OpcodeStack.Item, XField>();
     private Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamsWrappedToBuffers = new HashMap<OpcodeStack.Item, OpcodeStack.Item>();
+    private Map<OpcodeStack.Item, XField> arrayFieldClones = new HashMap<OpcodeStack.Item, XField>();
+    private Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamClones = new HashMap<OpcodeStack.Item, OpcodeStack.Item>();
 
     private final BugAccumulator bugAccumulator;
 
@@ -120,6 +127,10 @@ public class FindReturnRef extends OpcodeStackDetector {
             return;
         }
 
+        fieldUnderClone = null;
+        paramUnderClone = null;
+        fieldCloneUnderCast = null;
+        paramCloneUnderCast = null;
         fieldUnderWrapToBuffer = null;
         paramUnderWrapToBuffer = null;
         bufferFieldUnderDuplication = null;
@@ -162,6 +173,9 @@ public class FindReturnRef extends OpcodeStackDetector {
             XField field = item.getXField();
             boolean isBuf = false;
             if (field == null) {
+                field = arrayFieldClones.get(item);
+            }
+            if (field == null) {
                 field = bufferFieldDuplicates.get(item);
                 if (field != null) {
                     isBuf = true;
@@ -189,20 +203,33 @@ public class FindReturnRef extends OpcodeStackDetector {
 
         }
 
-        if (seen == Const.INVOKEVIRTUAL) {
+        if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             MethodDescriptor method = getMethodDescriptorOperand();
             OpcodeStack.Item item = stack.getStackItem(0);
             XField field = item.getXField();
-            if (method == null || !"duplicate".equals(method.getName())
-                    || !DUPLICATE_METHODS_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
-                    || !BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
+            if (method == null) {
                 return;
             }
 
-            if (field != null && field.getClassDescriptor().equals(getClassDescriptor()) && !field.isPublic()) {
-                bufferFieldUnderDuplication = field;
-            } else if (item.isInitialParameter()) {
-                bufferParamUnderDuplication = item;
+            if ("clone".equals(method.getName()) && item.isArray()
+                    && MutableClasses.mutableSignature(item.getSignature().substring(1))) {
+                if (field != null && field.getClassDescriptor().equals(getClassDescriptor()) &&
+                        !field.isPublic()) {
+                    fieldUnderClone = field;
+                } else if (item.isInitialParameter()) {
+                    System.err.println("Cloning: " + item);
+                    paramUnderClone = item;
+                }
+            }
+
+            if (seen == Const.INVOKEVIRTUAL && "duplicate".equals(method.getName())
+                    && DUPLICATE_METHODS_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
+                    && BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
+                if (field != null && field.getClassDescriptor().equals(getClassDescriptor()) && !field.isPublic()) {
+                    bufferFieldUnderDuplication = field;
+                } else if (item.isInitialParameter()) {
+                    bufferParamUnderDuplication = item;
+                }
             }
         }
 
@@ -222,18 +249,39 @@ public class FindReturnRef extends OpcodeStackDetector {
                 paramUnderWrapToBuffer = arg;
             }
         }
+
+        if (seen == Const.CHECKCAST) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            XField field = arrayFieldClones.get(item);
+            if (field != null) {
+                fieldCloneUnderCast = field;
+            }
+            OpcodeStack.Item param = arrayParamClones.get(item);
+            if (param != null) {
+                System.err.println("Casting: " + item + " which is a clone of " + param);
+                paramCloneUnderCast = param;
+            }
+        }
     }
 
     @Override
     public void afterOpcode(int seen) {
         super.afterOpcode(seen);
 
-        if (seen == Const.INVOKEVIRTUAL) {
-            if (bufferFieldUnderDuplication != null) {
-                bufferFieldDuplicates.put(stack.getStackItem(0), bufferFieldUnderDuplication);
+        if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
+            if (fieldUnderClone != null) {
+                arrayFieldClones.put(stack.getStackItem(0), fieldUnderClone);
             }
-            if (bufferParamUnderDuplication != null) {
-                bufferParamDuplicates.put(stack.getStackItem(0), bufferParamUnderDuplication);
+            if (paramUnderClone != null) {
+                arrayParamClones.put(stack.getStackItem(0), paramUnderClone);
+            }
+            if (seen == Const.INVOKEVIRTUAL) {
+                if (bufferFieldUnderDuplication != null) {
+                    bufferFieldDuplicates.put(stack.getStackItem(0), bufferFieldUnderDuplication);
+                }
+                if (bufferParamUnderDuplication != null) {
+                    bufferParamDuplicates.put(stack.getStackItem(0), bufferParamUnderDuplication);
+                }
             }
         }
 
@@ -243,6 +291,16 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
             if (paramUnderWrapToBuffer != null) {
                 arrayParamsWrappedToBuffers.put(stack.getStackItem(0), paramUnderWrapToBuffer);
+            }
+        }
+
+        if (seen == Const.CHECKCAST) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            if (fieldCloneUnderCast != null) {
+                arrayFieldClones.put(item, fieldCloneUnderCast);
+            }
+            if (paramCloneUnderCast != null) {
+                arrayParamClones.put(item, paramCloneUnderCast);
             }
         }
     }
@@ -255,15 +313,19 @@ public class FindReturnRef extends OpcodeStackDetector {
     private CaptureKind getPotentialCapture(OpcodeStack.Item top) {
         CaptureKind kind = CaptureKind.REP;
         if (!top.isInitialParameter()) {
-            OpcodeStack.Item newTop = arrayParamsWrappedToBuffers.get(top);
+            OpcodeStack.Item newTop = arrayParamClones.get(top);
             if (newTop == null) {
-                newTop = bufferParamDuplicates.get(top);
+                newTop = arrayParamsWrappedToBuffers.get(top);
                 if (newTop == null) {
-                    return CaptureKind.NONE;
+                    newTop = bufferParamDuplicates.get(top);
+                    if (newTop == null) {
+                        return CaptureKind.NONE;
+                    }
                 }
+                kind = CaptureKind.BUF;
             }
             top = newTop;
-            kind = CaptureKind.BUF;
+            System.err.println("This is a clone:" + top);
         }
         if ((getMethod().getAccessFlags() & Const.ACC_VARARGS) == 0) {
             return kind;
