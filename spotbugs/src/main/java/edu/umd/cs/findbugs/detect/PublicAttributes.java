@@ -18,6 +18,15 @@ public class PublicAttributes
         extends OpcodeStackDetector
         implements Detector {
 
+    private static final Set<String> CONSTRUCTOR_LIKE_NAMES = new HashSet<String>(Arrays.asList(
+            Const.CONSTRUCTOR_NAME, Const.STATIC_INITIALIZER_NAME,
+            "clone", "init", "initialize", "dispose", "finalize", "this",
+            "_jspInit", "jspDestroy"));
+
+    private static final List<String> SETTER_LIKE_NAMES = Arrays.asList(
+            "set", "put", "add", "insert", "delete", "remove", "erase", "clear",
+            "push", "pop", "enqueue", "dequeue", "write", "append");
+
     private final BugReporter bugReporter;
 
     private Set<XField> writtenFields = new HashSet<XField>();
@@ -127,21 +136,12 @@ public class PublicAttributes
         }
     }
 
-    private final Set<String> constructorLikeNames = new HashSet<String>(Arrays.asList(
-            Const.CONSTRUCTOR_NAME, Const.STATIC_INITIALIZER_NAME,
-            "clone", "init", "initialize", "dispose", "finalize", "this",
-            "_jspInit", "jspDestroy"));
-
-    private boolean isConstructorLikeMethod(String methodName) {
-        return constructorLikeNames.contains(methodName);
+    private static boolean isConstructorLikeMethod(String methodName) {
+        return CONSTRUCTOR_LIKE_NAMES.contains(methodName);
     }
 
-    private final List<String> setterLikeNames = Arrays.asList(
-            "set", "put", "add", "insert", "delete", "remove", "erase", "clear",
-            "push", "pop", "enqueue", "dequeue", "write", "append");
-
-    private boolean looksLikeASetter(String methodName) {
-        for (String name : setterLikeNames) {
+    private static boolean looksLikeASetter(String methodName) {
+        for (String name : SETTER_LIKE_NAMES) {
             if (methodName.startsWith(name)) {
                 return true;
             }
