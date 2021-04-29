@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.util.MutableClasses;
 
 public class FindReturnRef extends OpcodeStackDetector {
     boolean check = false;
@@ -109,7 +110,7 @@ public class FindReturnRef extends OpcodeStackDetector {
         }
 
         if (staticMethod && seen == Const.PUTSTATIC && nonPublicFieldOperand()
-                && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
+                && MutableClasses.mutableSignature(getSigConstantOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
             if (isPotentialCapture(top)) {
                 bugAccumulator.accumulateBug(
@@ -121,7 +122,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         }
         if (!staticMethod && seen == Const.PUTFIELD && nonPublicFieldOperand()
-                && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
+                && MutableClasses.mutableSignature(getSigConstantOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item target = stack.getStackItem(1);
             if (isPotentialCapture(top) && target.getRegisterNumber() == 0) {
@@ -167,7 +168,7 @@ public class FindReturnRef extends OpcodeStackDetector {
          * && !sigOnStack.equals("Ljava/lang/String;") &&
          * sigOnStack.indexOf("Exception") == -1 && sigOnStack.indexOf("[") >= 0
          */
-                && nameOnStack.indexOf("EMPTY") == -1 && MutableStaticFields.mutableSignature(sigOnStack)) {
+                && nameOnStack.indexOf("EMPTY") == -1 && MutableClasses.mutableSignature(sigOnStack)) {
             bugAccumulator.accumulateBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
                     .addClassAndMethod(this).addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic), this);
         }

@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.util.MutableClasses;
 
 public class MutableStaticFields extends BytecodeScanningDetector {
     private static final Set<String> COLLECTION_SUPERCLASSES = new HashSet<>(Arrays.asList("java/util/Collection",
@@ -78,13 +79,6 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             return "";
         }
         return c.substring(0, i);
-    }
-
-    static boolean mutableSignature(String sig) {
-        return sig.equals("Ljava/util/Hashtable;") || sig.equals("Ljava/util/Date;") ||
-                sig.equals("Ljava/sql/Date;") ||
-                sig.equals("Ljava/sql/Timestamp;") ||
-                sig.charAt(0) == '[';
     }
 
     LinkedList<XField> seen = new LinkedList<>();
@@ -181,7 +175,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             boolean samePackage = packageName.equals(extractPackage(xField.getFieldDescriptor().getSlashedClassName()));
             boolean initOnly = seen == Const.GETSTATIC || getClassName().equals(getClassConstantOperand()) && inStaticInitializer;
             boolean safeValue = seen == Const.GETSTATIC || emptyArrayOnTOS
-                    || AnalysisContext.currentXFactory().isEmptyArrayField(xField) || !mutableSignature(getSigConstantOperand());
+                    || AnalysisContext.currentXFactory().isEmptyArrayField(xField) || !MutableClasses.mutableSignature(getSigConstantOperand());
 
             if (seen == Const.GETSTATIC) {
                 readAnywhere.add(xField);
