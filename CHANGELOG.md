@@ -10,6 +10,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Bump Saxon-HE from 10.3 to 10.5 ([#1513](https://github.com/spotbugs/spotbugs/pull/1513))
 * Function `mutableSignature()` improved and factored out from the `MutableStaticFields` detector
 
+### Added
+* New rule set `PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS` to warn for custom class loaders who do not call their superclasses' `getPermissions()` in their `getPermissions()` method. This rule based on the SEI CERT rule *SEC07-J Call the superclass's getPermissions() method when writing a custom class loader*. ([#SEC07-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader))
+
 ## 4.2.3 - 2021-04-12
 
 ### Fixed

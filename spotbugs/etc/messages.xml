@@ -1675,6 +1675,17 @@ factory pattern to create these objects.</p>
             ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.PermissionsSuper">
+    <Details>
+      <![CDATA[
+            <p>Checks method getPermissions() of classes implementing interface
+               java.security.SecureClassLoader. The methods must always call
+               super.getPermissions() to get the initial value of the object
+               which they return at the end.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8402,6 +8413,20 @@ after the call to initLogging, the logger configuration is lost
         </p>]]>
       </Details>
   </BugPattern>
+  <BugPattern type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS">
+    <ShortDescription>Custom class loader does not call its superclass's getPermissions()</ShortDescription>
+    <LongDescription>Custom class loader {1} does not call its superclass's getPermissions()</LongDescription>
+    <Details>
+      <![CDATA[
+       <p>
+       <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader" SEI CERT rule SEC07-J</a> requires that custom class loaders must always call their superclass's getPermissions()
+       method in their own getPermissions() method to initialize the object they return at the end. Omitting it results
+       that a class defined using this custom class loader has permissions that are completely independent of those
+       specified in the systemwide policy file. In effect, the class's permissions override them.
+       </p>
+      ]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -8546,4 +8571,5 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="FB">SpotBugs did not produce the expected warnings on a method</BugCode>
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
+  <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
 </MessageCollection>
