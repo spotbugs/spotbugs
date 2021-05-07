@@ -1,4 +1,4 @@
-package ghIssues;
+package ghIssues.issue1539;
 
 import java.util.Random;
 
