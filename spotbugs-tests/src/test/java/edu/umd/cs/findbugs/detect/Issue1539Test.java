@@ -26,4 +26,13 @@ public class Issue1539Test extends AbstractIntegrationTest {
                 .build();
         assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
     }
+
+    @Test
+    public void testThreadLocal() {
+        performAnalysis("ghIssues/issue1539/Issue1539ThreadLocal.class");
+        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType("DMI_RANDOM_USED_ONLY_ONCE")
+                .build();
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+    }
 }
