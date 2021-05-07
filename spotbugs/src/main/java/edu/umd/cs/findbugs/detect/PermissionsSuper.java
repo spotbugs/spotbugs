@@ -79,10 +79,8 @@ public class PermissionsSuper extends OpcodeStackDetector {
         }
 
         if (seen == Const.ARETURN) {
-            System.err.println("Returning: " + stack.getStackItem(0));
             XMethod origin = stack.getStackItem(0).getReturnValueOf();
             if (origin != null) {
-                System.err.println("   From method " + origin + " of " + origin.getClassName());
                 try {
                     if (getThisClass().getSuperClass().getClassName()
                             .equals(origin.getClassName()) &&
