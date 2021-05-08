@@ -1,0 +1,12 @@
+{
+  "name": "docs",
+  "license": "ISC",
+  "scripts": {
+    "test": "textlint ./locale/ja/LC_MESSAGES/*.po"
+  },
+  "devDependencies": {
+    "textlint": "^11.9.0",
+    "textlint-rule-preset-jtf-style": "^2.3.8",
+    "@arielairone/textlint-plugin-po": "0.0.0-development"
+  }
+}

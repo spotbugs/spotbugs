@@ -76,37 +76,3 @@ msgstr "help ゴール"
 #: ../../maven.rst:51
 msgid "``help`` goal displays usage of this Maven plugin."
 msgstr "``help`` ゴールは，この Maven プラグインの使い方を表示します。"
-
-#~ msgid "This goal launches SpotBugs GUI to check analysis result."
-#~ msgstr ""
-
-#~ msgid "This goal displays usage of this Maven plugin."
-#~ msgstr ""
-
-#~ msgid ""
-#~ msgstr ""
-
-#~ msgid ""
-#~ "``spotbugs`` goal analyses target project "
-#~ "by SpotBugs. For detail, please refer"
-#~ " `Maven site <https://spotbugs.github.io/spotbugs-"
-#~ "maven-plugin/spotbugs-mojo.html>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "``check`` goal runs analysis like "
-#~ "``spotbugs`` goal, and make the build"
-#~ " failed if it found any bugs. "
-#~ "For detail, please refer `Maven site "
-#~ "<https://spotbugs.github.io/spotbugs-maven-plugin"
-#~ "/check-mojo.html>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "``gui`` goal launches SpotBugs GUI to"
-#~ " check analysis result. For detail, "
-#~ "please refer `Maven site "
-#~ "<https://spotbugs.github.io/spotbugs-maven-plugin/gui-"
-#~ "mojo.html>`_."
-#~ msgstr ""
-
