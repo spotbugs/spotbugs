@@ -17,11 +17,11 @@ msgstr "Project-Id-Version: spotbugs 3.1\n"
 
 #: ../../implement-plugin.rst:2
 msgid "Implement SpotBugs plugin"
-msgstr "SpotBugs プラグインの実装"
+msgstr "SpotBugsプラグインの実装"
 
 #: ../../implement-plugin.rst:5
 msgid "Create Maven project"
-msgstr "Maven プロジェクトの作成"
+msgstr "Mavenプロジェクトの作成"
 
 #: ../../implement-plugin.rst:7
 msgid ""
@@ -29,7 +29,7 @@ msgid ""
 "archetype>`_ to create Maven project. Then Maven archetype plugin will "
 "ask you to decide plugin's groupId, artifactId, package and initial "
 "version."
-msgstr "`spotbugs-archetype <https://github.com/spotbugs/spotbugs-archetype>`_ を使って Maven プロジェクトを作成してください。Maven archetype プラグインは，プラグインの groupId，artifactId，package，initial version を決定するように求めます。"
+msgstr "`spotbugs-archetype <https://github.com/spotbugs/spotbugs-archetype>`_ を使ってMavenプロジェクトを作成してください。Maven archetypeプラグインは、プラグインのgroupId、artifactId、package、initial versionを決定するように求めます。"
 
 #: ../../implement-plugin.rst:18
 msgid "Write java code to represent bug to find"
@@ -48,7 +48,7 @@ msgstr "生成されたプロジェクトでは  `BadCase.java <https://github.c
 msgid ""
 "If you have multiple patterns to represent, add more classes into "
 "``src/test/java`` directory."
-msgstr "表現するパターンが複数あるときは，``src/test/java`` ディレクトリにクラスを追加してください。"
+msgstr "表現するパターンが複数あるときは、``src/test/java`` ディレクトリにクラスを追加してください。"
 
 #: ../../implement-plugin.rst:27
 msgid "Write test case to ensure your detector can find bug"
@@ -63,7 +63,7 @@ msgid ""
 "``spotbugs.performAnalysis(Path)`` in this test runs SpotBugs with your "
 "plugin, and return all found bugs (here 1st argument of this method is a "
 "path of class file compiled from ``BadCase.java``)."
-msgstr "生成されたプロジェクトでは `MyDetectorTest.java <https://github.com/spotbugs/spotbugs-archetype/blob/spotbugs-archetype-0.1.0/src/main/resources/archetype-resources/src/test/java/MyDetectorTest.java>`_ という名前の別のファイルを見つけられます。このテストの ``spotbugs.performAnalysis(Path)`` はプラグインがある SpotBugs を実行し，見つかったバグをすべて返します (このメソッドの第 1 引数は ``BadCase.java`` からコンパイルされたクラスファイルのパスです)。"
+msgstr "生成されたプロジェクトでは `MyDetectorTest.java <https://github.com/spotbugs/spotbugs-archetype/blob/spotbugs-archetype-0.1.0/src/main/resources/archetype-resources/src/test/java/MyDetectorTest.java>`_ という名前の別のファイルを見つけられます。このテストの ``spotbugs.performAnalysis(Path)`` はプラグインがあるSpotBugsを実行し、見つかったバグをすべて返します (このメソッドの第1引数は ``BadCase.java`` からコンパイルされたクラスファイルのパスです)。"
 
 #: ../../implement-plugin.rst:32
 msgid ""
@@ -77,7 +77,7 @@ msgstr "`BugInstanceMatcher <https://github.com/spotbugs/spotbugs/blob/master/te
 msgid ""
 "Currently this test should fail, because we've not updated detector "
 "itself yet."
-msgstr "現在このテストは失敗するはずです。なぜなら，まだディテクタを更新していないからです。"
+msgstr "現在このテストは失敗するはずです。なぜなら、まだディテクタを更新していないからです。"
 
 #: ../../implement-plugin.rst:38
 msgid "Write java code to avoid false-positive"
@@ -87,7 +87,7 @@ msgstr "誤検出を回避するためのコードを書く"
 msgid ""
 "To avoid false-positive, it is good to ensure that in which case detector"
 " should NOT find bug."
-msgstr "誤検出を回避するために，どのようなときにディテクタがバグを見つけるべきでないかを確認することは良いことです。"
+msgstr "誤検出を回避するために、どのようなときにディテクタがバグを見つけるべきでないかを確認することは良いことです。"
 
 #: ../../implement-plugin.rst:42
 msgid ""
@@ -96,7 +96,7 @@ msgid ""
 "resources/src/test/java/GoodCase.java>`_ in your project, and represent "
 "such cases. After that, add a test method into ``MyDetectorTest.java`` "
 "which verify that no bug found from this ``GoodCase`` class."
-msgstr "プロジェクトの `GoodCase.java <https://github.com/spotbugs/spotbugs-archetype/blob/spotbugs-archetype-0.1.0/src/main/resources/archetype-resources/src/test/java/GoodCase.java>`_ を更新して，そのような例を表します。その後，``MyDetectorTest.java`` にテストメソッドを追加して，この ``GoodCase`` クラスからバグが見つからないことを確認します。"
+msgstr "プロジェクトの `GoodCase.java <https://github.com/spotbugs/spotbugs-archetype/blob/spotbugs-archetype-0.1.0/src/main/resources/archetype-resources/src/test/java/GoodCase.java>`_ を更新して、そのような例を表します。その後、``MyDetectorTest.java`` にテストメソッドを追加して、この ``GoodCase`` クラスからバグが見つからないことを確認します。"
 
 #: ../../implement-plugin.rst:49
 msgid "Update detector to pass all unit tests"
@@ -104,7 +104,7 @@ msgstr "すべての単体試験に合格するようにディテクタを更新
 
 #: ../../implement-plugin.rst:51
 msgid "Now you have tests to ensure that your detector can work as expected."
-msgstr "これで，ディテクタが期待どおりに動作することを確認するテストが実施されました。"
+msgstr "これで、ディテクタが期待どおりに動作することを確認するテストが実施されました。"
 
 #: ../../implement-plugin.rst:55
 msgid "TBU"
@@ -124,7 +124,7 @@ msgstr ""
 msgid ""
 "Base detector which analyzes annotations on classes, fields, methods, and"
 " method parameters."
-msgstr "クラス，フィールド，メソッド，メソッドパラメータに関するアノテーションを解析するベースディテクタです。"
+msgstr "クラス、フィールド、メソッド、メソッドパラメータに関するアノテーションを解析するベースディテクタです。"
 
 #: ../../implement-plugin.rst:65
 msgid ""
@@ -134,7 +134,7 @@ msgstr ""
 
 #: ../../implement-plugin.rst:65
 msgid "Base detector which analyzes java bytecode in class files."
-msgstr "クラスファイル内の Java バイトコードを解析するベースディテクタです。"
+msgstr "クラスファイル内のJavaバイトコードを解析するベースディテクタです。"
 
 #: ../../implement-plugin.rst:69
 msgid ""
@@ -147,7 +147,7 @@ msgid ""
 "Sub class of ``BytecodeScanningDetector``, which can scan the bytecode of"
 " a method and use an `operand stack "
 "<https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.2>`_."
-msgstr "``BytecodeScanningDetector`` のサブクラスです。メソッドのバイトコードをスキャンし，`operand stack <https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.2>`_ を使用できます。"
+msgstr "``BytecodeScanningDetector`` のサブクラスです。メソッドのバイトコードをスキャンし、`operand stack <https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.2>`_ を使用できます。"
 
 #: ../../implement-plugin.rst:72
 msgid "Update findbugs.xml"
@@ -158,19 +158,19 @@ msgid ""
 "SpotBugs reads ``findbugs.xml`` in each plugin to find detectors and "
 "bugs. So when you add new detector, you need to add new ``<Detector>`` "
 "element like below:"
-msgstr "SpotBugs は，それぞれのプラグインで ``findbugs.xml`` を読み出してディテクタとバグを見つけます。したがって，新しいディテクタを追加するときは，次のように新しい ``<Detector>`` 要素を追加する必要があります。"
+msgstr "SpotBugsは、それぞれのプラグインで ``findbugs.xml`` を読み出してディテクタとバグを見つけます。したがって、新しいディテクタを追加するときは、次のように新しい ``<Detector>`` 要素を追加する必要があります。"
 
 #: ../../implement-plugin.rst:81
 msgid ""
 "It is also necessary to add ``<BugPattern>``, to describe type and "
 "category of your bug pattern."
-msgstr "また，バグパターンのタイプとカテゴリを記述するために ``<BugPattern>`` を追加する必要があります。"
+msgstr "また、バグパターンのタイプとカテゴリを記述するために ``<BugPattern>`` を追加する必要があります。"
 
 #: ../../implement-plugin.rst:87
 msgid ""
 "You can find ``findbugs.xml`` in ``src/main/resources`` directory of "
 "generated Maven project."
-msgstr "生成された Maven プロジェクトの ``src/main/resources`` ディレクトリに ``findbugs.xml`` があります。"
+msgstr "生成されたMavenプロジェクトの ``src/main/resources`` ディレクトリに ``findbugs.xml`` があります。"
 
 #: ../../implement-plugin.rst:92
 msgid "Update messages.xml"
@@ -182,13 +182,13 @@ msgid ""
 "readable message to report detected bug. It also supports reading "
 "localized messages from ``messages_ja.xml``, ``messages_fr.xml`` and so "
 "on."
-msgstr "SpotBugs は，それぞれのプラグインで ``messages.xml`` を読み出し，検出されたバグを報告するための人間が読めるメッセージを作成します。また，``messages_ja.xml``，``messages_fr.xml`` などローカライズされたメッセージを読み出すこともサポートしています。"
+msgstr "SpotBugsは、それぞれのプラグインで ``messages.xml`` を読み出し、検出されたバグを報告するための人間が読めるメッセージを作成します。また、``messages_ja.xml``、``messages_fr.xml`` などローカライズされたメッセージを読み出すこともサポートしています。"
 
 #: ../../implement-plugin.rst:97
 msgid ""
 "You can find ``messages.xml`` in ``src/main/resources`` directory of "
 "generated Maven project."
-msgstr "生成された Maven プロジェクトの ``src/main/resources`` ディレクトリに ``messages.xml`` があります。"
+msgstr "生成されたMavenプロジェクトの ``src/main/resources`` ディレクトリに ``messages.xml`` があります。"
 
 #: ../../implement-plugin.rst:100
 msgid "Update message of Detector"
@@ -198,7 +198,7 @@ msgstr "ディテクタのメッセージの更新"
 msgid ""
 "In ``<Detector>`` element, you can add detector's description message. "
 "Note that it should be plain text, HTML is not supported."
-msgstr "``<Detector>`` 要素には，ディテクタを説明するメッセージを追加できます。メッセージはプレーンテキストでなければならず，HTMLはサポートされていないので注意してください。"
+msgstr "``<Detector>`` 要素には、ディテクタを説明するメッセージを追加できます。メッセージはプレーンテキストでなければならず、HTMLはサポートされていないので注意してください。"
 
 #: ../../implement-plugin.rst:113
 msgid "Update message of Bug Pattern"
@@ -208,7 +208,7 @@ msgstr "バグパターンのメッセージの更新"
 msgid ""
 "In ``<BugPattern>`` element, you can add bug pattern's description "
 "message. There are three kinds of messages:"
-msgstr "``<BugPattern>`` 要素には，バグパターンを説明するメッセージを追加できます。3 種類のメッセージがります。"
+msgstr "``<BugPattern>`` 要素には、バグパターンを説明するメッセージを追加できます。3 種類のメッセージがります。"
 
 #: ../../implement-plugin.rst:120
 msgid "ShortDescription"
@@ -218,7 +218,7 @@ msgstr ""
 msgid ""
 "Short description for bug pattern. Useful to tell its intent and "
 "character for users. It should be plain text, HTML is not supported."
-msgstr "バグパターンの簡単な説明です。ユーザの意図やキャラクタを伝えるのに便利です。プレーンテキストでなければならず，HTMLはサポートされていません。"
+msgstr "バグパターンの簡単な説明です。ユーザの意図やキャラクタを伝えるのに便利です。プレーンテキストでなければならず、HTMLはサポートされていません。"
 
 #: ../../implement-plugin.rst:127
 msgid "LongDescription"
@@ -231,11 +231,11 @@ msgid ""
 "<https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_"
 " will be inserted at there. So this ``LongDescription`` is useful to tell"
 " detailed information about detected bug."
-msgstr "バグパターンのより長い説明です。``{0}`` (0 はインデックス) のようなプレースホルダを使うことができ，`BugInstance <https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_ がそこに挿入されます。この ``LongDescription`` は検出されたバグの詳細情報を伝えるのに便利です。"
+msgstr "バグパターンのより長い説明です。``{0}`` (0はインデックス） のようなプレースホルダを使うことができ、`BugInstance <https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_ がそこに挿入されます。この ``LongDescription`` は検出されたバグの詳細情報を伝えるのに便利です。"
 
 #: ../../implement-plugin.rst:127
 msgid "It should be plain text, HTML is not supported."
-msgstr "プレーンテキストでなければならず，HTMLはサポートされていません。"
+msgstr "プレーンテキストでなければならず、HTMLはサポートされていません。"
 
 #: ../../implement-plugin.rst:130
 msgid "Details"
@@ -246,5 +246,5 @@ msgid ""
 "Detailed description for bug pattern. It should be HTML format, so this "
 "is useful to tell detailed specs/examples with table, list and code "
 "snippets."
-msgstr "バグパターンの詳細な説明です。HTML 形式でなければなりません。詳細な仕様/例を表，リスト，コードスニペットで伝えるのに便利です。"
+msgstr "バグパターンの詳細な説明です。HTML形式でなければなりません。詳細な仕様/例を表、リスト、コードスニペットで伝えるのに便利です。"
 

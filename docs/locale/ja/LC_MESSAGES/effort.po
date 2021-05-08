@@ -23,7 +23,7 @@ msgstr "解析力"
 msgid ""
 "Effort value adjusts internal flags of SpotBugs, to reduce computation "
 "cost by lowering the prediction."
-msgstr "解析力の値は，SpotBug の内部フラグを調整し，予測を下げて計算コストを削減します。"
+msgstr "解析力の値は、SpotBugの内部フラグを調整し、予測を下げて計算コストを削減します。"
 
 #: ../../effort.rst:6
 msgid "The default effort configuration is same with ``more``."
@@ -31,7 +31,7 @@ msgstr "デフォルトの解析力の設定は ``more`` と同じです。"
 
 #: ../../effort.rst:9
 msgid "Flags in FindBugs.java"
-msgstr "FindBugs.java のフラグ"
+msgstr "FindBugs.javaのフラグ"
 
 #: ../../effort.rst:9
 msgid "Description"
@@ -66,7 +66,7 @@ msgid ""
 "Determine (1) what exceptions can be thrown on exception edges, (2) "
 "which,catch blocks are reachable, and (3) which exception edges carry "
 "only, \"implicit\" runtime exceptions."
-msgstr "\\(1) 例外エッジでどのような例外がスローされるか，(2) ブロックが到達可能か，(3) どの例外エッジだけが実行されるか，「暗黙的な」ランタイム例外を判断します。"
+msgstr "\\(1) 例外エッジでどのような例外がスローされるか、(2) ブロックが到達可能か、(3) どの例外エッジだけが実行されるか、「暗黙的な」ランタイム例外を判断します。"
 
 #: ../../effort.rst:13 ../../effort.rst:15 ../../effort.rst:17
 #: ../../effort.rst:19 ../../effort.rst:21 ../../effort.rst:23
@@ -80,7 +80,7 @@ msgstr ""
 
 #: ../../effort.rst:15
 msgid "Model the effect of instanceof checks in type analysis"
-msgstr "型解析における instanceof チェックの効果をモデル化します。"
+msgstr "型解析におけるinstanceofチェックの効果をモデル化します。"
 
 #: ../../effort.rst:17
 msgid "Track Guaranteed Value Derefs in Null Pointer Analysis"
@@ -90,7 +90,7 @@ msgstr ""
 msgid ""
 "In the null pointer analysis, track null values that are guaranteed to "
 "be, dereferenced on some (non-implicit-exception) path."
-msgstr "NULL ポインタ解析では，(暗黙的でない例外を除いた) パスで逆参照されることが保証されている NULL 値を追跡します。"
+msgstr "NULLポインタ解析では、(暗黙的でない例外を除いた） パスで逆参照されることが保証されている NULL 値を追跡します。"
 
 #: ../../effort.rst:19
 msgid "Track Value Numbers in Null Pointer Analysis"
@@ -103,7 +103,7 @@ msgid ""
 "currently in the stack frame but might be in a heap location where the, "
 "value is recoverable by redundant load elimination or forward, "
 "substitution."
-msgstr "NULL ポインタ解析では，NULL とわかっている値の番号を追跡します。これにより，スタックフレーム内に存在しないが，冗長なロードの除去または転送，代用によって値が復帰可能なヒープ領域にあるかもしれない NULL 値を見失わないことを可能にします。"
+msgstr "NULLポインタ解析では、NULLとわかっている値の番号を追跡します。これにより、スタックフレーム内に存在しないが、冗長なロードの除去または転送、代用によって値が復帰可能なヒープ領域にあるかもしれないNULL 値を見失わないことを可能にします。"
 
 #: ../../effort.rst:21
 msgid "Interprocedural Analysis"
@@ -132,7 +132,7 @@ msgid ""
 "Try to conserve space at the expense of precision. e.g. Prune "
 "unconditional exception thrower edges for control flow graph analysis, to"
 " reduce memory footprint."
-msgstr "精度を犠牲にしてスペースを節約しようとします。たとえば，制御フローグラフ解析のための無条件例外スローアエッジを切り捨てて，メモリフットプリントを削減します。"
+msgstr "精度を犠牲にしてスペースを節約しようとします。たとえば、制御フローグラフ解析のための無条件例外スローアエッジを切り捨てて、メモリフットプリントを削減します。"
 
 #: ../../effort.rst:28
 msgid "Skip Huge Methods"
@@ -140,4 +140,4 @@ msgstr ""
 
 #: ../../effort.rst:28
 msgid "Skip method analysis if length of its bytecode is too long (6,000)."
-msgstr "バイトコードの長さが長すぎる (6,000) ときは，メソッド解析をスキップします。"
+msgstr "バイトコードの長さが長すぎる (6,000) ときは、メソッド解析をスキップします。"

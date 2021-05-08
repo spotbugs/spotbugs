@@ -26,20 +26,20 @@ msgid ""
 "SpotBugs. If you just want general information about SpotBugs, have a "
 "look at the manual."
 msgstr ""
-"このドキュメントには，SpotBugs に関する FAQ が含まれています。SpotBugs "
-"に関する一般的な情報だけが必要なときは，マニュアルをご覧ください。"
+"このドキュメントには、SpotBugsに関するFAQが含まれています。SpotBugs "
+"に関する一般的な情報だけが必要なときは、マニュアルをご覧ください。"
 
 #: ../../faq.rst:8
 msgid ""
 "Q1: I'm getting java.lang.UnsupportedClassVersionError when I try to run "
 "SpotBugs"
-msgstr "Q1: SpotBugs を実行しようとすると java.lang.UnsupportedClassVersionError が発生します。"
+msgstr "Q1: SpotBugsを実行しようとするとjava.lang.UnsupportedClassVersionErrorが発生します。"
 
 #: ../../faq.rst:10
 msgid ""
 "SpotBugs requires JRE8 or later to run. If you use an earlier version, "
 "you will see an exception error message similar to the following:"
-msgstr "SpotBugs を実行するためには JRE8 以降が必要です。以前のバージョンを使用しているときは，次のような例外エラーメッセージが表示されます。"
+msgstr "SpotBugsを実行するためにはJRE8以降が必要です。以前のバージョンを使用しているときは、次のような例外エラーメッセージが表示されます。"
 
 #: ../../faq.rst:13
 msgid ""
@@ -50,18 +50,18 @@ msgstr ""
 
 #: ../../faq.rst:16
 msgid "The solution is to upgrade to JRE8 or later."
-msgstr "解決方法は，JRE8 以降にアップグレードすることです。"
+msgstr "解決方法は、JRE8以降にアップグレードすることです。"
 
 #: ../../faq.rst:19
 msgid "Q2: SpotBugs is running out of memory, or is taking a long time to finish"
-msgstr "Q2: SpotBugs を実行するメモリが不足している，または終了するのに時間がかかる。"
+msgstr "Q2: SpotBugsを実行するメモリが不足している、または終了するのに時間がかかる。"
 
 #: ../../faq.rst:21
 msgid ""
 "In general, SpotBugs requires lots of memory and a relatively fast CPU. "
 "For large applications, 1024M or more of heap space may be required."
 msgstr ""
-"一般的に，SpotBugs には多くのメモリと比較的高速な CPU が必要です。大規模なアプリケーションでは，1024M "
+"一般的に、SpotBugsには多くのメモリと比較的高速なCPUが必要です。大規模なアプリケーションでは、1024M "
 "以上のヒープ領域が必用になることがあります。"
 
 #: ../../faq.rst:24
@@ -70,18 +70,18 @@ msgid ""
 "using the ``-maxHeap n`` option, where n is the number of megabytes of "
 "heap space to allocate."
 msgstr ""
-"デフォルトでは，SpotBugs は 768M のヒープ領域を割り当てます。``-maxHeap n`` "
-"オプションを使用してヒープ領域を増やせます。n は割り当てるヒープ領域のメガバイト数です。"
+"デフォルトでは、SpotBugsは768Mのヒープ領域を割り当てます。``-maxHeap n`` "
+"オプションを使用してヒープ領域を増やせます。nは割り当てるヒープ領域のメガバイト数です。"
 
 #: ../../faq.rst:28
 msgid "Q3: What is the \"auxiliary classpath\"? Why should I specify it?"
-msgstr "Q3: 「補助クラスパス」とは何ですか?なぜそれを指定すべきか?"
+msgstr "Q3:「補助クラスパス」とは何ですか？なぜそれを指定すべきか?"
 
 #: ../../faq.rst:30
 msgid ""
 "Many important facts about a Java class require information about the "
 "classes that it references.  For example:"
-msgstr "Java クラスに関する重要な事実は，それが参照するクラスに関する情報を必要とします。たとえば:"
+msgstr "Javaクラスに関する重要な事実は、それが参照するクラスに関する情報を必要とします。たとえば:"
 
 #: ../../faq.rst:32
 msgid "What other classes and interfaces the class inherits from"
@@ -99,8 +99,8 @@ msgid ""
 "class files containing classes that are used by the code you want "
 "SpotBugs to analyze, but should not themselves be analyzed by SpotBugs."
 msgstr ""
-"「補助クラスパス」は，SpotBugs で解析するコードで使用されるクラスを含む Jar "
-"ファイル，ディレクトリ，クラスのリストですが，SpotBugs によって解析されるべきではありません。"
+"「補助クラスパス」は、SpotBugsで解析するコードで使用されるクラスを含むJar "
+"ファイル、ディレクトリ、クラスのリストですが、SpotBugsによって解析されるべきではありません。"
 
 #: ../../faq.rst:37
 msgid ""
@@ -114,9 +114,9 @@ msgid ""
 "type hierarchy information."
 msgstr ""
 "SpotBugs "
-"に被参照クラスに関する完全な情報がない場合，可能なかぎり正確な結果を生成できません。たとえは，被参照クラスの完全なリポジトリを持つことで，SpotBugs"
+"に被参照クラスに関する完全な情報がない場合、可能なかぎり正確な結果を生成できません。たとえは、被参照クラスの完全なリポジトリを持つことで、SpotBugs"
 " "
-"は制御フロー情報を削減できるので，実行時に実現性が最も高いメソッドを通じてパスに集中できます。また，疑わしい参照比較ディテクタなどのバグディテクタの中には完全な型階層情報を必要とする型推論を実行できるものがあります。"
+"は制御フロー情報を削減できるので、実行時に実現性が最も高いメソッドを通じてパスに集中できます。また、疑わしい参照比較ディテクタなどのバグディテクタの中には完全な型階層情報を必要とする型推論を実行できるものがあります。"
 
 #: ../../faq.rst:41
 msgid ""
@@ -125,8 +125,8 @@ msgid ""
 "``-auxclasspath`` command line option, or the \"Classpath entries\" list "
 "in the GUI project editor dialog."
 msgstr ""
-"これらの理由から，SpotBugs の実行時に補助クラスパスを完全に指定することを強くお勧めします。``-auxclasspath`` "
-"コマンドラインオプション，または GUI プロジェクトエディタダイアログの \"Classpath entries\" "
+"これらの理由から、SpotBugsの実行時に補助クラスパスを完全に指定することを強くお勧めします。``-auxclasspath`` "
+"コマンドラインオプション、またはGUIプロジェクトエディタダイアログの \"Classpath entries\" "
 "リストを使って設定できます。"
 
 #: ../../faq.rst:44
@@ -136,8 +136,8 @@ msgid ""
 "that were missing. You should modify the auxiliary classpath to specify "
 "how to find the missing classes, and then run SpotBugs again."
 msgstr ""
-"SpotBugs がアプリケーションによって参照されるクラスを見つけられない場合，SpotBugs "
-"は解析が完了したときに見つからなかったクラスを指定してメッセージを出力します。補助クラスパスを変更して見つからなかったクラスを見つける方法を指定し，SpotBugs"
+"SpotBugsがアプリケーションによって参照されるクラスを見つけられない場合、SpotBugs "
+"は解析が完了したときに見つからなかったクラスを指定してメッセージを出力します。補助クラスパスを変更して見つからなかったクラスを見つける方法を指定し、SpotBugs"
 " を再度実行する必要があります。"
 
 #: ../../faq.rst:49
@@ -148,7 +148,7 @@ msgstr "Q4: Eclipse プラグインがロードされない"
 msgid ""
 "The symptom of this problem is that Eclipse fails to load the SpotBugs UI"
 " plugin with the message:"
-msgstr "この問題の症状は，次のようなメッセージで Eclipse が SpotBugs UI プラグインをロードできないことです。"
+msgstr "この問題の症状は、次のようなメッセージでEclipseがSpotBugs UIプラグインをロードできないことです。"
 
 #: ../../faq.rst:53
 msgid ""
@@ -162,7 +162,7 @@ msgid ""
 "SpotBugs does not work with older 3.x versions of Eclipse. Please use "
 "Eclipse Neon (version 4.6) or newer."
 msgstr ""
-"この問題の原因は，SpotBugs で配布されている Eclipse プラグインが Eclipse の古い 3.x "
+"この問題の原因は、SpotBugsで配布されているEclipseプラグインがEclipseの古い3.x "
 "バージョンでは動作しないためです。Eclipse Neon (バージョン 4.6) 以降を使用してください。"
 
 #: ../../faq.rst:59
@@ -176,8 +176,8 @@ msgid ""
 " exception thrown out of the method could bypass a call to a ``close()`` "
 "method for a stream or database resource."
 msgstr ""
-"デフォルトでは，SpotBugs "
-"はメソッド呼び出しが非検査例外をスローする可能性があるとみなします。その結果，メソッドからスローされた非検査例外が，ストリームまたはデータベースリソースの"
+"デフォルトでは、SpotBugs "
+"はメソッド呼び出しが非検査例外をスローする可能性があるとみなします。その結果、メソッドからスローされた非検査例外が、ストリームまたはデータベースリソースの"
 " ``close()`` メソッドへの呼び出しをバイパスできたと仮定するかもしれません。"
 
 #: ../../faq.rst:64
@@ -187,24 +187,24 @@ msgid ""
 "harder to prune unlikely exception edges. This generally reduces the "
 "number of false warnings, at the expense of slowing down the analysis."
 msgstr ""
-"``-workHard`` コマンドライン引数や ``findbugs.workHard`` ブール解析プロパティを使用して SpotBugs "
-"を動作させて，例外ではないエッジを削減できます。ほとんどの場合，誤った警告の数を減らせますが，解析を遅くするという犠牲を払います。"
+"``-workHard`` コマンドライン引数や ``findbugs.workHard`` ブール解析プロパティを使用してSpotBugs "
+"を動作させて、例外ではないエッジを削減できます。ほとんどの場合、誤った警告の数を減らせますが、解析を遅くするという犠牲を払います。"
 
 #: ../../faq.rst:68
 msgid "Q6: The Eclipse plugin loads, but doesn't work correctly"
-msgstr "Q6: Eclipse プラグインはロードされるが，正しく動作しません"
+msgstr "Q6: Eclipse プラグインはロードされるが、正しく動作しません"
 
 #: ../../faq.rst:70
 msgid ""
 "Make sure the Java code you trying to analyze is built properly and has "
 "no classpath or compile errors."
-msgstr "解析しようしとている Java コードが正しく構築され，クラスパスやコンパイルエラーがないことを確認してください。"
+msgstr "解析しようしとているJavaコードが正しく構築され、クラスパスやコンパイルエラーがないことを確認してください。"
 
 #: ../../faq.rst:71
 msgid ""
 "Make sure the project and workspace SpotBugs settings are valid - in "
 "doubt, revert them to defaults."
-msgstr "プロジェクトとワークスペースの SpotBugs 設定が有効であることを確認します。疑わしいときはデフォルトに戻してください。"
+msgstr "プロジェクトとワークスペースのSpotBugs設定が有効であることを確認します。疑わしいときはデフォルトに戻してください。"
 
 #: ../../faq.rst:72
 msgid "Make sure the Error log view does not show errors."

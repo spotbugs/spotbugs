@@ -18,24 +18,24 @@ msgstr ""
 
 #: ../../gradle.rst:2
 msgid "Using the SpotBugs Gradle Plugin"
-msgstr "SpotBugs Gradle プラグインの使い方"
+msgstr "SpotBugs Gradleプラグインの使い方"
 
 #: ../../gradle.rst:4
 msgid ""
 "This chapter describes how to integrate SpotBugs into a build script for "
 "Gradle."
-msgstr "この章では，Gradle のビルドスクリプトに SpotBugs を統合する方法について説明します。"
+msgstr "この章では、GradleのビルドスクリプトにSpotBugsを統合する方法について説明します。"
 
 #: ../../gradle.rst:7
 msgid "Use SpotBugs Gradle Plugin"
-msgstr "SpotBugs Gradle プラグインを使う"
+msgstr "SpotBugs Gradleプラグインを使う"
 
 #: ../../gradle.rst:9
 msgid ""
 "Please follow instruction found on `official Gradle Plugin page "
 "<https://plugins.gradle.org/plugin/com.github.spotbugs>`_."
 msgstr ""
-"`Gradle プラグインの公式ページ "
+"`Gradleプラグインの公式ページ "
 "<https://plugins.gradle.org/plugin/com.github.spotbugs>`_ の案内に従ってください。"
 
 #: ../../gradle.rst:11
@@ -46,7 +46,7 @@ msgstr "SpotBugs PluginはGradleバージョン4をサポートしません。�
 
 #: ../../gradle.rst:14
 msgid "Tasks introduced by this Gradle Plugin"
-msgstr "Gradle プラグインによって導入されたタスク"
+msgstr "Gradleプラグインによって導入されたタスク"
 
 #: ../../gradle.rst:16
 msgid ""
@@ -92,7 +92,7 @@ msgstr ""
 msgid ""
 "For instance, to specify the version of SpotBugs, you can configure like "
 "below:"
-msgstr "たとえば，SpotBugs のバージョンを指定したいときは，次のように設定します。"
+msgstr "たとえば、SpotBugsのバージョンを指定したいときは、次のように設定します。"
 
 #: ../../gradle.rst:36
 msgid "Introduce SpotBugs Plugin"
@@ -102,7 +102,7 @@ msgstr "SpotBugs Pluginを利用する"
 msgid ""
 "To introduce SpotBugs Plugin, please declare dependency in "
 "``dependencies`` like below:"
-msgstr "SpotBugs Pluginを利用するには，プラグインへの依存を次のように ``dependencies`` 内に記載してください:"
+msgstr "SpotBugs Pluginを利用するには、プラグインへの依存を次のように ``dependencies`` 内に記載してください:"
 
 #: ../../gradle.rst:47
 msgid "Other usage"

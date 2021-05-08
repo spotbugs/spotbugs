@@ -17,13 +17,13 @@ msgstr "Project-Id-Version: spotbugs 3.1\n"
 
 #: ../../gui.rst:2
 msgid "Using the SpotBugs GUI"
-msgstr "SpotBugs GUI の使い方"
+msgstr "SpotBugs GUIの使い方"
 
 #: ../../gui.rst:4
 msgid ""
 "This chapter describes how to use the SpotBugs graphical user interface "
 "(GUI)."
-msgstr "この章では，SpotBugs グラフィカルユーザインタフェース (GUI) の使い方について説明します。"
+msgstr "この章では、SpotBugsグラフィカルユーザインタフェース (GUI) の使い方について説明します。"
 
 #: ../../gui.rst:7
 msgid "Creating a Project"
@@ -34,14 +34,14 @@ msgid ""
 "After you have started SpotBugs using the ``spotbugs`` command, choose "
 "the ``File → New Project`` menu item. You will see a dialog which looks "
 "like this:"
-msgstr "``spotbugs`` コマンドを使って SpotBugs を起動したら，``File → New Project`` メニュー項目を選択します。次のようなダイアログが表示されます。"
+msgstr "``spotbugs`` コマンドを使ってSpotBugsを起動したら、``File → New Project`` メニュー項目を選択します。次のようなダイアログが表示されます。"
 
 #: ../../gui.rst:14
 msgid ""
 "Use the \"Add\" button next to \"Classpath to analyze\" to select a Java "
 "archive file (zip, jar, ear, or war file) or directory containing java "
 "classes to analyze for bugs. You may add multiple archives/directories."
-msgstr "「Classpath to analyze」の横にある「Add」ボタンを使用して，バグを解析する Java アーカイブファイル (zip，jar，ear，war ファイル) または Java クラスを含むディレクトリを選択します。複数のアーカイブ/ディレクトリを追加できます。"
+msgstr "「Classpath to analyze」の横にある「Add」ボタンを使用して、バグを解析するJavaアーカイブファイル (zip、jar、ear、warファイル） またはJavaクラスを含むディレクトリを選択します。複数のアーカイブ/ディレクトリを追加できます。"
 
 #: ../../gui.rst:16
 msgid ""
@@ -52,7 +52,7 @@ msgid ""
 "For example, if your application is contained in the ``org.foobar.myapp``"
 " package, you should add the parent directory of the org directory to the"
 " source directory list for the project."
-msgstr "また，解析をする Java アーカイブのソースコードを含むディレクトリを追加することもできます。そうすると，SpotBugs は発生する可能性があるエラーを含むソースコードを強調表示できます。追加するソースディレクトリは，Java パッケージ階層のルートにする必要があります。たとえば，アプリケーションが ``org.foobar.myapp`` パッケージに含まれているときは，org ディレクトリの親ディレクトリをプロジェクトのソースディレクトリに追加する必要があります。"
+msgstr "また、解析をするJavaアーカイブのソースコードを含むディレクトリを追加することもできます。そうすると、SpotBugsは発生する可能性があるエラーを含むソースコードを強調表示できます。追加するソースディレクトリは、Javaパッケージ階層のルートにする必要があります。たとえば、アプリケーションが ``org.foobar.myapp`` パッケージに含まれているときは、orgディレクトリの親ディレクトリをプロジェクトのソースディレクトリに追加する必要があります。"
 
 #: ../../gui.rst:18
 msgid ""
@@ -64,7 +64,7 @@ msgid ""
 "detectors in FindBugs make use of class hierarchy information, so you "
 "will get more accurate results if the entire class hierarchy is available"
 " which FindBugs performs its analysis."
-msgstr "もうひとつのオプションの手順は，追加する jar ファイルやディレクトリを「Auxiliary classpath locations」エントリとして追加することです。解析するアーカイブ/ディレクトリにも標準のランタイムクラスパスにも含まれていないクラスをアーカイブ/ディレクトリが参照しているときは追加する必要があります。SpotBugs のバグパターンディテクタの中には，クラス階層情報を利用するものがあるため，SpotBugs が解析を行うクラス階層全体が利用可能なら，より正確な結果が得られます。"
+msgstr "もうひとつのオプションの手順は、追加するjarファイルやディレクトリを「Auxiliary classpath locations」エントリとして追加することです。解析するアーカイブ/ディレクトリにも標準のランタイムクラスパスにも含まれていないクラスをアーカイブ/ディレクトリが参照しているときは追加する必要があります。SpotBugsのバグパターンディテクタの中には、クラス階層情報を利用するものがあるため、SpotBugsが解析を行うクラス階層全体が利用可能なら、より正確な結果が得られます。"
 
 #: ../../gui.rst:21
 msgid "Running the Analysis"
@@ -78,7 +78,7 @@ msgid ""
 "older computer, this may take quite a while (tens of minutes). A recent "
 "computer with ample memory will typically be able to analyze a large "
 "program in only a few minutes."
-msgstr "すべてのアーカイブ，ディレクトリ，ソースディレクトリを追加したら，「Analyze」ボタンをクリックして jar ファイルに含まれるクラスを解析します。古いコンピュータ上の巨大プロジェクトでは，かなりの時間 (数 10 分) かかることに注意してください。十分なメモリを備えた最近のコンピュータなら，大きなプログラムを数分で解析できます。"
+msgstr "すべてのアーカイブ、ディレクトリ、ソースディレクトリを追加したら、「Analyze」ボタンをクリックしてjarファイルに含まれるクラスを解析します。古いコンピュータ上の巨大プロジェクトでは、かなりの時間 (数10分） かかることに注意してください。十分なメモリを備えた最近のコンピュータなら、大きなプログラムを数分で解析できます。"
 
 #: ../../gui.rst:26
 msgid "Browsing Results"
@@ -86,14 +86,14 @@ msgstr "結果の閲覧"
 
 #: ../../gui.rst:28
 msgid "When the analysis completes, you will see a screen like the following:"
-msgstr "解析が完了すると，次のような画面が表示されます。"
+msgstr "解析が完了すると、次のような画面が表示されます。"
 
 #: ../../gui.rst:32
 msgid ""
 "The upper left-hand pane of the window shows the bug tree; this is a "
 "hierarchical representation of all of the potential bugs detected in the "
 "analyzed Jar files."
-msgstr "ウィンドウの左上のペインにバグツリーが表示されます。これは，解析された jar ファイルで検出されたすべての潜在的なバグを階層的に表したものです。"
+msgstr "ウィンドウの左上のペインにバグツリーが表示されます。これは、解析されたjarファイルで検出されたすべての潜在的なバグを階層的に表したものです。"
 
 #: ../../gui.rst:34
 msgid ""
@@ -104,7 +104,7 @@ msgid ""
 "the above example, the bug is a stream object that is not closed. The "
 "source code window highlights the line where the stream object is "
 "created."
-msgstr "上部ペインで特定のバグインスタンスを選択すると，下部ペインの「Details」タブにバグの説明が表示されます。さらに，右上のソースコードペインには，ソースが利用可能であれば，潜在的なバグが発生する場所のプログラムソースコードが表示されます。上記の例では，バグはクローズされていないストリームオブジェクトです。ソースコードウィンドウは，ストリームオブジェクトが作成された行を強調表示します。"
+msgstr "上部ペインで特定のバグインスタンスを選択すると、下部ペインの「Details」タブにバグの説明が表示されます。さらに、右上のソースコードペインには、ソースが利用可能であれば、潜在的なバグが発生する場所のプログラムソースコードが表示されます。上記の例では、バグはクローズされていないストリームオブジェクトです。ソースコードウィンドウは、ストリームオブジェクトが作成された行を強調表示します。"
 
 #: ../../gui.rst:36
 msgid ""
@@ -112,7 +112,7 @@ msgid ""
 "into the text box just below the hierarchical view. You can type any "
 "information which you would like to record. When you load and save bug "
 "results files, the annotations are preserved."
-msgstr "バグインスタンスにテキストで注釈を追加できます。階層ビューのすぐ下にあるテキストボックスに注釈を入力します。記録しておきたい情報を入力できます。バグ結果ファイルをロード，保存したときに，注釈も保存されます。"
+msgstr "バグインスタンスにテキストで注釈を追加できます。階層ビューのすぐ下にあるテキストボックスに注釈を入力します。記録しておきたい情報を入力できます。バグ結果ファイルをロード、保存したときに、注釈も保存されます。"
 
 #: ../../gui.rst:39
 msgid "Saving and Opening"
@@ -127,5 +127,5 @@ msgid ""
 " the jar file lists (\"FindBugs project file (.fbp)\") or just the "
 "results (\"FindBugs analysis file (.fba)\"). A saved file may be loaded "
 "with the ``File → Open...`` menu option."
-msgstr "``File → Save as...`` メニューオプションを使用するとユーザ作業を保存できます。指定した jar ファイルリストとすべてのバグ結果を含むユーザ作業を保存したいときは「Save as...」ダイアログのドロップダウンリストから「SpotBugs analysis results (.xml)」を選択します。jar ファイルリストだけを保存する (「FindBugs project file (.fbp)」)，結果だけを保存する (「FindBugs analysis file (.fba)」) オプションもあります。保存されたファイルは ``File → Open...`` メニューオプションでロードできます。"
+msgstr "``File → Save as...`` メニューオプションを使用するとユーザ作業を保存できます。指定したjarファイルリストとすべてのバグ結果を含むユーザ作業を保存したいときは「Save as...」ダイアログのドロップダウンリストから「SpotBugs analysis results (.xml)」を選択します。jarファイルリストだけを保存する (「FindBugs project file (.fbp)」)、結果だけを保存する (「FindBugs analysis file (.fba)」) オプションもあります。保存されたファイルは ``File → Open...`` メニューオプションでロードできます。"
 

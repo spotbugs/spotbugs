@@ -24,7 +24,7 @@ msgid ""
 "SpotBugs allows several aspects of the analyses it performs to be "
 "customized. System properties are used to configure these options. This "
 "chapter describes the configurable analysis options."
-msgstr "SpotBugs は，実行する解析の観点をカスタマイズできます。システムプロパティがオプションを設定するために使用されます。この章では，設定可能な解析オプションについて説明します。"
+msgstr "SpotBugsは、実行する解析の観点をカスタマイズできます。システムプロパティがオプションを設定するために使用されます。この章では、設定可能な解析オプションについて説明します。"
 
 #: ../../analysisprops.rst:6
 msgid ""
@@ -35,13 +35,13 @@ msgid ""
 "performed. Reducing analysis precision can save memory and analysis time,"
 " at the expense of missing some real bugs, or producing more false "
 "warnings."
-msgstr "解析オプションには主に2つの目的があります。1つ目は，SpotBugs にアプリケーションのメソッドの意味を通知し，より正確な結果を生成したり，誤検出を少なくしたりできます。2つ目は，実行される解析の精度を設定できます。解析の精度を下げると，メモリと解析時間を節約できますが，本当のバグを見逃したり，より多くの誤検出を作り出したりします。"
+msgstr "解析オプションには主に2つの目的があります。1つ目は、SpotBugsにアプリケーションのメソッドの意味を通知し、より正確な結果を生成したり、誤検出を少なくしたりできます。2つ目は、実行される解析の精度を設定できます。解析の精度を下げると、メモリと解析時間を節約できますが、本当のバグを見逃したり、より多くの誤検出を作り出したりします。"
 
 #: ../../analysisprops.rst:8
 msgid ""
 "The analysis options are set using the ``-property`` command line option."
 " For example:"
-msgstr "解析オプションは，``-property`` コマンドラインオプションを使用して設定します。たとえば:"
+msgstr "解析オプションは、``-property`` コマンドラインオプションを使用して設定します。たとえば:"
 
 #: ../../analysisprops.rst:14
 msgid "The list of configurable analysis properties is shown in following table:"
@@ -67,7 +67,7 @@ msgstr ""
 msgid ""
 "Comma-separated list of fully qualified method names: e.g., "
 "\"com.foo.MyClass.checkAssertion\""
-msgstr "コンマ区切りの完全就職メソッド名のリスト (例，「com.foo.MyClass.checkAssertion」)"
+msgstr "コンマ区切りの完全就職メソッド名のリスト (例、「com.foo.MyClass.checkAssertion」)"
 
 #: ../../analysisprops.rst:19
 msgid ""
@@ -75,7 +75,7 @@ msgid ""
 "program assertions. Specifying these methods allows the null pointer "
 "dereference bug detector to avoid reporting false warnings for values "
 "which are checked by assertion methods."
-msgstr "このプロパティは，プログラムのアサーションをチェックするために使用されるメソッドの名前を指定します。これらのメソッドを指定すると，null 間接参照バグディテクタは，アサーションメソッドによってチェックされる値に対する誤検出を回避できます。"
+msgstr "このプロパティは、プログラムのアサーションをチェックするために使用されるメソッドの名前を指定します。これらのメソッドを指定すると、null間接参照バグディテクタは、アサーションメソッドによってチェックされる値に対する誤検出を回避できます。"
 
 #: ../../analysisprops.rst:21
 msgid "findbugs.de.comment"
@@ -91,7 +91,7 @@ msgstr "true または false"
 msgid ""
 "If true, the DroppedException detector scans source code for empty catch "
 "blocks for a comment, and if one is found, does not report a warning."
-msgstr "true のときは，DroppedException ディテクタは空のキャッチブロックにコメントがないかスキャンし，見つかったときは警告を報告しません。"
+msgstr "trueのときは、DroppedExceptionディテクタは空のキャッチブロックにコメントがないかスキャンし、見つかったときは警告を報告しません。"
 
 #: ../../analysisprops.rst:23
 msgid "findbugs.maskedfields.locals"
@@ -101,7 +101,7 @@ msgstr ""
 msgid ""
 "If true, emit low priority warnings for local variables which obscure "
 "fields. Default is false."
-msgstr "true のときは，フィールドを隠蔽するローカル変数に対する優先度の低い警告を発行します。デフォルトは false です。"
+msgstr "trueのときは、フィールドを隠蔽するローカル変数に対する優先度の低い警告を発行します。デフォルトは false です。"
 
 #: ../../analysisprops.rst:25
 msgid "findbugs.nullderef.assumensp"
@@ -114,7 +114,7 @@ msgid ""
 "parameter might be null. Default is false. Note that enabling this "
 "property will very likely cause a large number of false warnings to be "
 "produced.)"
-msgstr "使わないでください (意図: trueのときは，null 間接参照ディテクタはメソッドから返された，またはメソッドに渡されたパラメータの参照値が null であるとみなします。デフォルトは false です。このプロパティを有効にすると，多数の誤った警告が生成されることに注意してください。)"
+msgstr "使わないでください (意図： trueのときは、null間接参照ディテクタはメソッドから返された、またはメソッドに渡されたパラメータの参照値がnullであるとみなします。デフォルトはfalseです。このプロパティを有効にすると、多数の誤った警告が生成されることに注意してください。)"
 
 #: ../../analysisprops.rst:27
 msgid "findbugs.refcomp.reportAll"
@@ -125,7 +125,7 @@ msgid ""
 "If true, all suspicious reference comparisons using the == and != "
 "operators are reported.,If false, only one such warning is issued per "
 "method.,Default is false."
-msgstr "true のときは，== と != 演算子を使用している疑わしい参照比較がすべて報告されます。false のときは，メソッドごとに警告が1つだけ発行されます。デフォルトは false です。"
+msgstr "trueのときは、== と != 演算子を使用している疑わしい参照比較がすべて報告されます。falseのときは、メソッドごとに警告が1つだけ発行されます。デフォルトは false です。"
 
 #: ../../analysisprops.rst:29
 msgid "findbugs.sf.comment"
@@ -138,4 +138,4 @@ msgid ""
 "\"fall\" or \"nobreak\". (An accurate source path must be used for this "
 "feature to work correctly.) This helps find cases where the switch "
 "fallthrough is likely to be unintentional."
-msgstr "true のときは，SwitchFallthrough ディテクタは，ソースコードに「fall」または「nobreak」という単語がコメントに含まれていないときに警告を報告します。(この機能を正しく動作させるためには，正確なソースパスを使用する必要があります。) これにより，意図的ではない switch 文のフォールスルーを見つけられます。"
+msgstr "trueのときは、SwitchFallthroughディテクタは、ソースコードに「fall」または「nobreak」という単語がコメントに含まれていないときに警告を報告します。(この機能を正しく動作させるためには、正確なソースパスを使用する必要があります） これにより、意図的ではないswitch 文のフォールスルーを見つけられます。"

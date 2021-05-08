@@ -17,7 +17,7 @@ msgstr "Project-Id-Version: spotbugs 3.1\n"
 
 #: ../../index.rst:7
 msgid "SpotBugs manual"
-msgstr "SpotBugs マニュアル"
+msgstr "SpotBugsマニュアル"
 
 #: ../../index.rst:9
 msgid ""
@@ -25,13 +25,13 @@ msgid ""
 "NonCommercial-ShareAlike License. To view a copy of this license, visit "
 "https://creativecommons.org/licenses/by-nc-sa/1.0/ or send a letter to "
 "Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA."
-msgstr "このマニュアルは Creative Commons Attribution-NonCommercial-ShareAlike License の下で使用許諾されています。この使用許諾のコピーを見るためには http://creativecommons.org/licenses/by-nc-sa/1.0/ を参照するか Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA に書簡を送付してください。"
+msgstr "このマニュアルはCreative Commons Attribution-NonCommercial-ShareAlike Licenseの下で使用許諾されています。この使用許諾のコピーを見るためにはhttp://creativecommons.org/licenses/by-nc-sa/1.0/ を参照するかCreative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USAに書簡を送付してください。"
 
 #: ../../index.rst:12
 msgid ""
 "The name FindBugs and the FindBugs logo are trademarked by the University"
 " of Maryland."
-msgstr "FindBugs という名称と FindBugs のロゴはメリーランド大学の商標です。"
+msgstr "FindBugsという名称とFindBugsのロゴはメリーランド大学の商標です。"
 
 #: ../../index.rst:15
 msgid "Indices and tables"
