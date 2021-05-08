@@ -1,12 +1,13 @@
 {
   "name": "docs",
-  "license": "ISC",
+  "description": "SpotBugs manual",
+  "license": "CC-BY-NC-SA-1.0",
   "scripts": {
     "test": "textlint ./locale/ja/LC_MESSAGES/*.po"
   },
   "devDependencies": {
+    "@arielairone/textlint-plugin-po": "^1.0.14",
     "textlint": "^11.9.0",
-    "textlint-rule-preset-jtf-style": "^2.3.8",
-    "@arielairone/textlint-plugin-po": "0.0.0-development"
+    "textlint-rule-preset-jtf-style": "^2.3.8"
   }
 }
