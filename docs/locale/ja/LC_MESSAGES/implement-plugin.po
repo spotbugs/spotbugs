@@ -231,7 +231,7 @@ msgid ""
 "<https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_"
 " will be inserted at there. So this ``LongDescription`` is useful to tell"
 " detailed information about detected bug."
-msgstr "バグパターンのより長い説明です。``{0}`` (0はインデックス） のようなプレースホルダを使うことができ、`BugInstance <https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_ がそこに挿入されます。この ``LongDescription`` は検出されたバグの詳細情報を伝えるのに便利です。"
+msgstr "バグパターンのより長い説明です。``{0}`` (0はインデックス）のようなプレースホルダを使うことができ、`BugInstance <https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_ がそこに挿入されます。この ``LongDescription`` は検出されたバグの詳細情報を伝えるのに便利です。"
 
 #: ../../implement-plugin.rst:127
 msgid "It should be plain text, HTML is not supported."

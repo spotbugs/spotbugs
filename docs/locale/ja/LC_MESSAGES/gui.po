@@ -41,7 +41,7 @@ msgid ""
 "Use the \"Add\" button next to \"Classpath to analyze\" to select a Java "
 "archive file (zip, jar, ear, or war file) or directory containing java "
 "classes to analyze for bugs. You may add multiple archives/directories."
-msgstr "「Classpath to analyze」の横にある「Add」ボタンを使用して、バグを解析するJavaアーカイブファイル (zip、jar、ear、warファイル） またはJavaクラスを含むディレクトリを選択します。複数のアーカイブ/ディレクトリを追加できます。"
+msgstr "「Classpath to analyze」の横にある「Add」ボタンを使用して、バグを解析するJavaアーカイブファイル (zip、jar、ear、warファイル）またはJavaクラスを含むディレクトリを選択します。複数のアーカイブ/ディレクトリを追加できます。"
 
 #: ../../gui.rst:16
 msgid ""
@@ -78,7 +78,7 @@ msgid ""
 "older computer, this may take quite a while (tens of minutes). A recent "
 "computer with ample memory will typically be able to analyze a large "
 "program in only a few minutes."
-msgstr "すべてのアーカイブ、ディレクトリ、ソースディレクトリを追加したら、「Analyze」ボタンをクリックしてjarファイルに含まれるクラスを解析します。古いコンピュータ上の巨大プロジェクトでは、かなりの時間 (数10分） かかることに注意してください。十分なメモリを備えた最近のコンピュータなら、大きなプログラムを数分で解析できます。"
+msgstr "すべてのアーカイブ、ディレクトリ、ソースディレクトリを追加したら、「Analyze」ボタンをクリックしてjarファイルに含まれるクラスを解析します。古いコンピュータ上の巨大プロジェクトでは、かなりの時間 (数10分）かかることに注意してください。十分なメモリを備えた最近のコンピュータなら、大きなプログラムを数分で解析できます。"
 
 #: ../../gui.rst:26
 msgid "Browsing Results"

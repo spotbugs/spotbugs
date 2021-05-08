@@ -90,7 +90,7 @@ msgstr ""
 msgid ""
 "In the null pointer analysis, track null values that are guaranteed to "
 "be, dereferenced on some (non-implicit-exception) path."
-msgstr "NULLポインタ解析では、(暗黙的でない例外を除いた） パスで逆参照されることが保証されている NULL 値を追跡します。"
+msgstr "NULLポインタ解析では、(暗黙的でない例外を除いた）パスで逆参照されることが保証されている NULL 値を追跡します。"
 
 #: ../../effort.rst:19
 msgid "Track Value Numbers in Null Pointer Analysis"
