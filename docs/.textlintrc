@@ -1,0 +1,10 @@
+{
+    "plugins": {
+        "@arielairone/textlint-plugin-po": {
+            "extensions": [".po"]
+        }
+    },
+    "rules": {
+      "preset-jtf-style": true
+    }
+}
