@@ -7,7 +7,7 @@ SpotBugs manual
 ===============
 
 This manual is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/1.0/ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+To view a copy of this license, visit `creativecommons.org <https://creativecommons.org/licenses/by-nc-sa/1.0/>`_ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 
 The name FindBugs and the FindBugs logo are trademarked by the University of Maryland.
 
