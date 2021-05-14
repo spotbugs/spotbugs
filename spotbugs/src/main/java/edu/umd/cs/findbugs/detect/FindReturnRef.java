@@ -127,7 +127,7 @@ public class FindReturnRef extends OpcodeStackDetector {
                     field.isPublic() ||
                     AnalysisContext.currentXFactory().isEmptyArrayField(field) ||
                     field.getName().indexOf("EMPTY") != -1 ||
-                    !MutableStaticFields.mutableSignature(field.getSignature())) {
+                    !MutableClasses.mutableSignature(field.getSignature())) {
                 return;
             }
             bugAccumulator.accumulateBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
