@@ -1,6 +1,6 @@
 plugins {
   id "org.sonarqube" version "3.2.0"
-  id "com.diffplug.spotless" version "5.12.4"
+  id "com.diffplug.spotless" version "5.12.5"
   id "org.gradle.crypto.checksum" version "1.2.0"
   id "com.github.spotbugs" version "4.7.1"
 }
