@@ -29,7 +29,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    implementation platform('org.junit:junit-bom:5.7.1')
+    implementation platform('org.junit:junit-bom:5.7.2')
   }
 }
 
