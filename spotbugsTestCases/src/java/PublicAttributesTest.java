@@ -14,18 +14,29 @@ public class PublicAttributesTest {
     @ExpectWarning("PA")
     public int attr1 = 0;
 
+    @ExpectWarning("PA")
+    public static int sattr1 = 0;
+
     // A final field. It cannot be written in methods.
     @NoWarning("PA")
     public final int Const1 = 10;
 
     @ExpectWarning("PA")
-    public static final Map<Integer, String> hm = new HashMap<Integer, String>();
+    public final Map<Integer, String> hm = new HashMap<Integer, String>();
+
+    @NoWarning("PA")
+    @ExpectWarning("MS")
+    public final static Map<Integer, String> shm = new HashMap<Integer, String>();
+
     // This field is not written, but only read.
     @NoWarning("PA")
-    public static final Set<String> hs = new HashSet<String>();
+    public final Set<String> hs = new HashSet<String>();
 
     @ExpectWarning("PA")
-    public static final String[] items = { "foo", "bar", "baz" };
+    public final String[] items = { "foo", "bar", "baz" };
+
+    @ExpectWarning("PA")
+    public static final String[] sitems = { "foo", "bar", "baz" };
 
     public PublicAttributesTest(int a1) {
         attr1 = a1;
@@ -33,8 +44,11 @@ public class PublicAttributesTest {
 
     public void doSomething() {
         attr1 = 1;
+        sattr1 = 1;
         hm.put(1, "test");
+        shm.put(1, "test");
         boolean b = hs.contains("x");
         items[0] = "test";
+        sitems[0] = "test";
     }
 }
