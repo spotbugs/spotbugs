@@ -13,6 +13,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.util.MutableClasses;
 
 public class PublicAttributes
         extends OpcodeStackDetector
@@ -104,13 +105,17 @@ public class PublicAttributes
             // If the verb does not hint that the method writes the object
             // then we skip it.
             if (!looksLikeASetter(xmo.getName())) {
-                System.err.println("Not a setter: " + xmo.getName());
                 return;
             }
 
             XField field = stack.getStackItem(xmo.getNumParams()).getXField();
             // Do not report the same public field twice.
             if (field == null || writtenFields.contains(field)) {
+                return;
+            }
+
+            // Mutable static fields are already detected by MS
+            if (field.isStatic()) {
                 return;
             }
 
@@ -123,8 +128,7 @@ public class PublicAttributes
                 return;
             }
 
-            if (!MutableStaticFields.mutableSignature(field.getSignature())) {
-                System.err.println("Immutable: " + field);
+            if (!MutableClasses.mutableSignature(field.getSignature())) {
                 return;
             }
 
