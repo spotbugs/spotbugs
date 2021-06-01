@@ -17,10 +17,16 @@ jobs:
           feature: 17
       - name: Set up JDK 17-ea
         uses: actions/setup-java@v2
+        id: jdk17
         with:
           java-version: ${{ env.JDK_VERSION }}
           distribution: jdkfile
           jdkFile: ${{ env.JDK_FILE }}
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: adopt
       - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
@@ -35,6 +41,7 @@ jobs:
       - name: Build
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         run: |
+          echo "org.gradle.java.installations.paths=${{ steps.jdk17.outputs.path }}" >> gradle.properties
           echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
           git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
           if [ "$GPG_SECRET_PASSPHRASE" != "" ]; then

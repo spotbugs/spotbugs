@@ -34,3 +34,9 @@ tasks.withType(SpotBugsTask).configureEach {
         }
     }
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
