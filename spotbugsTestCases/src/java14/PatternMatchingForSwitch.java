@@ -16,27 +16,21 @@ class Triangle extends Shape {
 public class PatternMatchingForSwitch {
     String formatterPatternSwitch(Object o) {
         return switch (o) {
-            case Integer
-                i -> String.format("int %d", i);
-            case Long
-                l -> String.format("long %d", l);
-            case Double
-                d -> String.format("double %f", d);
-            case String
-                s -> String.format("String %s", s);
-                case null -> "null";
-                default -> o.toString();
+            case Integer i -> String.format("int %d", i);
+            case Long l -> String.format("long %d", l);
+            case Double d -> String.format("double %f", d);
+            case String s -> String.format("String %s", s);
+            case null -> "null";
+            default -> o.toString();
         };
     }
 
     void testTriangle(Shape s) {
         switch (s) {
-            case Triangle
-                t && (t.calculateArea() > 100) ->
+            case Triangle t && (t.calculateArea() > 100) ->
                 System.out.println("Large triangle");
-            case Triangle
-                t ->
-                        System.out.println("Small triangle");
+            case Triangle t ->
+                System.out.println("Small triangle");
             default -> System.out.println("Non-triangle");
         }
     }
