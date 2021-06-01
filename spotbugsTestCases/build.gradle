@@ -43,6 +43,9 @@ tasks.withType(JavaCompile).configureEach {
   } else if (it.name != 'compileJava') {
     options.release = 8
   }
+  javaCompiler = javaToolchains.compilerFor {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
@@ -58,7 +61,6 @@ tasks.named('javadoc', Javadoc).configure {
   }
 }
 
-def jvmVersion = JavaVersion.current()
 def classesJava8 = tasks.register('classesJava8', JavaCompile) {
   destinationDir = file("$buildDir/classes/java/java8")
   classpath = sourceSets.main.compileClasspath
@@ -79,17 +81,7 @@ def classesJava14 = tasks.register('classesJava14', JavaCompile) {
 }
 
 tasks.named('classes').configure {
-  dependsOn classesJava8
-  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_11)) {
-    dependsOn classesJava11
-  } else {
-    println "skip tests for Java 11 features"
-  }
-  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_14)) {
-    dependsOn classesJava14
-  } else {
-    println "skip tests for Java 14 features"
-  }
+  dependsOn classesJava8, classesJava11, classesJava14
 }
 
 sonarqube {
