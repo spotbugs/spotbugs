@@ -24,7 +24,7 @@ dependencies {
   api 'net.jcip:jcip-annotations:1.0'
   implementation 'org.springframework:spring-core:5.3.7'
   compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
-  implementation 'org.checkerframework:checker-qual:3.13.0'
+  implementation 'org.checkerframework:checker-qual:3.14.0'
 
   implementation 'junit:junit:4.13.1'
   implementation 'org.testng:testng:7.4.0'
