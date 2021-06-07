@@ -31,6 +31,8 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.MutableClasses;
 
@@ -123,7 +125,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             OpcodeStack.Item item = stack.getStackItem(0);
             XField field = item.getXField();
             if (field == null ||
-                    !field.getClassDescriptor().equals(getClassDescriptor()) ||
+                    !isFieldOf(field, getClassDescriptor()) ||
                     field.isPublic() ||
                     AnalysisContext.currentXFactory().isEmptyArrayField(field) ||
                     field.getName().indexOf("EMPTY") != -1 ||
@@ -151,5 +153,20 @@ public class FindReturnRef extends OpcodeStackDetector {
         // var-arg parameter
         return top.getRegisterNumber() != parameterCount - 1;
 
+    }
+
+    private boolean isFieldOf(XField field, ClassDescriptor klass) {
+        do {
+            if (field.getClassDescriptor().equals(klass)) {
+                return true;
+            }
+            try {
+                klass = klass.getXClass().getSuperclassDescriptor();
+            } catch (CheckedAnalysisException e) {
+                AnalysisContext.logError("Error checking for class " + klass, e);
+                return false;
+            }
+        } while (klass != null);
+        return false;
     }
 }
