@@ -1,6 +1,7 @@
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
+import java.nio.CharBuffer;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -136,5 +137,71 @@ public class FindReturnRefTest {
     @ExpectWarning("MS")
     public static void getStaticValues(HashMap<Integer, String>  values) {
         shm = values;
+    }
+
+    private CharBuffer charBuf;
+    private char[] charArray;
+
+    private static CharBuffer sCharBuf;
+    private static char[] sCharArray;
+
+    @ExpectWarning("EI")
+    public CharBuffer getBuffer() {
+        return charBuf;
+    }
+
+    @ExpectWarning("MS")
+    public static CharBuffer getStaticBuffer() {
+        return sCharBuf;
+    }
+
+    @ExpectWarning("EI")
+    public CharBuffer getBufferDuplicate() {
+        return charBuf.duplicate();
+    }
+
+    @ExpectWarning("MS")
+    public static CharBuffer getStaticBufferDuplicate() {
+        return sCharBuf.duplicate();
+    }
+
+    @ExpectWarning("EI")
+    public CharBuffer getBuferWrap() {
+        return CharBuffer.wrap(charArray);        
+    }
+
+    @ExpectWarning("MS")
+    public static CharBuffer getStaticBuferWrap() {
+        return CharBuffer.wrap(sCharArray);        
+    }
+
+    @ExpectWarning("EI2")
+    public void setBuffer(CharBuffer cb) {
+        charBuf = cb;
+    }
+
+    @ExpectWarning("MS")
+    public static void setStaticBuffer(CharBuffer cb) {
+        sCharBuf = cb;
+    }
+
+    @ExpectWarning("EI2")
+    public void setBufferDuplicate(CharBuffer cb) {
+        charBuf = cb.duplicate();
+    }
+
+    @ExpectWarning("MS")
+    public static void setStaticBufferDuplicate(CharBuffer cb) {
+        sCharBuf = cb.duplicate();
+    }
+
+    @ExpectWarning("EI2")
+    public void setBufferWrap(char[] cArr) {
+        charBuf = CharBuffer.wrap(cArr);
+    }
+
+    @ExpectWarning("MS")
+    public static void setStaticBufferWrap(char[] cArr) {
+        sCharBuf = CharBuffer.wrap(cArr);
     }
 }
