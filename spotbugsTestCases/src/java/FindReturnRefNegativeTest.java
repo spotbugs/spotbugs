@@ -1,5 +1,6 @@
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
+import java.nio.CharBuffer;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -203,5 +204,45 @@ public class FindReturnRefNegativeTest {
             Date d2 = dateArray[0];
             String s = hm.get(1);
         }
+    }
+
+    private CharBuffer charBuf;
+    private char[] charArray;
+
+    private static CharBuffer sCharBuf;
+    private static char[] sCharArray;
+
+    @NoWarning("EI")
+    public CharBuffer getBufferReadOnly() {
+        return charBuf.asReadOnlyBuffer();
+    }
+
+    @NoWarning("MS")
+    public static CharBuffer getStaticBufferReadOnly() {
+        return sCharBuf.asReadOnlyBuffer();
+    }
+
+    @NoWarning("EI")
+    public CharBuffer getBufferCopy() {
+        CharBuffer cb = CharBuffer.allocate(charArray.length);
+        cb.put(charArray);
+        return cb;
+    }
+
+    @NoWarning("MS")
+    public static CharBuffer getStaticBufferCopy() {
+        CharBuffer cb = CharBuffer.allocate(sCharArray.length);
+        cb.put(sCharArray);
+        return cb;
+    }
+
+    @NoWarning("EI")
+    public CharBuffer getBuferWrap() {
+        return CharBuffer.wrap(charArray).asReadOnlyBuffer();        
+    }
+
+    @NoWarning("MS")
+    public static CharBuffer getStaticBuferWrap() {
+        return CharBuffer.wrap(sCharArray).asReadOnlyBuffer();        
     }
 }

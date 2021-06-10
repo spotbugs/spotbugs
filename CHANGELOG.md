@@ -14,6 +14,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Bump gson from 2.8.6 to 2.8.7 ([#1556](https://github.com/spotbugs/spotbugs/pull/1556))
 * Function `mutableSignature()` improved and factored out from the `MutableStaticFields` detector
 
+### Added
+* New bugs `MS_EXPOSE_BUF`, `EI_EXPOSE_BUF`, `EI_EXPOSE_STATIC_BUF2` and `EI_EXPOSE_BUF2` by the `FindReturnRef` detector to detect cases where buffers or their backing arrays are exposed (see [SEI CERT rule FIO05-J](https://wiki.sei.cmu.edu/confluence/display/java/FIO05-J.+Do+not+expose+buffers+or+their+backing+arrays+methods+to+untrusted+code))
+
 ## 4.2.3 - 2021-04-12
 
 ### Fixed
