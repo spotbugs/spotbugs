@@ -18,7 +18,7 @@ public class PatternMatchingForSwitchTest {
 
     @Test
     public void test() {
-        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java14/PatternMatchingForSwitch.class"));
+        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/java14/PatternMatchingForSwitch.class"));
         assertTrue(bugCollection.getCollection().isEmpty());
     }
 }
