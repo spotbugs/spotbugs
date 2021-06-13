@@ -53,3 +53,8 @@ jobs:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: my-artifact
+          path: spotbugsTestCases/build/classes/java/java14/PatternMatchingForSwitch.class
