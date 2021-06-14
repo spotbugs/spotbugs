@@ -11,6 +11,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Bump gson from 2.8.6 to 2.8.7 ([#1556](https://github.com/spotbugs/spotbugs/pull/1556))
 * Function `mutableSignature()` improved and factored out from the `MutableStaticFields` detector
 
+### Added
+- New rule set `PA_PUBLIC_PRIMITIVE_ATTRIBUTE`, `PA_PUBLIC_ARRAY_ATTRIBUTE` and `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` to warn for public attributes which are written by the methods of the class. This rule is loosely based on the SEI CERT rule *OBJ01-J Limit accessibility of fields*. ([#OBJ01-J](https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields))
+
 ## 4.2.3 - 2021-04-12
 
 ### Fixed
