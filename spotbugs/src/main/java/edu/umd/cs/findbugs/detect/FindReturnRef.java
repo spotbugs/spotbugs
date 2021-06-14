@@ -61,6 +61,10 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     private final BugAccumulator bugAccumulator;
 
+    private enum CaptureKind {
+        NONE, REP, ARRAY_CLONE
+    };
+
     // private LocalVariableTable variableNames;
 
     public FindReturnRef(BugReporter bugReporter) {
@@ -117,34 +121,42 @@ public class FindReturnRef extends OpcodeStackDetector {
         if (staticMethod && seen == Const.PUTSTATIC && nonPublicFieldOperand()
                 && MutableClasses.mutableSignature(getSigConstantOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
-            if (isPotentialCapture(top)) {
+            CaptureKind capture = getPotentialCapture(top);
+            if (capture != CaptureKind.NONE) {
                 bugAccumulator.accumulateBug(
-                        new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addReferencedField(this)
-                                .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), top.getRegisterNumber(),
-                                        getPC(), getPC() - 1)), this);
+                        new BugInstance(this, "EI_EXPOSE_STATIC_REP2",
+                                (capture == CaptureKind.ARRAY_CLONE) ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                        .addClassAndMethod(this)
+                                        .addReferencedField(this)
+                                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
+                                                top.getRegisterNumber(),
+                                                getPC(), getPC() - 1)), this);
             }
         }
         if (!staticMethod && seen == Const.PUTFIELD && nonPublicFieldOperand()
                 && MutableClasses.mutableSignature(getSigConstantOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item target = stack.getStackItem(1);
-            if (isPotentialCapture(top) && target.getRegisterNumber() == 0) {
+            CaptureKind capture = getPotentialCapture(top);
+            if (capture != CaptureKind.NONE && target.getRegisterNumber() == 0) {
                 bugAccumulator.accumulateBug(
-                        new BugInstance(this, "EI_EXPOSE_REP2", NORMAL_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addReferencedField(this)
-                                .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), top.getRegisterNumber(),
-                                        getPC(), getPC() - 1)), this);
+                        new BugInstance(this, "EI_EXPOSE_REP2",
+                                (capture == CaptureKind.ARRAY_CLONE) ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                        .addClassAndMethod(this)
+                                        .addReferencedField(this)
+                                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
+                                                top.getRegisterNumber(),
+                                                getPC(), getPC() - 1)), this);
             }
         }
 
         if (seen == Const.ARETURN) {
             OpcodeStack.Item item = stack.getStackItem(0);
             XField field = item.getXField();
+            boolean isArrayClone = false;
             if (field == null) {
                 field = arrayFieldClones.get(item);
+                isArrayClone = true;
             }
             if (field == null ||
                     !isFieldOf(field, getClassDescriptor()) ||
@@ -154,8 +166,11 @@ public class FindReturnRef extends OpcodeStackDetector {
                     !MutableClasses.mutableSignature(field.getSignature())) {
                 return;
             }
-            bugAccumulator.accumulateBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addField(field.getClassName(), field.getName(), field.getSignature(), field.isStatic()), this);
+            bugAccumulator.accumulateBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP",
+                    isArrayClone ? LOW_PRIORITY : NORMAL_PRIORITY)
+                            .addClassAndMethod(this).addField(field.getClassName(), field.getName(),
+                                    field.getSignature(),
+                                    field.isStatic()), this);
         }
 
         if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
@@ -172,7 +187,6 @@ public class FindReturnRef extends OpcodeStackDetector {
                     !field.isPublic()) {
                 fieldUnderClone = field;
             } else if (item.isInitialParameter()) {
-                System.err.println("Cloning: " + item);
                 paramUnderClone = item;
             }
         }
@@ -185,7 +199,6 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
             OpcodeStack.Item param = arrayParamClones.get(item);
             if (param != null) {
-                System.err.println("Casting: " + item + " which is a clone of " + param);
                 paramCloneUnderCast = param;
             }
         }
@@ -220,22 +233,23 @@ public class FindReturnRef extends OpcodeStackDetector {
         return xField == null || !xField.isPublic();
     }
 
-    private boolean isPotentialCapture(OpcodeStack.Item top) {
+    private CaptureKind getPotentialCapture(OpcodeStack.Item top) {
+        CaptureKind kind = CaptureKind.REP;
         if (!top.isInitialParameter()) {
             top = arrayParamClones.get(top);
             if (top == null) {
-                return false;
+                return CaptureKind.NONE;
             }
-            System.err.println("This is a clone:" + top);
+            kind = CaptureKind.ARRAY_CLONE;
         }
         if (!top.isInitialParameter()) {
-            return false;
+            return CaptureKind.NONE;
         }
         if ((getMethod().getAccessFlags() & Const.ACC_VARARGS) == 0) {
-            return true;
+            return kind;
         }
         // var-arg parameter
-        return top.getRegisterNumber() != parameterCount - 1;
+        return (top.getRegisterNumber() != parameterCount - 1) ? kind : CaptureKind.NONE;
 
     }
 
