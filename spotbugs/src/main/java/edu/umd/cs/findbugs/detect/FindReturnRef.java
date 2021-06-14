@@ -76,8 +76,8 @@ public class FindReturnRef extends OpcodeStackDetector {
             Pattern.compile("\\(\\[.\\)Ljava/nio/[A-Za-z]+Buffer;").matcher("");
 
     private enum CaptureKind {
-        NONE, REP, BUF
-    };
+        NONE, REP, ARRAY_CLONE, BUF
+    }
 
     // private LocalVariableTable variableNames;
 
@@ -143,7 +143,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             if (capture != CaptureKind.NONE) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EI_EXPOSE_STATIC_" + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
-                                capture == CaptureKind.BUF ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                (capture == CaptureKind.REP) ? NORMAL_PRIORITY : LOW_PRIORITY)
                                         .addClassAndMethod(this)
                                         .addReferencedField(this)
                                         .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
@@ -159,7 +159,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             if (capture != CaptureKind.NONE && target.getRegisterNumber() == 0) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EI_EXPOSE_" + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
-                                capture == CaptureKind.BUF ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
                                         .addClassAndMethod(this)
                                         .addReferencedField(this)
                                         .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
@@ -172,8 +172,12 @@ public class FindReturnRef extends OpcodeStackDetector {
             OpcodeStack.Item item = stack.getStackItem(0);
             XField field = item.getXField();
             boolean isBuf = false;
+            boolean isArrayClone = false;
             if (field == null) {
                 field = arrayFieldClones.get(item);
+                if (field != null) {
+                    isArrayClone = true;
+                }
             }
             if (field == null) {
                 field = bufferFieldDuplicates.get(item);
@@ -197,7 +201,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
             bugAccumulator.accumulateBug(new BugInstance(this, (staticMethod ? "MS" : "EI") + "_EXPOSE_"
                     + (isBuf ? "BUF" : "REP"),
-                    isBuf ? LOW_PRIORITY : NORMAL_PRIORITY)
+                    (isBuf || isArrayClone) ? LOW_PRIORITY : NORMAL_PRIORITY)
                             .addClassAndMethod(this).addField(field.getClassName(), field.getName(),
                                     field.getSignature(), field.isStatic()), this);
 
@@ -217,7 +221,6 @@ public class FindReturnRef extends OpcodeStackDetector {
                         !field.isPublic()) {
                     fieldUnderClone = field;
                 } else if (item.isInitialParameter()) {
-                    System.err.println("Cloning: " + item);
                     paramUnderClone = item;
                 }
             }
@@ -258,7 +261,6 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
             OpcodeStack.Item param = arrayParamClones.get(item);
             if (param != null) {
-                System.err.println("Casting: " + item + " which is a clone of " + param);
                 paramCloneUnderCast = param;
             }
         }
@@ -323,6 +325,8 @@ public class FindReturnRef extends OpcodeStackDetector {
                     }
                 }
                 kind = CaptureKind.BUF;
+            } else {
+                kind = CaptureKind.ARRAY_CLONE;
             }
             top = newTop;
             System.err.println("This is a clone:" + top);
