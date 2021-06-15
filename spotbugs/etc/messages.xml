@@ -3540,18 +3540,18 @@ Thus, having a mutable instance field generally creates race conditions.
 <![CDATA[
   <p> Returning a reference to a buffer (java.nio.*Buffer) which wraps an array stored in one of the object's fields
   exposes the internal representation of the array elements because the buffer only stores a reference to the array
-  instead of copying its content. Simliarly, returning a shallow-copy of such a buffer (using its duplicate() method
+  instead of copying its content. Simlarly, returning a shallow-copy of such a buffer (using its duplicate() method)
   stored in one of the object's fields also exposes the internal representation of the buffer.&nbsp;
    If instances are accessed by untrusted code, and unchecked changes to
    the array would compromise security or other
    important properties, you will need to do something different.
   Returning a read-only buffer (using its asReadOnly() method) or copying the array to a new buffer (using its put()
-  method) is better approach in many situations.</p>
+  method) is a better approach in many situations.</p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_BUF2">
-    <ShortDescription>May expose internal representation by creating a buffer which incorporating reference to array</ShortDescription>
+    <ShortDescription>May expose internal representation by creating a buffer which incorporates reference to array</ShortDescription>
     <LongDescription>{1} may expose internal representation by creating a buffer which contains an external array into {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
@@ -3561,7 +3561,7 @@ Thus, having a mutable instance field generally creates race conditions.
    are accessed by untrusted code, and unchecked changes to
    the array would compromise security or other
    important properties, you will need to do something different.
-  Storing a copy of the array is better approach in many situations.</p>
+  Storing a copy of the array is a better approach in many situations.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3575,7 +3575,7 @@ Thus, having a mutable instance field generally creates race conditions.
    If unchecked changes to
    the array would compromise security or other
    important properties, you will need to do something different.
-  Storing a copy of the array is better approach in many situations.</p>
+  Storing a copy of the array is a better approach in many situations.</p>
 ]]>
     </Details>
   </BugPattern>
