@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.HashMap;
 
 import org.apache.bcel.Const;
@@ -59,6 +61,12 @@ public class FindReturnRef extends OpcodeStackDetector {
     private Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamsWrappedToBuffers = new HashMap<OpcodeStack.Item, OpcodeStack.Item>();
 
     private final BugAccumulator bugAccumulator;
+
+    private static final Matcher bufferClassMatcher = Pattern.compile("Ljava/nio/[A-Za-z]+Buffer;").matcher("");
+    private static final Matcher duplicateMethodSignatureMatcher =
+            Pattern.compile("\\(\\)Ljava/nio/[A-Za-z]+Buffer;").matcher("");
+    private static final Matcher wrapMethodSignatureMatcher =
+            Pattern.compile("\\(\\[.\\)Ljava/nio/[A-Za-z]+Buffer;").matcher("");
 
     private enum CaptureKind {
         NONE, REP, BUF
@@ -155,11 +163,15 @@ public class FindReturnRef extends OpcodeStackDetector {
             boolean isBuf = false;
             if (field == null) {
                 field = bufferFieldDuplicates.get(item);
-                isBuf = true;
+                if (field != null) {
+                    isBuf = true;
+                }
             }
             if (field == null) {
                 field = arrayFieldsWrappedToBuffers.get(item);
-                isBuf = true;
+                if (field != null) {
+                    isBuf = true;
+                }
             }
             if (field == null ||
                     !isFieldOf(field, getClassDescriptor()) ||
@@ -182,8 +194,8 @@ public class FindReturnRef extends OpcodeStackDetector {
             OpcodeStack.Item item = stack.getStackItem(0);
             XField field = item.getXField();
             if (method == null || !"duplicate".equals(method.getName())
-                    || !method.getSignature().matches("\\(\\)Ljava/nio/[A-Za-z]+Buffer;")
-                    || !method.getClassDescriptor().getSignature().matches("Ljava/nio/[A-Za-z]+Buffer;")) {
+                    || !duplicateMethodSignatureMatcher.reset(method.getSignature()).matches()
+                    || !bufferClassMatcher.reset(method.getClassDescriptor().getSignature()).matches()) {
                 return;
             }
 
@@ -197,8 +209,8 @@ public class FindReturnRef extends OpcodeStackDetector {
         if (seen == Const.INVOKESTATIC) {
             MethodDescriptor method = getMethodDescriptorOperand();
             if (method == null || !"wrap".equals(method.getName())
-                    || !method.getSignature().matches("\\(\\[.\\)Ljava/nio/[A-Za-z]+Buffer;")
-                    || !method.getClassDescriptor().getSignature().matches("Ljava/nio/[A-Za-z]+Buffer;")) {
+                    || !wrapMethodSignatureMatcher.reset(method.getSignature()).matches()
+                    || !bufferClassMatcher.reset(method.getClassDescriptor().getSignature()).matches()) {
                 return;
             }
             OpcodeStack.Item arg = stack.getStackItem(0);
