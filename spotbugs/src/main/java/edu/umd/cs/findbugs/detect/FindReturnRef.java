@@ -62,10 +62,10 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     private final BugAccumulator bugAccumulator;
 
-    private static final Matcher bufferClassMatcher = Pattern.compile("Ljava/nio/[A-Za-z]+Buffer;").matcher("");
-    private static final Matcher duplicateMethodSignatureMatcher =
+    private static final Matcher BUFFER_CLASS_MATCHER = Pattern.compile("Ljava/nio/[A-Za-z]+Buffer;").matcher("");
+    private static final Matcher DUPLICATE_METHODS_SIGNATURE_MATCHER =
             Pattern.compile("\\(\\)Ljava/nio/[A-Za-z]+Buffer;").matcher("");
-    private static final Matcher wrapMethodSignatureMatcher =
+    private static final Matcher WRAP_METHOD_SIGNATURE_MATCHER =
             Pattern.compile("\\(\\[.\\)Ljava/nio/[A-Za-z]+Buffer;").matcher("");
 
     private enum CaptureKind {
@@ -194,8 +194,8 @@ public class FindReturnRef extends OpcodeStackDetector {
             OpcodeStack.Item item = stack.getStackItem(0);
             XField field = item.getXField();
             if (method == null || !"duplicate".equals(method.getName())
-                    || !duplicateMethodSignatureMatcher.reset(method.getSignature()).matches()
-                    || !bufferClassMatcher.reset(method.getClassDescriptor().getSignature()).matches()) {
+                    || !DUPLICATE_METHODS_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
+                    || !BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
                 return;
             }
 
@@ -209,8 +209,8 @@ public class FindReturnRef extends OpcodeStackDetector {
         if (seen == Const.INVOKESTATIC) {
             MethodDescriptor method = getMethodDescriptorOperand();
             if (method == null || !"wrap".equals(method.getName())
-                    || !wrapMethodSignatureMatcher.reset(method.getSignature()).matches()
-                    || !bufferClassMatcher.reset(method.getClassDescriptor().getSignature()).matches()) {
+                    || !WRAP_METHOD_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
+                    || !BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
                 return;
             }
             OpcodeStack.Item arg = stack.getStackItem(0);

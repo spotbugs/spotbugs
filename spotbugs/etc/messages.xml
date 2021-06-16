@@ -3540,7 +3540,7 @@ Thus, having a mutable instance field generally creates race conditions.
 <![CDATA[
   <p> Returning a reference to a buffer (java.nio.*Buffer) which wraps an array stored in one of the object's fields
   exposes the internal representation of the array elements because the buffer only stores a reference to the array
-  instead of copying its content. Simlarly, returning a shallow-copy of such a buffer (using its duplicate() method)
+  instead of copying its content. Similarly, returning a shallow-copy of such a buffer (using its duplicate() method)
   stored in one of the object's fields also exposes the internal representation of the buffer.&nbsp;
    If instances are accessed by untrusted code, and unchecked changes to
    the array would compromise security or other
