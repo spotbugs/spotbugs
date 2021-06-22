@@ -143,7 +143,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             if (capture != CaptureKind.NONE) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EI_EXPOSE_STATIC_" + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
-                                (capture == CaptureKind.REP) ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
                                         .addClassAndMethod(this)
                                         .addReferencedField(this)
                                         .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
@@ -329,7 +329,6 @@ public class FindReturnRef extends OpcodeStackDetector {
                 kind = CaptureKind.ARRAY_CLONE;
             }
             top = newTop;
-            System.err.println("This is a clone:" + top);
         }
         if ((getMethod().getAccessFlags() & Const.ACC_VARARGS) == 0) {
             return kind;
