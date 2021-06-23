@@ -1,4 +1,3 @@
-import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 import java.nio.CharBuffer;
@@ -65,12 +64,12 @@ public class FindReturnRefTest {
         return sDateArray;
     }
 
-    @DesireWarning("EI") // Cloning the array does not perform deep copy
+    @ExpectWarning("EI") // Cloning the array does not perform deep copy
     public Date[] getDateArray2() {
         return dateArray.clone();
     }
 
-    @DesireWarning("MS") // Cloning the array does not perform deep copy
+    @ExpectWarning("MS") // Cloning the array does not perform deep copy
     public static Date[] getStaticDateArray2() {
         return sDateArray.clone();
     }
@@ -119,12 +118,12 @@ public class FindReturnRefTest {
         sDateArray = da;
     }
 
-    @DesireWarning("EI2") // Cloning the array does not perform deep copy
+    @ExpectWarning("EI2") // Cloning the array does not perform deep copy
     public void setDateArray2(Date[] da) {
         dateArray = da.clone();
     }
 
-    @DesireWarning("MS") // Cloning the array does not perform deep copy
+    @ExpectWarning("MS") // Cloning the array does not perform deep copy
     public static void setStaticDateArray2(Date[] da) {
         sDateArray = da.clone();
     }
