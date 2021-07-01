@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - `MS_EXPOSE_REP` and `EI_EXPOSE_REP` are now reported for code returning a reference to a mutable object indirectly (e.g. via a local variable)
 
 ### Changed
+* Bump ObjectWeb ASM from 9.1 to 9.2 supporting JDK 18 ([#1591](https://github.com/spotbugs/spotbugs/pull/1591))
 * Bump Saxon-HE from 10.3 to 10.5 ([#1513](https://github.com/spotbugs/spotbugs/pull/1513))
 * Bump gson from 2.8.6 to 2.8.7 ([#1556](https://github.com/spotbugs/spotbugs/pull/1556))
 * Function `mutableSignature()` improved and factored out from the `MutableStaticFields` detector
