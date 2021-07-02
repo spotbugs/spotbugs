@@ -14,7 +14,7 @@ dependencies {
   // TODO : Some of these can be extracted to actual dependencies
   implementation fileTree(dir: 'lib', include: '*.jar')
 
-  implementation 'com.google.code.gson:gson:2.8.6'
+  implementation 'com.google.code.gson:gson:2.8.7'
   implementation 'com.google.guava:guava:30.1.1-jre'
   implementation "com.google.inject:guice:${guiceVersion}"
   implementation "com.google.inject.extensions:guice-assistedinject:${guiceVersion}"
@@ -22,9 +22,9 @@ dependencies {
   implementation 'com.google.truth:truth:1.1.3'
   implementation 'joda-time:joda-time:2.10.10'
   api 'net.jcip:jcip-annotations:1.0'
-  implementation 'org.springframework:spring-core:5.3.7'
+  implementation 'org.springframework:spring-core:5.3.8'
   compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
-  implementation 'org.checkerframework:checker-qual:3.14.0'
+  implementation 'org.checkerframework:checker-qual:3.15.0'
 
   implementation 'junit:junit:4.13.1'
   implementation 'org.testng:testng:7.4.0'

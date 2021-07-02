@@ -1,13 +1,13 @@
-import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
+import java.nio.CharBuffer;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class FindReturnRefTest {
     private Date date;
     private Date[] dateArray;
-    private Hashtable<Integer, String> ht = new Hashtable<Integer, String>();
+    private HashMap<Integer, String> hm = new HashMap<Integer, String>();
 
     private static Date sDate = new Date();
     private static Date[] sDateArray = new Date[20];
@@ -16,15 +16,15 @@ public class FindReturnRefTest {
             sDateArray[i] = new Date();
         }
     }
-    private static Hashtable<Integer, String> sht = new Hashtable<Integer, String>();
+    private static HashMap<Integer, String> shm = new HashMap<Integer, String>();
     static {
-        sht.put(1, "123-45-6789");
+        shm.put(1, "123-45-6789");
     }
 
     public FindReturnRefTest() {
         date = new Date();
         dateArray = new Date[20];
-        ht.put(1, "123-45-6789");
+        hm.put(1, "123-45-6789");
         for (int i = 0; i < dateArray.length; i++) {
             dateArray[i] = new Date();
         }
@@ -42,13 +42,13 @@ public class FindReturnRefTest {
         return sDate;
     }
 
-    @DesireWarning("EI") // Indirect way of returning reference
+    @ExpectWarning("EI") // Indirect way of returning reference
     public Date getDate2() {
         Date d = date;
         return d;
     }
 
-    @DesireWarning("MS") // Indirect way of returning reference
+    @ExpectWarning("MS") // Indirect way of returning reference
     public static Date getStaticDate2() {
         Date d = sDate;
         return d;
@@ -64,24 +64,24 @@ public class FindReturnRefTest {
         return sDateArray;
     }
 
-    @DesireWarning("EI") // Cloning the array does not perform deep copy
+    @ExpectWarning("EI") // Cloning the array does not perform deep copy
     public Date[] getDateArray2() {
         return dateArray.clone();
     }
 
-    @DesireWarning("MS") // Cloning the array does not perform deep copy
+    @ExpectWarning("MS") // Cloning the array does not perform deep copy
     public static Date[] getStaticDateArray2() {
         return sDateArray.clone();
     }
 
     @ExpectWarning("EI")
-    public Hashtable<Integer, String> getValues() {
-        return ht;
+    public HashMap<Integer, String> getValues() {
+        return hm;
     }
 
     @ExpectWarning("MS")
-    public static Hashtable<Integer, String> getStaticValues() {
-        return sht;
+    public static HashMap<Integer, String> getStaticValues() {
+        return shm;
     }
 
     @ExpectWarning("EI2")
@@ -118,23 +118,89 @@ public class FindReturnRefTest {
         sDateArray = da;
     }
 
-    @DesireWarning("EI2") // Cloning the array does not perform deep copy
+    @ExpectWarning("EI2") // Cloning the array does not perform deep copy
     public void setDateArray2(Date[] da) {
         dateArray = da.clone();
     }
 
-    @DesireWarning("MS") // Cloning the array does not perform deep copy
+    @ExpectWarning("MS") // Cloning the array does not perform deep copy
     public static void setStaticDateArray2(Date[] da) {
         sDateArray = da.clone();
     }
 
     @ExpectWarning("EI2")
-    public void setValues(Hashtable<Integer, String> values) {
-        ht = values;
+    public void setValues(HashMap<Integer, String> values) {
+        hm = values;
     }
 
     @ExpectWarning("MS")
-    public static void getStaticValues(Hashtable<Integer, String>  values) {
-        sht = values;
+    public static void getStaticValues(HashMap<Integer, String>  values) {
+        shm = values;
+    }
+
+    private CharBuffer charBuf;
+    private char[] charArray;
+
+    private static CharBuffer sCharBuf;
+    private static char[] sCharArray;
+
+    @ExpectWarning("EI")
+    public CharBuffer getBuffer() {
+        return charBuf;
+    }
+
+    @ExpectWarning("MS")
+    public static CharBuffer getStaticBuffer() {
+        return sCharBuf;
+    }
+
+    @ExpectWarning("EI")
+    public CharBuffer getBufferDuplicate() {
+        return charBuf.duplicate();
+    }
+
+    @ExpectWarning("MS")
+    public static CharBuffer getStaticBufferDuplicate() {
+        return sCharBuf.duplicate();
+    }
+
+    @ExpectWarning("EI")
+    public CharBuffer getBuferWrap() {
+        return CharBuffer.wrap(charArray);        
+    }
+
+    @ExpectWarning("MS")
+    public static CharBuffer getStaticBuferWrap() {
+        return CharBuffer.wrap(sCharArray);        
+    }
+
+    @ExpectWarning("EI2")
+    public void setBuffer(CharBuffer cb) {
+        charBuf = cb;
+    }
+
+    @ExpectWarning("MS")
+    public static void setStaticBuffer(CharBuffer cb) {
+        sCharBuf = cb;
+    }
+
+    @ExpectWarning("EI2")
+    public void setBufferDuplicate(CharBuffer cb) {
+        charBuf = cb.duplicate();
+    }
+
+    @ExpectWarning("MS")
+    public static void setStaticBufferDuplicate(CharBuffer cb) {
+        sCharBuf = cb.duplicate();
+    }
+
+    @ExpectWarning("EI2")
+    public void setBufferWrap(char[] cArr) {
+        charBuf = CharBuffer.wrap(cArr);
+    }
+
+    @ExpectWarning("MS")
+    public static void setStaticBufferWrap(char[] cArr) {
+        sCharBuf = CharBuffer.wrap(cArr);
     }
 }
