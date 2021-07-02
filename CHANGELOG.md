@@ -5,6 +5,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2021-??-??
+* Add opaque rule id for Sarif Log
 
 ## 4.3.0 - 2021-07-01
 
@@ -40,7 +41,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Bump ASM from 9.0 to 9.1 supporting JDK17
 * Bump commons-lang from 3.11 to 3.12.0
 * Replace org.json:json:20201115 with com.google.code.gson:gson:2.8.6
-* Add opaque rule id for Sarif Log
 
 ## 4.2.1 - 2021-02-04
 
