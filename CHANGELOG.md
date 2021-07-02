@@ -6,12 +6,39 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2021-??-??
 
+## 4.3.0 - 2021-07-01
+
+### Fixed
+- `MS_EXPOSE_REP` and `EI_EXPOSE_REP` are now reported for code returning a reference to a mutable object indirectly (e.g. via a local variable)
+
+### Changed
+* Bump ObjectWeb ASM from 9.1 to 9.2 supporting JDK 18 ([#1591](https://github.com/spotbugs/spotbugs/pull/1591))
+* Bump Saxon-HE from 10.3 to 10.5 ([#1513](https://github.com/spotbugs/spotbugs/pull/1513))
+* Bump gson from 2.8.6 to 2.8.7 ([#1556](https://github.com/spotbugs/spotbugs/pull/1556))
+* Function `mutableSignature()` improved and factored out from the `MutableStaticFields` detector
+
+### Added
+* New bugs `MS_EXPOSE_BUF`, `EI_EXPOSE_BUF`, `EI_EXPOSE_STATIC_BUF2` and `EI_EXPOSE_BUF2` by the `FindReturnRef` detector to detect cases where buffers or their backing arrays are exposed (see [SEI CERT rule FIO05-J](https://wiki.sei.cmu.edu/confluence/display/java/FIO05-J.+Do+not+expose+buffers+or+their+backing+arrays+methods+to+untrusted+code))
+*  `MS_EXPOSE_REP`, `EI_EXPOSE_REP`, `EI_EXPOSE_STATIC_REP2` and `EI_EXPOSE_REP2` now report for shallowly copied arrays (using clone()) of mutable objects
+
+## 4.2.3 - 2021-04-12
+
+### Fixed
+- Inconsistency in the description of `DLS_DEAD_LOCAL_INCREMENT_IN_RETURN`, `VO_VOLATILE_INCREMENT` and `QF_QUESTIONABLE_FOR_LOOP` ([#1470](https://github.com/spotbugs/spotbugs/issues/1470))
+- Should issue warning for SecureRandom object created and used only once ([#1464](https://github.com/spotbugs/spotbugs/issues/1464))
+- False positive OBL_UNSATIFIED_OBLIGATION with try with resources ([#79](https://github.com/spotbugs/spotbugs/issues/79))
+- `SA_LOCAL_SELF_COMPUTATION` bug  ([#1472](https://github.com/spotbugs/spotbugs/issues/1472))
+- False positive `EQ_UNUSUAL` with record classes ([#1367](https://github.com/spotbugs/spotbugs/issues/1367))
+
+## 4.2.2 - 2021-03-03
+
 ### Fixed
 * `UWF_NULL_FIELD` doesn't report line number ([#1368](https://github.com/spotbugs/spotbugs/issues/1368))
 * UnsupportedOperationException in BugRanker.trimToMaxRank ([#1161](https://github.com/spotbugs/spotbugs/issues/1161))
 
 ### Changed
 * Bump ASM from 9.0 to 9.1 supporting JDK17
+* Bump commons-lang from 3.11 to 3.12.0
 * Replace org.json:json:20201115 with com.google.code.gson:gson:2.8.6
 * Add opaque rule id for Sarif Log
 

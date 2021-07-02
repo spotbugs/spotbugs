@@ -18,7 +18,7 @@ msgstr ""
 
 #: /documents/docs/migration.rst:2
 msgid "Guide for migration from SpotBugs 3.1 to 4.0"
-msgstr "SpotBugs 3.1 から 4.0 への移行ガイド"
+msgstr "SpotBugs 3.1から4.0への移行ガイド"
 
 #: /documents/docs/migration.rst:5
 msgid "for SpotBugs Users"
@@ -80,7 +80,7 @@ msgstr ""
 
 #: /documents/docs/migration.rst:20
 msgid "Guide for migration from FindBugs 3.0 to SpotBugs 3.1"
-msgstr "FindBugs 3.0 から SpotBugs 3.1 への移行ガイド"
+msgstr "FindBugs 3.0からSpotBugs 3.1 への移行ガイド"
 
 #: /documents/docs/migration.rst:23
 msgid "com.google.code.findbugs:findbugs"
@@ -103,7 +103,7 @@ msgid ""
 "JSR305 is already Dormant status, so SpotBugs does not release ``jsr305``"
 " jar file. Please continue using findbugs' one."
 msgstr ""
-"JSR305 は，すでに休止状態なので，SpotBugs は ``jsr305`` jarファイルをリリースしません。FindBugs "
+"JSR305は、すでに休止状態なので、SpotBugsは ``jsr305`` jarファイルをリリースしません。FindBugs "
 "のものを使い続けてください。"
 
 #: /documents/docs/migration.rst:40
@@ -155,7 +155,7 @@ msgid ""
 "Please use spotbugs plugin found on "
 "https://plugins.gradle.org/plugin/com.github.spotbugs"
 msgstr ""
-"https://plugins.gradle.org/plugin/com.github.spotbugs にある spotbugs "
+"https://plugins.gradle.org/plugin/com.github.spotbugsにあるspotbugs "
 "プラグインを使用してください。"
 
 #: /documents/docs/migration.rst:100

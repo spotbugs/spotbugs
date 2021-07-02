@@ -84,4 +84,4 @@ This section lists common problems with the plugin and (if known) how to resolve
   Important: the configuration arguments starting with the line ``-vmargs`` must be last lines in the ``eclipse.ini`` file, and only one argument per line is allowed!
 
 * If you do not see any SpotBugs problem markers (in your source windows or in the Problems View), you may need to change your ``Problems View`` filter settings.
-  See `FAQ <faq.html#q6-the-eclipse-plugin-loads-but-doesn-t-work-correctly>`__ for more information.
+  See :ref:`Q6 at FAQ <faq6>` for more information.

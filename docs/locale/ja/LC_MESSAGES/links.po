@@ -18,13 +18,13 @@ msgstr ""
 
 #: ../../links.rst:2
 msgid "SpotBugs Links"
-msgstr "SpotBugs リンク"
+msgstr "SpotBugsリンク"
 
 #: ../../links.rst:4
 msgid ""
 "This page contains links to related projects, including tools that are "
 "similar to SpotBugs."
-msgstr "このページには，SpotBugs に似たツールを含む関連プロジェクトへのリンクが含まれています。."
+msgstr "このページには、SpotBugsに似たツールを含む関連プロジェクトへのリンクが含まれています。."
 
 #: ../../links.rst:7
 msgid "IDE Integration"
@@ -44,7 +44,7 @@ msgstr ""
 
 #: ../../links.rst:13
 msgid "SpotBugs Plugins"
-msgstr "SpotBugs プラグイン"
+msgstr "SpotBugsプラグイン"
 
 #: ../../links.rst:16
 msgid "`fb-contrib <http://fb-contrib.sourceforge.net/>`_"
@@ -54,15 +54,15 @@ msgstr ""
 msgid ""
 "A FindBugs/SpotBugs plugin for doing static code analysis on java byte "
 "code."
-msgstr "Java バイトコードの静的コード解析を行う FindBugs/SpotBugs プラグインです。"
+msgstr "Javaバイトコードの静的コード解析を行うFindBugs/SpotBugsプラグインです。"
 
 #: ../../links.rst:19
-msgid "`Find Security Bugs <http://find-sec-bugs.github.io/>`_"
+msgid "`Find Security Bugs <https://find-sec-bugs.github.io/>`_"
 msgstr ""
 
 #: ../../links.rst:19
 msgid "A FindBugs/SpotBugs plugin for security audits of Java web applications."
-msgstr "Java ウェブアプリケーションのセキュリティ監査用のFindBugs/SpotBugs プラグインです。"
+msgstr "Javaウェブアプリケーションのセキュリティ監査用のFindBugs/SpotBugs プラグインです。"
 
 #: ../../links.rst:22
 msgid "`findbugs-slf4j <https://github.com/KengoTODA/findbugs-slf4j>`_"
@@ -86,7 +86,7 @@ msgstr ""
 msgid ""
 "The FindBugs plugin for `IntelliJ IDEA "
 "<https://www.jetbrains.com/idea/>`_."
-msgstr "`IntelliJ IDEA <https://www.jetbrains.com/idea/>`_ のための FindBugs プラグインです。"
+msgstr "`IntelliJ IDEA <https://www.jetbrains.com/idea/>`_ のためのFindBugs プラグインです。"
 
 #: ../../links.rst:31
 msgid "`sonar-findbugs <https://github.com/SonarQubeCommunity/sonar-findbugs>`_"
@@ -97,11 +97,11 @@ msgid ""
 "A `SonarQube <https://www.sonarqube.org/>`_ plugin which provides rules "
 "based on SpotBugs and its major plugins."
 msgstr ""
-"SpotBugs とその主要なプラグインに基づいたルールを提供する `SonarQube "
+"SpotBugsとその主要なプラグインに基づいたルールを提供する `SonarQube "
 "<https://www.sonarqube.org/>`_ プラグインです。"
 
 #: ../../links.rst:34
-msgid "`Checkstyle <http://checkstyle.sourceforge.net/>`_"
+msgid "`Checkstyle <https://checkstyle.sourceforge.io/>`_"
 msgstr ""
 
 #: ../../links.rst:34
@@ -123,12 +123,12 @@ msgstr ""
 #: ../../links.rst:40
 msgid ""
 "New Java bytecode static analyzer tool based on `Procyon Compiler Tools "
-"<https://bitbucket.org/mstrobel/procyon/overview>`_ aimed to supersede "
+"<https://github.com/mstrobel/procyon>`_ aimed to supersede "
 "the FindBugs."
 msgstr ""
 "`Procyon Compiler Tools "
-"<https://bitbucket.org/mstrobel/procyon/overview>`_ "
-"に基づいた新しいバイトコード静的解析ツールで，FindBugs を置き換えることを目指しています。"
+"<https://github.com/mstrobel/procyon>`_ "
+"に基づいた新しいバイトコード静的解析ツールで、FindBugs を置き換えることを目指しています。"
 
 #: ../../links.rst:43
 msgid "`Google Error Prone <http://errorprone.info/>`_"

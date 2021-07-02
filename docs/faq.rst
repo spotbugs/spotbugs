@@ -64,6 +64,8 @@ As a result, it may assume that an unchecked exception thrown out of the method 
 You can use the ``-workHard`` command line argument or the ``findbugs.workHard`` boolean analysis property to make SpotBugs work harder to prune unlikely exception edges.
 This generally reduces the number of false warnings, at the expense of slowing down the analysis.
 
+.. _faq6:
+
 Q6: The Eclipse plugin loads, but doesn't work correctly
 --------------------------------------------------------
 

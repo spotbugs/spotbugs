@@ -16,10 +16,10 @@ import sys
 import os
 
 html_context = {
-  'version' : '4.2',
-  'full_version' : '4.2.1',
+  'version' : '4.3',
+  'full_version' : '4.3.0',
   'maven_plugin_version' : '4.2.0',
-  'gradle_plugin_version' : '4.6.0',
+  'gradle_plugin_version' : '4.7.1',
   'archetype_version' : '0.2.3'
 }
 
@@ -273,7 +273,7 @@ gettext_compact = False
 gettext_additional_targets = ['raw']
 
 def setup(app):
-    app.add_stylesheet('custom.css')
+    app.add_css_file('custom.css')
 
 sys.path.append(os.path.abspath('extensions'))
 extensions += ['generate_bug_description']
