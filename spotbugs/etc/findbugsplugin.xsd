@@ -87,6 +87,7 @@
     </xsd:complexType>
 
     <xsd:complexType name="BugPatternType">
+        <xsd:attribute name="ruleId" type="IdentifierType"/>
         <xsd:attribute name="abbrev" type="IdentifierType"/>
         <xsd:attribute name="type" type="xsd:ID"/>
         <xsd:attribute name="category" type="IdentifierType"/>
