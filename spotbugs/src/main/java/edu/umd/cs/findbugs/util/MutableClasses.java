@@ -3,6 +3,8 @@ package edu.umd.cs.findbugs.util;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.List;
 
 import org.apache.bcel.Repository;
@@ -27,6 +29,8 @@ public class MutableClasses {
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
             "enqueue", "dequeue", "write", "append", "replace");
 
+    private static final Matcher IMMUTABLE_CLASS_NAME_MATCHER = Pattern.compile(".*immutable.*", Pattern.CASE_INSENSITIVE).matcher("");
+
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
             return true;
@@ -38,6 +42,10 @@ public class MutableClasses {
 
         String dottedClassName = sig.substring(1, sig.length() - 1).replace('/', '.');
         if (KNOWN_IMMUTABLE_CLASSES.contains(dottedClassName)) {
+            return false;
+        }
+
+        if (IMMUTABLE_CLASS_NAME_MATCHER.reset(sig).matches()) {
             return false;
         }
 

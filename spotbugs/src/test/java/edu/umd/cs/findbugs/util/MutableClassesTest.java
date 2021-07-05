@@ -14,6 +14,10 @@ public class MutableClassesTest {
         Assert.assertFalse(MutableClasses.mutableSignature("Ljava/lang/String;"));
     }
 
+    public void TestNamedImmutable() {
+        Assert.assertFalse(MutableClasses.mutableSignature("Lcom/google/common/collect/ImmutableMap;"));
+    }
+
     @Test
     public void TestArray() {
         Assert.assertTrue(MutableClasses.mutableSignature("[I"));
