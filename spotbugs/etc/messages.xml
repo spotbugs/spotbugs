@@ -1675,6 +1675,20 @@ factory pattern to create these objects.</p>
             ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindBadEndOfStreamCheck">
+    <Details>
+      <![CDATA[
+            <p>Detector for patterns where the return value of java.io.FileInputStream.read() or
+               java.io.FileReader.read() is converted before checking against -1.</p>
+            <p>
+               Both methods return an int. If this int is converted to byte (in the case of
+               FileInputStream.read()) then -1 and the byte 0xFF become indistinguishable.
+               If it is converted to char (in the case of FileReader.read()) then -1 becomes
+               0xFFFF which is Character.MAX_VALUE since characters are unsigned in Java.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8461,6 +8475,21 @@ after the call to initLogging, the logger configuration is lost
         </p>]]>
       </Details>
   </BugPattern>
+
+  <BugPattern type="EOS_BAD_END_OF_STREAM_CHECK">
+    <ShortDescription>Data read is converted before comparison to -1</ShortDescription>
+    <LongDescription>The return value of {2} in method {1} is converted to {3} before comparison to {4}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      The method java.io.FileInputStream.read() returns an int. If this int is converted to a byte then -1 (which
+      indicates an EOF) and the byte 0xFF become indistinguishable, this comparing the (converted) result to -1
+      causes the read (probably in a loop) to end prematurely if the character 0xFF is met. Similarly, the method
+      java.io.FileReader.read() also returns an int. If it is converted to a char then -1 becomes 0xFFFF which is
+      Character.MAX_VALUE. Comparing the result to -1 is pointless, since characters are unsigned in Java. If the
+      checking for EOF is the condition of a loop then this loop is infinite.
+      </p>]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -8605,4 +8634,5 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="FB">SpotBugs did not produce the expected warnings on a method</BugCode>
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
+  <BugCode abbrev="EOS">Bad End of Stream check</BugCode>
 </MessageCollection>
