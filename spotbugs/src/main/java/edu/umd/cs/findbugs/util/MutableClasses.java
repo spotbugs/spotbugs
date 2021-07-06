@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.List;
 
 import org.apache.bcel.Repository;
@@ -45,12 +46,15 @@ public class MutableClasses {
             return false;
         }
 
-        if (IMMUTABLE_CLASS_NAME_MATCHER.reset(sig).matches()) {
+        if (IMMUTABLE_CLASS_NAME_MATCHER.reset(sig.substring(sig.lastIndexOf('.') + 1)).matches()) {
             return false;
         }
 
         try {
             JavaClass cls = Repository.lookupClass(dottedClassName);
+            if (Stream.of(cls.getAnnotationEntries()).anyMatch(s -> s.getAnnotationType().endsWith("Immutable"))) {
+                return false;
+            }
             return isMutable(cls);
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);

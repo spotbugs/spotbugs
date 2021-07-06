@@ -1,7 +1,23 @@
 package edu.umd.cs.findbugs.util;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+@Immutable
+class Annotated {
+    int n;
+
+    Annotated(int n) {
+        this.n = n;
+    }
+
+    // False setter
+    Annotated set(int n) {
+        return new Annotated(n);
+    }
+}
 
 public class MutableClassesTest {
     @Test
@@ -14,8 +30,14 @@ public class MutableClassesTest {
         Assert.assertFalse(MutableClasses.mutableSignature("Ljava/lang/String;"));
     }
 
+    @Test
     public void TestNamedImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature("Lcom/google/common/collect/ImmutableMap;"));
+    }
+
+    @Test
+    public void TestAnnotatedImmutable() {
+        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/Annotated;"));
     }
 
     @Test
