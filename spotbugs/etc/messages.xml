@@ -7161,7 +7161,7 @@ just use the constant. Methods detected are:
     instance and from the outside, the code is suspicious. Consider making these fields private and
     provide appropriate setters, if necessary. Please note that constructors, initializers and
     finalizers are exceptions, if only they write the field inside the class, the field is not
-    considered as written by the class itself.In case of object-type fields "writing" means calling
+    considered as written by the class itself. In case of object-type fields "writing" means calling
     methods whose name suggests modification.
     </p>
     ]]>
