@@ -3,8 +3,6 @@ package edu.umd.cs.findbugs.util;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.List;
 
@@ -24,13 +22,26 @@ public class MutableClasses {
             "java.awt.Color", "java.awt.GradientPaint", "java.awt.LinearGradientPaint",
             "java.awt.RadialGradientPaint", "java.Cursor.", "java.util.UUID", "java.util.URL",
             "java.util.URI", "java.util.Inet4Address", "java.util.InetSocketAddress",
-            "java.security.Permission"));
+            "java.security.Permission", "com.google.common.collect.ImmutableBiMap",
+            "com.google.common.collect.ImmutableClassToInstanceMap",
+            "com.google.common.collect.ImmutableCollection",
+            "com.google.common.collect.ImmutableList",
+            "com.google.common.collect.ImmutableListMultimap",
+            "com.google.common.collect.ImmutableMap",
+            "com.google.common.collect.ImmutableMultimap",
+            "com.google.common.collect.ImmutableMultiset",
+            "com.google.common.collect.ImmutableRangeMap",
+            "com.google.common.collect.ImmutableRangeSet",
+            "com.google.common.collect.ImmutableSet",
+            "com.google.common.collect.ImmutableSetMultimap",
+            "com.google.common.collect.ImmutableSortedMap",
+            "com.google.common.collect.ImmutableSortedMultiset",
+            "com.google.common.collect.ImmutableSortedSet",
+            "com.google.common.collect.ImmutableTable"));
 
     private static final List<String> SETTER_LIKE_NAMES = Arrays.asList(
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
             "enqueue", "dequeue", "write", "append", "replace");
-
-    private static final Matcher IMMUTABLE_CLASS_NAME_MATCHER = Pattern.compile(".*immutable.*", Pattern.CASE_INSENSITIVE).matcher("");
 
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
@@ -46,13 +57,9 @@ public class MutableClasses {
             return false;
         }
 
-        if (IMMUTABLE_CLASS_NAME_MATCHER.reset(sig.substring(sig.lastIndexOf('.') + 1)).matches()) {
-            return false;
-        }
-
         try {
             JavaClass cls = Repository.lookupClass(dottedClassName);
-            if (Stream.of(cls.getAnnotationEntries()).anyMatch(s -> s.getAnnotationType().endsWith("Immutable"))) {
+            if (Stream.of(cls.getAnnotationEntries()).anyMatch(s -> s.getAnnotationType().endsWith(".Immutable"))) {
                 return false;
             }
             return isMutable(cls);
