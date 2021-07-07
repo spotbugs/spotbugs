@@ -211,6 +211,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addOption("-adjustPriority", "v1=(raise|lower)[,...]", "raise/lower priority of warnings for given visitor(s)");
 
         startOptionGroup("Project configuration options:");
+        addSwitch("-parseStdinAsOptions", "read additional options from standard input, one argument per line");
         addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
         addSwitch("-auxclasspathFromInput", "read aux classpath from standard input");
         addOption("-auxclasspathFromFile", "filepath", "read aux classpaths from a designated file");
