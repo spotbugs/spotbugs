@@ -651,6 +651,8 @@
                     reports="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadEndOfStreamCheck" speed="fast"
                     reports="EOS_BAD_END_OF_STREAM_CHECK"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ReflectionIncreaseAccessibility"
+                    reports="REFL_REFLECTION_INCREASES_ACCESSIBILITY_OF_CLASS"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -1254,4 +1256,5 @@
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="STYLE" deprecated="true" />
           <BugPattern abbrev="EOS" type="EOS_BAD_END_OF_STREAM_CHECK" category="CORRECTNESS" />
+          <BugPattern abbrev="REFL" type="REFL_REFLECTION_INCREASES_ACCESSIBILITY_OF_CLASS" category="MALICIOUS_CODE" />
 </FindbugsPlugin>
