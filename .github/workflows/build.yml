@@ -13,9 +13,10 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up JDK 16
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
           java-version: '16.0.x'
+          distribution: adopt
       - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
