@@ -35,6 +35,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - False positive OBL_UNSATIFIED_OBLIGATION with try with resources ([#79](https://github.com/spotbugs/spotbugs/issues/79))
 - `SA_LOCAL_SELF_COMPUTATION` bug  ([#1472](https://github.com/spotbugs/spotbugs/issues/1472))
 - False positive `EQ_UNUSUAL` with record classes ([#1367](https://github.com/spotbugs/spotbugs/issues/1367))
+- Inconsistent bug description on `EQ_COMPARING_CLASS_NAMES` ([#1523](https://github.com/spotbugs/spotbugs/issues/1523))
 
 ## 4.2.2 - 2021-03-03
 
