@@ -31,6 +31,11 @@ public class MutableClassesTest {
     }
 
     @Test
+    public void TestKnownImmutablePackage() {
+        Assert.assertFalse(MutableClasses.mutableSignature("Ljava/time/LocalTime;"));
+    }
+
+    @Test
     public void TestNamedImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature("Lcom/google/common/collect/ImmutableMap;"));
     }
