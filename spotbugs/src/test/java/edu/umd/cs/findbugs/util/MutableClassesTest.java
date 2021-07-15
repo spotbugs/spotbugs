@@ -36,7 +36,6 @@ public class MutableClassesTest {
     }
 
     @Test
-    @Test
     public void TestNamedImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature("Lcom/google/common/collect/ImmutableMap;"));
     }
