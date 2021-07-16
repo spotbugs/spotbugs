@@ -72,7 +72,8 @@ public class MutableClasses {
 
         try {
             JavaClass cls = Repository.lookupClass(dottedClassName);
-            if (Stream.of(cls.getAnnotationEntries()).anyMatch(s -> s.getAnnotationType().endsWith(".Immutable"))) {
+            if (Stream.of(cls.getAnnotationEntries()).anyMatch(s -> (s.getAnnotationType().endsWith(".Immutable"))
+                    || s.getAnnotationType().equals("jdk.internal.ValueBased"))) {
                 return false;
             }
             return isMutable(cls);
