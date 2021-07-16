@@ -40,7 +40,7 @@ public class MutableClasses {
             "com.google.common.collect.ImmutableTable"));
 
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
-            "java.time"));
+            "java.math", "java.time"));
 
     private static final List<String> SETTER_LIKE_NAMES = Arrays.asList(
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
@@ -100,12 +100,15 @@ public class MutableClasses {
     }
 
     public static boolean looksLikeASetter(Method method, JavaClass cls) {
+        // If the method returns an object then we suppose that it
+        // is not a setter but creates a new instance instead.
+        if (method.getReturnType().getSignature().startsWith("L")) {
+            return false;
+        }
+
         for (String name : SETTER_LIKE_NAMES) {
             if (method.getName().startsWith(name)) {
-                String retSig = method.getReturnType().getSignature();
-                // If setter-like methods returns an object of the same type then we suppose that it
-                // is not a setter but creates a new instance instead.
-                return !("L" + cls.getClassName().replace('.', '/') + ";").equals(retSig);
+                return true;
             }
         }
         return false;
