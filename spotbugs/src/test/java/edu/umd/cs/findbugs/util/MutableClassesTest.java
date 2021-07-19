@@ -91,7 +91,7 @@ public class MutableClassesTest {
             return new Immutable(n);
         }
 
-        void setN3(int n)  {
+        void setN3(int n) {
             this.n = n;
         }
 
