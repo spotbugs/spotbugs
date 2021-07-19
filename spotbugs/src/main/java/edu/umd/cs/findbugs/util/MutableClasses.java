@@ -102,7 +102,13 @@ public class MutableClasses {
     }
 
     public static boolean looksLikeASetter(Method method, JavaClass cls) {
+        // Static methods are no setters.
         if (method.isStatic()) {
+            return false;
+        }
+
+        // Non-public setters cannot be used from outside the package so disregard them.
+        if (!method.isPublic()) {
             return false;
         }
 

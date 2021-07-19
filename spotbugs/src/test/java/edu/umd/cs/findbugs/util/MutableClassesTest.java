@@ -91,6 +91,10 @@ public class MutableClassesTest {
             return new Immutable(n);
         }
 
+        void setN3(int n)  {
+            this.n = n;
+        }
+
         public static Immutable getImmutable() {
             return immutable;
         }
