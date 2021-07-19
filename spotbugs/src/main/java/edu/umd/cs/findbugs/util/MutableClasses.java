@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import java.util.List;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -101,10 +102,23 @@ public class MutableClasses {
     }
 
     public static boolean looksLikeASetter(Method method, JavaClass cls) {
+        if (method.isStatic()) {
+            return false;
+        }
+
         // If the method returns an object then we suppose that it
         // is not a setter but creates a new instance instead.
         if (method.getReturnType().getSignature().startsWith("L")) {
             return false;
+        }
+
+        // If the method throws an UnsupportedOperationException
+        // then we must ignore it.
+        ExceptionTable exceptions = method.getExceptionTable();
+        if (exceptions != null) {
+            if (Arrays.asList(exceptions.getExceptionNames()).contains("java.lang.UnsupportedOperationException")) {
+                return false;
+            }
         }
 
         for (String name : SETTER_LIKE_NAMES) {

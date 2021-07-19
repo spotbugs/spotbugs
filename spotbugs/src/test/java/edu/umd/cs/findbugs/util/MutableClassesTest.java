@@ -72,6 +72,7 @@ public class MutableClassesTest {
     }
 
     public static class Immutable {
+        private static Immutable immutable;
         private int n;
 
         public Immutable(int n) {
@@ -82,8 +83,20 @@ public class MutableClassesTest {
             return n;
         }
 
-        public Immutable setN(int n) {
+        public void setN1(int n) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Immutable setN2(int n) {
             return new Immutable(n);
+        }
+
+        public static Immutable getImmutable() {
+            return immutable;
+        }
+
+        public static void setImmutable(Immutable imm) {
+            immutable = imm;
         }
     }
 
