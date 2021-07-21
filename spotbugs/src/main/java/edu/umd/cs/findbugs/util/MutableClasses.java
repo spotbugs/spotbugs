@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.util;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Stream;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 public class MutableClasses {
@@ -47,6 +49,33 @@ public class MutableClasses {
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
             "enqueue", "dequeue", "append", "replace");
 
+    private static Set<String> userDefinedImmutableClasses;
+    private static Set<String> userDefinedImmutablePackages;
+    static {
+        String envClsString = System.getenv("spotbugs.immutableclasses");
+        if (envClsString == null) {
+            envClsString = System.getenv("spotbugs_immutableclasses");
+        }
+
+        envClsString = SystemProperties.getProperty("spotbugs.immutableclasses", envClsString);
+        if (envClsString != null) {
+            List<String> clsList = Arrays.asList(envClsString.split(";"));
+            for (String clsName: clsList) {
+                if (clsName.endsWith(".*")) {
+                    if (userDefinedImmutablePackages == null) {
+                        userDefinedImmutablePackages = new HashSet<>();
+                    }
+                    userDefinedImmutablePackages.add(clsName.substring(0, clsName.length() - 2));
+                } else {
+                    if (userDefinedImmutableClasses == null) {
+                        userDefinedImmutableClasses = new HashSet<>();
+                    }
+                    userDefinedImmutableClasses.add(clsName);
+                }
+            }
+        }
+    }
+
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
             return true;
@@ -65,9 +94,17 @@ public class MutableClasses {
             if (KNOWN_IMMUTABLE_PACKAGES.contains(dottedPackageName)) {
                 return false;
             }
+
+            if (userDefinedImmutablePackages != null && userDefinedImmutablePackages.contains(dottedPackageName)) {
+                return false;
+            }
         }
 
         if (KNOWN_IMMUTABLE_CLASSES.contains(dottedClassName)) {
+            return false;
+        }
+
+        if (userDefinedImmutableClasses != null && userDefinedImmutableClasses.contains(dottedClassName)) {
             return false;
         }
 
