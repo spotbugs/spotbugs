@@ -2,7 +2,6 @@ package edu.umd.cs.findbugs.util;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Stream;
 import java.util.List;
@@ -60,7 +59,7 @@ public class MutableClasses {
         envClsString = SystemProperties.getProperty("spotbugs.immutableclasses", envClsString);
         if (envClsString != null) {
             List<String> clsList = Arrays.asList(envClsString.split(";"));
-            for (String clsName: clsList) {
+            for (String clsName : clsList) {
                 if (clsName.endsWith(".*")) {
                     if (userDefinedImmutablePackages == null) {
                         userDefinedImmutablePackages = new HashSet<>();
