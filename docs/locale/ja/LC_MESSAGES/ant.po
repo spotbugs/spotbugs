@@ -319,7 +319,7 @@ msgid ""
 "#command-line-options>`: for more information about setting the analysis "
 "level."
 msgstr ""
-"解析力を設定します。指定する値は、``min``、``default``、``max`` のいずれかでなければなりません。解析力の詳細については "
+"分析力を設定します。指定する値は、``min``、``default``、``max`` のいずれかでなければなりません。分析力の詳細については "
 "`コマンドラインオプション <running.html#command-line-options>`__ を参照してください。"
 
 #: ../../ant.rst:141

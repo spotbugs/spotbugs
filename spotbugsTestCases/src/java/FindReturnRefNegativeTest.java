@@ -1,12 +1,13 @@
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
+import java.nio.CharBuffer;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class FindReturnRefNegativeTest {
     private Date date;
     private Date[] dateArray;
-    private Hashtable<Integer, String> ht = new Hashtable<Integer, String>();
+    private HashMap<Integer, String> hm = new HashMap<Integer, String>();
 
     private static Date sDate = new Date();
     private static Date[] sDateArray = new Date[20];
@@ -15,14 +16,14 @@ public class FindReturnRefNegativeTest {
             sDateArray[i] = new Date();
         }
     }
-    private static Hashtable<Integer, String> sht = new Hashtable<Integer, String>();
+    private static HashMap<Integer, String> shm = new HashMap<Integer, String>();
     static {
-        sht.put(1, "123-45-6789");
+        shm.put(1, "123-45-6789");
     }
 
     public Date pubDate;
     public Date[] pubDateArray;
-    public Hashtable<Integer, String> puht = new Hashtable<Integer, String>();
+    public HashMap<Integer, String> puhm = new HashMap<Integer, String>();
 
     public static Date pubSDate;
     public static Date[] pubSDateArray;
@@ -31,9 +32,9 @@ public class FindReturnRefNegativeTest {
             pubSDateArray[i] = new Date();
         }
     }
-    public static Hashtable<Integer, String> pusht = new Hashtable<Integer, String>();
+    public static HashMap<Integer, String> pushm = new HashMap<Integer, String>();
     static {
-        pusht.put(1, "123-45-6789");
+        pushm.put(1, "123-45-6789");
     }
 
     private String string;
@@ -52,8 +53,8 @@ public class FindReturnRefNegativeTest {
         pubDate = new Date();
         dateArray = new Date[20];
         pubDateArray = new Date[20];
-        ht.put(1, "123-45-6789");
-        puht.put(1, "123-45-6789");
+        hm.put(1, "123-45-6789");
+        puhm.put(1, "123-45-6789");
         for (int i = 0; i < dateArray.length; i++) {
             dateArray[i] = new Date();
         }
@@ -93,13 +94,13 @@ public class FindReturnRefNegativeTest {
     }
 
     @NoWarning("EI")
-    public Hashtable<Integer, String> getValues() {
-        return (Hashtable<Integer, String>) ht.clone();
+    public HashMap<Integer, String> getValues() {
+        return (HashMap<Integer, String>) hm.clone();
     }
 
     @NoWarning("MS")
-    public static Hashtable<Integer, String> getSaticValues() {
-        return (Hashtable<Integer, String>) sht.clone();
+    public static HashMap<Integer, String> getStaticValues() {
+        return (HashMap<Integer, String>) shm.clone();
     }
 
     // Returning public case should be OK.
@@ -125,13 +126,13 @@ public class FindReturnRefNegativeTest {
     }
 
     @NoWarning("EI")
-    public Hashtable<Integer, String> getPublicValues() {
-        return puht;
+    public HashMap<Integer, String> getPublicValues() {
+        return puhm;
     }
 
     @NoWarning("MS")
-    public static Hashtable<Integer, String> getPublicStaticValues() {
-        return pusht;
+    public static HashMap<Integer, String> getPublicStaticValues() {
+        return pushm;
     }
 
     // Returning a private immutable should be OK.
@@ -185,13 +186,13 @@ public class FindReturnRefNegativeTest {
     }
 
     @NoWarning("EI2")
-    public void setValues(Hashtable<Integer, String> values) {
-        ht = (Hashtable<Integer, String>) values.clone();
+    public void setValues(HashMap<Integer, String> values) {
+        hm = (HashMap<Integer, String>) values.clone();
     }
 
     @NoWarning("MS")
-    public static void getStaticValues(Hashtable<Integer, String>  values) {
-        sht = (Hashtable<Integer, String>) values.clone();
+    public static void getStaticValues(HashMap<Integer, String>  values) {
+        shm = (HashMap<Integer, String>) values.clone();
     }
 
     // Do not warn for synthetic methods.
@@ -201,7 +202,47 @@ public class FindReturnRefNegativeTest {
         private void accessParent() {
             Date d1 = date;
             Date d2 = dateArray[0];
-            String s = ht.get(1);
+            String s = hm.get(1);
         }
+    }
+
+    private CharBuffer charBuf;
+    private char[] charArray;
+
+    private static CharBuffer sCharBuf;
+    private static char[] sCharArray;
+
+    @NoWarning("EI")
+    public CharBuffer getBufferReadOnly() {
+        return charBuf.asReadOnlyBuffer();
+    }
+
+    @NoWarning("MS")
+    public static CharBuffer getStaticBufferReadOnly() {
+        return sCharBuf.asReadOnlyBuffer();
+    }
+
+    @NoWarning("EI")
+    public CharBuffer getBufferCopy() {
+        CharBuffer cb = CharBuffer.allocate(charArray.length);
+        cb.put(charArray);
+        return cb;
+    }
+
+    @NoWarning("MS")
+    public static CharBuffer getStaticBufferCopy() {
+        CharBuffer cb = CharBuffer.allocate(sCharArray.length);
+        cb.put(sCharArray);
+        return cb;
+    }
+
+    @NoWarning("EI")
+    public CharBuffer getBuferWrap() {
+        return CharBuffer.wrap(charArray).asReadOnlyBuffer();        
+    }
+
+    @NoWarning("MS")
+    public static CharBuffer getStaticBuferWrap() {
+        return CharBuffer.wrap(sCharArray).asReadOnlyBuffer();        
     }
 }
