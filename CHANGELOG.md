@@ -12,7 +12,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 * New detector `FindBadEndOfStreamCheck` for new bug type `EOS_BAD_END_OF_STREAM_CHECK`. This bug is reported whenever the return value of java.io.FileInputStream.read() or java.io.FileReader.read() is first converted to byte/int and only thereafter checked against -1. (See [SEI CERT rule FIO08-J](https://wiki.sei.cmu.edu/confluence/display/java/FIO08-J.+Distinguish+between+characters+or+bytes+read+from+a+stream+and+-1))
 ### Fixed
-- Class names containing the substring "immutable" (case insensitive) are considered immutable
+- Heuristics to detect mutable classes improved: non-public or static "setters" are no longer considered as setters. Also the return value must be of a primitive type to consider the function as a setter. The list of known immutable classes was also extended.
 
 ## 4.3.0 - 2021-07-01
 

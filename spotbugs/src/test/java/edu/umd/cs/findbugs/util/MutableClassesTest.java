@@ -36,11 +36,6 @@ public class MutableClassesTest {
     }
 
     @Test
-    public void TestNamedImmutable() {
-        Assert.assertFalse(MutableClasses.mutableSignature("Lcom/google/common/collect/ImmutableMap;"));
-    }
-
-    @Test
     public void TestAnnotatedImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/Annotated;"));
     }
