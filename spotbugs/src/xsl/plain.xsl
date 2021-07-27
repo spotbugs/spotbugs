@@ -42,6 +42,7 @@
 <xsl:template match="/">
 	<html>
 	<head>
+		<meta charset="UTF-8" />
 		<title>SpotBugs Report</title>
 		<style type="text/css">
 		.tablerow0 {
