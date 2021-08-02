@@ -14,15 +14,21 @@ import java.util.Objects;
  */
 final class Message {
     @NonNull
+    final String text;
+
+    @NonNull
     final List<String> arguments;
 
-    Message(@NonNull List<String> arguments) {
+    Message(@NonNull String text, @NonNull List<String> arguments) {
+        this.text = text;
         this.arguments = Collections.unmodifiableList(Objects.requireNonNull(arguments));
     }
 
     JsonObject toJsonObject() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", "default");
+
+        jsonObject.addProperty("text", text);
 
         JsonArray jsonArray = new JsonArray();
         for (String arg : arguments) {
