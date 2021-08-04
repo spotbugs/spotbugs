@@ -76,7 +76,7 @@ jobs:
         run: |
           set -x
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
-          assets=()
+          assets=("-a" "./eclipsePlugin/build/distributions/eclipsePlugin.zip")
           for asset in ./spotbugs/build/distributions/*; do
             assets+=("-a" "$asset")
           done
