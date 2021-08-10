@@ -307,7 +307,7 @@ msgid ""
 " and find more bugs, but which may require more memory and take more time"
 " to complete. See :doc:`effort`."
 msgstr ""
-"解析力を設定します。-effort:minは精度を向上させるがメモリ消費量も増やす解析を無効にします。SpotBugs "
+"分析力を設定します。-effort:minは精度を向上させるがメモリ消費量も増やす解析を無効にします。SpotBugs "
 "を実行するためのメモリが不足したり、解析が完了するまでに異常に長い時間がかかるときは、このオプションを試してみると良いでしょう。詳細は "
 ":doc:`effort` を参照してください。"
 

@@ -1675,6 +1675,20 @@ factory pattern to create these objects.</p>
             ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindBadEndOfStreamCheck">
+    <Details>
+      <![CDATA[
+            <p>Detector for patterns where the return value of java.io.FileInputStream.read() or
+               java.io.FileReader.read() is converted before checking against -1.</p>
+            <p>
+               Both methods return an int. If this int is converted to byte (in the case of
+               FileInputStream.read()) then -1 and the byte 0xFF become indistinguishable.
+               If it is converted to char (in the case of FileReader.read()) then -1 becomes
+               0xFFFF which is Character.MAX_VALUE since characters are unsigned in Java.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -3073,7 +3087,7 @@ this code, but it is worth reviewing.
     <LongDescription>{1} compares class names rather than class objects</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method checks to see if two objects are the same class by checking to see if the names
+  <p> This class defines an equals method that checks to see if two objects are the same class by checking to see if the names
 of their classes are equal. You can have different classes with the same name if they are loaded by
 different class loaders. Just check to see if the class objects are the same.
 </p>
@@ -3517,6 +3531,65 @@ Thus, having a mutable instance field generally creates race conditions.
    the mutable object would compromise security or other
    important properties, you will need to do something different.
   Storing a copy of the object is better approach in many situations.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="MS_EXPOSE_BUF">
+    <ShortDescription>May expose internal representation by returning a buffer sharing non-public data</ShortDescription>
+    <LongDescription>{1} may expose internal representation by returning {2.givenClass}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> A public static method either returns a buffer (java.nio.*Buffer) which wraps an array that is part of the
+  static state of the class by holding a reference only to this same array or it returns a shallow-copy of a buffer
+  that is part of the static stat of the class which shares its reference with the original buffer.
+   Any code that calls this method can freely modify the underlying array.
+   One fix is to return a read-only buffer or a new buffer with a copy of the array.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="EI_EXPOSE_BUF">
+    <ShortDescription>May expose internal representation by returning a buffer sharing non-public data</ShortDescription>
+    <LongDescription>{1} may expose internal representation by returning {2.givenClass}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> Returning a reference to a buffer (java.nio.*Buffer) which wraps an array stored in one of the object's fields
+  exposes the internal representation of the array elements because the buffer only stores a reference to the array
+  instead of copying its content. Similarly, returning a shallow-copy of such a buffer (using its duplicate() method)
+  stored in one of the object's fields also exposes the internal representation of the buffer.&nbsp;
+   If instances are accessed by untrusted code, and unchecked changes to
+   the array would compromise security or other
+   important properties, you will need to do something different.
+  Returning a read-only buffer (using its asReadOnly() method) or copying the array to a new buffer (using its put()
+  method) is a better approach in many situations.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="EI_EXPOSE_BUF2">
+    <ShortDescription>May expose internal representation by creating a buffer which incorporates reference to array</ShortDescription>
+    <LongDescription>{1} may expose internal representation by creating a buffer which contains an external array into {2.givenClass}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This code creates a buffer which stores a reference to an external array or the array of an external buffer into
+  the internal representation of the object.&nbsp;
+   If instances
+   are accessed by untrusted code, and unchecked changes to
+   the array would compromise security or other
+   important properties, you will need to do something different.
+  Storing a copy of the array is a better approach in many situations.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="EI_EXPOSE_STATIC_BUF2">
+    <ShortDescription>May expose internal static state by creating a buffer which stores an external array into a static field</ShortDescription>
+    <LongDescription>{1} may expose internal static state by creating a buffer which stores an external array into static field {2}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This code creates a buffer which stores a reference to an external array or the array of an external buffer into
+  a static field.
+   If unchecked changes to
+   the array would compromise security or other
+   important properties, you will need to do something different.
+  Storing a copy of the array is a better approach in many situations.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -8402,6 +8475,21 @@ after the call to initLogging, the logger configuration is lost
         </p>]]>
       </Details>
   </BugPattern>
+
+  <BugPattern type="EOS_BAD_END_OF_STREAM_CHECK">
+    <ShortDescription>Data read is converted before comparison to -1</ShortDescription>
+    <LongDescription>The return value of {2} in method {1} is converted to {3} before comparison to {4}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      The method java.io.FileInputStream.read() returns an int. If this int is converted to a byte then -1 (which
+      indicates an EOF) and the byte 0xFF become indistinguishable, this comparing the (converted) result to -1
+      causes the read (probably in a loop) to end prematurely if the character 0xFF is met. Similarly, the method
+      java.io.FileReader.read() also returns an int. If it is converted to a char then -1 becomes 0xFFFF which is
+      Character.MAX_VALUE. Comparing the result to -1 is pointless, since characters are unsigned in Java. If the
+      checking for EOF is the condition of a loop then this loop is infinite.
+      </p>]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -8546,4 +8634,5 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="FB">SpotBugs did not produce the expected warnings on a method</BugCode>
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
+  <BugCode abbrev="EOS">Bad End of Stream check</BugCode>
 </MessageCollection>

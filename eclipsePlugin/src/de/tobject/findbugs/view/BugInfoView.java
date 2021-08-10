@@ -186,7 +186,7 @@ public class BugInfoView extends AbstractFindbugsView {
         data.grabExcessHorizontalSpace = true;
         data.grabExcessVerticalSpace = true;
         try {
-            browser = new Browser(parent, SWT.NO_BACKGROUND);
+            browser = new Browser(parent, SWT.NONE);
             browser.setLayoutData(data);
             browser.setBackground(parent.getBackground());
             browser.addOpenWindowListener(new OpenWindowListener() {
