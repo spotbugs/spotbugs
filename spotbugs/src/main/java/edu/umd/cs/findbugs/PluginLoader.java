@@ -1181,11 +1181,11 @@ public class PluginLoader {
     private List<Document> getMessageDocuments() throws PluginException {
         // List of message translation files in decreasing order of precedence
         ArrayList<Document> messageCollectionList = new ArrayList<>();
-        PluginException caught = null;
+        RuntimeException caught = null;
         for (String m : getPotentialMessageFiles()) {
             try {
                 addCollection(messageCollectionList, m);
-            } catch (PluginException e) {
+            } catch (RuntimeException e) {
                 caught = e;
                 AnalysisContext.logError(
                         "Error loading localized message file:" + m, e);
