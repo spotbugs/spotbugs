@@ -4,6 +4,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased - 2021-??-??
+
 ## 4.4.0 - 2021-08-12
 
 ### Fixed
