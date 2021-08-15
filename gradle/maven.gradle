@@ -4,15 +4,6 @@ apply plugin: 'signing'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT") && /* for Eclipse plugin */ !version.contains("-SNAPSHOT.")
 
 publishing {
-  repositories {
-    maven {
-      url isReleaseVersion ? "https://oss.sonatype.org/service/local/staging/deploy/maven2/" : "https://oss.sonatype.org/content/repositories/snapshots/"
-      credentials {
-        username = project.hasProperty('ossrhUsername') ? ossrhUsername : "Unknown user"
-        password = project.hasProperty('ossrhPassword') ? ossrhPassword : "Unknown password"
-      }
-    }
-  }
   publications {
     maven(MavenPublication) {
       from components.java

@@ -29,10 +29,10 @@ jobs:
       - name: Build
         run: |
           gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
-          echo ossrhUsername=eller86 >> gradle.properties
-          echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
+          echo sonatypeUsername=eller86 >> gradle.properties
+          echo "sonatypePassword=${SONATYPE_PASSWORD}" >> gradle.properties
           echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
-          ./gradlew assemble publish createReleaseBody --no-daemon
+          ./gradlew assemble publishToSonatype closeSonatypeStagingRepository createReleaseBody --no-daemon
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
