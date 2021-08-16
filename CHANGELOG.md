@@ -8,6 +8,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - `com.intellij.diagnostic.PluginException` in IntelliJ SpotBugs plugin (see [IntelliJ SpotBugs plugin issue tacker](https://github.com/JetBrains/spotbugs-intellij-plugin/issues?q=Do+not+request+resource+from+classloader+using+path+with+leading+slash))
 
+## 4.4.0 - 2021-08-12
+
 ### Fixed
 - Fixed False positives for RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE ([#600](https://github.com/spotbugs/spotbugs/issues/600) and [#1338](https://github.com/spotbugs/spotbugs/issues/1338))
 - Inconsistent bug description on `EQ_COMPARING_CLASS_NAMES` ([#1523](https://github.com/spotbugs/spotbugs/issues/1523))
