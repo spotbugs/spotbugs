@@ -20,7 +20,7 @@ public class MutableClasses {
             "java.math.Decimal", "java.io.File", "java.awt.Font", "java.awt.BasicStroke",
             "java.awt.Color", "java.awt.GradientPaint", "java.awt.LinearGradientPaint",
             "java.awt.RadialGradientPaint", "java.Cursor.", "java.util.UUID", "java.net.URL",
-            "java.net.URI", "java.net.Inet4Address", "java.net.InetSocketAddress",
+            "java.net.URI", "java.net.Inet4Address", "java.net.Inet6Address", "java.net.InetSocketAddress",
             "java.security.Permission"));
 
     private static final List<String> SETTER_LIKE_NAMES = Arrays.asList(
