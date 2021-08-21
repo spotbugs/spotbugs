@@ -1,7 +1,23 @@
 package edu.umd.cs.findbugs.util;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+@Immutable
+class Annotated {
+    int n;
+
+    Annotated(int n) {
+        this.n = n;
+    }
+
+    // False setter
+    Annotated set(int n) {
+        return new Annotated(n);
+    }
+}
 
 public class MutableClassesTest {
     @Test
@@ -12,6 +28,16 @@ public class MutableClassesTest {
     @Test
     public void TestKnownImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature("Ljava/lang/String;"));
+    }
+
+    @Test
+    public void TestKnownImmutablePackage() {
+        Assert.assertFalse(MutableClasses.mutableSignature("Ljava/time/LocalTime;"));
+    }
+
+    @Test
+    public void TestAnnotatedImmutable() {
+        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/Annotated;"));
     }
 
     @Test
@@ -41,6 +67,7 @@ public class MutableClassesTest {
     }
 
     public static class Immutable {
+        private static Immutable immutable;
         private int n;
 
         public Immutable(int n) {
@@ -51,8 +78,24 @@ public class MutableClassesTest {
             return n;
         }
 
-        public Immutable setN(int n) {
+        public void setN1(int n) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Immutable setN2(int n) {
             return new Immutable(n);
+        }
+
+        void setN3(int n) {
+            this.n = n;
+        }
+
+        public static Immutable getImmutable() {
+            return immutable;
+        }
+
+        public static void setImmutable(Immutable imm) {
+            immutable = imm;
         }
     }
 
