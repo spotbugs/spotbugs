@@ -21,6 +21,7 @@ public class MutableClasses {
             "java.awt.Color", "java.awt.GradientPaint", "java.awt.LinearGradientPaint",
             "java.awt.RadialGradientPaint", "java.Cursor.", "java.util.UUID", "java.net.URL",
             "java.net.URI", "java.net.Inet4Address", "java.net.Inet6Address", "java.net.InetSocketAddress",
+            "java.math.BigDecimal", "java.math.BigInteger",
             "java.security.Permission",
             "java.time.Duration", "java.time.Instant", "java.time.LocalDate", "java.time.LocalDateTime",
             "java.time.LocalTime", "java.time.MonthDay", "java.time.OffsetDateTime", "java.time.OffsetTime",
