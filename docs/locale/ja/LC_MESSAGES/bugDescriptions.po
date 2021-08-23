@@ -1,14 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2016-2021, spotbugs community
-# This file is distributed under the same license as the spotbugs package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+# Translations template for PROJECT.
+# Copyright (C) 2017 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: spotbugs 4.4\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-23 11:11+0000\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-08-23 11:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,11 +19,11 @@ msgstr ""
 
 #: ../../bugDescriptions.rst:2
 msgid "Bug descriptions"
-msgstr ""
+msgstr "検知可能なバグの詳細"
 
 #: ../../bugDescriptions.rst:4
 msgid "This document lists the standard bug patterns reported by SpotBugs."
-msgstr ""
+msgstr "このページではSpotBugsが標準で検知可能なバグを一覧で紹介しています。"
 
 #: ../../generated/bugDescriptionList.inc:2
 msgid "Bad practice (BAD_PRACTICE)"
@@ -3245,10 +3245,13 @@ msgid ""
 msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:3217
+#, fuzzy
 msgid ""
 "SQL: Method attempts to access a result set field with index 0 "
 "(SQL_BAD_RESULTSET_ACCESS)"
 msgstr ""
+"SQL: Method attempts to access a result set field with index 0 "
+"(BRSA_BAD_RESULTSET_ACCESS)"
 
 #: ../../generated/bugDescriptionList.inc:3219
 msgid ""
@@ -3565,10 +3568,13 @@ msgid ""
 msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:3521
+#, fuzzy
 msgid ""
 "NP: A known null value is checked to see if it is an instance of a type "
 "(NP_NULL_INSTANCEOF)"
 msgstr ""
+"NP: A known null value is checked to see if it is an instance of a type "
+"(BC_NULL_INSTANCEOF)"
 
 #: ../../generated/bugDescriptionList.inc:3523
 msgid ""
@@ -5491,8 +5497,11 @@ msgid ""
 msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:5464
+#, fuzzy
 msgid "LI: Incorrect lazy initialization of static field (LI_LAZY_INIT_STATIC)"
 msgstr ""
+"LI: Incorrect lazy initialization of instance field "
+"(LI_LAZY_INIT_INSTANCE)"
 
 #: ../../generated/bugDescriptionList.inc:5466
 msgid ""
@@ -5509,10 +5518,13 @@ msgid ""
 msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:5483
+#, fuzzy
 msgid ""
 "LI: Incorrect lazy initialization and update of static field "
 "(LI_LAZY_INIT_UPDATE_STATIC)"
 msgstr ""
+"LI: Incorrect lazy initialization of instance field "
+"(LI_LAZY_INIT_INSTANCE)"
 
 #: ../../generated/bugDescriptionList.inc:5485
 msgid ""
@@ -8165,4 +8177,3 @@ msgid ""
 "parameter.\n"
 "    </p>"
 msgstr ""
-
