@@ -27,6 +27,7 @@ public class MutableClasses {
             "java.time.LocalTime", "java.time.MonthDay", "java.time.OffsetDateTime", "java.time.OffsetTime",
             "java.time.Year", "java.time.YearMonth", "java.time.ZonedDateTime", "java.time.ZoneOffset",
             "java.time.ZoneRegion",
+            "java.util.Locale",
             "java.util.OptionalInt", "java.util.OptionalLong", "java.util.OptionalDouble"));
 
     private static final List<String> SETTER_LIKE_NAMES = Arrays.asList(
