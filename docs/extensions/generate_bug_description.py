@@ -18,8 +18,10 @@ def generate_pattern_title(bug_pattern, message):
 def generate_bug_description(language):
     print("Generating bug description page for %s..." % language)
     findbugs = parse('../spotbugs/etc/findbugs.xml')
+    fallback = None
     if language == 'ja':
         messages = parse('../spotbugs/etc/messages_ja.xml')
+        fallback = parse('../spotbugs/etc/messages.xml')
     else:
         messages = parse('../spotbugs/etc/messages.xml')
 
@@ -42,7 +44,7 @@ def generate_bug_description(language):
                 type = bug_pattern.get('type')
                 bug_description_page.write(".. _%s:" % type)
                 bug_description_page.write('\n\n')
-                message = messages.find(".//BugPattern[@type='%s']" % type)
+                message = findMessage(".//BugPattern[@type='%s']" % type, messages, fallback)
                 pattern_title = generate_pattern_title(bug_pattern, message)
                 bug_description_page.write("%s\n%s\n\n" % (pattern_title, '^' * len(pattern_title)))
                 details = message.findtext('.//Details')
@@ -61,17 +63,14 @@ def generate_bug_description(language):
                     continue
                 klass = element.get("class")
                 disabled = parse_bool_attr(element, "disabled")
-                speed = element.get("speed")
                 reports = element.get("reports", "").split(",")
 
                 page = disabled_detector_page if disabled else enabled_detector_page
-
-                message = messages.find(".//Detector[@class='%s']" % klass)
+                message = findMessage(".//Detector[@class='%s']" % klass, messages, fallback)
                 short_name = klass.split(".")[-1]
+                details = message.findtext('.//Details')
 
                 page.write("%s\n%s\n\n" % (short_name, '^' * len(short_name)))
-
-                details = message.findtext('.//Details')
                 page.write('.. raw:: html\n')
                 for line in details.splitlines():
                     page.write('  ')
@@ -79,13 +78,19 @@ def generate_bug_description(language):
                     page.write('\n')
                 page.write('\n')
 
-                if speed:
-                    page.write('Speed: *%s*\n\n' % speed)
-
                 for type in sorted(reports):
                     page.write("* :ref:`%s`" % type)
                     page.write('\n')
                 page.write('\n')
+
+def findMessage(pattern, messages, fallback):
+    message = messages.find(pattern)
+    if message is None and fallback is not None:
+        print("Using fallback for %s" % pattern)
+        message = fallback.find(pattern)
+    if message is None:
+        print("Pattern %s was not found", pattern)
+    return message
 
 def setup(app):
     app.connect('builder-inited', lambda app: generate_bug_description(app.config.language))
