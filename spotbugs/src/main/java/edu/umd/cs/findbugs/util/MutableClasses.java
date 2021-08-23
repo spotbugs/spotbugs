@@ -16,7 +16,7 @@ public class MutableClasses {
     private static final Set<String> KNOWN_IMMUTABLE_CLASSES = new HashSet<>(Arrays.asList(
             "java.lang.String", "java.lang.Integer", "java.lang.Byte", "java.lang.Character",
             "java.lang.Short", "java.lang.Boolean", "java.lang.Class", "java.lang.Long", "java.lang.Double",
-            "java.lang.Float", "java.lang.StackTraceElement", "java.math.BigInteger",
+            "java.lang.Float", "java.lang.Runtime.Version", "java.lang.StackTraceElement", "java.math.BigInteger",
             "java.math.Decimal", "java.io.File", "java.awt.Font", "java.awt.BasicStroke",
             "java.awt.Color", "java.awt.GradientPaint", "java.awt.LinearGradientPaint",
             "java.awt.RadialGradientPaint", "java.Cursor.", "java.util.UUID", "java.net.URL",
