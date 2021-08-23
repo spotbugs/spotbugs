@@ -9,7 +9,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bump gson from 2.8.7 to 2.8.8 ([#1658](https://github.com/spotbugs/spotbugs/pull/1658))
 
 ### Fixed
-- Fixed immutable classes in java.net.* as being flagged as EI ([#1653](https://github.com/spotbugs/spotbugs/issues/1653)
+- Fixed immutable classes in java.net.* as being flagged as EI ([#1653](https://github.com/spotbugs/spotbugs/issues/1653))
+- Fixed miscellaneous immutable classes as being flagged as EI ([#1662](https://github.com/spotbugs/spotbugs/pull/1662))
 
 ## 4.4.0 - 2021-08-12
 
