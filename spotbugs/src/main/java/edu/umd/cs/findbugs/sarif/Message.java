@@ -26,7 +26,7 @@ final class Message {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", "default");
 
-        if(text != null) {
+        if (text != null) {
             jsonObject.addProperty("text", text);
         }
 
