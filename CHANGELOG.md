@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2021-??-??
 ### Changed
 - Bump gson from 2.8.7 to 2.8.8 ([#1658](https://github.com/spotbugs/spotbugs/pull/1658))
+- Fixed SARIF format to be compatible with Github code scanning API requirements ([#1630](https://github.com/spotbugs/spotbugs/issues/1630))
 
 ### Fixed
 - Fixed immutable classes in java.net.* as being flagged as EI ([#1653](https://github.com/spotbugs/spotbugs/issues/1653)
@@ -18,7 +19,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Inconsistent bug description on `EQ_COMPARING_CLASS_NAMES` ([#1523](https://github.com/spotbugs/spotbugs/issues/1523))
 - Add a declaration of charset encoding in generated reports ([#1623](https://github.com/spotbugs/spotbugs/pull/1623))
 - Fixed regression in Bug Info view for Eclipse 2021-03+ ([#1477](https://github.com/spotbugs/spotbugs/issues/1477))
-- Fixed SARIF format to be compatible with Github code scanning API requirements ([#1630](https://github.com/spotbugs/spotbugs/issues/1630))
 
 ### Added
 * New detector `FindBadEndOfStreamCheck` for new bug type `EOS_BAD_END_OF_STREAM_CHECK`. This bug is reported whenever the return value of java.io.FileInputStream.read() or java.io.FileReader.read() is first converted to byte/int and only thereafter checked against -1. (See [SEI CERT rule FIO08-J](https://wiki.sei.cmu.edu/confluence/display/java/FIO08-J.+Distinguish+between+characters+or+bytes+read+from+a+stream+and+-1))
