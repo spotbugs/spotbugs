@@ -42,7 +42,7 @@ msgstr ""
 
 #: ../../bugDescriptionList.rst:38
 msgid ""
-"SW: Certain swing methods needs to be invoked in Swing thread "
+"SW: Certain swing methods need to be invoked in Swing thread "
 "(SW_SWING_METHODS_INVOKED_IN_SWING_THREAD)"
 msgstr ""
 
