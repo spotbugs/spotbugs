@@ -547,7 +547,11 @@ public class PluginLoader {
             LOG.debug("  from urls: {}", Arrays.asList(urlClassLoader.getURLs()));
             URL url = urlClassLoader.findResource(name);
             if (url == null) {
-                url = urlClassLoader.findResource("/" + name);
+                try {
+                    url = urlClassLoader.findResource("/" + name);
+                } catch (RuntimeException e) {
+                    assert true; // ignore
+                }
             }
             if (IO.verifyURL(url)) {
                 return url;
@@ -557,7 +561,11 @@ public class PluginLoader {
         LOG.debug("Trying to load {} using ClassLoader.getResource", name);
         URL url = classLoaderForResources.getResource(name);
         if (url == null) {
-            url = classLoaderForResources.getResource("/" + name);
+            try {
+                url = classLoaderForResources.getResource("/" + name);
+            } catch (RuntimeException e) {
+                assert true; // ignore
+            }
         }
         if (IO.verifyURL(url)) {
             return url;
@@ -1181,11 +1189,11 @@ public class PluginLoader {
     private List<Document> getMessageDocuments() throws PluginException {
         // List of message translation files in decreasing order of precedence
         ArrayList<Document> messageCollectionList = new ArrayList<>();
-        RuntimeException caught = null;
+        PluginException caught = null;
         for (String m : getPotentialMessageFiles()) {
             try {
                 addCollection(messageCollectionList, m);
-            } catch (RuntimeException e) {
+            } catch (PluginException e) {
                 caught = e;
                 AnalysisContext.logError(
                         "Error loading localized message file:" + m, e);
