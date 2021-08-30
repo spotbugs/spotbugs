@@ -68,6 +68,10 @@ public class MutableClasses {
     }
 
     public static boolean looksLikeASetter(Method method, JavaClass cls) {
+        if (method.isPrivate() || method.isProtected()) {
+            return false;
+        }
+
         for (String name : SETTER_LIKE_NAMES) {
             if (method.getName().startsWith(name)) {
                 String retSig = method.getReturnType().getSignature();

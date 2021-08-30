@@ -44,7 +44,7 @@ public class MutableClassesTest {
         private int n;
 
         public Immutable(int n) {
-            this.n = n;
+            setNPrivate(n);
         }
 
         public int getN() {
@@ -53,6 +53,14 @@ public class MutableClassesTest {
 
         public Immutable setN(int n) {
             return new Immutable(n);
+        }
+
+        private void setNPrivate(int n) {
+            this.n = n;
+        }
+
+        protected void setNProtected(int n) {
+            this.n = n;
         }
     }
 
