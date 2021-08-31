@@ -54,6 +54,10 @@ public class MutableClassesTest {
         public Immutable setN(int n) {
             return new Immutable(n);
         }
+
+        public void setNUnsupported(int n) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Test

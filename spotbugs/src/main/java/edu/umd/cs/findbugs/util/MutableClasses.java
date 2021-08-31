@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.List;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -68,6 +69,14 @@ public class MutableClasses {
     }
 
     public static boolean looksLikeASetter(Method method, JavaClass cls) {
+        // If the method throws an UnsupportedOperationException then we ignore it.
+        ExceptionTable exceptions = method.getExceptionTable();
+        if (exceptions != null) {
+            if (Arrays.asList(exceptions.getExceptionNames()).contains("java.lang.UnsupportedOperationException")) {
+                return false;
+            }
+        }
+
         for (String name : SETTER_LIKE_NAMES) {
             if (method.getName().startsWith(name)) {
                 String retSig = method.getReturnType().getSignature();
