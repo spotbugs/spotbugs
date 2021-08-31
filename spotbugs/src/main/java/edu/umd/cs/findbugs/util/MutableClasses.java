@@ -68,7 +68,7 @@ public class MutableClasses {
     }
 
     public static boolean looksLikeASetter(Method method, JavaClass cls) {
-        if (method.isPrivate() || method.isProtected()) {
+        if (method.isPrivate()) {
             return false;
         }
 

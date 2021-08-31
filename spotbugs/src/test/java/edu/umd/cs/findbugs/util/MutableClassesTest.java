@@ -58,10 +58,6 @@ public class MutableClassesTest {
         private void setNPrivate(int n) {
             this.n = n;
         }
-
-        protected void setNProtected(int n) {
-            this.n = n;
-        }
     }
 
     @Test
