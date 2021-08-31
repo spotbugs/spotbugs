@@ -1,5 +1,8 @@
 package edu.umd.cs.findbugs.util;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -53,6 +56,10 @@ public class MutableClassesTest {
 
         public Immutable setN(int n) {
             return new Immutable(n);
+        }
+
+        public void writeToStream(OutputStream os) throws IOException {
+            os.write(n);
         }
     }
 
