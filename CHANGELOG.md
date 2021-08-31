@@ -11,6 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Fixed immutable classes in java.net.* as being flagged as EI ([#1653](https://github.com/spotbugs/spotbugs/issues/1653)
+- Fixed algorithm deciding on the mutability of a class: methods returning any object are excluded from the potential setters ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 
 ## 4.4.0 - 2021-08-12
 
