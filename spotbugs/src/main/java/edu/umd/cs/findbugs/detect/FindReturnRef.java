@@ -137,7 +137,8 @@ public class FindReturnRef extends OpcodeStackDetector {
         bufferParamUnderDuplication = null;
 
         if (staticMethod && seen == Const.PUTSTATIC && nonPublicFieldOperand()
-                && MutableClasses.mutableSignature(getSigConstantOperand())) {
+                && (MutableClasses.mutableSignature(getSigConstantOperand())
+                || isBufferClassSignature(getSigConstantOperand()))) {
             OpcodeStack.Item top = stack.getStackItem(0);
             CaptureKind capture = getPotentialCapture(top);
             if (capture != CaptureKind.NONE) {
@@ -152,7 +153,8 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         }
         if (!staticMethod && seen == Const.PUTFIELD && nonPublicFieldOperand()
-                && MutableClasses.mutableSignature(getSigConstantOperand())) {
+                && (MutableClasses.mutableSignature(getSigConstantOperand())
+                || isBufferClassSignature(getSigConstantOperand()))) {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item target = stack.getStackItem(1);
             CaptureKind capture = getPotentialCapture(top);
@@ -196,8 +198,8 @@ public class FindReturnRef extends OpcodeStackDetector {
                     field.isPublic() ||
                     AnalysisContext.currentXFactory().isEmptyArrayField(field) ||
                     field.getName().indexOf("EMPTY") != -1 ||
-                    !MutableClasses.mutableSignature(field.getSignature())) {
-                return;
+                    !(MutableClasses.mutableSignature(field.getSignature()) ||
+                    isBufferClassSignature(field.getSignature()))) {                return;
             }
             bugAccumulator.accumulateBug(new BugInstance(this, (staticMethod ? "MS" : "EI") + "_EXPOSE_"
                     + (isBuf ? "BUF" : "REP"),
@@ -227,7 +229,7 @@ public class FindReturnRef extends OpcodeStackDetector {
 
             if (seen == Const.INVOKEVIRTUAL && "duplicate".equals(method.getName())
                     && DUPLICATE_METHODS_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
-                    && BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
+                    && isBufferClassSignature(method.getClassDescriptor().getSignature())) {
                 if (field != null && field.getClassDescriptor().equals(getClassDescriptor()) && !field.isPublic()) {
                     bufferFieldUnderDuplication = field;
                 } else if (item.isInitialParameter()) {
@@ -240,7 +242,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             MethodDescriptor method = getMethodDescriptorOperand();
             if (method == null || !"wrap".equals(method.getName())
                     || !WRAP_METHOD_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
-                    || !BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
+                    || !isBufferClassSignature(method.getClassDescriptor().getSignature())) {
                 return;
             }
             OpcodeStack.Item arg = stack.getStackItem(0);
@@ -351,5 +353,9 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         } while (klass != null);
         return false;
+    }
+
+    private boolean isBufferClassSignature(String sig) {
+        return BUFFER_CLASS_MATCHER.reset(sig).matches();
     }
 }

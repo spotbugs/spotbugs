@@ -54,6 +54,10 @@ public class MutableClassesTest {
         public Immutable setN(int n) {
             return new Immutable(n);
         }
+
+        public Mutable addToMutable(Mutable m) {
+            return new Mutable(m.getN() + n);
+        }
     }
 
     @Test

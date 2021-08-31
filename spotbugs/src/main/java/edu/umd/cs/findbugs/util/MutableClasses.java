@@ -68,12 +68,15 @@ public class MutableClasses {
     }
 
     public static boolean looksLikeASetter(Method method, JavaClass cls) {
+        // If the method returns an object (of either the same or another type) then we suppose
+        // that it is not a setter but creates a new instance instead.
+        if (method.getReturnType().getSignature().startsWith("L")) {
+            return false;
+        }
+
         for (String name : SETTER_LIKE_NAMES) {
             if (method.getName().startsWith(name)) {
-                String retSig = method.getReturnType().getSignature();
-                // If setter-like methods returns an object of the same type then we suppose that it
-                // is not a setter but creates a new instance instead.
-                return !("L" + cls.getClassName().replace('.', '/') + ";").equals(retSig);
+                return true;
             }
         }
         return false;
