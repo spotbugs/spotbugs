@@ -3,6 +3,42 @@ package edu.umd.cs.findbugs.util;
 import org.junit.Assert;
 import org.junit.Test;
 
+class Mutable {
+    private int n;
+
+    public Mutable(int n) {
+        this.n = n;
+    }
+
+    public void setN(int n) {
+        this.n = n;
+    }
+
+    public int getN() {
+        return n;
+    }
+}
+
+class Immutable {
+    private int n;
+
+    public Immutable(int n) {
+        setNPrivate(n);
+    }
+
+    public int getN() {
+        return n;
+    }
+
+    public Immutable setN(int n) {
+        return new Immutable(n);
+    }
+
+    private void setNPrivate(int n) {
+        this.n = n;
+    }
+}
+
 public class MutableClassesTest {
     @Test
     public void TestKnownMutable() {
@@ -19,49 +55,13 @@ public class MutableClassesTest {
         Assert.assertTrue(MutableClasses.mutableSignature("[I"));
     }
 
-    public static class Mutable {
-        private int n;
-
-        public Mutable(int n) {
-            this.n = n;
-        }
-
-        public void setN(int n) {
-            this.n = n;
-        }
-
-        public int getN() {
-            return n;
-        }
-    }
-
     @Test
     public void TestMutable() {
-        Assert.assertTrue(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Mutable;"));
-    }
-
-    public static class Immutable {
-        private int n;
-
-        public Immutable(int n) {
-            setNPrivate(n);
-        }
-
-        public int getN() {
-            return n;
-        }
-
-        public Immutable setN(int n) {
-            return new Immutable(n);
-        }
-
-        private void setNPrivate(int n) {
-            this.n = n;
-        }
+        Assert.assertTrue(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/Mutable;"));
     }
 
     @Test
     public void TestImmutable() {
-        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Immutable;"));
+        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/Immutable;"));
     }
 }

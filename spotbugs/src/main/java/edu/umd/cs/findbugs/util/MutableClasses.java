@@ -52,8 +52,10 @@ public class MutableClasses {
 
     private static boolean isMutable(JavaClass cls) {
         for (Method method : cls.getMethods()) {
-            if (looksLikeASetter(method, cls)) {
-                return true;
+            if (!method.isPrivate() || cls.isNested()) {
+                if (looksLikeASetter(method, cls)) {
+                    return true;
+                }
             }
         }
         try {
@@ -68,10 +70,6 @@ public class MutableClasses {
     }
 
     public static boolean looksLikeASetter(Method method, JavaClass cls) {
-        if (method.isPrivate()) {
-            return false;
-        }
-
         for (String name : SETTER_LIKE_NAMES) {
             if (method.getName().startsWith(name)) {
                 String retSig = method.getReturnType().getSignature();
