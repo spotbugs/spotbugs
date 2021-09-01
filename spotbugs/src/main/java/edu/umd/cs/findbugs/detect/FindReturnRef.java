@@ -138,7 +138,7 @@ public class FindReturnRef extends OpcodeStackDetector {
 
         if (staticMethod && seen == Const.PUTSTATIC && nonPublicFieldOperand()
                 && (MutableClasses.mutableSignature(getSigConstantOperand())
-                || isBufferClassSignature(getSigConstantOperand()))) {
+                        || isBufferClassSignature(getSigConstantOperand()))) {
             OpcodeStack.Item top = stack.getStackItem(0);
             CaptureKind capture = getPotentialCapture(top);
             if (capture != CaptureKind.NONE) {
@@ -154,7 +154,7 @@ public class FindReturnRef extends OpcodeStackDetector {
         }
         if (!staticMethod && seen == Const.PUTFIELD && nonPublicFieldOperand()
                 && (MutableClasses.mutableSignature(getSigConstantOperand())
-                || isBufferClassSignature(getSigConstantOperand()))) {
+                        || isBufferClassSignature(getSigConstantOperand()))) {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item target = stack.getStackItem(1);
             CaptureKind capture = getPotentialCapture(top);
@@ -199,7 +199,8 @@ public class FindReturnRef extends OpcodeStackDetector {
                     AnalysisContext.currentXFactory().isEmptyArrayField(field) ||
                     field.getName().indexOf("EMPTY") != -1 ||
                     !(MutableClasses.mutableSignature(field.getSignature()) ||
-                    isBufferClassSignature(field.getSignature()))) {                return;
+                            isBufferClassSignature(field.getSignature()))) {
+                return;
             }
             bugAccumulator.accumulateBug(new BugInstance(this, (staticMethod ? "MS" : "EI") + "_EXPOSE_"
                     + (isBuf ? "BUF" : "REP"),
