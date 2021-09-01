@@ -21,7 +21,22 @@ public class MutableClasses {
             "java.awt.Color", "java.awt.GradientPaint", "java.awt.LinearGradientPaint",
             "java.awt.RadialGradientPaint", "java.Cursor.", "java.util.UUID", "java.net.URL",
             "java.net.URI", "java.net.Inet4Address", "java.net.Inet6Address", "java.net.InetSocketAddress",
-            "java.security.Permission"));
+            "java.security.Permission", "com.google.common.collect.ImmutableBiMap",
+            "com.google.common.collect.ImmutableClassToInstanceMap",
+            "com.google.common.collect.ImmutableCollection",
+            "com.google.common.collect.ImmutableList",
+            "com.google.common.collect.ImmutableListMultimap",
+            "com.google.common.collect.ImmutableMap",
+            "com.google.common.collect.ImmutableMultimap",
+            "com.google.common.collect.ImmutableMultiset",
+            "com.google.common.collect.ImmutableRangeMap",
+            "com.google.common.collect.ImmutableRangeSet",
+            "com.google.common.collect.ImmutableSet",
+            "com.google.common.collect.ImmutableSetMultimap",
+            "com.google.common.collect.ImmutableSortedMap",
+            "com.google.common.collect.ImmutableSortedMultiset",
+            "com.google.common.collect.ImmutableSortedSet",
+            "com.google.common.collect.ImmutableTable"));
 
     private static final List<String> SETTER_LIKE_NAMES = Arrays.asList(
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
