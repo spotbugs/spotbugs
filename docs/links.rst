@@ -27,9 +27,6 @@ SpotBugs Plugins
 Similar/Related Tools
 ---------------------
 
-`FindBugs-IDEA <https://plugins.jetbrains.com/plugin/3847-findbugs-idea>`_
-  The FindBugs plugin for `IntelliJ IDEA <https://www.jetbrains.com/idea/>`_.
-
 `sonar-findbugs <https://github.com/SonarQubeCommunity/sonar-findbugs>`_
   A `SonarQube <https://www.sonarqube.org/>`_ plugin which provides rules based on SpotBugs and its major plugins.
 
