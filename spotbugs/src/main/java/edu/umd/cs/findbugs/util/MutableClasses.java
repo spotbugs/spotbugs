@@ -39,6 +39,9 @@ public class MutableClasses {
             "com.google.common.collect.ImmutableSortedSet",
             "com.google.common.collect.ImmutableTable"));
 
+    private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
+            "java.math", "java.time"));
+
     private static final List<String> SETTER_LIKE_NAMES = Arrays.asList(
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
             "enqueue", "dequeue", "write", "append", "replace");
@@ -53,6 +56,16 @@ public class MutableClasses {
         }
 
         String dottedClassName = sig.substring(1, sig.length() - 1).replace('/', '.');
+        int lastDot = dottedClassName.lastIndexOf('.');
+
+        if (lastDot >= 0) {
+            String dottedPackageName = dottedClassName.substring(0, lastDot);
+
+            if (KNOWN_IMMUTABLE_PACKAGES.contains(dottedPackageName)) {
+                return false;
+            }
+        }
+
         if (KNOWN_IMMUTABLE_CLASSES.contains(dottedClassName)) {
             return false;
         }
