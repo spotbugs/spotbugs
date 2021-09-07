@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs.util;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 import java.util.List;
 
 import org.apache.bcel.Repository;
@@ -71,6 +72,10 @@ public class MutableClasses {
 
         try {
             JavaClass cls = Repository.lookupClass(dottedClassName);
+            if (Stream.of(cls.getAnnotationEntries()).anyMatch(s -> (s.toString().endsWith("/Immutable;"))
+                    || s.getAnnotationType().equals("jdk.internal.ValueBased"))) {
+                return false;
+            }
             return isMutable(cls);
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);

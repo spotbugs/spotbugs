@@ -1,7 +1,23 @@
 package edu.umd.cs.findbugs.util;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+@Immutable
+class Annotated {
+    int n;
+
+    Annotated(int n) {
+        this.n = n;
+    }
+
+    // False setter
+    void set(int n) {
+        System.out.println("This is not a setter. So we do not set n to " + n + ".");
+    }
+}
 
 public class MutableClassesTest {
     @Test
@@ -22,6 +38,11 @@ public class MutableClassesTest {
     @Test
     public void TestArray() {
         Assert.assertTrue(MutableClasses.mutableSignature("[I"));
+    }
+
+    @Test
+    public void TestAnnotatedImmutable() {
+        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/Annotated;"));
     }
 
     public static class Mutable {
