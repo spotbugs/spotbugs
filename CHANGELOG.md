@@ -13,7 +13,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed immutable classes in java.net.* as being flagged as EI ([#1653](https://github.com/spotbugs/spotbugs/issues/1653)
 - Classes containing only static methods with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 - Handle all immutable collections in the Guava library as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
-
 - Classes annotated with @Immutable or @jdk.internal.ValueBased are considered as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 ## 4.4.0 - 2021-08-12
 
