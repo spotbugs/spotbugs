@@ -4,7 +4,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2021-??-??
+## 4.4.1 - 2021-09-07
 ### Changed
 - Bump gson from 2.8.7 to 2.8.8 ([#1658](https://github.com/spotbugs/spotbugs/pull/1658))
 - Lower `ExitCodes` logger to debug level ([#1661](https://github.com/spotbugs/spotbugs/issues/1661))
