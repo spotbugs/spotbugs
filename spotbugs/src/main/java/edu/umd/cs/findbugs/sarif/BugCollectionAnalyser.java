@@ -69,7 +69,10 @@ class BugCollectionAnalyser {
         List<Location> locations = new ArrayList<>();
         Location.fromBugInstance(bug, sourceFinder, baseToId).ifPresent(locations::add);
         int bugRank = BugRanker.findRank(bug);
-        Result result = new Result(bug.getType(), index, new Message(arguments), locations, Level.fromBugRank(bugRank));
+
+        Message msg = new Message(arguments);
+        msg.text = bug.getBugPattern().getShortDescription();
+        Result result = new Result(bug.getType(), index, msg, locations, Level.fromBugRank(bugRank));
         results.add(result);
     }
 
