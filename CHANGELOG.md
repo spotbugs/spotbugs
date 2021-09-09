@@ -6,6 +6,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2021-??-??
 
+### Added
+* New detector `FindDangerousPermissionCombination` for new bug type `DPC_DANGEROUS_PERMISSION_COMBINATION`. This bug is reported thenever `ReflectPermission` is granted on the target `suppressAccessChecks` or `RuntimePermission` on `createClassLoader`. (See [CEI CERT RULE ENV03-J](https://wiki.sei.cmu.edu/confluence/display/java/ENV03-J.+Do+not+grant+dangerous+combinations+of+permissions))
+
 ## 4.4.1 - 2021-09-07
 ### Changed
 - Bump gson from 2.8.7 to 2.8.8 ([#1658](https://github.com/spotbugs/spotbugs/pull/1658))

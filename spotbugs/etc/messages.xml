@@ -1689,6 +1689,18 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindDangerousPermissionCombination">
+    <Details>
+      <![CDATA[
+            <p>Detector for patterns where combination of dangerous permissions are granted.</p>
+            <p>
+               Granting ReflectPermission on the target suppressAccessChecks or granting
+               RuntimePermission on the target createClassLoader are both dangerous and thus
+               not recommended.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8490,6 +8502,24 @@ after the call to initLogging, the logger configuration is lost
       </p>]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="DPC_DANGEROUS_PERMISSION_COMBINATION">
+    <ShortDescription>Dangerous combination of permissions granted</ShortDescription>
+    <LongDescription>Granting permission {2} on the target {3} in method {1} is dangerous.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Certain combinations of permissions can produce significant capability increases and should not be granted.
+      Granting ReflectPermission on the target suppressAccessChecks is dangerous in that information (possibly
+      confidential) and methods normally unavailable would be accessible to malicious code. Similarly, the
+      permission java.lang.RuntimePermission applied to target createClassLoader grants code the permission to create
+      a ClassLoader object. This is an extremely dangerous, because malicious applications that can instantiate their
+      own class loaders could then load their own rogue classes into the system. These newly loaded classes could be
+      placed into any protection domain by the class loader, thereby automatically granting the classes the permissions
+      for that domain.
+      <p>See SEI-CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ENV03-J.+Do+not+grant+dangerous+combinations+of+permissions">ENV03-J. Do not grant dangerous combinations of permissions</p>
+      </p>]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -8635,4 +8665,5 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
   <BugCode abbrev="EOS">Bad End of Stream check</BugCode>
+  <BugCode abbrev="DPC">Dangerous Permission Combination</BugCode>
 </MessageCollection>
