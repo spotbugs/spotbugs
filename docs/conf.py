@@ -16,11 +16,11 @@ import sys
 import os
 
 html_context = {
-  'version' : '4.2',
-  'full_version' : '4.2.3',
+  'version' : '4.4',
+  'full_version' : '4.4.1',
   'maven_plugin_version' : '4.2.0',
-  'gradle_plugin_version' : '4.7.0',
-  'archetype_version' : '0.2.3'
+  'gradle_plugin_version' : '4.7.3',
+  'archetype_version' : '0.2.4'
 }
 
 # If extensions (or modules to document with autodoc) are in another directory,

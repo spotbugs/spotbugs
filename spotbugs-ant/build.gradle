@@ -4,7 +4,7 @@ apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
   implementation project(':spotbugs')
-  compileOnly 'org.apache.ant:ant:1.10.10'
+  compileOnly 'org.apache.ant:ant:1.10.11'
 }
 
 tasks.named('javadoc', Javadoc).configure {

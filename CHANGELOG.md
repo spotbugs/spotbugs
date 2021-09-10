@@ -6,12 +6,47 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2021-??-??
 
+### Added
+* New rule `PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS` to warn for custom class loaders who do not call their superclasses' `getPermissions()` in their `getPermissions()` method. This rule based on the SEI CERT rule *SEC07-J Call the superclass's getPermissions() method when writing a custom class loader*. ([#SEC07-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader))
+
+## 4.4.1 - 2021-09-07
 ### Changed
+- Bump gson from 2.8.7 to 2.8.8 ([#1658](https://github.com/spotbugs/spotbugs/pull/1658))
+- Lower `ExitCodes` logger to debug level ([#1661](https://github.com/spotbugs/spotbugs/issues/1661))
+- Fixed SARIF format to be compatible with Github code scanning API requirements ([#1630](https://github.com/spotbugs/spotbugs/issues/1630))
+
+### Fixed
+- Fixed immutable classes in java.net.* as being flagged as EI ([#1653](https://github.com/spotbugs/spotbugs/issues/1653)
+- Classes containing only static methods with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+- Handle all immutable collections in the Guava library as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+- Classes annotated with @Immutable or @jdk.internal.ValueBased are considered as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+- All classes in packages java.time and java.math are now correctly handled as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+
+## 4.4.0 - 2021-08-12
+
+### Fixed
+- Fixed False positives for RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE ([#600](https://github.com/spotbugs/spotbugs/issues/600) and [#1338](https://github.com/spotbugs/spotbugs/issues/1338))
+- Inconsistent bug description on `EQ_COMPARING_CLASS_NAMES` ([#1523](https://github.com/spotbugs/spotbugs/issues/1523))
+- Add a declaration of charset encoding in generated reports ([#1623](https://github.com/spotbugs/spotbugs/pull/1623))
+- Fixed regression in Bug Info view for Eclipse 2021-03+ ([#1477](https://github.com/spotbugs/spotbugs/issues/1477))
+
+### Added
+* New detector `FindBadEndOfStreamCheck` for new bug type `EOS_BAD_END_OF_STREAM_CHECK`. This bug is reported whenever the return value of java.io.FileInputStream.read() or java.io.FileReader.read() is first converted to byte/int and only thereafter checked against -1. (See [SEI CERT rule FIO08-J](https://wiki.sei.cmu.edu/confluence/display/java/FIO08-J.+Distinguish+between+characters+or+bytes+read+from+a+stream+and+-1))
+
+## 4.3.0 - 2021-07-01
+
+### Fixed
+- `MS_EXPOSE_REP` and `EI_EXPOSE_REP` are now reported for code returning a reference to a mutable object indirectly (e.g. via a local variable)
+
+### Changed
+* Bump ObjectWeb ASM from 9.1 to 9.2 supporting JDK 18 ([#1591](https://github.com/spotbugs/spotbugs/pull/1591))
 * Bump Saxon-HE from 10.3 to 10.5 ([#1513](https://github.com/spotbugs/spotbugs/pull/1513))
+* Bump gson from 2.8.6 to 2.8.7 ([#1556](https://github.com/spotbugs/spotbugs/pull/1556))
 * Function `mutableSignature()` improved and factored out from the `MutableStaticFields` detector
 
 ### Added
-* New rule `PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS` to warn for custom class loaders who do not call their superclasses' `getPermissions()` in their `getPermissions()` method. This rule based on the SEI CERT rule *SEC07-J Call the superclass's getPermissions() method when writing a custom class loader*. ([#SEC07-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader))
+* New bugs `MS_EXPOSE_BUF`, `EI_EXPOSE_BUF`, `EI_EXPOSE_STATIC_BUF2` and `EI_EXPOSE_BUF2` by the `FindReturnRef` detector to detect cases where buffers or their backing arrays are exposed (see [SEI CERT rule FIO05-J](https://wiki.sei.cmu.edu/confluence/display/java/FIO05-J.+Do+not+expose+buffers+or+their+backing+arrays+methods+to+untrusted+code))
+*  `MS_EXPOSE_REP`, `EI_EXPOSE_REP`, `EI_EXPOSE_STATIC_REP2` and `EI_EXPOSE_REP2` now report for shallowly copied arrays (using clone()) of mutable objects
 
 ## 4.2.3 - 2021-04-12
 

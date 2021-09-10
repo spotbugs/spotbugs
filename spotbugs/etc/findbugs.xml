@@ -436,7 +436,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" speed="fast"
                     reports="NN_NAKED_NOTIFY"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" speed="fast"
-                    reports="MS_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_REP2,EI_EXPOSE_STATIC_REP2"/>
+                    reports="MS_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_REP2,EI_EXPOSE_STATIC_REP2,MS_EXPOSE_BUF,EI_EXPOSE_BUF,EI_EXPOSE_STATIC_BUF2,EI_EXPOSE_BUF2"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast"
                     reports="RU_INVOKE_RUN"/>
           <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" speed="fast"
@@ -649,6 +649,8 @@
                     reports="NP_METHOD_RETURN_RELAXING_ANNOTATION,NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION"/>
           <Detector class="edu.umd.cs.findbugs.detect.DontAssertInstanceofInTests" speed="fast"
                     reports="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindBadEndOfStreamCheck" speed="fast"
+                    reports="EOS_BAD_END_OF_STREAM_CHECK"/>
           <Detector class="edu.umd.cs.findbugs.detect.PermissionsSuper"
                     reports="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS"/>
             <!-- Bug Categories -->
@@ -866,9 +868,13 @@
           <BugPattern abbrev="IS" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="MS" type="MS_EXPOSE_REP" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_EXPOSE_BUF" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="EI" type="EI_EXPOSE_REP" category="MALICIOUS_CODE" cweid="374"/>
+          <BugPattern abbrev="EI" type="EI_EXPOSE_BUF" category="MALICIOUS_CODE" cweid="374"/>
           <BugPattern abbrev="EI2" type="EI_EXPOSE_REP2" category="MALICIOUS_CODE" cweid="374"/>
           <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_REP2" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="EI2" type="EI_EXPOSE_BUF2" category="MALICIOUS_CODE" cweid="374"/>
+          <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_BUF2" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" cweid="572"/>
           <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="STYLE"/>
@@ -1249,5 +1255,6 @@
           <BugPattern abbrev="NP" type="NP_METHOD_RETURN_RELAXING_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="STYLE" deprecated="true" />
+          <BugPattern abbrev="EOS" type="EOS_BAD_END_OF_STREAM_CHECK" category="CORRECTNESS" />
           <BugPattern abbrev="PERM" type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS" category="MALICIOUS_CODE" />
 </FindbugsPlugin>
