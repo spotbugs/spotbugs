@@ -44,3 +44,6 @@ Similar/Related Tools
 
 `Checker Framework <https://checkerframework.org/>`_
   A pluggable type-checking for Java.
+
+`FindBugs-IDEA <https://plugins.jetbrains.com/plugin/3847-findbugs-idea>`_ (outdated)
+  The FindBugs plugin for `IntelliJ IDEA <https://www.jetbrains.com/idea/>`_.
