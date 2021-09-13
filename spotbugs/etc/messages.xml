@@ -8486,6 +8486,7 @@ after the call to initLogging, the logger configuration is lost
         </p>]]>
       </Details>
   </BugPattern>
+
   <BugPattern type="EOS_BAD_END_OF_STREAM_CHECK">
     <ShortDescription>Data read is converted before comparison to -1</ShortDescription>
     <LongDescription>The return value of {2} in method {1} is converted to {3} before comparison to {4}.</LongDescription>
@@ -8500,6 +8501,7 @@ after the call to initLogging, the logger configuration is lost
       </p>]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS">
     <ShortDescription>Custom class loader does not call its superclass's getPermissions()</ShortDescription>
     <LongDescription>Custom class loader {1} does not call its superclass's getPermissions()</LongDescription>
