@@ -17,17 +17,17 @@ msgstr "Project-Id-Version: spotbugs 3.1\n"
 
 #: ../../effort.rst:2
 msgid "Effort"
-msgstr "解析力"
+msgstr "分析力"
 
 #: ../../effort.rst:4
 msgid ""
 "Effort value adjusts internal flags of SpotBugs, to reduce computation "
 "cost by lowering the prediction."
-msgstr "解析力の値は、SpotBugの内部フラグを調整し、予測を下げて計算コストを削減します。"
+msgstr "分析力の値は、SpotBugの内部フラグを調整し、予測を下げて計算コストを削減します。"
 
 #: ../../effort.rst:6
 msgid "The default effort configuration is same with ``more``."
-msgstr "デフォルトの解析力の設定は ``more`` と同じです。"
+msgstr "デフォルトの分析力の設定は ``more`` と同じです。"
 
 #: ../../effort.rst:9
 msgid "Flags in FindBugs.java"
@@ -39,7 +39,7 @@ msgstr "説明"
 
 #: ../../effort.rst:9
 msgid "Effort Level"
-msgstr "解析力"
+msgstr "分析力"
 
 #: ../../effort.rst:11
 msgid "min"

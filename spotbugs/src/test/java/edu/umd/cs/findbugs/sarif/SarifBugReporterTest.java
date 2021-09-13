@@ -152,6 +152,7 @@ public class SarifBugReporterTest {
         assertThat(result.get("ruleId").getAsString(), is(bugPattern.getType()));
         JsonObject message = result.getAsJsonObject("message");
         assertThat(message.get("id").getAsString(), is("default"));
+        assertThat(message.get("text").getAsString(), is(bugPattern.getShortDescription()));
         JsonArray arguments = message.getAsJsonArray("arguments");
         assertThat(arguments.get(0).getAsInt(), is(10));
     }
