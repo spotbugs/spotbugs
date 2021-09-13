@@ -5,6 +5,15 @@
 FROM sphinxdoc/sphinx:4.1.2
 
 WORKDIR /docs/docs
+RUN pip3 install --upgrade pip
+
+ARG USER=user
+RUN mkdir /home/$USER && \
+    useradd --no-log-init $USER && \
+    chown $USER:$USER -R /home/$USER
+
+USER $USER
+ENV PATH "/home/$USER/.local/bin:$PATH"
+
 ADD requirements.txt /tmp
-RUN pip3 install --upgrade pip && \
-    pip3 install -r /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt
