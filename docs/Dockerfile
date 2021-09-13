@@ -7,7 +7,7 @@ FROM sphinxdoc/sphinx:4.1.2
 WORKDIR /docs/docs
 RUN pip3 install --upgrade pip
 
-ARG USER=user
+ARG USER=sphinx
 RUN mkdir /home/$USER && \
     useradd --no-log-init $USER && \
     chown $USER:$USER -R /home/$USER
