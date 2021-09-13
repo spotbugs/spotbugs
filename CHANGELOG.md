@@ -5,6 +5,35 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2021-??-??
+## Changed
+- Add bug code to report in fancy-hist.xsl ([#1688](https://github.com/spotbugs/spotbugs/pull/1688))
+
+### Fixed
+- Fixed immutable java.lang.Class as being flagged as EI ([#1695](https://github.com/spotbugs/spotbugs/pull/1695))
+- Agree verb with plural subject in the description of
+`SW_SWING_METHODS_INVOKED_IN_SWING_THREAD` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
+- Wrong description of the `SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
+
+## 4.4.1 - 2021-09-07
+### Changed
+- Bump gson from 2.8.7 to 2.8.8 ([#1658](https://github.com/spotbugs/spotbugs/pull/1658))
+- Lower `ExitCodes` logger to debug level ([#1661](https://github.com/spotbugs/spotbugs/issues/1661))
+- Fixed SARIF format to be compatible with Github code scanning API requirements ([#1630](https://github.com/spotbugs/spotbugs/issues/1630))
+
+### Fixed
+- Fixed immutable classes in java.net.* as being flagged as EI ([#1653](https://github.com/spotbugs/spotbugs/issues/1653)
+- Classes containing only static methods with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+- Handle all immutable collections in the Guava library as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+- Classes annotated with @Immutable or @jdk.internal.ValueBased are considered as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+- All classes in packages java.time and java.math are now correctly handled as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+
+## 4.4.0 - 2021-08-12
+
+### Fixed
+- Fixed False positives for RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE ([#600](https://github.com/spotbugs/spotbugs/issues/600) and [#1338](https://github.com/spotbugs/spotbugs/issues/1338))
+- Inconsistent bug description on `EQ_COMPARING_CLASS_NAMES` ([#1523](https://github.com/spotbugs/spotbugs/issues/1523))
+- Add a declaration of charset encoding in generated reports ([#1623](https://github.com/spotbugs/spotbugs/pull/1623))
+- Fixed regression in Bug Info view for Eclipse 2021-03+ ([#1477](https://github.com/spotbugs/spotbugs/issues/1477))
 
 ### Added
 * New detector `FindBadEndOfStreamCheck` for new bug type `EOS_BAD_END_OF_STREAM_CHECK`. This bug is reported whenever the return value of java.io.FileInputStream.read() or java.io.FileReader.read() is first converted to byte/int and only thereafter checked against -1. (See [SEI CERT rule FIO08-J](https://wiki.sei.cmu.edu/confluence/display/java/FIO08-J.+Distinguish+between+characters+or+bytes+read+from+a+stream+and+-1))

@@ -89,6 +89,7 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         jsonWriter.name("version").value(Version.VERSION_STRING);
         // SpotBugs refers JVM config to decide which language we use.
         jsonWriter.name("language").value(Locale.getDefault().getLanguage());
+        jsonWriter.name("informationUri").value("https://spotbugs.github.io/");
 
         jsonWriter.name("rules").beginArray();
         rules.forEach((rule) -> gson.toJson(rule, jsonWriter));

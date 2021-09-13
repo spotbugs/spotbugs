@@ -38,5 +38,6 @@ Contents
    faq
    links
    bugDescriptions
+   detectors
    migration
    annotations

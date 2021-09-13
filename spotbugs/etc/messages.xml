@@ -2016,7 +2016,7 @@ consider using a commercial static analysis or pen-testing tool.
     </Details>
   </BugPattern>
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
-    <ShortDescription>Certain swing methods needs to be invoked in Swing thread</ShortDescription>
+    <ShortDescription>Certain swing methods need to be invoked in Swing thread</ShortDescription>
     <LongDescription>Call to swing method in {1} needs to be performed in Swing event thread</LongDescription>
     <Details>
 <![CDATA[
@@ -3097,7 +3097,7 @@ this code, but it is worth reviewing.
     <LongDescription>{1} compares class names rather than class objects</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method checks to see if two objects are the same class by checking to see if the names
+  <p> This class defines an equals method that checks to see if two objects are the same class by checking to see if the names
 of their classes are equal. You can have different classes with the same name if they are loaded by
 different class loaders. Just check to see if the class objects are the same.
 </p>
@@ -4460,7 +4460,7 @@ mechanism, it must be declared to have a return type of Object.
 <![CDATA[
   <p> The field is marked as transient, but the class isn't Serializable, so marking it as transient
 has absolutely no effect.
-This may be leftover marking from a previous version of the code in which the class was transient, or
+This may be leftover marking from a previous version of the code in which the class was Serializable, or
 it may indicate a misunderstanding of how serialization works.
 </p>
 <p><em>This bug is reported only if special option <tt>reportTransientFieldOfNonSerializableClass</tt> is set.</em></p>
