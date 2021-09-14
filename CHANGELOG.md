@@ -13,6 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Agree verb with plural subject in the description of
 `SW_SWING_METHODS_INVOKED_IN_SWING_THREAD` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
 - Wrong description of the `SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
+- Do not consider java.io.Serializable with writeReplace() as mutable type ([#1704](https://github.com/spotbugs/spotbugs/pull/1704))
 
 ## 4.4.1 - 2021-09-07
 ### Changed

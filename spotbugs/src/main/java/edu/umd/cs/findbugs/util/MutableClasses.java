@@ -2,9 +2,9 @@ package edu.umd.cs.findbugs.util;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-import java.util.List;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
@@ -42,10 +42,6 @@ public class MutableClasses {
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
             "java.math", "java.time"));
 
-    private static final List<String> SETTER_LIKE_NAMES = Arrays.asList(
-            "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
-            "enqueue", "dequeue", "write", "append", "replace");
-
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
             return true;
@@ -70,49 +66,114 @@ public class MutableClasses {
             return false;
         }
 
+        final JavaClass cls;
         try {
-            JavaClass cls = Repository.lookupClass(dottedClassName);
-            if (Stream.of(cls.getAnnotationEntries()).anyMatch(s -> (s.toString().endsWith("/Immutable;"))
-                    || s.getAnnotationType().equals("jdk.internal.ValueBased"))) {
-                return false;
-            }
-            return isMutable(cls);
+            cls = Repository.lookupClass(dottedClassName);
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
             return false;
         }
-    }
 
-    private static boolean isMutable(JavaClass cls) {
-        for (Method method : cls.getMethods()) {
-            if (looksLikeASetter(method, cls)) {
-                return true;
-            }
-        }
-        try {
-            JavaClass sup = cls.getSuperClass();
-            if (sup != null) {
-                return isMutable(sup);
-            }
-        } catch (ClassNotFoundException e) {
-            AnalysisContext.reportMissingClass(e);
-        }
-        return false;
-    }
-
-    public static boolean looksLikeASetter(Method method, JavaClass cls) {
-        if (method.isStatic()) {
+        if (Stream.of(cls.getAnnotationEntries()).anyMatch(s -> s.toString().endsWith("/Immutable;")
+                || s.getAnnotationType().equals("jdk.internal.ValueBased"))) {
             return false;
         }
 
-        for (String name : SETTER_LIKE_NAMES) {
-            if (method.getName().startsWith(name)) {
-                String retSig = method.getReturnType().getSignature();
-                // If setter-like methods returns an object of the same type then we suppose that it
-                // is not a setter but creates a new instance instead.
-                return !("L" + cls.getClassName().replace('.', '/') + ";").equals(retSig);
-            }
+        return new ClassAnalysis(cls).isMutable();
+    }
+
+    private static final class ClassAnalysis {
+        private static final List<String> SETTER_LIKE_NAMES = Arrays.asList(
+                "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
+                "enqueue", "dequeue", "write", "append", "replace");
+
+        private final JavaClass cls;
+        private ClassAnalysis superAnalysis;
+        private Boolean mutable;
+        private Boolean serializable;
+
+        ClassAnalysis(JavaClass cls) {
+            this.cls = cls;
         }
-        return false;
+
+        boolean isMutable() {
+            Boolean local = mutable;
+            if (local == null) {
+                mutable = local = computeMutable();
+            }
+            return local;
+        }
+
+        private boolean computeMutable() {
+            for (Method method : cls.getMethods()) {
+                if (!method.isStatic() && looksLikeASetter(method)) {
+                    return true;
+                }
+            }
+
+            final ClassAnalysis maybeSuper = getSuperAnalysis();
+            return maybeSuper != null && maybeSuper.isMutable();
+        }
+
+        private boolean isSerializable() {
+            Boolean local = serializable;
+            if (local == null) {
+                serializable = local = computeSerializable();
+            }
+            return local;
+        }
+
+        private boolean computeSerializable() {
+            // We are considering directly-implemented interfaces for now
+            for (String iface : cls.getInterfaceNames()) {
+                if (iface.equals("java.io.Serializable")) {
+                    return true;
+                }
+            }
+
+            final ClassAnalysis maybeSuper = getSuperAnalysis();
+            return maybeSuper != null && maybeSuper.isSerializable();
+        }
+
+        private ClassAnalysis getSuperAnalysis() {
+            if (superAnalysis != null) {
+                return superAnalysis;
+            }
+
+            final String superName = cls.getSuperclassName();
+            if (superName == null || superName.equals("java.lang.Object")) {
+                return null;
+            }
+
+            final JavaClass superClass;
+            try {
+                superClass = cls.getSuperClass();
+            } catch (ClassNotFoundException e) {
+                AnalysisContext.reportMissingClass(e);
+                return null;
+            }
+            if (superClass == null) {
+                return null;
+            }
+            return superAnalysis = new ClassAnalysis(superClass);
+        }
+
+        private boolean looksLikeASetter(Method method) {
+            final String methodName = method.getName();
+            for (String name : SETTER_LIKE_NAMES) {
+                if (methodName.startsWith(name)) {
+                    final String retSig = method.getReturnType().getSignature();
+                    // writeReplace() is a special case for Serializable contract
+                    if (methodName.equals("writeReplace") && retSig.equals("Ljava/lang/Object;") && isSerializable()) {
+                        continue;
+                    }
+
+                    // If setter-like methods returns an object of the same type then we suppose that it
+                    // is not a setter but creates a new instance instead.
+                    return !("L" + cls.getClassName().replace('.', '/') + ";").equals(retSig);
+                }
+            }
+            return false;
+        }
     }
 }

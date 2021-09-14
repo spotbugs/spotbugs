@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.util;
 
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import javax.annotation.concurrent.Immutable;
 
 import org.junit.Assert;
@@ -94,5 +96,29 @@ public class MutableClassesTest {
     @Test
     public void TestImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Immutable;"));
+    }
+
+    public static final class MutableWriteReplace {
+        Object writeReplace() throws ObjectStreamException {
+            return null;
+        }
+    }
+
+    @Test
+    public void TestMutableWriteReplace() {
+        Assert.assertTrue(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$MutableWriteReplace;"));
+    }
+
+    public static final class ImmutableWriteReplace implements Serializable {
+        Object writeReplace() throws ObjectStreamException {
+            return null;
+        }
+    }
+
+    @Test
+    public void TestImmutableWriteReplace() {
+        Assert.assertFalse(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$ImmutableWriteReplace;"));
     }
 }
