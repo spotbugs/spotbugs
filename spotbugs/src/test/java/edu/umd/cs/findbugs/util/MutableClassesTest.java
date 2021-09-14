@@ -122,4 +122,24 @@ public class MutableClassesTest {
         Assert.assertFalse(MutableClasses.mutableSignature(
                 "Ledu/umd/cs/findbugs/util/MutableClassesTest$ErrorProneImmutableSubclass;"));
     }
+
+    public static class OpenDaylightImmutable implements org.opendaylight.yangtools.concepts.Immutable {
+        public void clear() {
+            // Does not matter
+        }
+    }
+
+    public static class OpenDaylightImmutableSubclass extends OpenDaylightImmutable {
+        public String put(String str) {
+            return "";
+        }
+    }
+
+    @Test
+    public void TestOpenDaylightImmutable() {
+        Assert.assertFalse(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$OpenDaylightImmutable;"));
+        Assert.assertFalse(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$OpenDaylightImmutableSubclass;"));
+    }
 }
