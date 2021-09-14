@@ -95,4 +95,25 @@ public class MutableClassesTest {
     public void TestImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Immutable;"));
     }
+
+    @com.google.errorprone.annotations.Immutable
+    public static class ErrorProneImmutable {
+        public void write() {
+            // Does not matter
+        }
+    }
+
+    public static class ErrorProneImmutableSubclass extends ErrorProneImmutable {
+        public void writeOther() {
+            // Does not matter
+        }
+    }
+
+    @Test
+    public void TestErrorProneImmutable() {
+        Assert.assertFalse(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$ErrorProneImmutable;"));
+        Assert.assertFalse(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$ErrorProneImmutableSubclass;"));
+    }
 }
