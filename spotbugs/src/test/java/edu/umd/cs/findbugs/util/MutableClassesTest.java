@@ -5,10 +5,10 @@ import javax.annotation.concurrent.Immutable;
 import org.junit.Assert;
 import org.junit.Test;
 
-class Mutable {
+class MutableClass {
     private int n;
 
-    public Mutable(int n) {
+    public MutableClass(int n) {
         this.n = n;
     }
 
@@ -21,10 +21,11 @@ class Mutable {
     }
 }
 
-class Immutable {
+class ImmutableClass {
     private int n;
+    private static ImmutableClass immutable;
 
-    public Immutable(int n) {
+    public ImmutableClass(int n) {
         setNPrivate(n);
     }
 
@@ -32,28 +33,28 @@ class Immutable {
         return n;
     }
 
-    public Immutable setN(int n) {
-        return new Immutable(n);
+    public ImmutableClass setN(int n) {
+        return new ImmutableClass(n);
     }
 
     private void setNPrivate(int n) {
         this.n = n;
     }
 
-    public static Immutable getImmutable() {
+    public static ImmutableClass getImmutable() {
         return immutable;
     }
 
-    public static void setImmutable(Immutable imm) {
+    public static void setImmutable(ImmutableClass imm) {
         immutable = imm;
     }
 }
 
 @Immutable
-class Annotated {
+class AnnotatedClass {
     int n;
 
-    Annotated(int n) {
+    AnnotatedClass(int n) {
         this.n = n;
     }
 
@@ -86,17 +87,17 @@ public class MutableClassesTest {
 
     @Test
     public void TestAnnotatedImmutable() {
-        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/Annotated;"));
+        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/AnnotatedClass;"));
     }
 
     @Test
     public void TestMutable() {
-        Assert.assertTrue(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/Mutable;"));
+        Assert.assertTrue(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClass;"));
     }
 
     @Test
     public void TestImmutable() {
-        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/Immutable;"));
+        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/ImmutableClass;"));
     }
 
     @com.google.errorprone.annotations.Immutable
