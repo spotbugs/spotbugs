@@ -5,11 +5,56 @@ import javax.annotation.concurrent.Immutable;
 import org.junit.Assert;
 import org.junit.Test;
 
+class MutableClass {
+    private int n;
+
+    public MutableClass(int n) {
+        this.n = n;
+    }
+
+    public void setN(int n) {
+        this.n = n;
+    }
+
+    public int getN() {
+        return n;
+    }
+}
+
+class ImmutableClass {
+    private int n;
+    private static ImmutableClass immutable;
+
+    public ImmutableClass(int n) {
+        setNPrivate(n);
+    }
+
+    public int getN() {
+        return n;
+    }
+
+    public ImmutableClass setN(int n) {
+        return new ImmutableClass(n);
+    }
+
+    private void setNPrivate(int n) {
+        this.n = n;
+    }
+
+    public static ImmutableClass getImmutable() {
+        return immutable;
+    }
+
+    public static void setImmutable(ImmutableClass imm) {
+        immutable = imm;
+    }
+}
+
 @Immutable
-class Annotated {
+class AnnotatedClass {
     int n;
 
-    Annotated(int n) {
+    AnnotatedClass(int n) {
         this.n = n;
     }
 
@@ -42,58 +87,17 @@ public class MutableClassesTest {
 
     @Test
     public void TestAnnotatedImmutable() {
-        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/Annotated;"));
-    }
-
-    public static class Mutable {
-        private int n;
-
-        public Mutable(int n) {
-            this.n = n;
-        }
-
-        public void setN(int n) {
-            this.n = n;
-        }
-
-        public int getN() {
-            return n;
-        }
+        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/AnnotatedClass;"));
     }
 
     @Test
     public void TestMutable() {
-        Assert.assertTrue(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Mutable;"));
-    }
-
-    public static class Immutable {
-        private int n;
-        private static Immutable immutable;
-
-        public Immutable(int n) {
-            this.n = n;
-        }
-
-        public int getN() {
-            return n;
-        }
-
-        public Immutable setN(int n) {
-            return new Immutable(n);
-        }
-
-        public static Immutable getImmutable() {
-            return immutable;
-        }
-
-        public static void setImmutable(Immutable imm) {
-            immutable = imm;
-        }
+        Assert.assertTrue(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClass;"));
     }
 
     @Test
     public void TestImmutable() {
-        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Immutable;"));
+        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/ImmutableClass;"));
     }
 
     @com.google.errorprone.annotations.Immutable
