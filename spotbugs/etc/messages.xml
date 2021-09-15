@@ -2006,7 +2006,7 @@ consider using a commercial static analysis or pen-testing tool.
     </Details>
   </BugPattern>
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
-    <ShortDescription>Certain swing methods needs to be invoked in Swing thread</ShortDescription>
+    <ShortDescription>Certain swing methods need to be invoked in Swing thread</ShortDescription>
     <LongDescription>Call to swing method in {1} needs to be performed in Swing event thread</LongDescription>
     <Details>
 <![CDATA[
@@ -4450,7 +4450,7 @@ mechanism, it must be declared to have a return type of Object.
 <![CDATA[
   <p> The field is marked as transient, but the class isn't Serializable, so marking it as transient
 has absolutely no effect.
-This may be leftover marking from a previous version of the code in which the class was transient, or
+This may be leftover marking from a previous version of the code in which the class was Serializable, or
 it may indicate a misunderstanding of how serialization works.
 </p>
 <p><em>This bug is reported only if special option <tt>reportTransientFieldOfNonSerializableClass</tt> is set.</em></p>
