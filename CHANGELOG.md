@@ -5,13 +5,30 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2021-??-??
+## Changed
+- Add bug code to report in fancy-hist.xsl ([#1688](https://github.com/spotbugs/spotbugs/pull/1688))
+
+### Fixed
+- Fixed immutable java.lang.Class as being flagged as EI ([#1695](https://github.com/spotbugs/spotbugs/pull/1695))
+- Agree verb with plural subject in the description of
+`SW_SWING_METHODS_INVOKED_IN_SWING_THREAD` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
+- Wrong description of the `SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
+- Treat types with `@com.google.errorprone.annotations.Immutable` as immutable ([#1705](https://github.com/spotbugs/spotbugs/pull/1705))
+- Classes containing only private methods with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+
+## 4.4.1 - 2021-09-07
 ### Changed
 - Bump gson from 2.8.7 to 2.8.8 ([#1658](https://github.com/spotbugs/spotbugs/pull/1658))
 - Lower `ExitCodes` logger to debug level ([#1661](https://github.com/spotbugs/spotbugs/issues/1661))
+- Fixed SARIF format to be compatible with Github code scanning API requirements ([#1630](https://github.com/spotbugs/spotbugs/issues/1630))
 
 ### Fixed
 - Fixed immutable classes in java.net.* as being flagged as EI ([#1653](https://github.com/spotbugs/spotbugs/issues/1653)
-- Classes containing only private methods with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+- Classes containing only static methods with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+- Handle all immutable collections in the Guava library as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+- Classes annotated with @Immutable or @jdk.internal.ValueBased are considered as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+- All classes in packages java.time and java.math are now correctly handled as immutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+
 ## 4.4.0 - 2021-08-12
 
 ### Fixed
