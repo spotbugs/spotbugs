@@ -15,6 +15,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Wrong description of the `SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
 - Treat types with `@com.google.errorprone.annotations.Immutable` as immutable ([#1705](https://github.com/spotbugs/spotbugs/pull/1705))
 
+### Added
+* New detector `FindOverridableMethodCall` to detect invocation of overridable method in constructors (`MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR`) and clone() method (`MC_OVERRIDABLE_METHOD_CALL_IN_CLONE`), according to SEI CERT rules [MET05-J. Ensure that constructors do not call overridable methods](https://wiki.sei.cmu.edu/confluence/display/java/MET05-J.+Ensure+that+constructors+do+not+call+overridable+methods) and [MET06-J. Do not invoke overridable methods in clone()](https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921).
+
 ## 4.4.1 - 2021-09-07
 ### Changed
 - Bump gson from 2.8.7 to 2.8.8 ([#1658](https://github.com/spotbugs/spotbugs/pull/1658))

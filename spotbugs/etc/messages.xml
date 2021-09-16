@@ -1689,6 +1689,18 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindOverridableMethodCall">
+    <Details>
+      <![CDATA[
+            <p>Detector for patterns where a constructor or a clone() method calls an overridable
+               method.</p>
+            <p>
+               Calling an overridalbe method from a constructor may result in the use of
+               uninitialized data. Calling such method from a clone() method is insecure.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8490,6 +8502,34 @@ after the call to initLogging, the logger configuration is lost
       </p>]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR">
+    <ShortDescription>An overridable method is called from a constructor</ShortDescription>
+    <LongDescription>Overridable method {2} is called from constructor {1}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Calling an overridable method during in a constructor may result in the use of uninitialized data. It may also
+      leak the this reference of the partially constructed object. Only static, final or private methods shoud be
+      invoked from a constructor.</p>
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET05-J.+Ensure+that+constructors+do+not+call+overridable+methods">MET05-J. Ensure that constructors do not call overridable methods</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_CLONE">
+    <ShortDescription>An overridable method is called from the clone() method.</ShortDescription>
+    <LongDescription>Overridable method {2} is called from method clone() in class {0}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Calling overridable methods from the clone() method is insecure because a subclass could override the method,
+      affecting the behavior of clone(). It can also observe or modify the clone object in a partially initialized
+      state. Only static, final or private methods should be invoked from the clone() method.</p>
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">MET06-J. Do not invoke overridable methods in clone()</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -8635,4 +8675,5 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
   <BugCode abbrev="EOS">Bad End of Stream check</BugCode>
+  <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
 </MessageCollection>
