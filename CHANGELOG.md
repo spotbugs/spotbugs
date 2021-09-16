@@ -15,6 +15,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Wrong description of the `SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
 - Fixed java.util.Locale as being flagged as EI  ([#1702](https://github.com/spotbugs/spotbugs/pull/1702))
 - Fixed reference to java.awt.Cursor which caused it to be flagged as EI ([#1702](https://github.com/spotbugs/spotbugs/pull/1702))
+- Treat types with `@com.google.errorprone.annotations.Immutable` as immutable ([#1705](https://github.com/spotbugs/spotbugs/pull/1705))
+- Fix annotation check for `jdk.internal.ValueBased` ([#1706](https://github.com/spotbugs/spotbugs/pull/1706))
 
 ## 4.4.1 - 2021-09-07
 ### Changed

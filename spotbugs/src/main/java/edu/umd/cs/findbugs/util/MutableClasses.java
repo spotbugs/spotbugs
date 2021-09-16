@@ -2,11 +2,12 @@ package edu.umd.cs.findbugs.util;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-import java.util.List;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -42,10 +43,6 @@ public class MutableClasses {
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
             "java.math", "java.time"));
 
-    private static final List<String> SETTER_LIKE_NAMES = Arrays.asList(
-            "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
-            "enqueue", "dequeue", "write", "append", "replace");
-
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
             return true;
@@ -72,47 +69,139 @@ public class MutableClasses {
 
         try {
             JavaClass cls = Repository.lookupClass(dottedClassName);
-            if (Stream.of(cls.getAnnotationEntries()).anyMatch(s -> (s.toString().endsWith("/Immutable;"))
-                    || s.getAnnotationType().equals("jdk.internal.ValueBased"))) {
+            if (Stream.of(cls.getAnnotationEntries()).map(AnnotationEntry::getAnnotationType)
+                    .anyMatch(type -> type.endsWith("/Immutable;") || type.equals("Ljdk/internal/ValueBased;"))) {
                 return false;
             }
-            return isMutable(cls);
+            return ClassAnalysis.load(cls, sig).isMutable();
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
             return false;
         }
     }
 
-    private static boolean isMutable(JavaClass cls) {
-        for (Method method : cls.getMethods()) {
-            if (looksLikeASetter(method, cls)) {
-                return true;
-            }
-        }
-        try {
-            JavaClass sup = cls.getSuperClass();
-            if (sup != null) {
-                return isMutable(sup);
-            }
-        } catch (ClassNotFoundException e) {
-            AnalysisContext.reportMissingClass(e);
-        }
-        return false;
-    }
+    /**
+     * Analytic information about a {@link JavaClass} relevant to determining its mutability properties.
+     */
+    private static final class ClassAnalysis {
+        private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
+                "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
+                "enqueue", "dequeue", "write", "append", "replace");
 
-    public static boolean looksLikeASetter(Method method, JavaClass cls) {
-        if (method.isStatic()) {
+        /**
+         * Class under analysis.
+         */
+        private final JavaClass cls;
+        /**
+         * Superclass {@link ClassAnalysis}, lazily instantiated if present, otherwise {@code null}.
+         */
+        private ClassAnalysis superAnalysis;
+
+        // Various lazily-determined properties of this class. null indicates the property has not been determined yet.
+        private String sig;
+        private Boolean mutable;
+        private Boolean immutableByContract;
+
+        private ClassAnalysis(JavaClass cls, String sig) {
+            this.cls = cls;
+            this.sig = sig;
+        }
+
+        static ClassAnalysis load(JavaClass cls, String sig) {
+            // TODO: is there a place where we can maintain a cache of these for the duration of analysis?
+            return new ClassAnalysis(cls, sig);
+        }
+
+        boolean isMutable() {
+            Boolean local = mutable;
+            if (local == null) {
+                mutable = local = computeMutable();
+            }
+            return local;
+        }
+
+        private boolean computeMutable() {
+            if (isImmutableByContract()) {
+                return false;
+            }
+
+            for (Method method : cls.getMethods()) {
+                if (!method.isStatic() && looksLikeASetter(method)) {
+                    return true;
+                }
+            }
+
+            final ClassAnalysis maybeSuper = getSuperAnalysis();
+            return maybeSuper != null && maybeSuper.isMutable();
+        }
+
+        private boolean looksLikeASetter(Method method) {
+            final String methodName = method.getName();
+            for (String name : SETTER_LIKE_PREFIXES) {
+                if (methodName.startsWith(name)) {
+                    // If setter-like methods returns an object of the same type then we suppose that it
+                    // is not a setter but creates a new instance instead.
+                    return !getSig().equals(method.getReturnType().getSignature());
+                }
+            }
             return false;
         }
 
-        for (String name : SETTER_LIKE_NAMES) {
-            if (method.getName().startsWith(name)) {
-                String retSig = method.getReturnType().getSignature();
-                // If setter-like methods returns an object of the same type then we suppose that it
-                // is not a setter but creates a new instance instead.
-                return !("L" + cls.getClassName().replace('.', '/') + ";").equals(retSig);
+        private String getSig() {
+            String local = sig;
+            if (local == null) {
+                sig = local = "L" + cls.getClassName().replace('.', '/') + ";";
             }
+            return local;
         }
-        return false;
+
+        private boolean isImmutableByContract() {
+            Boolean local = immutableByContract;
+            if (local == null) {
+                immutableByContract = local = computeByImmutableContract();
+            }
+            return local;
+        }
+
+        private boolean computeByImmutableContract() {
+            for (AnnotationEntry entry : cls.getAnnotationEntries()) {
+                // Error-Prone's @Immutable annotation is @Inherited, hence it applies to subclasses as well
+                if (entry.getAnnotationType().equals("Lcom/google/errorprone/annotations/Immutable;")) {
+                    return true;
+                }
+            }
+
+            final ClassAnalysis maybeSuper = getSuperAnalysis();
+            return maybeSuper != null && maybeSuper.isImmutableByContract();
+        }
+
+        private ClassAnalysis getSuperAnalysis() {
+            ClassAnalysis local = superAnalysis;
+            if (local == null) {
+                superAnalysis = local = loadSuperAnalysis();
+            }
+            return local;
+        }
+
+        private ClassAnalysis loadSuperAnalysis() {
+            // Quick check if there is a superclass of importance
+            final String superName = cls.getSuperclassName();
+            if (superName == null || superName.equals("java.lang.Object")) {
+                return null;
+            }
+
+            final JavaClass superClass;
+            try {
+                superClass = cls.getSuperClass();
+            } catch (ClassNotFoundException e) {
+                AnalysisContext.reportMissingClass(e);
+                return null;
+            }
+            if (superClass == null) {
+                return null;
+            }
+
+            return load(superClass, null);
+        }
     }
 }
