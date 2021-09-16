@@ -36,6 +36,11 @@ public class MutableClassesTest {
     }
 
     @Test
+    public void TestLocale() {
+        Assert.assertFalse(MutableClasses.mutableSignature("Ljava/util/Locale;"));
+    }
+
+    @Test
     public void TestArray() {
         Assert.assertTrue(MutableClasses.mutableSignature("[I"));
     }
