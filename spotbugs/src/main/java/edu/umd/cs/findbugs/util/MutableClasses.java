@@ -140,10 +140,10 @@ public class MutableClasses {
             final String methodName = method.getName();
             // If the method throws an UnsupportedOperationException then we ignore it.
             ExceptionTable exceptions = method.getExceptionTable();
-            if (exceptions != null) {
-                if (Arrays.asList(exceptions.getExceptionNames()).contains("java.lang.UnsupportedOperationException")) {
-                    return false;
-                }
+            if (exceptions != null
+                    && Arrays.asList(exceptions.getExceptionNames())
+                            .contains("java.lang.UnsupportedOperationException")) {
+                return false;
             }
 
             for (String name : SETTER_LIKE_PREFIXES) {
