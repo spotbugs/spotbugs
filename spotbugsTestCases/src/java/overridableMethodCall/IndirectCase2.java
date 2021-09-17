@@ -1,22 +1,28 @@
-public class OverridableMethodCall implements Cloneable {
-    OverridableMethodCall() {
-        overridableMethod();
+package overridableMethodCall;
+
+public class IndirectCase2 implements Cloneable {
+    IndirectCase2() {
+        indirect();
         privateMethod();
         finalMethod();
         staticMethod();
     }
 
-    OverridableMethodCall(OverridableMethodCall other) {
-        other.overridableMethod();
+    IndirectCase2(IndirectCase2 other) {
+        other.indirect();
     }
 
     @Override
-    public OverridableMethodCall clone() throws CloneNotSupportedException {
-        OverridableMethodCall omc = (OverridableMethodCall) super.clone();
-        omc.overridableMethod();
+    public IndirectCase2 clone() throws CloneNotSupportedException {
+        IndirectCase2 omc = (IndirectCase2) super.clone();
+        omc.indirect();
         omc.privateMethod();
         omc.finalMethod();
         return omc;
+    }
+
+    final void indirect() {
+        overridableMethod();
     }
 
     void overridableMethod() {
