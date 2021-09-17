@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
@@ -30,6 +31,7 @@ public class FindOverridableMethodCallTest extends AbstractIntegrationTest {
                 .bugType("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR")
                 .inClass("OverridableMethodCall")
                 .inMethod(Const.CONSTRUCTOR_NAME)
+                .withConfidence(Confidence.LOW)
                 .atLine(3)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));

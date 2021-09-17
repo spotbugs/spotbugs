@@ -55,7 +55,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                 if (item.getRegisterNumber() == 0
                         && Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                     bugAccumulator.accumulateBug(new BugInstance(this,
-                            "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", NORMAL_PRIORITY)
+                            "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", LOW_PRIORITY)
                                     .addClassAndMethod(this).addString(method.getName()), this);
 
                 } else if ("clone".equals(getMethodName())
