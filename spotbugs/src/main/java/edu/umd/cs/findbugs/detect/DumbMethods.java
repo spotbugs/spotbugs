@@ -492,8 +492,8 @@ public class DumbMethods extends OpcodeStackDetector {
         public void sawOpcode(int seen) {
             if (seen == Const.INVOKEVIRTUAL) {
                 String classConstantOperand = getClassConstantOperand();
-                if ("java/util/Random".equals(classConstantOperand) || "java/security/SecureRandom".equals(
-                        classConstantOperand)
+                if (("java/util/Random".equals(classConstantOperand) || "java/security/SecureRandom".equals(
+                        classConstantOperand))
                         && (freshRandomOnTos || freshRandomOneBelowTos)) {
                     accumulator.accumulateBug(new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
                             .addClassAndMethod(DumbMethods.this).addCalledMethod(DumbMethods.this), DumbMethods.this);
