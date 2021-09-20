@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.math.BigDecimal;
 import java.util.Iterator;
 
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -478,6 +479,9 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
+    @SlashedClassName
+    private static final String CLASS_NAME_RANDOM = "java/util/Random";
+
     private class RandomOnceSubDetector extends SubDetector {
         /**
          * True if a freshly created {@code Random} instance exists on ToS (Top op Stack)
@@ -495,7 +499,7 @@ public class DumbMethods extends OpcodeStackDetector {
         public void sawOpcode(int seen) {
             if (seen == Const.INVOKEVIRTUAL) {
                 String classConstantOperand = getClassConstantOperand();
-                if (("java/util/Random".equals(classConstantOperand) || "java/security/SecureRandom".equals(
+                if ((CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom".equals(
                         classConstantOperand))
                         && (freshRandomOnTos || freshRandomOneBelowTos)) {
                     accumulator.accumulateBug(new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
@@ -506,7 +510,7 @@ public class DumbMethods extends OpcodeStackDetector {
             if (seen == Const.INVOKESPECIAL) {
                 String classConstantOperand = getClassConstantOperand();
                 freshRandomOneBelowTos = freshRandomOnTos && isRegisterLoad();
-                freshRandomOnTos = ("java/util/Random".equals(classConstantOperand) || "java/security/SecureRandom"
+                freshRandomOnTos = (CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom"
                         .equals(classConstantOperand)) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
             }
 
@@ -1170,7 +1174,7 @@ public class DumbMethods extends OpcodeStackDetector {
             // + " " + getMethodName());
             switch (randomNextIntState) {
             case 0:
-                if (seen == Const.INVOKEVIRTUAL && "java/util/Random".equals(getClassConstantOperand())
+                if (seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand())
                         && "nextDouble".equals(getNameConstantOperand()) || seen == Const.INVOKESTATIC
                                 && ClassName.isMathClass(getClassConstantOperand()) && "random".equals(getNameConstantOperand())) {
                     randomNextIntState = 1;
