@@ -479,6 +479,9 @@ public class DumbMethods extends OpcodeStackDetector {
     }
 
     private class RandomOnceSubDetector extends SubDetector {
+        /**
+         * True if a freshly created {@code Random} instance exists on ToS (Top op Stack)
+         */
         private boolean freshRandomOnTos = false;
 
         private boolean freshRandomOneBelowTos = false;
