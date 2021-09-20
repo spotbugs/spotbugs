@@ -66,6 +66,16 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     @Override
+    public void visit(JavaClass obj) {
+        super.visit(obj);
+        callerConstructors.clear();
+        callerClones.clear();
+        callsToOverridable.clear();
+        callerToCalleeMap.clear();
+        calleeToCallerMap.clear();
+    }
+
+    @Override
     public void visitAfter(JavaClass obj) {
         bugAccumulator.reportAccumulatedBugs();
     }
