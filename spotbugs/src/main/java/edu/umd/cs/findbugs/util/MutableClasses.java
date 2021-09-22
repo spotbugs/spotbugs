@@ -171,6 +171,14 @@ public class MutableClasses {
                 }
             }
 
+            // We are not considering transitive interfaces for now to side-step class loading
+            for (String iface : cls.getInterfaceNames()) {
+                // OpenDaylight's Immutable interface is an explicit contract
+                if (iface.equals("org.opendaylight.yangtools.concepts.Immutable")) {
+                    return true;
+                }
+            }
+
             final ClassAnalysis maybeSuper = getSuperAnalysis();
             return maybeSuper != null && maybeSuper.isImmutableByContract();
         }
