@@ -31,7 +31,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    implementation platform('org.junit:junit-bom:5.8.0')
+    implementation platform('org.junit:junit-bom:5.8.1')
   }
 }
 
