@@ -36,8 +36,8 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
-  if (it.name == 'classesJava14') {
-    options.release = 16
+  if (it.name == 'classesJava17') {
+    options.release = 17
   } else if (it.name == 'classesJava11') {
     options.release = 11
   } else if (it.name != 'compileJava') {
@@ -71,8 +71,7 @@ def classesJava11 = tasks.register('classesJava11', JavaCompile) {
   source = file('src/java11')
 }
 
-def classesJava14 = tasks.register('classesJava14', JavaCompile) {
-  options.compilerArgs.add('--enable-preview')
+def classesJava17 = tasks.register('classesJava17', JavaCompile) {
   destinationDir = file("$buildDir/classes/java/java14")
   classpath = sourceSets.main.compileClasspath
   source = file('src/java14')
@@ -85,10 +84,10 @@ tasks.named('classes').configure {
   } else {
     println "skip tests for Java 11 features"
   }
-  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_14)) {
-    dependsOn classesJava14
+  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
+    dependsOn classesJava17
   } else {
-    println "skip tests for Java 14 features"
+    println "skip tests for Java 17 features"
   }
 }
 
