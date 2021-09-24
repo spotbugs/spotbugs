@@ -8,7 +8,7 @@ plugins {
 
 def readLastCommitHash() {
   // Same as 'git log -1 --pretty=format:"%h"'.execute().getText()
-  org.ajoberstar.grgit.Grgit.open(file('../')).head().abbreviatedId
+  org.ajoberstar.grgit.Grgit.open(dir: rootDir).head().abbreviatedId
 }
 
 if (version.endsWith('-SNAPSHOT')) {
