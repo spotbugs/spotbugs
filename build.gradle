@@ -56,7 +56,7 @@ task jacocoRootReport(type: JacocoReport) {
   reports {
     // JaCoCo SonarQube plugin needs a XML file to parse
     // https://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin
-    xml.enabled = true
+    xml.required = true
   }
 }
 
