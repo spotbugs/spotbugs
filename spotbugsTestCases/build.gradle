@@ -60,19 +60,19 @@ tasks.named('javadoc', Javadoc).configure {
 
 def jvmVersion = JavaVersion.current()
 def classesJava8 = tasks.register('classesJava8', JavaCompile) {
-  destinationDir = file("$buildDir/classes/java/java8")
+  destinationDirectory.set(file("$buildDir/classes/java/java8"))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java8')
 }
 
 def classesJava11 = tasks.register('classesJava11', JavaCompile) {
-  destinationDir = file("$buildDir/classes/java/java11")
+  destinationDirectory.set(file("$buildDir/classes/java/java11"))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java11')
 }
 
 def classesJava17 = tasks.register('classesJava17', JavaCompile) {
-  destinationDir = file("$buildDir/classes/java/java14")
+  destinationDirectory.set(file("$buildDir/classes/java/java14"))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java14')
 }
