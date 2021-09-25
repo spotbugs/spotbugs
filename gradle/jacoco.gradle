@@ -6,7 +6,7 @@ jacoco {
 
 jacocoTestReport {
   reports {
-    html.enabled = true
+    html.required = true
   }
 }
 
