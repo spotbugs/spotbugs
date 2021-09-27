@@ -18,12 +18,19 @@ public class MutableClasses {
     private static final Set<String> KNOWN_IMMUTABLE_CLASSES = new HashSet<>(Arrays.asList(
             "java.lang.String", "java.lang.Integer", "java.lang.Byte", "java.lang.Character",
             "java.lang.Short", "java.lang.Boolean", "java.lang.Long", "java.lang.Double",
-            "java.lang.Float", "java.lang.StackTraceElement", "java.lang.Class", "java.math.BigInteger",
-            "java.math.Decimal", "java.io.File", "java.awt.Font", "java.awt.BasicStroke",
+            "java.lang.Float", "java.lang.StackTraceElement", "java.lang.Class", "java.lang.Thread",
+            "java.io.File", "java.awt.Font", "java.awt.BasicStroke",
             "java.awt.Color", "java.awt.GradientPaint", "java.awt.LinearGradientPaint",
             "java.awt.RadialGradientPaint", "java.awt.Cursor", "java.util.Locale", "java.util.UUID", "java.net.URL",
             "java.net.URI", "java.net.Inet4Address", "java.net.Inet6Address", "java.net.InetSocketAddress",
-            "java.security.Permission", "com.google.common.collect.ImmutableBiMap",
+            "java.util.Optional", "java.util.OptionalDouble", "java.util.OptionalInt", "java.util.OptionalLong",
+            "java.util.regex.Pattern", "java.nio.charset.Charset", "java.nio.file.Path",
+            "java.security.Permission",
+            "java.lang.module.Configuration",
+            "java.lang.module.ModuleDescriptor",
+            "java.lang.module.ModuleReference",
+            "java.lang.module.ResolvedModule",
+            "com.google.common.collect.ImmutableBiMap",
             "com.google.common.collect.ImmutableClassToInstanceMap",
             "com.google.common.collect.ImmutableCollection",
             "com.google.common.collect.ImmutableList",
@@ -41,7 +48,8 @@ public class MutableClasses {
             "com.google.common.collect.ImmutableTable"));
 
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
-            "java.math", "java.time"));
+            "java.math", "java.time",
+            "java.lang.invoke", "java.lang.reflect", "java.lang.constant"));
 
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
