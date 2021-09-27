@@ -22,7 +22,7 @@ public class MutableClasses {
             "java.util.regex.Pattern",
             "java.net.URI", "java.net.Inet4Address", "java.net.Inet6Address", "java.net.InetSocketAddress",
             "java.util.Optional", "java.util.OptionalDouble", "java.util.OptionalInt", "java.util.OptionalLong",
-            "java.util.regex.Pattern", "java.nio.charset.Charset", "java.nio.file.Path",
+            "java.nio.charset.Charset", "java.nio.file.Path",
             "java.security.Permission",
             "java.lang.module.Configuration",
             "java.lang.module.ModuleDescriptor",
