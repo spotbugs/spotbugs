@@ -18,7 +18,7 @@ public class MutableClasses {
     private static final Set<String> KNOWN_IMMUTABLE_CLASSES = new HashSet<>(Arrays.asList(
             "java.lang.String", "java.lang.Integer", "java.lang.Byte", "java.lang.Character",
             "java.lang.Short", "java.lang.Boolean", "java.lang.Long", "java.lang.Double",
-            "java.lang.Float", "java.lang.StackTraceElement", "java.lang.Class", "java.lang.Thread",
+            "java.lang.Float", "java.lang.StackTraceElement", "java.lang.Class", "java.lang.ClassLoader",
             "java.io.File", "java.awt.Font", "java.awt.BasicStroke",
             "java.awt.Color", "java.awt.GradientPaint", "java.awt.LinearGradientPaint",
             "java.awt.RadialGradientPaint", "java.awt.Cursor", "java.util.Locale", "java.util.UUID", "java.net.URL",
@@ -49,7 +49,7 @@ public class MutableClasses {
             "com.google.common.collect.ImmutableTable"));
 
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
-            "java.math", "java.time",
+            "java.math", "java.time", "java.util.function",
             "java.lang.invoke", "java.lang.reflect", "java.lang.constant"));
 
     public static boolean mutableSignature(String sig) {
@@ -82,6 +82,10 @@ public class MutableClasses {
                     .anyMatch(type -> type.endsWith("/Immutable;") || type.equals("Ljdk/internal/ValueBased;"))) {
                 return false;
             }
+            JavaClass ann = Repository.lookupClass("java.lang.annotation.Annotation");
+            if (cls.instanceOf(ann)) {
+                return false;
+            }
             return ClassAnalysis.load(cls, sig).isMutable();
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
@@ -95,7 +99,7 @@ public class MutableClasses {
     private static final class ClassAnalysis {
         private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
                 "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
-                "enqueue", "dequeue", "write", "append", "replace");
+                "enqueue", "dequeue", "write", "append", "replace", "prepend", "reset", "update");
 
         /**
          * Class under analysis.
