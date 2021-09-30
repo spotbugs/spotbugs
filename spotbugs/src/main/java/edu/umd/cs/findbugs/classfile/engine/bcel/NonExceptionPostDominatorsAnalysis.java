@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
  *
  * @author David Hovemeyer
  */
-public class NonExceptionPostdominatorsAnalysis extends PostDominatorsAnalysis {
+public class NonExceptionPostDominatorsAnalysis extends PostDominatorsAnalysis {
     /**
      * Constructor.
      *
@@ -40,7 +40,7 @@ public class NonExceptionPostdominatorsAnalysis extends PostDominatorsAnalysis {
      * @param dfs
      *            the DepthFirstSearch on the CFG
      */
-    public NonExceptionPostdominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
+    public NonExceptionPostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
         super(cfg, rdfs, dfs, true);
     }
 }
