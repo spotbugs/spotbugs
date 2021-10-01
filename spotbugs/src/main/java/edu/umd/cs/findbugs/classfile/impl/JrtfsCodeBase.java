@@ -39,6 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -90,9 +91,10 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     public Map<String, Object> createPackageToModuleMap(FileSystem fs) throws IOException {
         HashMap<String, Object> packageToModule = new LinkedHashMap<>();
         Path path = fs.getPath("packages");
-        Files.list(path).forEach(p -> {
-            try {
-                Iterator<Path> modIter = Files.list(p).iterator();
+        try(Stream<Path> packList = Files.list(path)) {
+         packList.forEach(p -> {
+            try(try(Stream<Path> pList = Files.list(p)) {
+                Iterator<Path> modIter = pList.iterator();
                 while (modIter.hasNext()) {
                     Path module = modIter.next();
                     String packageKey = fileName(p).replace('.', '/');
@@ -112,7 +114,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        });
+        })};
         return packageToModule;
     }
 
