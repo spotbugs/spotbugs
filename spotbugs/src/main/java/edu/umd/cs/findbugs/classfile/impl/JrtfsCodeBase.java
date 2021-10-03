@@ -93,7 +93,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         Path path = fs.getPath("packages");
         try(Stream<Path> packList = Files.list(path)) {
          packList.forEach(p -> {
-            try(try(Stream<Path> pList = Files.list(p)) {
+            try(Stream<Path> pList = Files.list(p)) {
                 Iterator<Path> modIter = pList.iterator();
                 while (modIter.hasNext()) {
                     Path module = modIter.next();
@@ -114,7 +114,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        })};
+        });};
         return packageToModule;
     }
 
