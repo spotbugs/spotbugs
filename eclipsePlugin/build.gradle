@@ -4,6 +4,12 @@ import static groovy.io.FileType.FILES
 // apply from: "$rootDir/gradle/maven.gradle"
 plugins {
   id 'org.ajoberstar.grgit' version '4.1.0'
+  id "com.diffplug.oomph.ide" version "3.33.1"
+}
+
+oomphIde {
+  repoEclipse '4.6.3'
+  pde {}
 }
 
 def readLastCommitHash() {
