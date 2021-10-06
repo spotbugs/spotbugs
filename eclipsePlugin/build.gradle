@@ -5,10 +5,12 @@ import static groovy.io.FileType.FILES
 plugins {
   id 'org.ajoberstar.grgit' version '4.1.0'
   id "com.diffplug.oomph.ide" version "3.33.1"
+  id "com.diffplug.eclipse.mavencentral" version "3.33.1"
 }
 
 oomphIde {
-  repoEclipse '4.6.3'
+  // does not work with 4.6.3 due to https://bugs.eclipse.org/bugs/show_bug.cgi?id=515286
+  repoEclipse '4.7.3'
   pde {}
 }
 
@@ -55,25 +57,37 @@ localProps.load(new FileInputStream("$projectDir/local.properties"))
 def eclipseRootDir = file(localProps.getProperty('eclipseRoot.dir'))
 // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
 def eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
-def eclipsePluginsDir = new File(eclipseRootDir, "Contents/Eclipse/plugins")
 if (!eclipseExecutable.exists()) {
    // Fall back to non-macOS directory layout.
    eclipseExecutable = new File(eclipseRootDir, "eclipse")
-   eclipsePluginsDir = new File(eclipseRootDir, "plugins")
+}
+
+eclipseMavenCentral {
+  // TODO: it should include what is required in the MANIFEST.MF, and nothing else
+  release '4.6.3', {
+    compileOnly 'org.eclipse.ant.core'
+    compileOnly 'org.eclipse.core.resources'
+    compileOnly 'org.eclipse.core.runtime'
+    compileOnly 'org.eclipse.jdt.core'
+    compileOnly 'org.eclipse.jdt.ui'
+    compileOnly 'org.eclipse.jface'
+    compileOnly 'org.eclipse.pde'
+
+    // does not work
+    // compileOnly 'org.eclipse.pde.build'
+
+    compileOnly 'org.eclipse.pde.ui'
+    compileOnly 'org.eclipse.swt'
+    compileOnly 'org.eclipse.ui.workbench'
+
+    // necessary to build with the org.eclipse.swt module
+    useNativesForRunningPlatform()
+
+    constrainTransitivesToThisRelease()
+  }
 }
 
 dependencies {
-  // List below includes all Eclipse SDK plugins except few causing troubles.
-  // TODO: it should include what is required in the MANIFEST.MF, and nothing else
-  compileOnly fileTree(dir:eclipsePluginsDir, include:'**/*.jar',
-    exclude:[
-        '**/datanucleus-enhancer*.jar',
-        'edu.umd.cs.findbugs.**/*.jar',
-        'org.mockito*.jar',
-        'com.github.spotbugs.**/*.jar',
-        '**/*source_*.jar'
-        ])
-
   api (project(':spotbugs')) {
     transitive = true
   }
