@@ -8,7 +8,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Changed
 - Add bug code to report in fancy-hist.xsl ([#1688](https://github.com/spotbugs/spotbugs/pull/1688))
 - Bump Saxon-HE from 10.5 to 10.6 ([#1715](https://github.com/spotbugs/spotbugs/pull/1715))
-- Fixed immutable java.util.regex.Pattern as being flagged as EI ([#1695](https://github.com/spotbugs/spotbugs/pull/1738))
 
 ### Fixed
 - Fixed immutable java.lang.Class as being flagged as EI ([#1695](https://github.com/spotbugs/spotbugs/pull/1695))
@@ -21,6 +20,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix annotation check for `jdk.internal.ValueBased` ([#1706](https://github.com/spotbugs/spotbugs/pull/1706))
 - `DMI_RANDOM_USED_ONLY_ONCE` false positive ([#1539](https://github.com/spotbugs/spotbugs/issues/1539))
 - `NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` false negative ([#1642](https://github.com/spotbugs/spotbugs/issues/1642))
+- Immutable java.util.regex.Pattern as being flagged as EI ([#1695](https://github.com/spotbugs/spotbugs/pull/1738))
+- Resource leak in the JrtfsCodeBase ([#1732](https://github.com/spotbugs/spotbugs/pull/1732))
 
 ## 4.4.1 - 2021-09-07
 ### Changed
