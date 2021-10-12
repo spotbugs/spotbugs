@@ -1279,7 +1279,7 @@ when no code in the block throws Exception. </p>
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchNullPointerException">
     <Details>
 <![CDATA[
-<p> Nullponter exceptions or its ancestors should not be caught.</p>
+<p>Nullpointer exceptions should not be caught.</p>
 ]]>
      </Details>
   </Detector>
