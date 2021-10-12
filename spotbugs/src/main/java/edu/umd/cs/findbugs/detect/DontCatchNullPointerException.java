@@ -3,23 +3,22 @@ package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.classfile.CodeException;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class DontCatchNullPointerException
-        extends PreorderVisitor implements Detector {
+        extends BytecodeScanningDetector {
 
     private final BugReporter reporter;
-    ClassContext classContext;
 
     public DontCatchNullPointerException(BugReporter reporter) {
         this.reporter = reporter;
     }
 
-    private static final String NullPtrExceptionID =
+    @DottedClassName
+    private static final String NULLPOINTER_EXCEPTION_FQCN =
             "java.lang.NullPointerException";
 
     @Override
@@ -33,24 +32,14 @@ public class DontCatchNullPointerException
                 .constantToString(getConstantPool()
                         .getConstant(type));
 
-        if (name.equals(NullPtrExceptionID)) {
+        if (name.equals(NULLPOINTER_EXCEPTION_FQCN)) {
             BugInstance bug = new BugInstance(this,
                     "DCN_NULLPOINTER_EXCEPTION",
                     NORMAL_PRIORITY);
             bug.addClassAndMethod(this);
-            bug.addSourceLine(this.classContext, this, exc.getHandlerPC());
+            bug.addSourceLine(getClassContext(), this, exc.getHandlerPC());
 
             reporter.reportBug(bug);
         }
-    }
-
-    @Override
-    public void visitClassContext(ClassContext classContext) {
-        this.classContext = classContext;
-        this.classContext.getJavaClass().accept(this);
-    }
-
-    @Override
-    public void report() {
     }
 }
