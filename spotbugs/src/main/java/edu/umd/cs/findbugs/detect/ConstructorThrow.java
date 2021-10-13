@@ -7,17 +7,19 @@ import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.SystemProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This detector can find constructors that throw exception.
  */
 public class ConstructorThrow extends OpcodeStackDetector {
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private static final boolean DEBUG = SystemProperties.getBoolean("ct.debug");
 
@@ -44,7 +46,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
         resetState();
         if (obj.isFinal()) {
             if (DEBUG)
-                System.out.println("This is a final class, no finalizer attack can happen");
+                log.debug("This is a final class, no finalizer attack can happen");
             isFinalClass = true;
             return;
         }
@@ -53,16 +55,16 @@ public class ConstructorThrow extends OpcodeStackDetector {
             if ("<init>".equals(m.getName())) {
                 // This will visit all constructor.
                 if (DEBUG)
-                    System.out.println("Firstpass visiting constructor: " + m.getName() + m.getSignature());
+                    log.debug("Firstpass visiting constructor: " + m.getName() + m.getSignature());
                 doVisitMethod(m);
             } else if ("finalize".equals(m.getName())) {
                 // Check for finalizer.
                 if (DEBUG)
-                    System.out.println("Checking if finalizer is final");
+                    log.debug("Checking if finalizer is final");
                 if (m.isFinal()) {
                     isFinalFinalizer = true;
                     if (DEBUG)
-                        System.out.println("Finalizer is final, no finalizer attack can happen.");
+                        log.debug("Finalizer is final, no finalizer attack can happen.");
                 }
             }
         }
@@ -74,20 +76,25 @@ public class ConstructorThrow extends OpcodeStackDetector {
         if (isFinalClass || isFinalFinalizer || alreadyReported)
             return;
         if (DEBUG) {
-            System.out.print("Current state of mthd set: {");
-            for (String s : calledFromCtor)
-                System.out.print(" " + s + ", ");
-            System.out.print("}\n");
+            StringBuilder sb = new StringBuilder("Current state of mthd set: {");
+            sb.append(System.getProperty("line.separator"));
+            for (String s : calledFromCtor) {
+                sb.append(" " + s + ", ");
+                sb.append(System.getProperty("line.separator"));
+            }
+            sb.append("}");
+            sb.append(System.getProperty("line.separator"));
+            log.debug(sb.toString());
         }
         if (isConstructor() || methodCalledFromCtor()) {
             if (DEBUG)
-                System.out.println("Visiting method: " + getFullyQualifiedMethodName());
+                log.debug("Visiting method: " + getFullyQualifiedMethodName());
             // Check if there is a throws keyword for checked exceptions.
             ExceptionTable tbl = obj.getExceptionTable();
             boolean throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
             if (throwsExceptions) {
                 if (DEBUG)
-                    System.out.println("Excplicit throws declaration in constructor: " + getFullyQualifiedMethodName());
+                    log.debug("Excplicit throws declaration in constructor: " + getFullyQualifiedMethodName());
                 reportCTBug();
             }
         }
@@ -119,15 +126,16 @@ public class ConstructorThrow extends OpcodeStackDetector {
             try {
                 classConstantOperand = getClassConstantOperand();
             } catch (Exception e) {
-                System.out.println("Seen OPcode and failed: " + seen);
-                System.out.println(getNameConstantOperand() + " : " + getSigConstantOperand());
+                log.warn("Seen OPcode and failed: " + seen);
+                log.warn(getNameConstantOperand() + " : " + getSigConstantOperand());
+                log.warn(e.getMessage());
             }
             String method = classConstantOperand + "." + getNameConstantOperand() + " : " + getSigConstantOperand();
             // Not interested in object superctor
             if (!"java/lang/Object.<init> : ()V".equals(method)) {
                 calledFromCtor.add(method);
                 if (DEBUG)
-                    System.out.println("Added method to calledFromCtor: " + method);
+                    log.debug("Added method to calledFromCtor: " + method);
             }
         }
     }
