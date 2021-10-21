@@ -15,7 +15,7 @@ Add ``<plugin>`` into your ``pom.xml`` like below:
 Integrate Find Security Bugs into spotbugs-maven-plugin
 -------------------------------------------------------
 
-Are you looking for additional security detectors for SpotBugs? We suggest you check the `Find Security Bugs <https://find-sec-bugs.github.io/>`_ a SpotBugs plugin for security audits of Java web applications and Android applications. It can detect 138 different vulnerability types, including SQL/HQL Injection, Command Injection, XPath Injection, and Cryptography weaknesses.
+Are you looking for additional security detectors for SpotBugs? We suggest you to check the `Find Security Bugs <https://find-sec-bugs.github.io/>`_ a SpotBugs plugin for security audits of Java web and Android applications. It can detect 138 different vulnerability types, including SQL/HQL Injection, Command Injection, XPath Injection, and Cryptography weaknesses.
 
 To integrate Find Security Bugs into SpotBugs plugin, you can configure your ``pom.xml`` like below:
 
