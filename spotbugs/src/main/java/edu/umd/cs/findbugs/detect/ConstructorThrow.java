@@ -19,9 +19,6 @@ import org.slf4j.LoggerFactory;
  * This detector can find constructors that throw exception.
  */
 public class ConstructorThrow extends OpcodeStackDetector {
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
-    private static final boolean DEBUG = SystemProperties.getBoolean("ct.debug");
 
     private final BugReporter bugReporter;
     private final Set<String> calledFromCtor = new HashSet<String>();
@@ -45,8 +42,6 @@ public class ConstructorThrow extends OpcodeStackDetector {
     public void visit(JavaClass obj) {
         resetState();
         if (obj.isFinal()) {
-            if (DEBUG)
-                log.debug("This is a final class, no finalizer attack can happen");
             isFinalClass = true;
             return;
         }
@@ -54,17 +49,11 @@ public class ConstructorThrow extends OpcodeStackDetector {
             // First visit the constructor, it might not be on the start of the class.
             if ("<init>".equals(m.getName())) {
                 // This will visit all constructor.
-                if (DEBUG)
-                    log.debug("Firstpass visiting constructor: " + m.getName() + m.getSignature());
                 doVisitMethod(m);
             } else if ("finalize".equals(m.getName())) {
                 // Check for finalizer.
-                if (DEBUG)
-                    log.debug("Checking if finalizer is final");
                 if (m.isFinal()) {
                     isFinalFinalizer = true;
-                    if (DEBUG)
-                        log.debug("Finalizer is final, no finalizer attack can happen.");
                 }
             }
         }
@@ -75,32 +64,17 @@ public class ConstructorThrow extends OpcodeStackDetector {
     public void visit(Method obj) {
         if (isFinalClass || isFinalFinalizer || alreadyReported)
             return;
-        if (DEBUG) {
-            StringBuilder sb = new StringBuilder("Current state of mthd set: {");
-            sb.append(System.getProperty("line.separator"));
-            for (String s : calledFromCtor) {
-                sb.append(" " + s + ", ");
-                sb.append(System.getProperty("line.separator"));
-            }
-            sb.append("}");
-            sb.append(System.getProperty("line.separator"));
-            log.debug(sb.toString());
-        }
         if (isConstructor() || methodCalledFromCtor()) {
-            if (DEBUG)
-                log.debug("Visiting method: " + getFullyQualifiedMethodName());
             // Check if there is a throws keyword for checked exceptions.
             ExceptionTable tbl = obj.getExceptionTable();
             boolean throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
             if (throwsExceptions) {
-                if (DEBUG)
-                    log.debug("Excplicit throws declaration in constructor: " + getFullyQualifiedMethodName());
                 reportCTBug();
             }
         }
     }
 
-    /** 
+    /**
      * 1. Check for any throw expression in the constructor.
      * 2. Check for any unchecked exception throw inside constructor,
      *    or any of the called methods.
@@ -126,16 +100,12 @@ public class ConstructorThrow extends OpcodeStackDetector {
             try {
                 classConstantOperand = getClassConstantOperand();
             } catch (Exception e) {
-                log.warn("Seen OPcode and failed: " + seen);
-                log.warn(getNameConstantOperand() + " : " + getSigConstantOperand());
-                log.warn(e.getMessage());
+                bugReporter.logError("Seen OPcode and failed to get ClassConstantOperand: " + seen, e);
             }
             String method = classConstantOperand + "." + getNameConstantOperand() + " : " + getSigConstantOperand();
             // Not interested in object superctor
             if (!"java/lang/Object.<init> : ()V".equals(method)) {
                 calledFromCtor.add(method);
-                if (DEBUG)
-                    log.debug("Added method to calledFromCtor: " + method);
             }
         }
     }
