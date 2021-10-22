@@ -3,8 +3,8 @@ import java.io.IOException;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 /**
- * In this testcase the constructor throws a checked exception,
- * there is a throws declaration. 
+ * In this test case the constructor throws a checked exception,
+ * there is a throws declaration.
  */
 
 public class ConstructorThrowTest2{

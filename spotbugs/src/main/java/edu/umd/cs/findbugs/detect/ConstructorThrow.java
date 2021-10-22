@@ -31,7 +31,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
     }
 
     /**
-     * Visiting class to find the constructor, then collect all the methods that gets called in it.
+     * Visit a class to find the constructor, then collect all the methods that gets called in it.
      * Also we are checking for final declaration on the class, or a final finalizer, as if present
      * no finalizer attack can happen.
      */
@@ -43,9 +43,9 @@ public class ConstructorThrow extends OpcodeStackDetector {
             return;
         }
         for (Method m : obj.getMethods()) {
-            // First visit the constructor, it might not be on the start of the class.
+            // First visit the constructor, it might not be at the start of the class.
             if ("<init>".equals(m.getName())) {
-                // This will visit all constructor.
+                // This will visit all constructors.
                 doVisitMethod(m);
             } else if ("finalize".equals(m.getName())) {
                 // Check for finalizer.
@@ -91,6 +91,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
     }
 
+    /** Collects all the methods that are called from the constructor */
     private void tryCollectMethod(int seen) {
         if (isMethodCall(seen)) {
             String classConstantOperand = "";
