@@ -1,0 +1,144 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2021, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-22 15:35-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../analysisprops.rst:2
+msgid "Analysis Properties"
+msgstr ""
+
+#: ../../analysisprops.rst:4
+msgid ""
+"SpotBugs allows several aspects of the analyses it performs to be "
+"customized. System properties are used to configure these options. This "
+"chapter describes the configurable analysis options."
+msgstr ""
+
+#: ../../analysisprops.rst:6
+msgid ""
+"The analysis options have two main purposes. First, they allow you to "
+"inform SpotBugs about the meaning of methods in your application, so that"
+" it can produce more accurate results, or produce fewer false warnings. "
+"Second, they allow you to configure the precision of the analysis "
+"performed. Reducing analysis precision can save memory and analysis time,"
+" at the expense of missing some real bugs, or producing more false "
+"warnings."
+msgstr ""
+
+#: ../../analysisprops.rst:8
+msgid ""
+"The analysis options are set using the ``-property`` command line option."
+" For example:"
+msgstr ""
+
+#: ../../analysisprops.rst:14
+msgid "The list of configurable analysis properties is shown in following table:"
+msgstr ""
+
+#: ../../analysisprops.rst:17
+msgid "Property Name"
+msgstr ""
+
+#: ../../analysisprops.rst:17
+msgid "Value"
+msgstr ""
+
+#: ../../analysisprops.rst:17
+msgid "Meaning"
+msgstr ""
+
+#: ../../analysisprops.rst:19
+msgid "findbugs.assertionmethods"
+msgstr ""
+
+#: ../../analysisprops.rst:19
+msgid ""
+"Comma-separated list of fully qualified method names: e.g., "
+"\"com.foo.MyClass.checkAssertion\""
+msgstr ""
+
+#: ../../analysisprops.rst:19
+msgid ""
+"This property specifies the names of methods that are used to check "
+"program assertions. Specifying these methods allows the null pointer "
+"dereference bug detector to avoid reporting false warnings for values "
+"which are checked by assertion methods."
+msgstr ""
+
+#: ../../analysisprops.rst:21
+msgid "findbugs.de.comment"
+msgstr ""
+
+#: ../../analysisprops.rst:21 ../../analysisprops.rst:23
+#: ../../analysisprops.rst:25 ../../analysisprops.rst:27
+#: ../../analysisprops.rst:29
+msgid "true or false"
+msgstr ""
+
+#: ../../analysisprops.rst:21
+msgid ""
+"If true, the DroppedException detector scans source code for empty catch "
+"blocks for a comment, and if one is found, does not report a warning."
+msgstr ""
+
+#: ../../analysisprops.rst:23
+msgid "findbugs.maskedfields.locals"
+msgstr ""
+
+#: ../../analysisprops.rst:23
+msgid ""
+"If true, emit low priority warnings for local variables which obscure "
+"fields. Default is false."
+msgstr ""
+
+#: ../../analysisprops.rst:25
+msgid "findbugs.nullderef.assumensp"
+msgstr ""
+
+#: ../../analysisprops.rst:25
+msgid ""
+"not used (intention: If true, the null dereference detector assumes that "
+"any reference value returned from a method or passed to a method in a "
+"parameter might be null. Default is false. Note that enabling this "
+"property will very likely cause a large number of false warnings to be "
+"produced.)"
+msgstr ""
+
+#: ../../analysisprops.rst:27
+msgid "findbugs.refcomp.reportAll"
+msgstr ""
+
+#: ../../analysisprops.rst:27
+msgid ""
+"If true, all suspicious reference comparisons using the == and != "
+"operators are reported.,If false, only one such warning is issued per "
+"method.,Default is false."
+msgstr ""
+
+#: ../../analysisprops.rst:29
+msgid "findbugs.sf.comment"
+msgstr ""
+
+#: ../../analysisprops.rst:29
+msgid ""
+"If true, the SwitchFallthrough detector will only report warnings for "
+"cases where the source code does not have a comment containing the words "
+"\"fall\" or \"nobreak\". (An accurate source path must be used for this "
+"feature to work correctly.) This helps find cases where the switch "
+"fallthrough is likely to be unintentional."
+msgstr ""
+
