@@ -167,6 +167,15 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
                     break;
                 }
 
+                OpcodeStack.Item itemToAssign = stack.getStackItem(0);
+                if (itemToAssign != null) {
+                    XField fieldToAssign = itemToAssign.getXField();
+                    // do not count a field as initialized, if it is assigned to itself or if it is assigned another not initialized field
+                    if (fieldToAssign != null && (f.equals(fieldToAssign) || !initializedFields.contains(fieldToAssign))) {
+                        break;
+                    }
+                }
+
                 if (checkForInitialization(f)) {
                     initializedFields.add(f);
                 }

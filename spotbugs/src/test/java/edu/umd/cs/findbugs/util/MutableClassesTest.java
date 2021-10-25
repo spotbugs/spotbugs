@@ -33,6 +33,12 @@ public class MutableClassesTest {
     @Test
     public void TestKnownImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature("Ljava/lang/String;"));
+        Assert.assertFalse(MutableClasses.mutableSignature("Ljava/util/regex/Pattern;"));
+    }
+
+    @Test
+    public void TestLocale() {
+        Assert.assertFalse(MutableClasses.mutableSignature("Ljava/util/Locale;"));
     }
 
     @Test
@@ -94,5 +100,32 @@ public class MutableClassesTest {
     @Test
     public void TestImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Immutable;"));
+    }
+
+    @Test
+    public void TestImmutableValuedBased() {
+        // Annotated with @jdk.internal.ValueBased and has "setValue", which should normally trip detection
+        Assert.assertFalse(MutableClasses.mutableSignature("Ljava/util/KeyValueHolder;"));
+    }
+
+    @com.google.errorprone.annotations.Immutable
+    public static class ErrorProneImmutable {
+        public void write() {
+            // Does not matter
+        }
+    }
+
+    public static class ErrorProneImmutableSubclass extends ErrorProneImmutable {
+        public void writeOther() {
+            // Does not matter
+        }
+    }
+
+    @Test
+    public void TestErrorProneImmutable() {
+        Assert.assertFalse(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$ErrorProneImmutable;"));
+        Assert.assertFalse(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$ErrorProneImmutableSubclass;"));
     }
 }

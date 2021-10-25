@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 
 /**
