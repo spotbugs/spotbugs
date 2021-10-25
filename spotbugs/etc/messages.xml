@@ -1276,6 +1276,13 @@ when no code in the block throws Exception. </p>
 ]]>
      </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DontCatchNullPointerException">
+    <Details>
+<![CDATA[
+<p>Nullpointer exceptions should not be caught.</p>
+]]>
+     </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality">
     <Details>
 <![CDATA[
@@ -6926,6 +6933,39 @@ does not need to be created, just access the static methods directly using the c
   ]]>
      </Details>
   </BugPattern>
+  <BugPattern type="DCN_NULLPOINTER_EXCEPTION">
+    <ShortDescription>NullPointerException caught</ShortDescription>
+    <LongDescription>Do not catch NullPointerException like in {1}</LongDescription>
+    <Details>
+   <![CDATA[
+<p>
+According to SEI Cert rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors">ERR08-J</a> NullPointerException should not be caught. Handling NullPointerException is considered an inferior alternative to null-checking.
+<p>
+This non-compliant code catches a NullPointerException to see if an incoming parameter is null:
+</p>
+<pre><code>
+boolean hasSpace(String m) {
+  try {
+    String ms[] = m.split(" ");
+    return names.length != 1;
+  } catch (NullPointerException e) {
+    return false;
+  }
+}
+</code></pre>
+<p>
+A compliant solution would use a null-check as in the following example:
+</p>
+<pre><code>
+boolean hasSpace(String m) {
+    if (m == null) return false;
+    String ms[] = m.split(" ");
+    return names.length != 1;
+}
+</code></pre>
+    ]]>
+     </Details>
+  </BugPattern>
   <BugPattern type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER">
     <ShortDescription>Doomed test for equality to NaN</ShortDescription>
     <LongDescription>Doomed test for equality to NaN in {1}</LongDescription>
@@ -8619,6 +8659,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="MF">Masked Field</BugCode>
   <BugCode abbrev="WMI">Inefficient Map Iterator</BugCode>
   <BugCode abbrev="ISC">Instantiated Static Class</BugCode>
+  <BugCode abbrev="DCN">Don't Catch NullPointer Exception</BugCode>
   <BugCode abbrev="REC">RuntimeException capture</BugCode>
   <BugCode abbrev="FE">Test for floating point equality</BugCode>
   <BugCode abbrev="UM">Unnecessary Math on constants</BugCode>
