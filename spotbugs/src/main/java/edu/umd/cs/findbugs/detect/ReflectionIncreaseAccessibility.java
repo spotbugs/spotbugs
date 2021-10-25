@@ -53,29 +53,31 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.INVOKEVIRTUAL) {
-            OpcodeStack.Item obj = stack.getItemMethodInvokedOn(this);
-            try {
-                JavaClass cls = obj.getJavaClass();
-                if (cls == null) {
-                    return;
-                }
-                XMethod met = getXMethodOperand();
-                if (!securityCheck && obj.isInitialParameter() && "java.lang.Class".equals(cls.getClassName()) &&
-                        "newInstance".equals(met.getName()) && "()Ljava/lang/Object;".equals(met.getSignature()) &&
-                        getMethod().isPublic()) {
-                    bugAccumulator.accumulateBug(new BugInstance(this,
-                            "REFL_REFLECTION_INCREASES_ACCESSIBILITY_OF_CLASS", NORMAL_PRIORITY)
-                                    .addClassAndMethod(this), this);
-                } else if ("java.lang.SecurityManager".equals(cls.getClassName()) &&
-                        "checkPackageAccess".equals(met.getName()) &&
-                        "(Ljava/lang/String;)V".equals(met.getSignature()) &&
-                        getPackageName().equals((String) stack.getStackItem(0).getConstant())) {
-                    securityCheck = true;
-                }
-            } catch (ClassNotFoundException e) {
-                AnalysisContext.reportMissingClass(e);
+        if (seen != Const.INVOKEVIRTUAL) {
+            return;
+        }
+
+        OpcodeStack.Item obj = stack.getItemMethodInvokedOn(this);
+        try {
+            JavaClass cls = obj.getJavaClass();
+            if (cls == null) {
+                return;
             }
+            XMethod met = getXMethodOperand();
+            if (!securityCheck && obj.isInitialParameter() && "java.lang.Class".equals(cls.getClassName()) &&
+                    "newInstance".equals(met.getName()) && "()Ljava/lang/Object;".equals(met.getSignature()) &&
+                    getThisClass().isPublic() && getMethod().isPublic()) {
+                bugAccumulator.accumulateBug(new BugInstance(this,
+                        "REFL_REFLECTION_INCREASES_ACCESSIBILITY_OF_CLASS", NORMAL_PRIORITY)
+                                .addClassAndMethod(this), this);
+            } else if ("java.lang.SecurityManager".equals(cls.getClassName()) &&
+                    "checkPackageAccess".equals(met.getName()) &&
+                    "(Ljava/lang/String;)V".equals(met.getSignature()) &&
+                    getPackageName().equals((String) stack.getStackItem(0).getConstant())) {
+                securityCheck = true;
+            }
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
         }
     }
 }
