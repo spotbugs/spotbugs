@@ -73,15 +73,12 @@ public class PermissionsSuper extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (!checkMethod) {
-            return;
-        }
-
         if (seen == Const.ARETURN) {
             XMethod origin = stack.getStackItem(0).getReturnValueOf();
             if (origin != null) {
                 if (getThisClass().getSuperclassName()
                         .equals(origin.getClassName()) &&
+                        getMethod().getName().equals(origin.getName()) &&
                         getMethod().getSignature().equals(origin.getSignature())) {
                     return;
                 }
