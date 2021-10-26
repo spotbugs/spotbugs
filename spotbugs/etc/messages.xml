@@ -8549,7 +8549,7 @@ after the call to initLogging, the logger configuration is lost
       <![CDATA[
        <p>
        <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader">SEI CERT rule SEC07-J</a> requires that custom class loaders must always call their superclass's getPermissions()
-       method in their own getPermissions() method to initialize the object they return at the end. Omitting it results
+       method in their own getPermissions() method to initialize the object they return at the end. Omitting it means
        that a class defined using this custom class loader has permissions that are completely independent of those
        specified in the systemwide policy file. In effect, the class's permissions override them.
        </p>
