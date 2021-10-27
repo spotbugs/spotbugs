@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -622,38 +623,39 @@ public class TextUICommandLine extends FindBugsCommandLine {
             }
             project = bugs.getProject().duplicate();
         }
-        TextUIBugReporter textuiBugReporter;
+        Collection<TextUIBugReporter> reporters = new ArrayList<>();
         switch (bugReporterType) {
         case PRINTING_REPORTER:
-            textuiBugReporter = new PrintingBugReporter();
+            reporters.add(new PrintingBugReporter());
             break;
         case SORTING_REPORTER:
-            textuiBugReporter = new SortingBugReporter();
+            reporters.add(new SortingBugReporter());
             break;
         case XML_REPORTER: {
             XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
             xmlBugReporter.setAddMessages(xmlWithMessages);
             xmlBugReporter.setMinimalXML(xmlMinimal);
 
-            textuiBugReporter = xmlBugReporter;
+            reporters.add(xmlBugReporter);
         }
             break;
         case EMACS_REPORTER:
-            textuiBugReporter = new EmacsBugReporter();
+            reporters.add(new EmacsBugReporter());
             break;
         case HTML_REPORTER:
-            textuiBugReporter = new HTMLBugReporter(project, stylesheet);
+            reporters.add(new HTMLBugReporter(project, stylesheet));
             break;
         case XDOCS_REPORTER:
-            textuiBugReporter = new XDocsBugReporter(project);
+            reporters.add(new XDocsBugReporter(project));
             break;
         case SARIF_REPORTER:
-            textuiBugReporter = new SarifBugReporter(project);
+            reporters.add(new SarifBugReporter(project));
             break;
         default:
             throw new IllegalStateException();
         }
 
+        TextUIBugReporter textuiBugReporter = new BugReportDispatcher(reporters);
         if (quiet) {
             textuiBugReporter.setErrorVerbosity(BugReporter.SILENT);
         }
