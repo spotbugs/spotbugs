@@ -5,11 +5,12 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 import javax.annotation.CheckForNull;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-class BugReportDispatcher extends TextUIBugReporter {
+class BugReportDispatcher implements ConfigurableBugReporter {
     @NonNull
     private final List<TextUIBugReporter> reporters;
 
@@ -51,8 +52,8 @@ class BugReportDispatcher extends TextUIBugReporter {
     }
 
     @Override
-    protected void doReportBug(BugInstance bugInstance) {
-        reporters.forEach(reporter -> reporter.doReportBug(bugInstance));
+    public void reportBug(@NonNull BugInstance bugInstance) {
+        reporters.forEach(reporter -> reporter.reportBug(bugInstance));
     }
 
     @CheckForNull
@@ -89,5 +90,20 @@ class BugReportDispatcher extends TextUIBugReporter {
     @Override
     public void reportSkippedAnalysis(MethodDescriptor method) {
         reporters.forEach(reporter -> reporter.reportSkippedAnalysis(method));
+    }
+
+    @Override
+    public void setRankThreshold(int threshold) {
+        reporters.forEach(reporter -> reporter.setRankThreshold(threshold));
+    }
+
+    @Override
+    public void setUseLongBugCodes(boolean useLongBugCodes) {
+        reporters.forEach(reporter -> reporter.setUseLongBugCodes(useLongBugCodes));
+    }
+
+    @Override
+    public void setOutputStream(PrintStream outputStream) {
+        reporters.forEach(reporter -> reporter.setOutputStream(outputStream));
     }
 }

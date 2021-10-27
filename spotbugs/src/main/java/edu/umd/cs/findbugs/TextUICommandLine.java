@@ -655,7 +655,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
             throw new IllegalStateException();
         }
 
-        TextUIBugReporter textuiBugReporter = new BugReportDispatcher(reporters);
+        ConfigurableBugReporter textuiBugReporter = new BugReportDispatcher(reporters);
         if (quiet) {
             textuiBugReporter.setErrorVerbosity(BugReporter.SILENT);
         }
