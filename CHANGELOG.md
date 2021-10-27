@@ -8,6 +8,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 - Replace "分析" with "解析" in Japanese document ([#1573](https://github.com/spotbugs/spotbugs/issues/1573))
 - Add a section to document how to integrate find-sec-bugs into spotbugs-maven-plugin ([#540](https://github.com/spotbugs/spotbugs/issues/540))
+- Changes related to dominators analysis in package `edu.umd.cs.findbugs.classfile.engine.bcel`:
+  - `DominiatorsAnalysisFactory` renamed to `NonExceptionDominatorsAnalysisFactory` (clarification)
+  - `NonExceptionPostdominatorsAnalysisFactory` renamed to `NonExceptionPostDominatorsAnalysisFactory` (spelling)
+  - `NonImplicitExceptionDominatorsAnalysis` introduced (API consistency)
 
 ### Added
 * Rule `DCN_NULLPOINTER_EXCEPTION` covers catching NullPointerExceptions in accordance with SEI Cert rule [ERR08-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors) ([#1740](https://github.com/spotbugs/spotbugs/pull/1740))
