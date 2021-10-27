@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
     private boolean securityCheck = false;
+    private boolean fieldNameUnderGet = false;
 
     private final BugAccumulator bugAccumulator;
 
@@ -53,7 +54,9 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen != Const.INVOKEVIRTUAL) {
+        fieldNameUnderGet = false;
+
+        if (seen != Const.INVOKEVIRTUAL || !getThisClass().isPublic() || !getMethod().isPublic()) {
             return;
         }
 
@@ -67,11 +70,23 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
             if (!securityCheck && obj.isInitialParameter() && obj.getXField() == null &&
                     "java.lang.Class".equals(cls.getClassName()) &&
                     "newInstance".equals(met.getName()) &&
-                    "()Ljava/lang/Object;".equals(met.getSignature()) &&
-                    getThisClass().isPublic() && getMethod().isPublic()) {
+                    "()Ljava/lang/Object;".equals(met.getSignature())) {
                 bugAccumulator.accumulateBug(new BugInstance(this,
                         "REFL_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS", NORMAL_PRIORITY)
                                 .addClassAndMethod(this), this);
+            } else if ("java.lang.Class".equals(cls.getClassName()) &&
+                    "getDeclaredField".equals(met.getName()) &&
+                    "(Ljava/lang/String;)Ljava/lang/reflect/Field;".equals(met.getSignature())) {
+                OpcodeStack.Item param = stack.getStackItem(0);
+                fieldNameUnderGet = param.isInitialParameter() && param.getXField() == null;
+            } else if (!securityCheck && "java.lang.reflect.Field".equals(cls.getClassName()) &&
+                    met.getName().startsWith("set")) {
+                Boolean fieldIsFromParam = (Boolean) obj.getUserValue();
+                if (fieldIsFromParam != null && fieldIsFromParam.booleanValue()) {
+                    bugAccumulator.accumulateBug(new BugInstance(this,
+                            "REFL_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD", NORMAL_PRIORITY)
+                                    .addClassAndMethod(this), this);
+                }
             } else if ("java.lang.SecurityManager".equals(cls.getClassName()) &&
                     "checkPackageAccess".equals(met.getName()) &&
                     "(Ljava/lang/String;)V".equals(met.getSignature()) &&
@@ -81,5 +96,15 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
         }
+    }
+
+    @Override
+    public void afterOpcode(int seen) {
+        super.afterOpcode(seen);
+
+        if (fieldNameUnderGet) {
+            stack.getStackItem(0).setUserValue(true);
+        }
+
     }
 }
