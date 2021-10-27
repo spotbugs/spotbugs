@@ -70,7 +70,7 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
                     "()Ljava/lang/Object;".equals(met.getSignature()) &&
                     getThisClass().isPublic() && getMethod().isPublic()) {
                 bugAccumulator.accumulateBug(new BugInstance(this,
-                        "REFL_REFLECTION_INCREASES_ACCESSIBILITY_OF_CLASS", NORMAL_PRIORITY)
+                        "REFL_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS", NORMAL_PRIORITY)
                                 .addClassAndMethod(this), this);
             } else if ("java.lang.SecurityManager".equals(cls.getClassName()) &&
                     "checkPackageAccess".equals(met.getName()) &&

@@ -8540,7 +8540,7 @@ after the call to initLogging, the logger configuration is lost
       </p>]]>
     </Details>
   </BugPattern>
-  <BugPattern type="REFL_REFLECTION_INCREASES_ACCESSIBILITY_OF_CLASS">
+  <BugPattern type="REFL_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS">
     <ShortDescription>Public method uses reflection to create a class it gets in its parameter which could increase the accessibility of any class</ShortDescription>
     <LongDescription>Public method {1} uses reflection to create a class it gets in its parameter which could increase the accessibility of any class</LongDescription>
     <Details>
