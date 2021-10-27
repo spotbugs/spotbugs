@@ -5,9 +5,18 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2021-??-??
+### Changed
+- Replace "分析" with "解析" in Japanese document ([#1573](https://github.com/spotbugs/spotbugs/issues/1573))
+- Add a section to document how to integrate find-sec-bugs into spotbugs-maven-plugin ([#540](https://github.com/spotbugs/spotbugs/issues/540))
+
+### Added
+* Rule `DCN_NULLPOINTER_EXCEPTION` covers catching NullPointerExceptions in accordance with SEI Cert rule [ERR08-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors) ([#1740](https://github.com/spotbugs/spotbugs/pull/1740))
+
+### Fixed
+* False negative about the rule ES_COMPARING_STRINGS_WITH_EQ ([#1764](https://github.com/spotbugs/spotbugs/issues/1764))
 
 ## 4.4.2 - 2021-10-08
-## Changed
+### Changed
 - Add bug code to report in fancy-hist.xsl ([#1688](https://github.com/spotbugs/spotbugs/pull/1688))
 - Bump Saxon-HE from 10.5 to 10.6 ([#1715](https://github.com/spotbugs/spotbugs/pull/1715))
 
