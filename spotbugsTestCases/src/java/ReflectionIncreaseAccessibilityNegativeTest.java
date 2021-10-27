@@ -1,7 +1,16 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class ReflectionIncreaseAccessibilityNegativeTest {
-    ReflectionIncreaseAccessibilityNegativeTest() {}
+    private Class cls;
+
+    ReflectionIncreaseAccessibilityNegativeTest(Class cls) {
+        this.cls = cls;
+    }
 
     @NoWarning("REFL")
     public static <T> T create(Class<T> c)
@@ -13,5 +22,29 @@ public class ReflectionIncreaseAccessibilityNegativeTest {
             }
         }
         return c.newInstance();
+    }
+
+    private static class C {
+        Class<?> cls;
+/*        public C(Class<?> cls) {
+            this.cls = cls;
+        }*/
+    }
+
+    @NoWarning("REFL")
+    public void strangeFP()
+            throws InstantiationException, IllegalAccessException {
+        cls.newInstance();
+    }
+
+    private C getC() {
+        return new C();
+    }
+
+    @NoWarning("REFL")
+    public void strangeFP2()
+            throws InstantiationException, IllegalAccessException {
+        C c = getC();
+        c.cls.newInstance();
     }
 }
