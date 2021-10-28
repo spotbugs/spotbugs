@@ -688,7 +688,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
             throw new IllegalStateException();
         }
 
-        ConfigurableBugReporter textuiBugReporter = new BugReportDispatcher(reporters);
+        if (reporters.isEmpty()) {
+            throw new IllegalStateException("No bug reporter configured");
+        }
+        ConfigurableBugReporter textuiBugReporter = reporters.size() == 1 ? reporters.get(0) : new BugReportDispatcher(reporters);
         if (quiet) {
             textuiBugReporter.setErrorVerbosity(BugReporter.SILENT);
         }
