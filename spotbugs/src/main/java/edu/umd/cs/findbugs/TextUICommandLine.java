@@ -19,14 +19,11 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -50,6 +47,8 @@ import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to parse the command line and configure the IFindBugsEngine
@@ -57,6 +56,8 @@ import edu.umd.cs.findbugs.util.Util;
  * enable and disable detectors as requested).
  */
 public class TextUICommandLine extends FindBugsCommandLine {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     /**
      * Handling callback for choose() method, used to implement the
      * -chooseVisitors and -choosePlugins options.
@@ -261,6 +262,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     Map<String, String> parsedOptions = new LinkedHashMap<>();
 
+    private List<TextUIBugReporter> reporters = new ArrayList<>();
+
     @SuppressFBWarnings("DM_EXIT")
     @Override
     protected void handleOption(String option, String optionExtraPart) {
@@ -314,6 +317,19 @@ public class TextUICommandLine extends FindBugsCommandLine {
             bugReporterType = SORTING_REPORTER;
         } else if ("-xml".equals(option)) {
             bugReporterType = XML_REPORTER;
+            XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
+
+            int index = optionExtraPart.indexOf('=');
+            if (index >= 0) {
+                Path path = Paths.get(optionExtraPart.substring(index + 1));
+                try {
+                    // TODO .gz file support
+                    xmlBugReporter.setOutputStream(UTF8.printStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE)));
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+                optionExtraPart = optionExtraPart.substring(0, index);
+            }
             if (!"".equals(optionExtraPart)) {
                 if ("withMessages".equals(optionExtraPart)) {
                     xmlWithMessages = true;
@@ -327,6 +343,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     throw new IllegalArgumentException("Unknown option: -xml:" + optionExtraPart);
                 }
             }
+            xmlBugReporter.setAddMessages(xmlWithMessages);
+            xmlBugReporter.setMinimalXML(xmlMinimal);
+            reporters.add(xmlBugReporter);
         } else if ("-emacs".equals(option)) {
             bugReporterType = EMACS_REPORTER;
         } else if ("-relaxed".equals(option)) {
@@ -400,6 +419,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
             if (outputFile != null) {
                 throw new IllegalArgumentException("output set twice; to " + outputFile + " and to " + argument);
             }
+            logger.warn("-output option and -outputFile option are deprecated. Set file path to each option for reporter.");
             outputFile = new File(argument);
 
             String fileName = outputFile.getName();
@@ -623,7 +643,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
             }
             project = bugs.getProject().duplicate();
         }
-        Collection<TextUIBugReporter> reporters = new ArrayList<>();
         switch (bugReporterType) {
         case PRINTING_REPORTER:
             reporters.add(new PrintingBugReporter());
@@ -631,13 +650,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
         case SORTING_REPORTER:
             reporters.add(new SortingBugReporter());
             break;
-        case XML_REPORTER: {
-            XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
-            xmlBugReporter.setAddMessages(xmlWithMessages);
-            xmlBugReporter.setMinimalXML(xmlMinimal);
-
-            reporters.add(xmlBugReporter);
-        }
+        case XML_REPORTER:
+            // reporter has been created in the handleOperationWithArgument() method
             break;
         case EMACS_REPORTER:
             reporters.add(new EmacsBugReporter());
@@ -666,6 +680,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
         findBugs.setRankThreshold(rankThreshold);
         if (outputStream != null) {
+            // TODO set different OutputStream to each reporter
             textuiBugReporter.setOutputStream(outputStream);
         }
 
