@@ -9,7 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Replace "分析" with "解析" in Japanese document ([#1573](https://github.com/spotbugs/spotbugs/issues/1573))
 - Add a section to document how to integrate find-sec-bugs into spotbugs-maven-plugin ([#540](https://github.com/spotbugs/spotbugs/issues/540))
 - Changes related to dominators analysis in package `edu.umd.cs.findbugs.classfile.engine.bcel`:
-  - `DominiatorsAnalysisFactory` renamed to `NonExceptionDominatorsAnalysisFactory` (clarification)
+  - `DominatorsAnalysisFactory` renamed to `NonExceptionDominatorsAnalysisFactory` (clarification)
   - `NonExceptionPostdominatorsAnalysisFactory` renamed to `NonExceptionPostDominatorsAnalysisFactory` (spelling)
   - `NonImplicitExceptionDominatorsAnalysis` introduced (API consistency)
 
