@@ -9,12 +9,19 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-class BugReportDispatcher implements ConfigurableBugReporter {
+/**
+ * Bug reporter delegate actual operation to each bug reporter in the list.
+ * It is designed to output multiple reports in batch.
+ */
+public class BugReportDispatcher implements ConfigurableBugReporter {
     @NonNull
     private final List<TextUIBugReporter> reporters;
 
-    BugReportDispatcher(Collection<TextUIBugReporter> reporters) {
+    public BugReportDispatcher(Collection<TextUIBugReporter> reporters) {
         if (reporters == null || reporters.isEmpty()) {
             throw new IllegalArgumentException("No reporter provided");
         }
@@ -23,27 +30,27 @@ class BugReportDispatcher implements ConfigurableBugReporter {
 
     @Override
     public void setErrorVerbosity(int level) {
-        reporters.forEach(reporter -> reporter.setErrorVerbosity(level));
+        forEach(reporter -> reporter.setErrorVerbosity(level));
     }
 
     @Override
     public void setPriorityThreshold(int threshold) {
-        reporters.forEach(reporter -> reporter.setPriorityThreshold(threshold));
+        forEach(reporter -> reporter.setPriorityThreshold(threshold));
     }
 
     @Override
     public void finish() {
-        reporters.forEach(BugReporter::finish);
+        forEach(BugReporter::finish);
     }
 
     @Override
     public void reportQueuedErrors() {
-        reporters.forEach(BugReporter::reportQueuedErrors);
+        forEach(BugReporter::reportQueuedErrors);
     }
 
     @Override
     public void addObserver(BugReporterObserver observer) {
-        reporters.forEach(reporter -> reporter.addObserver(observer));
+        forEach(reporter -> reporter.addObserver(observer));
     }
 
     @Override
@@ -53,7 +60,7 @@ class BugReportDispatcher implements ConfigurableBugReporter {
 
     @Override
     public void reportBug(@NonNull BugInstance bugInstance) {
-        reporters.forEach(reporter -> reporter.reportBug(bugInstance));
+        forEach(reporter -> reporter.reportBug(bugInstance));
     }
 
     @CheckForNull
@@ -64,46 +71,72 @@ class BugReportDispatcher implements ConfigurableBugReporter {
 
     @Override
     public void observeClass(ClassDescriptor classDescriptor) {
-        reporters.forEach(reporter -> reporter.observeClass(classDescriptor));
+        forEach(reporter -> reporter.observeClass(classDescriptor));
     }
 
     @Override
     public void reportMissingClass(ClassNotFoundException ex) {
-        reporters.forEach(reporter -> reporter.reportMissingClass(ex));
+        forEach(reporter -> reporter.reportMissingClass(ex));
     }
 
     @Override
     public void reportMissingClass(ClassDescriptor classDescriptor) {
-        reporters.forEach(reporter -> reporter.reportMissingClass(classDescriptor));
+        forEach(reporter -> reporter.reportMissingClass(classDescriptor));
     }
 
     @Override
     public void logError(String message) {
-        reporters.forEach(reporter -> reporter.logError(message));
+        forEach(reporter -> reporter.logError(message));
     }
 
     @Override
     public void logError(String message, Throwable e) {
-        reporters.forEach(reporter -> reporter.logError(message, e));
+        forEach(reporter -> reporter.logError(message, e));
     }
 
     @Override
     public void reportSkippedAnalysis(MethodDescriptor method) {
-        reporters.forEach(reporter -> reporter.reportSkippedAnalysis(method));
+        forEach(reporter -> reporter.reportSkippedAnalysis(method));
     }
 
     @Override
     public void setRankThreshold(int threshold) {
-        reporters.forEach(reporter -> reporter.setRankThreshold(threshold));
+        forEach(reporter -> reporter.setRankThreshold(threshold));
     }
 
     @Override
     public void setUseLongBugCodes(boolean useLongBugCodes) {
-        reporters.forEach(reporter -> reporter.setUseLongBugCodes(useLongBugCodes));
+        forEach(reporter -> reporter.setUseLongBugCodes(useLongBugCodes));
     }
 
     @Override
     public void setOutputStream(PrintStream outputStream) {
-        reporters.forEach(reporter -> reporter.setOutputStream(outputStream));
+        forEach(reporter -> reporter.setOutputStream(outputStream));
+    }
+
+    /**
+     * Consume each reporter one by one, and throw an exception if some of them.
+     * @param consumer Operation to handle each reporter.
+     */
+    private void forEach(Consumer<TextUIBugReporter> consumer) {
+        List<RuntimeException> exceptions = reporters.stream().map(reporter -> {
+            try {
+                consumer.accept(reporter);
+                return null;
+            } catch (RuntimeException thrown) {
+                return thrown;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+
+        if (exceptions.isEmpty()) {
+            return;
+        }
+
+        RuntimeException head = exceptions.get(0);
+        for (int i = 1; i < exceptions.size(); ++i) {
+            head.addSuppressed(exceptions.get(i));
+        }
+
+        throw head;
     }
 }
