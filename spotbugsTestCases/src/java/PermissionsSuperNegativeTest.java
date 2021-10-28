@@ -5,7 +5,7 @@ import java.security.PermissionCollection;
 
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
-class PermissionsSuperNegativeTest extends URLClassLoader {
+public class PermissionsSuperNegativeTest extends MyClassLoader {
     PermissionsSuperNegativeTest(URL[] urls) {
         super(urls);
     }
@@ -15,5 +15,11 @@ class PermissionsSuperNegativeTest extends URLClassLoader {
         PermissionCollection pc = super.getPermissions(cs);
         pc.add(new RuntimePermission("exitVM"));
         return pc;
+    }
+}
+
+class MyClassLoader extends URLClassLoader {
+    MyClassLoader(URL[] urls) {
+        super(urls);
     }
 }

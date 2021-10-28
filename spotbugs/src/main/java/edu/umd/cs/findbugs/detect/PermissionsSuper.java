@@ -18,6 +18,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
+
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -76,11 +78,16 @@ public class PermissionsSuper extends OpcodeStackDetector {
         if (seen == Const.ARETURN) {
             XMethod origin = stack.getStackItem(0).getReturnValueOf();
             if (origin != null) {
-                if (getThisClass().getSuperclassName()
-                        .equals(origin.getClassName()) &&
-                        getMethod().getName().equals(origin.getName()) &&
-                        getMethod().getSignature().equals(origin.getSignature())) {
-                    return;
+                try {
+                    if (Arrays.stream(getThisClass().getSuperClasses())
+                            .filter(cls -> cls.getClassName().equals(origin.getClassName()))
+                            .findAny() != null &&
+                            getMethod().getName().equals(origin.getName()) &&
+                            getMethod().getSignature().equals(origin.getSignature())) {
+                        return;
+                    }
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
                 }
             }
             bugAccumulator.accumulateBug(new BugInstance(this,
