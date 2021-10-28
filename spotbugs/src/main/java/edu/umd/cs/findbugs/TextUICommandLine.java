@@ -19,13 +19,20 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -264,6 +271,32 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private List<TextUIBugReporter> reporters = new ArrayList<>();
 
+    /**
+     * Parse {@code optionExtraPart} and configure {@Link TextUIBugReporter} if it contains the
+     * output file path such as {@code ":withMessages=path/to/file.extension"} and {@code "=/absolute/path/to/file.extension"}.
+     *
+     * @param reporter the reporter to set a {@link PrintStream} based on the given file path
+     * @param optionExtraPart extra part of the specified commandline option
+     * @return Remaining part of {@code optionExtraPart}
+     */
+    private String handleOutputFilePath(TextUIBugReporter reporter, String optionExtraPart) {
+        int index = optionExtraPart.indexOf('=');
+        if (index >= 0) {
+            Path path = Paths.get(optionExtraPart.substring(index + 1));
+            try {
+                OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                if ("gz".equals(Util.getFileExtension(path.toFile()))) {
+                    outputStream = new GZIPOutputStream(outputStream);
+                }
+                reporter.setOutputStream(UTF8.printStream(outputStream));
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+            optionExtraPart = optionExtraPart.substring(0, index);
+        }
+        return optionExtraPart;
+    }
+
     @SuppressFBWarnings("DM_EXIT")
     @Override
     protected void handleOption(String option, String optionExtraPart) {
@@ -318,18 +351,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         } else if ("-xml".equals(option)) {
             bugReporterType = XML_REPORTER;
             XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
-
-            int index = optionExtraPart.indexOf('=');
-            if (index >= 0) {
-                Path path = Paths.get(optionExtraPart.substring(index + 1));
-                try {
-                    // TODO .gz file support
-                    xmlBugReporter.setOutputStream(UTF8.printStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE)));
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-                optionExtraPart = optionExtraPart.substring(0, index);
-            }
+            optionExtraPart = handleOutputFilePath(xmlBugReporter, optionExtraPart);
             if (!"".equals(optionExtraPart)) {
                 if ("withMessages".equals(optionExtraPart)) {
                     xmlWithMessages = true;
