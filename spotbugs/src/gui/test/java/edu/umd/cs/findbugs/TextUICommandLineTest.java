@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.config.CommandLine;
 import org.junit.Test;
 
 import java.io.IOException;
