@@ -29,22 +29,29 @@ msgid ""
 "sa/1.0/>`_ or send a letter to Creative Commons, 559 Nathan Abbott Way, "
 "Stanford, California 94305, USA."
 msgstr ""
+"Este manual está licenciado pela Creative Commons Attribution-"
+"NonCommercial-ShareAlike. Para ver uma cópia desta licença, visite "
+"`creativecommons.org <https://creativecommons.org/licenses/by-nc-"
+"sa/1.0/>`_ ou envie uma carta para Creative Commons, 559 Nathan Abbott Way, "
+"Stanford, Califórnia 94305, EUA."
 
 #: ../../index.rst:12
 msgid ""
 "The name FindBugs and the FindBugs logo are trademarked by the University"
 " of Maryland."
 msgstr ""
+"O nome FindBugs e o logotipo FindBugs são marcas registradas da Universidade "
+"de Maryland."
 
 #: ../../index.rst:15
 msgid "Indices and tables"
-msgstr ""
+msgstr "Índices e tabelas"
 
 #: ../../index.rst:17
 msgid ":ref:`search`"
 msgstr ""
 
 #: ../../index.rst:20
-msgid "Contents"
+msgid "Conteúdo"
 msgstr ""
 

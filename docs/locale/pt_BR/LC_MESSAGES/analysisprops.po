@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../analysisprops.rst:2
 msgid "Analysis Properties"
-msgstr ""
+msgstr "Propriedades de análise"
 
 #: ../../analysisprops.rst:4
 msgid ""
@@ -27,6 +27,9 @@ msgid ""
 "customized. System properties are used to configure these options. This "
 "chapter describes the configurable analysis options."
 msgstr ""
+"SpotBugs permite que vários aspectos das análises que realiza sejam "
+"personalizadas. As propriedades do sistema são usadas para configurar essas opções. "
+"Este capítulo descreve as opções de análise configuráveis."
 
 #: ../../analysisprops.rst:6
 msgid ""
@@ -38,28 +41,37 @@ msgid ""
 " at the expense of missing some real bugs, or producing more false "
 "warnings."
 msgstr ""
+"As opções de análise têm dois objetivos principais. Primeiro, as opções permitem que você "
+"informe ao SpotBugs sobre o significado dos métodos em sua aplicação, para que "
+"ele possa produzir resultados mais precisos ou produzir menos avisos falsos. "
+"Segundo, as opções permitem que você configure a precisão da análise "
+"realizada. A redução da precisão da análise pode economizar memória e tempo de análise, "
+"às custas de perder alguns bugs reais, ou produzir mais avisos "
+"falsos."
 
 #: ../../analysisprops.rst:8
 msgid ""
 "The analysis options are set using the ``-property`` command line option."
 " For example:"
 msgstr ""
+"As opções de análise são definidas usando a opção ``-property`` na linha de comando."
+" Por exemplo:"
 
 #: ../../analysisprops.rst:14
 msgid "The list of configurable analysis properties is shown in following table:"
-msgstr ""
+msgstr "A lista de propriedades de análise configuráveis são msotradas na tabela a seguir:"
 
 #: ../../analysisprops.rst:17
 msgid "Property Name"
-msgstr ""
+msgstr "Nome da propriedade"
 
 #: ../../analysisprops.rst:17
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #: ../../analysisprops.rst:17
 msgid "Meaning"
-msgstr ""
+msgstr "Significado"
 
 #: ../../analysisprops.rst:19
 msgid "findbugs.assertionmethods"
@@ -69,7 +81,8 @@ msgstr ""
 msgid ""
 "Comma-separated list of fully qualified method names: e.g., "
 "\"com.foo.MyClass.checkAssertion\""
-msgstr ""
+msgstr "Lista separada por vírgulas dos nomes qualificados dos métodos: por exemplo, "
+"\"com.foo.MyClass.checkAssertion\""
 
 #: ../../analysisprops.rst:19
 msgid ""
@@ -78,6 +91,10 @@ msgid ""
 "dereference bug detector to avoid reporting false warnings for values "
 "which are checked by assertion methods."
 msgstr ""
+"Esta propriedade especifica os nomes dos métodos que são usados para verificar as "
+"asserções do programa. A especificação desses métodos permite que o detector de bug "
+"para referência nula evite relatar avisos falsos para valores "
+"que são verificados por métodos de asserção."
 
 #: ../../analysisprops.rst:21
 msgid "findbugs.de.comment"
@@ -87,13 +104,14 @@ msgstr ""
 #: ../../analysisprops.rst:25 ../../analysisprops.rst:27
 #: ../../analysisprops.rst:29
 msgid "true or false"
-msgstr ""
+msgstr "verdadeiro ou falso"
 
 #: ../../analysisprops.rst:21
 msgid ""
 "If true, the DroppedException detector scans source code for empty catch "
 "blocks for a comment, and if one is found, does not report a warning."
-msgstr ""
+msgstr "Se verdadeiro, o detector DroppedException escaneia o código fonte para capturar blocos "
+"de comentários vazios, e se for encontrado, o aviso não é reportado."
 
 #: ../../analysisprops.rst:23
 msgid "findbugs.maskedfields.locals"
@@ -104,6 +122,8 @@ msgid ""
 "If true, emit low priority warnings for local variables which obscure "
 "fields. Default is false."
 msgstr ""
+"Se verdadeiro, emite avisos de baixa prioridade para variáveis locais com campos obscuros. "
+"O valor default é falso."
 
 #: ../../analysisprops.rst:25
 msgid "findbugs.nullderef.assumensp"
@@ -117,6 +137,10 @@ msgid ""
 "property will very likely cause a large number of false warnings to be "
 "produced.)"
 msgstr ""
+"Não usado (intenção: se verdadeiro, o detector de referência nula assume que "
+"nenhum valor de referência é retornado do método ou passado para um método como "
+"parâmetro seja nulo. O valor default é falso. Veja que ao habilitar essa propriedade, "
+"é possível que muitos avisos falsos sejam gerados.)"
 
 #: ../../analysisprops.rst:27
 msgid "findbugs.refcomp.reportAll"
@@ -128,6 +152,9 @@ msgid ""
 "operators are reported.,If false, only one such warning is issued per "
 "method.,Default is false."
 msgstr ""
+"Se verdadeiro, todas as referências suspeitas usando os operadores == e != "
+"para comparações são reportadas. Se falso, apenas um aviso é gerado por método."
+"O valor default é falso".
 
 #: ../../analysisprops.rst:29
 msgid "findbugs.sf.comment"
@@ -141,4 +168,8 @@ msgid ""
 "feature to work correctly.) This helps find cases where the switch "
 "fallthrough is likely to be unintentional."
 msgstr ""
+"Se verdadeiro, o detector SwitchFallthrough apenas reporta avisos para "
+"casos onde o código fonte não tem comentários com as palavras "
+"\"fall\" ou \"nobreak\". (Um caminho de origem preciso deve ser usado para esse "
+"recurso funcionar corretamente.) isso ajuda a encontrar casos onde a fallthrough não é intencional.
 

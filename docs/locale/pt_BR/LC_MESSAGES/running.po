@@ -825,5 +825,5 @@ msgstr ""
 
 #: ../../running.rst:342
 msgid "Print configuration and exit, without running analysis."
-msgstr ""
+msgstr "Imprimir configuração e sair, sem executar a análise."
 

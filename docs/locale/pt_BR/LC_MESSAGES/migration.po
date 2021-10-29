@@ -19,11 +19,11 @@ msgstr ""
 
 #: ../../migration.rst:2
 msgid "Guide for migration from SpotBugs 3.1 to 4.0"
-msgstr ""
+msgstr "Guia para migração do SpotBugs 3.1 para o 4.0"
 
 #: ../../migration.rst:5
 msgid "for SpotBugs Users"
-msgstr ""
+msgstr "para usuários do SpotBugs"
 
 #: ../../migration.rst:7
 msgid ""
@@ -31,26 +31,33 @@ msgid ""
 " you run SpotBugs, it is recommended to have a SLF4J binding in "
 "classpath."
 msgstr ""
+"Agora, o SpotBugs usa SLF4J invés de chamar o STDERR/STDOUT diretamente. Então, quando"
+" executar o SpotBugs, é recomendado que se tenha o SLF4J vinculado no"
+" classpath."
 
 #: ../../migration.rst:8
 msgid ""
 "SQL files in SpotBugs project are dropped. Generally it does not affect "
 "your usage."
 msgstr ""
+"Arquivos SQL no projeto SpotBugs são descartados. Geralmente, isso não afeta "
+"seu uso."
 
 #: ../../migration.rst:9
 msgid "JNLP (Applet) support is dropped."
-msgstr ""
+msgstr "Não há mais suporte para JNLP (Applet)."
 
 #: ../../migration.rst:12
 msgid "for Plugin Developers"
-msgstr ""
+msgstr "para ddesenvolvedores de plugins"
 
 #: ../../migration.rst:14
 msgid ""
 "The `speed` attribute of `Detector` element in `findbugs.xml` is "
 "deprecated."
 msgstr ""
+"O atributo `speed` do elemento `Detector` em` findbugs.xml` foi "
+"descontinuado."
 
 #: ../../migration.rst:15
 msgid ""
@@ -58,19 +65,24 @@ msgid ""
 "it does not affect your project because SpotBugs does not depend on it "
 "directly."
 msgstr ""
+"A dependência do `jaxen` foi alterada para o escopo `runtime`. De modo geral, "
+"isso não afeta o seu projeto porque SpotBugs não depende dele "
+"diretamente."
 
 #: ../../migration.rst:16
 msgid "The dependency on `Saxon-HE` has added as a `runtime` scope dependency."
-msgstr ""
+msgstr "A dependência de `Saxon-HE` foi adicionada como uma dependência de escopo `runtime`."
 
 #: ../../migration.rst:17
 msgid ""
 "Some deprecated APIs have been removed, refer the javadoc and migrate to "
 "preferred API before you migrate to SpotBugs 4.0."
 msgstr ""
+"Algumas APIs obsoletas foram removidas, consulte o javadoc e migre para a"
+"API preferencial antes de migrar para o SpotBugs 4.0."
 
 #: ../../migration.rst:20
-msgid "Guide for migration from FindBugs 3.0 to SpotBugs 3.1"
+msgid "Guia para migração do FindBugs 3.0 para o SpotBugs 3.1"
 msgstr ""
 
 #: ../../migration.rst:23
@@ -82,6 +94,8 @@ msgid ""
 "Simply replace ``com.google.code.findbugs:findbugs`` with "
 "``com.github.spotbugs:spotbugs``."
 msgstr ""
+"Basta substituir ``com.google.code.findbugs: findbugs`` por "
+"``com.github.spotbugs: spotbugs``."
 
 #: ../../migration.rst:34
 msgid "com.google.code.findbugs:jsr305"
@@ -92,6 +106,8 @@ msgid ""
 "JSR305 is already Dormant status, so SpotBugs does not release ``jsr305``"
 " jar file. Please continue using findbugs' one."
 msgstr ""
+"JSR305 já está com Dormant status, então SpotBugs não lança o arquivo jar ``jsr305``"
+". Continue usando o findbugs."
 
 #: ../../migration.rst:40
 msgid "com.google.code.findbugs:findbugs-annotations"
@@ -99,7 +115,7 @@ msgstr ""
 
 #: ../../migration.rst:42
 msgid "Please depend on ``spotbugs-annotations`` instead."
-msgstr ""
+msgstr "Por favor, dependa de `` spotbugs-annotations`` em vez disso."
 
 #: ../../migration.rst:51
 msgid "com.google.code.findbugs:annotations"
@@ -110,42 +126,48 @@ msgid ""
 "Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-"
 "annotations:1.0`` instead."
 msgstr ""
+"Por favor, dependa de ``spotbugs-annotations`` e ``net.jcip: jcip-"
+"annotations: 1.0`` em vez disso."
 
 #: ../../migration.rst:62
 msgid "FindBugs Ant task"
-msgstr ""
+msgstr "Findbugs tarfera para o Ant"
 
 #: ../../migration.rst:64
 msgid "Please replace ``findbugs-ant.jar`` with ``spotbugs-ant.jar``."
-msgstr ""
+msgstr "Substitua ``findbugs-ant.jar`` por ``spotbugs-ant.jar``."
 
 #: ../../migration.rst:84
 msgid "FindBugs Maven plugin"
-msgstr ""
+msgstr "FindBugs plugin para o Maven"
 
 #: ../../migration.rst:86
 msgid ""
 "Please use `com.github.spotbugs:spotbugs-maven-plugin` instead of "
 "`org.codehaus.mojo:findbugs-maven-plugin`."
 msgstr ""
+"Por favor, use `com.github.spotbugs: spotbugs-maven-plugin` em vez de "
+"`org.codehaus.mojo: findbugs-maven-plugin`. "
 
 #: ../../migration.rst:92
 msgid "FindBugs Gradle plugin"
-msgstr ""
+msgstr "Findbugs plugin para o Gradle"
 
 #: ../../migration.rst:94
 msgid ""
 "Please use spotbugs plugin found on "
 "https://plugins.gradle.org/plugin/com.github.spotbugs"
 msgstr ""
+"Por favor, use o plugin Spotbugs disponível em "
+"https://plugins.gradle.org/plugin/com.github.spotbugs"
 
 #: ../../migration.rst:100
 msgid "FindBugs Eclipse plugin"
-msgstr ""
+msgstr "FindBugs plugin para o Eclipse"
 
 #: ../../migration.rst:102
 msgid "Please use following update site instead."
-msgstr ""
+msgstr "Por favor, use o seguinte site de atualização."
 
 #: ../../migration.rst:104
 msgid "https://spotbugs.github.io/eclipse/ (to use stable version)"

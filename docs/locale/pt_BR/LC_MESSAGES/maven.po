@@ -23,7 +23,7 @@ msgstr "Usando o SpotBugs Maven Plugin"
 
 #: ../../maven.rst:4
 msgid "This chapter describes how to integrate SpotBugs into a Maven project."
-msgstr "Esta seção descreve como integrar o SpotBugs em projetos Maven."
+msgstr "Este capítulo descreve como integrar o SpotBugs em projetos Maven."
 
 #: ../../maven.rst:7
 msgid "Add spotbugs-maven-plugin to your pom.xml"
