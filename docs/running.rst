@@ -166,8 +166,11 @@ Text UI Options
 
 These options are only accepted by the Text User Interface.
 
--sortByClass:
+-sortByClass=filepath:
   Sort reported bug instances by class name.
+
+  From SpotBugs 4.5.0, this option receives a file path like ``-sortByClass=path/to/spotbugs.txt``.
+  It is also supported to set multiple reports like ``-xml:spotbugs.xml -sortByClass:spotbugs.txt``.
 
 -include *filterFile.xml*:
   Only report bug instances that match the filter specified by filterFile.xml.
