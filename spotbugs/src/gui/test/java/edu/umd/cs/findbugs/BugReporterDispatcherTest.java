@@ -33,7 +33,7 @@ public class BugReporterDispatcherTest {
         dispatcher.getBugCollection();
         dispatcher.logError("dispatchingMethod");
         dispatcher.logError("dispatchingMethod", new Exception());
-        dispatcher.observeClass(null);
+        dispatcher.observeClass(DescriptorFactory.instance().getClassDescriptor("some/UnknownClass"));
         dispatcher.addObserver(bugInstance -> {
         });
         dispatcher.reportMissingClass(DescriptorFactory.instance().getClassDescriptor("some/UnknownClass"));
