@@ -273,7 +273,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
      * @param optionExtraPart extra part of the specified commandline option
      * @return Remaining part of {@code optionExtraPart}
      */
-    private String handleOutputFilePath(TextUIBugReporter reporter, String optionExtraPart) {
+    /* visible for testing */ String handleOutputFilePath(TextUIBugReporter reporter, String optionExtraPart) {
         int index = optionExtraPart.indexOf('=');
         if (index >= 0) {
             Path path = Paths.get(optionExtraPart.substring(index + 1));
