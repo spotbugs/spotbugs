@@ -2,10 +2,9 @@ package edu.umd.cs.findbugs;
 
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.instanceOf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -23,10 +22,16 @@ public class BugReporterDispatcherTest {
         SortingBugReporter bugReporter = new SortingBugReporter();
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         bugReporter.setOutputStream(new PrintStream(outStream));
-        BugReportDispatcher dispatcher = new BugReportDispatcher(Arrays.asList(bugReporter));
-        dispatcher.logError("message");
 
-        assertThat(outStream.toString(), is(""));
+        BugReportDispatcher dispatcher = new BugReportDispatcher(Arrays.asList(bugReporter));
+        dispatcher.setErrorVerbosity(BugReporter.NORMAL);
+        dispatcher.getProjectStats();
+        dispatcher.getBugCollection();
+        dispatcher.logError("dispatchingMethod");
+        dispatcher.reportQueuedErrors();
+        dispatcher.finish();
+
+        assertThat(bugReporter.getQueuedErrors().size(), is(1));
     }
 
     @Test

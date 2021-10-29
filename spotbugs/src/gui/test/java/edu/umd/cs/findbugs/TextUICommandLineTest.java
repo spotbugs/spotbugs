@@ -37,18 +37,32 @@ public class TextUICommandLineTest {
     }
 
     @Test
-    public void htmlReportWithOption() throws IOException, InterruptedException {
+    public void htmlReportWithOption() throws IOException {
+        Path xmlFile = Files.createTempFile("spotbugs", ".xml");
         Path htmlFile = Files.createTempFile("spotbugs", ".html");
         Path sarifFile = Files.createTempFile("spotbugs", ".sarif");
+        Path emacsFile = Files.createTempFile("spotbugs", ".emacs");
+        Path xdocsFile = Files.createTempFile("spotbugs", ".xdocs");
+        Path textFile = Files.createTempFile("spotbugs", ".txt");
+
         TextUICommandLine commandLine = new TextUICommandLine();
         try (FindBugs2 findbugs = new FindBugs2()) {
+            commandLine.handleOption("-xml", "=" + xmlFile.toFile().getAbsolutePath());
             commandLine.handleOption("-html", "fancy-hist.xsl=" + htmlFile.toFile().getAbsolutePath());
             commandLine.handleOption("-sarif", "=" + sarifFile.toFile().getAbsolutePath());
+            commandLine.handleOption("-emacs", "=" + emacsFile.toFile().getAbsolutePath());
+            commandLine.handleOption("-xdocs", "=" + xdocsFile.toFile().getAbsolutePath());
+            commandLine.handleOption("-sortByClass", "=" + textFile.toFile().getAbsolutePath());
             commandLine.configureEngine(findbugs);
             findbugs.getBugReporter().finish();
         }
         String html = Files.readString(htmlFile, StandardCharsets.UTF_8);
         assertThat(html, containsString("#historyTab"));
+
+        assertTrue(xmlFile.toFile().isFile());
         assertTrue(sarifFile.toFile().isFile());
+        assertTrue(emacsFile.toFile().isFile());
+        assertTrue(xdocsFile.toFile().isFile());
+        assertTrue(textFile.toFile().isFile());
     }
 }
