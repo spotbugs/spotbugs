@@ -1,8 +1,11 @@
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -29,10 +32,23 @@ public class BugReporterDispatcherTest {
         dispatcher.getProjectStats();
         dispatcher.getBugCollection();
         dispatcher.logError("dispatchingMethod");
-        dispatcher.reportQueuedErrors();
-        dispatcher.finish();
+        dispatcher.logError("dispatchingMethod", new Exception());
+        dispatcher.observeClass(null);
+        dispatcher.addObserver(bugInstance -> {
+        });
+        dispatcher.reportMissingClass(DescriptorFactory.instance().getClassDescriptor("some/UnknownClass"));
+        dispatcher.reportMissingClass(new ClassNotFoundException());
 
-        assertThat(bugReporter.getQueuedErrors().size(), is(1));
+        PrintStream stderr = System.err;
+        try {
+            System.setErr(UTF8.printStream(new ByteArrayOutputStream()));
+            dispatcher.reportQueuedErrors();
+            dispatcher.finish();
+        } finally {
+            System.setErr(stderr);
+        }
+
+        assertThat(bugReporter.getQueuedErrors().size(), is(2));
     }
 
     @Test
