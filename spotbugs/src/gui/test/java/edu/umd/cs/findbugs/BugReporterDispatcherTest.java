@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -21,7 +22,7 @@ public class BugReporterDispatcherTest {
     public void dispatchingMethod() {
         SortingBugReporter bugReporter = new SortingBugReporter();
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        bugReporter.setOutputStream(new PrintStream(outStream));
+        bugReporter.setOutputStream(new PrintStream(outStream, false, StandardCharsets.UTF_8));
 
         BugReportDispatcher dispatcher = new BugReportDispatcher(Arrays.asList(bugReporter));
         dispatcher.setErrorVerbosity(BugReporter.NORMAL);
