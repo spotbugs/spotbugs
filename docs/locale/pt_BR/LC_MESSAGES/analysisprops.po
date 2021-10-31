@@ -103,7 +103,7 @@ msgstr ""
 #: ../../analysisprops.rst:25 ../../analysisprops.rst:27
 #: ../../analysisprops.rst:29
 msgid "true or false"
-msgstr "verdadeiro ou falso"
+msgstr "verdadeiro (true) ou falso (false)"
 
 #: ../../analysisprops.rst:21
 msgid ""
