@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../ant.rst:2
 msgid "Using the SpotBugs Ant task"
-msgstr "Tarefa Ant para usar o SpotBugs"
+msgstr "Usando SpotBugs como tarefa Ant"
 
 #: ../../ant.rst:4
 msgid ""
