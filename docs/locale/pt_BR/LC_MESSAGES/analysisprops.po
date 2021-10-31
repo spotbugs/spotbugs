@@ -27,8 +27,8 @@ msgid ""
 "customized. System properties are used to configure these options. This "
 "chapter describes the configurable analysis options."
 msgstr ""
-"SpotBugs permite que vários aspectos das análises que realiza sejam "
-"personalizadas. As propriedades do sistema são usadas para configurar essas opções. "
+"SpotBugs permite a customização de vários aspectos das análises suportadas. "
+"As propriedades do sistema são usadas para configurar essas opções. "
 "Este capítulo descreve as opções de análise configuráveis."
 
 #: ../../analysisprops.rst:6
@@ -41,13 +41,12 @@ msgid ""
 " at the expense of missing some real bugs, or producing more false "
 "warnings."
 msgstr ""
-"As opções de análise têm dois objetivos principais. Primeiro, as opções permitem que você "
-"informe ao SpotBugs sobre o significado dos métodos em sua aplicação, para que "
-"ele possa produzir resultados mais precisos ou produzir menos avisos falsos. "
-"Segundo, as opções permitem que você configure a precisão da análise "
+"As opções de análise apresentam dois objetivos principais. Primeiro, as opções de análise "
+"permitem que você informe ao SpotBugs sobre o significado dos métodos em sua aplicação, "
+"para que ele possa produzir resultados mais precisos ou menos avisos falsos. "
+"Segundo, as opções de análise permitem que você configure a precisão da análise "
 "realizada. A redução da precisão da análise pode economizar memória e tempo de análise, "
-"às custas de perder alguns bugs reais, ou produzir mais avisos "
-"falsos."
+"as custas de perder alguns bugs reais, ou produzir mais avisos falsos."
 
 #: ../../analysisprops.rst:8
 msgid ""
@@ -59,7 +58,7 @@ msgstr ""
 
 #: ../../analysisprops.rst:14
 msgid "The list of configurable analysis properties is shown in following table:"
-msgstr "A lista de propriedades de análise configuráveis são msotradas na tabela a seguir:"
+msgstr "A lista de propriedades de análise configuráveis são mostradas na tabela a seguir:"
 
 #: ../../analysisprops.rst:17
 msgid "Property Name"
@@ -111,7 +110,7 @@ msgid ""
 "If true, the DroppedException detector scans source code for empty catch "
 "blocks for a comment, and if one is found, does not report a warning."
 msgstr "Se verdadeiro, o detector DroppedException escaneia o código fonte para capturar blocos "
-"de comentários vazios, e se for encontrado, o aviso não é reportado."
+"de comentários vazios e, se for encontrado, o aviso não é reportado."
 
 #: ../../analysisprops.rst:23
 msgid "findbugs.maskedfields.locals"
@@ -138,8 +137,8 @@ msgid ""
 "produced.)"
 msgstr ""
 "Não usado (intenção: se verdadeiro, o detector de referência nula assume que "
-"nenhum valor de referência é retornado do método ou passado para um método como "
-"parâmetro seja nulo. O valor default é falso. Veja que ao habilitar essa propriedade, "
+"qualquer valor de referência retornado de um método ou passado como parâmetro para um método "
+"pode ser nulo. O valor default é falso. Veja que ao habilitar essa propriedade, "
 "é possível que muitos avisos falsos sejam gerados.)"
 
 #: ../../analysisprops.rst:27

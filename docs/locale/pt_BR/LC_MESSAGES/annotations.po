@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../annotations.rst:2
 msgid "Annotations"
-msgstr ""
+msgstr "Anotações"
 
 #: ../../annotations.rst:4
 msgid ""
@@ -27,6 +27,9 @@ msgid ""
 "so that SpotBugs can issue warnings more appropriately. Annotations for "
 "SpotBugs (mostly deprecated except for SuppressFBWarnings)."
 msgstr ""
+"O SpotBugs suporta várias anotações para expressar a intenção do desenvolvedor "
+"para que o SpotBugs possa emitir avisos mais precisos. As anotações para o SpotBugs " 
+"(a maioria das anotações são obsoletas, com exceção da SuppressFBWarnings)."
 
 #: ../../annotations.rst:8
 msgid "edu.umd.cs.findbugs.annotations.CheckForNull"
@@ -36,7 +39,7 @@ msgstr ""
 msgid ""
 "The annotated element might be null, and uses of the element should check"
 " for null."
-msgstr ""
+msgstr "O elemento anotado pode ser nulo e deve ser verificado se o uso do elemento é nulo."
 
 #: ../../annotations.rst:12
 msgid "edu.umd.cs.findbugs.annotations.CheckReturnValue"
@@ -47,6 +50,8 @@ msgid ""
 "This annotation is used to denote a method whose return value should "
 "always be checked when invoking the method."
 msgstr ""
+"Esta anotação é usada para denotar um método cujo valor de retorno "
+"deve sempre ser verificado ao invocar o método."
 
 #: ../../annotations.rst:16
 msgid "edu.umd.cs.findbugs.annotations.CleanupObligation"
@@ -54,7 +59,7 @@ msgstr ""
 
 #: ../../annotations.rst:17 ../../annotations.rst:100
 msgid "Mark a class or interface as a resource type requiring cleanup."
-msgstr ""
+msgstr "Marca a classe ou interface como um tipo de recurso que requer limpeza."
 
 #: ../../annotations.rst:20
 msgid "edu.umd.cs.findbugs.annotations.CreatesObligation"
@@ -64,7 +69,7 @@ msgstr ""
 msgid ""
 "Mark a constructor or method as creating a resource which requires "
 "cleanup."
-msgstr ""
+msgstr "Marca o contrutor ou método como um tipo de recurso que requer limpeza."
 
 #: ../../annotations.rst:24
 msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotation"
@@ -76,6 +81,8 @@ msgid ""
 "Indicates that all members of the class or package should be annotated "
 "with the default value of the supplied annotation class."
 msgstr ""
+"Indica que todos os membros da classe ou pacote devem ser anotados "
+"com o valor default da classe de anotação fornecida."
 
 #: ../../annotations.rst:28
 msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields"
@@ -96,7 +103,7 @@ msgstr ""
 #: ../../annotations.rst:41 ../../annotations.rst:45 ../../annotations.rst:53
 #: ../../annotations.rst:61
 msgid "The annotation based approach is useless for lambdas."
-msgstr ""
+msgstr "A abordagem baseada em anotação não é útil para lambdas."
 
 #: ../../annotations.rst:44
 msgid "edu.umd.cs.findbugs.annotations.DesireWarning (Deprecated)"
@@ -108,7 +115,7 @@ msgstr ""
 
 #: ../../annotations.rst:49
 msgid "Mark a method as cleaning up a resource."
-msgstr ""
+msgstr "Marca um método como limpeza de um recurso."
 
 #: ../../annotations.rst:52
 msgid "edu.umd.cs.findbugs.annotations.ExpectWarning (Deprecated)"
@@ -135,6 +142,8 @@ msgid ""
 "The annotated element could be null under some circumstances. This is "
 "treated the same way as not being annotated."
 msgstr ""
+"O elemento anotado pode ser nulo em algumas circunstâncias. "
+"Isso é tratado da mesma maneira que não ser anotado."
 
 #: ../../annotations.rst:69
 msgid "edu.umd.cs.findbugs.annotations.OverrideMustInvoke"
@@ -145,6 +154,8 @@ msgid ""
 "Used to annotate a method that, if overridden, must (or should) be "
 "invoked by an invocation on super in the overriding method."
 msgstr ""
+"Usado para anotar um método que, se sobrescrito (override), deveria ser "
+"invocado por uma chamada super no método de sobrescrita."
 
 #: ../../annotations.rst:73
 msgid "edu.umd.cs.findbugs.annotations.PossiblyNull (Deprecated)"
@@ -156,6 +167,9 @@ msgid ""
 " not only could the value be null, but that good coding practice requires"
 " that the value be checked for null."
 msgstr ""
+"Em vez disso, use `CheckForNull`. O nome indica mais claramente que não apenas "
+"o valor pode ser nulo, mas que a boa prática de codificação requer que o valor "
+"seja verificado quanto a nulo. "
 
 #: ../../annotations.rst:79
 msgid "edu.umd.cs.findbugs.annotations.ReturnValuesAreNonnullByDefault"
@@ -170,6 +184,12 @@ msgid ""
 " parameter in the superclass applies) there is a default annotation "
 "applied to a more tightly nested element."
 msgstr ""
+"Esta anotação pode ser aplicada a um pacote, classe ou método para indicar "
+"que os métodos nesse elemento têm valores de retorno não nulos por default "
+"a menos que haja uma anotação explícita de nulidade. O método substitui um "
+"método em uma superclasse (neste caso, a anotação do parâmetro correspondente "
+"na superclasse se aplica) há uma anotação default aplicada a um elemento mais "
+"fortemente aninhado. "
 
 #: ../../annotations.rst:86
 msgid "edu.umd.cs.findbugs.annotations.SuppressFBWarnings"
@@ -196,6 +216,8 @@ msgid ""
 "Used to indicate that the nullness of element is unknown, or may vary in "
 "unknown ways in subclasses."
 msgstr ""
+"Usado para indicar que a nulidade do elemento é desconhecida ou pode variar "
+"de maneiras desconhecidas nas subclasses."
 
 #: ../../annotations.rst:99
 msgid "edu.umd.cs.findbugs.annotations.CleanupObligation (Deprecated)"
@@ -211,6 +233,8 @@ msgid ""
 "cleanup. The marked method must be a member of a class marked with the "
 "CleanupObligation annotation."
 msgstr ""
+"Marca um construtor ou método como a criação de um recurso que requer limpeza. "
+"O método marcado deve ser um membro de uma classe marcada com a anotação CleanupObligation."
 
 #: ../../annotations.rst:108
 msgid "edu.umd.cs.findbugs.annotations.DischargesObligation (Deprecated)"
@@ -221,4 +245,5 @@ msgid ""
 "Mark a method as cleaning up a resource. The marked method must be a "
 "member of a class marked with the CleanupObligation annotation."
 msgstr ""
-
+"Marca um método como limpeza de um recurso. O método marcado deve ser "
+"um membro de uma classe marcada com a anotação CleanupObligation."
