@@ -19,29 +19,31 @@ msgstr ""
 
 #: ../../effort.rst:2
 msgid "Effort"
-msgstr ""
+msgstr "Esforço"
 
 #: ../../effort.rst:4
 msgid ""
 "Effort value adjusts internal flags of SpotBugs, to reduce computation "
 "cost by lowering the prediction."
 msgstr ""
+"O valor do esforço ajusta os sinalizadores internos do SpotBugs, para reduzir o "
+"custo da computação por meio da redução de predição."
 
 #: ../../effort.rst:6
 msgid "The default effort configuration is same with ``more``."
-msgstr ""
+msgstr "A configuração de esforço default é a mesma com ``more``."
 
 #: ../../effort.rst:9
 msgid "Flags in FindBugs.java"
-msgstr ""
+msgstr "Sinalizadores no FindBugs.java"
 
 #: ../../effort.rst:9
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 #: ../../effort.rst:9
 msgid "Effort Level"
-msgstr ""
+msgstr "Nível de esforço"
 
 #: ../../effort.rst:11
 msgid "min"
@@ -61,7 +63,7 @@ msgstr ""
 
 #: ../../effort.rst:13
 msgid "Accurate Exceptions"
-msgstr ""
+msgstr "Exceções precisas"
 
 #: ../../effort.rst:13
 msgid ""
@@ -69,6 +71,9 @@ msgid ""
 "which,catch blocks are reachable, and (3) which exception edges carry "
 "only, \"implicit\" runtime exceptions."
 msgstr ""
+"Determina (1) quais exceções podem ser lançadas nas bordas da exceção, (2)"
+"quais blocos de captura são alcançáveis, e (3) quais bordas de exceção carregam"
+"apenas exceções de tempo de execução implícitas \"implicit\"."
 
 #: ../../effort.rst:13 ../../effort.rst:15 ../../effort.rst:17
 #: ../../effort.rst:19 ../../effort.rst:21 ../../effort.rst:23
@@ -78,25 +83,27 @@ msgstr ""
 
 #: ../../effort.rst:15
 msgid "Model Instanceof"
-msgstr ""
+msgstr "Modelo Instanceof"
 
 #: ../../effort.rst:15
 msgid "Model the effect of instanceof checks in type analysis"
-msgstr ""
+msgstr "Modelar o efeito de verificações na análise de tipo instanceof "
 
 #: ../../effort.rst:17
 msgid "Track Guaranteed Value Derefs in Null Pointer Analysis"
-msgstr ""
+msgstr "Rastrear derefs de valor garantido na análise de ponteiro nulo"
 
 #: ../../effort.rst:17
 msgid ""
 "In the null pointer analysis, track null values that are guaranteed to "
 "be, dereferenced on some (non-implicit-exception) path."
 msgstr ""
+"Na análise de ponteiro nulo, rastreia os valores nulos que têm garantia de "
+"ser não referenciado em algum caminho (exceção não implícita)."
 
 #: ../../effort.rst:19
 msgid "Track Value Numbers in Null Pointer Analysis"
-msgstr ""
+msgstr "Rastrear Números de Valor na Análise de Ponteiro Nulo"
 
 #: ../../effort.rst:19
 msgid ""
@@ -106,28 +113,34 @@ msgid ""
 "value is recoverable by redundant load elimination or forward, "
 "substitution."
 msgstr ""
+"Na análise de ponteiro nulo, rastreia os números de valor que são conhecidos por serem "
+"null. Isso nos permite não perder o controle de valores nulos que não estão "
+"atualmente na pilha, mas podem estar em um local da heap onde "
+"o valor é recuperável por eliminação de carga redundante ou substituição direta."
+
 
 #: ../../effort.rst:21
 msgid "Interprocedural Analysis"
-msgstr ""
+msgstr "Análise interprocedural"
 
 #: ../../effort.rst:21
 msgid "Enable interprocedural analysis for application classes."
-msgstr ""
+msgstr "Habilitar análise interprocedural para classes de aplicação."
 
 #: ../../effort.rst:23
 msgid "Interprocedural Analysis of Referenced Classes"
-msgstr ""
+msgstr "Análise interprocedural de classes referenciadas"
 
 #: ../../effort.rst:23
 msgid ""
 "Enable interprocedural analysis for referenced classes (non-application "
 "classes)."
 msgstr ""
+"Habilita a análise interprocedural para as classes referenciadas (não aplicado em classes)."
 
 #: ../../effort.rst:25
 msgid "Conserve Space"
-msgstr ""
+msgstr "Conservar espaço"
 
 #: ../../effort.rst:25
 msgid ""
@@ -135,12 +148,15 @@ msgid ""
 "unconditional exception thrower edges for control flow graph analysis, to"
 " reduce memory footprint."
 msgstr ""
+"Tenta economizar espaço em detrimento da precisão. Por exemplo, poda as "
+"arestas de lançamento de exceção incondicional para análise de grafos de fluxo de controle, para "
+"reduzir o consumo de memória."
 
 #: ../../effort.rst:28
 msgid "Skip Huge Methods"
-msgstr ""
+msgstr "Pula métodos grandes"
 
 #: ../../effort.rst:28
 msgid "Skip method analysis if length of its bytecode is too long (6,000)."
-msgstr ""
+msgstr "Pula a análise de métodos se o tamanho de seu bytecode é muito grande (6.000)."
 

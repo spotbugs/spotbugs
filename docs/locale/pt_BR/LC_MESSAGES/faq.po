@@ -27,18 +27,25 @@ msgid ""
 "SpotBugs. If you just want general information about SpotBugs, have a "
 "look at the manual."
 msgstr ""
+"Este documento contém respostas para perguntas frequentes sobre o "
+"SpotBugs. Se você deseja apenas informações gerais sobre o SpotBugs, "
+"veja o manual."
 
 #: ../../faq.rst:8
 msgid ""
 "Q1: I'm getting java.lang.UnsupportedClassVersionError when I try to run "
 "SpotBugs"
 msgstr ""
+"Q1: Estou recebendo java.lang.UnsupportedClassVersionError quando tento executar"
+" o SpotBugs"
 
 #: ../../faq.rst:10
 msgid ""
 "SpotBugs requires JRE8 or later to run. If you use an earlier version, "
 "you will see an exception error message similar to the following:"
 msgstr ""
+"O SpotBugs requer JRE8 ou posterior para funcionar. Se você usar uma versão anterior,"
+" você verá uma mensagem de erro de exceção semelhante à seguinte:"
 
 #: ../../faq.rst:13
 msgid ""
@@ -49,17 +56,19 @@ msgstr ""
 
 #: ../../faq.rst:16
 msgid "The solution is to upgrade to JRE8 or later."
-msgstr ""
+msgstr "A solução é atualizar para o JRE8 ou posterior."
 
 #: ../../faq.rst:19
 msgid "Q2: SpotBugs is running out of memory, or is taking a long time to finish"
-msgstr ""
+msgstr "Q2: O SpotBugs está ficando sem memória ou está demorando muito para terminar."
 
 #: ../../faq.rst:21
 msgid ""
 "In general, SpotBugs requires lots of memory and a relatively fast CPU. "
 "For large applications, 1024M or more of heap space may be required."
 msgstr ""
+"Em geral, o SpotBugs requer muita memória e uma CPU relativamente rápida. "
+"Para aplicações grandes, pode ser necessário 1024MB ou mais de espaço de heap."
 
 #: ../../faq.rst:24
 msgid ""
@@ -67,26 +76,31 @@ msgid ""
 "using the ``-maxHeap n`` option, where n is the number of megabytes of "
 "heap space to allocate."
 msgstr ""
+"Por padrão, os SpotBugs aloca 768MB de espaço de heap. Você pode aumentar isso "
+"usando a opção ``-maxHeap n``, onde n é o número de megabytes de "
+"espaço de heap para alocar."
 
 #: ../../faq.rst:28
 msgid "Q3: What is the \"auxiliary classpath\"? Why should I specify it?"
-msgstr ""
+msgstr "Q3: O que é o caminho de classe auxiliar \"auxiliary classpath\"? Por que devo especificar isso?"
 
 #: ../../faq.rst:30
 msgid ""
 "Many important facts about a Java class require information about the "
 "classes that it references.  For example:"
 msgstr ""
+"Muitos fatos importantes sobre uma classe Java requerem informações sobre as "
+"classes às quais faz referência. Por exemplo:"
 
 #: ../../faq.rst:32
 msgid "What other classes and interfaces the class inherits from"
-msgstr ""
+msgstr "De quais outras classes e interfaces a classe herda"
 
 #: ../../faq.rst:33
 msgid ""
 "What exceptions can be thrown by methods in external classes and "
 "interfaces"
-msgstr ""
+msgstr "Quais exceções podem ser lançadas por métodos em classes externas e interfaces"
 
 #: ../../faq.rst:35
 msgid ""
@@ -94,6 +108,9 @@ msgid ""
 "class files containing classes that are used by the code you want "
 "SpotBugs to analyze, but should not themselves be analyzed by SpotBugs."
 msgstr ""
+"O caminho de classe auxiliar \"auxiliary classpath\" é uma lista de arquivos Jar, diretórios e "
+"arquivos de classe contendo classes que são usadas pelo código que você deseja que o "
+"SpotBugs analise, mas não devem ser analisadas por SpotBugs."
 
 #: ../../faq.rst:37
 msgid ""
@@ -106,6 +123,14 @@ msgid ""
 " rely on being able to perform type inference, which requires complete "
 "type hierarchy information."
 msgstr ""
+"Se SpotBugs não tiver informações completas sobre as classes referenciadas, "
+"não será capaz de produzir resultados tão precisos. "
+"Por exemplo, ter um repositório completo de classes referenciadas permite que o "
+"SpotBugs remova as informações de fluxo de controle para que possa se concentrar nos caminhos "
+"por meio de métodos que são mais viáveis em tempo de execução. Além disso, "
+"alguns detectores de bug (como o detector de comparação de referência suspeita) "
+"confiam na capacidade de realização de inferência de tipo, o que requer uma "
+"informações completas da hierarquia de tipo."
 
 #: ../../faq.rst:41
 msgid ""
@@ -114,6 +139,10 @@ msgid ""
 "``-auxclasspath`` command line option, or the \"Classpath entries\" list "
 "in the GUI project editor dialog."
 msgstr ""
+"Por esses motivos, é altamente recomendável que você especifique completamente o "
+"classpath auxiliar ao executar o SpotBugs. Você pode fazer isso usando a "
+"opção de linha de comando ``-auxclasspath`` ou a lista "
+"na caixa de diálogo GUI em \"Classpath entries\"."
 
 #: ../../faq.rst:44
 msgid ""
@@ -122,16 +151,22 @@ msgid ""
 "that were missing. You should modify the auxiliary classpath to specify "
 "how to find the missing classes, and then run SpotBugs again."
 msgstr ""
+"Se o SpotBugs não conseguir encontrar uma classe referenciada por seu aplicativo, ele irá "
+"imprimir uma mensagem quando a análise for concluída, especificando as classes "
+"que estavam faltando. Você deve modificar o caminho de classe auxiliar para especificar "
+"como encontrar as classes que faltam e, em seguida, executar o SpotBugs novamente."
 
 #: ../../faq.rst:49
 msgid "Q4: The Eclipse plugin doesn't load"
-msgstr ""
+msgstr "Q4: O plugin do eclipse não carrega"
 
 #: ../../faq.rst:51
 msgid ""
 "The symptom of this problem is that Eclipse fails to load the SpotBugs UI"
 " plugin with the message:"
 msgstr ""
+"Quando o Eclipse não consegue carregar a interface do plugin do SpotBugs"
+" apresenta a mensagem:"
 
 #: ../../faq.rst:53
 msgid ""
@@ -145,10 +180,13 @@ msgid ""
 "SpotBugs does not work with older 3.x versions of Eclipse. Please use "
 "Eclipse Neon (version 4.6) or newer."
 msgstr ""
+"A razão para este problema é que o plugin do SpotBugs não "
+"funciona com versões 3.x ou mais antigas do Eclipse. Use o "
+"Eclipse Neon (versão 4.6) ou mais recente."
 
 #: ../../faq.rst:59
 msgid "Q5: I'm getting a lot of false \"OS\" and \"ODR\" warnings"
-msgstr ""
+msgstr "Q5: Eu estou obtendo muitos avisos falsos para \"OS\" e \"ODR\""
 
 #: ../../faq.rst:61
 msgid ""
@@ -157,6 +195,10 @@ msgid ""
 " exception thrown out of the method could bypass a call to a ``close()`` "
 "method for a stream or database resource."
 msgstr ""
+"Por padrão, o SpotBugs assume que qualquer invocação de método pode lançar uma "
+"exceção de tempo de execução não verificada. Como resultado, pode assumir que uma "
+"exceção lançada para fora do método pode ignorar uma chamada a um método ``close ()``"
+"para um fluxo ou recurso de banco de dados."
 
 #: ../../faq.rst:64
 msgid ""
@@ -165,34 +207,41 @@ msgid ""
 "harder to prune unlikely exception edges. This generally reduces the "
 "number of false warnings, at the expense of slowing down the analysis."
 msgstr ""
+"Você pode usar o argumento da linha de comando ``-workHard`` ou a propriedade de análise booleana "
+"``findbugs.workHard`` para fazer o SpotBugs "
+"podar mais bordas de exceção improváveis. Isso geralmente reduz o "
+"número de avisos falsos, as custas do aumento do tempo de análise."
 
 #: ../../faq.rst:70
 msgid "Q6: The Eclipse plugin loads, but doesn't work correctly"
-msgstr ""
+msgstr "Q6: O plugin do Eclipse carrega, mas não funciona corretamente"
 
 #: ../../faq.rst:72
 msgid ""
 "Make sure the Java code you trying to analyze is built properly and has "
 "no classpath or compile errors."
 msgstr ""
+"verifique que o código Java que você está tentando analisar está construído e não possui caminhos de classes ou erros de compilação. "
 
 #: ../../faq.rst:73
 msgid ""
 "Make sure the project and workspace SpotBugs settings are valid - in "
 "doubt, revert them to defaults."
 msgstr ""
+"verifique se as configurações do SpotBugs para o projeto e workspace são válidas. "
+"Em caso de dúvidas, reverta as configurações para default."
 
 #: ../../faq.rst:74
 msgid "Make sure the Error log view does not show errors."
-msgstr ""
+msgstr "Verifique se o log de erros não apresenta erros. "
 
 #: ../../faq.rst:77
 msgid "Q7: Where is the Maven plugin for SpotBugs?"
-msgstr ""
+msgstr "Q7: onde está o plugin maven para o SpotBugs?"
 
 #: ../../faq.rst:79
 msgid ""
-"The Maven Plugin for SpotBugs may be found `here "
+"o plugin maven para o Spotbugs pode ser encontado `aqui "
 "<https://github.com/spotbugs/spotbugs-maven-plugin/>`_."
 msgstr ""
 
