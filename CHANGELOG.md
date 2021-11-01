@@ -20,6 +20,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 * False negative about the rule ES_COMPARING_STRINGS_WITH_EQ ([#1764](https://github.com/spotbugs/spotbugs/issues/1764))
+* False negative about the rule IM_MULTIPLYING_RESULT_OF_IREM ([#1498])(https://github.com/spotbugs/spotbugs/issues/1498)
 
 ### Deprecated
 * `-output` commandline option is deprecated. Use commandline options for report configuration like `-xml=spotbugs.xml` instead.
