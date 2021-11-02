@@ -23,7 +23,8 @@ public class MutableClasses {
             "java.lang.Float", "java.lang.StackTraceElement", "java.lang.Class", "java.math.BigInteger",
             "java.math.Decimal", "java.io.File", "java.awt.Font", "java.awt.BasicStroke",
             "java.awt.Color", "java.awt.GradientPaint", "java.awt.LinearGradientPaint",
-            "java.awt.RadialGradientPaint", "java.Cursor.", "java.util.UUID", "java.net.URL",
+            "java.awt.RadialGradientPaint", "java.awt.Cursor", "java.util.Locale", "java.util.UUID", "java.net.URL",
+            "java.util.regex.Pattern",
             "java.net.URI", "java.net.Inet4Address", "java.net.Inet6Address", "java.net.InetSocketAddress",
             "java.security.Permission", "com.google.common.collect.ImmutableBiMap",
             "com.google.common.collect.ImmutableClassToInstanceMap",
@@ -71,8 +72,8 @@ public class MutableClasses {
 
         try {
             JavaClass cls = Repository.lookupClass(dottedClassName);
-            if (Stream.of(cls.getAnnotationEntries()).anyMatch(s -> s.toString().endsWith("/Immutable;")
-                    || s.getAnnotationType().equals("jdk.internal.ValueBased"))) {
+            if (Stream.of(cls.getAnnotationEntries()).map(AnnotationEntry::getAnnotationType)
+                    .anyMatch(type -> type.endsWith("/Immutable;") || type.equals("Ljdk/internal/ValueBased;"))) {
                 return false;
             }
             return ClassAnalysis.load(cls, sig).isMutable();

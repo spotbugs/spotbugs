@@ -1,13 +1,13 @@
 plugins {
   id "org.sonarqube" version "3.3"
-  id "com.diffplug.spotless" version "5.15.0"
+  id "com.diffplug.spotless" version "5.17.1"
   id "org.gradle.crypto.checksum" version "1.2.0"
-  id "com.github.spotbugs" version "4.7.5"
+  id "com.github.spotbugs" version "5.0.0-beta.5"
   id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
 group = 'com.github.spotbugs'
-version = '4.4.2-SNAPSHOT'
+version = '4.4.3-SNAPSHOT'
 
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
@@ -31,7 +31,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    implementation platform('org.junit:junit-bom:5.8.0')
+    implementation platform('org.junit:junit-bom:5.8.1')
   }
 }
 
@@ -56,7 +56,7 @@ task jacocoRootReport(type: JacocoReport) {
   reports {
     // JaCoCo SonarQube plugin needs a XML file to parse
     // https://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin
-    xml.enabled = true
+    xml.required = true
   }
 }
 
