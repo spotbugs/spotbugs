@@ -82,8 +82,12 @@ public class MutableClassesTest {
             return new Immutable(n);
         }
 
-        public void setNUnsupported(int n) throws UnsupportedOperationException {
+        public void setNUnsupported(int n) {
             throw new UnsupportedOperationException();
+        }
+
+        public void setNUnsupported2(int n) {
+            throw new UnsupportedOperationException("This class is immutable, setters are unsupported.");
         }
 
         public static Immutable getImmutable() {
