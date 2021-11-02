@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
+@OpcodeStack.CustomUserValue
 public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
     private boolean securityCheck = false;
     private boolean fieldNameUnderGet = false;
@@ -72,7 +73,7 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
                     "newInstance".equals(met.getName()) &&
                     "()Ljava/lang/Object;".equals(met.getSignature())) {
                 bugAccumulator.accumulateBug(new BugInstance(this,
-                        "REFL_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS", NORMAL_PRIORITY)
+                        "REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS", NORMAL_PRIORITY)
                                 .addClassAndMethod(this), this);
             } else if ("java.lang.Class".equals(cls.getClassName()) &&
                     "getDeclaredField".equals(met.getName()) &&
@@ -84,7 +85,7 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
                 Boolean fieldIsFromParam = (Boolean) obj.getUserValue();
                 if (fieldIsFromParam != null && fieldIsFromParam.booleanValue()) {
                     bugAccumulator.accumulateBug(new BugInstance(this,
-                            "REFL_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD", NORMAL_PRIORITY)
+                            "REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD", NORMAL_PRIORITY)
                                     .addClassAndMethod(this), this);
                 }
             } else if ("java.lang.SecurityManager".equals(cls.getClassName()) &&

@@ -12,7 +12,7 @@ public class ReflectionIncreaseAccessibilityNegativeTest {
         this.cls = cls;
     }
 
-    @NoWarning("REFL")
+    @NoWarning("REFLC")
     public static <T> T create(Class<T> c)
             throws InstantiationException, IllegalAccessException {
         if (c.getConstructors().length == 0) {
@@ -26,22 +26,22 @@ public class ReflectionIncreaseAccessibilityNegativeTest {
 
     private static class C {
         Class<?> cls;
-/*        public C(Class<?> cls) {
+        public C(Class<?> cls) {
             this.cls = cls;
-        }*/
+        }
     }
 
-    @NoWarning("REFL")
+    @NoWarning("REFLC")
     public void strangeFP()
             throws InstantiationException, IllegalAccessException {
         cls.newInstance();
     }
 
     private C getC() {
-        return new C();
+        return new C(Integer.class);
     }
 
-    @NoWarning("REFL")
+    @NoWarning("REFLC")
     public void strangeFP2()
             throws InstantiationException, IllegalAccessException {
         C c = getC();

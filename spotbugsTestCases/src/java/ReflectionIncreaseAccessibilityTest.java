@@ -5,7 +5,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 public class ReflectionIncreaseAccessibilityTest {
     ReflectionIncreaseAccessibilityTest() {}
 
-    @ExpectWarning("REFL")
+    @ExpectWarning("REFLC")
     public static <T> T create(Class<T> c)
             throws InstantiationException, IllegalAccessException {
         return c.newInstance();
@@ -13,7 +13,7 @@ public class ReflectionIncreaseAccessibilityTest {
 
     private int field;
 
-    @ExpectWarning("REFL")
+    @ExpectWarning("REFLF")
     public void setField(String fieldName, int value) {
         try {
             Field f = this.getClass().getDeclaredField(fieldName);
@@ -25,7 +25,7 @@ public class ReflectionIncreaseAccessibilityTest {
         }
     }
 
-    @ExpectWarning("REFL")
+    @ExpectWarning("REFLF")
     public Field getAccessibleField(String fieldName) {
         try {
             Field f = this.getClass().getDeclaredField(fieldName);

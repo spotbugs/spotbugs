@@ -654,7 +654,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.FindBadEndOfStreamCheck" speed="fast"
                     reports="EOS_BAD_END_OF_STREAM_CHECK"/>
           <Detector class="edu.umd.cs.findbugs.detect.ReflectionIncreaseAccessibility"
-                    reports="REFL_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS,REFL_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD"/>
+                    reports="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS,REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -1260,6 +1260,6 @@
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="STYLE" deprecated="true" />
           <BugPattern abbrev="EOS" type="EOS_BAD_END_OF_STREAM_CHECK" category="CORRECTNESS" />
-          <BugPattern abbrev="REFL" type="REFL_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS" category="MALICIOUS_CODE" />
-          <BugPattern abbrev="REFL" type="REFL_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD" category="MALICIOUS_CODE" />
+          <BugPattern abbrev="REFLC" type="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS" category="MALICIOUS_CODE" />
+          <BugPattern abbrev="REFLF" type="REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD" category="MALICIOUS_CODE" />
 </FindbugsPlugin>
