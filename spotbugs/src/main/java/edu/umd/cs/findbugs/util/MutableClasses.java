@@ -139,12 +139,17 @@ public class MutableClasses {
         }
 
         private boolean looksLikeASetter(Method method) {
-            final String methodName = method.getName();
+            // Empty methods cannot set anything
+            if (method.getCode() == null) {
+                return false;
+            }
+
             // If the method throws an UnsupportedOperationException then we ignore it.
             if (isSingleLineUnsupportedOperationThrower(method)) {
                 return false;
             }
 
+            final String methodName = method.getName();
             for (String name : SETTER_LIKE_PREFIXES) {
                 if (methodName.startsWith(name)) {
                     // If setter-like methods returns an object of the same type then we suppose that it
