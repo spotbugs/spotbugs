@@ -19,17 +19,18 @@ msgstr ""
 
 #: ../../gui.rst:2
 msgid "Using the SpotBugs GUI"
-msgstr ""
+msgstr "Usando a interface do SpotBugs"
 
 #: ../../gui.rst:4
 msgid ""
 "This chapter describes how to use the SpotBugs graphical user interface "
 "(GUI)."
 msgstr ""
+"Este capítulo descreve como usar a interface gráfica do SpotBugs (GUI)."
 
 #: ../../gui.rst:7
 msgid "Creating a Project"
-msgstr ""
+msgstr "Criação de um projeto"
 
 #: ../../gui.rst:9
 msgid ""
@@ -37,6 +38,8 @@ msgid ""
 "the ``File → New Project`` menu item. You will see a dialog which looks "
 "like this:"
 msgstr ""
+"Após a inicialização do SpotBugs usando o comando ``spotbugs``, escolha "
+"o item ``File → New Project`` no menu. Você verá uma caixa de diálogo parecida com a seguinte:"
 
 #: ../../gui.rst:14
 msgid ""
@@ -44,6 +47,9 @@ msgid ""
 "archive file (zip, jar, ear, or war file) or directory containing java "
 "classes to analyze for bugs. You may add multiple archives/directories."
 msgstr ""
+"Use o botão \"Add\" próximo ao \"Classpath to analyze\" para selecionar um "
+"arquivo Java (zip, jar, ear, or war file) ou diretório contendo classes Java "
+"a serem analisadas. Você pode adicionar múltiplos arquivos e diretórios."
 
 #: ../../gui.rst:16
 msgid ""
@@ -55,6 +61,13 @@ msgid ""
 " package, you should add the parent directory of the org directory to the"
 " source directory list for the project."
 msgstr ""
+"Você também pode adicionar os diretórios que contém o código dos arquivos "
+"Java que deseja analisar. Isso permitirá que o SpotBugs destaque "
+"o código que possui um possível erro. Os diretórios que você adicionar "
+"devem ser diretórios raiz na hierarquia de pacotes Java. "
+"Por exemplo, se sua aplicação está contida no pacote ``org.foobar.myapp``, "
+"você deve adicionar o diretório pai do diretório org para "
+" que o projeto seja listado."
 
 #: ../../gui.rst:18
 msgid ""
@@ -67,10 +80,17 @@ msgid ""
 "will get more accurate results if the entire class hierarchy is available"
 " which FindBugs performs its analysis."
 msgstr ""
+"outro passo adicional é a adição de arquivos Jar ou diretórios como entrada em "
+"\"Auxiliary classpath locations\". Você deve fazer isso se os arquivos "
+"ou diretórios que deseja analisar possuem referências para outras "
+"classes que não estão inclusas nos arquivos/diretórios e "
+"não estão inclusas no classpath padrão. Alguns dos detectores de padrões de bug "
+"no FindBugs usam informações da hierarquia de classes, então você "
+"pode obter resultados mais precisos se a hierarquia de classes está disponível."
 
 #: ../../gui.rst:21
 msgid "Running the Analysis"
-msgstr ""
+msgstr "Execução da análise"
 
 #: ../../gui.rst:23
 msgid ""
@@ -81,14 +101,19 @@ msgid ""
 "computer with ample memory will typically be able to analyze a large "
 "program in only a few minutes."
 msgstr ""
+"Uma vez que você adicionou todos os arquivos e diretórios "
+"clique no botão \"Analyze\" para executar a análise classes "
+"contidas nos arquivos Jar. Observe que para um programa muito grande, em um "
+"computador antigo, a análise pode demorar bastante. Um computador mais "
+"atual, com bastante memória, é capaz de analisar um programa muito grande em poucos minutos."
 
 #: ../../gui.rst:26
 msgid "Browsing Results"
-msgstr ""
+msgstr "Visualização dos resultados"
 
 #: ../../gui.rst:28
 msgid "When the analysis completes, you will see a screen like the following:"
-msgstr ""
+msgstr "Quando a análise terminar, você verá uma tela como a seguir: "
 
 #: ../../gui.rst:32
 msgid ""
@@ -96,6 +121,8 @@ msgid ""
 "hierarchical representation of all of the potential bugs detected in the "
 "analyzed Jar files."
 msgstr ""
+"O painel superior esquerdo da janela mostra a árvore de bug; esta é uma "
+"representação hierárquica de todos os possíveis bugs detectados nos arquivos Jar analisados.
 
 #: ../../gui.rst:34
 msgid ""
@@ -107,6 +134,12 @@ msgid ""
 "source code window highlights the line where the stream object is "
 "created."
 msgstr ""
+"Ao selecionar uma determinada instância de bug no painel superior, você verá "
+"uma descrição do bug na guia \"Detais\" no painel inferior. Além disso, o painel "
+"de código-fonte no canto superior direito mostrará o programa código-fonte onde "
+"ocorre o possível bug, se a fonte estiver disponível. No exemplo acima, o bug é "
+"um objeto de fluxo que não é fechado. A janela do código-fonte destaca a linha "
+"onde o objeto de fluxo é criado. "
 
 #: ../../gui.rst:36
 msgid ""
@@ -115,10 +148,14 @@ msgid ""
 "information which you would like to record. When you load and save bug "
 "results files, the annotations are preserved."
 msgstr ""
+"Você pode adicionar anotações textuais às instâncias do bug. Para fazer isso, "
+"digite-as na caixa de texto logo abaixo da visualização hierárquica. Você pode "
+"digitar qualquer informação que gostaria de registrar. Quando você carrega e "
+"salva os arquivos de resultados do bug, as anotações são preservadas. "
 
 #: ../../gui.rst:39
 msgid "Saving and Opening"
-msgstr ""
+msgstr "Salvando e abrindo os arquivos"
 
 #: ../../gui.rst:41
 msgid ""
@@ -130,4 +167,10 @@ msgid ""
 "results (\"FindBugs analysis file (.fba)\"). A saved file may be loaded "
 "with the ``File → Open...`` menu option."
 msgstr ""
-
+"Você pode usar a opção do menu ``File → Save as...`` para salvar seu trabalho. "
+"Para salvar seu trabalho, incluindo as listas de arquivos jar e todos os resultados "
+"de bugs, escolha \"FindBugs analysis results (.xml)\" no menu drop-down "
+"no diálogo \"Save as...\". Há outras opções para salvar apenas "
+"as listas de arquivos Jar (\"FindBugs project file (.fbp)\") ou apenas "
+"os resultados (\"FindBugs analysis file (.fba)\"). um arquivo salvo pode ser aberto "
+"na opção do menu ``File → Open...``."
