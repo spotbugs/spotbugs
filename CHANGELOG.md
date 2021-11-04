@@ -8,12 +8,17 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 - Replace "分析" with "解析" in Japanese document ([#1573](https://github.com/spotbugs/spotbugs/issues/1573))
 - Add a section to document how to integrate find-sec-bugs into spotbugs-maven-plugin ([#540](https://github.com/spotbugs/spotbugs/issues/540))
+- Bump gson from 2.8.8 to 2.8.9 ([#1784](https://github.com/spotbugs/spotbugs/pull/1784))
 
 ### Added
 * Rule `DCN_NULLPOINTER_EXCEPTION` covers catching NullPointerExceptions in accordance with SEI Cert rule [ERR08-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors) ([#1740](https://github.com/spotbugs/spotbugs/pull/1740))
+* Multiple types of report can be generated in batch. Set multiple commandline options for report configuration like `-html=report/spotbugs.html -xml:withMessages=report/spotbugs.xml`.
 
 ### Fixed
 * False negative about the rule ES_COMPARING_STRINGS_WITH_EQ ([#1764](https://github.com/spotbugs/spotbugs/issues/1764))
+
+### Deprecated
+* `-output` commandline option is deprecated. Use commandline options for report configuration like `-xml=spotbugs.xml` instead.
 
 ## 4.4.2 - 2021-10-08
 ### Changed

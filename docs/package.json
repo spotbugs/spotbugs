@@ -7,7 +7,7 @@
   },
   "devDependencies": {
     "@arielairone/textlint-plugin-po": "^1.0.14",
-    "textlint": "^11.9.0",
-    "textlint-rule-preset-jtf-style": "^2.3.8"
+    "textlint": "^12.0.2",
+    "textlint-rule-preset-jtf-style": "^2.3.12"
   }
 }
