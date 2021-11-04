@@ -34,12 +34,16 @@ import org.dom4j.Document;
 import org.dom4j.io.DocumentSource;
 
 public class HTMLBugReporter extends BugCollectionBugReporter {
-    private final String stylesheet;
+    private String stylesheet;
 
     private Exception fatalException;
 
     public HTMLBugReporter(Project project, String stylesheet) {
         super(project);
+        this.stylesheet = stylesheet;
+    }
+
+    public void setStylesheet(String stylesheet) {
         this.stylesheet = stylesheet;
     }
 

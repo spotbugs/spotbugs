@@ -319,6 +319,12 @@ public abstract class CommandLine {
                 optionExtraPart = option.substring(colon + 1);
                 option = option.substring(0, colon);
             }
+            int eq = option.indexOf('=');
+            if (eq >= 0) {
+                assert optionExtraPart.isEmpty();
+                optionExtraPart = option.substring(eq); // starts with '='
+                option = option.substring(0, eq);
+            }
 
             if (optionDescriptionMap.get(option) == null) {
                 throw new IllegalArgumentException("Unknown option: " + option);
