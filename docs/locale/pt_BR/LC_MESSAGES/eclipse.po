@@ -196,9 +196,9 @@ msgstr ""
 "Os detectores padrão do SpotBugs detector podem ser configurados via "
 "``Window → Preferences → Java → FindBugs → Misc. Settings → Custom "
 "Detectors``. Basta especificar os locais das bibliotecas de qualquer plugin adicional. "
-"O benefício dessa solução é que os pacotes de detectores existentes podem ser utilizados "
+"O benefício desta solução é que os pacotes de detectores existentes podem ser utilizados "
 "\"as is\", e você pode rapidamente verificar a qualidade de detectores terceiros. "
-"A desvantagem é que você precisa aplicar as configurações em cada workspace do Ecplise, "
+"A desvantagem é que você precisa aplicar as configurações em cada workspace do Eclipse, "
 "e as configurações não podem ser compartilhadas entre membros de um time."
 
 #: ../../eclipse.rst:61
@@ -239,8 +239,8 @@ msgstr ""
 "de configurar mais nada. A pré-condição (muito pequena) é que você deve converter seu pacote "
 "de detectores existente para o plug-in do Eclipse. Você pode fazer isso até mesmo para pacotes "
 "de detectores de terceiros. Outro grande diferencial é a capacidade de estender o caminho de "
-"classes do SpotBugs padrão em tempo de execução com bibliotecas de terceiros (consulte
-AddedDetectors.txt para mais informações). "
+"classes do SpotBugs padrão em tempo de execução com bibliotecas de terceiros (consulte "
+"AddedDetectors.txt para mais informações). "
 
 #: ../../eclipse.rst:72
 msgid "Troubleshooting"

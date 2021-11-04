@@ -83,7 +83,7 @@ msgid ""
 "``build.xml`` for the Apache BCEL library."
 msgstr ""
 "Depois de adicionar a definição da tarefa, você pode definir um alvo para usar "
-"a tarefa spotbugs. A seguir é apresentado um exemplo que pode ser adicionado ao ``build.xml`` "
+"a tarefa spotbugs. A seguir, é apresentado um exemplo que pode ser adicionado ao ``build.xml`` "
 "para a biblioteca Apache BCEL."
 
 #: ../../ant.rst:49
@@ -92,7 +92,7 @@ msgid ""
 " which SpotBugs is installed; in other words, ``$SPOTBUGS_HOME``. See "
 ":doc:`installing`."
 msgstr ""
-"O elemento spotbugs deve ter o atributo home definido para o diretório no qual "
+"O elemento SpotBugs deve ter o atributo home definido para o diretório no qual "
 "o SpotBugs está instalado; em outras palavras, ``$SPOTBUGS_HOME``. Veja "
 ":doc:`installing`."
 
@@ -116,7 +116,7 @@ msgstr ""
 
 #: ../../ant.rst:57
 msgid "Executing the task"
-msgstr "Executanto a tarefa"
+msgstr "Executando a tarefa"
 
 #: ../../ant.rst:59
 msgid ""
@@ -260,8 +260,8 @@ msgstr ""
 "Atributo opcional. Este atributo especifica o formato de saída. Se definido como ``xml`` (por default), "
 "a saída será no formato XML. Se definido como \"xml:withMessages\", a saída será no formato XML "
 "acrescentado com mensagens legíveis. (Você deve usar este formato se planeja gerar um relatório "
-"usando uma folha de estilo XSL.) Se definido como \"html\", a saída será formatada em HTML 
-(por default, a folha de estilo é default.xsl). Se definido como ``texto``, a saída será em "
+"usando uma folha de estilo XSL.) Se definido como \"html\", a saída será formatada em HTML "
+"(por default, a folha de estilo é default.xsl). Se definido como ``texto``, a saída será em "
 "formato de texto ad-hoc. Se definido como ``emacs``, a saída será no formato de mensagem de erro Emacs. "
 "Se definido como ``xdocs``, a saída será xdoc XML para uso com Apache Maven. "
 
@@ -415,7 +415,7 @@ msgid ""
 "An optional nested element. It specifies a path containing filters "
 "specifying bugs to exclude from being reported. See :doc:`filter`."
 msgstr ""
-"Um elemento aninhado opicional. Este elemento especifica o caminho contendo os filtros "
+"Um elemento aninhado opcional. Este elemento especifica o caminho contendo os filtros "
 "que definem os bugs que não devem ser reportados. Veja :doc:`filter`." 
 
 #: ../../ant.rst:165
@@ -439,7 +439,7 @@ msgid ""
 "An optional nested element. It specifies a path containing filters "
 "specifying which bugs are reported. See :doc:`filter`."
 msgstr ""
-"Um elemento aninhado opicional. Este elemento especifica o caminho contendo os filtros "
+"Um elemento aninhado opcional. Este elemento especifica o caminho contendo os filtros "
 "que definem os bugs que devem ser reportados. Veja :doc:`filter`." 
 
 #: ../../ant.rst:174

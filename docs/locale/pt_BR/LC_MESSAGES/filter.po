@@ -41,7 +41,7 @@ msgid ""
 msgstr ""
 "Conceitualmente, um filtro compara instâncias de bug com um conjunto de critérios. "
 "Ao definir um filtro, você pode selecionar um tratamento especial para instâncias de bugs, "
-"como exclí-las ou incluí-las em um reporte."
+"como excluí-las ou incluí-las em um reporte."
 
 #: ../../filter.rst:12
 msgid ""
@@ -490,7 +490,7 @@ msgid ""
 "Match minor bugs introduced by AspectJ compiler (you are probably not "
 "interested in these unless you are an AspectJ developer)"
 msgstr "Identificação de minor bugs introduzidos pelo compilador do AspectJ "
-"(você provavelvelmente não está interessado nessa parte, a menos que seja um desenvolvedor Aspectj"
+"(você provavelmente não está interessado nessa parte, a menos que seja um desenvolvedor Aspectj"
 
 #: ../../filter.rst:239
 msgid "Match bugs in specific parts of the code base"

@@ -27,8 +27,8 @@ msgid ""
 "so that SpotBugs can issue warnings more appropriately. Annotations for "
 "SpotBugs (mostly deprecated except for SuppressFBWarnings)."
 msgstr ""
-"O SpotBugs suporta várias anotações para expressar a intenção do desenvolvedor "
-"para que o SpotBugs possa emitir avisos mais precisos. As anotações para o SpotBugs " 
+"O SpotBugs suporta várias anotações para emitir avisos mais precisos "
+"conforme a intenção do desenvolvedor. As anotações para o SpotBugs são apresentadas a seguir "
 "(a maioria das anotações são obsoletas, com exceção da SuppressFBWarnings)."
 
 #: ../../annotations.rst:8
@@ -39,7 +39,7 @@ msgstr ""
 msgid ""
 "The annotated element might be null, and uses of the element should check"
 " for null."
-msgstr "O elemento anotado pode ser nulo e deve ser verificado se o uso do elemento é nulo."
+msgstr "O elemento anotado pode ser nulo e deve ser verificado se seu uso é nulo."
 
 #: ../../annotations.rst:12
 msgid "edu.umd.cs.findbugs.annotations.CheckReturnValue"
@@ -69,7 +69,7 @@ msgstr ""
 msgid ""
 "Mark a constructor or method as creating a resource which requires "
 "cleanup."
-msgstr "Marca o contrutor ou método como um tipo de recurso que requer limpeza."
+msgstr "Marca o construtor ou método como um tipo de recurso que requer limpeza."
 
 #: ../../annotations.rst:24
 msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotation"

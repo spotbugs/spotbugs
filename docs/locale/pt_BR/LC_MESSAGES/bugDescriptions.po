@@ -48,7 +48,7 @@ msgid ""
 "JUA:  Asserting value of instanceof in tests is not recommended.  "
 "(JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS)"
 msgstr ""
-"JUA: Utilização do operador instanceof no código de teste para validação de tipos."
+"JUA: Utilização de instanceof no código de teste "
 "(JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS)"
 #: ../../generated/bugDescriptionList.inc:18
 msgid ""
@@ -70,32 +70,33 @@ msgid ""
 "\n"
 "class from hamcrest could be used instead.</p>"
 msgstr ""
-"<p>Validação de tipos com o operador instanceof no código de teste não é recomendado. "
-"A mensagem disparada por ClassCastException pode prover informações sobre o tipo da instância encontrada. </p>\n"
-"<p> Em comparação, a asserção de tipos antes de fazer o cast pode resultar em uma mensagem menos informativa "
-"<code>\"false is not true\"</code>. </p>\n"
-"<p> Se você estiver usando o JUnit com o hamcrest, é recomendável usar a classe <a "
+"Validação de tipos com o operador instanceof no código de teste não é recomendado. "
+"A mensagem disparada por ClassCastException pode prover informações sobre o tipo da instância encontrada.\n"
+"Em comparação, a asserção de tipos antes de fazer o cast pode resultar em uma mensagem menos informativa "
+"<code>\"false is not true\"</code>.\n"
+"Se você estiver usando o JUnit com o hamcrest, é recomendável usar a classe <a "
 "href=\"https://junit.org/junit4/javadoc/latest/index.html?org/hamcrest/core/IsInstanceOf.html\">"
-"<code>IsInstanceOf</code></a>" do hamcrest. </p>"
+"<code>IsInstanceOf</code></a>"
 
 #: ../../generated/bugDescriptionList.inc:37
 msgid "CNT: Rough value of known constant found (CNT_ROUGH_CONSTANT_VALUE)"
-msgstr "CNT: encontrado um valor bruto de uma constante conhecida (CNT_ROUGH_CONSTANT_VALUE)"
+msgstr "CNT: Valor aproximado de constantes conhecidas "
+"(CNT_ROUGH_CONSTANT_VALUE)"
 
 #: ../../generated/bugDescriptionList.inc:39
 msgid ""
 "<p>It's recommended to use the predefined library constant for code "
 "clarity and better precision.</p>"
 msgstr ""
-"<p> Recomendamos que você use constantes de biblioteca predefinidas "
-"para maior clareza e precisão do código. </p>"
+"Recomendamos que você use constantes de biblioteca predefinidas "
+"para maior clareza e precisão do código."
 
 #: ../../generated/bugDescriptionList.inc:49
 msgid ""
 "NP: Method with Boolean return type returns explicit null "
 "(NP_BOOLEAN_RETURN_NULL)"
 msgstr ""
-"NP: Um método com um tipo de retorno Booleano retorna nulo "
+"NP: Método com um tipo de retorno Booleano retorna nulo "
 "(NP_BOOLEAN_RETURN_NULL)"
 
 #: ../../generated/bugDescriptionList.inc:51
@@ -111,7 +112,7 @@ msgid ""
 "   </p>"
 msgstr ""
 "Um método que retorna Boolean.TRUE, Boolean.FALSE, ou null pode gerar uma exceção. "
-"É esperado que o método é chamado retorne um valor de tipo lógico. "
+"É esperado que o método chamado retorne um valor de tipo lógico. "
 "O compilador insere o desempacotamento automático de valores para Boolean. "
 "Se o método retornar null, isso resultará em um NullPointerException."
 
@@ -119,7 +120,7 @@ msgstr ""
 msgid ""
 "SW: Certain swing methods need to be invoked in Swing thread "
 "(SW_SWING_METHODS_INVOKED_IN_SWING_THREAD)"
-msgstr "SW: certos métodos swing devem ser chamados a partir da Swing thread"
+msgstr "SW: Métodos swing devem ser chamados na Swing thread "
 "(SW_SWING_METHODS_INVOKED_IN_SWING_THREAD)"
 
 #: ../../generated/bugDescriptionList.inc:68
@@ -144,10 +145,9 @@ msgid ""
 "visible), they could trigger listener notification on the event dispatch "
 "thread.</p>"
 msgstr ""
-"<p>(<a "
-"href=\"http://web.archive.org/web/20090526170426/http://java.sun.com/developer/JDCTechTips/2003/tt1208.html\">"
-"Conforme JDC Tech Tip</a>): Os métodos Swing show(), setVisible(), e pack() criam pares associados para o frame. \n"
-"Quando você cria um par, o sistema cria uma thread de despacho de evento. \n"
+"(<a href=\"http://web.archive.org/web/20090526170426/http://java.sun.com/developer/JDCTechTips/2003/tt1208.html\">"
+"JDC Tech Tip</a>): Os métodos Swing show(), setVisible(), e pack() criam pares associados para o frame."
+"Quando você cria um par, o sistema cria uma thread de despacho de evento."
 "Isso pode ser um problema porque a thread pode estar notificando os listeners enquanto o empacotamento e validação "
 "ainda estão sendo processados. Essa situação é uma falha séria que pode permitir que duas threads acessem o componente "
 "Swing, resultando em deadlocks e outros problemas relacionados ao uso de threads. A chamada de empacotamento do método "
@@ -155,7 +155,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:87
 msgid "FI: Finalizer only nulls fields (FI_FINALIZER_ONLY_NULLS_FIELDS)"
-msgstr "FI: O finalizador apenas anula o campo (FI_FINALIZER_ONLY_NULLS_FIELDS)"
+msgstr "FI: Finalizador apenas anula os campos "
+"(FI_FINALIZER_ONLY_NULLS_FIELDS)"
 
 #: ../../generated/bugDescriptionList.inc:89
 msgid ""
@@ -165,13 +166,14 @@ msgid ""
 "again. You should just remove the finalize\n"
 "method.</p>"
 msgstr ""
-" <p> Este finalizador não faz nada além de criar o campo nulos. "
+"Este finalizador não faz nada além de criar campos nulos. "
 "Isso é completamente sem sentido e requer que o objeto seja descartado, "
-"finalizado e novamente descartado. Você deve apenas remover o método finalize.</p>"
+"finalizado e novamente descartado. Você deve apenas remover o método finalize."
 
 #: ../../generated/bugDescriptionList.inc:101
 msgid "FI: Finalizer nulls fields (FI_FINALIZER_NULLS_FIELDS)"
-msgstr "FI: Campo nulos do finalizador (FI_FINALIZER_NULLS_FIELDS) "
+msgstr "FI: Finalizador anula campos "
+"(FI_FINALIZER_NULLS_FIELDS) "
 
 #: ../../generated/bugDescriptionList.inc:103
 msgid ""
@@ -179,16 +181,16 @@ msgid ""
 "does not aid garbage collection,\n"
 "and the object is going to be garbage collected anyway.</p>"
 msgstr ""
-"<p> Este finalizador possui um campo null. Isso geralmente é um erro "
-"e não ajuda o garbage collector. O objeto será descartado de qualquer maneira.</p>"
+"Este finalizador cria um campo nulo. Isso geralmente é um erro "
+"e não ajuda o garbage collector. O objeto será descartado de qualquer maneira."
 
 #: ../../generated/bugDescriptionList.inc:114
 msgid ""
 "UI: Usage of GetResource may be unsafe if class is extended "
 "(UI_INHERITANCE_UNSAFE_GETRESOURCE)"
 msgstr ""
-"IU: o uso de getResource pode não ser seguro se a classe for estendida
-(UI_INHERITANCE_UNSAFE_GETRESOURCE)"
+"IU: Uso de getResource pode não ser seguro se a classe for estendida "
+"(UI_INHERITANCE_UNSAFE_GETRESOURCE)"
 
 #: ../../generated/bugDescriptionList.inc:116
 msgid ""
@@ -196,12 +198,13 @@ msgid ""
 "results other than expected if this class is extended by a class in\n"
 "another package.</p>"
 msgstr ""
-"<p> A chamada de <code>this.getClass().getResource(...)</code> pode retornar "
-"resultados não esperados se essa classe é estendida em outro pacote.</p>"
+"A chamada de <code>this.getClass().getResource(...)</code> pode retornar "
+"resultados não esperados se essa classe é estendida em outro pacote."
 
 #: ../../generated/bugDescriptionList.inc:128
 msgid "AM: Creates an empty zip file entry (AM_CREATES_EMPTY_ZIP_FILE_ENTRY)"
-msgstr "AM: Crie uma entrada de arquivo ZIP vazia (AM_CREATES_EMPTY_ZIP_FILE_ENTRY)"
+msgstr "AM: Cria uma entrada de arquivo ZIP vazia "
+"(AM_CREATES_EMPTY_ZIP_FILE_ENTRY)"
 
 #: ../../generated/bugDescriptionList.inc:130
 msgid ""
@@ -214,11 +217,12 @@ msgid ""
 msgstr ""
 "Este código chama <code>putNextEntry()</code>, seguido pela chamada para <code>closeEntry()</code>. "
 "O resultado é uma entrada de arquivo ZIP vazia. Os dados de entrada devem ser gravados em um arquivo ZIP "
-"entre as chamadas para os métodos <code>putNextEntry()</code> e <code>closeEntry()</code>.</p>"
+"entre as chamadas para os métodos <code>putNextEntry()</code> e <code>closeEntry()</code>."
 
 #: ../../generated/bugDescriptionList.inc:145
 msgid "AM: Creates an empty jar file entry (AM_CREATES_EMPTY_JAR_FILE_ENTRY)"
-msgstr "AM: Cria uma entrada de arquivo JAR vazia (AM_CREATES_EMPTY_JAR_FILE_ENTRY)"
+msgstr "AM: Cria uma entrada de arquivo JAR vazia"
+"(AM_CREATES_EMPTY_JAR_FILE_ENTRY)"
 
 #: ../../generated/bugDescriptionList.inc:147
 msgid ""
@@ -231,13 +235,14 @@ msgid ""
 msgstr ""
 "Este código chama <code>putNextEntry()</code>, seguido pela chamada para <code>closeEntry()</code>. "
 "O resultado é uma entrada de arquivo Jar vazia. Os dados de entrada devem ser gravados em um arquivo ZIP "
-"entre as chamadas para os métodos <code>putNextEntry()</code> e <code>closeEntry()</code>.</p>"
+"entre as chamadas para os métodos <code>putNextEntry()</code> e <code>closeEntry()</code>."
 
 #: ../../generated/bugDescriptionList.inc:162
 msgid ""
 "IMSE: Dubious catching of IllegalMonitorStateException "
 "(IMSE_DONT_CATCH_IMSE)"
-msgstr "IMSE: Capture ambiguidades do IllegalMonitorStateException (IMSE_DONT_CATCH_IMSE)"
+msgstr "IMSE: Captura ambiguidades do IllegalMonitorStateException"
+"(IMSE_DONT_CATCH_IMSE)"
 
 #: ../../generated/bugDescriptionList.inc:164
 msgid ""
@@ -253,7 +258,7 @@ msgid ""
 "CN: Class defines clone() but doesn't implement Cloneable "
 "(CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE)"
 msgstr ""
-"CN: uma classe que define clone(), mas não implementa Cloneable "
+"CN: Classe que define clone(), mas não implementa Cloneable "
 "(CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE)"
 
 #: ../../generated/bugDescriptionList.inc:178
@@ -275,7 +280,8 @@ msgid ""
 "CN: Class implements Cloneable but does not define or use clone method "
 "(CN_IDIOM)"
 msgstr ""
-"CN: A classe que implementa Cloneable, mas não define ou usa o método clone (CN_IDIOM)"
+"CN: Classe que implementa Cloneable, mas não define ou usa o método clone "
+"(CN_IDIOM)"
 
 #: ../../generated/bugDescriptionList.inc:193
 msgid ""
@@ -287,7 +293,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:205
 msgid "CN: clone method does not call super.clone() (CN_IDIOM_NO_SUPER_CALL)"
-msgstr "CN: o método clone não chama super.clone() (CN_IDIOM_NO_SUPER_CALL)"
+msgstr "CN: Método clone não chama super.clone() "
+"(CN_IDIOM_NO_SUPER_CALL)"
 
 #: ../../generated/bugDescriptionList.inc:207
 msgid ""
@@ -311,7 +318,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:224
 msgid "DE: Method might drop exception (DE_MIGHT_DROP)"
-msgstr "DE: um método que pode estar lançando exceções (DE_MIGHT_DROP)"
+msgstr "DE: Método pode estar lançando exceções"
+"(DE_MIGHT_DROP)"
 
 #: ../../generated/bugDescriptionList.inc:226
 msgid ""
@@ -324,7 +332,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:238
 msgid "DE: Method might ignore exception (DE_MIGHT_IGNORE)"
-msgstr "DE: um método que pode estar ignorando a exceção (DE_MIGHT_IGNORE)"
+msgstr "DE: Método que pode estar ignorando a exceção "
+"(DE_MIGHT_IGNORE)"
 
 #: ../../generated/bugDescriptionList.inc:240
 msgid ""
@@ -337,7 +346,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:252
 msgid "Dm: Method invokes System.exit(...) (DM_EXIT)"
-msgstr "Dm: o método que chama System.exit(...) (DM_EXIT)"
+msgstr "Dm: Método que chama System.exit(...)"
+"(DM_EXIT)"
 
 #: ../../generated/bugDescriptionList.inc:254
 msgid ""
@@ -356,7 +366,7 @@ msgid ""
 "Nm: Use of identifier that is a keyword in later versions of Java "
 "(NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER)"
 msgstr ""
-"Nm: uso de identificadores que são keywords em versões posteriores do Java "
+"Nm: Uso de identificadores que são keywords em versões do Java "
 "(NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER)"
 
 #: ../../generated/bugDescriptionList.inc:269
@@ -373,7 +383,7 @@ msgid ""
 "Nm: Use of identifier that is a keyword in later versions of Java "
 "(NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER)"
 msgstr ""
-"Nm: Uso de identificadores que são keywords em versões posteriores do Java"
+"Nm: Uso de identificadores que são keywords em versões do Java "
 "(NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER)"
 
 #: ../../generated/bugDescriptionList.inc:283
@@ -393,7 +403,7 @@ msgid ""
 "JCIP: Fields of immutable classes should be final "
 "(JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS)"
 msgstr ""
-"JCIP: os campos de classe imutáveis ​​devem ser finais "
+"JCIP: Campos de classe imutáveis ​​devem ser finais "
 "(JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS)"
 
 #: ../../generated/bugDescriptionList.inc:298
@@ -404,14 +414,14 @@ msgid ""
 " .</p>"
 msgstr ""
 "A classe é anotada com net.jcip.annotations.Immutableou ou javax.annotation.concurrent.Immutable. "
-"As regras de anotação exigem que todos os campos sejam final.
+"As regras de anotação exigem que todos os campos sejam final."
 
 #: ../../generated/bugDescriptionList.inc:310
 msgid ""
 "Dm: Method invokes dangerous method runFinalizersOnExit "
 "(DM_RUN_FINALIZERS_ON_EXIT)"
 msgstr ""
-"Dm: o método que chama o método perigoso runFinalizersOnExit"
+"Dm: o método que chama o método perigoso runFinalizersOnExit "
 "(DM_RUN_FINALIZERS_ON_EXIT)"
 
 #: ../../generated/bugDescriptionList.inc:312
@@ -428,7 +438,8 @@ msgid ""
 "NP: equals() method does not check for null argument "
 "(NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT)"
 msgstr ""
-"NP: O método equals não verifica se há argumentos nulos (NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT)"
+"NP: Método equals não verifica se há argumentos nulos "
+"(NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT)"
 
 #: ../../generated/bugDescriptionList.inc:326
 msgid ""
@@ -445,7 +456,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:341
 msgid "FI: Empty finalizer should be deleted (FI_EMPTY)"
-msgstr "FI: O finalizador vazio deve ser removido (FI_EMPTY)"
+msgstr "FI: Finalizador vazio deve ser removido"
+"(FI_EMPTY)"
 
 #: ../../generated/bugDescriptionList.inc:343
 msgid ""
@@ -456,7 +468,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:354
 msgid "FI: Finalizer nullifies superclass finalizer (FI_NULLIFY_SUPER)"
-msgstr "FI: O Finalizer nega os finalizadores da superclasse (FI_NULLIFY_SUPER)"
+msgstr "FI: Finalizador nulifica os finalizadores da superclasse "
+"(FI_NULLIFY_SUPER)"
 
 #: ../../generated/bugDescriptionList.inc:356
 msgid ""
@@ -471,7 +484,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:369
 msgid "FI: Finalizer does nothing but call superclass finalizer (FI_USELESS)"
-msgstr "FI: O finalizador está apenas chamando o finalizador da superclasse (FI_USELESS)"
+msgstr "FI: Finalizador apenas chama o finalizador da superclasse "
+"(FI_USELESS)"
 
 #: ../../generated/bugDescriptionList.inc:371
 msgid ""
@@ -483,7 +497,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:383
 msgid "FI: Finalizer does not call superclass finalizer (FI_MISSING_SUPER_CALL)"
-msgstr "FI: O finalizador não está chamando um finalizador da superclasse (FI_MISSING_SUPER_CALL)"
+msgstr "FI: Finalizador não chama o finalizador da superclasse "
+"(FI_MISSING_SUPER_CALL)"
 
 #: ../../generated/bugDescriptionList.inc:385
 msgid ""
@@ -498,7 +513,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:398
 msgid "FI: Explicit invocation of finalizer (FI_EXPLICIT_INVOCATION)"
-msgstr "FI: Chamada explícita para o finalizador (FI_EXPLICIT_INVOCATION)"
+msgstr "FI: Chamada explícita para o finalizador "
+"(FI_EXPLICIT_INVOCATION)"
 
 #: ../../generated/bugDescriptionList.inc:400
 msgid ""
@@ -518,9 +534,9 @@ msgid ""
 msgstr ""
 "Este método possui uma chamada explícita uma para o método <code>finalize()</code>. "
 "Como os métodos do finalizador devem ser executados uma vez, e apenas pela VM, isso é uma má ideia. \n"
-"Se um conjunto de objetos conectados for finalizável, a VM invocará o método finalize em todos os objetos "
+"Se um conjunto de objetos conectados for finalizable, a VM invocará o método finalize em todos os objetos "
 "finalizáveis, possivelmente ao mesmo tempo em diferentes threads. Portanto, para o método finalize de ums classe X "
-"a invoção de finalize nos objetos referenciados pela classe X é uma má ideia, porque eles já podem estar sendo "
+"a invocação de finalize nos objetos referenciados pela classe X é uma má ideia, porque eles já podem estar sendo "
 "finalizados em uma thread separada."
 
 #: ../../generated/bugDescriptionList.inc:416
@@ -559,7 +575,6 @@ msgstr ""
 "(ou seja, uma classe que não é um supertipo nem subtipo da classe que "
 "define o método equals). Por exemplo, a classe Foo pode ter um método "
 "equals que se parece com:\n"
-
 "<pre><code>public boolean equals(Object o) {\n"
 "    if (o instanceof Foo)\n"
 "        return name.equals(((Foo)o).name);\n"
@@ -568,14 +583,14 @@ msgstr ""
 "    else return false;\n"
 "}\n"
 "</code></pre>\n"
-
 "Isso é considerado uma prática ruim, pois torna muito difícil implementar um "
 "método igual que seja simétrico e transitivo. Sem essas propriedades, "
 "comportamentos inesperados são possíveis."
 
 #: ../../generated/bugDescriptionList.inc:444
 msgid "Eq: equals method fails for subtypes (EQ_GETCLASS_AND_CLASS_CONSTANT)"
-msgstr "Eq: o método equals falha para subtipos (EQ_GETCLASS_AND_CLASS_CONSTANT)"
+msgstr "Eq: Método equals falha para subtipos "
+"(EQ_GETCLASS_AND_CLASS_CONSTANT)"
 
 #: ../../generated/bugDescriptionList.inc:446
 msgid ""
@@ -594,7 +609,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:460
 msgid "Eq: Covariant equals() method defined (EQ_SELF_NO_OBJECT)"
-msgstr "Eq: Método covariant de equals() (EQ_SELF_NO_OBJECT)"
+msgstr "Eq: Covariante do método equals() "
+"(EQ_SELF_NO_OBJECT)"
 
 #: ../../generated/bugDescriptionList.inc:462
 #: ../../generated/bugDescriptionList.inc:701
@@ -611,7 +627,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:475
 msgid "Co: Covariant compareTo() method defined (CO_SELF_NO_OBJECT)"
-msgstr "Co: covariante do método compareTo() (CO_SELF_NO_OBJECT)"
+msgstr "Co: Covariante do método compareTo() "
+"(CO_SELF_NO_OBJECT)"
 
 #: ../../generated/bugDescriptionList.inc:477
 #: ../../generated/bugDescriptionList.inc:716
@@ -623,7 +640,7 @@ msgid ""
 "<code>compareTo()</code>\n"
 "must have type <code>java.lang.Object</code>.</p>"
 msgstr ""
-"esta classe define uma covariante do método "
+"Esta classe define uma covariante do método "
 "<code>compareTo()</code>.&nbsp;\n"
 "Para sobrescrever o método <code>compareTo()</code> na interface \n"
 "<code>Comparable</code> os parâmetros de "
@@ -659,7 +676,7 @@ msgstr ""
 msgid ""
 "Co: compareTo()/compare() incorrectly handles float or double value "
 "(CO_COMPARETO_INCORRECT_FLOATING)"
-msgstr "Co: compareTo()/compare() manipula incorretamente o valor flutuante ou duplo "
+msgstr "Co: Métodos compareTo()/compare() manipula incorretamente float e double "
 "(CO_COMPARETO_INCORRECT_FLOATING)"
 
 #: ../../generated/bugDescriptionList.inc:509
@@ -707,7 +724,7 @@ msgid ""
 "ES: Comparison of String objects using == or != "
 "(ES_COMPARING_STRINGS_WITH_EQ)"
 msgstr ""
-"ES: comparação de objetos String usando == ou! = "
+"ES: Comparação de objetos String usando == ou! = "
 "(ES_COMPARING_STRINGS_WITH_EQ)"
 
 #: ../../generated/bugDescriptionList.inc:541
@@ -724,14 +741,14 @@ msgstr ""
 "usando os operadores == ou! =. A menos que ambas as strings sejam constantes em "
 "um arquivo de origem ou tenham sido internadas usando o método <code>String.intern()</code>, "
 "o mesmo valor da string pode ser representado por dois objetos String diferentes. "
-"Considere usar o método <code>equals(Object)</code>.
+"Considere usar o método <code>equals(Object)</code>."
 
 #: ../../generated/bugDescriptionList.inc:556
 msgid ""
 "ES: Comparison of String parameter using == or != "
 "(ES_COMPARING_PARAMETER_STRING_WITH_EQ)"
 msgstr ""
-"ES: comparação do parâmetro String usando == ou! ="
+"ES: Comparação de parâmetro String usando == ou! ="
 "(ES_COMPARING_PARAMETER_STRING_WITH_EQ)"
 
 #: ../../generated/bugDescriptionList.inc:558
@@ -748,12 +765,13 @@ msgstr ""
 "de referência usando os operadores == ou! =. Exigir que os chamadores passem "
 "apenas constantes de String ou strings para um método é desnecessariamente frágil "
 "e raramente leva a ganhos de desempenho mensuráveis. Considere usar o método <code>equals(Object)</code>."
+
 #: ../../generated/bugDescriptionList.inc:572
 msgid ""
 "Eq: Class defines compareTo(...) and uses Object.equals() "
 "(EQ_COMPARETO_USE_OBJECT_EQUALS)"
 msgstr ""
-"Eq: a classe define compareTo(…) e usa Object.equals()"
+"Eq: Classe define compareTo() e usa Object.equals() "
 "(EQ_COMPARETO_USE_OBJECT_EQUALS)"
 
 #: ../../generated/bugDescriptionList.inc:574
@@ -802,7 +820,7 @@ msgid ""
 "HE: Class defines hashCode() and uses Object.equals() "
 "(HE_HASHCODE_USE_OBJECT_EQUALS)"
 msgstr ""
-"HE: a classe define hashCode() e usa Object.equals()"
+"HE: Classe define hashCode() e usa Object.equals()"
 "(HE_HASHCODE_USE_OBJECT_EQUALS)"
 
 #: ../../generated/bugDescriptionList.inc:600
@@ -846,7 +864,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:624
 msgid "HE: Class defines hashCode() but not equals() (HE_HASHCODE_NO_EQUALS)"
-msgstr "HE: a classe define hashCode() mas não equals() (HE_HASHCODE_NO_EQUALS)"
+msgstr "HE: Classe define hashCode() mas não equals() "
+"(HE_HASHCODE_NO_EQUALS)"
 
 
 #: ../../generated/bugDescriptionList.inc:626
@@ -863,7 +882,7 @@ msgid ""
 "HE: Class defines equals() and uses Object.hashCode() "
 "(HE_EQUALS_USE_HASHCODE)"
 msgstr ""
-"HE: a classe define equals() e usa Object.hashCode()"
+"HE: Classe define equals() e usa Object.hashCode()"
 "(HE_EQUALS_USE_HASHCODE)"
 
 #: ../../generated/bugDescriptionList.inc:640
@@ -888,11 +907,11 @@ msgstr ""
 "Esta classe sobrescreve <code>equals(Object)</code>, mas não "
 "sobrescreve <code>hashCode()</code>, e herda a implementação de"
 "<code>hashCode()</code> a partir <code>java.lang.Object</code> (a qual "
-"retorna o hash code, um valor arbitrátrio atribuído ao objeto pela VM). "
+"retorna o hash code, um valor arbitrário atribuído ao objeto pela VM). "
 "Dessa forma, é provável que a classe viole a invariante de objetos iguais "
 "devem ter o mesmo hashcode."
 "\n"
-"Se você acha que instâncias dessa classe não serão incluidas na "
+"Se você acha que instâncias dessa classe não serão incluídas na "
 "HashMap/HashTable, a implementação do <code>hashCode</code> recomendável é:\n"
 "<pre><code>public int hashCode() {\n"
 "    assert false : \"hashCode not designed\";\n"
@@ -927,12 +946,14 @@ msgstr ""
 "hash de identidade, um valor arbitrário atribuído ao objeto pela VM). Portanto, "
 "é muito provável que a classe viole a invariante de que objetos iguais devem ter "
 "códigos de hash iguais."
-
-Se você não deseja definir um método hashCode e / ou não acredita que o objeto será colocado em um HashMap / Hashtable, defina o hashCode()método a ser lançado UnsupportedOperationException.
+"Se você não deseja definir um método hashCode e/ou não acredita que o objeto será "
+"colocado em um HashMap/Hashtable, defina o método hashCode() a ser lançado "
+"UnsupportedOperationException."
 
 #: ../../generated/bugDescriptionList.inc:685
 msgid "HE: Class defines equals() but not hashCode() (HE_EQUALS_NO_HASHCODE)"
-msgstr "HE: A classe define equals(), mas não hashCode() (HE_EQUALS_NO_HASHCODE)"
+msgstr "HE: Classe define equals(), mas não hashCode() "
+"(HE_EQUALS_NO_HASHCODE)"
 
 #: ../../generated/bugDescriptionList.inc:687
 msgid ""
@@ -951,7 +972,7 @@ msgstr "Eq: a classe abstrata define o método covariante equals()"
 
 #: ../../generated/bugDescriptionList.inc:714
 msgid "Co: Abstract class defines covariant compareTo() method (CO_ABSTRACT_SELF)"
-msgstr "Co: a classe abstrata define o método covariant compareTo()"
+msgstr "Co: a classe abstrata define o método covariant compareTo() "
 "(CO_ABSTRACT_SELF)"
 
 #: ../../generated/bugDescriptionList.inc:729
@@ -959,7 +980,7 @@ msgid ""
 "IC: Superclass uses subclass during initialization "
 "(IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION)"
 msgstr ""
-"IC: Superclass usa subclasse durante a inicialização"
+"IC: Superclass usa subclasse durante a inicialização "
 "(IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION)"
 
 #: ../../generated/bugDescriptionList.inc:731
@@ -1000,7 +1021,7 @@ msgid ""
 "SI: Static initializer creates instance before all static final fields "
 "assigned (SI_INSTANCE_BEFORE_FINALS_ASSIGNED)"
 msgstr ""
-"SI: o inicializador estático cria instância antes dos campos finais estáticos"
+"SI: Inicializador estático cria instância antes dos campos finais estáticos"
 "(SI_INSTANCE_BEFORE_FINALS_ASSIGNED)"
 
 #: ../../generated/bugDescriptionList.inc:753
@@ -1015,7 +1036,7 @@ msgid ""
 "It: Iterator next() method can't throw NoSuchElementException "
 "(IT_NO_SUCH_ELEMENT)"
 msgstr ""
-"It: o método Iterator next() não pode lançar NoSuchElementException"
+"It: Método Iterator next() não pode lançar NoSuchElementException "
 "(IT_NO_SUCH_ELEMENT)"
 
 #: ../../generated/bugDescriptionList.inc:766
@@ -1037,7 +1058,8 @@ msgstr ""
 #: ../../generated/bugDescriptionList.inc:780
 msgid "ME: Enum field is public and mutable (ME_MUTABLE_ENUM_FIELD)"
 msgstr ""
-"ME: o campo Enum é público e mutável (ME_MUTABLE_ENUM_FIELD)"
+"ME: Campo Enum é público e mutável "
+"(ME_MUTABLE_ENUM_FIELD)"
 
 #: ../../generated/bugDescriptionList.inc:782
 msgid ""
@@ -1057,7 +1079,7 @@ msgid ""
 "ME: Public enum method unconditionally sets its field "
 "(ME_ENUM_FIELD_SETTER)"
 msgstr ""
-"ME: método enum público define incondicionalmente seu campo"
+"ME: Método enum público define seu campo incondicionalmente"
 "(ME_ENUM_FIELD_SETTER)"
 
 #: ../../generated/bugDescriptionList.inc:796
@@ -1079,7 +1101,7 @@ msgid ""
 "Nm: Method names should start with a lower case letter "
 "(NM_METHOD_NAMING_CONVENTION)"
 msgstr ""
-"Nm: os nomes dos métodos devem começar com uma letra minúscula "
+"Nm: Nomes de métodos devem começar com uma letra minúscula "
 "(NM_METHOD_NAMING_CONVENTION)"
 
 #: ../../generated/bugDescriptionList.inc:810
@@ -1097,7 +1119,7 @@ msgid ""
 "Nm: Field names should start with a lower case letter "
 "(NM_FIELD_NAMING_CONVENTION)"
 msgstr ""
-"Nm: os nomes dos campos devem começar com uma letra minúscula"
+"Nm: Nomes de campos devem começar com uma letra minúscula"
 "(NM_FIELD_NAMING_CONVENTION)"
 #: ../../generated/bugDescriptionList.inc:824
 msgid ""
@@ -1115,7 +1137,7 @@ msgid ""
 "Nm: Class names shouldn't shadow simple name of implemented interface "
 "(NM_SAME_SIMPLE_NAME_AS_INTERFACE)"
 msgstr ""
-"Nm: os nomes das classes não devem seguir o nome simples da interface implementada"
+"Nm: Nomes das classes não devem seguir a interface"
 "(NM_SAME_SIMPLE_NAME_AS_INTERFACE)"
 
 #: ../../generated/bugDescriptionList.inc:838
@@ -1724,7 +1746,8 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:1418
 msgid "DMI: Random object created and used only once (DMI_RANDOM_USED_ONLY_ONCE)"
-msgstr ""
+msgstr "DMI: Criação de objeto randômico usado uma vez "
+"(DMI_RANDOM_USED_ONLY_ONCE)
 
 #: ../../generated/bugDescriptionList.inc:1420
 msgid ""

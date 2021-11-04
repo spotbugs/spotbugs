@@ -45,7 +45,7 @@ msgstr ""
 "permitem que você informe ao SpotBugs sobre o significado dos métodos em sua aplicação, "
 "para que ele possa produzir resultados mais precisos ou menos avisos falsos. "
 "Segundo, as opções de análise permitem que você configure a precisão da análise "
-"realizada. A redução da precisão da análise pode economizar memória e tempo de análise, "
+"realizada. A redução da precisão pode economizar memória e tempo de análise, "
 "as custas de perder alguns bugs reais, ou produzir mais avisos falsos."
 
 #: ../../analysisprops.rst:8
@@ -80,7 +80,7 @@ msgstr ""
 msgid ""
 "Comma-separated list of fully qualified method names: e.g., "
 "\"com.foo.MyClass.checkAssertion\""
-msgstr "Lista separada por vírgulas dos nomes qualificados dos métodos: por exemplo, "
+msgstr "Lista separada por vírgulas dos nomes qualificados dos métodos. Por exemplo, "
 "\"com.foo.MyClass.checkAssertion\""
 
 #: ../../analysisprops.rst:19
@@ -139,7 +139,7 @@ msgstr ""
 "Não usado (intenção: se verdadeiro, o detector de referência nula assume que "
 "qualquer valor de referência retornado de um método ou passado como parâmetro para um método "
 "pode ser nulo. O valor default é falso. Veja que ao habilitar essa propriedade, "
-"é possível que muitos avisos falsos sejam gerados.)"
+"muitos avisos falsos podem ser gerados.)"
 
 #: ../../analysisprops.rst:27
 msgid "findbugs.refcomp.reportAll"
@@ -170,5 +170,5 @@ msgstr ""
 "Se verdadeiro, o detector SwitchFallthrough apenas reporta avisos para "
 "casos onde o código fonte não tem comentários com as palavras "
 "\"fall\" ou \"nobreak\". (Um caminho de origem preciso deve ser usado para esse "
-"recurso funcionar corretamente.) isso ajuda a encontrar casos onde a fallthrough não é intencional.
+"recurso funcionar corretamente.) Isso ajuda a encontrar casos onde a fallthrough não é intencional.
 

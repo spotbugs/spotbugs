@@ -97,8 +97,9 @@ msgid ""
 msgstr ""
 "Se seu SpotBugs plugin não é complexo, você pode utilizar o `SonarQube rule "
 "xml generator Maven Plugin <https://github.com/KengoTODA/sonarqube-rule-xml-generator>`_ "
-"para gerar o arquivo ``rules.xml``. Siga as instruções descritas no `README
-<https://github.com/KengoTODA/sonarqube-rule-xml-generator#how-to-use>`_."
+"para gerar o arquivo ``rules.xml``. Siga as instruções descritas no `README "
+"<https://github.com/KengoTODA"
+"/sonarqube-rule-xml-generator#how-to-use>`_."
 
 #: ../../use-plugin-on-sonarqube.rst:30
 msgid "Update RulesDefinition.java"
