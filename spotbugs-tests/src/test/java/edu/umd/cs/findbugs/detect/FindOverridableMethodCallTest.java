@@ -21,6 +21,11 @@ public class FindOverridableMethodCallTest extends AbstractIntegrationTest {
     }
 
     @Test
+    public void testDirectCaseObject() {
+        testCase("DirectCaseObject", 5, 13);
+    }
+
+    @Test
     public void testIndirectCase1() {
         testCase("IndirectCase1", 9, 22);
     }
@@ -58,6 +63,26 @@ public class FindOverridableMethodCallTest extends AbstractIntegrationTest {
     @Test
     public void testDoubleIndirectCase6() {
         testCase("DoubleIndirectCase6", 5, 18);
+    }
+
+    @Test
+    public void testMethodReference() {
+        testCase("MethodReference", 11, 20);
+    }
+
+    @Test
+    public void testMethodReferenceIndirect1() {
+        testCase("MethodReferenceIndirect1", 15, 24);
+    }
+
+    @Test
+    public void testMethodReferenceIndirect2() {
+        testCase("MethodReferenceIndirect2", 23, 32);
+    }
+
+    @Test
+    public void testMethodReferenceIndirect3() {
+        testCase("MethodReferenceIndirect3", 23, 32);
     }
 
     void testCase(String className, int constructorLine, int cloneLine) {
