@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.charsets.UTF8;
  *
  * @author David Hovemeyer
  */
-public abstract class TextUIBugReporter extends AbstractBugReporter {
+public abstract class TextUIBugReporter extends AbstractBugReporter implements ConfigurableBugReporter {
     private boolean reportStackTrace;
 
     private boolean useLongBugCodes = false;

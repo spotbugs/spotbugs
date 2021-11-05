@@ -22,6 +22,7 @@ public class MutableClasses {
             "java.math.Decimal", "java.io.File", "java.awt.Font", "java.awt.BasicStroke",
             "java.awt.Color", "java.awt.GradientPaint", "java.awt.LinearGradientPaint",
             "java.awt.RadialGradientPaint", "java.awt.Cursor", "java.util.Locale", "java.util.UUID", "java.net.URL",
+            "java.util.regex.Pattern",
             "java.net.URI", "java.net.Inet4Address", "java.net.Inet6Address", "java.net.InetSocketAddress",
             "java.security.Permission", "com.google.common.collect.ImmutableBiMap",
             "com.google.common.collect.ImmutableClassToInstanceMap",

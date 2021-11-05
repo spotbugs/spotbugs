@@ -1,6 +1,5 @@
 /*
- * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2007 University of Maryland
+ * SpotBugs - Find Bugs in Java programs
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,21 +19,24 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;
-import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
-import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
+import edu.umd.cs.findbugs.ba.DominatorsAnalysis;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
+import java.util.BitSet;
+
 /**
- * Analysis engine to produce NonExceptionPostDominatorsAnalysis objects for
- * analyzed methods.
- *
- * @author David Hovemeyer
+ * Analysis engine to produce NonImplicitExceptionDominatorsAnalysis objects
+ * for analyzed methods.
  */
-public class NonExceptionPostdominatorsAnalysisFactory extends AnalysisFactory<NonExceptionPostdominatorsAnalysis> {
-    public NonExceptionPostdominatorsAnalysisFactory() {
-        super("non-exception postdominators analysis", NonExceptionPostdominatorsAnalysis.class);
+public class NonImplicitExceptionDominatorsAnalysisFactory extends
+        AnalysisFactory<NonImplicitExceptionDominatorsAnalysis> {
+    /**
+     * Constructor.
+     */
+    public NonImplicitExceptionDominatorsAnalysisFactory() {
+        super("non-implicit-exception postdominators analysis", NonImplicitExceptionDominatorsAnalysis.class);
     }
 
     /*
@@ -45,15 +47,14 @@ public class NonExceptionPostdominatorsAnalysisFactory extends AnalysisFactory<N
      * .classfile.IAnalysisCache, java.lang.Object)
      */
     @Override
-    public NonExceptionPostdominatorsAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+    public NonImplicitExceptionDominatorsAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
             throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
-        ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(analysisCache, descriptor);
-        NonExceptionPostdominatorsAnalysis analysis = new NonExceptionPostdominatorsAnalysis(cfg, rdfs, getDepthFirstSearch(
-                analysisCache, descriptor));
-        Dataflow<java.util.BitSet, PostDominatorsAnalysis> dataflow = new Dataflow<>(cfg,
-                analysis);
+        NonImplicitExceptionDominatorsAnalysis analysis = new NonImplicitExceptionDominatorsAnalysis(cfg,
+                getDepthFirstSearch(analysisCache, descriptor));
+        Dataflow<BitSet, DominatorsAnalysis> dataflow = new Dataflow<>(cfg, analysis);
         dataflow.execute();
+
         return analysis;
     }
 }
