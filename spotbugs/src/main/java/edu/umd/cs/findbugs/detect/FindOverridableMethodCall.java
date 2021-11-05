@@ -121,35 +121,31 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                 if (cp.getClassIndex() != getThisClass().getClassNameIndex()) {
                     return;
                 }
-                ConstantNameAndType cnt = (ConstantNameAndType) getConstantPool()
+                ConstantNameAndType cnat = (ConstantNameAndType) getConstantPool()
                         .getConstant(cp.getNameAndTypeIndex());
                 Optional<Method> metOpt = Arrays.stream(getThisClass().getMethods())
-                        .filter(m -> m.getNameIndex() == cnt.getNameIndex()
-                                && m.getSignatureIndex() == cnt.getSignatureIndex())
+                        .filter(m -> m.getNameIndex() == cnat.getNameIndex()
+                                && m.getSignatureIndex() == cnat.getSignatureIndex())
                         .findAny();
                 if (!metOpt.isPresent()) {
                     continue;
                 }
                 XMethod method = getXClass().findMethod(metOpt.get().getName(), metOpt.get().getSignature(),
                         metOpt.get().isStatic());
-                if (ctor != null) {
-                    if (checkDirectCase(ctor.method, method, "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR",
+                if (ctor != null && checkDirectCase(ctor.method, method, "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR",
                             LOW_PRIORITY, ctor.sourceLine)) {
-                        checkAndRecordCallFromConstructor(ctor.method, method, ctor.sourceLine);
-                    }
+                    checkAndRecordCallFromConstructor(ctor.method, method, ctor.sourceLine);
                 }
-                if (clone != null) {
-                    if (checkDirectCase(clone.method, method, "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE",
+                if (clone != null && checkDirectCase(clone.method, method, "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE",
                             NORMAL_PRIORITY, clone.sourceLine)) {
-                        checkAndRecordCallFromClone(clone.method, method, clone.sourceLine);
-                    }
+                    checkAndRecordCallFromClone(clone.method, method, clone.sourceLine);
                 }
                 if (callers != null) {
                     for (XMethod caller : callers) {
-                        if (!method.isPrivate() && !method.isFinal()) {
-                            checkAndRecordCallToOverridable(caller, method);
-                        } else {
+                        if (method.isPrivate() || method.isFinal()) {
                             checkAndRecordCallBetweenNonOverridableMethods(caller, method);
+                        } else {
+                            checkAndRecordCallToOverridable(caller, method);
                         }
                     }
                 }
@@ -211,10 +207,10 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
 
             } else if (item.getRegisterNumber() == 0
                     && (getXMethod().isPrivate() || getXMethod().isFinal())) {
-                if (!method.isPrivate() && !method.isFinal()) {
-                    checkAndRecordCallToOverridable(getXMethod(), method);
-                } else {
+                if (method.isPrivate() || method.isFinal()) {
                     checkAndRecordCallBetweenNonOverridableMethods(getXMethod(), method);
+                } else {
+                    checkAndRecordCallToOverridable(getXMethod(), method);
                 }
             }
         }
