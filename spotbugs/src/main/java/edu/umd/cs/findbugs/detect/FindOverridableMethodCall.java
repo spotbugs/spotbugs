@@ -133,11 +133,11 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                 XMethod method = getXClass().findMethod(metOpt.get().getName(), metOpt.get().getSignature(),
                         metOpt.get().isStatic());
                 if (ctor != null && checkDirectCase(ctor.method, method, "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR",
-                            LOW_PRIORITY, ctor.sourceLine)) {
+                        LOW_PRIORITY, ctor.sourceLine)) {
                     checkAndRecordCallFromConstructor(ctor.method, method, ctor.sourceLine);
                 }
                 if (clone != null && checkDirectCase(clone.method, method, "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE",
-                            NORMAL_PRIORITY, clone.sourceLine)) {
+                        NORMAL_PRIORITY, clone.sourceLine)) {
                     checkAndRecordCallFromClone(clone.method, method, clone.sourceLine);
                 }
                 if (callers != null) {
