@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spotbugs 4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-22 15:35-0300\n"
+"POT-Creation-Date: 2021-11-05 10:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: ../../running.rst:2
 msgid "Running SpotBugs"
@@ -27,9 +27,9 @@ msgid ""
 "command line user interface. This chapter describes how to run each of "
 "these user interfaces."
 msgstr ""
-"O SpotBugs tem duas interfaces: uma interface gráfica de usuário (GUI) e uma em linha de comando. "
-"Este capítulo descreve como executar cada uma de suas interfaces. "
-
+"O SpotBugs tem duas interfaces: uma interface gráfica de usuário (GUI) e "
+"uma em linha de comando. Este capítulo descreve como executar cada uma de"
+" suas interfaces. "
 
 #: ../../running.rst:8
 msgid "Quick Start"
@@ -41,7 +41,7 @@ msgid ""
 " ``%SPOTBUGS_HOME%\\lib\\spotbugs.jar`` to start the SpotBugs GUI."
 msgstr ""
 "No Windows, dê um clique duplo no arquivo "
-"``%SPOTBUGS_HOME%\\lib\\spotbugs.jar`` para iniciar o SpotBugs GUI.
+"``%SPOTBUGS_HOME%\\lib\\spotbugs.jar`` para iniciar o SpotBugs GUI"
 
 #: ../../running.rst:12
 msgid ""
@@ -66,8 +66,8 @@ msgid ""
 "This section describes how to invoke the SpotBugs program. There are two "
 "ways to invoke SpotBugs: directly, or using a wrapper script."
 msgstr ""
-"Esta seção descreve como iniciar o programa SpotBugs. Existem duas maneiras "
-"de iniciar SpotBugs: diretamente ou com um script de wrapper."
+"Esta seção descreve como iniciar o programa SpotBugs. Existem duas "
+"maneiras de iniciar SpotBugs: diretamente ou com um script de wrapper."
 
 #: ../../running.rst:23
 msgid "Direct invocation of SpotBugs"
@@ -80,8 +80,9 @@ msgid ""
 " the JVM (java) executable. (Versions of SpotBugs prior to 1.3.5 required"
 " a wrapper script to invoke SpotBugs.)"
 msgstr ""
-"A maneira recomendada de executar SpotBugs é executar ``$SPOTBUGS_HOME/lib/spotbugs.jar`` diretamente, "
-"usando a opção de linha de comando -jar no executável JVM (Java). O SpotBugs nas versões 1.3.5 e "
+"A maneira recomendada de executar SpotBugs é executar "
+"``$SPOTBUGS_HOME/lib/spotbugs.jar`` diretamente, usando a opção de linha "
+"de comando -jar no executável JVM (Java). O SpotBugs nas versões 1.3.5 e "
 "anteriores exigiam um script de wrapper para iniciar SpotBugs."
 
 #: ../../running.rst:28
@@ -130,7 +131,9 @@ msgstr ""
 
 #: ../../running.rst:49
 msgid "displays help information for the SpotBugs command line user interface"
-msgstr "Visualiza as informações de ajuda sobre a interface de usuário da linha de comando do SpotBugs"
+msgstr ""
+"Visualiza as informações de ajuda sobre a interface de usuário da linha "
+"de comando do SpotBugs"
 
 #: ../../running.rst:52
 msgid "-gui1:"
@@ -158,8 +161,9 @@ msgid ""
 "requires a large amount of memory. For a very large project, using 1500 "
 "megabytes is not unusual."
 msgstr ""
-"Define o tamanho máximo de heap Java para NN megabytes. O SpotBugs geralmente "
-"requer muita memória. Não é incomum usar 1500 megabytes para grandes projetos."
+"Define o tamanho máximo de heap Java para NN megabytes. O SpotBugs "
+"geralmente requer muita memória. Não é incomum usar 1500 megabytes para "
+"grandes projetos."
 
 #: ../../running.rst:66
 msgid "-Dname=value:"
@@ -171,7 +175,8 @@ msgid ""
 "``-Duser.language=ja`` to display GUI messages in Japanese."
 msgstr ""
 "Define as propriedades do sistema Java. Por exemplo, se você deseja "
-"exibir as mensagens da GUI em japonês, use o argumento ``-Duser.language=ja``."
+"exibir as mensagens da GUI em japonês, use o argumento "
+"``-Duser.language=ja``."
 
 #: ../../running.rst:69
 msgid "Invocation of SpotBugs using a wrapper script"
@@ -186,7 +191,8 @@ msgid ""
 "On Unix-like systems, use the following command to invoke the wrapper "
 "script:"
 msgstr ""
-"Em sistemas baseados no Unix, use o comando para iniciar o script de wrapper:"
+"Em sistemas baseados no Unix, use o comando para iniciar o script de "
+"wrapper:"
 
 #: ../../running.rst:79
 msgid "On Windows systems, the command to invoke the wrapper script is"
@@ -198,9 +204,10 @@ msgid ""
 "``$SPOTBUGS_HOME/bin`` directory to your ``PATH`` environment variable "
 "and then invoke SpotBugs using the ``spotbugs`` command."
 msgstr ""
-"Em ambos os sistemas do tipo Unix e Windows, você pode simplesmente adicionar o "
-"diretório ``$SPOTBUGS_HOME/bin`` em sua variável de ambiente ``PATH`` para, posteriormente, "
-"usar o comando ``spotbugs`` para inicializar o Spotbugs."
+"Em ambos os sistemas do tipo Unix e Windows, você pode simplesmente "
+"adicionar o diretório ``$SPOTBUGS_HOME/bin`` em sua variável de ambiente "
+"``PATH`` para, posteriormente, usar o comando ``spotbugs`` para "
+"inicializar o Spotbugs."
 
 #: ../../running.rst:88
 msgid "Wrapper script command line options"
@@ -212,9 +219,10 @@ msgid ""
 "Note that these command line options are not handled by the SpotBugs "
 "program per se; rather, they are handled by the wrapper script."
 msgstr ""
-"O script de wrapper do SpotBugs oferece suporte às seguintes opções de linha de comando. "
-"Observe que essas opções de linha de comando não são tratadas pelo próprio programa SpotBugs. "
-"Eles são controlados pelo script de wrapper."
+"O script de wrapper do SpotBugs oferece suporte às seguintes opções de "
+"linha de comando. Observe que essas opções de linha de comando não são "
+"tratadas pelo próprio programa SpotBugs. Eles são controlados pelo script"
+" de wrapper."
 
 #: ../../running.rst:98
 msgid "-jvmArgs *args*:"
@@ -225,7 +233,8 @@ msgid ""
 "Specifies arguments to pass to the JVM. For example, you might want to "
 "set a JVM property:"
 msgstr ""
-"Especifica os argumentos a serem passados para a JVM. Por exemplo, suponha que você deseja definir uma propriedade JVM."
+"Especifica os argumentos a serem passados para a JVM. Por exemplo, "
+"suponha que você deseja definir uma propriedade JVM."
 
 #: ../../running.rst:101
 msgid "-javahome *directory*:"
@@ -236,7 +245,8 @@ msgid ""
 "Specifies the directory containing the JRE (Java Runtime Environment) to "
 "use to execute FindBugs."
 msgstr ""
-"Especifica o diretório que contém o JRE (Java Runtime Environment) usado para executar o SpotBugs."
+"Especifica o diretório que contém o JRE (Java Runtime Environment) usado "
+"para executar o SpotBugs."
 
 #: ../../running.rst:105
 msgid "-maxHeap *size*:"
@@ -248,7 +258,8 @@ msgid ""
 "More memory may be required to analyze very large programs or libraries."
 msgstr ""
 "Especifica o tamanho máximo de heap Java em megabytes. O padrão é 256. "
-"Pode ser necessária mais memória para analisar programas e bibliotecas grandes."
+"Pode ser necessária mais memória para analisar programas e bibliotecas "
+"grandes."
 
 #: ../../running.rst:109
 msgid "-debug:"
@@ -259,8 +270,8 @@ msgid ""
 "Prints a trace of detectors run and classes analyzed to standard output. "
 "Useful for troubleshooting unexpected analysis failures."
 msgstr ""
-"Produz o rastreamento de execução do detector e a classe analisada para a saída padrão. "
-"Ajuda a solucionar erros de análise inesperados."
+"Produz o rastreamento de execução do detector e a classe analisada para a"
+" saída padrão. Ajuda a solucionar erros de análise inesperados."
 
 #: ../../running.rst:116
 msgid "-property *name=value*:"
@@ -273,10 +284,11 @@ msgid ""
 "option multiple times in order to set multiple properties. Note: In most "
 "versions of Windows, the name=value string must be in quotes."
 msgstr ""
-"Esta opção define as propriedades do sistema. O SpotBugs usa as propriedades "
-"do sistema para definir opções de análise. Consulte :doc:`analysisprops`. Use "
-"esta opção várias vezes se desejar definir várias propriedades. Observação: "
-"a maioria das versões do Windows exige que você coloque a string name=value entre aspas."
+"Esta opção define as propriedades do sistema. O SpotBugs usa as "
+"propriedades do sistema para definir opções de análise. Consulte "
+":doc:`analysisprops`. Use esta opção várias vezes se desejar definir "
+"várias propriedades. Observação: a maioria das versões do Windows exige "
+"que você coloque a string name=value entre aspas."
 
 #: ../../running.rst:119
 msgid "Command-line Options"
@@ -288,9 +300,9 @@ msgid ""
 "These command line options may be used when invoking SpotBugs directly, "
 "or when using a wrapper script."
 msgstr ""
-"Esta seção descreve as opções de linha de comando suportadas pelo SpotBugs. "
-"Essas opções de linha de comando estão disponíveis quando você inicia SpotBugs "
-"diretamente ou quando usa um script de wrapper."
+"Esta seção descreve as opções de linha de comando suportadas pelo "
+"SpotBugs. Essas opções de linha de comando estão disponíveis quando você "
+"inicia SpotBugs diretamente ou quando usa um script de wrapper."
 
 #: ../../running.rst:125
 msgid "Common command-line options"
@@ -298,7 +310,9 @@ msgstr "Opções comuns de linha de comando"
 
 #: ../../running.rst:127
 msgid "These options may be used with both the GUI and command-line interfaces."
-msgstr "Essas opções estão disponíveis na GUI e na interface do usuário em linha de comando."
+msgstr ""
+"Essas opções estão disponíveis na GUI e na interface do usuário em linha "
+"de comando."
 
 #: ../../running.rst:135
 msgid "-effort[:min|less|default|more|max]:"
@@ -319,16 +333,20 @@ msgid ""
 " and find more bugs, but which may require more memory and take more time"
 " to complete. See :doc:`effort`."
 msgstr ""
-"Define o nível de esforço de análise. -effort:min desativa muitas análises "
-"que melhoram a precisão e aumentam o consumo de memória. Você pode querer usar "
-"essa opção quando, ao executar o Spotbugs com -effort:less, ainda ficar sem memória "
-"ou demorar bastante tempo para executar sua análise. O -effort:less desabilita algumas "
-"análises que melhoram a precisão e aumentam o consumo de memória. Você pode querer usar "
-"essa opção quando, ao executar o SpotBugs com -effort:more/-effort:default, "
-"ainda ficar sem memória ou demorar bastante tempo para executar sua análise. "
-"O -effort:more equivale ao -effort:default e executa muitas análises para encontrar bugs."
-"O -effort:max habilita análises que aumentam a precisam e encontram mais bugs, mas podem "
-"consumir mais memória e tempo de execução. veja :doc:`effort`."
+"Define o nível de esforço de análise. -effort:min desativa muitas "
+"análises que melhoram a precisão e aumentam o consumo de memória. Você "
+"pode querer usar essa opção quando, ao executar o Spotbugs com "
+"-effort:less, ainda ficar sem memória ou demorar bastante tempo para "
+"executar sua análise. O -effort:less desabilita algumas análises que "
+"melhoram a precisão e aumentam o consumo de memória. Você pode querer "
+"usar essa opção quando, ao executar o SpotBugs com "
+"-effort:more/-effort:default, ainda ficar sem memória ou demorar bastante"
+" tempo para executar sua análise. O -effort:more equivale ao "
+"-effort:default e executa muitas análises para encontrar bugs.O "
+"-effort:max habilita análises que aumentam a precisam e encontram mais "
+"bugs, mas podem consumir mais memória e tempo de execução. veja "
+":doc:`effort`."
+
 #: ../../running.rst:139
 msgid "-project *project*:"
 msgstr ""
@@ -339,8 +357,10 @@ msgid ""
 "one that was created using the GUI interface. It will typically end in "
 "the extension .fb or .fbp."
 msgstr ""
-"Especifica o projeto a ser analisado. O arquivo de projeto especificado deve "
-"ter sido criado usando a interface GUI. A extensão geralmente termina em .fb or .fbp."
+"Especifica o projeto a ser analisado. O arquivo de projeto especificado "
+"deve ter sido criado usando a interface GUI. A extensão geralmente "
+"termina em .fb or .fbp."
+
 #: ../../running.rst:142
 msgid "-pluginList <jar1[;jar2...]>:"
 msgstr ""
@@ -405,19 +425,26 @@ msgstr "Opções de texto da IU"
 msgid "These options are only accepted by the Text User Interface."
 msgstr "Essas opções são aceitas apenas na interface de usuário de texto."
 
-#: ../../running.rst:170
-msgid "-sortByClass:"
+#: ../../running.rst:173
+msgid "-sortByClass=filepath:"
 msgstr ""
 
 #: ../../running.rst:170
 msgid "Sort reported bug instances by class name."
 msgstr "Classifica as instâncias de bug relatadas por nome de classe."
 
-#: ../../running.rst:174
+#: ../../running.rst:172
+msgid ""
+"From SpotBugs 4.5.0, this option receives a file path like "
+"``-sortByClass=path/to/spotbugs.txt``. It is also supported to set "
+"multiple reports like ``-xml:spotbugs.xml -sortByClass:spotbugs.txt``."
+msgstr ""
+
+#: ../../running.rst:177
 msgid "-include *filterFile.xml*:"
 msgstr ""
 
-#: ../../running.rst:173
+#: ../../running.rst:176
 msgid ""
 "Only report bug instances that match the filter specified by "
 "filterFile.xml. See :doc:`filter`."
@@ -425,23 +452,23 @@ msgstr ""
 "Relata apenas as instâncias de bug que correspondem ao filtro "
 "especificado em filterFile.xml. Veja :doc:`filter`."
 
-#: ../../running.rst:178
+#: ../../running.rst:181
 msgid "-exclude *filterFile.xml*:"
 msgstr ""
 
-#: ../../running.rst:177
+#: ../../running.rst:180
 msgid ""
 "Report all bug instances except those matching the filter specified by "
 "filterFile.xml. See :doc:`filter`."
 msgstr ""
-"Relata todas as instâncias de bug exceto aquelas que correspondem ao filtro "
-"especificado em filterFile.xml. Veja :doc:`filter`."
+"Relata todas as instâncias de bug exceto aquelas que correspondem ao "
+"filtro especificado em filterFile.xml. Veja :doc:`filter`."
 
-#: ../../running.rst:185
+#: ../../running.rst:188
 msgid "-onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.**:"
 msgstr ""
 
-#: ../../running.rst:181
+#: ../../running.rst:184
 msgid ""
 "Restrict analysis to find bugs to given comma-separated list of classes "
 "and packages. Unlike filtering, this option avoids running analysis on "
@@ -454,57 +481,59 @@ msgid ""
 "in the package (i.e., add .* to the full name of the package). Replace .*"
 " with .- to also analyze all subpackages."
 msgstr ""
-"Restringe a análise para encontrar bugs dada uma lista, separadas por vírgulas, "
-"contendo as classes e pacotes. Diferente do filtro, essa opção evita que a análise "
-"seja executada em classes e pacotes que não correspondem aos especificados: para "
-"projetos grandes, essa opção pode reduzir bastante o tempo necessário para executar a "
-"análise. No entanto, alguns detectores podem produzir resultados menos precisos "
-"caso não rode a aplicação toda. classes devem ser especificadas por meio de seu nome completo "
-"(incluindo o pacote), e os pacotes devem ser especificados da mesma forma que declarações "
-"em Java para importação de todas as classes de um pacote (isto é, adicione .* no nome completo "
-"do pacote). Substitua .* por .- para analizar subpacotes."
+"Restringe a análise para encontrar bugs dada uma lista, separadas por "
+"vírgulas, contendo as classes e pacotes. Diferente do filtro, essa opção "
+"evita que a análise seja executada em classes e pacotes que não "
+"correspondem aos especificados: para projetos grandes, essa opção pode "
+"reduzir bastante o tempo necessário para executar a análise. No entanto, "
+"alguns detectores podem produzir resultados menos precisos caso não rode "
+"a aplicação toda. classes devem ser especificadas por meio de seu nome "
+"completo (incluindo o pacote), e os pacotes devem ser especificados da "
+"mesma forma que declarações em Java para importação de todas as classes "
+"de um pacote (isto é, adicione .* no nome completo do pacote). Substitua "
+".* por .- para analizar subpacotes."
 
-#: ../../running.rst:188
+#: ../../running.rst:191
 msgid "-low:"
 msgstr ""
 
-#: ../../running.rst:188
+#: ../../running.rst:191
 msgid "Report all bugs."
 msgstr "Relata todos os bugs."
 
-#: ../../running.rst:191
+#: ../../running.rst:194
 msgid "-medium:"
 msgstr ""
 
-#: ../../running.rst:191
+#: ../../running.rst:194
 msgid "Report medium and high priority bugs. This is the default setting."
 msgstr "Relata bugs de média e alta prioridade. Essa é a configuração padrão."
 
-#: ../../running.rst:194
+#: ../../running.rst:197
 msgid "-high:"
 msgstr ""
 
-#: ../../running.rst:194
+#: ../../running.rst:197
 msgid "Report only high priority bugs."
 msgstr "Reporta bugs de alta prioridade."
 
-#: ../../running.rst:198
+#: ../../running.rst:201
 msgid "-relaxed:"
 msgstr ""
 
-#: ../../running.rst:197
+#: ../../running.rst:200
 msgid ""
 "Relaxed reporting mode. For many detectors, this option suppresses the "
 "heuristics used to avoid reporting false positives."
 msgstr ""
-"Um modo de fazer relatórios aproximados. Para muitos detectores, esta opção "
-"suprime a heurística usada para evitar falsos positivos."
+"Um modo de fazer relatórios aproximados. Para muitos detectores, esta "
+"opção suprime a heurística usada para evitar falsos positivos."
 
-#: ../../running.rst:204
-msgid "-xml:"
+#: ../../running.rst:210
+msgid "-xml=filepath:"
 msgstr ""
 
-#: ../../running.rst:201
+#: ../../running.rst:204
 msgid ""
 "Produce the bug reports as XML. The XML data produced may be viewed in "
 "the GUI at a later time. You may also specify this option as "
@@ -513,16 +542,24 @@ msgid ""
 "contained in the file. XML files generated this way are easy to transform"
 " into reports."
 msgstr ""
-"Gera um relatório de bug como XML. Os dados XML gerados podem ser visualizados "
-"posteriormente na GUI. Você pode usar essa opção como ``-xml:withMessages``. "
-"Com esta opção, o arquivo XML de saída conterá uma mensagem legível explicando um aviso. "
-"Os arquivos XML gerados dessa forma podem ser facilmente convertidos em relatórios."
+"Gera um relatório de bug como XML. Os dados XML gerados podem ser "
+"visualizados posteriormente na GUI. Você pode usar essa opção como "
+"``-xml:withMessages``. Com esta opção, o arquivo XML de saída conterá uma"
+" mensagem legível explicando um aviso. Os arquivos XML gerados dessa "
+"forma podem ser facilmente convertidos em relatórios."
 
-#: ../../running.rst:213
-msgid "-html:"
+#: ../../running.rst:209
+msgid ""
+"From SpotBugs 4.5.0, this option receives a file path like "
+"``-xml:withMessages=path/to/spotbugs.xml``. It is also supported to set "
+"multiple reports like ``-xml:spotbugs.xml -html:spotbugs.html``."
 msgstr ""
 
-#: ../../running.rst:207
+#: ../../running.rst:222
+msgid "-html=filepath:"
+msgstr ""
+
+#: ../../running.rst:213
 msgid ""
 "Generate HTML output. By default, SpotBugs will use the default.xsl XSLT "
 "stylesheet to generate the HTML: you can find this file in spotbugs.jar, "
@@ -535,75 +572,91 @@ msgid ""
 "``fancy.xsl`` stylesheet. It makes an extensive use of DOM and Javascript"
 " for dynamically filtering the lists of bugs."
 msgstr ""
-"Produz a saída HTML. Por padrão, o SpotBugs usa a folha de estilo XSLT default.xsl "
-"para gerar o HTML. Este arquivo pode ser encontrado em spotbugs.jar, no fonte do SpotBugs "
-"ou na distribuição binária. As variações dessa opção incluem ``-html:plain.xsl``, ``-html:fancy.xsl`` e ``-html"
-":fancy-hist.xsl``. As folhas de estilo ``plain.xsl`` não usam Javascript ou DOM e podem "
-"funcionar bem para navegadores e impressões mais antigas. As folhas de estilo ``fancy.xsl`` "
-"usam DOM e Javascript para navegação e CSS para representação visual. A folha de estilo "
-"``fancy-hist.xsl`` é uma evolução da ``fancy.xsl``, que faz o uso do DOM e do Javascript "
-"para filtrar dinamicamente a lista de bugs."
+"Produz a saída HTML. Por padrão, o SpotBugs usa a folha de estilo XSLT "
+"default.xsl para gerar o HTML. Este arquivo pode ser encontrado em "
+"spotbugs.jar, no fonte do SpotBugs ou na distribuição binária. As "
+"variações dessa opção incluem ``-html:plain.xsl``, ``-html:fancy.xsl`` e "
+"``-html:fancy-hist.xsl``. As folhas de estilo ``plain.xsl`` não usam "
+"Javascript ou DOM e podem funcionar bem para navegadores e impressões "
+"mais antigas. As folhas de estilo ``fancy.xsl`` usam DOM e Javascript "
+"para navegação e CSS para representação visual. A folha de estilo "
+"``fancy-hist.xsl`` é uma evolução da ``fancy.xsl``, que faz o uso do DOM "
+"e do Javascript para filtrar dinamicamente a lista de bugs."
 
-#: ../../running.rst:213
+#: ../../running.rst:219
 msgid ""
 "If you want to specify your own XSLT stylesheet to perform the "
 "transformation to HTML, specify the option as ``-html:myStylesheet.xsl``,"
 " where ``myStylesheet.xsl`` is the filename of the stylesheet you want to"
 " use."
 msgstr ""
-"Se você quer especificar seu estilo de folha XSLT próprio para realizar "
-"a transformação para HTML, especifique a opção ``-html:myStylesheet.xsl``,"
-" onde ``myStylesheet.xsl`` é o nome do arquivo da folha de estilo que você "
-"quer usar."
+"Se você quer especificar seu estilo de folha XSLT próprio para realizar a"
+" transformação para HTML, especifique a opção ``-html:myStylesheet.xsl``,"
+" onde ``myStylesheet.xsl`` é o nome do arquivo da folha de estilo que "
+"você quer usar."
 
-#: ../../running.rst:216
-msgid "-sarif:"
+#: ../../running.rst:221
+msgid ""
+"From SpotBugs 4.5.0, this option receives a file path like ``-html:fancy-"
+"hist.xsl=path/to/spotbugs.html``. It is also supported to set multiple "
+"reports like ``-xml:spotbugs.xml -html:spotbugs.html``."
 msgstr ""
 
-#: ../../running.rst:216
+#: ../../running.rst:228
+msgid "-sarif=filepath:"
+msgstr ""
+
+#: ../../running.rst:225
 msgid ""
 "Produce the bug reports in `SARIF 2.1.0 <https://docs.oasis-"
 "open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html>`_."
-msgstr "gera um relatório de bugs no formato `SARIF 2.1.0 <https://docs.oasis-"
+msgstr ""
+"gera um relatório de bugs no formato `SARIF 2.1.0 <https://docs.oasis-"
 "open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html>`_."
 
-#: ../../running.rst:219
-msgid "-emacs:"
-msgstr ""
-
-#: ../../running.rst:219
-msgid "Produce the bug reports in Emacs format."
-msgstr "Gera um relatório de bugs no formato Emacs."
-
-#: ../../running.rst:222
-msgid "-xdocs:"
-msgstr ""
-
-#: ../../running.rst:222
-msgid "Produce the bug reports in xdoc XML format for use with Apache Maven."
-msgstr "Gera um relatório de bugs no formato xdoc XML para uso com Apache Maven."
-
-#: ../../running.rst:225
-msgid "-output *filename*:"
-msgstr ""
-
-#: ../../running.rst:225
-msgid "Produce the output in the specified file."
-msgstr "Gera a saída no arquivo especificado."
-
-#: ../../running.rst:228
-msgid "-outputFile *filename*:"
-msgstr ""
-
-#: ../../running.rst:228
-msgid "This argument is deprecated. Use ``-output`` instead."
-msgstr "Este argumento está obsoleto. Em vez disso, use ``-output``."
-
-#: ../../running.rst:232
-msgid "-nested[:true|false]:"
+#: ../../running.rst:227
+msgid ""
+"From SpotBugs 4.5.0, this option receives a file path like "
+"``-sarif=path/to/spotbugs.sarif``. It is also supported to set multiple "
+"reports like ``-xml:spotbugs.xml -sarif:spotbugs.sarif``."
 msgstr ""
 
 #: ../../running.rst:231
+msgid "-emacs=filepath:"
+msgstr ""
+
+#: ../../running.rst:231
+msgid "Produce the bug reports in Emacs format."
+msgstr "Gera um relatório de bugs no formato Emacs."
+
+#: ../../running.rst:234
+msgid "-xdocs=filepath:"
+msgstr ""
+
+#: ../../running.rst:234
+msgid "Produce the bug reports in xdoc XML format for use with Apache Maven."
+msgstr "Gera um relatório de bugs no formato xdoc XML para uso com Apache Maven."
+
+#: ../../running.rst:237
+msgid "-output *filename*:"
+msgstr ""
+
+#: ../../running.rst:237 ../../running.rst:240
+#, fuzzy
+msgid ""
+"This argument is deprecated. Use report type option like "
+"``-xml=spotbugs.xml`` instead."
+msgstr "Este argumento está obsoleto. Em vez disso, use ``-output``."
+
+#: ../../running.rst:240
+msgid "-outputFile *filename*:"
+msgstr ""
+
+#: ../../running.rst:244
+msgid "-nested[:true|false]:"
+msgstr ""
+
+#: ../../running.rst:243
 msgid ""
 "This option enables or disables scanning of nested jar and zip files "
 "found in the list of files and directories to be analyzed. By default, "
@@ -611,64 +664,68 @@ msgid ""
 "``-nested:false`` to the command line arguments."
 msgstr ""
 "Esta opção ativa ou desativa a varredura de arquivos jar e zip aninhados "
-"na lista de arquivos e diretórios a serem analisados. Por padrão, a varredura "
-"de arquivos jar e zip aninhados está ativada. Se você deseja desativá-lo, "
-"adicione ``-nested:false`` como argumento na linha de comando."
+"na lista de arquivos e diretórios a serem analisados. Por padrão, a "
+"varredura de arquivos jar e zip aninhados está ativada. Se você deseja "
+"desativá-lo, adicione ``-nested:false`` como argumento na linha de "
+"comando."
 
-#: ../../running.rst:236
+#: ../../running.rst:248
 msgid "-auxclasspath *classpath*:"
 msgstr ""
 
-#: ../../running.rst:235
+#: ../../running.rst:247
 msgid ""
 "Set the auxiliary classpath for analysis. This classpath should include "
 "all jar files and directories containing classes that are part of the "
 "program being analyzed but you do not want to have analyzed for bugs."
 msgstr ""
-"Define o caminho de classe auxiliar para análise. O caminho de classe auxiliar deve "
-"incluir todos os diretórios e arquivos jar que contém as classes usadas pelo programa "
-"a ser analisado, mas que você não deseja analisar para encontrar bugs.
+"Define o caminho de classe auxiliar para análise. O caminho de classe "
+"auxiliar deve incluir todos os diretórios e arquivos jar que contém as "
+"classes usadas pelo programa a ser analisado, mas que você não deseja "
+"analisar para encontrar bugs"
 
-#: ../../running.rst:239
+#: ../../running.rst:251
 msgid "-auxclasspathFromInput:"
 msgstr ""
 
-#: ../../running.rst:239
+#: ../../running.rst:251
 msgid ""
 "Read the auxiliary classpath for analysis from standard input, each line "
 "adds new entry to the auxiliary classpath for analysis."
 msgstr ""
 "Lê o caminho de classe auxiliar para análise a partir da entrada padrão, "
-"cada linha adiciona uma nova entrada com o caminho de classe auxiliar para análise."
+"cada linha adiciona uma nova entrada com o caminho de classe auxiliar "
+"para análise."
 
-#: ../../running.rst:242
+#: ../../running.rst:254
 msgid "-auxclasspathFromFile *filepath*:"
 msgstr ""
 
-#: ../../running.rst:242
+#: ../../running.rst:254
 msgid ""
 "Read the auxiliary classpath for analysis from file, each line adds new "
 "entry to the auxiliary classpath for analysis."
 msgstr ""
-"Lê o caminho de classe auxiliar para análise do arquivo, cada linha adiciona "
-"uma nova entrada com o caminho de classe auxiliar para análise."
+"Lê o caminho de classe auxiliar para análise do arquivo, cada linha "
+"adiciona uma nova entrada com o caminho de classe auxiliar para análise."
 
-#: ../../running.rst:245
+#: ../../running.rst:257
 msgid "-analyzeFromFile *filepath*:"
 msgstr ""
 
-#: ../../running.rst:245
+#: ../../running.rst:257
 msgid ""
 "Read the files to analyze from file, each line adds new entry to the "
 "classpath for analysis."
 msgstr ""
-"Lê o arquivo a ser analisado a partir do arquivo e registre cada linha no classpath para análise."
+"Lê o arquivo a ser analisado a partir do arquivo e registre cada linha no"
+" classpath para análise."
 
-#: ../../running.rst:250
+#: ../../running.rst:262
 msgid "-userPrefs *edu.umd.cs.findbugs.core.prefs*:"
 msgstr ""
 
-#: ../../running.rst:248
+#: ../../running.rst:260
 msgid ""
 "Set the path of the user preferences file to use, which might override "
 "some of the options above. Specifying userPrefs as first argument would "
@@ -677,253 +734,261 @@ msgid ""
 "option is to reuse SpotBugs Eclipse project settings for command line "
 "execution."
 msgstr ""
-"Define o arquivo de configuração do usuário a ser usado. Algumas das opções "
-"acima podem ser substituídas. Se você especificar userPrefs como o primeiro "
-"argumento, ele será substituído pelas opções subsequentes. Especificá-lo como "
-"o último argumento substituirá a opção anterior. A lógica por trás dessa opção "
-"é reutilizar as configurações do projeto SpotBugs Eclipse na execução da linha "
-"de comando."
+"Define o arquivo de configuração do usuário a ser usado. Algumas das "
+"opções acima podem ser substituídas. Se você especificar userPrefs como o"
+" primeiro argumento, ele será substituído pelas opções subsequentes. "
+"Especificá-lo como o último argumento substituirá a opção anterior. A "
+"lógica por trás dessa opção é reutilizar as configurações do projeto "
+"SpotBugs Eclipse na execução da linha de comando."
 
-#: ../../running.rst:253
+#: ../../running.rst:265
 msgid "-showPlugins:"
 msgstr ""
 
-#: ../../running.rst:253
+#: ../../running.rst:265
 msgid "Show list of available detector plugins."
 msgstr "Mostra a lista de plug-ins de detectores disponíveis."
 
-#: ../../running.rst:256
+#: ../../running.rst:268
 msgid "Output options"
 msgstr "Opções de saída"
 
-#: ../../running.rst:258
+#: ../../running.rst:270
 msgid "-timestampNow:"
 msgstr ""
 
-#: ../../running.rst:258
+#: ../../running.rst:270
 msgid "Set timestamp of results to be current time."
 msgstr "Defina a data e hora dos resultados como a hora atual."
 
-#: ../../running.rst:261
+#: ../../running.rst:273
 msgid "-quiet:"
 msgstr ""
 
-#: ../../running.rst:261
+#: ../../running.rst:273
 msgid "Suppress error messages."
 msgstr "Suprima mensagens de erro."
 
-#: ../../running.rst:264
+#: ../../running.rst:276
 msgid "-longBugCodes:"
 msgstr ""
 
-#: ../../running.rst:264
+#: ../../running.rst:276
 msgid "Report long bug codes."
 msgstr "Relata todos os bugs."
 
-#: ../../running.rst:267
+#: ../../running.rst:279
 msgid "-progress:"
 msgstr ""
 
-#: ../../running.rst:267
+#: ../../running.rst:279
 msgid "Display progress in terminal window."
 msgstr "Exibe o progresso na janela do terminal."
 
-#: ../../running.rst:270
+#: ../../running.rst:282
 msgid "-release <release name>:"
 msgstr ""
 
-#: ../../running.rst:270
+#: ../../running.rst:282
 msgid "Set the release name of the analyzed application."
 msgstr "Define o nome da liberação do aplicativo analisado."
 
-#: ../../running.rst:273
+#: ../../running.rst:285
 msgid "-maxRank <rank>:"
 msgstr ""
 
-#: ../../running.rst:273
+#: ../../running.rst:285
 msgid "Only report issues with a bug rank at least as scary as that provided."
-msgstr "Relata apenas problemas com uma classificação de bug pelo menos do mesmo nível especificado."
+msgstr ""
+"Relata apenas problemas com uma classificação de bug pelo menos do mesmo "
+"nível especificado."
 
-#: ../../running.rst:276
+#: ../../running.rst:288
 msgid "-dontCombineWarnings:"
 msgstr ""
 
-#: ../../running.rst:276
+#: ../../running.rst:288
 msgid "Don't combine warnings that differ only in line number."
 msgstr "Não combina avisos que diferem apenas no número da linha."
 
-#: ../../running.rst:279
+#: ../../running.rst:291
 msgid "-train[:outputDir]:"
 msgstr ""
 
-#: ../../running.rst:279
+#: ../../running.rst:291
 msgid "Save training data (experimental); output dir defaults to '.'."
-msgstr "Salva os dados de treinamento (experimental); o padrão de saída do dir é '.'"
+msgstr ""
+"Salva os dados de treinamento (experimental); o padrão de saída do dir é "
+"'.'"
 
-#: ../../running.rst:282
+#: ../../running.rst:294
 msgid "-useTraining[:inputDir]:"
 msgstr ""
 
-#: ../../running.rst:282
+#: ../../running.rst:294
 msgid "Use training data (experimental); input dir defaults to '.'."
 msgstr "Usa dados de treinamento (experimental); o padrão de entrada é '.'"
 
-#: ../../running.rst:285
+#: ../../running.rst:297
 msgid "-redoAnalysis <filename>:"
 msgstr ""
 
-#: ../../running.rst:285
+#: ../../running.rst:297
 msgid "Redo analysis using configuration from previous analysis."
 msgstr "Refaz a análise usando a configuração da análise anterior."
 
-#: ../../running.rst:288
+#: ../../running.rst:300
 msgid "-sourceInfo <filename>:"
 msgstr ""
 
-#: ../../running.rst:288
+#: ../../running.rst:300
 msgid "Specify source info file (line numbers for fields/classes)."
-msgstr "Especifica informações do arquivo de origem (números de linha para campos/classes)."
+msgstr ""
+"Especifica informações do arquivo de origem (números de linha para "
+"campos/classes)."
 
-#: ../../running.rst:291
+#: ../../running.rst:303
 msgid "-projectName <project name>:"
 msgstr ""
 
-#: ../../running.rst:291
+#: ../../running.rst:303
 msgid "Descriptive name of project."
 msgstr "Nome descritivo do projeto."
 
-#: ../../running.rst:294
+#: ../../running.rst:306
 msgid "-reanalyze <filename>:"
 msgstr ""
 
-#: ../../running.rst:294
+#: ../../running.rst:306
 msgid "Redo analysis in provided file."
 msgstr "Refaz a análise no arquivo fornecido."
 
-#: ../../running.rst:297
+#: ../../running.rst:309
 msgid "Output filtering options"
 msgstr "Opções de filtragem de saída"
 
-#: ../../running.rst:299
+#: ../../running.rst:311
 msgid "-bugCategories <cat1[,cat2...]>:"
 msgstr ""
 
-#: ../../running.rst:299
+#: ../../running.rst:311
 msgid "Only report bugs in given categories."
 msgstr "Relata apenas os bugs de determinadas categorias."
 
-#: ../../running.rst:302
+#: ../../running.rst:314
 msgid "-excludeBugs <baseline bugs>:"
 msgstr ""
 
-#: ../../running.rst:302
+#: ../../running.rst:314
 msgid "Exclude bugs that are also reported in the baseline xml output."
 msgstr "Exclui os bugs que também são relatados na saída xml."
 
-#: ../../running.rst:305
+#: ../../running.rst:317
 msgid "-applySuppression:"
 msgstr ""
 
-#: ../../running.rst:305
+#: ../../running.rst:317
 msgid "Exclude any bugs that match suppression filter loaded from fbp file."
-msgstr "Remove os bugs de saída que correspondem ao filtro de supressão especificado pelo arquivo fbp."
+msgstr ""
+"Remove os bugs de saída que correspondem ao filtro de supressão "
+"especificado pelo arquivo fbp."
 
-#: ../../running.rst:308
+#: ../../running.rst:320
 msgid "Detector (visitor) configuration options"
 msgstr "Opção de configuração do detector (visitor)"
 
-#: ../../running.rst:310
+#: ../../running.rst:322
 msgid "-visitors <v1[,v2...]>:"
 msgstr ""
 
-#: ../../running.rst:310
+#: ../../running.rst:322
 msgid "Run only named visitors."
 msgstr "Executa apenas o visitor especificado."
 
-#: ../../running.rst:313
+#: ../../running.rst:325
 msgid "-omitVisitors <v1[,v2...]>:"
 msgstr ""
 
-#: ../../running.rst:313
+#: ../../running.rst:325
 msgid "Omit named visitors."
 msgstr "Não executa o visitor especificado."
 
-#: ../../running.rst:316
+#: ../../running.rst:328
 msgid "-chooseVisitors <+v1,-v2,...>:"
 msgstr ""
 
-#: ../../running.rst:316
+#: ../../running.rst:328
 msgid "Selectively enable/disable detectors."
 msgstr "Habilita ou desabilita o Detector especificado."
 
-#: ../../running.rst:319
+#: ../../running.rst:331
 msgid "-choosePlugins <+p1,-p2,...>:"
 msgstr ""
 
-#: ../../running.rst:319
+#: ../../running.rst:331
 msgid "Selectively enable/disable plugins."
 msgstr "Habilita ou desabilita o plugin especificado."
 
-#: ../../running.rst:322
+#: ../../running.rst:334
 msgid "-adjustPriority <v1=(raise|lower)[,...]>:"
 msgstr ""
 
-#: ../../running.rst:322
+#: ../../running.rst:334
 msgid "Raise/lower priority of warnings for given visitor(s)"
 msgstr "Altera a prioridade do aviso especificado."
 
-#: ../../running.rst:325
+#: ../../running.rst:337
 msgid "Project configuration options"
 msgstr "Opções para configurações do projeto"
 
-#: ../../running.rst:327
+#: ../../running.rst:339
 msgid "-sourcepath <source path>:"
 msgstr ""
 
-#: ../../running.rst:327
+#: ../../running.rst:339
 msgid "Set source path for analyzed classes."
 msgstr "Especifica o caminho de origem das classes analisadas."
 
-#: ../../running.rst:330
+#: ../../running.rst:342
 msgid "-exitcode:"
 msgstr ""
 
-#: ../../running.rst:330
+#: ../../running.rst:342
 msgid "Set exit code of process."
 msgstr "Define o código de status do processo."
 
-#: ../../running.rst:333
+#: ../../running.rst:345
 msgid "-noClassOk:"
 msgstr ""
 
-#: ../../running.rst:333
+#: ../../running.rst:345
 msgid "Output empty warning file if no classes are specified."
 msgstr "Gera um arquivo de aviso vazio se a classe de destino não é especificada."
 
-#: ../../running.rst:336
+#: ../../running.rst:348
 msgid "-xargs:"
 msgstr ""
 
-#: ../../running.rst:336
+#: ../../running.rst:348
 msgid ""
 "Get list of classfiles/jarfiles from standard input rather than command "
 "line."
-msgstr "Lê uma lista de arquivos de classe e jar a partir da entrada padrão "
-"em vez de opções de linha de comando."
+msgstr ""
+"Lê uma lista de arquivos de classe e jar a partir da entrada padrão em "
+"vez de opções de linha de comando."
 
-#: ../../running.rst:339
+#: ../../running.rst:351
 msgid "-bugReporters <name,name2,-name3>:"
 msgstr ""
 
-#: ../../running.rst:339
+#: ../../running.rst:351
 msgid "Bug reporter decorators to explicitly enable/disable."
 msgstr "Habilita ou desabilita explicitamente o relato de bugs."
 
-#: ../../running.rst:341
+#: ../../running.rst:353
 msgid "-printConfiguration:"
 msgstr ""
 
-#: ../../running.rst:342
+#: ../../running.rst:354
 msgid "Print configuration and exit, without running analysis."
 msgstr "Depois de enviar as configurações, saia sem realizar a análise."
-
