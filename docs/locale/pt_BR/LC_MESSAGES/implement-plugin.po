@@ -216,7 +216,7 @@ msgid ""
 "localized messages from ``messages_ja.xml``, ``messages_fr.xml`` and so "
 "on."
 msgstr ""
-"O SpotBugs lê o arquivo ``messages.xml``em cada plugin e cria uma mensagem legível "
+"O SpotBugs lê o arquivo ``messages.xml`` em cada plugin e cria uma mensagem legível "
 "por humanos para relatar os bugs detectados. Além disso, ele também suporta a leitura de mensagens localizadas em "
 "``messages_ja.xml``, ``messages_fr.xml`` e etc."
 
@@ -278,7 +278,7 @@ msgstr ""
 "Apresenta uma descrição mais longa do padrão de bug. Você pode usar um espaço reservado como ``{0}``  "
 "(0-índice) e os dados de `BugInstance "
 "<https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_"
-"serão inseridos nesse espaço. Portanto, o ``LongDescription`` é útil para fornecer informações detalhadas "
+" serão inseridos nesse espaço. Portanto, o ``LongDescription`` é útil para fornecer informações detalhadas "
 "sobre os bugs encontrados.
 
 #: ../../implement-plugin.rst:123

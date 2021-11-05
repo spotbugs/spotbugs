@@ -250,7 +250,7 @@ msgstr "Verifique se o log de erros não apresenta erros. "
 
 #: ../../faq.rst:77
 msgid "Q7: Where is the Maven plugin for SpotBugs?"
-msgstr "Q7: onde está o plugin maven para o SpotBugs?"
+msgstr "Q7: Onde está o plugin maven para o SpotBugs?"
 
 #: ../../faq.rst:79
 msgid ""
