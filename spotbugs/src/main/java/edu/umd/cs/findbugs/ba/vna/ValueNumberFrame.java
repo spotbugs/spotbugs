@@ -54,6 +54,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
     private Map<AvailableLoad, ValueNumber[]> availableLoadMap;
 
+    private Map<ValueNumber, AvailableLoad> availableLoadReverseMap;
+
     private Map<AvailableLoad, ValueNumber> mergedLoads;
 
     private Map<ValueNumber, AvailableLoad> previouslyKnownAs;
@@ -114,17 +116,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         if (!REDUNDANT_LOAD_ELIMINATION) {
             return null;
         }
-        for (Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
-            ValueNumber[] values = e.getValue();
-            if (values != null) {
-                for (ValueNumber v2 : values) {
-                    if (v.equals(v2)) {
-                        return e.getKey();
-                    }
-                }
-            }
-        }
-        return null;
+
+        return getAvailableLoadReverseMap().get(v);
     }
 
     /**
@@ -148,7 +141,17 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
      */
     public void addAvailableLoad(AvailableLoad availableLoad, @Nonnull ValueNumber[] value) {
         Objects.requireNonNull(value);
-        getUpdateableAvailableLoadMap().put(availableLoad, value);
+
+        getUpdateableAvailableLoadMap(false).put(availableLoad, value);
+        if (availableLoadReverseMap != null) {
+            // update the reverse map as well
+            if (!(availableLoadReverseMap instanceof HashMap)) {
+                availableLoadReverseMap = new HashMap<>(availableLoadReverseMap);
+            }
+            for (ValueNumber valueElement : value) {
+                availableLoadReverseMap.put(valueElement, availableLoad);
+            }
+        }
 
         for (ValueNumber v : value) {
             getUpdateablePreviouslyKnownAs().put(v, availableLoad);
@@ -415,8 +418,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         if (mergedValueList == null && other.isValid()) {
             // This is where this frame gets its size.
             // It will have the same size as long as it remains valid.
-            mergedValueList = new ArrayList<>(other.getNumSlots());
             int numSlots = other.getNumSlots();
+            mergedValueList = new ArrayList<>(numSlots);
             for (int i = 0; i < numSlots; ++i) {
                 mergedValueList.add(null);
             }
@@ -434,13 +437,22 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         Map<AvailableLoad, ValueNumber[]> availableLoadMapOther = other.getAvailableLoadMap();
         if (availableLoadMapOther instanceof HashMap) {
             availableLoadMapOther = Collections.<AvailableLoad, ValueNumber[]>unmodifiableMap(availableLoadMapOther);
-            other.setAvailableLoadMap(availableLoadMapOther);
-            setAvailableLoadMap(availableLoadMapOther);
-            constructedUnmodifiableMap++;
         } else {
-            setAvailableLoadMap(availableLoadMapOther);
             reusedMap++;
         }
+
+        // reverse map
+        Map<ValueNumber, AvailableLoad> availableLoadReverseMapOther = other.getAvailableLoadReverseMap();
+        if (availableLoadReverseMapOther instanceof HashMap) {
+            availableLoadReverseMapOther = Collections
+                    .<ValueNumber, AvailableLoad>unmodifiableMap(availableLoadReverseMapOther);
+            constructedUnmodifiableMap++;
+        } else {
+            reusedMap++;
+        }
+        other.setAvailableLoadMap(availableLoadMapOther, availableLoadReverseMapOther); // set the other's to
+                                                                                        // unmodifiable
+        setAvailableLoadMap(availableLoadMapOther, availableLoadReverseMapOther);
     }
 
     private void assignPreviouslyKnownAs(ValueNumberFrame other) {
@@ -578,31 +590,76 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     }
 
     public Collection<ValueNumber> valueNumbersForLoads() {
-        HashSet<ValueNumber> result = new HashSet<>();
         if (REDUNDANT_LOAD_ELIMINATION) {
-            for (Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
-                if (e.getValue() != null) {
-                    Collections.addAll(result, e.getValue());
-                }
-            }
+            return Collections.unmodifiableCollection(getAvailableLoadReverseMap().keySet());
         }
 
-        return result;
+        return Collections.emptySet();
     }
 
     private void setAvailableLoadMap(Map<AvailableLoad, ValueNumber[]> availableLoadMap) {
         this.availableLoadMap = availableLoadMap;
+        this.availableLoadReverseMap = null; // clear the reverse map
+    }
+
+    /**
+     * Sets both the available load map and its reverse lookup map.
+     */
+    private void setAvailableLoadMap(Map<AvailableLoad, ValueNumber[]> availableLoadMap,
+            Map<ValueNumber, AvailableLoad> availableLoadReverseMap) {
+        this.availableLoadMap = availableLoadMap;
+        this.availableLoadReverseMap = availableLoadReverseMap;
     }
 
     private Map<AvailableLoad, ValueNumber[]> getAvailableLoadMap() {
         return availableLoadMap;
     }
 
+    /**
+     * @return a reverse map, with the contents of {@link #getAvailableLoadMap()}.
+     */
+    private Map<ValueNumber, AvailableLoad> getAvailableLoadReverseMap() {
+        if (availableLoadReverseMap != null) {
+            // assert (availableLoadReverseMap.size() == availableLoadMap.size());
+            return availableLoadReverseMap; // already up to date
+        }
+
+        // lazy load the values
+        availableLoadReverseMap = new HashMap<>();
+        for (Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
+            ValueNumber[] value = e.getValue();
+            if (value != null) {
+                for (ValueNumber v2 : value) {
+                    availableLoadReverseMap.put(v2, e.getKey());
+                }
+            }
+        }
+
+        if (availableLoadReverseMap.isEmpty()) { // try to conserve memory
+            availableLoadReverseMap = Collections.<ValueNumber, AvailableLoad>emptyMap();
+        }
+        return availableLoadReverseMap;
+    }
+
+    /**
+     * @return the AvailableLoadMap, and clears the reverse lookup map
+     */
     private Map<AvailableLoad, ValueNumber[]> getUpdateableAvailableLoadMap() {
+        return getUpdateableAvailableLoadMap(true);
+    }
+
+    /**
+     * @param clearReverseMap
+     *            if the reverse lookup map should be cleared. This should always be 'true', unless the caller carefully
+     *            updates the reverse map with any changes made.
+     */
+
+    private Map<AvailableLoad, ValueNumber[]> getUpdateableAvailableLoadMap(boolean clearReverseMap) {
         if (!(availableLoadMap instanceof HashMap)) {
-            HashMap<AvailableLoad, ValueNumber[]> tmp = new HashMap<>(availableLoadMap.size() + 4);
-            tmp.putAll(availableLoadMap);
-            availableLoadMap = tmp;
+            availableLoadMap = new HashMap<>(availableLoadMap);
+        }
+        if (clearReverseMap) {
+            availableLoadReverseMap = null;
         }
         return availableLoadMap;
     }
@@ -617,6 +674,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
     private Map<AvailableLoad, ValueNumber> getUpdateableMergedLoads() {
         if (!(mergedLoads instanceof HashMap)) {
+            // its an unmodifiable empty map, replace with a regular HashMap
             mergedLoads = new HashMap<>();
         }
 
@@ -636,9 +694,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
             previouslyKnownAs = new HashMap<>(4);
             createdEmptyMap++;
         } else if (!(previouslyKnownAs instanceof HashMap)) {
-            HashMap<ValueNumber, AvailableLoad> tmp = new HashMap<>(previouslyKnownAs.size() + 4);
-            tmp.putAll(previouslyKnownAs);
-            previouslyKnownAs = tmp;
+            previouslyKnownAs = new HashMap<>(previouslyKnownAs);
             madeImmutableMutable++;
         } else {
             reusedMutableMap++;
