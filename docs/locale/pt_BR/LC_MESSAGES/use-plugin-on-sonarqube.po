@@ -36,7 +36,7 @@ msgstr ""
 "contrib.sourceforge.net/>`_ and `Find Security Bugs "
 "<http://h3xstream.github.io/find-sec-bugs/>`_. No entanto, se quiser usar outro "
 "plugin, você precisa criar seu próprio plugin SonarQube. Para obter os requisitos "
-"detalhados dos plugins do SonarQube, consulte as diretrizes oficiais da SonarQube."
+"detalhados dos plugins do SonarQube, consulte as `diretrizes oficiais do SonarQube`_."
 
 #: ../../use-plugin-on-sonarqube.rst:7
 msgid "Create Maven Project"
