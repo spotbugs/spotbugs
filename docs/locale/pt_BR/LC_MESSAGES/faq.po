@@ -209,7 +209,7 @@ msgstr ""
 "Por padrão, o SpotBugs assume que qualquer invocação de método pode "
 "lançar uma exceção de tempo de execução não verificada. Como resultado, "
 "pode assumir que uma exceção lançada para fora do método pode ignorar uma"
-" chamada a um método ``close ()``para um fluxo ou recurso de banco de "
+" chamada a um método ``close ()`` para um fluxo ou recurso de banco de "
 "dados."
 
 #: ../../faq.rst:64
