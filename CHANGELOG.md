@@ -17,10 +17,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 * Rule `DCN_NULLPOINTER_EXCEPTION` covers catching NullPointerExceptions in accordance with SEI Cert rule [ERR08-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors) ([#1740](https://github.com/spotbugs/spotbugs/pull/1740))
 * Multiple types of report can be generated in batch. Set multiple commandline options for report configuration like `-html=report/spotbugs.html -xml:withMessages=report/spotbugs.xml`.
+* New rule `REFL_REFLECTION_INCREASES_ACCESSIBILITY_OF_CLASS` to detect public methods instantiating a class they get in their parameter. This rule based on the SEI CERT rule *SEC05-J. Do not use reflection to increase accessibility of classes, methods, or fields*. ([#SEC05-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC05-J.+Do+not+use+reflection+to+increase+accessibility+of+classes%2C+methods%2C+or+fields))
 * Translation of RTD to Brazilian Portuguese (PT-BR).
 
 ### Fixed
 * False negative about the rule ES_COMPARING_STRINGS_WITH_EQ ([#1764](https://github.com/spotbugs/spotbugs/issues/1764))
+* False negative about the rule IM_MULTIPLYING_RESULT_OF_IREM ([#1498])(https://github.com/spotbugs/spotbugs/issues/1498)
 
 ### Deprecated
 * `-output` commandline option is deprecated. Use commandline options for report configuration like `-xml=spotbugs.xml` instead.
