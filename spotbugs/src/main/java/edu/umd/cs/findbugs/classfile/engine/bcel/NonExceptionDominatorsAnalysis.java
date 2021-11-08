@@ -1,6 +1,5 @@
 /*
- * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2007 University of Maryland
+ * SpotBugs - Find bugs in Java programs
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,26 +20,21 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
-import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
-import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
+import edu.umd.cs.findbugs.ba.DominatorsAnalysis;
 
 /**
- * PostDominatorsAnalysis variant in which all exception edges are ignored.
- *
- * @author David Hovemeyer
+ * DominatorsAnalysis variant in which all exception edges are ignored.
  */
-public class NonExceptionPostdominatorsAnalysis extends PostDominatorsAnalysis {
+public class NonExceptionDominatorsAnalysis extends DominatorsAnalysis {
     /**
      * Constructor.
      *
      * @param cfg
      *            the CFG to compute dominator relationships for
-     * @param rdfs
-     *            the ReverseDepthFirstSearch on the CFG
      * @param dfs
      *            the DepthFirstSearch on the CFG
      */
-    public NonExceptionPostdominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
-        super(cfg, rdfs, dfs, true);
+    public NonExceptionDominatorsAnalysis(CFG cfg, DepthFirstSearch dfs) {
+        super(cfg, dfs, true);
     }
 }
