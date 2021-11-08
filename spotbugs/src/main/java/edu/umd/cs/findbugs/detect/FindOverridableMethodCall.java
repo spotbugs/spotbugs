@@ -104,7 +104,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
             CallerInfo ctor = refCallerConstructors.get(i);
             CallerInfo clone = refCallerClones.get(i);
             Collection<XMethod> callers = refCalleeToCallerMap.get(i);
-            if (ctor == null && clone == null && callers == null && !callers.isEmpty()) {
+            if (ctor == null && clone == null && (callers == null || callers.isEmpty())) {
                 continue;
             }
             for (int arg : bm.getBootstrapArguments()) {
