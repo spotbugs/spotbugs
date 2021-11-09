@@ -566,6 +566,14 @@ This does not help the garbage collector in any way, the nulling out of fields h
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DateFormatStringChecker">
+    <Details>
+<![CDATA[
+<p> Checks for incorrect date format strings.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis">
     <Details>
 <![CDATA[
@@ -7307,6 +7315,19 @@ This format string includes a newline character (\n). In format strings, it is g
 ]]>
      </Details>
   </BugPattern>
+<BugPattern type="FS_BAD_DATE_FORMAT_FLAG_COMBO">
+    <ShortDescription>Certain SimpleDateFormat format strings may lead to unexpected behavior</ShortDescription>
+    <LongDescription>Certain SimpleDateFormat format strings may lead to unexpected behavior in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This format stream includes a bad combination of format flags which may lead to unexpected behavior. Examples include
+using a week year ("Y") without specifying week in year ("w") or using an AM/PM hour ("h" or "K") without specifying
+an AM/PM marker ("a").
+</p>
+]]>
+     </Details>
+  </BugPattern>
   <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
     <ShortDescription>Primitive array passed to function expecting a variable number of object arguments</ShortDescription>
     <LongDescription>{2} passed to varargs method {3} in {1}</LongDescription>
@@ -8677,3 +8698,4 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
   <BugCode abbrev="EOS">Bad End of Stream check</BugCode>
 </MessageCollection>
+
