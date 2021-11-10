@@ -18,63 +18,28 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 public class Issue637Test extends AbstractIntegrationTest {
     private static final String DESIRED_BUG_TYPE = "FS_BAD_DATE_FORMAT_FLAG_COMBO";
 
+    /**
+     * Expects 10 "FS_BAD_DATE_FORMAT_FLAG_COMBO" errors in the "Issue637Errors.class" file
+     */
     @Test
-    public void testClass() {
-        performAnalysis("ghIssues/Issue637.class");
-        BugInstanceMatcher bugTypeMatcherA = new BugInstanceMatcherBuilder()
+    public void testClassWithErrors() {
+        performAnalysis("ghIssues/Issue637Errors.class");
+        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(DESIRED_BUG_TYPE)
-                .atLine(22)
                 .build();
-        BugInstanceMatcher bugTypeMatcherB = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .atLine(34)
-                .build();
-        BugInstanceMatcher bugTypeMatcherC = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .atLine(46)
-                .build();
-
-        BugInstanceMatcher bugTypeMatcherD = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .atLine(28)
-                .build();
-        BugInstanceMatcher bugTypeMatcherE = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .atLine(40)
-                .build();
-        BugInstanceMatcher bugTypeMatcherF = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .atLine(52)
-                .build();
-
-        BugInstanceMatcher bugTypeMatcherG = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .atLine(59)
-                .build();
-
-        BugInstanceMatcher bugTypeMatcherH = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .atLine(66)
-                .build();
-
-        BugInstanceMatcher bugTypeMatcherI = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .atLine(73)
-                .build();
-
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcherA));
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcherB));
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcherC));
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcherG));
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcherH));
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcherI));
-
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherD));
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherE));
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherF));
-
+        assertThat(getBugCollection(), containsExactly(10, bugTypeMatcher));
     }
 
-
+    /**
+     * Expects no "FS_BAD_DATE_FORMAT_FLAG_COMBO" errors in the "Issue637NoErrors.class" file
+     */
+    @Test
+    public void testClassWithoutErrors() {
+        performAnalysis("ghIssues/Issue637NoErrors.class");
+        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType(DESIRED_BUG_TYPE)
+                .build();
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+    }
 
 }

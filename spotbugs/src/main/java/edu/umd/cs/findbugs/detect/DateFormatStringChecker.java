@@ -30,27 +30,50 @@ import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
 public class DateFormatStringChecker extends OpcodeStackDetector {
 
+    private static final ArrayList<String> AM_PM_HOURS_FLAG_1 = new ArrayList<>(Arrays.asList("a", "h"));
+    private static final ArrayList<String> AM_PM_HOURS_FLAG_2 = new ArrayList<>(Arrays.asList("a", "K"));
+    private static final ArrayList<String> MILITARY_HOURS_FLAG_1 = new ArrayList<>(Arrays.asList(null,"H","a"));
+    private static final ArrayList<String> MILITARY_HOURS_FLAG_2 = new ArrayList<>(Arrays.asList(null,"k","a"));
+    private static final ArrayList<String> WEEK_YEAR_FLAG_1 = new ArrayList<>(Arrays.asList("w","Y","M","d"));
+
+    private static final ArrayList<Integer> CONST_ARRAY_LIST = new ArrayList<>(Arrays.asList((int)Const.INVOKESPECIAL,
+            (int)Const.INVOKEVIRTUAL, (int)Const.INVOKESTATIC, (int)Const.INVOKEINTERFACE));
+
+    private static final String SIG_CONSTANT_OPERAND = "Ljava/lang/String;)V";
+    private static final String CLASS_CONSTANT_OPERAND = "java/text/SimpleDateFormat";
+    private static final String NAME_CONSTANT_OPERAND_1 = "<init>";
+    private static final String NAME_CONSTANT_OPERAND_2 = "applyPattern";
+    private static final String BUG_TYPE = "FS_BAD_DATE_FORMAT_FLAG_COMBO";
+
+    String dateFormatString;
     final BugReporter bugReporter;
 
+    /**
+     * DateFormatStringChecker class constructor
+     * @param bugReporter
+     */
     public DateFormatStringChecker(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-    String dateFormatString;
-
-
-    /*
-     * (non-Javadoc)
-     *
+    /**
+     * Analyzes opcode to find SimpleDateFormat instances calling bad combinations of format flags
      * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
+     * @param seen
      */
     @Override
     public void sawOpcode(int seen) {
-        if ((seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE) && (stack
-                .getStackDepth() > 0)) {
+        ArrayList<ArrayList<String>> combinations = new ArrayList<>(Arrays.asList(
+                AM_PM_HOURS_FLAG_1, AM_PM_HOURS_FLAG_2, MILITARY_HOURS_FLAG_1, MILITARY_HOURS_FLAG_2, WEEK_YEAR_FLAG_1
+        ));
+
+        if ((CONST_ARRAY_LIST.contains(seen)) && (stack.getStackDepth() > 0)) {
             Object formatStr = stack.getStackItem(0).getConstant();
             if (formatStr instanceof String) {
                 this.dateFormatString = (String) formatStr;
@@ -58,20 +81,43 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
                 String nm = getNameConstantOperand();
                 String sig = getSigConstantOperand();
 
-                if (sig.indexOf("Ljava/lang/String;)V") >= 0
-                        && ("java/text/SimpleDateFormat".equals(cl) && ("<init>".equals(nm) || "applyPattern".equals(nm)))) {
+                if (sig.indexOf(SIG_CONSTANT_OPERAND) >= 0
+                        && (CLASS_CONSTANT_OPERAND.equals(cl) && (NAME_CONSTANT_OPERAND_1.equals(nm) ||
+                        NAME_CONSTANT_OPERAND_2.equals(nm)))) {
 
-                    if (((dateFormatString.indexOf('h') >= 0) && (dateFormatString.indexOf('m') >= 0) && (dateFormatString.indexOf('a') < 0)) ||
-                            ((dateFormatString.indexOf('K') >= 0) && (dateFormatString.indexOf('m') >= 0) && (dateFormatString.indexOf('a') < 0)) ||
-                            ((dateFormatString.indexOf('Y') >= 0) && (dateFormatString.indexOf('M') >= 0) && (dateFormatString.indexOf('d') >= 0)
-                                    && (dateFormatString.indexOf('w') < 0))) {
-                        bugReporter.reportBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
+                    if (runCheckStringForBadFlagCombo(dateFormatString, combinations)){
+                        bugReporter.reportBug(new BugInstance(this, BUG_TYPE, NORMAL_PRIORITY)
                                 .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
                                 .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
                     }
                 }
             }
         }
+    }
+
+    private boolean checkStringForBadFlagCombo(String stringToCheck, String missingFlag, ArrayList<String> requiredFlags) {
+        boolean result = true;
+        if ((missingFlag != null) && (stringToCheck.contains(missingFlag))) {
+            result = false;
+        }
+        for (String flag : requiredFlags) {
+            if (!stringToCheck.contains(flag)){
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    private boolean runCheckStringForBadFlagCombo(String stringToCheck, ArrayList<ArrayList<String>> combinationsToRun){
+        boolean result = false;
+        for (ArrayList<String> combination : combinationsToRun){
+            ArrayList<String> requiredFlags = new ArrayList<String>(combination.subList(1,combination.size()));
+            String missingFlag = combination.get(0);
+            if (checkStringForBadFlagCombo(dateFormatString, missingFlag, requiredFlags)){
+                result = true;
+            };
+        }
+        return result;
     }
 
 }
