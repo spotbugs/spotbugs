@@ -182,6 +182,14 @@ This plugin contains all of the standard SpotBugs detectors.
 ]]>
      </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.MethodCallInOptionalOrElse">
+    <Details>
+<![CDATA[
+<p> Finds method calls invoked by Optional.orElse.
+</p>
+]]>
+     </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.InitializeNonnullFieldsInConstructor">
     <Details>
 <![CDATA[
@@ -1736,6 +1744,34 @@ factory pattern to create these objects.</p>
       <![CDATA[
     <p>It's recommended to use the predefined library constant for code clarity and better precision.</p>
 ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE">
+    <ShortDescription>Finds method calls invoked by Optional.orElse</ShortDescription>
+    <LongDescription>Do not call method {0} from Optional.orElse in {2}, consider using Optional.orElseGet instead.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          It's recommended to use the predefined library constant for code clarity and better precision.
+        </p>
+        <p>
+          This non-compliant code invokes secondMethod() even if firstMethod() returns a non-null value:
+        </p>
+        <pre><code>
+          var result = Optional.ofNullable(firstMethod())
+                // The method secondMethod() invoked always.
+                // The result of secondMethod() is discarded, unexpected side effects are possible.
+                .orElse(secondMethod());
+        </code></pre>
+        <p>
+          A compliant solution would use Optional.orElseGet method as in the following example:
+        </p>
+        <pre><code>
+          var result = Optional.ofNullable(firstMethod())
+                // The method secondMethod() is invoked only if firstMethod() returns null.
+                .orElseGet(this::secondMethod);
+        </code></pre>
+    ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SKIPPED_CLASS_TOO_BIG">

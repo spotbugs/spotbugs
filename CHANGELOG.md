@@ -16,6 +16,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Added
 * Rule `DCN_NULLPOINTER_EXCEPTION` covers catching NullPointerExceptions in accordance with SEI Cert rule [ERR08-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors) ([#1740](https://github.com/spotbugs/spotbugs/pull/1740))
+* Rule `MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE` covers method invocation in [Optional.orElse](https://www.baeldung.com/java-optional-or-else-vs-or-else-get) ([#1808](https://github.com/spotbugs/spotbugs/pull/1808))
 * Multiple types of report can be generated in batch. Set multiple commandline options for report configuration like `-html=report/spotbugs.html -xml:withMessages=report/spotbugs.xml`.
 
 ### Fixed
