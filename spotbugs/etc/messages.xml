@@ -2467,25 +2467,6 @@ will need to be changed in order to compile it in later versions of Java.</p>
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSED_SOURCE">
-    <ShortDescription>Potential security check based on untrusted source.</ShortDescription>
-    <LongDescription>Non-final method {4} was called at {5} before entering a doPrivileged block and was also called inside the block at {6} on a non-final class instance of {3} in public method {1}. If this call is a check before entering the doPrivileged() block then it may be unreliable since the method may receive an instance of a malicious descendant of the class which has this overridden to behave differently than expected.</LongDescription>
-    <Details>
-<![CDATA[
-  <p> A public method of a public class may be called from outside the package which means that untrusted
-      data may be passed to it. Calling a method before the doPrivileged to check its return value and then
-      calling the same method inside the class is dangerous if the method or its enclosing class is not
-      final. An attacker may pass an instance of a malicious descendant of the class instead of an instance
-      of the expected one where this method is overridden in a way that it returns different values upon
-      different invocations. For example, a method returning a file path may return a harmless path to check
-      before entering the doPrivileged block and then a sensitive file upon the call inside the doPrivileged
-      block. To avoid such scenario defensively copy the object reveiced in the parameter, e.g. by using
-      the copy constructor of the class used as the type of the formal parameter. This ensures that the
-      method behaves exactly as expected.
-      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources">SEC02-J. Do not base security checks on untrusted sources</a>.</p>
-]]>
-    </Details>
-  </BugPattern>
   <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
     <ShortDescription>Fields of immutable classes should be final</ShortDescription>
     <LongDescription>{1.givenClass} should be final since {0} is marked as Immutable.</LongDescription>
@@ -8636,6 +8617,26 @@ after the call to initLogging, the logger configuration is lost
       state. Only static, final or private methods should be invoked from the clone() method.</p>
       <p>
       See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">MET06-J. Do not invoke overridable methods in clone()</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSED_SOURCE">
+    <ShortDescription>Potential security check based on untrusted source.</ShortDescription>
+    <LongDescription>Non-final method {4} was called at {5} before entering a doPrivileged block and was also called inside the block at {6} on a non-final class instance of {3} in public method {1}. If this call is a check before entering the doPrivileged() block then it may be unreliable since the method may receive an instance of a malicious descendant of the class which has this overridden to behave differently than expected.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      A public method of a public class may be called from outside the package which means that untrusted
+      data may be passed to it. Calling a method before the doPrivileged to check its return value and then
+      calling the same method inside the class is dangerous if the method or its enclosing class is not
+      final. An attacker may pass an instance of a malicious descendant of the class instead of an instance
+      of the expected one where this method is overridden in a way that it returns different values upon
+      different invocations. For example, a method returning a file path may return a harmless path to check
+      before entering the doPrivileged block and then a sensitive file upon the call inside the doPrivileged
+      block. To avoid such scenario defensively copy the object reveiced in the parameter, e.g. by using
+      the copy constructor of the class used as the type of the formal parameter. This ensures that the
+      method behaves exactly as expected.
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources">SEC02-J. Do not base security checks on untrusted sources</a>.
       </p>]]>
     </Details>
   </BugPattern>

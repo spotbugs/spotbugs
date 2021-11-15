@@ -359,8 +359,6 @@
                     reports="AM_CREATES_EMPTY_ZIP_FILE_ENTRY,AM_CREATES_EMPTY_JAR_FILE_ENTRY"/>
           <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged" speed="fast"
                     reports="DP_DO_INSIDE_DO_PRIVILEGED,DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
-          <Detector class="edu.umd.cs.findbugs.detect.UnreliableMethodCallBeforeAndInsideDoPrivileged" speed="fast"
-                    reports="DP_UNRELIABLE_METHOD_CALL_BEFORE_AND_INSIDE_DO_PRIVILEGED"/>
           <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants" speed="fast"
                     reports="HSC_HUGE_SHARED_STRING_CONSTANT"/>
           <Detector class="edu.umd.cs.findbugs.detect.FinalizerNullsFields" speed="fast"
@@ -659,7 +657,7 @@
                     reports="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS,REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindOverridableMethodCall"
                     reports="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR,MC_OVERRIDABLE_METHOD_CALL_IN_CLONE"/>
-                    <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource" speed="fast"
+          <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource" speed="fast"
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSED_SOURCE"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
