@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2021, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-22 15:35-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../maven.rst:2
+msgid "Using the SpotBugs Maven Plugin"
+msgstr "Usando o SpotBugs Maven Plugin"
+
+#: ../../maven.rst:4
+msgid "This chapter describes how to integrate SpotBugs into a Maven project."
+msgstr "Este capítulo descreve como integrar o SpotBugs em projetos Maven."
+
+#: ../../maven.rst:7
+msgid "Add spotbugs-maven-plugin to your pom.xml"
+msgstr "Adição do spotbugs-maven-plugin"
+
+#: ../../maven.rst:9
+msgid "Add ``<plugin>`` into your ``pom.xml`` like below:"
+msgstr "Adicione o ``<plugin>`` no arquivo ``pom.xml`` como no código abaixo:"
+
+#: ../../maven.rst:16
+msgid "Integrate Find Security Bugs into spotbugs-maven-plugin"
+msgstr "Integração do Find Security Bugs no spotbugs-maven-plugin"
+
+#: ../../maven.rst:18
+msgid ""
+"Are you looking for additional security detectors for SpotBugs? We "
+"suggest you to check the `Find Security Bugs <https://find-sec-"
+"bugs.github.io/>`_ a SpotBugs plugin for security audits of Java web and "
+"Android applications. It can detect 138 different vulnerability types, "
+"including SQL/HQL Injection, Command Injection, XPath Injection, and "
+"Cryptography weaknesses."
+msgstr ""
+"Voê está procurando por detectores de segurança adicionais para o SpotBugs? Sugerimos "
+"que você veja o `Find Security Bugs <https://find-sec-"
+"bugs.github.io/>`_ um plugin para o SpotBugs para auditoria de segurança de aplicações Java web"
+"Android. O plugin pode detectar 138 tipos de vulnerabilidades diferentes, "
+"incluindo SQL/HQL Injection, Command Injection, XPath Injection, e "
+"Cryptography weaknesses."
+
+#: ../../maven.rst:20
+msgid ""
+"To integrate Find Security Bugs into SpotBugs plugin, you can configure "
+"your ``pom.xml`` like below:"
+msgstr "Para integrar o Find Security Bugs no SpotBugs, você pode configurar "
+"o arquivo ``pom.xml`` como mostrado a seguir:"
+
+#: ../../maven.rst:25
+msgid ""
+"The ``<plugins>`` option defines a collection of PluginArtifact to work "
+"on. Please, specify \"Find Security Bugs\" by adding its groupId, "
+"artifactId, version."
+msgstr ""
+"A opção ``<plugins>`` define uma coleção de artefatos para utilizar o plugin. "
+"Por favor, especifique \"Find Security Bugs\" por meio da adição de seu groupId, "
+"artifactId, e version."
+
+#: ../../maven.rst:27
+msgid ""
+"The ``<includeFilterFile>`` and ``<excludeFilterFile>`` specify the "
+"filter files to include and exclude bug reports, respectively (see "
+"`Filter file <https://spotbugs.readthedocs.io/en/latest/filter.html>`_ "
+"for more details). Optionally, you can limit the research to the security"
+" category by adding files like below:"
+msgstr ""
+"As opções ``<includeFilterFile>`` e ``<excludeFilterFile>`` especificam os "
+"arquivos de filtro para a inclusão e exclusão de reporte de bugs, respectivamente (veja "
+"`Arquivos de filtro <https://spotbugs.readthedocs.io/en/latest/filter.html>`_ "
+"para mais detalhes). Opcionalmente, você pode limitar a busca apenas a categoria de segurança"
+" por meio da adição de arquivos como:"
+
+#: ../../maven.rst:30
+msgid "*spotbugs-security-include.xml*"
+msgstr ""
+
+#: ../../maven.rst:40
+msgid "*spotbugs-security-exclude.xml*"
+msgstr ""
+
+#: ../../maven.rst:49
+msgid "Goals of spotbugs-maven-plugin"
+msgstr "Objetivos do spotbugs-maven-plugin"
+
+#: ../../maven.rst:52
+msgid "spotbugs goal"
+msgstr "Meta: spotbugs"
+
+#: ../../maven.rst:54
+msgid ""
+"``spotbugs`` goal analyses target project by SpotBugs. For detail, please"
+" refer `spotbugs goal description in maven site "
+"<https://spotbugs.github.io/spotbugs-maven-plugin/spotbugs-mojo.html>`_."
+msgstr ""
+"A meta ``spotbugs`` analisa o projeto selecionado com o SpotBugs. Para detalhes, consulte"
+" `spotbugs goal no site "
+"<https://spotbugs.github.io/spotbugs-maven-plugin/spotbugs-mojo.html>`_."
+#: ../../maven.rst:58
+msgid "check goal"
+msgstr "Meta: check"
+
+#: ../../maven.rst:60
+msgid ""
+"``check`` goal runs analysis like ``spotbugs`` goal, and make the build "
+"failed if it found any bugs. For detail, please refer `check goal "
+"description in maven site <https://spotbugs.github.io/spotbugs-maven-"
+"plugin/check-mojo.html>`_."
+msgstr ""
+"A meta ``check`` executa a análise com a meta ``spotbugs``, e faz a compilação "
+"falhar se não forem encontrados bugs. Para detalhes, consulte `check goal "
+"no site <https://spotbugs.github.io/spotbugs-maven-"
+"plugin/check-mojo.html>`_."
+
+#: ../../maven.rst:64
+msgid "gui goal"
+msgstr "Meta: gui"
+
+#: ../../maven.rst:66
+msgid ""
+"``gui`` goal launches SpotBugs GUI to check analysis result. For detail, "
+"please refer `gui goal description in maven site "
+"<https://spotbugs.github.io/spotbugs-maven-plugin/gui-mojo.html>`_."
+msgstr ""
+"A meta ``gui`` inicia a interface SpotBugs GUI para verificar o resultado da análise. Para detalhes "
+"consulte `gui goal description no site "
+"<https://spotbugs.github.io/spotbugs-maven-plugin/gui-mojo.html>`_."
+
+#: ../../maven.rst:70
+msgid "help goal"
+msgstr "Meta: help"
+
+#: ../../maven.rst:72
+msgid "``help`` goal displays usage of this Maven plugin."
+msgstr "a meta ``help`` apresenta os modos de uso deste Maven plugin."
+

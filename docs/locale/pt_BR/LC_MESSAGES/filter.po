@@ -1,0 +1,518 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2021, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-22 15:35-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../filter.rst:2
+msgid "Filter file"
+msgstr "Arquivos de filtro"
+
+#: ../../filter.rst:4
+msgid ""
+"Filter files may be used to include or exclude bug reports for particular"
+" classes and methods. This chapter explains how to use filter files."
+msgstr ""
+"Arquivos de filtro podem ser usados para incluir ou excluir o reporte de bugs "
+"para classes e métodos específicos. Este capítulo explica como usar os arquivos de filtro."
+
+#: ../../filter.rst:7
+msgid "Introduction to Filter Files"
+msgstr "Introdução aos arquivos de filtro"
+
+#: ../../filter.rst:9
+msgid ""
+"Conceptually, a filter matches bug instances against a set of criteria. "
+"By defining a filter, you can select bug instances for special treatment;"
+" for example, to exclude or include them in a report."
+msgstr ""
+"Conceitualmente, um filtro compara instâncias de bug com um conjunto de critérios. "
+"Ao definir um filtro, você pode selecionar um tratamento especial para instâncias de bugs, "
+"como excluí-las ou incluí-las em um reporte."
+
+#: ../../filter.rst:12
+msgid ""
+"A filter file is an XML document with a top-level ``FindBugsFilter`` "
+"element which has some number of Match elements as children. Each Match "
+"element represents a predicate which is applied to generated bug "
+"instances. Usually, a filter will be used to exclude bug instances. For "
+"example::"
+msgstr ""
+"Um arquivo de filtro é um documento XML com o elemento de nível superior ``FindBugsFilter``, "
+"que possui um número de elementos Match como filhos. Cada elemento Match representa "
+"uma premissa a ser aplicada na geração de instâncias de bug. Geralmente, um filtro é usado para excluir instâncias de bug. "
+"Por exemplo:: "
+
+#: ../../filter.rst:18
+msgid ""
+"However, a filter could also be used to select bug instances to "
+"specifically report::"
+msgstr ""
+"No entanto, um filtro também pode ser usado para selecionar instâncias de bug para um reporte específico::"
+#: ../../filter.rst:22
+msgid ""
+"``Match`` elements contain children, which are conjuncts of the "
+"predicate. In other words, each of the children must be ``true`` for the "
+"predicate to be ``true``."
+msgstr ""
+"Os filhos dos elementos ``Match`` são conjuntos de premissas. "
+"Em outras palavras, cada filho deve ser verdadeiro ``true``para que a "
+"premissa seja verdadeira ``true``."
+
+#: ../../filter.rst:26
+msgid "Types of Match clauses"
+msgstr "Tipos de cláusulas Match "
+
+#: ../../filter.rst:29
+msgid "<Bug>"
+msgstr ""
+
+#: ../../filter.rst:31
+msgid ""
+"This element specifies a particular bug ``pattern`` or ``patterns`` to "
+"match. The ``pattern`` attribute is a comma-separated list of bug pattern"
+" types. You can find the bug pattern types for particular warnings by "
+"looking at the output produced by the **-xml** output option (the type "
+"attribute of BugInstance elements), or from the :doc:`bugDescriptions`."
+msgstr ""
+"Este elemento especifica um ou mais padrões (``pattern`` ou ``patterns``) de um bug a serem comparados. "
+"O atributo ``pattern`` é uma lista, separada por vírgulas, contendo os tipos de padrões de bug. "
+"Você pode encontrar os tipos de padrões de bug ao procurar avisos específicos na saída produzida pela opção **-xml** "
+"(o atributo type do elemento BugInstances) ou a partir da :doc:`bugDescriptions`."
+
+
+#: ../../filter.rst:34
+msgid ""
+"For more coarse-grained matching, use ``code`` attribute. It takes a "
+"comma-separated list of bug abbreviations. For most-coarse grained "
+"matching use ``category`` attribute, that takes a comma separated list of"
+" bug category names: ``CORRECTNESS``, ``MT_CORRECTNESS``, "
+"``BAD_PRACTICICE``, ``PERFORMANCE``, ``STYLE``."
+msgstr ""
+"Para uma comparação granulosa, use o atributo ``code``. "
+"É necessária uma lista, separada por vírgulas, contendo as abreviações de bug. "
+"Para uma comparação mais granulosa, use o atributo ``category``. "
+"Para isso, é necessária uma lista, separadas por vírgulas, com os nomes das categorias de bug: "
+"``CORRECTNESS``, ``MT_CORRECTNESS``, ``BAD_PRACTICICE``, ``PERFORMANCE``, ``STYLE``. "
+
+#: ../../filter.rst:36
+msgid ""
+"If more than one of the attributes mentioned above are specified on the "
+"same <Bug> element, all bug patterns that match either one of specified "
+"pattern names, or abbreviations, or categories will be matched."
+msgstr ""
+"Se mais de um dos atributos mencionados acima forem especificados no mesmo elemento <Bug>, "
+"todos os padrões de bug que correspondem a um dos nomes de padrão, abreviações ou categorias, "
+"serão correspondidos."
+
+#: ../../filter.rst:38
+msgid ""
+"As a backwards compatibility measure, <BugPattern> and <BugCode> elements"
+" may be used instead of <Bug> element. Each of these uses a name "
+"attribute for specifying accepted values list. Support for these elements"
+" may be removed in a future release."
+msgstr ""
+"Como medida de compatibilidade com versões anteriores, os elementos <BugPattern> e <BugCode> "
+"podem ser usados em vez do elemento <Bug>. Cada um deles usa o atributo nome para especificar "
+"a lista de valores aceitos. O suporte para esses elementos pode ser removido em uma versão futura. "
+
+#: ../../filter.rst:41
+msgid "<Confidence>"
+msgstr ""
+
+#: ../../filter.rst:43
+msgid ""
+"This element matches warnings with a particular bug confidence. The "
+"``value`` attribute should be an integer value: 1 to match high-"
+"confidence warnings, 2 to match normal-confidence warnings, or 3 to match"
+" low-confidence warnings. ``<Confidence>`` replaced ``<Priority>`` in "
+"2.0.0 release."
+msgstr ""
+"Este elemento corresponde os avisos de bug com os níveis de confiança. "
+"O atributo ``value`` deve ser um valor inteiro: 1 corresponde ao nível de confiança alta , "
+"2 corresponde ao nível de confiança normal e 3 corresponde ao nível de confiança baixa."
+"O elemento ``<Confidence>`` substituiu o atributo ``<Priority>`` na versão 2.0.0."
+
+#: ../../filter.rst:46
+msgid "<Priority>"
+msgstr ""
+
+#: ../../filter.rst:48
+msgid "Same as ``<Confidence>``, exists for backward compatibility."
+msgstr "Equivalente ao elemento ``<Confidence>``. "
+"Existe por motivos de compatibilidade com versões anteriores. "
+
+#: ../../filter.rst:51
+msgid "<Rank>"
+msgstr ""
+
+#: ../../filter.rst:53
+msgid ""
+"This element matches warnings having at least a specified bug rank. The "
+"``value`` attribute should be an integer value between 1 and 20, where 1 "
+"to 4 are scariest, 5 to 9 scary, 10 to 14 troubling, and 15 to 20 of "
+"concern bugs."
+msgstr ""
+"Este elemento corresponde os avisos com a classificação de bug especificada. "
+"O atributo ``value`` deve ser um valor inteiro entre 1 e 20, onde os valores de 1 a 4 indicam "
+"os bugs mais graves, de 5 a 9 os bugs graves, de 10 a 14 os bugs problemáticos e de 15 a 20 os bugs preocupantes. "
+
+#: ../../filter.rst:56
+msgid "<Package>"
+msgstr ""
+
+#: ../../filter.rst:58
+msgid ""
+"This element matches warnings associated with classes within the package "
+"specified using ``name`` attribute. Nested packages are not included "
+"(along the lines of Java import statement). However matching multiple "
+"packages can be achieved easily using regex name match."
+msgstr ""
+"Este elemento corresponde os avisos com as classes dentro do pacote especificado "
+"utilizando o atributo ``name``. Os pacotes aninhados não são incluídos "
+"(em conjunto com as linhas de importação Java). No entanto, a correspondência de vários "
+"pacotes pode ser alcançada facilmente usando regex para a correspondência de nomes."
+
+#: ../../filter.rst:61
+msgid "<Class>"
+msgstr ""
+
+#: ../../filter.rst:63
+msgid ""
+"This element matches warnings associated with a particular class. The "
+"``name`` attribute is used to specify the exact or regex match pattern "
+"for the class name. The ``role`` attribute is the class role."
+msgstr ""
+" Este elemento corresponde os avisos associados com uma classe específica. O atributo ``name`` "
+"é usado para especificar o padrão de correspondência exato ou regex para o nome da classe. "
+"O atributo ``role`` é o papel da classe."
+
+#: ../../filter.rst:65
+msgid ""
+"As a backward compatibility measure, instead of element of this type, you"
+" can use ``class`` attribute on a ``Match`` element to specify exact an "
+"class name or ``classregex`` attribute to specify a regular expression to"
+" match the class name against."
+msgstr ""
+"Como medida de compatibilidade com versões anteriores, você pode usar o atributo "
+"``class`` em um elemento ``Match`` para especificar o nome exato de uma classe ou o atributo "
+"``classregex`` para especificar uma expressão regular para a correspondência com o nome da classe. "
+
+#: ../../filter.rst:67
+msgid ""
+"If the ``Match`` element contains neither a ``Class`` element, nor a "
+"``class`` / ``classregex`` attribute, the predicate will apply to all "
+"classes. Such predicate is likely to match more bug instances than you "
+"want, unless it is refined further down with appropriate method or field "
+"predicates."
+msgstr ""
+"Se o elemento ``Match`` não contém um elemento ``Class``, nem um atributo ``class`` / ``classregex``, "
+"então a premissa será aplicada a todas as classes. Tal premissa pode identificar mais instâncias de bug "
+"do que você deseja, a menos que seja refinado ainda mais com o método apropriado ou premissas de campo. "
+
+#: ../../filter.rst:70
+msgid "<Source>"
+msgstr ""
+
+#: ../../filter.rst:72
+msgid ""
+"This element matches warnings associated with a particular source file. "
+"The ``name`` attribute is used to specify the exact or regex match "
+"pattern for the source file name."
+msgstr ""
+"Este elemento corresponde os avisos com um arquivo de origem específico. "
+"O atributo ``name`` é usado para especificar o padrão de correspondência exata "
+"ou regex para o nome do arquivo de origem."
+
+#: ../../filter.rst:75
+msgid "<Method>"
+msgstr ""
+
+#: ../../filter.rst:77
+msgid ""
+"This element specifies a method. The ``name`` attribute is used to "
+"specify the exact or regex match pattern for the method name. The "
+"``params`` attribute is a comma-separated list of the types of the "
+"method's parameters. The ``returns`` attribute is the method's return "
+"type. The ``role`` attribute is the method role. In ``params`` and "
+"``returns``, class names must be fully qualified. (E.g., "
+"``\"java.lang.String\"`` instead of just ``\"String\"``.) If one of the "
+"latter attributes is specified the other is required for creating a "
+"method signature. Note that you can provide either ``name`` attribute or "
+"``params`` and ``returns`` attributes or all three of them. This way you "
+"can provide various kinds of name and signature based matches."
+msgstr ""
+"Este elemento especifica um método. O atributo ``name`` é usado para especificar "
+"o padrão de correspondência exata ou regex para o nome do método. O atributo ``params`` "
+"é uma lista contendo os tipos de parâmetros do método separados por vírgulas. "
+"O atributo ``returns`` é o tipo de retorno do método. O atributo ``role`` é o papel do método. "
+"Em ``params`` e ``returns``, os nomes das classes devem ser totalmente qualificados. "
+"(Por exemplo: ``\"java.lang.String\"`` instead of just ``\"String\"``.) "
+"Se um dos últimos atributos for especificado, o outro é necessário para criar a assinatura de método. "
+"Observe que você pode fornecer o atributo ``name``, ``params`` e ``returns``, ou todos os três. Dessa forma, "
+"você pode fornecer vários tipos de correspondências baseadas em nome e assinatura."
+
+#: ../../filter.rst:80
+msgid "<Field>"
+msgstr ""
+
+#: ../../filter.rst:82
+msgid ""
+"This element specifies a field. The ``name`` attribute is used to specify"
+" the exact or regex match pattern for the field name. You can also filter"
+" fields according to their signature - use ``type`` attribute to specify "
+"fully qualified type of the field. You can specify either or both of "
+"these attributes in order to perform name / signature based matches. The "
+"``role`` attribute is the field role."
+msgstr ""
+"Este elemento especifica um campo. O atributo ``name`` é usado para especificar "
+"o padrão de correspondência exata ou regex para o nome do campo. Você também pode "
+"filtrar os campos de acordo com sua assinatura - use o atributo ``type`` para "
+"especificar o tipo do campo qualificado. Você pode especificar um ou ambos os "
+"atributos para realizar correspondências baseadas em nome / assinatura. "
+"O atributo ``role`` é o papel do campo. "
+
+#: ../../filter.rst:85
+msgid "<Local>"
+msgstr ""
+
+#: ../../filter.rst:87
+msgid ""
+"This element specifies a local variable. The ``name`` attribute is used "
+"to specify the exact or regex match pattern for the local variable name. "
+"Local variables are variables defined within a method."
+msgstr ""
+"Este elemento especifica uma variável local. O atributo ``name`` é usado para especificar "
+"o padrão de correspondência exata ou regex para o nome da variável local. Variáveis locais "
+"são variáveis definidas dentro de um método."
+
+#: ../../filter.rst:90
+msgid "<Type>"
+msgstr ""
+
+#: ../../filter.rst:92
+msgid ""
+"This element matches warnings associated with a particular type. The "
+"``descriptor`` attribute is used to specify the exact or regex match "
+"pattern for type descriptor. If the descriptor starts with the ~ "
+"character the rest of attribute content is interpreted as a Java regular "
+"expression. The ``role`` attribute is the class role, and the "
+"``typeParameters`` is the type parameters. Both of ``role`` and "
+"``typeParameters`` are optional attributes."
+msgstr ""
+"Este elemento corresponde os avisos com um tipo específico. O atributo ``descriptor`` "
+"é usado para especificar o padrão de correspondência exata ou regex para o descritor de tipo. "
+"Se o descritor começar com o caractere ~, o resto do conteúdo do atributo é interpretado como uma "
+"expressão Java regular. O atributo ``role`` é o papel da classe, e o ``typeParameters`` são os tipos "
+"de parâmetro. Ambos de ``role`` e ``typeParameters`` são atributos opcionais. "
+
+#: ../../filter.rst:95
+msgid "<Or>"
+msgstr ""
+
+#: ../../filter.rst:97
+msgid ""
+"This element combines ``Match`` clauses as disjuncts. I.e., you can put "
+"two ``Method`` elements in an ``Or`` clause in order to match either "
+"method."
+msgstr ""
+"Este elemento combina cláusulas ``Match`` como disjuntas. Isto é, você pode "
+"colocar dois elementos ``Method`` em uma cláusula ``Or`` para identificar qualquer um dos métodos."
+
+#: ../../filter.rst:100
+msgid "<And>"
+msgstr ""
+
+#: ../../filter.rst:102
+msgid ""
+"This element combines ``Match`` clauses which both must evaluate to "
+"``true``. I.e., you can put ``Bug`` and ``Confidence`` elements in an "
+"``And`` clause in order to match specific bugs with given confidence "
+"only."
+msgstr ""
+"Este elemento combina cláusulas ``Match`` que devem ser avaliadas como verdadeiras ``true``. "
+"Isto é, você pode colocar os elementos ``Bug`` e ``Confidence`` em uma cláusula ``And`` para "
+"identificar as instâncias de bug apenas com o nível de confiança estabelecido. "
+
+#: ../../filter.rst:105
+msgid "<Not>"
+msgstr ""
+
+#: ../../filter.rst:107
+msgid ""
+"This element inverts the included child ``Match``. I.e., you can put a "
+"``Bug`` element in a ``Not`` clause in order to match any bug excluding "
+"the given one."
+msgstr ""
+"Este elemento inverte os filhos incluídos em ``Match``. Isto é, você pode "
+"colocar um elemento ``Bug`` em uma cláusula ``Not`` para identificar quaisquer instâncias "
+"de bus, com exceção da especificada na cláusula."
+
+#: ../../filter.rst:110
+msgid "Java element name matching"
+msgstr "Correspondência entre nomes de elementos Java"
+
+#: ../../filter.rst:112
+msgid ""
+"If the ``name`` attribute of ``Class``, ``Source``, ``Method`` or "
+"``Field`` starts with the ``~`` character the rest of attribute content "
+"is interpreted as a Java regular expression that is matched against the "
+"names of the Java element in question."
+msgstr ""
+"Se o atributo ``name`` dos elementos  ``Class``, ``Source``, ``Method`` or "
+"``Field`` começar com o caracter ``~``, então o restante do conteúdo do atributo "
+"é interpretado com uma expressão Java regular que é comparada com os nomes "
+"dos elementos Java em questão."
+
+#: ../../filter.rst:114
+msgid ""
+"Note that the pattern is matched against whole element name and therefore"
+" ``.*`` clauses need to be used at pattern beginning and/or end to "
+"perform substring matching."
+msgstr ""
+" Veja que o padrão é comparado com o nome completo do elemento e, portanto, "
+"as cláusulas  precisam ser iniciadas e/ou terminadas em ``.*`` para realizar "
+"a identificação de substrings."
+
+#: ../../filter.rst:116
+msgid ""
+"See `java.util.regex.Pattern "
+"<https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html>`_"
+" documentation for pattern syntax."
+msgstr ""
+"Veja a documentação `java.util.regex.Pattern "
+"<https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html>`_"
+" para sintaxe de padrão."
+#: ../../filter.rst:119
+msgid "Caveats"
+msgstr ""
+
+#: ../../filter.rst:121
+msgid ""
+"``Match`` clauses can only match information that is actually contained "
+"in the bug instances. Every bug instance has a class, so in general, "
+"excluding bugs by class will work."
+msgstr ""
+"As cláusulas ``Match`` podem comparar apenas as informações que realmente estão contidas "
+"nas instâncias de bug. Cada instância de bug possui uma classe, então a  "
+"exclusão de bugs por classes funcionará."
+
+#: ../../filter.rst:124
+msgid ""
+"Some bug instances have two (or more) classes. For example, the DE "
+"(dropped exception) bugs report both the class containing the method "
+"where the dropped exception happens, and the class which represents the "
+"type of the dropped exception. Only the *first* (primary) class is "
+"matched against ``Match`` clauses. So, for example, if you want to "
+"suppress IC (initialization circularity) reports for classes "
+"\"com.foobar.A\" and \"com.foobar.B\", you would use two ``Match`` "
+"clauses:"
+msgstr ""
+"Algumas instâncias de bug têm duas (ou mais) classes. Por exemplo, os bugs DE (dropped exception) "
+"reportam a classe que contém o método onde o dropped exception acontece e a classe que representa o tipo dropped exception. "
+"Somente a *primeira* classe (primária) é comparada com as cláusulas ``Match``. Então, por exemplo, se você deseja suprimir "
+"os relatórios de IC (initialization circularity) para as classes "\"com.foobar.A\" e \"com.foobar.B\", você usaria duas "
+"cláusulas ``Match``:"
+
+#: ../../filter.rst:140
+msgid ""
+"By explicitly matching both classes, you ensure that the IC bug instance "
+"will be matched regardless of which class involved in the circularity "
+"happens to be listed first in the bug instance. (Of course, this approach"
+" might accidentally suppress circularities involving \"com.foobar.A\" or "
+"\"com.foobar.B\" and a third class.)"
+msgstr ""
+"Ao corresponder explicitamente as duas classes, você garante que a instância do "
+"bug IC será correspondida, independentemente de qual classe envolvida na circularidade "
+"seja listada primeiro na instância do bug. (Claro, esta abordagem pode suprimir "
+"acidentalmente circularidades envolvendo \"com.foobar.A\" ou "
+"\"com.foobar.B\" e uma terceira classe.)"
+
+#: ../../filter.rst:142
+msgid ""
+"Many kinds of bugs report what method they occur in. For those bug "
+"instances, you can put Method clauses in the Match element and they "
+"should work as expected."
+msgstr ""
+"Muitos tipos de bug relatam o método em que ocorrem. Para essas instâncias de bug, "
+"você pode colocar cláusulas Method no elemento Match e eles devem funcionar conforme o esperado."
+
+#: ../../filter.rst:145
+msgid "Examples"
+msgstr "Exemplos"
+
+#: ../../filter.rst:148
+msgid "Match all bug reports for a class"
+msgstr "Identificação de todos os bugs em uma classe"
+
+#: ../../filter.rst:157
+msgid "Match certain tests from a class by specifying their abbreviations"
+msgstr "Identificação de certos testes de uma classe por meio da especificação de suas abreviações"
+
+#: ../../filter.rst:167
+msgid "Match certain tests from all classes by specifying their abbreviations"
+msgstr "Identificação de certos testes de todas as classes por meio da especificação de suas abreviações"
+
+#: ../../filter.rst:176
+msgid "Match certain tests from all classes by specifying their category"
+msgstr "Identificação de certos testes de todas as classes por meio da especificação de sua categoria"
+
+#: ../../filter.rst:185
+msgid "Match bug types from specified methods of a class by their abbreviations"
+msgstr "Identificação de tipos de bug de métodos especificados de uma classe por meio de suas abreviações"
+
+#: ../../filter.rst:199
+msgid "Match a particular bug pattern in a particular method"
+msgstr "Identificação de um padrão de bug em um método específico"
+
+#: ../../filter.rst:211
+msgid ""
+"Match a particular bug pattern with a given priority in a particular "
+"method"
+msgstr ""
+"Identificação de um padrão de bug com prioridade em um método específico"
+
+#: ../../filter.rst:224
+msgid ""
+"Match minor bugs introduced by AspectJ compiler (you are probably not "
+"interested in these unless you are an AspectJ developer)"
+msgstr "Identificação de minor bugs introduzidos pelo compilador do AspectJ "
+"(você provavelmente não está interessado nessa parte, a menos que seja um desenvolvedor Aspectj"
+
+#: ../../filter.rst:239
+msgid "Match bugs in specific parts of the code base"
+msgstr "Identificação de bugs em partes específicas do código base"
+
+#: ../../filter.rst:260
+msgid "Match bugs on fields or methods with specific signatures"
+msgstr "Identificação de bugs em campos e métodos com assinaturas específicas"
+
+#: ../../filter.rst:276
+msgid "Match bugs using the Not filter operator"
+msgstr "Identificação de bugs usando o operador de filtro Not"
+
+#: ../../filter.rst:294
+msgid ""
+"Full exclusion filter file to match all classes generated from Groovy "
+"source files"
+msgstr ""
+"Arquivo de filtro de exclusão completo para identificação de todas as classes geradas a "
+"partir de arquivos do Groovy"
+
+#: ../../filter.rst:306
+msgid "Complete Example"
+msgstr "Exemplo completo"
+
