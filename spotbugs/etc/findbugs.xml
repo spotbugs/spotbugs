@@ -375,7 +375,7 @@
                     disabled="true" reports="DMI_UNSUPPORTED_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker" speed="fast"
                     reports="VA_FORMAT_STRING_USES_NEWLINE"/>
-	  <Detector class="edu.umd.cs.findbugs.detect.DateFormatStringChecker" speed="fast"
+          <Detector class="edu.umd.cs.findbugs.detect.DateFormatStringChecker" speed="fast"
                     reports="FS_BAD_DATE_FORMAT_FLAG_COMBO"/>
           <Detector class="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference" speed="fast"
                     reports="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"/>
@@ -1041,7 +1041,7 @@
           <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="VA_FORMAT_STRING_USES_NEWLINE" category="BAD_PRACTICE"/>
-	  <BugPattern abbrev="FS" type="FS_BAD_DATE_FORMAT_FLAG_COMBO" category="BAD_PRACTICE" experimental="true"/>
+          <BugPattern abbrev="FS" type="FS_BAD_DATE_FORMAT_FLAG_COMBO" category="BAD_PRACTICE" experimental="true"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
