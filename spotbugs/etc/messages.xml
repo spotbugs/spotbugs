@@ -7315,7 +7315,7 @@ This format string includes a newline character (\n). In format strings, it is g
 ]]>
      </Details>
   </BugPattern>
-<BugPattern type="FS_BAD_DATE_FORMAT_FLAG_COMBO">
+  <BugPattern type="FS_BAD_DATE_FORMAT_FLAG_COMBO">
     <ShortDescription>Certain SimpleDateFormat format strings may lead to unexpected behavior</ShortDescription>
     <LongDescription>Certain SimpleDateFormat format strings may lead to unexpected behavior in {1}</LongDescription>
     <Details>
