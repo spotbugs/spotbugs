@@ -85,12 +85,58 @@ public class FindOverridableMethodCallTest extends AbstractIntegrationTest {
         testCase("MethodReferenceIndirect3", 23, 32);
     }
 
+    @Test
+    public void testFinalClassDirect() {
+        testPass("FinalClassDirect");
+    }
+
+    @Test
+    public void testFinalClassIndirect() {
+        testPass("FinalClassIndirect");
+    }
+
+    @Test
+    public void testFinalClassDoubleIndirect() {
+        testPass("FinalClassDoubleIndirect");
+    }
+
+    @Test
+    public void testFinalClassMethodReference() {
+        testPass("FinalClassMethodReference");
+    }
+
+    @Test
+    public void testFinalClassInheritedDirect() {
+        testPass("FinalClassInheritedDirect");
+    }
+
+    @Test
+    public void testFinalClassInheritedIndirect() {
+        testPass("FinalClassInheritedIndirect");
+    }
+
+    @Test
+    public void testFinalClassInheritedDoubleIndirect() {
+        testPass("FinalClassInheritedDoubleIndirect");
+    }
+
+    @Test
+    public void testFinalClassInheritedMethodReference() {
+        testPass("FinalClassInheritedMethodReference");
+    }
+
     void testCase(String className, int constructorLine, int cloneLine) {
         performAnalysis("overridableMethodCall/" + className + ".class");
 
         checkOneBug();
         checkOverridableMethodCallInConstructor(className, constructorLine);
         checkOverridableMethodCallInClone(className, cloneLine);
+    }
+
+    void testPass(String className) {
+        performAnalysis("overridableMethodCall/" + className + ".class");
+
+        checkNoBug();
     }
 
     void checkOneBug() {
@@ -101,6 +147,16 @@ public class FindOverridableMethodCallTest extends AbstractIntegrationTest {
         bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("MC_OVERRIDABLE_METHOD_CALL_IN_CLONE").build();
         assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+    }
+
+    void checkNoBug() {
+        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR").build();
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+
+        bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType("MC_OVERRIDABLE_METHOD_CALL_IN_CLONE").build();
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
     }
 
     void checkOverridableMethodCallInConstructor(String className, int line) {
