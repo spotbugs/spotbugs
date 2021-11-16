@@ -61,8 +61,9 @@ public class ConstructorThrow extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
-        if (isFinalClass || isFinalFinalizer)
+        if (isFinalClass || isFinalFinalizer) {
             return;
+        }
         if (isConstructor() || methodCalledFromCtor()) {
             // Check if there is a throws keyword for checked exceptions.
             ExceptionTable tbl = obj.getExceptionTable();
@@ -84,11 +85,16 @@ public class ConstructorThrow extends OpcodeStackDetector {
      * 2. Check for any unchecked exception throw inside constructor,
      *    or any of the called methods.
      * If the class is final, we are fine, no finalizer attack can happen.
+     * In the first pass the detector shouldn't report, because there could be
+     * a final finalizer and a throwing constructor. Reporting in this case
+     * would be a false positive as classes with a final finalizer are not
+     * vulnerable to the finalizer attack.
      */
     @Override
     public void sawOpcode(int seen) {
-        if (isFinalClass || isFinalFinalizer)
+        if (isFinalClass || isFinalFinalizer) {
             return;
+        }
         if (isFirstPass) {
             tryCollectMethod(seen);
         } else {
@@ -101,8 +107,9 @@ public class ConstructorThrow extends OpcodeStackDetector {
 
     /** Collects all the methods that are called from the constructor */
     private void tryCollectMethod(int seen) {
-        if (!isMethodCall(seen))
+        if (!isMethodCall(seen)) {
             return;
+        }
         String classConstantOperand = "";
         try {
             classConstantOperand = getClassConstantOperand();
