@@ -102,17 +102,15 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
     }
 
     private boolean checkStringForBadCombo(String stringToCheck, String missingFlag, List<String> requiredFlags) {
-        boolean result = true;
         if (missingFlag != null && stringToCheck.contains(missingFlag)) {
-            result = false;
+            return false;
         }
         for (String flag : requiredFlags) {
             if (!stringToCheck.contains(flag)){
-                result = false;
-                break;
+                return false;
             }
         }
-        return result;
+        return true;
     }
 
 }
