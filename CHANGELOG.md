@@ -6,6 +6,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2021-??-??
 
+### Fixed
+* False negative about the rule RV_DONT_JUST_NULL_CHECK_READLINE ([#1821](https://github.com/spotbugs/spotbugs/issues/1821)[#1820](https://github.com/spotbugs/spotbugs/issues/1820)[#1819](https://github.com/spotbugs/spotbugs/issues/1819)[#1818](https://github.com/spotbugs/spotbugs/issues/1818))
+
 ## 4.5.0 - 2021-11-05
 ### Changed
 - Replace "分析" with "解析" in Japanese document ([#1573](https://github.com/spotbugs/spotbugs/issues/1573))
