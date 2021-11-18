@@ -7321,9 +7321,11 @@ This format string includes a newline character (\n). In format strings, it is g
     <Details>
 <![CDATA[
 <p>
-This format stream includes a bad combination of format flags which may lead to unexpected behavior. Examples include
-using a week year ("Y") without specifying week in year ("w") or using an AM/PM hour ("h" or "K") without specifying
-an AM/PM marker ("a").
+This format string includes a bad combination of flags which may lead to unexpected behavior.
+Potential bad combinations include the following: using a week year ("Y") with month in year
+("M") and day in month ("d") without specifying week in year ("w") ("y" may be preferable
+here instead); using an AM/PM hour ("h" or "K") without specifying an AM/PM marker ("a");
+and using a 24-hour format hour ("H" or "k") and also specifying an AM/PM marker.
 </p>
 ]]>
      </Details>

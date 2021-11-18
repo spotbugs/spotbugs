@@ -5,6 +5,8 @@ import org.apache.bcel.Const;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.StringAnnotation;
+import edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 import java.util.Arrays;
@@ -13,27 +15,65 @@ import java.util.List;
 
 public class DateFormatStringChecker extends OpcodeStackDetector {
 
-    private static final List<String> AM_PM_HOURS_FLAG_1 = new ArrayList<>(Arrays.asList("a", "h"));
-    private static final List<String> AM_PM_HOURS_FLAG_2 = new ArrayList<>(Arrays.asList("a", "K"));
-    private static final List<String> MILITARY_HOURS_FLAG_1 = new ArrayList<>(Arrays.asList(null,"H","a"));
-    private static final List<String> MILITARY_HOURS_FLAG_2 = new ArrayList<>(Arrays.asList(null,"k","a"));
-    private static final List<String> WEEK_YEAR_FLAG_1 = new ArrayList<>(Arrays.asList("w","Y","M","d"));
+    /** List of bytecode instructions which could signal a method we should check. */
+    private static final List<Integer> CONST_ARRAY_LIST = new ArrayList<>(Arrays.asList((int) Const.INVOKESPECIAL,
+            (int) Const.INVOKEVIRTUAL, (int) Const.INVOKESTATIC, (int) Const.INVOKEINTERFACE));
 
-    private static final List<Integer> CONST_ARRAY_LIST = new ArrayList<>(Arrays.asList((int)Const.INVOKESPECIAL,
-            (int)Const.INVOKEVIRTUAL, (int)Const.INVOKESTATIC, (int)Const.INVOKEINTERFACE));
-
+    /** List of operands matching target pattern. */
     private static final String SIG_CONSTANT_OPERAND_1 = "Ljava/lang/String;)V";
     private static final String SIG_CONSTANT_OPERAND_2 = "Ljava/lang/String;Ljava/util/Locale;)V";
     private static final String SIG_CONSTANT_OPERAND_3 = "Ljava/lang/String;Ljava/text/DateFormatSymbols;)V";
+
     private static final String CLASS_CONSTANT_OPERAND = "java/text/SimpleDateFormat";
+
     private static final String NAME_CONSTANT_OPERAND_1 = "<init>";
     private static final String NAME_CONSTANT_OPERAND_2 = "applyPattern";
     private static final String NAME_CONSTANT_OPERAND_3 = "applyLocalizedPattern";
 
-    private static final String BUG_TYPE = "FS_BAD_DATE_FORMAT_FLAG_COMBO";
+    /** Creates DateFormatRule objects for different bad combinations of date format flags. */
+    private static final DateFormatStringChecker.DateFormatRule STANDARD_TIME_FLAG_1 =
+            new DateFormatStringChecker.DateFormatRule("a", Arrays.asList("h"));
+    private static final DateFormatStringChecker.DateFormatRule STANDARD_TIME_FLAG_2 =
+            new DateFormatStringChecker.DateFormatRule("a", Arrays.asList("K"));
+    private static final DateFormatStringChecker.DateFormatRule MILITARY_FLAG_1 =
+            new DateFormatStringChecker.DateFormatRule(null, Arrays.asList("H", "a"));
+    private static final DateFormatStringChecker.DateFormatRule MILITARY_FLAG_2 =
+            new DateFormatStringChecker.DateFormatRule(null, Arrays.asList("k", "a"));
+    private static final DateFormatStringChecker.DateFormatRule WEEK_YEAR_FLAG =
+            new DateFormatStringChecker.DateFormatRule("w", Arrays.asList("Y", "M", "d"));
 
-    String dateFormatString;
+    private static final String BUG_TYPE = "FS_BAD_DATE_FORMAT_FLAG_COMBO";
     final BugReporter bugReporter;
+
+    /** Class for defining bad combinations of date format flags and checking for their presence. */
+    private static final class DateFormatRule {
+        /** forbiddenFlag must be missing to match given DateFormatRule. If this field is {@code null}, rule does
+         * not have a forbiddenFlag and the associated check will be bypassed. */
+        @Nullable
+        String forbiddenFlag;
+
+        /** List of flags required in a pattern to match given DateFormatRule. */
+        @NonNull
+        List<String> requiredFlags;
+
+        DateFormatRule(String forbiddenFlag, List<String> requiredFlags) {
+            this.forbiddenFlag = forbiddenFlag;
+            this.requiredFlags = requiredFlags;
+        }
+
+        /** @return {@code true} if given dateFormatString does not have forbiddenFlag and has all required flags. */
+        boolean verify(String dateFormatString) {
+            if (this.forbiddenFlag != null && dateFormatString.contains(this.forbiddenFlag)) {
+                return false;
+            }
+            for (String flag : requiredFlags) {
+                if (!dateFormatString.contains(flag)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 
     /**
      * DateFormatStringChecker class constructor.
@@ -50,67 +90,58 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        List<List<String>> combinations = new ArrayList<>(Arrays.asList(
-                AM_PM_HOURS_FLAG_1, AM_PM_HOURS_FLAG_2, MILITARY_HOURS_FLAG_1, MILITARY_HOURS_FLAG_2, WEEK_YEAR_FLAG_1
-        ));
+        String dateFormatString = null;
 
-        if (CONST_ARRAY_LIST.contains(seen) && stack.getStackDepth() > 0) {
-            Object formatStr1 = stack.getStackItem(0).getConstant();
-            if (formatStr1 instanceof String) {
-                this.dateFormatString = (String) formatStr1;
+        List<DateFormatRule> badCombinations = new ArrayList<>(Arrays.asList(
+                STANDARD_TIME_FLAG_1, STANDARD_TIME_FLAG_2, MILITARY_FLAG_1, MILITARY_FLAG_2, WEEK_YEAR_FLAG));
+
+        if (!CONST_ARRAY_LIST.contains(seen) || stack.getStackDepth() == 0) {
+            return;
+        }
+
+        int i = 0;
+        while (i < stack.getStackDepth()) {
+            Object formatStr = stack.getStackItem(i).getConstant();
+            if (formatStr instanceof String) {
+                dateFormatString = (String) formatStr;
+                break;
             }
+            i++;
+        }
 
-            else if (stack.getStackDepth() > 1) {
-                Object formatStr2 = stack.getStackItem(1).getConstant();
-                if (formatStr2 instanceof String) {
-                    this.dateFormatString = (String) formatStr2;
-                }
-            }
+        if (dateFormatString == null) {
+            return;
+        }
 
-            else {
-                this.dateFormatString = null;
-            }
+        String cl = getClassConstantOperand();
+        String nm = getNameConstantOperand();
+        String sig = getSigConstantOperand();
 
-            String cl = getClassConstantOperand();
-            String nm = getNameConstantOperand();
-            String sig = getSigConstantOperand();
+        if ((sig.indexOf(SIG_CONSTANT_OPERAND_1) >= 0 || sig.indexOf(SIG_CONSTANT_OPERAND_2) >= 0 ||
+                sig.indexOf(SIG_CONSTANT_OPERAND_3) >= 0) && CLASS_CONSTANT_OPERAND.equals(cl) &&
+                (NAME_CONSTANT_OPERAND_1.equals(nm) || NAME_CONSTANT_OPERAND_2.equals(nm) ||
+                        NAME_CONSTANT_OPERAND_3.equals(nm))) {
 
-            if (this.dateFormatString != null && (sig.indexOf(SIG_CONSTANT_OPERAND_1) >= 0 ||
-                    sig.indexOf(SIG_CONSTANT_OPERAND_2) >= 0 || sig.indexOf(SIG_CONSTANT_OPERAND_3) >= 0 )
-                    && CLASS_CONSTANT_OPERAND.equals(cl) && (NAME_CONSTANT_OPERAND_1.equals(nm)
-                    || NAME_CONSTANT_OPERAND_2.equals(nm) || NAME_CONSTANT_OPERAND_3.equals(nm))) {
-
-                    if (runCheckStringForBadCombo(dateFormatString, combinations)){
-                        bugReporter.reportBug(new BugInstance(this, BUG_TYPE, NORMAL_PRIORITY)
-                                .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
-                                .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
-                    }
+            if (runDateFormatRuleVerify(dateFormatString, badCombinations)) {
+                bugReporter.reportBug(new BugInstance(this, BUG_TYPE, NORMAL_PRIORITY)
+                        .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
+                        .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
             }
         }
     }
 
-    private boolean runCheckStringForBadCombo(String stringToCheck, List<List<String>> combinationsToRun){
-        boolean result = false;
-        for (List<String> combination : combinationsToRun){
-            List<String> requiredFlags = new ArrayList<String>(combination.subList(1,combination.size()));
-            String missingFlag = combination.get(0);
-            if (checkStringForBadCombo(stringToCheck, missingFlag, requiredFlags)) {
-                result = true;
+    /**
+     * Checks for presence of a list of bad combinations (DateFormatRule objects) in a given string.
+     * @param stringToCheck
+     * @param badCombinations
+     * @return {@code true} if given stringToCheck matches at least one of the given bad DateFormatRule objects.
+     */
+    private boolean runDateFormatRuleVerify(String stringToCheck, List<DateFormatRule> badCombinations) {
+        for (DateFormatRule combination : badCombinations) {
+            if (combination.verify(stringToCheck)) {
+                return true;
             }
         }
-        return result;
+        return false;
     }
-
-    private boolean checkStringForBadCombo(String stringToCheck, String missingFlag, List<String> requiredFlags) {
-        if (missingFlag != null && stringToCheck.contains(missingFlag)) {
-            return false;
-        }
-        for (String flag : requiredFlags) {
-            if (!stringToCheck.contains(flag)){
-                return false;
-            }
-        }
-        return true;
-    }
-
 }
