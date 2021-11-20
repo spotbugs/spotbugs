@@ -35,6 +35,18 @@ public class FindBugsTaskTest {
     }
 
     @Test
+    public void enableSortByClassForNullOutput() {
+        task.setSort(true);
+        task.setOutput(null);
+
+        task.configureFindbugsEngine();
+        List<String> args = Arrays.asList(task.getFindbugsEngine().getCommandLine().getJavaCommand().getArguments());
+
+        assertThat(args, not(hasItem("-xml")));
+        assertThat(args, hasItem("-sortByClass"));
+    }
+
+    @Test
     public void enableSortByClassWhenTextIsUsed() {
         task.setSort(true);
         task.setOutput("text");
