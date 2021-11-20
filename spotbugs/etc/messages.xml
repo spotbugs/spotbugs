@@ -1748,7 +1748,7 @@ factory pattern to create these objects.</p>
   </BugPattern>
   <BugPattern type="MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE">
     <ShortDescription>Finds method calls invoked by Optional.orElse</ShortDescription>
-    <LongDescription>Do not call method {0} from Optional.orElse in {2}, consider using Optional.orElseGet instead.</LongDescription>
+    <LongDescription>Do not call method {0} from Optional.orElse in {2}, consider using Optional.orElseGet instead. Or extract the expression to a constant field or variable.</LongDescription>
     <Details>
       <![CDATA[
         <p>
@@ -1770,6 +1770,16 @@ factory pattern to create these objects.</p>
           var result = Optional.ofNullable(firstMethod())
                 // The method secondMethod() is invoked only if firstMethod() returns null.
                 .orElseGet(this::secondMethod);
+        </code></pre>
+        <p>
+          Another solution would be to extract the result to a constant, as in the following example:
+        </p>
+        <pre><code>
+          private static final Set<String> EMPTY_STRING_SET = Collections.emptySet();
+          // ...
+          var result = Optional.ofNullable(getStringSet())
+                // Return a precomputed value.
+                .orElseGet(EMPTY_STRING_SET);
         </code></pre>
     ]]>
     </Details>

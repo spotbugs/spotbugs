@@ -1,9 +1,13 @@
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class MethodCallInOptionalOrElseTest {
+
+    public static final Set<String> EMPTY_STRING_SET = Collections.emptySet();
 
     @ExpectWarning("MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE")
     public String doNotCallMethodsOnOptionalOrElse(String arg) {
@@ -54,6 +58,11 @@ public class MethodCallInOptionalOrElseTest {
 
     private static String defaultValue() {
         return "??";
+    }
+
+    public static Set<String> nonNullStringSet(Set<String> set) {
+        return Optional.ofNullable(set)
+                .orElse(EMPTY_STRING_SET); // OK, constant field
     }
 
 }
