@@ -72,23 +72,23 @@ public class MethodCallInOptionalOrElse extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (isMethodCall()) {
-            LOG.debug("{} {} {}::{}->{}", inJavaLangOptionalChain, calledMethod,
-                    getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
-            if (getSigConstantOperand().endsWith(JAVA_UTIL_OPTIONAL_SIGNATURE)) {
-                inJavaLangOptionalChain = true;
-                calledMethod = null;
-            }
-            else if (inJavaLangOptionalChain) {
-                if (JAVA_UTIL_OPTIONAL_SLASHED_CLASS_NAME.equals(getClassConstantOperand())) {
-                    if (JAVA_UTIL_OPTIONAL_OR_ELSE_METHOD_NAME.equals(getNameConstantOperand())) {
-                        handleOptionalOrElseInvocation();
-                    }
-                    inJavaLangOptionalChain = false;
-                    calledMethod = null;
-                } else if (calledMethod == null && !isBoxingMethod(getXMethodOperand())) {
-                    calledMethod = getXMethodOperand();
+        if (!isMethodCall()) {
+            return;
+        }
+        LOG.debug("{} {} {}::{}->{}", inJavaLangOptionalChain, calledMethod,
+                getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+        if (getSigConstantOperand().endsWith(JAVA_UTIL_OPTIONAL_SIGNATURE)) {
+            inJavaLangOptionalChain = true;
+            calledMethod = null;
+        } else if (inJavaLangOptionalChain) {
+            if (JAVA_UTIL_OPTIONAL_SLASHED_CLASS_NAME.equals(getClassConstantOperand())) {
+                if (JAVA_UTIL_OPTIONAL_OR_ELSE_METHOD_NAME.equals(getNameConstantOperand())) {
+                    handleOptionalOrElseInvocation();
                 }
+                inJavaLangOptionalChain = false;
+                calledMethod = null;
+            } else if (calledMethod == null && !isBoxingMethod(getXMethodOperand())) {
+                calledMethod = getXMethodOperand();
             }
         }
     }
