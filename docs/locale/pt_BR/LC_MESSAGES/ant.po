@@ -1,0 +1,591 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2021, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-22 15:35-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../ant.rst:2
+msgid "Using the SpotBugs Ant task"
+msgstr "Usando SpotBugs como tarefa Ant"
+
+#: ../../ant.rst:4
+msgid ""
+"This chapter describes how to integrate SpotBugs into a build script for "
+"Ant, which is a popular Java build and deployment tool. Using the "
+"SpotBugs Ant task, your build script can automatically run SpotBugs on "
+"your Java code."
+msgstr ""
+"Este capítulo descreve como integrar o SpotBugs em um script de construção para Ant, "
+"que é uma ferramenta popular de construção e implantação Java. Ao usar o SpotBugs em uma tarefa "
+"no seu script de construção Ant, o SpotBugs pode ser executado automaticamente em seu código Java."
+
+#: ../../ant.rst:7
+msgid "The Ant task was generously contributed by Mike Fagan."
+msgstr "A tarefa Ant teve uma contribuição generosa de Mike Fagan."
+
+#: ../../ant.rst:10
+msgid "Installing the Ant task"
+msgstr "Instalando a tarefa Ant"
+
+#: ../../ant.rst:12
+msgid ""
+"To install the Ant task, simply copy ``$SPOTBUGS_HOME/lib/spotbugs-"
+"ant.jar`` into the lib subdirectory of your Ant installation."
+msgstr "Para instalar a tarefa Ant, basta copiar  ``$SPOTBUGS_HOME/lib/spotbugs-"
+"ant.jar`` no subdiretório lib da instalação do Ant."
+
+#: ../../ant.rst:16
+msgid ""
+"It is strongly recommended that you use the Ant task with the version of "
+"SpotBugs it was included with. We do not guarantee that the Ant task Jar "
+"file will work with any version of SpotBugs other than the one it was "
+"included with."
+msgstr "É altamente recomendável que você use a tarefa Ant com a versão incluída do "
+"SpotBugs. Não garantimos que o arquivo Jar da tarefa Ant "
+"funcionará com qualquer versão do SpotBugs diferente daquela incluída."
+
+#: ../../ant.rst:20
+msgid "Modifying build.xml"
+msgstr "Modificando o build.xml"
+
+#: ../../ant.rst:22
+msgid ""
+"To incorporate SpotBugs into build.xml (the build script for Ant), you "
+"first need to add a task definition. This should appear as follows:"
+msgstr "Para adicionar o SpotBugs no build.xml (o script de construção para Ant), você "
+"precisa adicionar a definição da tarefa. Isso pode ser feito da forma:"
+
+#: ../../ant.rst:30
+msgid ""
+"The task definition specifies that when a spotbugs element is seen in "
+"``build.xml``, it should use the indicated class to execute the task."
+msgstr ""
+"A definição da tarefa especifica que quando um elemento spotbugs é visto no ``build.xml``, "
+"ele deve usar a classe indicada para executar a tarefa."
+
+#: ../../ant.rst:32
+msgid ""
+"After you have added the task definition, you can define a target which "
+"uses the spotbugs task. Here is an example which could be added to the "
+"``build.xml`` for the Apache BCEL library."
+msgstr ""
+"Depois de adicionar a definição da tarefa, você pode definir um alvo para usar "
+"a tarefa spotbugs. A seguir, é apresentado um exemplo que pode ser adicionado ao ``build.xml`` "
+"para a biblioteca Apache BCEL."
+
+#: ../../ant.rst:49
+msgid ""
+"The spotbugs element must have the home attribute set to the directory in"
+" which SpotBugs is installed; in other words, ``$SPOTBUGS_HOME``. See "
+":doc:`installing`."
+msgstr ""
+"O elemento SpotBugs deve ter o atributo home definido para o diretório no qual "
+"o SpotBugs está instalado; em outras palavras, ``$SPOTBUGS_HOME``. Veja "
+":doc:`installing`."
+
+#: ../../ant.rst:51
+msgid ""
+"This target will execute SpotBugs on ``bcel.jar``, which is the Jar file "
+"produced by BCEL's build script. (By making it depend on the \"jar\" "
+"target, we ensure that the library is fully compiled before running "
+"SpotBugs on it.) The output of SpotBugs will be saved in XML format to a "
+"file called ``bcel-sb.xml``. An auxiliary Jar file, Regex.jar, is added "
+"to the aux classpath, because it is referenced by the main BCEL library. "
+"A source path is specified so that the saved bug data will have accurate "
+"references to the BCEL source code."
+msgstr ""
+"Este destino irá executar o SpotBugs em ``bcel.jar``, que é o arquivo Jar "
+"produzido pelo script de construção BCEL. (Ao torná-lo dependente do destino \"jar\" "
+"garantimos que a biblioteca está totalmente compilada antes de executar SpotBugs nele.) "
+"A saída do SpotBugs será salva no formato XML em um arquivo chamado ``bcel-sb.xml``. "
+"Um arquivo Jar auxiliar, Regex.jar, é adicionado ao classpath aux, porque é referenciado pela biblioteca BCEL. "
+"Um caminho é especificado para que os dados dos bugs salvos tenham referências precisas ao código-fonte BCEL. "
+
+#: ../../ant.rst:57
+msgid "Executing the task"
+msgstr "Executando a tarefa"
+
+#: ../../ant.rst:59
+msgid ""
+"Here is an example of invoking Ant from the command line, using the "
+"spotbugs target defined above."
+msgstr "O exemplo abaixo apresenta uma chamada do Ant a partir da linha de comando, usando o alvo do SpotBugs definido anteriormente."
+
+#: ../../ant.rst:82
+msgid ""
+"In this case, because we saved the bug results in an XML file, we can use"
+" the SpotBugs GUI to view the results; see :doc:`running`."
+msgstr ""
+"Como os resultados dos bugs foram salvos em um arquivo XML, nós podemos usar "
+"o SpotBugs GUI para visualizar os resultados; veja :doc:`running`."
+
+#: ../../ant.rst:85
+msgid "Parameters"
+msgstr "Parâmetros"
+
+#: ../../ant.rst:87
+msgid ""
+"This section describes the parameters that may be specified when using "
+"the FindBugs task."
+msgstr "Esta seção descreve os parâmetros que podem ser especificados quando usando o "
+"FindBugs como tarefa."
+
+#: ../../ant.rst:95
+msgid "class"
+msgstr ""
+
+#: ../../ant.rst:90
+msgid ""
+"A optional nested element specifying which classes to analyze. The class "
+"element must specify a location attribute which names the archive file "
+"(jar, zip, etc.), directory, or class file to be analyzed. Multiple class"
+" elements may be specified as children of a single spotbugs element."
+msgstr ""
+"Um elemento aninhado opcional que especifica quais classes analisar. "
+"O elemento de classe deve especificar um atributo de localização que nomeia o arquivo (jar, zip, etc.), "
+"diretório ou arquivo de classe a ser analisado. Vários elementos de classe podem ser especificados como filhos "
+"de um único elemento do SpotBugs." 
+
+#: ../../ant.rst:94
+msgid ""
+"In addition to or instead of specifying a class element, the SpotBugs "
+"task can contain one or more fileset element(s) that specify files to be "
+"analyzed. For example, you might use a fileset to specify that all of the"
+" jar files in a directory should be analyzed."
+msgstr ""
+"Além disso, a tarefa SpotBugs pode conter um ou mais elementos do conjunto "
+"de arquivos que especificam os arquivos a serem analisados. Por exemplo, você "
+"pode usar um conjunto de arquivos para especificar que todos os arquivos jar "
+"em um diretório devem ser analisados. "
+
+#: ../../ant.rst:99
+msgid "auxClasspath"
+msgstr ""
+
+#: ../../ant.rst:98
+msgid ""
+"An optional nested element which specifies a classpath (Jar files or "
+"directories) containing classes used by the analyzed library or "
+"application, but which you don't want to analyze. It is specified the "
+"same way as Ant's classpath element for the Java task."
+msgstr ""
+"Um elemento aninhado opcional que especifica um caminho de classe (arquivos Jar ou diretórios) "
+"contendo classes usadas pela biblioteca ou aplicativo analisado, mas que você não deseja analisar. "
+"É especificado da mesma forma que o elemento de caminho de classe do Ant para a tarefa Java. "
+
+#: ../../ant.rst:103
+msgid "sourcePath"
+msgstr ""
+
+#: ../../ant.rst:102
+msgid ""
+"An optional nested element which specifies a source directory path "
+"containing source files used to compile the Java code being analyzed. By "
+"specifying a source path, any generated XML bug output will have complete"
+" source information, which allows later viewing in the GUI."
+msgstr ""
+"Um elemento aninhado opcional que especifica um caminho de diretório de "
+"origem contendo arquivos de origem usados para compilar o código Java que está sendo analisado. "
+"Ao especificar um caminho de origem, qualquer saída de bug XML gerada terá informações de origem "
+"completas, o que permite a visualização posterior na GUI."
+
+#: ../../ant.rst:106
+msgid "home"
+msgstr ""
+
+#: ../../ant.rst:106
+msgid ""
+"A required attribute. It must be set to the name of the directory where "
+"SpotBugs is installed."
+msgstr ""
+"Um atributo obrigatório. Deve ser definido com o nome do diretório onde o SpotBugs está instalado."
+
+#: ../../ant.rst:109
+msgid "quietErrors"
+msgstr ""
+
+#: ../../ant.rst:109
+msgid ""
+"An optional boolean attribute. If true, reports of serious analysis "
+"errors and missing classes will be suppressed in the SpotBugs output. "
+"Default is false."
+msgstr ""
+"Um atributo booleano opcional. Se verdadeiro, relatórios de erros de análise "
+"sérios e classes ausentes serão suprimidos na saída do SpotBugs. O valor default é falso."
+
+#: ../../ant.rst:115
+msgid "reportLevel"
+msgstr ""
+
+#: ../../ant.rst:112
+msgid ""
+"An optional attribute. It specifies the confidence/priority threshold for"
+" reporting issues. If set to ``low``, confidence is not used to filter "
+"bugs. If set to ``medium`` (the default), low confidence issues are "
+"suppressed. If set to ``high``, only high confidence bugs are reported."
+msgstr ""
+"Um atributo opcional. Este atributo especifica o limite de confiança/prioridade para "
+"relatar problemas. Se definido como ``baixo``, a confiança não é usada para "
+"filtrar bugs. Se definido como ``médio`` (valor default), os problemas de baixa "
+"confiança são suprimidos. Se definido como ``alto``, apenas bugs de alta confiança são relatados. "
+
+#: ../../ant.rst:120
+msgid "output"
+msgstr ""
+
+#: ../../ant.rst:118
+msgid ""
+"Optional attribute. It specifies the output format. If set to ``xml`` "
+"(the default), output is in XML format. If set to \"xml:withMessages\", "
+"output is in XML format augmented with human-readable messages. (You "
+"should use this format if you plan to generate a report using an XSL "
+"stylesheet.) If set to \"html\", output is in HTML formatted (default "
+"stylesheet is default.xsl). If set to ``text``, output is in ad-hoc text "
+"format. If set to ``emacs``, output is in Emacs error message format. If "
+"set to ``xdocs``, output is xdoc XML for use with Apache Maven."
+msgstr ""
+"Atributo opcional. Este atributo especifica o formato de saída. Se definido como ``xml`` (por default), "
+"a saída será no formato XML. Se definido como \"xml:withMessages\", a saída será no formato XML "
+"acrescentado com mensagens legíveis. (Você deve usar este formato se planeja gerar um relatório "
+"usando uma folha de estilo XSL.) Se definido como \"html\", a saída será formatada em HTML "
+"(por default, a folha de estilo é default.xsl). Se definido como ``texto``, a saída será em "
+"formato de texto ad-hoc. Se definido como ``emacs``, a saída será no formato de mensagem de erro Emacs. "
+"Se definido como ``xdocs``, a saída será xdoc XML para uso com Apache Maven. "
+
+#: ../../ant.rst:124
+msgid "stylesheet"
+msgstr ""
+
+#: ../../ant.rst:123
+msgid ""
+"Optional attribute. It specifies the stylesheet to use to generate html "
+"output when the output is set to html. Stylesheets included in the "
+"FindBugs distribution include default.xsl, fancy.xsl, fancy-hist.xsl, "
+"plain.xsl, and summary.xsl. The default value, if no stylesheet attribute"
+" is provided, is default.xsl."
+msgstr ""
+"Atributo opcional. Esse atributo especifica a folha de estilo a ser usada para gerar a saída "
+"html quando a saída é definida como html. As folhas de estilo incluídas na distribuição FindBugs "
+"incluem default.xsl, fancy.xsl, fancy-hist.xsl, plain.xsl e summary. xsl. O valor default é default.xsl, caso nenhum "
+"atributo de folha de estilo seja fornecido. "
+
+#: ../../ant.rst:127
+msgid "sort"
+msgstr ""
+
+#: ../../ant.rst:127
+msgid ""
+"Optional attribute. If the output attribute is set to ``text``, then the "
+"sort attribute specifies whether or not reported bugs are sorted by "
+"class. Default is ``true``."
+msgstr ""
+"Atributo opcional. Se o atributo de saída for definido como ``text``, então "
+"o atributo sort especifica se os bugs relatados são ou não classificados por classe. "
+"O valor default é verdadeiro ``true``."
+
+#: ../../ant.rst:131
+msgid "outputFile"
+msgstr ""
+
+#: ../../ant.rst:130
+msgid ""
+"Optional attribute. If specified, names the output file in which the "
+"FindBugs output will be saved. By default, the output is displayed "
+"directly by Ant."
+msgstr ""
+"Atributo opcional. Se especificado, nomeia o arquivo de saída no qual "
+"a saída do FindBugs será salva. Por padrão, a saída é exibida diretamente pelo Ant."
+
+#: ../../ant.rst:134
+msgid "debug"
+msgstr ""
+
+#: ../../ant.rst:134
+msgid ""
+"Optional boolean attribute. If set to ``true``, SpotBugs prints "
+"diagnostic information about which classes are being analyzed, and which "
+"bug pattern detectors are being run. Default is ``false``."
+msgstr ""
+"Atributo booleano opcional. Se definido como verdadeiro ``true``, o SpotBugs "
+"imprime as informações de diagnóstico sobre quais classes estão sendo analisadas e "
+"quais detectores de padrões de bug estão sendo executados. O valor default é falso ``false``."
+
+#: ../../ant.rst:138
+msgid "effort"
+msgstr ""
+
+#: ../../ant.rst:137
+msgid ""
+"Set the analysis effort level. The value specified should be one of "
+"``min``, ``default``, or ``max``. See `Command-line Options <running.html"
+"#command-line-options>`: for more information about setting the analysis "
+"level."
+msgstr ""
+"Define o nível de esforço de análise. O valor especificado deve ser ``min``, ``default`` ou ``max``. "
+"Consulte `Command-line Options <running.html"
+"#command-line-options>`: para obter mais informações sobre como definir o nível de análise."
+
+#: ../../ant.rst:141
+msgid "conserveSpace"
+msgstr ""
+
+#: ../../ant.rst:141
+msgid "Synonym for ``effort=\"min\"``."
+msgstr ""
+
+#: ../../ant.rst:144
+msgid "workHard"
+msgstr ""
+
+#: ../../ant.rst:144
+msgid "Synonym for ``effort=\"max\"``."
+msgstr ""
+
+#: ../../ant.rst:149
+msgid "visitors"
+msgstr ""
+
+#: ../../ant.rst:147
+msgid ""
+"Optional attribute. It specifies a comma-separated list of bug detectors "
+"which should be run. The bug detectors are specified by their class "
+"names, without any package qualification. By default, all detectors which"
+" are not disabled by default are run."
+msgstr ""
+"Atributo opcional. Este atributo especifica uma lista separada por vírgulas de detectores de bug que devem ser executados. "
+"Os detectores de bug são especificados por seus nomes de classe, sem qualquer qualificação de pacote. "
+"Por default, todos os detectores não desabilitados são executados."
+
+#: ../../ant.rst:153
+msgid "omitVisitors"
+msgstr ""
+
+#: ../../ant.rst:152
+msgid ""
+"Optional attribute. It specifies a comma-separated list of bug detectors."
+" It is like the visitors attribute, except it specifies detectors which "
+"will not be run."
+msgstr ""
+"Atributo opcional. Este atributo especifica uma lista separada por vírgulas de detectores de bug. "
+"É como o atributo visitors, exceto que especifica detectores que não serão executados."
+
+#: ../../ant.rst:156
+msgid "chooseVisitors"
+msgstr ""
+
+#: ../../ant.rst:156
+msgid ""
+"Optional attribute. It specifies a comma-separated list of bug detectors "
+"prefixed with \"+\" or \"-\" to selectively enable/disable them."
+msgstr ""
+"Atributo opcional. Este atributo especifica uma lista separada por vírgulas de "
+"detectores de bug prefixados com \"+\" or \"-\" para ativá-los ou desativá-los."
+
+#: ../../ant.rst:159
+msgid "excludeFilter"
+msgstr ""
+
+#: ../../ant.rst:159
+msgid ""
+"Optional attribute. It specifies the filename of a filter specifying bugs"
+" to exclude from being reported. See :doc:`filter`."
+msgstr ""
+"Atributo opcional. Este atributo especifica o nome do arquivo de um filtro para definir os bugs que não devem ser reportados. "
+"Veja :doc:`filter`."
+
+#: ../../ant.rst:162
+msgid "excludePath"
+msgstr ""
+
+#: ../../ant.rst:162
+msgid ""
+"An optional nested element. It specifies a path containing filters "
+"specifying bugs to exclude from being reported. See :doc:`filter`."
+msgstr ""
+"Um elemento aninhado opcional. Este elemento especifica o caminho contendo os filtros "
+"que definem os bugs que não devem ser reportados. Veja :doc:`filter`." 
+
+#: ../../ant.rst:165
+msgid "includeFilter"
+msgstr ""
+
+#: ../../ant.rst:165
+msgid ""
+"Optional attribute. It specifies the filename of a filter specifying "
+"which bugs are reported. See :doc:`filter`."
+msgstr ""
+"Atributo opcional. Este atributo especifica o nome do arquivo de um filtro para definir os bugs que devem ser reportados. "
+"Veja :doc:`filter`."
+
+#: ../../ant.rst:168
+msgid "includePath"
+msgstr ""
+
+#: ../../ant.rst:168
+msgid ""
+"An optional nested element. It specifies a path containing filters "
+"specifying which bugs are reported. See :doc:`filter`."
+msgstr ""
+"Um elemento aninhado opcional. Este elemento especifica o caminho contendo os filtros "
+"que definem os bugs que devem ser reportados. Veja :doc:`filter`." 
+
+#: ../../ant.rst:174
+msgid "projectFile"
+msgstr ""
+
+#: ../../ant.rst:171
+msgid ""
+"Optional attribute. It specifies the name of a project file. Project "
+"files are created by the FindBugs GUI, and specify classes, aux classpath"
+" entries, and source directories. By naming a project, you don't need to "
+"specify any class elements, nor do you need to specify ``auxClasspath`` "
+"or ``sourcePath`` attributes. See :doc:`running` for how to create a "
+"project."
+msgstr ""
+"Atributo opcional. Este atributo especifica o nome de um arquivo de projeto. "
+"Arquivos de projeto são criados pela GUI do FindBugs e especificam classes, "
+"entradas de caminho de classe auxiliar e diretórios de origem. Ao nomear um projeto, "
+"você não precisa especificar nenhum elemento de classe, nem precisa especificar os atributos" 
+"``auxClasspath`` ou ``sourcePath``. Veja :doc:`running` para saber como criar um projeto."
+
+#: ../../ant.rst:178
+msgid "jvmargs"
+msgstr ""
+
+#: ../../ant.rst:177
+msgid ""
+"Optional attribute. It specifies any arguments that should be passed to "
+"the Java virtual machine used to run SpotBugs. You may need to use this "
+"attribute to specify flags to increase the amount of memory the JVM may "
+"use if you are analyzing a very large program."
+msgstr ""
+"Atributo opcional. Este atributo especifica os argumentos que devem ser passados "
+"para a máquina virtual Java usada para executar o SpotBugs. Você pode precisar "
+"deste atributo para especificar sinalizadores para aumentar a quantidade de memória "
+"que a JVM pode usar se você estiver analisando um programa muito grande. "
+
+#: ../../ant.rst:182
+msgid "systemProperty"
+msgstr ""
+
+#: ../../ant.rst:181
+msgid ""
+"Optional nested element. If specified, defines a system property. The "
+"name attribute specifies the name of the system property, and the value "
+"attribute specifies the value of the system property."
+msgstr ""
+"Elemento aninhado opcional. Se especificado, define uma propriedade do sistema. "
+"O atributo name especifica o nome da propriedade do sistema e o atributo value "
+"especifica o valor da propriedade do sistema."
+
+#: ../../ant.rst:186
+msgid "timeout"
+msgstr ""
+
+#: ../../ant.rst:185
+msgid ""
+"Optional attribute. It specifies the amount of time, in milliseconds, "
+"that the Java process executing SpotBugs may run before it is assumed to "
+"be hung and is terminated. The default is 600,000 milliseconds, which is "
+"ten minutes. Note that for very large programs, SpotBugs may require more"
+" than ten minutes to complete its analysis."
+msgstr ""
+"Atributo opcional. Este atributo especifica a quantidade de tempo, em milissegundos, "
+"que o processo Java com SpotBugs pode ser executado antes de ser considerado interrompido e encerrado. "
+"O valor default é 600.000 milissegundos, ou seja, dez minutos. Observe que para programas muito grandes, "
+"o SpotBugs pode levar mais de dez minutos para concluir sua análise. "
+
+#: ../../ant.rst:189
+msgid "failOnError"
+msgstr ""
+
+#: ../../ant.rst:189
+msgid ""
+"Optional boolean attribute. Whether to abort the build process if there "
+"is an error running SpotBugs. Defaults to ``false``."
+msgstr ""
+"Atributo booleano opcional. Define quando se deve abortar o processo de construção caso "
+"haja um erro ao executar o SpotBugs. O valor default  é falso ``false``."
+
+#: ../../ant.rst:192
+msgid "errorProperty"
+msgstr ""
+
+#: ../../ant.rst:192
+msgid ""
+"Optional attribute which specifies the name of a property that will be "
+"set to ``true`` if an error occurs while running SpotBugs."
+msgstr ""
+"Atributo opcional que especifica o nome de uma propriedade que será definida como verdadeira ``true`` "
+"se ocorrer um erro durante a execução do SpotBugs."
+
+#: ../../ant.rst:195
+msgid "warningsProperty"
+msgstr ""
+
+#: ../../ant.rst:195
+msgid ""
+"Optional attribute which specifies the name of a property that will be "
+"set to ``true`` if any warnings are reported by SpotBugs on the analyzed "
+"program."
+msgstr ""
+"Atributo opcional que especifica o nome de uma propriedade que será definida "
+"como verdadeira ``true`` se quaisquer avisos forem relatados pelo SpotBugs no programa analisado."
+
+#: ../../ant.rst:200
+msgid "userPreferencesFile"
+msgstr ""
+
+#: ../../ant.rst:198
+msgid ""
+"Optional attribute. Set the path of the user preferences file to use, "
+"which might override some of the options above. Specifying "
+"``userPreferencesFile`` as first argument would mean some later options "
+"will override them, as last argument would mean they will override some "
+"previous options). This rationale behind this option is to reuse SpotBugs"
+" Eclipse project settings for command line execution."
+msgstr ""
+"Atributo opcional. Este atributo define o caminho do arquivo de preferências do usuário a ser usado, "
+"o que pode sobrescrever algumas das opções acima. Especificar o ``userPreferencesFile`` como primeiro "
+"argumento significa que algumas opções posteriores irão sobrescrevê-lo, já que o último argumento "
+"sobrescreve algumas opções anteriores). O raciocínio desta opção é reutilizar as configurações do "
+"projeto Eclipse do SpotBugs para execução em linha de comando. "
+
+#: ../../ant.rst:204
+msgid "nested"
+msgstr ""
+
+#: ../../ant.rst:203
+msgid ""
+"Optional attribute which enables or disables scanning of nested jar and "
+"zip files found in the list of files and directories to be analyzed. By "
+"default, scanning of nested jar/zip files is enabled."
+msgstr ""
+"Atributo opcional que ativa ou desativa a verificação de arquivos jar e zip aninhados "
+"encontrados na lista de arquivos e diretórios a serem analisados. Por default, a verificação "
+"de arquivos jar/zip aninhados está ativada."
+
+#: ../../ant.rst:206
+msgid "setExitCode"
+msgstr ""
+
+#: ../../ant.rst:207
+msgid ""
+"Optional boolean attribute. Whether the exit code will be returned to the"
+" main ant job. Defaults to ``true``."
+msgstr ""
+"Atributo booleano opcional. Se o código de saída deve ser retornado a tarefa Ant principal. " 
+"O valor default é verdadeiro ``true``."
