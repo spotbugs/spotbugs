@@ -18,8 +18,9 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSourceTest extends Abstra
                 "PotentialSecurityCheckBasedOnUntrustedSource$1.class",
                 "PotentialSecurityCheckBasedOnUntrustedSource$2.class");
 
-        assertNumOfUSCBugs(1);
+        assertNumOfUSCBugs(2);
         assertUSCBug("badOpenFile", 11);
+        assertUSCBug("badOpenFileLambda", 40);
     }
 
     private void assertNumOfUSCBugs(int num) throws Exception {
