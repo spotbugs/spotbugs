@@ -375,6 +375,7 @@ public abstract class CommandLine {
             this.extraPart = Objects.requireNonNull(extraPart);
         }
     }
+
     /**
      * Callback method for handling an option.
      *
