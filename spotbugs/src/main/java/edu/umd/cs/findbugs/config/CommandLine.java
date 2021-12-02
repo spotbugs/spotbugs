@@ -354,8 +354,11 @@ public abstract class CommandLine {
         }
         int eq = option.indexOf('=');
         if (eq >= 0) {
-            assert optionExtraPart.isEmpty();
-            optionExtraPart = option.substring(eq); // starts with '='
+            if (optionExtraPart.isEmpty()) {
+                optionExtraPart = option.substring(eq); // starts with '='
+            } else {
+                optionExtraPart = option.substring(eq) + ":" + optionExtraPart;
+            }
             option = option.substring(0, eq);
         }
         return new Option(option, optionExtraPart);
