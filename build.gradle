@@ -24,6 +24,11 @@ subprojects {
   group = 'com.github.spotbugs'
   version = rootProject.version
 
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(17)
+    }
+  }
 }
 
 allprojects {
