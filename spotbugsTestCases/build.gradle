@@ -34,6 +34,9 @@ dependencies {
 }
 
 tasks.withType(JavaCompile).configureEach {
+  javaCompiler = javaToolchains.compilerFor {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
   if (it.name == 'classesJava17') {
@@ -58,7 +61,6 @@ tasks.named('javadoc', Javadoc).configure {
   }
 }
 
-def jvmVersion = JavaVersion.current()
 def classesJava8 = tasks.register('classesJava8', JavaCompile) {
   destinationDirectory.set(file("$buildDir/classes/java/java8"))
   classpath = sourceSets.main.compileClasspath
@@ -79,16 +81,8 @@ def classesJava17 = tasks.register('classesJava17', JavaCompile) {
 
 tasks.named('classes').configure {
   dependsOn classesJava8
-  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_11)) {
-    dependsOn classesJava11
-  } else {
-    println "skip tests for Java 11 features"
-  }
-  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
-    dependsOn classesJava17
-  } else {
-    println "skip tests for Java 17 features"
-  }
+  dependsOn classesJava11
+  dependsOn classesJava17
 }
 
 sonarqube {
