@@ -67,8 +67,8 @@ public class ConstructorThrow extends OpcodeStackDetector {
         if (isConstructor() || methodCalledFromCtor()) {
             // Check if there is a throws keyword for checked exceptions.
             ExceptionTable tbl = obj.getExceptionTable();
-            boolean throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
-            if (throwsExceptions) {
+            // Check if the number of thrown exceptions is greater than 0
+            if (tbl != null && tbl.getNumberOfExceptions() > 0) {
                 accumulateBug();
             }
         }
@@ -115,6 +115,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
             classConstantOperand = getClassConstantOperand();
         } catch (IllegalStateException e) {
             bugReporter.logError("Seen OPcode and failed to get ClassConstantOperand: " + seen, e);
+            return;
         }
         String method = classConstantOperand + "." + getNameConstantOperand() + " : " + getSigConstantOperand();
         // Not interested in object superctor
