@@ -45,6 +45,7 @@ public class PermissionsSuper extends OpcodeStackDetector {
 
     @Override
     public void visit(JavaClass obj) {
+        checkClass = false;
         try {
             checkClass = obj.instanceOf(Repository.lookupClass("java.security.SecureClassLoader"));
         } catch (ClassNotFoundException e) {
