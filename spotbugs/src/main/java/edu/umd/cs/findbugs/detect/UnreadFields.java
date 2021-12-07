@@ -78,6 +78,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -1082,6 +1083,20 @@ public class UnreadFields extends OpcodeStackDetector {
             if (dontComplainAbout.matcher(fieldName).find()) {
                 continue;
             }
+
+            ClassDescriptor skipAnnotation =
+                    DescriptorFactory.createClassDescriptor(com.google.gson.annotations.SerializedName.class);
+
+            int skipAnnotationFlag = 0;
+            for (AnnotationValue a : f.getAnnotations()){
+                if (a.getAnnotationClass().equals(skipAnnotation)){
+                    skipAnnotationFlag = 1;
+                }
+            }
+            if (skipAnnotationFlag == 1){
+                continue;
+            }
+
             if (lastDollar >= 0 && (fieldName.startsWith("this$") || fieldName.startsWith("this+"))) {
                 String outerClassName = className.substring(0, lastDollar);
 
