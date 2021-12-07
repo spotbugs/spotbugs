@@ -1,2 +1,3 @@
 gradlew linguist-generated=true
 gradlew.bat linguist-generated=true
+* text eol=lf
