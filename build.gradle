@@ -24,6 +24,11 @@ subprojects {
   group = 'com.github.spotbugs'
   version = rootProject.version
 
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(17)
+    }
+  }
 }
 
 allprojects {
@@ -31,7 +36,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    implementation platform('org.junit:junit-bom:5.8.1')
+    implementation platform('org.junit:junit-bom:5.8.2')
   }
 }
 
