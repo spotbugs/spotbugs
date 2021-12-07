@@ -19,6 +19,8 @@ import edu.umd.cs.findbugs.ba.XMethod;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
@@ -45,7 +47,8 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     boolean isSerializable;
 
     Map<Methods, XMethod> methods;
-    
+    List<XMethod> methodsUsingMonitor;
+
     public MultipleInstantiationsOfSingletons(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -65,6 +68,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         isSerializable = false;
 
         methods = new HashMap<>();
+        methodsUsingMonitor = new ArrayList<>();
 
         if (obj.getClassName().endsWith("Singleton")) {
             isSingleton = true;
@@ -145,6 +149,10 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                 }
             }
         }
+
+        if (seen == Const.MONITORENTER) {
+            methodsUsingMonitor.add(getXMethod());
+        }
     }
 
     @Override
@@ -153,12 +161,14 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             return;
         }
 
+        boolean isGetterMethodUsingMonitor = methodsUsingMonitor.contains(methods.get(Methods.INSTANCE_GETTER));
+
         if (!isConstructorPrivate) {
             bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", NORMAL_PRIORITY).addClass(this).addMethod(
                     methods.get(Methods.CONSTRUCTOR)));
         }
 
-        if (!isGetterMethodSynchronized) {
+        if (!isGetterMethodSynchronized && !isGetterMethodUsingMonitor) {
             bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", NORMAL_PRIORITY).addClass(this).addMethod(
                     methods.get(Methods.INSTANCE_GETTER)));
         }
