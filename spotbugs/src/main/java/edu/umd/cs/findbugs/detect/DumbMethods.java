@@ -1174,10 +1174,13 @@ public class DumbMethods extends OpcodeStackDetector {
             // + " " + getMethodName());
             switch (randomNextIntState) {
             case 0:
-                if (seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand()) && "nextDouble".equals(getNameConstantOperand()) ||
-                    seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand()) && "nextFloat".equals(getNameConstantOperand()) ||
-                    seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand()) && "nextLong".equals(getNameConstantOperand()) ||
-                    seen == Const.INVOKESTATIC && ClassName.isMathClass(getClassConstantOperand()) && "random".equals(getNameConstantOperand())) {
+                if (seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand()) && "nextDouble".equals(
+                        getNameConstantOperand()) ||
+                        seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand()) && "nextFloat".equals(
+                                getNameConstantOperand()) ||
+                        seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand()) && "nextLong".equals(
+                                getNameConstantOperand()) ||
+                        seen == Const.INVOKESTATIC && ClassName.isMathClass(getClassConstantOperand()) && "random".equals(getNameConstantOperand())) {
                     randomNextIntState = 1;
                 }
                 break;
