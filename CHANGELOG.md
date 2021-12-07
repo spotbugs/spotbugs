@@ -5,6 +5,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2021-??-??
+### Added
+* Add new detector `CT_CONSTRUCTOR_THROW` for detecting constructors that throw exceptions.
+
 ### Fixed
 - Ant task does not produce XML anymore ([#1827](https://github.com/spotbugs/spotbugs/issues/1827))
 - Do not emit false positives of `MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR` and `MC_OVERRIDABLE_METHOD_CALL_IN_CLONE` for final classes ([#1812](https://github.com/spotbugs/spotbugs/issues/1812)).
@@ -26,7 +29,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * New rule `REFL_REFLECTION_INCREASES_ACCESSIBILITY_OF_CLASS` to detect public methods instantiating a class they get in their parameter. This rule based on the SEI CERT rule *SEC05-J. Do not use reflection to increase accessibility of classes, methods, or fields*. ([#SEC05-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC05-J.+Do+not+use+reflection+to+increase+accessibility+of+classes%2C+methods%2C+or+fields))
 * New detector `FindOverridableMethodCall` to detect invocation of overridable method in constructors (`MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR`) and clone() method (`MC_OVERRIDABLE_METHOD_CALL_IN_CLONE`), according to SEI CERT rules [MET05-J. Ensure that constructors do not call overridable methods](https://wiki.sei.cmu.edu/confluence/display/java/MET05-J.+Ensure+that+constructors+do+not+call+overridable+methods) and [MET06-J. Do not invoke overridable methods in clone()](https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921).
 * [Translation of online manual to Brazilian Portuguese (PT-BR)](https://spotbugs.readthedocs.io/pt_BR/latest/).
-* Add new detector `CT_CONSTRUCTOR_THROW` for detecting constructors that throw exceptions.
 
 ### Fixed
 * False negative about the rule ES_COMPARING_STRINGS_WITH_EQ ([#1764](https://github.com/spotbugs/spotbugs/issues/1764))
