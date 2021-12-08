@@ -1718,6 +1718,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DontUseFloatsAsLoopCounters">
+    <Details>
+      <![CDATA[
+            <p>Checks for floats in loop counters.</p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8609,6 +8616,21 @@ after the call to initLogging, the logger configuration is lost
       state. Only static, final or private methods should be invoked from the clone() method.</p>
       <p>
       See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">MET06-J. Do not invoke overridable methods in clone()</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="FL_FLOATS_AS_LOOP_COUNTERS">
+    <ShortDescription>Do not use floating-point variables as loop counters</ShortDescription>
+    <LongDescription>Using floating-point loop counters can lead to unexpected behavior.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+Floating-point variables must not be used as loop counters. Limited-precision IEEE 754 floating-point types cannot represent</p>
+<ul>
+<li>All simple fractions exactly.</li>
+<li>All decimals precisely, even when the decimals can be represented in a small number of digits.</li>
+<li>All digits of large values, meaning that incrementing a large floating-point value might not change that value within the available precision.</li>
+</ul>
+<p>For the purpose of this rule, a loop counter is an induction variable that is used as an operand of a comparison expression that is used as the controlling expression of a do, while or for loop. An induction variable is a variable that gets increased or decreased by a fixed amount on every iteration of a loop [Aho 1986]. Furthermore, the change to the variable must occur directly in the loop body (rather than inside a function executed within the loop.)
       </p>]]>
     </Details>
   </BugPattern>

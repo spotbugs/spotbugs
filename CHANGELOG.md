@@ -11,6 +11,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Ant task does not produce XML anymore ([#1827](https://github.com/spotbugs/spotbugs/issues/1827))
 - Do not emit false positives of `MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR` and `MC_OVERRIDABLE_METHOD_CALL_IN_CLONE` for final classes ([#1812](https://github.com/spotbugs/spotbugs/issues/1812)).
 - Reports cannot be created on Windows platform ([#1842](https://github.com/spotbugs/spotbugs/pull/1842))
+### Added
+* New detector `DontUseFloatsAsLoopCounters` to detect usage of floating-point variables as loop counters (`FL_FLOATS_AS_LOOP_COUNTERS`), according to SEI CERT rules [NUM09-J. Do not use floating-point variables as loop counters](https://wiki.sei.cmu.edu/confluence/display/java/NUM09-J.+Do+not+use+floating-point+variables+as+loop+counters)
 
 ## 4.5.0 - 2021-11-05
 ### Changed
