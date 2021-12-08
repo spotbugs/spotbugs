@@ -16,8 +16,8 @@ public class Issue1518Test extends AbstractIntegrationTest {
     public void test() {
         performAnalysis("ghIssues/Issue1518.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-            .bugType("RV_01_TO_INT")
-            .build();
+                .bugType("RV_01_TO_INT")
+                .build();
         assertThat(getBugCollection(), containsExactly(3, bugTypeMatcher));
     }
 }
