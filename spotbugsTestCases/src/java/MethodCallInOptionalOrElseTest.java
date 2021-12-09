@@ -9,6 +9,10 @@ public class MethodCallInOptionalOrElseTest {
 
     public static final Set<String> EMPTY_STRING_SET = Collections.emptySet();
 
+    private static Optional<String> STATIC_FIELD;
+
+    private Optional<String> field;
+
     @ExpectWarning("MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE")
     public String doNotCallMethodsOnOptionalOrElse(String arg) {
         return Optional.ofNullable(arg)
@@ -20,6 +24,31 @@ public class MethodCallInOptionalOrElseTest {
         return getOptional()
                 .map(Function.identity())
                 .orElse(System.currentTimeMillis() + 1); // Error: consider using Optional.orElseGet here
+    }
+
+    @ExpectWarning("MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE")
+    public String variableAssign(String arg) {
+        final String variable;
+        return Optional.ofNullable(arg)
+                .orElse(variable = defaultValue()) + variable; // Error: consider using Optional.orElseGet here
+    }
+
+    @ExpectWarning("MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE")
+    public String localVariableLoad(String arg) {
+        Optional<String> variable = Optional.ofNullable(arg);
+        return variable.orElse(defaultValue()); // Error: consider using Optional.orElseGet here
+    }
+
+    @ExpectWarning("MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE")
+    public String fieldLoad(String arg) {
+        field = Optional.ofNullable(arg);
+        return field.orElse(defaultValue()); // Error: consider using Optional.orElseGet here
+    }
+
+    @ExpectWarning("MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE")
+    public String staticFieldLoad(String arg) {
+        STATIC_FIELD = Optional.ofNullable(arg);
+        return STATIC_FIELD.orElse(defaultValue()); // Error: consider using Optional.orElseGet here
     }
 
     private Optional<Long> getOptional() {
@@ -56,6 +85,18 @@ public class MethodCallInOptionalOrElseTest {
                 .orElse(Long.valueOf(42L)); // OK, boxing is allowed
     }
 
+    public String localVariableVoidMethod(String arg) {
+        Optional<String> variable = Optional.ofNullable(arg);
+        voidMethod(); // OK, regular method call
+        return variable.orElse(null);
+    }
+
+    public String localVariableStringMethod(String arg) {
+        Optional<String> variable = Optional.ofNullable(arg);
+        String str = defaultValue(); // OK, regular method call
+        return variable.orElse(str);
+    }
+
     private static String defaultValue() {
         return "??";
     }
@@ -65,4 +106,6 @@ public class MethodCallInOptionalOrElseTest {
                 .orElse(EMPTY_STRING_SET); // OK, constant field
     }
 
+    private static void voidMethod() {
+    }
 }

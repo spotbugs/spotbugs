@@ -2,7 +2,11 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Arrays;
 
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.bcp.Opcode;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LocalVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,25 +76,60 @@ public class MethodCallInOptionalOrElse extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (!isMethodCall()) {
-            return;
-        }
-        LOG.debug("{} {} {}::{}->{}", inJavaLangOptionalChain, calledMethod,
-                getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
-        if (getSigConstantOperand().endsWith(JAVA_UTIL_OPTIONAL_SIGNATURE)) {
-            inJavaLangOptionalChain = true;
-            calledMethod = null;
-        } else if (inJavaLangOptionalChain) {
-            if (JAVA_UTIL_OPTIONAL_SLASHED_CLASS_NAME.equals(getClassConstantOperand())) {
-                if (JAVA_UTIL_OPTIONAL_OR_ELSE_METHOD_NAME.equals(getNameConstantOperand())) {
-                    handleOptionalOrElseInvocation();
+        if (seen == Const.GETSTATIC) {
+            final XField field = getXFieldOperand();
+            LOG.debug("[{} {}] Load static field {} of type {}", inJavaLangOptionalChain, calledMethod,
+                    field.getName(), field.getSignature());
+            if (JAVA_UTIL_OPTIONAL_SIGNATURE.equals(field.getSignature())) {
+                enterJavaLangOptionalChain();
+            }
+        } else if (isRegisterLoad()) {
+            final LocalVariable local = getMethod().getLocalVariableTable().getLocalVariable(getRegisterOperand(), getNextPC());
+            LOG.debug("[{} {}] Load {} of type {}", inJavaLangOptionalChain, calledMethod,
+                    local.getName(), local.getSignature());
+            if (JAVA_UTIL_OPTIONAL_SIGNATURE.equals(local.getSignature())) {
+                enterJavaLangOptionalChain();
+            }
+        } else if (seen == Const.PUTSTATIC) {
+            final XField field = getXFieldOperand();
+            LOG.debug("[{} {}] Store static field {} of type {}", inJavaLangOptionalChain, calledMethod,
+                    field.getName(), field.getSignature());
+            if (inJavaLangOptionalChain && JAVA_UTIL_OPTIONAL_SIGNATURE.equals(field.getSignature())) {
+                reset();
+            }
+        } else if (isRegisterStore()) {
+            final LocalVariable local = getMethod().getLocalVariableTable().getLocalVariable(getRegisterOperand(), getNextPC());
+            LOG.debug("[{} {}] Store {} of type {}", inJavaLangOptionalChain, calledMethod,
+                    local.getName(), local.getSignature());
+            if (inJavaLangOptionalChain && JAVA_UTIL_OPTIONAL_SIGNATURE.equals(local.getSignature())) {
+                reset();
+            }
+        } else if (isMethodCall()) {
+            LOG.debug("[{} {}] Call {}::{}->{}", inJavaLangOptionalChain, calledMethod,
+                    getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+            if (getSigConstantOperand().endsWith(JAVA_UTIL_OPTIONAL_SIGNATURE)) {
+                enterJavaLangOptionalChain();
+            } else if (inJavaLangOptionalChain) {
+                if (JAVA_UTIL_OPTIONAL_SLASHED_CLASS_NAME.equals(getClassConstantOperand())) {
+                    if (JAVA_UTIL_OPTIONAL_OR_ELSE_METHOD_NAME.equals(getNameConstantOperand())) {
+                        handleOptionalOrElseInvocation();
+                    }
+                    reset();
+                } else if (calledMethod == null && !isBoxingMethod(getXMethodOperand())) {
+                    calledMethod = getXMethodOperand();
                 }
-                inJavaLangOptionalChain = false;
-                calledMethod = null;
-            } else if (calledMethod == null && !isBoxingMethod(getXMethodOperand())) {
-                calledMethod = getXMethodOperand();
             }
         }
+    }
+
+    private void enterJavaLangOptionalChain() {
+        inJavaLangOptionalChain = true;
+        calledMethod = null;
+    }
+
+    private void reset() {
+        inJavaLangOptionalChain = false;
+        calledMethod = null;
     }
 
     private void handleOptionalOrElseInvocation() {
@@ -107,6 +146,5 @@ public class MethodCallInOptionalOrElse extends OpcodeStackDetector {
                 && JAVA_LANG_XXX_VALUE_OF_METHOD_NAME.equals(method.getName())
                 && Arrays.binarySearch(BOXING_TYPES, method.getClassName()) >= 0;
     }
-
 
 }
