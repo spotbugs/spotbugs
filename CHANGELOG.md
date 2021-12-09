@@ -4,12 +4,15 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2021-??-??
+## Unreleased - 2022-??-??
 ### Added
 * Rule `MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE` covers method invocation in [Optional.orElse](https://www.baeldung.com/java-optional-or-else-vs-or-else-get) ([#1808](https://github.com/spotbugs/spotbugs/pull/1808))
 
+## 4.5.1 - 2021-12-08
 ### Fixed
 - Ant task does not produce XML anymore ([#1827](https://github.com/spotbugs/spotbugs/issues/1827))
+- Do not emit false positives of `MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR` and `MC_OVERRIDABLE_METHOD_CALL_IN_CLONE` for final classes ([#1812](https://github.com/spotbugs/spotbugs/issues/1812)).
+- Reports cannot be created on Windows platform ([#1842](https://github.com/spotbugs/spotbugs/pull/1842))
 
 ## 4.5.0 - 2021-11-05
 ### Changed
