@@ -71,7 +71,7 @@ public class MethodCallInOptionalOrElse extends OpcodeStackDetector {
     public void visit(Code obj) {
         super.visit(obj);
         bugAccumulator.reportAccumulatedBugs();
-        inJavaLangOptionalChain = false;
+        reset();
     }
 
     @Override

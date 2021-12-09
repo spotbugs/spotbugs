@@ -51,18 +51,25 @@ public class MethodCallInOptionalOrElseTest {
         return STATIC_FIELD.orElse(defaultValue()); // Error: consider using Optional.orElseGet here
     }
 
+    @ExpectWarning("MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE")
+    public String parameterLoad(Optional<String> arg) {
+        return arg
+                .map(Function.identity())
+                .orElse(defaultValue()); // Error: consider using Optional.orElseGet here
+    }
+
     private Optional<Long> getOptional() {
         return Optional.of(1L);
     }
 
     public String compliantLambda(String arg) {
         return Optional.ofNullable(arg)
-                .orElseGet(() -> defaultValue()); // OK
+                .orElseGet(() -> defaultValue()); // OK, Optional.orElseGet used
     }
 
     public String compliantMethodRef(String arg) {
         return Optional.ofNullable(arg)
-                .orElseGet(MethodCallInOptionalOrElseTest::defaultValue); // OK
+                .orElseGet(MethodCallInOptionalOrElseTest::defaultValue); // OK, Optional.orElseGet used
     }
 
     public String compliantConstant(String arg) {
@@ -93,12 +100,8 @@ public class MethodCallInOptionalOrElseTest {
 
     public String localVariableStringMethod(String arg) {
         Optional<String> variable = Optional.ofNullable(arg);
-        String str = defaultValue(); // OK, regular method call
+        String str = defaultValue(); // OK, extracted to a variable
         return variable.orElse(str);
-    }
-
-    private static String defaultValue() {
-        return "??";
     }
 
     public static Set<String> nonNullStringSet(Set<String> set) {
@@ -106,6 +109,11 @@ public class MethodCallInOptionalOrElseTest {
                 .orElse(EMPTY_STRING_SET); // OK, constant field
     }
 
+    private static String defaultValue() {
+        return "??";
+    }
+
     private static void voidMethod() {
     }
+
 }
