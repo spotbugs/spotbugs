@@ -87,6 +87,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.UnreadFieldsAnnotationChecker;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -1084,19 +1085,6 @@ public class UnreadFields extends OpcodeStackDetector {
                 continue;
             }
 
-            ClassDescriptor skipAnnotation =
-                    DescriptorFactory.createClassDescriptor(com.google.gson.annotations.SerializedName.class);
-
-            int skipAnnotationFlag = 0;
-            for (AnnotationValue a : f.getAnnotations()){
-                if (a.getAnnotationClass().equals(skipAnnotation)){
-                    skipAnnotationFlag = 1;
-                }
-            }
-            if (skipAnnotationFlag == 1){
-                continue;
-            }
-
             if (lastDollar >= 0 && (fieldName.startsWith("this$") || fieldName.startsWith("this+"))) {
                 String outerClassName = className.substring(0, lastDollar);
 
@@ -1213,8 +1201,11 @@ public class UnreadFields extends OpcodeStackDetector {
                     bugReporter.reportBug(new BugInstance(this,
                             (f.isPublic() || f.isProtected()) ? "UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" : "UUF_UNUSED_FIELD",
                             NORMAL_PRIORITY).addClass(className).addField(f).lowerPriorityIfDeprecated());
+                } else if (UnreadFieldsAnnotationChecker.containsSpecialAnnotation(f.getAnnotations())) {
+                    // ignore it
                 } else if (f.getName().toLowerCase().indexOf("guardian") < 0) {
                     int priority = NORMAL_PRIORITY;
+
                     if (f.isStatic()) {
                         priority++;
                     }

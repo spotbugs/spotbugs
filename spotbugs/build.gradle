@@ -76,7 +76,6 @@ dependencies {
     exclude group: 'jaxen',            module: 'jaxen'
     exclude group: 'javax.xml.stream', module: 'stax-api'
     exclude group: 'net.java.dev.msv', module: 'xsdlib'
-    exclude group: 'javax.xml.bind',   module: 'jaxb-api'
     exclude group: 'pull-parser',      module: 'pull-parser'
     exclude group: 'xpp3',             module: 'xpp3'
   }

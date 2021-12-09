@@ -19,15 +19,26 @@ public class Issue574Test extends AbstractIntegrationTest {
     private static final String DESIRED_BUG_TYPE = "URF_UNREAD_FIELD";
 
     /**
-     * Expects 0 "URF_UNREAD_FIELD" error in the "Issue574Errors.class" file.
+     * Expects 0 "URF_UNREAD_FIELD" errors in the "Issue574SerializedName.class" file.
      */
     @Test
-    public void testClassWithErrors() {
-        performAnalysis("ghIssues/Issue574Errors.class");
+    public void testSerializedNameAnnotation() {
+        performAnalysis("ghIssues/Issue574SerializedName.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(DESIRED_BUG_TYPE)
                 .build();
         assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
     }
 
+    /**
+     * Expects 2 "URF_UNREAD_FIELD" errors in the "Issue574XmlElement.class" file.
+     */
+    @Test
+    public void testXmlElementAnnotation() {
+        performAnalysis("ghIssues/Issue574XmlElement.class");
+        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType(DESIRED_BUG_TYPE)
+                .build();
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+    }
 }
