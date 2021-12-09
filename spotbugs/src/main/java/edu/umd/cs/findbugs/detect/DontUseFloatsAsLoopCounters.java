@@ -35,7 +35,7 @@ public class DontUseFloatsAsLoopCounters extends OpcodeStackDetector implements 
     }
 
     private boolean isInductionVariable(int seen) {
-        if (seen == Const.FADD || seen == Const.FDIV || seen == Const.DADD || seen == Const.FDIV) {
+        if (seen == Const.FADD || seen == Const.FSUB || seen == Const.DADD || seen == Const.DSUB) {
             return true;
         } else {
             return false;
