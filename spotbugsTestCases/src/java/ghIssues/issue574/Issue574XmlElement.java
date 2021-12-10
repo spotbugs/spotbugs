@@ -1,34 +1,37 @@
 package ghIssues;
 
-import org.junit.Test;
-
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
+ * Tests that "URF_UNREAD_FIELD" warning is suppressed for fields with @XmlElement, @XmlAttribute, and @XmlValue
+ * annotations.
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/574">GitHub issue</a>
  */
 
 @XmlRootElement
 public final class Issue574XmlElement {
 
-    @XmlAttribute
-    private String type;
+    @XmlElement
+    private String element;
 
     @XmlAttribute
-    private String gender;
+    private String attribute;
 
     @XmlValue
-    private String description;
+    private String value;
 
-    public Issue574XmlElement(String type, String gender, String description){
-        this.type = type;
-        this.gender = gender;
-        this.description = description;
+    /**
+     * Constructor for test class.
+     * @param element
+     * @param attribute
+     * @param value
+     */
+    public Issue574XmlElement(String element, String attribute, String value){
+        this.element = element;
+        this.attribute = attribute;
+        this.value = value;
     }
-
-    @Test
-    public void test1(){
-        Issue574XmlElement testObject = new Issue574XmlElement("test","male","swimming");
-    }
-
 }
