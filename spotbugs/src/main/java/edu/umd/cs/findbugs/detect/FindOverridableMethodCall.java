@@ -99,6 +99,9 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
 
     @Override
     public void visitBootstrapMethods​(BootstrapMethods obj) {
+        if (getXClass().isFinal()) {
+            return;
+        }
         for (int i = 0; i < obj.getBootstrapMethods().length; ++i) {
             BootstrapMethod bm = obj.getBootstrapMethods()[i];
             CallerInfo ctor = refCallerConstructors.get(i);
@@ -160,6 +163,9 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
+        if (getXClass().isFinal()) {
+            return;
+        }
         if (seen == Const.INVOKEDYNAMIC) {
             ConstantInvokeDynamic constDyn = (ConstantInvokeDynamic) getConstantRefOperand();
             if (stack.getStackDepth() == 0) {
