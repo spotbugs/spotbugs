@@ -2,8 +2,6 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Arrays;
 
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.bcp.Opcode;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
@@ -13,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
