@@ -5,6 +5,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2021-??-??
+### Changed
+- Update UnreadFields detector to ignore warnings for fields with certain annotations ([#574](https://github.com/spotbugs/spotbugs/issues/574))
+
 ### Fixed
 - Ant task does not produce XML anymore ([#1827](https://github.com/spotbugs/spotbugs/issues/1827))
 
