@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -137,6 +139,16 @@ public class MutableClasses {
         }
 
         private boolean looksLikeASetter(Method method) {
+            // Empty methods cannot set anything
+            if (method.getCode() == null) {
+                return false;
+            }
+
+            // If the method throws an UnsupportedOperationException then we ignore it.
+            if (isSingleLineUnsupportedOperationThrower(method)) {
+                return false;
+            }
+
             final String methodName = method.getName();
             for (String name : SETTER_LIKE_PREFIXES) {
                 if (methodName.startsWith(name)) {
@@ -146,6 +158,47 @@ public class MutableClasses {
                 }
             }
             return false;
+        }
+
+        private boolean isSingleLineUnsupportedOperationThrower(Method method) {
+            byte[] code = method.getCode().getCode();
+            if (code.length != 8 && code.length != 10) {
+                return false;
+            }
+
+            ConstantPool cp = method.getConstantPool();
+
+            if (Byte.toUnsignedInt(code[0]) != Const.NEW
+                    || !equalsConstant(code[1], code[2], "java.lang.UnsupportedOperationException", cp)
+                    || Byte.toUnsignedInt(code[3]) != Const.DUP) {
+                return false;
+            }
+
+            // Using java.lang.UnsupportedOperationException()
+            if (code.length == 8
+                    && (Byte.toUnsignedInt(code[4]) != Const.INVOKESPECIAL
+                            || !equalsConstant(code[5], code[6],
+                                    "java.lang.UnsupportedOperationException." + Const.CONSTRUCTOR_NAME + " ()V", cp)
+                            || Byte.toUnsignedInt(code[7]) != Const.ATHROW)) {
+                return false;
+            }
+
+            // Using java.lang.UnsupportedOperationException(java.lang.String)
+            if (code.length == 10
+                    && (Byte.toUnsignedInt(code[4]) != Const.LDC
+                            || Byte.toUnsignedInt(code[6]) != Const.INVOKESPECIAL
+                            || !equalsConstant(code[7], code[8],
+                                    "java.lang.UnsupportedOperationException." + Const.CONSTRUCTOR_NAME
+                                            + " (Ljava/lang/String;)V", cp)
+                            || Byte.toUnsignedInt(code[9]) != Const.ATHROW)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        private boolean equalsConstant(byte high, byte low, String cnst, ConstantPool cp) {
+            return cnst.equals(cp.constantToString(cp.getConstant((high << 8) + low)));
         }
 
         private String getSig() {
