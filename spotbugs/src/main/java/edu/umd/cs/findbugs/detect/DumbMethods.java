@@ -1174,14 +1174,18 @@ public class DumbMethods extends OpcodeStackDetector {
             // + " " + getMethodName());
             switch (randomNextIntState) {
             case 0:
-                if (seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand())
-                        && "nextDouble".equals(getNameConstantOperand()) || seen == Const.INVOKESTATIC
-                                && ClassName.isMathClass(getClassConstantOperand()) && "random".equals(getNameConstantOperand())) {
+                if (seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand()) && "nextDouble".equals(
+                        getNameConstantOperand()) ||
+                        seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand()) && "nextFloat".equals(
+                                getNameConstantOperand()) ||
+                        seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand()) && "nextLong".equals(
+                                getNameConstantOperand()) ||
+                        seen == Const.INVOKESTATIC && ClassName.isMathClass(getClassConstantOperand()) && "random".equals(getNameConstantOperand())) {
                     randomNextIntState = 1;
                 }
                 break;
             case 1:
-                if (seen == Const.D2I) {
+                if (seen == Const.D2I || seen == Const.F2I || seen == Const.L2I) {
                     accumulator.accumulateBug(new BugInstance(this, "RV_01_TO_INT", HIGH_PRIORITY).addClassAndMethod(this), this);
                     randomNextIntState = 0;
                 } else if (seen == Const.DMUL) {
