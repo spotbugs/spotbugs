@@ -34,6 +34,7 @@ dependencies {
   implementation 'org.springframework:spring-core:7.0.9'
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
   implementation 'org.checkerframework:checker-qual:4.2.3'
+  implementation 'org.jetbrains:annotations:26.1.0'
   implementation 'com.sun.xml.bind:jaxb-impl:4.0.9'
 
   implementation 'org.junit.jupiter:junit-jupiter-engine:6.1.3'
