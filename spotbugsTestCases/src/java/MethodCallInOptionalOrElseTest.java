@@ -1,5 +1,9 @@
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -107,6 +111,14 @@ public class MethodCallInOptionalOrElseTest {
     public static Set<String> nonNullStringSet(Set<String> set) {
         return Optional.ofNullable(set)
                 .orElse(EMPTY_STRING_SET); // OK, constant field
+    }
+
+    public static void hiddenVariable(URL url) {
+        try (InputStream in = url.openStream()) {
+            final Properties props = new Properties();
+            props.load(in);
+        } catch (IOException ignored) {
+        }
     }
 
     private static String defaultValue() {
