@@ -8,6 +8,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 * Rule `MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE` covers method invocation in [Optional.orElse](https://www.baeldung.com/java-optional-or-else-vs-or-else-get) ([#1808](https://github.com/spotbugs/spotbugs/pull/1808))
 
+### Fixed
+- Updated RV_01_TO_INT to handle float and long checks ([#1518](https://github.com/spotbugs/spotbugs/issues/1518))
+
 ## 4.5.1 - 2021-12-08
 ### Fixed
 - Ant task does not produce XML anymore ([#1827](https://github.com/spotbugs/spotbugs/issues/1827))
