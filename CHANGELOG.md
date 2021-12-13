@@ -4,7 +4,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## 4.5.2 - 2022-12-13
+## 4.5.2 - 2021-12-13
 ### Fixed
 - Bumped log4j from 2.14.1 to 2.15.0 to address CVE-2021-44228
 - Updated RV_01_TO_INT to handle float and long checks ([#1518](https://github.com/spotbugs/spotbugs/issues/1518))
