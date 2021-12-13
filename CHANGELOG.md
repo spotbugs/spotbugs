@@ -6,7 +6,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## 4.5.2 - 2021-12-13
 ### Security
-- Bumped log4j from 2.14.1 to 2.15.0 to address CVE-2021-44228
+- Bumped log4j from 2.14.1 to 2.16.0 to address CVE-2021-44228
 
 ### Fixed
 - Updated RV_01_TO_INT to handle float and long checks ([#1518](https://github.com/spotbugs/spotbugs/issues/1518))
