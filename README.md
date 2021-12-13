@@ -1,5 +1,5 @@
 
-# ![SpotBugs](https://spotbugs.github.io/images/logos/spotbugs_logo_300px.png)
+# ![SpotBugs](https://spotbugs.github.io/images/logos/spotbugs_logo_300px.png)  
 
 [![Build Status](https://github.com/spotbugs/spotbugs/workflows/build/badge.svg)](https://github.com/spotbugs/spotbugs/actions)
 [![Documentation Status](https://readthedocs.org/projects/spotbugs/badge/?version=latest)](http://spotbugs.readthedocs.io/en/latest/?badge=latest)
