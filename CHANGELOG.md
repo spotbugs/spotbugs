@@ -8,6 +8,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 * Rule `MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE` covers method invocation in [Optional.orElse](https://www.baeldung.com/java-optional-or-else-vs-or-else-get) ([#1808](https://github.com/spotbugs/spotbugs/pull/1808))
 
+## 4.5.2 - 2021-12-13
+### Security
+- Bumped log4j from 2.14.1 to 2.16.0 to address CVE-2021-44228
+
 ### Fixed
 - Updated RV_01_TO_INT to handle float and long checks ([#1518](https://github.com/spotbugs/spotbugs/issues/1518))
 
