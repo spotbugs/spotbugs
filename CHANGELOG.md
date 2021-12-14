@@ -9,6 +9,13 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 * New rule `PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS` to warn for custom class loaders who do not call their superclasses' `getPermissions()` in their `getPermissions()` method. This rule based on the SEI CERT rule *SEC07-J Call the superclass's getPermissions() method when writing a custom class loader*. ([#SEC07-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader))
 
+## 4.5.2 - 2021-12-13
+### Security
+- Bumped log4j from 2.14.1 to 2.16.0 to address CVE-2021-44228
+
+### Fixed
+- Updated RV_01_TO_INT to handle float and long checks ([#1518](https://github.com/spotbugs/spotbugs/issues/1518))
+
 ## 4.5.1 - 2021-12-08
 ### Fixed
 - Ant task does not produce XML anymore ([#1827](https://github.com/spotbugs/spotbugs/issues/1827))
