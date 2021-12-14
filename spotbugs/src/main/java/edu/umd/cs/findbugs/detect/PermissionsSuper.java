@@ -81,8 +81,7 @@ public class PermissionsSuper extends OpcodeStackDetector {
             if (origin != null) {
                 try {
                     if (Arrays.stream(getThisClass().getSuperClasses())
-                            .filter(cls -> cls.getClassName().equals(origin.getClassName()))
-                            .findAny() != null &&
+                            .anyMatch(cls -> cls.getClassName().equals(origin.getClassName())) &&
                             getMethod().getName().equals(origin.getName()) &&
                             getMethod().getSignature().equals(origin.getSignature())) {
                         return;
