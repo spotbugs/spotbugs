@@ -95,4 +95,96 @@ public class ClassNameTest {
                     ClassName.matchedPrefixes(searchString, "com.test.TestClass"));
         }
     }
+
+    @Test
+    public void testSimpleBinaryClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("com/bla/Parent"));
+    }
+
+    @Test
+    public void testSimpleDottedClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("com.bla.Parent"));
+    }
+
+    @Test
+    public void testInnerClassBinaryClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("com/bla/Parent$Child"));
+    }
+
+    @Test
+    public void testInnerClassDottedClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("com.bla.Parent$Child"));
+    }
+
+    @Test
+    public void testJavaStyleAnonymousInnerClassBinaryClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("com/bla/Parent$Child$1"));
+    }
+
+    @Test
+    public void testJavaStyleAnonymousInnerClassDottedClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("com.bla.Parent$Child$1"));
+    }
+
+    @Test
+    public void testKotlinStyleAnonymousInnerClassBinaryClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("com/bla/Parent$function$variable$1"));
+    }
+
+    @Test
+    public void testKotlinStyleAnonymousInnerClassDottedClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("com.bla.Parent$function$variable$1"));
+    }
+
+    @Test
+    public void testBinaryClassNameContainingAllowedSpecialCharactersIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("com/bla/Parent$function!@#%^&*,?{}]()$variable$1"));
+    }
+
+    @Test
+    public void testDottedClassNameContainingAllowedSpecialCharactersIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("com.bla.Parent$function!@#%^&*,?{}]()$variable$1"));
+    }
+
+    @Test
+    public void testFieldDescriptorClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("Lcom/bla/Parent;"));
+    }
+
+    @Test
+    public void testFieldDescriptorOneDimensionalArrayClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("[Lcom/bla/Parent;"));
+    }
+
+    @Test
+    public void testFieldDescriptorOneDimensionalPrimitiveArrayClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("[I"));
+    }
+
+    @Test
+    public void testFieldDescriptorTwoDimensionalArrayClassNameIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("[[Lcom/bla/Parent;"));
+    }
+
+    @Test
+    public void testFieldDescriptorClassNameContainingAllowedSpecialCharactersIsValidClassName() {
+        assertTrue(ClassName.isValidClassName("[[Lcom/bla/Parent$function!@#%^&*,?{}]()$variable$1;"));
+    }
+
+    @Test
+    public void testFieldDescriptorClassNameContainingDotsIsInvalidClassName() {
+        assertFalse(ClassName.isValidClassName("Lcom.bla.Parent;"));
+    }
+
+    @Test
+    public void testClassNameContainingBothSlashesAndDotsIsInvalidClassName() {
+        assertFalse(ClassName.isValidClassName("com.bla/Parent"));
+    }
+
+    @Test
+    public void testBinaryClassNameContainingDisallowedSpecialCharactersIsInvalidClassName() {
+        assertFalse(ClassName.isValidClassName("com/bla/Parent$function$variable$1;"));
+        assertFalse(ClassName.isValidClassName("com/bla/Parent$function;$variable$1"));
+        assertFalse(ClassName.isValidClassName("com/bla/Parent$function[$variable$1"));
+    }
 }
