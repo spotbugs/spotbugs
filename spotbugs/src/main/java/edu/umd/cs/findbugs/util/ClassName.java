@@ -175,9 +175,47 @@ public abstract class ClassName {
      * @return true if it's a valid class name, false otherwise
      */
     public static boolean isValidClassName(String className) {
-        // FIXME: should use a regex
+        return isValidBinaryClassName(className) ||
+                isValidDottedClassName(className) ||
+                isValidArrayFieldDescriptor(className) ||
+                isValidClassFieldDescriptor(className);
+    }
 
-        return className.indexOf('(') < 0;
+    private static boolean isValidBinaryClassName(String className) {
+        return className.indexOf('.') == -1 &&
+                className.indexOf('[') == -1 &&
+                className.indexOf(';') == -1;
+    }
+
+    private static boolean isValidDottedClassName(String className) {
+        return className.indexOf('/') == -1 &&
+                className.indexOf('[') == -1 &&
+                className.indexOf(';') == -1;
+    }
+
+    private static boolean isValidArrayFieldDescriptor(String className) {
+        return className.startsWith("[") &&
+                (isValidArrayFieldDescriptor(className.substring(1))) ||
+                isValidClassFieldDescriptor(className.substring(1)) ||
+                isValidBaseTypeFieldDescriptor(className.substring(1));
+
+    }
+
+    private static boolean isValidClassFieldDescriptor(String className) {
+        return className.startsWith("L") &&
+                className.endsWith(";") &&
+                isValidBinaryClassName(className.substring(1, className.length() - 1));
+    }
+
+    private static boolean isValidBaseTypeFieldDescriptor(String className) {
+        return "B".equals(className) ||
+                "C".equals(className) ||
+                "D".equals(className) ||
+                "F".equals(className) ||
+                "I".equals(className) ||
+                "J".equals(className) ||
+                "S".equals(className) ||
+                "Z".equals(className);
     }
 
     /**
