@@ -187,4 +187,9 @@ public class ClassNameTest {
         assertFalse(ClassName.isValidClassName("com/bla/Parent$function;$variable$1"));
         assertFalse(ClassName.isValidClassName("com/bla/Parent$function[$variable$1"));
     }
+
+    @Test
+    public void testEmptyStringIsInvalidClassName() {
+        assertFalse(ClassName.isValidClassName(("")));
+    }
 }

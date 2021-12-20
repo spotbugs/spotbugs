@@ -175,12 +175,18 @@ public abstract class ClassName {
      * @return true if it's a valid class name, false otherwise
      */
     public static boolean isValidClassName(String className) {
-        return isValidBinaryClassName(className) ||
-                isValidDottedClassName(className) ||
-                isValidArrayFieldDescriptor(className) ||
-                isValidClassFieldDescriptor(className);
+        return !className.isEmpty() &&
+                (isValidBinaryClassName(className) ||
+                        isValidDottedClassName(className) ||
+                        isValidArrayFieldDescriptor(className) ||
+                        isValidClassFieldDescriptor(className));
     }
 
+    /**
+     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.2.1">
+     *     JVMS (Java SE 8 Edition) 4.2.1. Binary Class and Interface Names
+     *     </a>
+     */
     private static boolean isValidBinaryClassName(String className) {
         return className.indexOf('.') == -1 &&
                 className.indexOf('[') == -1 &&
@@ -193,11 +199,22 @@ public abstract class ClassName {
                 className.indexOf(';') == -1;
     }
 
+    /**
+     * Determines whether a class name is a valid array field descriptor as per
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.2">
+     * JVMS (Java SE 8 Edition) 4.3.2</a>
+     *
+     * @param className a class name to test for validity - must be non-{@code null} and non-empty.
+     * @return {@code true} if {@code className} is a valid array field descriptor as
+     *          per JVMS 4.3.2, otherwise {@code false}
+     * @throws IndexOutOfBoundsException if {@code className} is {@code null} or empty.
+     */
     private static boolean isValidArrayFieldDescriptor(String className) {
+        String tail = className.substring(1);
         return className.startsWith("[") &&
-                (isValidArrayFieldDescriptor(className.substring(1))) ||
-                isValidClassFieldDescriptor(className.substring(1)) ||
-                isValidBaseTypeFieldDescriptor(className.substring(1));
+                (isValidArrayFieldDescriptor(tail) ||
+                        isValidClassFieldDescriptor(tail) ||
+                        isValidBaseTypeFieldDescriptor(tail));
 
     }
 
