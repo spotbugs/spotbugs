@@ -207,7 +207,8 @@ public abstract class ClassName {
      * @param className a class name to test for validity - must be non-{@code null} and non-empty.
      * @return {@code true} if {@code className} is a valid array field descriptor as
      *          per JVMS 4.3.2, otherwise {@code false}
-     * @throws IndexOutOfBoundsException if {@code className} is {@code null} or empty.
+     * @throws IndexOutOfBoundsException if {@code className} is empty.
+     * @throws NullPointerException if {@code className} is {@code null}.
      */
     private static boolean isValidArrayFieldDescriptor(String className) {
         String tail = className.substring(1);
