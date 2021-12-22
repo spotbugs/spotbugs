@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Remove duplicated logging frameworks from the Eclipse plugin distribution ([#1868](https://github.com/spotbugs/spotbugs/issues/1868))
+- Corrected class name validation to no longer fail for Kotlin classes on class path containing special characters. ([#1883](https://github.com/spotbugs/spotbugs/issues/1883))
 
 ## 4.5.2 - 2021-12-13
 ### Security
