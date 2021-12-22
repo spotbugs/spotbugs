@@ -17,6 +17,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bumped log4j from 2.14.1 to 2.16.0 to address CVE-2021-44228
 
 ### Fixed
+- False negative about the rule RV_DONT_JUST_NULL_CHECK_READLINE ([#1821](https://github.com/spotbugs/spotbugs/issues/1821)[#1820](https://github.com/spotbugs/spotbugs/issues/1820)[#1819](https://github.com/spotbugs/spotbugs/issues/1819)[#1818](https://github.com/spotbugs/spotbugs/issues/1818))
 - Updated RV_01_TO_INT to handle float and long checks ([#1518](https://github.com/spotbugs/spotbugs/issues/1518))
 
 ## 4.5.1 - 2021-12-08
