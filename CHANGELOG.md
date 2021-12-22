@@ -5,14 +5,22 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2022-??-??
+### Security
+- Bumped log4j from 2.16.0 to 2.17.0 to address [CVE-2021-45105](https://nvd.nist.gov/vuln/detail/CVE-2021-45105) ([#1885](https://github.com/spotbugs/spotbugs/pull/1885))
+
 ### Added
 * Rule `MOE_METHOD_INVOKED_IN_OPTIONAL_ORELSE` covers method invocation in [Optional.orElse](https://www.baeldung.com/java-optional-or-else-vs-or-else-get) ([#1808](https://github.com/spotbugs/spotbugs/pull/1808))
+
+### Fixed
+- Remove duplicated logging frameworks from the Eclipse plugin distribution ([#1868](https://github.com/spotbugs/spotbugs/issues/1868))
+- Corrected class name validation to no longer fail for Kotlin classes on class path containing special characters. ([#1883](https://github.com/spotbugs/spotbugs/issues/1883))
 
 ## 4.5.2 - 2021-12-13
 ### Security
 - Bumped log4j from 2.14.1 to 2.16.0 to address CVE-2021-44228
 
 ### Fixed
+- False negative about the rule RV_DONT_JUST_NULL_CHECK_READLINE ([#1821](https://github.com/spotbugs/spotbugs/issues/1821)[#1820](https://github.com/spotbugs/spotbugs/issues/1820)[#1819](https://github.com/spotbugs/spotbugs/issues/1819)[#1818](https://github.com/spotbugs/spotbugs/issues/1818))
 - Updated RV_01_TO_INT to handle float and long checks ([#1518](https://github.com/spotbugs/spotbugs/issues/1518))
 
 ## 4.5.1 - 2021-12-08
