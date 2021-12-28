@@ -1,0 +1,26 @@
+name: 'Automated ticket management'
+on:
+  schedule:
+    # Run the check every day.
+    # We use the release date of the first SpotBugs release,
+    # just to avoid periods of high load.
+    # https://github.com/spotbugs/spotbugs/releases/tag/3.1.0
+    - cron: '25 10 * * *'
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale-pr-and-issue:
+    # Mark stale issues and PRs, then close them 30 days later.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v4
+        with:
+          days-before-stale: 30
+          days-before-close: 30
+          stale-pr-label: 'Stale'
+          stale-issue-label: 'need info'
+          only-issue-labels: 'need info'
+          exempt-all-pr-assignees: true
