@@ -23,7 +23,7 @@ val unzipPdeTool = tasks.register<Copy>("unzipPdeTool") {
 }
 
 dependencies {
-  implementation(files("$buildDir/pdeTool/pdebuild.jar"){
+  compileOnly(files("$buildDir/pdeTool/pdebuild.jar"){
     builtBy(unzipPdeTool)
   })
 }
