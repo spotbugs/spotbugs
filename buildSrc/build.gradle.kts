@@ -1,6 +1,6 @@
 plugins {
     `kotlin-dsl`
-    id("com.diffplug.spotless") version "5.16.0"
+    id("com.diffplug.spotless") version "6.1.0"
 }
 
 repositories {
