@@ -4,8 +4,54 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2021-??-??
-## Changed
+## Unreleased - 2022-??-??
+### Security
+- Bumped log4j from 2.16.0 to 2.17.0 to address [CVE-2021-45105](https://nvd.nist.gov/vuln/detail/CVE-2021-45105) ([#1885](https://github.com/spotbugs/spotbugs/pull/1885))
+
+### Fixed
+- Remove duplicated logging frameworks from the Eclipse plugin distribution ([#1868](https://github.com/spotbugs/spotbugs/issues/1868))
+- Corrected class name validation to no longer fail for Kotlin classes on class path containing special characters. ([#1883](https://github.com/spotbugs/spotbugs/issues/1883))
+
+## 4.5.2 - 2021-12-13
+### Security
+- Bumped log4j from 2.14.1 to 2.16.0 to address CVE-2021-44228
+
+### Fixed
+- False negative about the rule RV_DONT_JUST_NULL_CHECK_READLINE ([#1821](https://github.com/spotbugs/spotbugs/issues/1821)[#1820](https://github.com/spotbugs/spotbugs/issues/1820)[#1819](https://github.com/spotbugs/spotbugs/issues/1819)[#1818](https://github.com/spotbugs/spotbugs/issues/1818))
+- Updated RV_01_TO_INT to handle float and long checks ([#1518](https://github.com/spotbugs/spotbugs/issues/1518))
+
+## 4.5.1 - 2021-12-08
+### Fixed
+- Ant task does not produce XML anymore ([#1827](https://github.com/spotbugs/spotbugs/issues/1827))
+- Do not emit false positives of `MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR` and `MC_OVERRIDABLE_METHOD_CALL_IN_CLONE` for final classes ([#1812](https://github.com/spotbugs/spotbugs/issues/1812)).
+- Reports cannot be created on Windows platform ([#1842](https://github.com/spotbugs/spotbugs/pull/1842))
+
+## 4.5.0 - 2021-11-05
+### Changed
+- Replace "分析" with "解析" in Japanese document ([#1573](https://github.com/spotbugs/spotbugs/issues/1573))
+- Add a section to document how to integrate find-sec-bugs into spotbugs-maven-plugin ([#540](https://github.com/spotbugs/spotbugs/issues/540))
+- Bump gson from 2.8.8 to 2.8.9 ([#1784](https://github.com/spotbugs/spotbugs/pull/1784))
+- Changes related to dominators analysis in package `edu.umd.cs.findbugs.classfile.engine.bcel` ([#1741](https://github.com/spotbugs/spotbugs/pull/1741)):
+  - `DominatorsAnalysisFactory` renamed to `NonExceptionDominatorsAnalysisFactory` (clarification)
+  - `NonExceptionPostdominatorsAnalysisFactory` renamed to `NonExceptionPostDominatorsAnalysisFactory` (spelling)
+  - `NonImplicitExceptionDominatorsAnalysis` introduced (API consistency)
+
+### Added
+* Rule `DCN_NULLPOINTER_EXCEPTION` covers catching NullPointerExceptions in accordance with SEI Cert rule [ERR08-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors) ([#1740](https://github.com/spotbugs/spotbugs/pull/1740))
+* Multiple types of report can be generated in batch. Set multiple commandline options for report configuration like `-html=report/spotbugs.html -xml:withMessages=report/spotbugs.xml`.
+* New rule `REFL_REFLECTION_INCREASES_ACCESSIBILITY_OF_CLASS` to detect public methods instantiating a class they get in their parameter. This rule based on the SEI CERT rule *SEC05-J. Do not use reflection to increase accessibility of classes, methods, or fields*. ([#SEC05-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC05-J.+Do+not+use+reflection+to+increase+accessibility+of+classes%2C+methods%2C+or+fields))
+* New detector `FindOverridableMethodCall` to detect invocation of overridable method in constructors (`MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR`) and clone() method (`MC_OVERRIDABLE_METHOD_CALL_IN_CLONE`), according to SEI CERT rules [MET05-J. Ensure that constructors do not call overridable methods](https://wiki.sei.cmu.edu/confluence/display/java/MET05-J.+Ensure+that+constructors+do+not+call+overridable+methods) and [MET06-J. Do not invoke overridable methods in clone()](https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921).
+* [Translation of online manual to Brazilian Portuguese (PT-BR)](https://spotbugs.readthedocs.io/pt_BR/latest/).
+
+### Fixed
+* False negative about the rule ES_COMPARING_STRINGS_WITH_EQ ([#1764](https://github.com/spotbugs/spotbugs/issues/1764))
+* False negative about the rule IM_MULTIPLYING_RESULT_OF_IREM ([#1498])(https://github.com/spotbugs/spotbugs/issues/1498)
+
+### Deprecated
+* `-output` commandline option is deprecated. Use commandline options for report configuration like `-xml=spotbugs.xml` instead.
+
+## 4.4.2 - 2021-10-08
+### Changed
 - Add bug code to report in fancy-hist.xsl ([#1688](https://github.com/spotbugs/spotbugs/pull/1688))
 - Bump Saxon-HE from 10.5 to 10.6 ([#1715](https://github.com/spotbugs/spotbugs/pull/1715))
 
@@ -19,6 +65,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Treat types with `@com.google.errorprone.annotations.Immutable` as immutable ([#1705](https://github.com/spotbugs/spotbugs/pull/1705))
 - Fix annotation check for `jdk.internal.ValueBased` ([#1706](https://github.com/spotbugs/spotbugs/pull/1706))
 - `DMI_RANDOM_USED_ONLY_ONCE` false positive ([#1539](https://github.com/spotbugs/spotbugs/issues/1539))
+- `NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` false negative ([#1642](https://github.com/spotbugs/spotbugs/issues/1642))
+- Immutable java.util.regex.Pattern as being flagged as EI ([#1695](https://github.com/spotbugs/spotbugs/pull/1738))
+- Resource leak in the JrtfsCodeBase ([#1732](https://github.com/spotbugs/spotbugs/pull/1732))
 
 ## 4.4.1 - 2021-09-07
 ### Changed

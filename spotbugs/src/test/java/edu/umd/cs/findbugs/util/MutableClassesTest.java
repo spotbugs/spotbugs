@@ -33,6 +33,7 @@ public class MutableClassesTest {
     @Test
     public void TestKnownImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature("Ljava/lang/String;"));
+        Assert.assertFalse(MutableClasses.mutableSignature("Ljava/util/regex/Pattern;"));
     }
 
     @Test

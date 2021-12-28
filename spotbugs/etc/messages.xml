@@ -1276,6 +1276,13 @@ when no code in the block throws Exception. </p>
 ]]>
      </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DontCatchNullPointerException">
+    <Details>
+<![CDATA[
+<p>Nullpointer exceptions should not be caught.</p>
+]]>
+     </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality">
     <Details>
 <![CDATA[
@@ -1685,6 +1692,28 @@ factory pattern to create these objects.</p>
                FileInputStream.read()) then -1 and the byte 0xFF become indistinguishable.
                If it is converted to char (in the case of FileReader.read()) then -1 becomes
                0xFFFF which is Character.MAX_VALUE since characters are unsigned in Java.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ReflectionIncreaseAccessibility">
+    <Details>
+      <![CDATA[
+               <p>Detector for public methods instantiating a class they get in their parameter.</p>
+               <p>
+                  An attacker may invoke this method with a class that has no public constructor.
+               </p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindOverridableMethodCall">
+    <Details>
+      <![CDATA[
+            <p>Detector for patterns where a constructor or a clone() method calls an overridable
+               method.</p>
+            <p>
+               Calling an overridable method from a constructor may result in the use of
+               uninitialized data. Calling such method from a clone() method is insecure.
             </p>
       ]]>
     </Details>
@@ -6916,6 +6945,39 @@ does not need to be created, just access the static methods directly using the c
   ]]>
      </Details>
   </BugPattern>
+  <BugPattern type="DCN_NULLPOINTER_EXCEPTION">
+    <ShortDescription>NullPointerException caught</ShortDescription>
+    <LongDescription>Do not catch NullPointerException like in {1}</LongDescription>
+    <Details>
+   <![CDATA[
+<p>
+According to SEI Cert rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors">ERR08-J</a> NullPointerException should not be caught. Handling NullPointerException is considered an inferior alternative to null-checking.
+<p>
+This non-compliant code catches a NullPointerException to see if an incoming parameter is null:
+</p>
+<pre><code>
+boolean hasSpace(String m) {
+  try {
+    String ms[] = m.split(" ");
+    return names.length != 1;
+  } catch (NullPointerException e) {
+    return false;
+  }
+}
+</code></pre>
+<p>
+A compliant solution would use a null-check as in the following example:
+</p>
+<pre><code>
+boolean hasSpace(String m) {
+    if (m == null) return false;
+    String ms[] = m.split(" ");
+    return names.length != 1;
+}
+</code></pre>
+    ]]>
+     </Details>
+  </BugPattern>
   <BugPattern type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER">
     <ShortDescription>Doomed test for equality to NaN</ShortDescription>
     <LongDescription>Doomed test for equality to NaN in {1}</LongDescription>
@@ -8490,6 +8552,66 @@ after the call to initLogging, the logger configuration is lost
       </p>]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS">
+    <ShortDescription>Public method uses reflection to create a class it gets in its parameter which could increase the accessibility of any class</ShortDescription>
+    <LongDescription>Public method {1} uses reflection to create a class it gets in its parameter which could increase the accessibility of any class</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC05-J.+Do+not+use+reflection+to+increase+accessibility+of+classes%2C+methods%2C+or+fields">SEI CERT SEC05-J</a> rule forbids the use of reflection to increase accessibility of classes, methods or fields. If
+        a class in a package provides a public method which takes an instance of java.lang.Class as its parameter and
+        calls its newInstance() method then it increases accessibility of classes in the same package without public
+        constructors. An attacker code may call this method and pass such class to create an instance of it. This should
+        be avoided by either making the method non-public or by checking for package access permission on the package.
+        A third possibility is to use the java.beans.Beans.instantiate() method instead of java.lang.Class.newInstance()
+        which checks whether the Class object being received has any public constructors.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD">
+    <ShortDescription>Public method uses reflection to modify a field it gets in its parameter which could increase the accessibility of any class</ShortDescription>
+    <LongDescription>Public method {1} uses reflection to modify a field it gets in its parameter which could increase the accessibility of any class.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC05-J.+Do+not+use+reflection+to+increase+accessibility+of+classes%2C+methods%2C+or+fields">SEI CERT SEC05-J</a> rule forbids the use of reflection to increase accessibility of classes, methods or fields. If
+        a class in a package provides a public method which takes an instance of java.lang.reflect.Field as its
+        parameter and calls a setter (or setAccessible()) method then it increases accessibility of fields in the same
+        package which are private, protected or package private. An attacker code may call this method and pass such
+        field to change it. This should be avoided by either making the method non-public or by checking for package
+        access permission on the package.
+        </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR">
+    <ShortDescription>An overridable method is called from a constructor</ShortDescription>
+    <LongDescription>Overridable method {2} is called from constructor {1}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Calling an overridable method during in a constructor may result in the use of uninitialized data. It may also
+      leak the this reference of the partially constructed object. Only static, final or private methods should be
+      invoked from a constructor.</p>
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET05-J.+Ensure+that+constructors+do+not+call+overridable+methods">MET05-J. Ensure that constructors do not call overridable methods</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_CLONE">
+    <ShortDescription>An overridable method is called from the clone() method.</ShortDescription>
+    <LongDescription>Overridable method {2} is called from method clone() in class {0}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Calling overridable methods from the clone() method is insecure because a subclass could override the method,
+      affecting the behavior of clone(). It can also observe or modify the clone object in a partially initialized
+      state. Only static, final or private methods should be invoked from the clone() method.</p>
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">MET06-J. Do not invoke overridable methods in clone()</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -8593,6 +8715,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="MF">Masked Field</BugCode>
   <BugCode abbrev="WMI">Inefficient Map Iterator</BugCode>
   <BugCode abbrev="ISC">Instantiated Static Class</BugCode>
+  <BugCode abbrev="DCN">Don't Catch NullPointer Exception</BugCode>
   <BugCode abbrev="REC">RuntimeException capture</BugCode>
   <BugCode abbrev="FE">Test for floating point equality</BugCode>
   <BugCode abbrev="UM">Unnecessary Math on constants</BugCode>
@@ -8635,4 +8758,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
   <BugCode abbrev="EOS">Bad End of Stream check</BugCode>
+  <BugCode abbrev="REFLC">Reflection increasing accessibility of classes</BugCode>
+  <BugCode abbrev="REFLF">Reflection increasing accessibility of fields</BugCode>
+  <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
 </MessageCollection>

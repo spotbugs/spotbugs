@@ -49,7 +49,7 @@ publishing {
             id = 'iloveeclipse'
             name = 'Andrey Loskutov'
             email = 'loskutov@gmx.de'
-            url = 'https://plus.google.com/+AndreyLoskutov'
+            url = 'https://github.com/iloveeclipse'
             timezone = '+2'
           }
           developer {
