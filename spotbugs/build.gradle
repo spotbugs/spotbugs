@@ -145,25 +145,16 @@ eclipse.classpath.file {
     }
 }
 
-def copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
-    from configurations.testCompileClasspath, configurations.testRuntimeClasspath, configurations.guiRuntimeClasspath, configurations.guiCompileClasspath, configurations.logBinding
-    into ".libs"
-    include "*.jar"
-    exclude "*xml-apis*.jar"
-    exclude "*spotbugs-annotations*.jar"
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 def updateManifest = tasks.register('updateManifest') {
   inputs.file "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
   outputs.file "$projectDir/META-INF/MANIFEST.MF"
-  dependsOn configurations.runtimeClasspath, copyLibsForEclipse
+  dependsOn configurations.runtimeClasspath
   doLast {
     def manifestSpec = manifest {
       from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version.replace('-', '.'),
-               'Bundle-ClassPath': 'spotbugs.jar,' +  fileTree(dir: '.libs').collect { projectDir.toPath().relativize(it.toPath()).toString() }.join(',')
+               'Bundle-ClassPath': 'spotbugs.jar,' +  configurations.runtimeClasspath.collect { it.name }.join(',')
     }
     // write manifests
     manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")

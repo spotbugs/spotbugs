@@ -108,19 +108,7 @@ tasks.named('javadoc', Javadoc).configure {
 }
 
 def copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
-    from ('../spotbugs/.libs') {
-      include "*.jar"
-      exclude "*xml-apis*.jar"
-      exclude "*ant-*.jar"
-      exclude "Apple*.jar"
-      exclude "hamcrest*.jar"
-      exclude "slf4j-*alpha*.jar"
-      exclude "Saxon*.jar"
-    }
-    from ('../spotbugs/build/libs') {
-      include "*.jar"
-    }
-    from ('../spotbugs-annotations/build/libs') {
+    from (configurations.runtimeClasspath) {
       include "*.jar"
     }
     into "lib"
