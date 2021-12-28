@@ -469,19 +469,11 @@ ext.signJar = { File dir ->
   }
 }
 
-def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
+def generateP2Metadata = tasks.named("generateP2Metadata", JavaExec) {
   doFirst {
-    project.delete "${buildDir}/site/eclipse/artifacts.xml"
-    project.delete "${buildDir}/site/eclipse/content.xml"
-    signJar(file("${buildDir}/site/eclipse"))
+    signJar(file("$buildDir/site/eclipse"))
   }
-  inputs.file 'local.properties'
   dependsOn pluginJar, featureJar, siteXml, siteHtml
-  commandLine "${eclipseExecutable}", '-nosplash',
-    '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
-    '-artifactRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse"
 }
 
 def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', Exec) {
