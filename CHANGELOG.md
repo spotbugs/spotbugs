@@ -6,7 +6,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2022-??-??
 ### Security
-- Bumped log4j from 2.16.0 to 2.17.0 to address [CVE-2021-45105](https://nvd.nist.gov/vuln/detail/CVE-2021-45105) ([#1885](https://github.com/spotbugs/spotbugs/pull/1885))
+- Bumped log4j from 2.16.0 to 2.17.1 to address [CVE-2021-45105](https://nvd.nist.gov/vuln/detail/CVE-2021-45105) and [CVE-2021-44832](https://nvd.nist.gov/vuln/detail/CVE-2021-44832) ([#1885](https://github.com/spotbugs/spotbugs/pull/1885), [#1897](https://github.com/spotbugs/spotbugs/pull/1897))
 
 ### Fixed
 - Remove duplicated logging frameworks from the Eclipse plugin distribution ([#1868](https://github.com/spotbugs/spotbugs/issues/1868))
