@@ -48,21 +48,27 @@ sourceSets {
   }
 }
 
-def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
+def findEclipseExecutable() {
+  if (!file("$projectDir/local.properties").exists()) {
+    return null
+  }
 
-def localProps = new Properties()
-localProps.load(new FileInputStream("$projectDir/local.properties"))
-
-def eclipseRootDir = file(localProps.getProperty('eclipseRoot.dir'))
-// Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
-def eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
-if (!eclipseExecutable.exists()) {
-   // Fall back to non-macOS directory layout.
-   eclipseExecutable = new File(eclipseRootDir, "eclipse")
+  def localProps = new Properties()
+  localProps.load(new FileInputStream("$projectDir/local.properties"))
+  def eclipseRootDir = file(localProps.getProperty('eclipseRoot.dir'))
+  // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
+  def eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
+  if (!eclipseExecutable.exists()) {
+    // Fall back to non-macOS directory layout.
+    eclipseExecutable = new File(eclipseRootDir, "eclipse")
+  }
+  return eclipseExecutable
 }
 
+def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
+def eclipseExecutable = findEclipseExecutable()
+
 eclipseMavenCentral {
-  // TODO: it should include what is required in the MANIFEST.MF, and nothing else
   release '4.6.3', {
     compileOnly 'org.eclipse.ant.core'
     compileOnly 'org.eclipse.core.resources'
@@ -71,10 +77,11 @@ eclipseMavenCentral {
     compileOnly 'org.eclipse.jdt.ui'
     compileOnly 'org.eclipse.jface'
     compileOnly 'org.eclipse.pde'
+    compileOnly 'org.eclipse.ui.workbench'
 
+    // TODO these packages are not listed in the manifest
     compileOnly 'org.eclipse.pde.ui'
     compileOnly 'org.eclipse.swt'
-    compileOnly 'org.eclipse.ui.workbench'
 
     // necessary to build with the org.eclipse.swt module
     useNativesForRunningPlatform()
@@ -469,6 +476,14 @@ ext.signJar = { File dir ->
   }
 }
 
+def confirmEclipse = tasks.register('confirmEclipse') {
+  doFirst {
+    if (eclipseExecutable == null || !eclipseExecutable.exists()) {
+      throw new GradleScriptException("No eclipse found in local")
+    }
+  }
+}
+
 def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
   doFirst {
     project.delete "${buildDir}/site/eclipse/artifacts.xml"
@@ -476,7 +491,7 @@ def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
     signJar(file("${buildDir}/site/eclipse"))
   }
   inputs.file 'local.properties'
-  dependsOn pluginJar, featureJar, siteXml, siteHtml
+  dependsOn confirmEclipse, pluginJar, featureJar, siteXml, siteHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
@@ -491,7 +506,7 @@ def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', 
     signJar(file("${buildDir}/site/eclipse-candidate"))
   }
   inputs.file 'local.properties'
-  dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
+  dependsOn confirmEclipse, pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
@@ -506,7 +521,7 @@ def generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
     signJar(file("${buildDir}/site/eclipse-daily"))
   }
   inputs.file 'local.properties'
-  dependsOn pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
+  dependsOn confirmEclipse, pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
@@ -521,7 +536,7 @@ def generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLat
     signJar(file("${buildDir}/site/eclipse-stable-latest"))
   }
   inputs.file 'local.properties'
-  dependsOn pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
+  dependsOn confirmEclipse, pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-stable-latest", // TODO : May not work on Windows

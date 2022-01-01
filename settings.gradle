@@ -2,15 +2,17 @@ plugins {
   id "com.gradle.enterprise" version "3.8"
 }
 
-def eclipseFile = "eclipsePlugin/local.properties"
-if (new File(rootDir, eclipseFile).exists()) {
-  include ':eclipsePlugin', ':eclipsePlugin-test', ':eclipsePlugin-junit', ':spotbugsTestCases', ':spotbugs', ':spotbugs-tests', ':test-harness', ':spotbugs-annotations', ':spotbugs-ant'
-} else {
-  logger.lifecycle('Eclipse plugin configuration (' + eclipseFile + ') was not found. Skipping Eclipse plugin...')
-  include ':spotbugsTestCases', ':spotbugs', ':spotbugs-tests', ':test-harness', ':spotbugs-annotations', ':spotbugs-ant'
-}
-
-include ':test-harness-core', ':test-harness-jupiter'
+include ':eclipsePlugin'
+include ':eclipsePlugin-test'
+include ':eclipsePlugin-junit'
+include ':spotbugs'
+include ':spotbugs-annotations'
+include ':spotbugs-ant'
+include ':spotbugs-tests'
+include ':spotbugsTestCases'
+include ':test-harness'
+include ':test-harness-core'
+include ':test-harness-jupiter'
 
 gradleEnterprise {
   buildScan {
