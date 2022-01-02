@@ -1,5 +1,4 @@
 plugins {
-  id ("com.diffplug.oomph.ide")
   id ("com.diffplug.eclipse.mavencentral")
 }
 
@@ -8,9 +7,27 @@ val pdeTool by configurations.creating {
 }
 
 eclipseMavenCentral {
-  // TODO: it should include what is required in the MANIFEST.MF, and nothing else
   release("4.6.3") {
+    compileOnly("org.eclipse.ant.core")
+    compileOnly("org.eclipse.core.resources")
+    compileOnly("org.eclipse.core.runtime")
+    compileOnly("org.eclipse.jdt.core")
+    compileOnly("org.eclipse.jdt.ui")
+    compileOnly("org.eclipse.jface")
+    compileOnly("org.eclipse.pde")
+    compileOnly("org.eclipse.ui.workbench")
+    testImplementation("org.eclipse.core.runtime")
+
     dep("pdeTool", "org.eclipse.pde.build")
+
+    // TODO these packages are not listed in the manifest
+    compileOnly("org.eclipse.pde.ui")
+    compileOnly("org.eclipse.swt")
+
+    // necessary to build with the org.eclipse.swt module
+    useNativesForRunningPlatform()
+
+    constrainTransitivesToThisRelease()
   }
 }
 

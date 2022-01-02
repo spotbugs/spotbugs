@@ -1,33 +1,14 @@
+plugins {
+  id "eclipse-convention"
+}
+
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
-
-def localProps = new Properties()
-localProps.load(new FileInputStream("$rootDir/eclipsePlugin/local.properties"))
-
-def eclipseRootDir = file(localProps.getProperty('eclipseRoot.dir'))
-// Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
-def eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
-def eclipsePluginsDir = new File(eclipseRootDir, "Contents/Eclipse/plugins")
-if (!eclipseExecutable.exists()) {
-  // Fall back to non-macOS directory layout.
-  eclipsePluginsDir = new File(eclipseRootDir, "plugins")
-}
 
 dependencies {
   implementation project(':eclipsePlugin')
   testImplementation 'junit:junit:4.13.1'
   testImplementation 'org.mockito:mockito-core:4.2.0'
-
-  // List below includes all Eclipse SDK plugins except few causing troubles.
-  // TODO: it should include what is required in the MANIFEST.MF, and nothing else
-  testImplementation fileTree(dir:eclipsePluginsDir, include:'**/*.jar',
-          exclude:[
-                  '**/datanucleus-enhancer*.jar',
-                  'edu.umd.cs.findbugs.**/*.jar',
-                  'org.mockito*.jar',
-                  'com.github.spotbugs.**/*.jar',
-                  '**/*source_*.jar'
-          ])
 }
 
 tasks.named('jacocoTestReport', JacocoReport).configure {

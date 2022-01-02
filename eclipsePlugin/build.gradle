@@ -7,12 +7,6 @@ plugins {
   id "eclipse-convention"
 }
 
-oomphIde {
-  // does not work with 4.6.3 due to https://bugs.eclipse.org/bugs/show_bug.cgi?id=515286
-  repoEclipse '4.7.3'
-  pde {}
-}
-
 def readLastCommitHash() {
   // Same as 'git log -1 --pretty=format:"%h"'.execute().getText()
   org.ajoberstar.grgit.Grgit.open(dir: rootDir).head().abbreviatedId
@@ -67,28 +61,6 @@ def findEclipseExecutable() {
 
 def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
 def eclipseExecutable = findEclipseExecutable()
-
-eclipseMavenCentral {
-  release '4.6.3', {
-    compileOnly 'org.eclipse.ant.core'
-    compileOnly 'org.eclipse.core.resources'
-    compileOnly 'org.eclipse.core.runtime'
-    compileOnly 'org.eclipse.jdt.core'
-    compileOnly 'org.eclipse.jdt.ui'
-    compileOnly 'org.eclipse.jface'
-    compileOnly 'org.eclipse.pde'
-    compileOnly 'org.eclipse.ui.workbench'
-
-    // TODO these packages are not listed in the manifest
-    compileOnly 'org.eclipse.pde.ui'
-    compileOnly 'org.eclipse.swt'
-
-    // necessary to build with the org.eclipse.swt module
-    useNativesForRunningPlatform()
-
-    constrainTransitivesToThisRelease()
-  }
-}
 
 dependencies {
   api (project(':spotbugs')) {
