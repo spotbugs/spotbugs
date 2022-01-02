@@ -233,7 +233,7 @@ def testPluginJar = tasks.register('testPluginJar') {
             .matching { include 'lib/spotbugs.jar' }
             .singleFile
     if (!spotbugsJar.exists()) {
-      throw new GradleException('Eclipse plugin does not contain spotbugs.jar');
+      throw new TaskInstantiationException('Eclipse plugin does not contain spotbugs.jar');
     } else {
       println 'Eclipse plugin contains spotbugs.jar'
     }
@@ -527,7 +527,11 @@ def eclipseSiteZip = tasks.register('eclipseSiteZip', Zip) {
   archiveFileName = "eclipsePlugin.zip"
 }
 
-tasks.named('assemble').configure { dependsOn eclipseSite, eclipseSiteZip }
+if (eclipseExecutable == null) {
+  println "Create local.properties to build eclipse site"
+} else {
+  tasks.named('assemble').configure { dependsOn eclipseSiteZip }
+}
 
 spotbugs {
   ignoreFailures = true
