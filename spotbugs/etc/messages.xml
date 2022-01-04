@@ -8620,7 +8620,7 @@ after the call to initLogging, the logger configuration is lost
       </p>]]>
     </Details>
   </BugPattern>
-  <BugPattern type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSED_SOURCE">
+  <BugPattern type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE">
     <ShortDescription>Potential security check based on untrusted source.</ShortDescription>
     <LongDescription>Non-final method {4} was called at {5} before entering a doPrivileged block and was also called inside the block at {6} on a non-final class instance of {3} in public method {1}. If this call is a check before entering the doPrivileged() block then it may be unreliable since the method may receive an instance of a malicious descendant of the class which has this overridden to behave differently than expected.</LongDescription>
     <Details>
@@ -8632,7 +8632,7 @@ after the call to initLogging, the logger configuration is lost
       of the expected one where this method is overridden in a way that it returns different values upon
       different invocations. For example, a method returning a file path may return a harmless path to check
       before entering the doPrivileged block and then a sensitive file upon the call inside the doPrivileged
-      block. To avoid such scenario defensively copy the object reveiced in the parameter, e.g. by using
+      block. To avoid such scenario defensively copy the object received in the parameter, e.g. by using
       the copy constructor of the class used as the type of the formal parameter. This ensures that the
       method behaves exactly as expected.
       <p>

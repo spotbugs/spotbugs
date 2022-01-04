@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.bcel.Const;
@@ -101,12 +102,13 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
             if (ctor == null && clone == null && (callers == null || callers.isEmpty())) {
                 continue;
             }
-            Method method = BootstrapMethodsUtil.getMethodFromBootstrap(obj, i, getConstantPool(), getThisClass());
-            if (method == null) {
+            Optional<Method> method = BootstrapMethodsUtil.getMethodFromBootstrap(obj, i, getConstantPool(),
+                    getThisClass());
+            if (!method.isPresent()) {
                 continue;
             }
-            XMethod xMethod = getXClass().findMethod(method.getName(), method.getSignature(),
-                    method.isStatic());
+            XMethod xMethod = getXClass().findMethod(method.get().getName(), method.get().getSignature(),
+                    method.get().isStatic());
             if (ctor != null && checkDirectCase(ctor.method, xMethod, "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR",
                     LOW_PRIORITY, ctor.sourceLine)) {
                 checkAndRecordCallFromConstructor(ctor.method, xMethod, ctor.sourceLine);

@@ -21,9 +21,9 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.bcel.Const;
@@ -51,7 +51,7 @@ import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 
 public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStackDetector {
 
-    private static final Matcher NESTED_CLASS_VARIABLE_NAME_MATCHER = Pattern.compile("val\\$.*").matcher("");
+    private static final Pattern NESTED_CLASS_VARIABLE_NAME_PATTERN = Pattern.compile("val\\$.*");
 
     private static class CalleeInfo {
         ClassDescriptor calledClass;
@@ -168,11 +168,13 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
             ConstantInvokeDynamic constDyn = (ConstantInvokeDynamic) getConstantRefOperand();
             for (Attribute attr : getThisClass().getAttributes()) {
                 if (attr instanceof BootstrapMethods) {
-                    Method method = BootstrapMethodsUtil.getMethodFromBootstrap((BootstrapMethods) attr,
+                    Optional<Method> method = BootstrapMethodsUtil.getMethodFromBootstrap((BootstrapMethods) attr,
                             constDyn.getBootstrapMethodAttrIndex(), getConstantPool(), getThisClass());
-                    String[] paramNames = getParamNames();
-                    currentLambda = new LambdaInfo(method, paramNames);
-                    break;
+                    if (method.isPresent()) {
+                        String[] paramNames = getParamNames();
+                        currentLambda = new LambdaInfo(method.get(), paramNames);
+                        break;
+                    }
                 }
             }
         } else if (seen == Const.INVOKEVIRTUAL && getXClassOperand() != null && getXMethodOperand() != null) {
@@ -207,7 +209,7 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
             if (getXClass().isPublic() && getXMethod().isPublic() && !getXClassOperand().isFinal()
                     && !getXMethodOperand().isFinal() && object.isInitialParameter() && object.getXField() == null
                     && !parameterNameStack.empty() && parameterNameStack.peek() != null) {
-                addTononFinalMethodsCalledOnParam(getClassDescriptorOperand(), getXMethodOperand(), object);
+                addToNonFinalMethodsCalledOnParam(getClassDescriptorOperand(), getXMethodOperand(), object);
             }
         } else if (seen == Const.INVOKESTATIC && getXMethodOperand() != null
                 && "doPrivileged".equals(getXMethodOperand().getName())) {
@@ -243,7 +245,7 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
             return false;
         }
 
-        return NESTED_CLASS_VARIABLE_NAME_MATCHER.reset(field.getName()).matches();
+        return NESTED_CLASS_VARIABLE_NAME_PATTERN.matcher(field.getName()).matches();
     }
 
     private boolean isLambdaNestingMethodLocalVariable(OpcodeStack.Item object, LambdaCallInfo lambdaCall) {
@@ -262,7 +264,7 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
                 SourceLineAnnotation.fromVisitedInstruction(this)));
     }
 
-    private void addTononFinalMethodsCalledOnParam(ClassDescriptor calledClass, XMethod calledMethod,
+    private void addToNonFinalMethodsCalledOnParam(ClassDescriptor calledClass, XMethod calledMethod,
             OpcodeStack.Item object) {
         Set<CalleeInfo> objects = nonFinalMethodsCalledOnParam.computeIfAbsent(getXMethod(), k -> new HashSet<>());
         objects.add(new CalleeInfo(calledClass, calledMethod, parameterNameStack.peek(),
@@ -330,7 +332,7 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
     }
 
     private void reportBug(CallPair callPair) {
-        bugAccumulator.accumulateBug(new BugInstance(this, "USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSED_SOURCE",
+        bugAccumulator.accumulateBug(new BugInstance(this, "USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE",
                 NORMAL_PRIORITY)
                         .addClassAndMethod(this)
                         .addSourceLine(this)
@@ -344,7 +346,7 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
 
     private void reportBug(JavaClass cls, XMethod method, SourceLineAnnotation srcLine,
             CalleeInfo calleInfo, SourceLineAnnotation insideSrcLine) {
-        bugAccumulator.accumulateBug(new BugInstance(this, "USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSED_SOURCE",
+        bugAccumulator.accumulateBug(new BugInstance(this, "USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE",
                 NORMAL_PRIORITY)
                         .addClass(cls)
                         .addMethod(method)

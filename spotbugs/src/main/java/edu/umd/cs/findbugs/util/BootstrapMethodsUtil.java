@@ -33,8 +33,27 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+/**
+ * Utility methods for working with bootstrap methods
+ * 
+ * @author Ádám Balogh
+ */
 public class BootstrapMethodsUtil {
-    public static Method getMethodFromBootstrap(BootstrapMethods bms, int index, ConstantPool cp, JavaClass cls) {
+
+    /**
+     * Returns the method representation of a bootstrap method from a Java class.
+     * 
+     * @param bms
+     *      the BootstrapMethods attribute of a java class
+     * @param index
+     *      the index of the bootstrap method
+     * @param cp
+     *      the constant pool of the java class
+     * @param cls
+     *      the java class itself
+     * @return the bootstrap method represented as Method if found, Optional.empty() otherwise
+     */
+    public static Optional<Method> getMethodFromBootstrap(BootstrapMethods bms, int index, ConstantPool cp, JavaClass cls) {
         BootstrapMethod bm = bms.getBootstrapMethods()[index];
         for (int arg : bm.getBootstrapArguments()) {
             Constant c = bms.getConstantPool().getConstant(arg);
@@ -48,7 +67,7 @@ public class BootstrapMethodsUtil {
             }
             ConstantCP ccp = (ConstantCP) c;
             if (ccp.getClassIndex() != cls.getClassNameIndex()) {
-                return null;
+                return Optional.empty();
             }
             ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(ccp.getNameAndTypeIndex());
             Optional<Method> metOpt = Arrays.stream(cls.getMethods())
@@ -58,8 +77,8 @@ public class BootstrapMethodsUtil {
             if (!metOpt.isPresent()) {
                 continue;
             }
-            return metOpt.get();
+            return metOpt;
         }
-        return null;
+        return Optional.empty();
     }
 }
