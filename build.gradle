@@ -2,12 +2,12 @@ plugins {
   id "org.sonarqube" version "3.3"
   id "com.diffplug.spotless" version "5.17.1"
   id "org.gradle.crypto.checksum" version "1.2.0"
-  id "com.github.spotbugs" version "5.0.0-beta.6"
+  id "com.github.spotbugs" version "5.0.3"
   id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
 group = 'com.github.spotbugs'
-version = '4.5.1-SNAPSHOT'
+version = '4.5.3-SNAPSHOT'
 
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
@@ -24,6 +24,11 @@ subprojects {
   group = 'com.github.spotbugs'
   version = rootProject.version
 
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(17)
+    }
+  }
 }
 
 allprojects {
@@ -31,7 +36,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    implementation platform('org.junit:junit-bom:5.8.1')
+    implementation platform('org.junit:junit-bom:5.8.2')
   }
 }
 
