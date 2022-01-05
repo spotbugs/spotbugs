@@ -165,27 +165,18 @@ eclipse.classpath.file {
   }
 }
 
-TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
-  from configurations.testCompileClasspath, configurations.testRuntimeClasspath, configurations.guiRuntimeClasspath, configurations.guiCompileClasspath, configurations.logBinding
-  into '.libs'
-  include '*.jar'
-  exclude '*xml-apis*.jar'
-  exclude '*spotbugs-annotations*.jar'
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
   File manifestTemplate = file("${projectDir}/META-INF/MANIFEST-TEMPLATE.MF")
   File manifestOutput = file("${projectDir}/META-INF/MANIFEST.MF")
   String version = project.version.replace('-', '.')
   String mainClass = 'edu.umd.cs.findbugs.LaunchAppropriateUI'
   Provider<String> bundleClassPath = provider {
-    List<String> libs = fileTree(dir: '.libs').collect { File file -> projectDir.toPath().relativize(file.toPath()).toString() }
+    List<String> libs = configurations.runtimeClasspath.collect { File file -> file.name }.join(',')
     return 'spotbugs.jar,' + libs.join(',')
   }
   inputs.file manifestTemplate
   outputs.file manifestOutput
-  dependsOn configurations.runtimeClasspath, copyLibsForEclipse
+  dependsOn configurations.runtimeClasspath
   doLast {
     Manifest manifestSpec = java.manifest {
       from manifestTemplate
