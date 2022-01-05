@@ -5,6 +5,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2022-??-??
+
+## 4.5.3 - 2022-01-04
 ### Security
 - Bumped log4j from 2.16.0 to 2.17.1 to address [CVE-2021-45105](https://nvd.nist.gov/vuln/detail/CVE-2021-45105) and [CVE-2021-44832](https://nvd.nist.gov/vuln/detail/CVE-2021-44832) ([#1885](https://github.com/spotbugs/spotbugs/pull/1885), [#1897](https://github.com/spotbugs/spotbugs/pull/1897))
 
