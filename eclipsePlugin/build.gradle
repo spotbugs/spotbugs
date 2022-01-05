@@ -4,6 +4,7 @@ import static groovy.io.FileType.FILES
 // apply from: "$rootDir/gradle/maven.gradle"
 plugins {
   id 'org.ajoberstar.grgit' version '4.1.1'
+  id "eclipse-convention"
 }
 
 def readLastCommitHash() {
@@ -41,33 +42,27 @@ sourceSets {
   }
 }
 
-def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
+def findEclipseExecutable() {
+  if (!file("$projectDir/local.properties").exists()) {
+    return null
+  }
 
-def localProps = new Properties()
-localProps.load(new FileInputStream("$projectDir/local.properties"))
-
-def eclipseRootDir = file(localProps.getProperty('eclipseRoot.dir'))
-// Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
-def eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
-def eclipsePluginsDir = new File(eclipseRootDir, "Contents/Eclipse/plugins")
-if (!eclipseExecutable.exists()) {
-   // Fall back to non-macOS directory layout.
-   eclipseExecutable = new File(eclipseRootDir, "eclipse")
-   eclipsePluginsDir = new File(eclipseRootDir, "plugins")
+  def localProps = new Properties()
+  localProps.load(new FileInputStream("$projectDir/local.properties"))
+  def eclipseRootDir = file(localProps.getProperty('eclipseRoot.dir'))
+  // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
+  def eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
+  if (!eclipseExecutable.exists()) {
+    // Fall back to non-macOS directory layout.
+    eclipseExecutable = new File(eclipseRootDir, "eclipse")
+  }
+  return eclipseExecutable
 }
 
-dependencies {
-  // List below includes all Eclipse SDK plugins except few causing troubles.
-  // TODO: it should include what is required in the MANIFEST.MF, and nothing else
-  compileOnly fileTree(dir:eclipsePluginsDir, include:'**/*.jar',
-    exclude:[
-        '**/datanucleus-enhancer*.jar',
-        'edu.umd.cs.findbugs.**/*.jar',
-        'org.mockito*.jar',
-        'com.github.spotbugs.**/*.jar',
-        '**/*source_*.jar'
-        ])
+def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
+def eclipseExecutable = findEclipseExecutable()
 
+dependencies {
   api (project(':spotbugs')) {
     transitive = true
   }
@@ -92,19 +87,7 @@ tasks.named('javadoc', Javadoc).configure {
 }
 
 def copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
-    from ('../spotbugs/.libs') {
-      include "*.jar"
-      exclude "*xml-apis*.jar"
-      exclude "*ant-*.jar"
-      exclude "Apple*.jar"
-      exclude "hamcrest*.jar"
-      exclude "slf4j-*alpha*.jar"
-      exclude "Saxon*.jar"
-    }
-    from ('../spotbugs/build/libs') {
-      include "*.jar"
-    }
-    from ('../spotbugs-annotations/build/libs') {
+    from (configurations.runtimeClasspath) {
       include "*.jar"
     }
     into "lib"
@@ -250,7 +233,7 @@ def testPluginJar = tasks.register('testPluginJar') {
             .matching { include 'lib/spotbugs.jar' }
             .singleFile
     if (!spotbugsJar.exists()) {
-      throw new GradleException('Eclipse plugin does not contain spotbugs.jar');
+      throw new TaskInstantiationException('Eclipse plugin does not contain spotbugs.jar');
     } else {
       println 'Eclipse plugin contains spotbugs.jar'
     }
@@ -465,6 +448,14 @@ ext.signJar = { File dir ->
   }
 }
 
+def confirmEclipse = tasks.register('confirmEclipse') {
+  doFirst {
+    if (eclipseExecutable == null || !eclipseExecutable.exists()) {
+      throw new GradleScriptException("No eclipse found in local")
+    }
+  }
+}
+
 def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
   doFirst {
     project.delete "${buildDir}/site/eclipse/artifacts.xml"
@@ -472,7 +463,7 @@ def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
     signJar(file("${buildDir}/site/eclipse"))
   }
   inputs.file 'local.properties'
-  dependsOn pluginJar, featureJar, siteXml, siteHtml
+  dependsOn confirmEclipse, pluginJar, featureJar, siteXml, siteHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
@@ -487,7 +478,7 @@ def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', 
     signJar(file("${buildDir}/site/eclipse-candidate"))
   }
   inputs.file 'local.properties'
-  dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
+  dependsOn confirmEclipse, pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
@@ -502,7 +493,7 @@ def generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
     signJar(file("${buildDir}/site/eclipse-daily"))
   }
   inputs.file 'local.properties'
-  dependsOn pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
+  dependsOn confirmEclipse, pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
@@ -517,7 +508,7 @@ def generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLat
     signJar(file("${buildDir}/site/eclipse-stable-latest"))
   }
   inputs.file 'local.properties'
-  dependsOn pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
+  dependsOn confirmEclipse, pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-stable-latest", // TODO : May not work on Windows
@@ -536,7 +527,11 @@ def eclipseSiteZip = tasks.register('eclipseSiteZip', Zip) {
   archiveFileName = "eclipsePlugin.zip"
 }
 
-tasks.named('assemble').configure { dependsOn eclipseSite, eclipseSiteZip }
+if (eclipseExecutable == null) {
+  println "Create local.properties to build eclipse site"
+} else {
+  tasks.named('assemble').configure { dependsOn eclipseSiteZip }
+}
 
 spotbugs {
   ignoreFailures = true
