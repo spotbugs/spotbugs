@@ -89,6 +89,7 @@ tasks.named('javadoc', Javadoc).configure {
 def copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
     from (configurations.runtimeClasspath) {
       include "*.jar"
+      exclude "Saxon*.jar"
     }
     into "lib"
 }
