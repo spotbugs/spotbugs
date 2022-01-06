@@ -7,6 +7,15 @@ plugins {
   id "eclipse-convention"
 }
 
+// Force Eclipse use Java 1.8, otherwise it will get Java 17 (!) from gradle
+eclipse {
+  jdt {
+    sourceCompatibility = 8
+    targetCompatibility = 8
+    javaRuntimeName = "JavaSE-1.8"
+  }
+}
+
 def readLastCommitHash() {
   // Same as 'git log -1 --pretty=format:"%h"'.execute().getText()
   org.ajoberstar.grgit.Grgit.open(dir: rootDir).head().abbreviatedId
@@ -55,6 +64,10 @@ def findEclipseExecutable() {
   if (!eclipseExecutable.exists()) {
     // Fall back to non-macOS directory layout.
     eclipseExecutable = new File(eclipseRootDir, "eclipse")
+  }
+  logger.warn('found eclipseExecutable at ' + eclipseExecutable)
+  if (!eclipseExecutable.exists()) {
+    logger.error('eclipseExecutable at ' + eclipseExecutable + ' does not exist!')
   }
   return eclipseExecutable
 }
@@ -452,7 +465,8 @@ ext.signJar = { File dir ->
 def confirmEclipse = tasks.register('confirmEclipse') {
   doFirst {
     if (eclipseExecutable == null || !eclipseExecutable.exists()) {
-      throw new GradleScriptException("No eclipse found in local")
+      logger.warn('found eclipseExecutable at 2 ' + eclipseExecutable)
+      throw new GradleScriptException("No eclipse found in local", null)
     }
   }
 }

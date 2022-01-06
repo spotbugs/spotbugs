@@ -5,6 +5,10 @@ plugins {
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
 
+tasks.named('compileJava', JavaCompile).configure {
+  options.release = 11
+}
+
 dependencies {
   implementation project(':eclipsePlugin')
   testImplementation 'junit:junit:4.13.2'

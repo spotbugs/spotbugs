@@ -2,6 +2,21 @@ apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
+// This library is consumed by lot of clients
+// It should be compiled with lowest possible JLS level
+tasks.named('compileJava', JavaCompile).configure {
+  sourceCompatibility = 1.5
+  targetCompatibility = 1.5
+}
+
+eclipse {
+  jdt {
+    sourceCompatibility = 1.5
+    targetCompatibility = 1.5
+    javaRuntimeName = "J2SE-1.5"
+  }
+}
+
 dependencies {
   api 'com.google.code.findbugs:jsr305:3.0.2'
 }

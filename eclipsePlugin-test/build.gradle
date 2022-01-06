@@ -3,6 +3,10 @@ plugins {
 }
 apply from: "$rootDir/gradle/checkstyle.gradle"
 
+tasks.named('compileJava', JavaCompile).configure {
+  options.release = 11
+}
+
 sourceSets {
   main {
     java {
