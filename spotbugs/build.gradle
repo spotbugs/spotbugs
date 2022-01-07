@@ -23,11 +23,6 @@ eclipse {
   }
 }
 
-configurations {
-  // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
-  logBinding
-}
-
 sourceSets {
   main {
     java {
@@ -67,6 +62,19 @@ sourceSets {
       include '**/*.html'
       include '**/*.png'
     }
+  }
+}
+
+configurations {
+  // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
+  logBinding
+
+  guiImplementation {
+    extendsFrom(configurations.implementation)
+  }
+
+  guiTestImplementation {
+    extendsFrom(configurations.testImplementation)
   }
 }
 
@@ -111,9 +119,12 @@ dependencies {
 
   api 'com.google.code.gson:gson:2.14.0'
 
-  guiImplementation sourceSets.main.runtimeClasspath
+  guiImplementation sourceSets.main.output
   guiCompileOnly project(':spotbugs-annotations')
   guiCompileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+
+  guiTestImplementation sourceSets.main.output
+  guiTestImplementation sourceSets.gui.output
 }
 
 tasks.named('clean', Delete).configure {
@@ -143,6 +154,10 @@ tasks.withType(Jar).configureEach {
   //destinationDirectory = file("${projectDir}/lib")
 }
 
+eclipse.classpath {
+    plusConfigurations = [ configurations.guiTestRuntimeClasspath, configurations.appleExtensions ]
+}
+
 eclipse.classpath.file {
   whenMerged { Classpath classpath ->
     List<String> removeLibPaths = [
@@ -155,11 +170,12 @@ eclipse.classpath.file {
         entry.path.contains(pathPart)
       }
     }
-    classpath.entries.forEach { ClasspathEntry entry ->
-      if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') && !Files.isDirectory(Path.of(entry.path))) {
-        entry.path = '.libs/' + Path.of(entry.path).getFileName().toString()
-        entry.exported = true
-      }
+    classpath.entries.findAll {
+           it.kind == 'lib' && it instanceof org.gradle.plugins.ide.eclipse.model.AbstractClasspathEntry
+         } .forEach {
+           def attributes = it.entryAttributes
+           attributes["test"] = attributes["gradle_used_by_scope"] == "guiTest,test"
+         }
     }
     Map<String, List<ClasspathEntry>> entryByPath = classpath.entries.groupBy { ClasspathEntry entry ->
       entry.path

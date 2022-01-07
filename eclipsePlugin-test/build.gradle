@@ -56,3 +56,5 @@ assemble.dependsOn sourcesJar
 spotbugs {
   ignoreFailures = true
 }
+
+tasks.named("eclipse") { dependsOn "unzipPdeTool" }
