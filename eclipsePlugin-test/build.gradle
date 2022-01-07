@@ -56,3 +56,5 @@ artifacts {
 spotbugs {
   ignoreFailures = true
 }
+
+tasks.named("eclipse") { dependsOn "unzipPdeTool" }

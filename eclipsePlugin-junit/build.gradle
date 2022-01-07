@@ -24,3 +24,4 @@ tasks.named('jacocoTestReport', JacocoReport).configure {
   additionalSourceDirs.setFrom files(project(':eclipsePlugin').sourceSets.main.java.srcDirs)
   additionalClassDirs.setFrom files(project(':eclipsePlugin').sourceSets.main.output.classesDirs)
 }
+tasks.named("eclipse") { dependsOn "unzipPdeTool" }
