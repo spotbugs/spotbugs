@@ -1,6 +1,10 @@
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
 
+ext {
+  log4jVersion = '2.17.1'
+}
+
 dependencies {
   implementation(project(':spotbugs')) {
     transitive = true
@@ -14,6 +18,8 @@ dependencies {
   implementation 'junit:junit:4.13.1'
   implementation 'org.hamcrest:hamcrest-all:1.3'
   implementation 'org.apache.ant:ant:1.10.12'
+  implementation "org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion"
+  implementation 'com.google.errorprone:error_prone_annotations:2.10.0'
 }
 
 java {
@@ -27,6 +33,11 @@ artifacts {
 tasks.named('jacocoTestReport', JacocoReport).configure {
   additionalSourceDirs.setFrom files(project(':spotbugs').sourceSets.main.java.srcDirs)
   additionalClassDirs.setFrom files(project(':spotbugs').sourceSets.main.output.classesDirs)
+}
+
+tasks.named('test').configure {
+  dependsOn ':spotbugsTestCases:build'
+  maxHeapSize = '2G'
 }
 
 spotbugs {
