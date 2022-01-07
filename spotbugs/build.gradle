@@ -50,11 +50,6 @@ sourceSets {
       include '**/*.png'
     }
   }
-  test {
-    java {
-      srcDirs = ['src/test/java']
-    }
-  }
   guiTest {
     java {
       srcDirs = ['src/gui/test/java']
@@ -95,16 +90,12 @@ dependencies {
   api project(':spotbugs-annotations')
 
   api "com.google.code.gson:gson:2.8.9"
-  testImplementation 'junit:junit:4.13.1'
-  testImplementation 'org.apache.ant:ant:1.10.12'
-  testImplementation "org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion"
-  testImplementation 'com.google.errorprone:error_prone_annotations:2.10.0'
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
   guiCompileOnly project(':spotbugs-annotations')
   guiTestImplementation sourceSets.gui.runtimeClasspath
-  guiTestImplementation 'junit:junit:4.13'
+  guiTestImplementation 'junit:junit:4.13.1'
   guiTestCompileOnly project(':spotbugs-annotations')
 
   // for Eclipse compilation only
@@ -126,7 +117,6 @@ tasks.withType(Jar).configureEach {
 }
 
 eclipse.classpath {
-  plusConfigurations += [ configurations.testRuntimeClasspath ]
   plusConfigurations += [ configurations.appleExtensions ]
 }
 
@@ -298,11 +288,6 @@ tasks.named('assemble') {
   dependsOn assembleDist
 }
 
-tasks.named('test').configure {
-  dependsOn ':spotbugsTestCases:build'
-  maxHeapSize = '1G'
-}
-
 def unzipDist = tasks.register('unzipDist', Copy) {
   dependsOn distZip
   from distZip.map { zipTree(it.outputs.files.singleFile) }
@@ -352,8 +337,8 @@ def guiTest = tasks.register('guiTest', Test) {
 }
 
 tasks.named('jacocoTestReport', JacocoReport).configure {
-  dependsOn(test, guiTest)
-  executionData.setFrom files("$buildDir/jacoco/test.exec", "$buildDir/jacoco/guiTest.exec")
+  dependsOn(guiTest)
+  executionData.setFrom files("$buildDir/jacoco/guiTest.exec")
   sourceDirectories.setFrom files(sourceSets.main.java.srcDirs, sourceSets.gui.java.srcDirs)
   classDirectories.setFrom files(sourceSets.main.output, sourceSets.gui.output)
 }
