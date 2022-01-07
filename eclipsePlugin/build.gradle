@@ -127,7 +127,7 @@ tasks.named('javadoc', Javadoc).configure {
 }
 
 TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
-  from(configurations.runtimeClasspath) {
+  from(configurations.compileClasspath) {
     include '*.jar'
     exclude 'Saxon*.jar'
   }
@@ -200,7 +200,7 @@ tasks.named('compileJava').configure {
 
 // create manifest when importing to eclipse
 tasks.named('eclipse').configure {
-  dependsOn updateManifest
+  dependsOn updateManifest, "unzipPdeTool"
 }
 
 class FileRef implements FileReference {
