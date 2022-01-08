@@ -7,6 +7,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.OpcodeStack;
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -31,8 +32,11 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     };
 
     private final BugReporter bugReporter;
+
     private final ClassDescriptor cloneDescriptor = DescriptorFactory.createClassDescriptor(java.lang.Cloneable.class);
     private final ClassDescriptor serializableDescriptor = DescriptorFactory.createClassDescriptor(java.io.Serializable.class);
+    private JavaClass cloneableInterface;
+    private JavaClass serializableInterface;
 
     boolean isSingleton;
     boolean isConstructorPrivate;
@@ -51,6 +55,12 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     public MultipleInstantiationsOfSingletons(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            cloneableInterface = Repository.getInterfaces("java.lang.Cloneable")[0];
+            serializableInterface = Repository.getInterfaces("java.io.Serializable")[0];
+        }
+        catch (Exception e) {}
     }
 
     @Override
@@ -75,32 +85,35 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         }
 
         // Does this class directly implement Cloneable or Serializable?
-        String[] interface_names = obj.getInterfaceNames();
-        for (String interface_name : interface_names) {
-            if ("java.lang.Cloneable".equals(interface_name)) {
-                isCloneable = true;
-                implementsCloneableDirectly = true;
-            }
-            if ("java.lang.Serializable".equals(interface_name)) {
-                isSerializable = true;
+        try {
+            for (JavaClass implementedInterface : obj.getInterfaces()) {
+                if (implementedInterface.equals(cloneableInterface)) {
+                    isCloneable = true;
+                    implementsCloneableDirectly = true;
+                }
+                else if (implementedInterface.equals(serializableInterface)) {
+                    isSerializable = true;
+                }
             }
         }
+        catch (ClassNotFoundException e) {}
 
-        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-        try {
-            if (subtypes2.isSubtype(getClassDescriptor(), cloneDescriptor)) {
-                isCloneable = true;
+        if (!isCloneable || !isSerializable) {
+            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+            try {
+                if (subtypes2.isSubtype(getClassDescriptor(), cloneDescriptor)) {
+                    isCloneable = true;
+                }
+                if (subtypes2.isSubtype(DescriptorFactory.createClassDescriptorFromDottedClassName(obj.getSuperclassName()), cloneDescriptor)) {
+                    implementsCloneableDirectly = false;
+                }
+                
+                if (subtypes2.isSubtype(getClassDescriptor(), serializableDescriptor)) {
+                    isSerializable = true;
+                }
+            } catch (ClassNotFoundException e) {
+                bugReporter.reportMissingClass(e);
             }
-            if (subtypes2.isSubtype(DescriptorFactory.createClassDescriptorFromDottedClassName(obj.getSuperclassName()), cloneDescriptor)) {
-                implementsCloneableDirectly = false;
-            }
-
-            if (subtypes2.isSubtype(getClassDescriptor(), serializableDescriptor)) {
-                isSerializable = true;
-            }
-
-        } catch (ClassNotFoundException e) {
-            bugReporter.reportMissingClass(e);
         }
 
         super.visit(obj);
@@ -114,11 +127,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             hasCloneMethod = true;
         }
 
-        super.visit(obj);
-    }
-
-    @Override
-    public void sawOpcode(int seen) {
+        // TODO case of more constructors
         if (Const.CONSTRUCTOR_NAME.equals(getMethod().getName())) {
             methods.put(Methods.CONSTRUCTOR, getXMethod());
             if (getMethod().isPrivate()) {
@@ -128,6 +137,25 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             }
         }
 
+        super.visit(obj);
+    }
+
+    @Override
+    public boolean beforeOpcode(int seen) {
+        if (seen == Const.ATHROW && "clone".equals(getMethod().getName())) {
+            return true;
+        }
+        if (seen == Const.ARETURN && Const.CONSTRUCTOR_NAME.equals(getMethod().getName())) {
+            return true;
+        }
+        if (seen == Const.ARETURN || seen == Const.MONITORENTER) {
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public void sawOpcode(int seen) {
         if (seen == Const.ATHROW) {
             OpcodeStack.Item item = stack.getStackItem(0);
             if (item != null) {
@@ -136,21 +164,20 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                 }
             }
         }
-
-        if (seen == Const.ARETURN) {
+        else if (seen == Const.ARETURN) {
             OpcodeStack.Item item = stack.getStackItem(0);
             XField field = item.getXField();
             if (field != null) {
                 String className = "L" + getClassName() + ";";
                 if (field.isPrivate() && field.isStatic() && field.getSignature().equals(className)) {
                     isSingleton = true;
+                    System.out.println("class is singleton");
                     isGetterMethodSynchronized = getMethod().isSynchronized();
                     methods.put(Methods.INSTANCE_GETTER, getXMethod());
                 }
             }
         }
-
-        if (seen == Const.MONITORENTER) {
+        else if (seen == Const.MONITORENTER) {
             methodsUsingMonitor.add(getXMethod());
         }
     }
