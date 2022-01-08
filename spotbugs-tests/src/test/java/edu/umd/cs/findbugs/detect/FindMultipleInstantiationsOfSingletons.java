@@ -79,6 +79,26 @@ public class FindMultipleInstantiationsOfSingletons extends AbstractIntegrationT
         assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
     }
 
+    @Test
+    public void multiplePrivateConstructorsTest() {
+        performAnalysis("singletons/MultiplePrivateConstructors.class");
+        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 0);
+    }
+
+    @Test
+    public void multipleNonPrivateConstructorsTest() {
+        performAnalysis("singletons/MultipleNonPrivateConstructors.class");
+        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "MultipleNonPrivateConstructors");
+    }
+
+    @Test
+    public void multipleNonPrivateConstructorsTest2() {
+        performAnalysis("singletons/MultipleNonPrivateConstructors2.class");
+        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "MultipleNonPrivateConstructors2");
+    }
+
     private void assertNumOfSINGBugs(String bugType, int num) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)

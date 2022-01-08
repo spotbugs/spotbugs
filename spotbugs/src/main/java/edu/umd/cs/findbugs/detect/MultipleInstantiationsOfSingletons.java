@@ -20,6 +20,8 @@ import edu.umd.cs.findbugs.ba.XMethod;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -39,7 +41,6 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     private JavaClass serializableInterface;
 
     boolean isSingleton;
-    boolean isConstructorPrivate;
     boolean isGetterMethodSynchronized;
 
     boolean isCloneable;
@@ -52,6 +53,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     Map<Methods, XMethod> methods;
     List<XMethod> methodsUsingMonitor;
+    Set<XMethod> constructors;
 
     public MultipleInstantiationsOfSingletons(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -66,7 +68,6 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     @Override
     public void visit(JavaClass obj) {
         isSingleton = false;
-        isConstructorPrivate = false;
         isGetterMethodSynchronized = false;
 
         isCloneable = false;
@@ -77,6 +78,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
         isSerializable = false;
 
+        constructors = new HashSet<>();
         methods = new HashMap<>();
         methodsUsingMonitor = new ArrayList<>();
 
@@ -126,15 +128,9 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             methods.put(Methods.CLONE, getXMethod());
             hasCloneMethod = true;
         }
-
-        // TODO case of more constructors
+        
         if (Const.CONSTRUCTOR_NAME.equals(getMethod().getName())) {
-            methods.put(Methods.CONSTRUCTOR, getXMethod());
-            if (getMethod().isPrivate()) {
-                isConstructorPrivate = true;
-            } else {
-                isConstructorPrivate = false;
-            }
+            constructors.add(getXMethod());
         }
 
         super.visit(obj);
@@ -187,9 +183,18 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             return;
         }
 
+        boolean hasNonPrivateConstructor = false;
+        for (XMethod constructor : constructors) {
+            if (!constructor.isPrivate()) {
+                hasNonPrivateConstructor = true;
+                methods.put(Methods.CONSTRUCTOR, constructor);
+                break;
+            }
+        }
+
         boolean isGetterMethodUsingMonitor = methodsUsingMonitor.contains(methods.get(Methods.INSTANCE_GETTER));
 
-        if (!isConstructorPrivate) {
+        if (hasNonPrivateConstructor) {
             bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", NORMAL_PRIORITY).addClass(this).addMethod(
                     methods.get(Methods.CONSTRUCTOR)));
         }
@@ -215,8 +220,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         }
 
         if (isSerializable) {
-            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_SERIALIZEABLE", NORMAL_PRIORITY).addClass(this).addMethod(
-                    methods.get(Methods.CONSTRUCTOR)));
+            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_SERIALIZEABLE", NORMAL_PRIORITY).addClass(this));
         }
 
         super.visitAfter(obj);
