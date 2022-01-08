@@ -8624,14 +8624,9 @@ after the call to initLogging, the logger configuration is lost
     <LongDescription>Using floating-point loop counters can lead to unexpected behavior.</LongDescription>
     <Details>
       <![CDATA[<p>
-Floating-point variables must not be used as loop counters. Limited-precision IEEE 754 floating-point types cannot represent</p>
-<ul>
-<li>All simple fractions exactly.</li>
-<li>All decimals precisely, even when the decimals can be represented in a small number of digits.</li>
-<li>All digits of large values, meaning that incrementing a large floating-point value might not change that value within the available precision.</li>
-</ul>
-<p>For the purpose of this rule, a loop counter is an induction variable that is used as an operand of a comparison expression that is used as the controlling expression of a do, while or for loop. An induction variable is a variable that gets increased or decreased by a fixed amount on every iteration of a loop [Aho 1986]. Furthermore, the change to the variable must occur directly in the loop body (rather than inside a function executed within the loop.)
-      </p>]]>
+Using floating-point variables should not be used as loop counters, as they are not precise, which may result in incorrect loops. A loop counter is a variable that is changed with each iteration and controls when the loop should terminate. It is decreased or increased by a fixed amount each iteration.</p>
+<p>See rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/NUM09-J.+Do+not+use+floating-point+variables+as+loop+counters">NUM09-J</a>.</p>
+]]>
     </Details>
   </BugPattern>
   <!--

@@ -18,8 +18,7 @@ public class DontUseFloatsAsLoopCounters extends OpcodeStackDetector implements 
 
     @Override
     public void sawOpcode(int seen) {
-        if ((seen == Const.GOTO || seen == Const.GOTO_W) && (isFloatOrDouble(getCodeByte(getBranchTarget())) && (getBranchTarget() < getPC())
-                && (isInductionVariable(getCodeByte(getPC() - 2)) || isInductionVariable(getCodeByte(getPC() - 3))))) {
+        if ((seen == Const.GOTO || seen == Const.GOTO_W) && (isFloatOrDouble(getCodeByte(getBranchTarget())) && (getBranchTarget() < getPC()))) {
             bugReporter.reportBug(new BugInstance(this, "FL_FLOATS_AS_LOOP_COUNTERS", NORMAL_PRIORITY)
                     .addClassAndMethod(this).addSourceLine(this, getBranchTarget()));
         }
@@ -28,14 +27,6 @@ public class DontUseFloatsAsLoopCounters extends OpcodeStackDetector implements 
     private boolean isFloatOrDouble(int seen) {
         if ((seen == Const.FLOAD || seen == Const.FLOAD_0 || seen == Const.FLOAD_1 || seen == Const.FLOAD_2 || seen == Const.FLOAD_3)
                 || (seen == Const.DLOAD || seen == Const.DLOAD_0 || seen == Const.DLOAD_1 || seen == Const.DLOAD_2 || seen == Const.DLOAD_3)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean isInductionVariable(int seen) {
-        if (seen == Const.FADD || seen == Const.FSUB || seen == Const.DADD || seen == Const.DSUB) {
             return true;
         } else {
             return false;
