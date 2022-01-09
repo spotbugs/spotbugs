@@ -1,4 +1,3 @@
-apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
@@ -50,11 +49,6 @@ sourceSets {
       include '**/*.png'
     }
   }
-  guiTest {
-    java {
-      srcDirs = ['src/gui/test/java']
-    }
-  }
 }
 
 dependencies {
@@ -94,9 +88,6 @@ dependencies {
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
   guiCompileOnly project(':spotbugs-annotations')
-  guiTestImplementation sourceSets.gui.runtimeClasspath
-  guiTestImplementation 'junit:junit:4.13.1'
-  guiTestCompileOnly project(':spotbugs-annotations')
 
   // for Eclipse compilation only
   appleExtensions 'com.apple:AppleJavaExtensions:1.4'
@@ -330,18 +321,6 @@ publishing.publications.maven {
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
 ext.moduleName = 'com.github.spotbugs.spotbugs'
 apply from: "$rootDir/gradle/jigsaw.gradle"
-
-def guiTest = tasks.register('guiTest', Test) {
-  classpath = project.sourceSets.guiTest.runtimeClasspath
-  testClassesDirs = project.sourceSets.guiTest.output.classesDirs
-}
-
-tasks.named('jacocoTestReport', JacocoReport).configure {
-  dependsOn(guiTest)
-  executionData.setFrom files("$buildDir/jacoco/guiTest.exec")
-  sourceDirectories.setFrom files(sourceSets.main.java.srcDirs, sourceSets.gui.java.srcDirs)
-  classDirectories.setFrom files(sourceSets.main.output, sourceSets.gui.output)
-}
 
 tasks.named('spotbugsTest').configure {
   ignoreFailures = true
