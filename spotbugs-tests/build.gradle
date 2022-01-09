@@ -35,9 +35,24 @@ tasks.named('jacocoTestReport', JacocoReport).configure {
   additionalClassDirs.setFrom files(project(':spotbugs').sourceSets.main.output.classesDirs)
 }
 
-tasks.named('test').configure {
-  dependsOn ':spotbugsTestCases:build'
-  maxHeapSize = '2G'
+// Tests below fail if executed with other tests
+// So we run them before all other tests are executed
+task unstableTest(type: Test) {
+  filter {
+    includeTestsMatching "PlaceholderTest"
+    includeTestsMatching "MutableClassesTest"
+  }
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
+}
+
+test {
+  dependsOn ':spotbugsTestCases:build', 'unstableTest'
+  filter {
+    excludeTestsMatching "PlaceholderTest"
+    excludeTestsMatching "MutableClassesTest"
+  }
 }
 
 spotbugs {
