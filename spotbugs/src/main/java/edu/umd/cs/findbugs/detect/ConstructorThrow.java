@@ -12,7 +12,6 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Code;
 
 /**
  * This detector can find constructors that throw exception.
@@ -49,8 +48,9 @@ public class ConstructorThrow extends OpcodeStackDetector {
             if ("<init>".equals(m.getName())) {
                 // This will visit all constructors.
                 doVisitMethod(m);
-            } else if ("finalize".equals(m.getName())) {
-                // Check for finalizer.
+                // Signature of the finalizer is also needed to be checked
+            } else if ("finalize".equals(m.getName()) && "()V".equals(m.getSignature())) {
+                // Check for final finalizer.
                 if (m.isFinal()) {
                     isFinalFinalizer = true;
                 }
@@ -75,7 +75,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
     }
 
     @Override
-    public void visit(Code obj) {
+    public void visitAfter(JavaClass obj) {
         super.visit(obj);
         bugAccumulator.reportAccumulatedBugs();
     }
