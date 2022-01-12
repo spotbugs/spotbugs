@@ -33,4 +33,4 @@ SpotBugs can be used standalone and through several integrations, including:
 * [IntelliJ IDEA](https://github.com/JetBrains/spotbugs-intellij-plugin)
 
 # Questions?
-You can contact us using [our general purpose mailing list](https://github.com/spotbugs/discuss/issues?q=).
+You can contact us using [GitHub Discussions](https://github.com/spotbugs/spotbugs/discussions).
