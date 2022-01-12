@@ -15,7 +15,7 @@ if (!eclipseExecutable.exists()) {
 
 dependencies {
   implementation project(':eclipsePlugin')
-  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.mockito:mockito-core:4.2.0'
 
   // List below includes all Eclipse SDK plugins except few causing troubles.
