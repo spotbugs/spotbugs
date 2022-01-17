@@ -9,6 +9,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed spotbugs build with ecj compiler ([#1903](https://github.com/spotbugs/spotbugs/issues/1903))
 - Moved tests from spotbugs project to spotbugs-tests project ([#1914](https://github.com/spotbugs/spotbugs/issues/1914))
 
+### Added
+* New detector `FindInstanceLockOnSharedStaticData` for new bug type `SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA`. This detector reports a bug if an instance level lock is used to modify a shared static data. (See [SEI CERT rule LCK06-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK06-J.+Do+not+use+an+instance+lock+to+protect+shared+static+data))
+
 ## 4.5.3 - 2022-01-04
 ### Security
 - Bumped log4j from 2.16.0 to 2.17.1 to address [CVE-2021-45105](https://nvd.nist.gov/vuln/detail/CVE-2021-45105) and [CVE-2021-44832](https://nvd.nist.gov/vuln/detail/CVE-2021-44832) ([#1885](https://github.com/spotbugs/spotbugs/pull/1885), [#1897](https://github.com/spotbugs/spotbugs/pull/1897))
