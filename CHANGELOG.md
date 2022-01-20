@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fixed spotbugs build with ecj compiler ([#1903](https://github.com/spotbugs/spotbugs/issues/1903))
 - Moved tests from spotbugs project to spotbugs-tests project ([#1914](https://github.com/spotbugs/spotbugs/issues/1914))
+- Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
 
 ## 4.5.3 - 2022-01-04
 ### Security
