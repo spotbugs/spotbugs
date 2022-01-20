@@ -45,6 +45,7 @@ public class Issue600Test {
     private BugCollection analyse(String clazz) {
         return spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/" + clazz + ".class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/MyAutocloseable.class"));
+                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/MyAutocloseable.class"),
+                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/IMyAutocloseable.class"));
     }
 }
