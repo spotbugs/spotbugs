@@ -7,7 +7,7 @@ sourceSets {
 }
 
 ext {
-  guiceVersion = '5.0.1'
+  guiceVersion = '5.1.0'
 }
 
 dependencies {
