@@ -171,7 +171,6 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                 String className = "L" + getClassName() + ";";
                 if (field.isPrivate() && field.isStatic() && field.getSignature().equals(className)) {
                     isSingleton = true;
-                    System.out.println("class is singleton");
                     isGetterMethodSynchronized = getMethod().isSynchronized();
                     methods.put(Methods.INSTANCE_GETTER, getXMethod());
                 }
