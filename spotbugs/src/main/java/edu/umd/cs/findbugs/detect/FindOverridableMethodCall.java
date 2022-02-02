@@ -91,7 +91,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     @Override
-    public void visitBootstrapMethods​(BootstrapMethods obj) {
+    public void visitBootstrapMethods(BootstrapMethods obj) {
         if (getXClass().isFinal()) {
             return;
         }
