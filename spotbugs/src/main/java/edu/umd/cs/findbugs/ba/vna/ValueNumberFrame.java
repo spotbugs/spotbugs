@@ -52,7 +52,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
     private ArrayList<ValueNumber> mergedValueList;
 
-    private Map<AvailableLoad, ValueNumber[]> availableLoadMap;
+    private AvailableLoadBiMap availableLoadMap;
 
     private Map<AvailableLoad, ValueNumber> mergedLoads;
 
@@ -89,7 +89,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     public ValueNumberFrame(int numLocals) {
         super(numLocals);
         if (REDUNDANT_LOAD_ELIMINATION) {
-            setAvailableLoadMap(Collections.<AvailableLoad, ValueNumber[]>emptyMap());
+            setAvailableLoadMap(AvailableLoadBiMap.emptyMap());
             setMergedLoads(Collections.<AvailableLoad, ValueNumber>emptyMap());
             setPreviouslyKnownAs(Collections.<ValueNumber, AvailableLoad>emptyMap());
         }
@@ -114,17 +114,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         if (!REDUNDANT_LOAD_ELIMINATION) {
             return null;
         }
-        for (Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
-            ValueNumber[] values = e.getValue();
-            if (values != null) {
-                for (ValueNumber v2 : values) {
-                    if (v.equals(v2)) {
-                        return e.getKey();
-                    }
-                }
-            }
-        }
-        return null;
+
+        return getAvailableLoadMap().getLoad(v);
     }
 
     /**
@@ -159,8 +150,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         }
     }
 
-    private static <K, V> void removeAllKeys(Map<K, V> map, Iterable<K> removeMe) {
-        for (K k : removeMe) {
+    private static void removeAllKeys(AvailableLoadBiMap map, Iterable<AvailableLoad> removeMe) {
+        for (AvailableLoad k : removeMe) {
             map.remove(k);
         }
     }
@@ -315,7 +306,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
             boolean changed = false;
             if (other.isBottom()) {
                 changed = !this.getAvailableLoadMap().isEmpty();
-                setAvailableLoadMap(Collections.<AvailableLoad, ValueNumber[]>emptyMap());
+                setAvailableLoadMap(AvailableLoadBiMap.emptyMap());
             } else if (!other.isTop()) {
                 for (Map.Entry<AvailableLoad, ValueNumber[]> e : getUpdateableAvailableLoadMap().entrySet()) {
                     AvailableLoad load = e.getKey();
@@ -431,9 +422,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     }
 
     private void assignAvailableLoadMap(ValueNumberFrame other) {
-        Map<AvailableLoad, ValueNumber[]> availableLoadMapOther = other.getAvailableLoadMap();
-        if (availableLoadMapOther instanceof HashMap) {
-            availableLoadMapOther = Collections.<AvailableLoad, ValueNumber[]>unmodifiableMap(availableLoadMapOther);
+        AvailableLoadBiMap availableLoadMapOther = other.getAvailableLoadMap();
+        if (availableLoadMapOther.isModifiable()) {
+            availableLoadMapOther = AvailableLoadBiMap.unmodifiableMap(availableLoadMapOther);
             other.setAvailableLoadMap(availableLoadMapOther);
             setAvailableLoadMap(availableLoadMapOther);
             constructedUnmodifiableMap++;
@@ -590,19 +581,19 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         return result;
     }
 
-    private void setAvailableLoadMap(Map<AvailableLoad, ValueNumber[]> availableLoadMap) {
+    private void setAvailableLoadMap(AvailableLoadBiMap availableLoadMap) {
         this.availableLoadMap = availableLoadMap;
     }
 
-    private Map<AvailableLoad, ValueNumber[]> getAvailableLoadMap() {
+    private AvailableLoadBiMap getAvailableLoadMap() {
         return availableLoadMap;
     }
 
-    private Map<AvailableLoad, ValueNumber[]> getUpdateableAvailableLoadMap() {
-        if (!(availableLoadMap instanceof HashMap)) {
+    private AvailableLoadBiMap getUpdateableAvailableLoadMap() {
+        if (!availableLoadMap.isModifiable()) {
             HashMap<AvailableLoad, ValueNumber[]> tmp = new HashMap<>(availableLoadMap.size() + 4);
-            tmp.putAll(availableLoadMap);
-            availableLoadMap = tmp;
+            tmp.putAll(availableLoadMap.map);
+            availableLoadMap = new AvailableLoadBiMap(tmp);
         }
         return availableLoadMap;
     }
@@ -670,5 +661,107 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
     public boolean hasAvailableLoads() {
         return !getAvailableLoadMap().isEmpty();
+    }
+
+    /**
+     * A wrapper for the AvailableLoad to ValueNumber[] map also keeping track of a reverse map. There are a lot of
+     * calls to {@link ValueNumberFrame#getLoad(ValueNumber)} so it is faster using a reverse map compared to doing a
+     * linear search
+     */
+    private static class AvailableLoadBiMap {
+        private final Map<AvailableLoad, ValueNumber[]> map;
+        private final Map<ValueNumber, AvailableLoad> reverseMap;
+
+        public AvailableLoadBiMap(Map<AvailableLoad, ValueNumber[]> map) {
+            this.map = map;
+            this.reverseMap = new HashMap<>();
+
+            for (Map.Entry<AvailableLoad, ValueNumber[]> entry : map.entrySet()) {
+                ValueNumber[] value = entry.getValue();
+
+                for (ValueNumber element : value) {
+                    reverseMap.put(element, entry.getKey());
+                }
+            }
+        }
+
+        public AvailableLoadBiMap(Map<AvailableLoad, ValueNumber[]> map, Map<ValueNumber, AvailableLoad> reverseMap) {
+            this.map = map;
+            this.reverseMap = reverseMap;
+        }
+
+        /**
+         * @return an empty (unmodifiable) {@link AvailableLoadBiMap}
+         */
+        public static AvailableLoadBiMap emptyMap() {
+            return new AvailableLoadBiMap(Collections.emptyMap(), Collections.emptyMap());
+        }
+
+        /**
+         * @param other
+         *            The map we want to copy
+         * @return an unmodifiable copy backed by the <code>other</code> {@link AvailableLoadBiMap}
+         */
+        public static AvailableLoadBiMap unmodifiableMap(AvailableLoadBiMap other) {
+            return new AvailableLoadBiMap(Collections.unmodifiableMap(other.map),
+                    Collections.unmodifiableMap(other.reverseMap));
+        }
+
+        /**
+         * @return The number of distinct {@link AvailableLoad} in this map
+         */
+        public int size() {
+            return map.size();
+        }
+
+        public boolean isEmpty() {
+            return map.isEmpty();
+        }
+
+        public Set<AvailableLoad> keySet() {
+            return map.keySet();
+        }
+
+        public Set<Entry<AvailableLoad, ValueNumber[]>> entrySet() {
+            return map.entrySet();
+        }
+
+        public ValueNumber[] get(AvailableLoad key) {
+            return map.get(key);
+        }
+
+        /**
+         * Put an array of {@link ValueNumber} for an {@link AvailableLoad} and update the reverse map
+         */
+        public ValueNumber[] put(AvailableLoad key, ValueNumber[] value) {
+            ValueNumber[] previous = map.put(key, value);
+
+            for (ValueNumber v : value) {
+                reverseMap.put(v, key);
+            }
+
+            return previous;
+        }
+
+        /**
+         * Remove an {@link AvailableLoad} and update the reverse map
+         */
+        public ValueNumber[] remove(AvailableLoad key) {
+            ValueNumber[] value = map.remove(key);
+
+            for (ValueNumber v : value) {
+                reverseMap.remove(v);
+            }
+
+            return value;
+        }
+
+        public AvailableLoad getLoad(ValueNumber v) {
+            return reverseMap.get(v);
+        }
+
+        public boolean isModifiable() {
+            return map instanceof HashMap;
+        }
     }
 }

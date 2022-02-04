@@ -1718,6 +1718,21 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindInstanceLockOnSharedStaticData">
+    <Details>
+      <![CDATA[
+            <p>
+              Detector for patterns where a shared static data is modified by either an instance level non-static synchronized
+              method, or inside a synchronized block, which used a non-static lock object.
+            </p>
+            <p>
+               Programs must not use instance locks to protect static shared data because instance locks are ineffective
+               when two or more instances of the class are created.
+               Consequently, failure to use a static lock object leaves the shared state unprotected against concurrent access.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.PermissionsSuper">
     <Details>
       <![CDATA[
@@ -1726,7 +1741,7 @@ factory pattern to create these objects.</p>
                super.getPermissions() to get the initial value of the object
                which they return at the end.
               </p>
-      ]]>
+              ]]>
     </Details>
   </Detector>
   <!--
@@ -8624,6 +8639,21 @@ after the call to initLogging, the logger configuration is lost
     </Details>
   </BugPattern>
 
+  <BugPattern type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA">
+    <ShortDescription>Instance level lock was used on a shared static data</ShortDescription>
+    <LongDescription>Static field "{1}" is modified by an instance level {2}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Instance level synchronization, that modifies a static shared object could cause security leaks.
+        If the lock or the method is not static, that modifies the static field, and is synchronized,
+        that could leave the shared static data unprotected against concurrent access.
+        This could occur in two ways, if a synchronization method uses a non-static lock object,
+        or a synchronized method is declared as non-static. Both ways are ineffective.
+        Best solution is to use a private static final lock object to secure the shared static data.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS">
     <ShortDescription>Custom class loader does not call its superclass's getPermissions()</ShortDescription>
     <LongDescription>Custom class loader {1} does not call its superclass's getPermissions()</LongDescription>
@@ -8787,5 +8817,6 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="REFLC">Reflection increasing accessibility of classes</BugCode>
   <BugCode abbrev="REFLF">Reflection increasing accessibility of fields</BugCode>
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
+  <BugCode abbrev="SSD">Do not use an instance lock to protect shared static data</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
 </MessageCollection>
