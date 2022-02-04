@@ -8574,7 +8574,9 @@ after the call to initLogging, the logger configuration is lost
       causes the read (probably in a loop) to end prematurely if the character 0xFF is met. Similarly, the method
       java.io.FileReader.read() also returns an int. If it is converted to a char then -1 becomes 0xFFFF which is
       Character.MAX_VALUE. Comparing the result to -1 is pointless, since characters are unsigned in Java. If the
-      checking for EOF is the condition of a loop then this loop is infinite.
+      checking for EOF is the condition of a loop then this loop is infinite.</p>
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/FIO08-J.+Distinguish+between+characters+or+bytes+read+from+a+stream+and+-1">FIO08-J. Distinguish between characters or bytes read from a stream and -1</a>.
       </p>]]>
     </Details>
   </BugPattern>
