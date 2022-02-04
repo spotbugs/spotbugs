@@ -491,7 +491,7 @@ another package. </p>
   <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry">
     <Details>
 <![CDATA[
-<p> This looks for creation of empty zip file entries. It is a moderately fast detector.</p>
+<p> This looks for creation of empty ZIP file entries. It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -8021,7 +8021,7 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
      such an iterator for an entrySet, then
      <code>c.addAll(m.entrySet())</code> will go badly wrong. All of
      the Map implementations in OpenJDK 1.7 have been rewritten to avoid this,
-     you should to.
+     you should too.
     </p>
      ]]>
     </Details>
@@ -8444,7 +8444,7 @@ String constructComponentName() {
     <LongDescription>Unexpected/undesired {2} SpotBugs warning in {1}</LongDescription>
     <Details>
           <![CDATA[
-          <p>SpotBugs generated a warning that, according to a @NoWarning annotated,
+          <p>SpotBugs generated a warning that, according to a <code>@NoWarning</code> annotation,
             is unexpected or undesired.</p>
           ]]>
       </Details>
@@ -8454,7 +8454,7 @@ String constructComponentName() {
     <LongDescription>Missing expected or desired {2} SpotBugs warning in {1}</LongDescription>
     <Details>
           <![CDATA[
-          <p>SpotBugs didn't generate generated a warning that, according to a @ExpectedWarning annotated,
+          <p>SpotBugs didn't generate a warning that, according to an <code>@ExpectedWarning</code> annotation,
             is expected or desired.</p>
           ]]>
       </Details>
