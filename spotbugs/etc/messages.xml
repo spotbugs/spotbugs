@@ -245,7 +245,7 @@ applied to method parameters and uses of those method parameters. </p>
   <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems">
     <Details>
 <![CDATA[
-<p> Looks for problems with arising from Java 1.5 varargs.</p>
+<p> Looks for problems with arising from Java 5 varargs.</p>
 ]]>
     </Details>
   </Detector>
@@ -592,7 +592,7 @@ Normally, this detector does nothing.</p>
   <Detector class="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference">
     <Details>
 <![CDATA[
-<p> This detector finds code that behaves differently under OpenJDK 1.6, where
+<p> This detector finds code that behaves differently under OpenJDK 6, where
 weak references are used to hold onto Loggers.
 </p>
 ]]>
@@ -2625,7 +2625,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   <p> Creating new instances of <code>java.lang.Boolean</code> wastes
   memory, since <code>Boolean</code> objects are immutable and there are
   only two useful values of this type.&nbsp; Use the <code>Boolean.valueOf()</code>
-  method (or Java 1.5 autoboxing) to create <code>Boolean</code> objects instead.</p>
+  method (or Java 5 autoboxing) to create <code>Boolean</code> objects instead.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2645,7 +2645,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
       For values outside the constant range the performance of both styles is the same.
       </p>
       <p>
-      Unless the class must be compatible with JVMs predating Java 1.5,
+      Unless the class must be compatible with JVMs predating Java 5,
       use either autoboxing or the <code>valueOf()</code> method when creating instances of
       <code>Long</code>, <code>Integer</code>, <code>Short</code>, <code>Character</code>, and <code>Byte</code>.
       </p>
@@ -2663,7 +2663,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
       Using of cached values avoids object allocation and the code will be faster.
       </p>
       <p>
-      Unless the class must be compatible with JVMs predating Java 1.5,
+      Unless the class must be compatible with JVMs predating Java 5,
       use either autoboxing or the <code>valueOf()</code> method when creating instances of <code>Double</code> and <code>Float</code>.
       </p>
       ]]>
@@ -2767,8 +2767,8 @@ to immediately undo the work of the boxing.
     <LongDescription>Primitive is boxed to call {2}: use {3} instead</LongDescription>
     <Details>
 <![CDATA[
-  <p>A boxed primitive is created just to call compareTo method. It's more efficient to use static compare method
-  (for double and float since Java 1.4, for other primitive types since Java 1.7) which works on primitives directly.
+  <p>A boxed primitive is created just to call <code>compareTo()</code> method. It's more efficient to use static compare method
+  (for double and float since Java 1.4, for other primitive types since Java 7) which works on primitives directly.
   </p>
 ]]>
     </Details>
@@ -6486,7 +6486,7 @@ In each iteration, the String is converted to a StringBuffer/StringBuilder,
    as the growing string is recopied in each iteration. </p>
 
 <p>Better performance can be obtained by using
-a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
+a StringBuffer (or StringBuilder in Java 5) explicitly.</p>
 
 <p> For example:</p>
 <pre><code>// This is bad
@@ -8018,7 +8018,7 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
      of nasty coding mistakes. If a map <code>m</code> returns
      such an iterator for an entrySet, then
      <code>c.addAll(m.entrySet())</code> will go badly wrong. All of
-     the Map implementations in OpenJDK 1.7 have been rewritten to avoid this,
+     the Map implementations in OpenJDK 7 have been rewritten to avoid this,
      you should too.
     </p>
      ]]>
@@ -8031,7 +8031,7 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
      <![CDATA[
      <p> The entrySet() method is allowed to return a view of the
      underlying Map in which a single Entry object is reused and returned
-     during the iteration.  As of Java 1.6, both IdentityHashMap
+     during the iteration. As of Java 6, both IdentityHashMap
      and EnumMap did so. When iterating through such a Map,
      the Entry value is only valid until you advance to the next iteration.
      If, for example, you try to pass such an entrySet to an addAll method,
