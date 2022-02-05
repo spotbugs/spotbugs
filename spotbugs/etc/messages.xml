@@ -1653,7 +1653,7 @@ factory pattern to create these objects.</p>
     <Details>
 <![CDATA[
 <p> Checks for calls to methods which perform a byte to String (or String to byte) conversion using the user's default
- platform encoding. This can cause the application behaviour to vary between platforms.  </p>
+ platform encoding. This can cause the application behavior to vary between platforms.  </p>
 ]]>
       </Details>
   </Detector>
@@ -8524,7 +8524,10 @@ after the call to initLogging, the logger configuration is lost
     <LongDescription>Found reliance on default encoding in {1}: {2}</LongDescription>
     <Details>
 <![CDATA[
-<p> Found a call to a method which will perform a byte to String (or String to byte) conversion, and will assume that the default platform encoding is suitable. This will cause the application behaviour to vary between platforms. Use an alternative API and specify a charset name or Charset object explicitly.  </p>
+<p> Found a call to a method which will perform a byte to String (or String to byte) conversion,
+and will assume that the default platform encoding is suitable. This will cause the application
+behavior to vary between platforms. Use an alternative API and specify a charset name or Charset
+object explicitly.</p>
 ]]>
       </Details>
   </BugPattern>
