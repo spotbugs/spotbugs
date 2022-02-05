@@ -772,7 +772,7 @@ such as the no-argument String constructor.
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck">
     <Details>
 <![CDATA[
-<p> This detector looks for instances of double checked locking.
+<p> This detector looks for instances of double-checked locking.
 </p>
 ]]>
     </Details>
@@ -2870,8 +2870,8 @@ be used to make the prepared statement do something unexpected and undesirable.
     </Details>
   </BugPattern>
   <BugPattern type="DC_DOUBLECHECK">
-    <ShortDescription>Possible double check of field</ShortDescription>
-    <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
+    <ShortDescription>Possible double-check of field</ShortDescription>
+    <LongDescription>Possible double-check on {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method may contain an instance of double-checked locking.&nbsp;
@@ -5965,8 +5965,7 @@ public void foo() {
 <p> This method performs a nonsensical computation of a field with another
 reference to the same field (e.g., x&x or x-x). Because of the nature
 of the computation, this operation doesn't seem to make sense,
-and may indicate a typo or
-a logic error.  Double check the computation.
+and may indicate a typo or a logic error.  Double-check the computation.
 </p>
 ]]>
     </Details>
@@ -5979,8 +5978,7 @@ a logic error.  Double check the computation.
 <p> This method performs a nonsensical computation of a local variable with another
 reference to the same variable (e.g., x&x or x-x). Because of the nature
 of the computation, this operation doesn't seem to make sense,
-and may indicate a typo or
-a logic error.  Double check the computation.
+and may indicate a typo or a logic error.  Double-check the computation.
 </p>
 ]]>
     </Details>
@@ -8709,7 +8707,7 @@ object explicitly.</p>
   <BugCode abbrev="NN">Naked notify</BugCode>
   <BugCode abbrev="UW">Unconditional wait</BugCode>
   <BugCode abbrev="SP">Method spins on field</BugCode>
-  <BugCode abbrev="DC">Double check pattern</BugCode>
+  <BugCode abbrev="DC">Double-check pattern</BugCode>
   <BugCode abbrev="Wa">Wait not in loop</BugCode>
   <BugCode abbrev="No">Using notify() rather than notifyAll()</BugCode>
   <BugCode abbrev="DE">Dropped or ignored exception</BugCode>
