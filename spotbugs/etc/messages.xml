@@ -7454,8 +7454,10 @@ to a type more specific than <code>Object[]</code>, as in:</p>
 of almost all collections return an <code>Object[]</code>. They can't really do anything else,
 since the Collection object has no reference to the declared generic type of the collection.
 <p>The correct way to do get an array of a specific type from a collection is to use
-  <code>c.toArray(new String[]);</code>
-  or <code>c.toArray(new String[c.size()]);</code> (the latter is slightly more efficient).
+  <code>c.toArray(new String[0]);</code>
+  or <code>c.toArray(new String[c.size()]);</code> (the former is
+  <a href="https://shipilev.net/blog/2016/arrays-wisdom-ancients/#_historical_perspective">slightly more efficient</a>
+  since late Java 6 updates).
 <p>There is one common/known exception to this. The <code>toArray()</code>
 method of lists returned by <code>Arrays.asList(...)</code> will return a covariantly
 typed array. For example, <code>Arrays.asArray(new String[] { "a" }).toArray()</code>
