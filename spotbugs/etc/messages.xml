@@ -2253,8 +2253,8 @@ bug detectors.</p>
     <LongDescription>Unknown bug pattern BUG_PATTERN in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>A warning was recorded, but SpotBugs can't find the description of this bug pattern
-and so can't describe it. This should occur only in cases of a bug in SpotBugs or its configuration,
+<p>A warning was recorded, but SpotBugs cannot find the description of this bug pattern
+and so cannot describe it. This should occur only in cases of a bug in SpotBugs or its configuration,
 or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded.
 .</p>
 ]]>
@@ -2533,11 +2533,11 @@ Consider using <code>java.net.URI</code> instead.
     </Details>
   </BugPattern>
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
-    <ShortDescription>Can't use reflection to check for presence of annotation without runtime retention</ShortDescription>
+    <ShortDescription>Cannot use reflection to check for presence of annotation without runtime retention</ShortDescription>
     <LongDescription>Use of reflection to check for the presence the annotation {3} which doesn't have runtime retention, in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> Unless an annotation has itself been annotated with  @Retention(RetentionPolicy.RUNTIME), the annotation can't be observed using reflection
+  <p> Unless an annotation has itself been annotated with  @Retention(RetentionPolicy.RUNTIME), the annotation cannot be observed using reflection
 (e.g., by using the isAnnotationPresent method).
    .</p>
 ]]>
@@ -3233,7 +3233,7 @@ by reversing the order of the operands rather than by negating the results.
   </BugPattern>
   <BugPattern type="CO_COMPARETO_RESULTS_MIN_VALUE">
     <ShortDescription>compareTo()/compare() returns Integer.MIN_VALUE</ShortDescription>
-    <LongDescription>{1} returns Integer.MIN_VALUE, which can't be negated</LongDescription>
+    <LongDescription>{1} returns Integer.MIN_VALUE, which cannot be negated</LongDescription>
     <Details>
 <![CDATA[
   <p> In some situation, this compareTo or compare method returns
@@ -3855,8 +3855,8 @@ For example, in the following code, <code>foo</code> will be null.</p>
     </Details>
   </BugPattern>
   <BugPattern type="IT_NO_SUCH_ELEMENT">
-    <ShortDescription>Iterator next() method can't throw NoSuchElementException</ShortDescription>
-    <LongDescription>{1} can't throw NoSuchElementException</LongDescription>
+    <ShortDescription>Iterator next() method cannot throw NoSuchElementException</ShortDescription>
+    <LongDescription>{1} cannot throw NoSuchElementException</LongDescription>
     <Details>
 <![CDATA[
   <p> This class implements the <code>java.util.Iterator</code> interface.&nbsp;
@@ -4161,8 +4161,8 @@ could be changed by malicious code or
     </Details>
   </BugPattern>
   <BugPattern type="MS_CANNOT_BE_FINAL">
-    <ShortDescription>Field isn't final and can't be protected from malicious code</ShortDescription>
-    <LongDescription>{1} isn't final and can't be protected from malicious code</LongDescription>
+    <ShortDescription>Field isn't final and cannot be protected from malicious code</ShortDescription>
+    <LongDescription>{1} isn't final and cannot be protected from malicious code</LongDescription>
     <Details>
 <![CDATA[
   <p>
@@ -4214,7 +4214,7 @@ that you want to invoke the inherited method, not the method in the outer class.
 </p>
 <p>If you call <code>this.foo(17)</code>, then the inherited method will be invoked. However, since SpotBugs only looks at
 classfiles, it
-can't tell the difference between an invocation of <code>this.foo(17)</code> and <code>foo(17)</code>, it will still
+cannot tell the difference between an invocation of <code>this.foo(17)</code> and <code>foo(17)</code>, it will still
 complain about a potential ambiguous invocation.
 </p>
 ]]>
@@ -4383,7 +4383,7 @@ removing or deprecating the method with the similar but not identical signature.
   <p> This regular method has the same name as the class it is defined in. It is likely that this was intended to be a constructor.
       If it was intended to be a constructor, remove the declaration of a void return value.
     If you had accidentally defined this method, realized the mistake, defined a proper constructor
-    but can't get rid of this method due to backwards compatibility, deprecate the method.
+    but cannot get rid of this method due to backwards compatibility, deprecate the method.
 </p>
 ]]>
     </Details>
@@ -5294,7 +5294,7 @@ something like </p>
   </BugPattern>
   <BugPattern type="NP_CLOSING_NULL">
     <ShortDescription>close() invoked on a value that is always null</ShortDescription>
-    <LongDescription>Can't close {2.givenClass} since it is always null in {1}</LongDescription>
+    <LongDescription>Cannot close {2.givenClass} since it is always null in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> close() is being invoked on a value that is always null. If this statement is executed,
@@ -5348,7 +5348,7 @@ of the parameter or the annotation is wrong.
 a null value will be dereferenced, which
 would generate a <code>NullPointerException</code> when the code is executed.
 Of course, the problem might be that the branch or statement is infeasible and that
-the null pointer exception can't ever be executed; deciding that is beyond the ability of SpotBugs.
+the null pointer exception cannot ever be executed; deciding that is beyond the ability of SpotBugs.
 </p>
 ]]>
     </Details>
@@ -5362,7 +5362,7 @@ the null pointer exception can't ever be executed; deciding that is beyond the a
 a null value will be dereferenced, which
 would generate a <code>NullPointerException</code> when the code is executed.
 Of course, the problem might be that the branch or statement is infeasible and that
-the null pointer exception can't ever be executed; deciding that is beyond the ability of SpotBugs.
+the null pointer exception cannot ever be executed; deciding that is beyond the ability of SpotBugs.
 Due to the fact that this value had been previously tested for nullness,
 this is a definite possibility.
 </p>
@@ -5619,7 +5619,7 @@ body of an <code>if</code> statement, e.g.:</p>
     <LongDescription>Nullcheck of {2.givenClass} at {4.lineNumber} of value previously dereferenced in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> A value is checked here to see whether it is null, but this value can't
+<p> A value is checked here to see whether it is null, but this value cannot
 be null because it was previously dereferenced and if it were null a null pointer
 exception would have occurred at the earlier dereference.
 Essentially, this code and the previous dereference
@@ -7447,7 +7447,7 @@ to a type more specific than <code>Object[]</code>, as in:</p>
 }
 </code></pre>
 <p>This will usually fail by throwing a ClassCastException. The <code>toArray()</code>
-of almost all collections return an <code>Object[]</code>. They can't really do anything else,
+of almost all collections return an <code>Object[]</code>. They cannot really do anything else,
 since the Collection object has no reference to the declared generic type of the collection.
 <p>The correct way to do get an array of a specific type from a collection is to use
   <code>c.toArray(new String[0]);</code>
@@ -7491,7 +7491,7 @@ an indication of some misunderstanding or some other logic error.
   </BugPattern>
   <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
     <ShortDescription>instanceof will always return false</ShortDescription>
-    <LongDescription>instanceof will always return false in {1}, since a {2} can't be a {3}</LongDescription>
+    <LongDescription>instanceof will always return false in {1}, since a {2} cannot be a {3}</LongDescription>
     <Details>
 <![CDATA[
 <p>
