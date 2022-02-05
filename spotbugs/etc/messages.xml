@@ -8358,8 +8358,8 @@ String constructComponentName() {
           For sending feedback, check:
           </p>
           <ul>
-            <li><a href="https://github.com/spotbugs/spotbugs/blob/master/CONTRIBUTING.md">contributing guideline</a></li>
-            <li><a href="https://github.com/spotbugs/discuss/issues?q=">malinglist</a></li>
+            <li><a href="https://github.com/spotbugs/spotbugs/blob/master/.github/CONTRIBUTING.md">contributing guideline</a></li>
+            <li><a href="https://github.com/spotbugs/discuss/issues?q=">mailinglist</a></li>
           </ul>
 
           <p>
@@ -8408,8 +8408,8 @@ String constructComponentName() {
           For sending feedback, check:
           </p>
           <ul>
-            <li><a href="https://github.com/spotbugs/spotbugs/blob/master/CONTRIBUTING.md">contributing guideline</a></li>
-            <li><a href="https://github.com/spotbugs/discuss/issues?q=">malinglist</a></li>
+            <li><a href="https://github.com/spotbugs/spotbugs/blob/master/.github/CONTRIBUTING.md">contributing guideline</a></li>
+            <li><a href="https://github.com/spotbugs/discuss/issues?q=">mailinglist</a></li>
           </ul>
 
           <p>
