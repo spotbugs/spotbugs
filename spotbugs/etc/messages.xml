@@ -124,7 +124,7 @@ This plugin contains all of the standard SpotBugs detectors.
   <BugCategory category="STYLE">
     <Description>Dodgy code</Description>
     <Abbreviation>D</Abbreviation>
-    <Details>code that is confusing, anomalous, or
+    <Details>Code that is confusing, anomalous, or
             written in a way that leads itself to errors.
             Examples include dead local stores, switch fall through,
             unconfirmed casts, and redundant null check of value
@@ -136,29 +136,27 @@ This plugin contains all of the standard SpotBugs detectors.
   <BugCategory category="PERFORMANCE">
     <Description>Performance</Description>
     <Abbreviation>P</Abbreviation>
-    <Details>code that is not necessarily incorrect but may be inefficient</Details>
+    <Details>Code that is not necessarily incorrect but may be inefficient</Details>
   </BugCategory>
   <BugCategory category="MALICIOUS_CODE">
     <Description>Malicious code vulnerability</Description>
     <Abbreviation>V</Abbreviation>
-    <Details>code that is vulnerable to attacks from untrusted code</Details>
+    <Details>Code that is vulnerable to attacks from untrusted code</Details>
   </BugCategory>
   <BugCategory category="MT_CORRECTNESS">
     <Description>Multithreaded correctness</Description>
     <Abbreviation>M</Abbreviation>
-    <Details>code flaws having to do with threads, locks, and volatiles</Details>
+    <Details>Code flaws having to do with threads, locks, and volatiles</Details>
   </BugCategory>
   <BugCategory category="I18N">
     <Description>Internationalization</Description>
     <Abbreviation>I</Abbreviation>
-    <Details>code flaws having to do with internationalization and locale</Details>
-    <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
+    <Details>Code flaws having to do with internationalization and locale</Details>
   </BugCategory>
   <BugCategory category="EXPERIMENTAL">
     <Description>Experimental</Description>
     <Abbreviation>X</Abbreviation>
     <Details>Experimental and not fully vetted bug patterns</Details>
-    <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
 
   <!--
