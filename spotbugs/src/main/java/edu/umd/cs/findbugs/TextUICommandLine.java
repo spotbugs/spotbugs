@@ -278,7 +278,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
         if (index >= 0) {
             Path path = Paths.get(optionExtraPart.substring(index + 1));
             try {
-                OutputStream oStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                OutputStream oStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+                        StandardOpenOption.TRUNCATE_EXISTING);
                 if ("gz".equals(Util.getFileExtension(path.toFile()))) {
                     oStream = new GZIPOutputStream(oStream);
                 }
