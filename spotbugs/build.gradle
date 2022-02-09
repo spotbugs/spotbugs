@@ -2,6 +2,19 @@ apply from: "$rootDir/gradle/maven.gradle"
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
 
+tasks.named('compileJava', JavaCompile).configure {
+    options.release = 8
+}
+
+// Force Eclipse use Java 1.8, otherwise it will get Java 17 (!) from gradle
+eclipse {
+  jdt {
+    sourceCompatibility = 8
+    targetCompatibility = 8
+    javaRuntimeName = "JavaSE-1.8"
+  }
+}
+
 configurations {
   // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
   logBinding
@@ -107,13 +120,11 @@ tasks.withType(Jar).configureEach {
   //destinationDir = file("$projectDir/lib")
 }
 
-eclipse.classpath {
-  plusConfigurations += [ configurations.appleExtensions ]
-}
-
 eclipse.classpath.file {
     whenMerged {
       classpath ->
+         classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('build/classes/')}
+         classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('build/resources/')}
          classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('xml-apis')}
          classpath.entries.forEach {
              entry ->
@@ -122,7 +133,22 @@ eclipse.classpath.file {
                    entry.path = ".libs/" + java.nio.file.Paths.get(entry.path).getFileName().toString()
                    entry.exported = true
                }
-      }
+         }
+         Map entryByPath = classpath.entries.groupBy { entry -> entry.path }
+         entryByPath.each { key, values ->
+          if (values.size() > 1) {
+            def entry = values.first()
+            if (entry.kind == 'src') {
+              entry.includes = []
+              entry.excludes = []
+            }
+            int index = classpath.entries.indexOf entry
+            logger.lifecycle "Removing ${values.collect { it.path }}"
+            classpath.entries.removeAll values
+            logger.lifecycle "Adding ${entry.path}"
+            classpath.entries.add index, entry
+          }
+        }
     }
 }
 
@@ -325,6 +351,26 @@ apply from: "$rootDir/gradle/jigsaw.gradle"
 tasks.named('spotbugsTest').configure {
   ignoreFailures = true
 }
+
+dependencies {
+  constraints {
+    logBinding("org.apache.logging.log4j:log4j-core") {
+      version {
+        strictly("[2.17.1, 3[")
+        prefer("2.17.1")
+      }
+      because("CVE-2021-44228, CVE-2021-45046, CVE-2021-45105, CVE-2021-44832: Log4j vulnerable to remote code execution and other critical security vulnerabilities")
+    }
+    logBinding("ch.qos.logback:logback-core") {
+      version {
+        strictly("[1.2.9, 2[")
+        prefer("1.2.10")
+      }
+      because("CVE-2021-42550: Logback vulnerable to remote code execution vulnerabilities")
+    }
+  }
+}
+
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual
 // TODO : bugdesc
