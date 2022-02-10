@@ -220,7 +220,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         }
 
         if (isSerializable) {
-            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_SERIALIZEABLE", NORMAL_PRIORITY).addClass(this));
+            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", NORMAL_PRIORITY).addClass(this));
         }
 
         super.visitAfter(obj);

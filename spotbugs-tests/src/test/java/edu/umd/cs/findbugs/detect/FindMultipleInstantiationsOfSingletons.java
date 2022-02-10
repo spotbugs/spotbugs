@@ -42,8 +42,8 @@ public class FindMultipleInstantiationsOfSingletons extends AbstractIntegrationT
     @Test
     public void serializableSingletonTest() {
         performAnalysis("singletons/SerializableSingleton.class");
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZEABLE", 1);
-        assertSINGBug("SING_SINGLETON_IMPLEMENTS_SERIALIZEABLE", "SerializableSingleton");
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 1);
+        assertSINGBug("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", "SerializableSingleton");
     }
 
     @Test
@@ -69,7 +69,7 @@ public class FindMultipleInstantiationsOfSingletons extends AbstractIntegrationT
         assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
         assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
         assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZEABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
         assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
     }
 

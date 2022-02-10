@@ -8688,7 +8688,7 @@ after the call to initLogging, the logger configuration is lost
         </p>]]>
     </Details>
   </BugPattern>
-  <BugPattern type="SING_SINGLETON_IMPLEMENTS_SERIALIZEABLE">
+  <BugPattern type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE">
     <ShortDescription>Class using singleton design pattern directly or indirectly implements Serializable interface.</ShortDescription>
     <LongDescription>Class ({0}) using singleton design pattern directly or indirectly implements Serializable interface.</LongDescription>
     <Details>

@@ -660,7 +660,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.FindInstanceLockOnSharedStaticData" speed="fast"
                     reports="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA"/>
           <Detector class="edu.umd.cs.findbugs.detect.MultipleInstantiationsOfSingletons" speed="fast"
-                    reports="SING_SINGLETON_IMPLEMENTS_CLONEABLE,SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE,SING_SINGLETON_IMPLEMENTS_CLONE_METHOD,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR,SING_SINGLETON_IMPLEMENTS_SERIALIZEABLE,SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" />
+                    reports="SING_SINGLETON_IMPLEMENTS_CLONEABLE,SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE,SING_SINGLETON_IMPLEMENTS_CLONE_METHOD,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR,SING_SINGLETON_IMPLEMENTS_SERIALIZABLE,SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" />
                     
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
@@ -1276,6 +1276,6 @@
           <BugPattern abbrev="SING" type="SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE" category="CORRECTNESS" />
           <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_CLONE_METHOD" category="CORRECTNESS" />
           <BugPattern abbrev="SING" type="SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR" category="CORRECTNESS" />
-          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_SERIALIZEABLE" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE" category="CORRECTNESS" />
           <BugPattern abbrev="SING" type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" category="CORRECTNESS" />
 </FindbugsPlugin>
