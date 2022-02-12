@@ -60,6 +60,9 @@ public class Util {
                         // System.out.println("Outer class is " +
                         // ic.getOuterClassIndex());
                         ConstantClass oc = (ConstantClass) obj.getConstantPool().getConstant(ic.getOuterClassIndex());
+                        if (oc == null) {
+                            return null;
+                        }
                         String ocName = oc.getBytes(obj.getConstantPool());
                         return Repository.lookupClass(ocName);
                     }

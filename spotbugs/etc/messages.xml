@@ -1733,6 +1733,14 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ForgotToUpdateHashCodeEqualsToStringDetector">
+    <Details>
+		<![CDATA[
+			<p> forgot to update hashCode() or equals() or toString().
+			</p>
+		]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -3283,6 +3291,66 @@ equal objects have equal hashCodes.
 and thus doesn't fulfill the requirement that equal objects have equal hashCodes.
 An instance of this class is used in a hash data structure, making the need to
 fix this problem of highest importance.
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="HE_NO_EQUALS_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE">
+    <ShortDescription>There is no equals() unlike its parent or outer class or interface.</ShortDescription>
+    <LongDescription>There is no equals() unlike its parent or outer class or interface.</LongDescription>
+    <Details>
+<![CDATA[
+  <p>No equals() unlike its parent or outer class or interface.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="HE_NO_HASHCODE_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE">
+    <ShortDescription>There is no hashCode() unlike its parent class or interface.</ShortDescription>
+    <LongDescription>There is no hashCode() unlike its parent class or interface.</LongDescription>
+    <Details>
+<![CDATA[
+  <p>No hashCode() unlike its parent or outer class or interface.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="USELESS_STRING_NO_TOSTRING_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE">
+    <ShortDescription>There is no toString() unlike its parent or outer class or interface.</ShortDescription>
+    <LongDescription>There is no toString() unlike its parent or outer class or interface.</LongDescription>
+    <Details>
+<![CDATA[
+  <p>No toString() unlike its parent or outer class or interface.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="HE_MEMBER_DOESNT_APPEAR_IN_EQUALS">
+    <ShortDescription>Instance member doesn't appear in equals().</ShortDescription>
+    <LongDescription>Instance member doesn't appear in equals().</LongDescription>
+    <Details>
+<![CDATA[
+  <p>
+  Instance member doesn't appear in equals().
+  </p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="HE_MEMBER_DOESNT_APPEAR_IN_HASHCODE">
+    <ShortDescription>Instance member doesn't appear in hashCode().</ShortDescription>
+    <LongDescription>Instance member doesn't appear in hashCode().</LongDescription>
+    <Details>
+<![CDATA[
+  <p>
+  Instance member doesn't appear in hashCode().
+  </p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="USELESS_STRING_MEMBER_DOESNT_APPEAR_IN_TOSTRING">
+    <ShortDescription>Instance member doesn't appear in toString().</ShortDescription>
+    <LongDescription>Instance member doesn't appear in toString().</LongDescription>
+    <Details>
+<![CDATA[
+  <p>
+  Instance member doesn't appear in toString().
+  </p>
 ]]>
     </Details>
   </BugPattern>

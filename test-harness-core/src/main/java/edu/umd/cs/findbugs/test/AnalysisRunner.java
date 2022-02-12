@@ -84,6 +84,11 @@ public class AnalysisRunner {
 
     @Nonnull
     public BugCollectionBugReporter run(Path... files) {
+        return run(Priorities.LOW_PRIORITY, BugRanker.VISIBLE_RANK_MAX, files);
+    }
+
+    @Nonnull
+    public BugCollectionBugReporter run(int priorityThreshold, int bugRankThreshold, Path... files) {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
         try (FindBugs2 engine = new FindBugs2(); Project project = createProject(files)) {
@@ -93,8 +98,8 @@ public class AnalysisRunner {
             engine.setDetectorFactoryCollection(detectorFactoryCollection);
 
             BugCollectionBugReporter bugReporter = new BugCollectionBugReporter(project);
-            bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
-            bugReporter.setRankThreshold(BugRanker.VISIBLE_RANK_MAX);
+            bugReporter.setPriorityThreshold(priorityThreshold);
+            bugReporter.setRankThreshold(bugRankThreshold);
 
             engine.setBugReporter(bugReporter);
             final UserPreferences preferences = UserPreferences.createDefaultUserPreferences();

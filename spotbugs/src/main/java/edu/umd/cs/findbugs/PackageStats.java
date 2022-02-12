@@ -53,7 +53,7 @@ class BugCounts {
 
     protected void ensureNonnullBugCounts() {
         if (nBugs == null) {
-            nBugs = new int[] { 0, 0, 0, 0, 0 };
+            nBugs = new int[] { 0, 0, 0, 0, 0, 0 };
         }
 
     }

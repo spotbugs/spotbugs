@@ -11,6 +11,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed UI freezes in Eclipse on bug count decorations update ([#285](https://github.com/spotbugs/spotbugs/issues/285))
 
 ### Added
+* New detector `ForgotToUpdateHashcodeEqualsToStringDetector` for new bug type `HE_NO_EQUALS_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE`,  `HE_NO_HASHCODE_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE`, 
+`USELESS_STRING_NO_TOSTRING_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE`, 
+`HE_MEMBER_DOESNT_APPEAR_IN_EQUALS`, 
+`HE_MEMBER_DOESNT_APPEAR_IN_HASHCODE` and
+`USELESS_STRING_MEMBER_DOESNT_APPEAR_IN_TOSTRING` of IGNORE or EXP_PRIORITY. This detector detects incomplete hashcode(), equals() and toString() for preventing forgetting to update when member variables are updated.
+
 * New detector `FindInstanceLockOnSharedStaticData` for new bug type `SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA`. This detector reports a bug if an instance level lock is used to modify a shared static data. (See [SEI CERT rule LCK06-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK06-J.+Do+not+use+an+instance+lock+to+protect+shared+static+data))
 
 ## 4.5.3 - 2022-01-04

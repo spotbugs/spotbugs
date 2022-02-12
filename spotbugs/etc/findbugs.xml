@@ -555,6 +555,8 @@
                     reports="FE_FLOATING_POINT_EQUALITY,FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation" speed="slow"
                     reports="OBL_UNSATISFIED_OBLIGATION,OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ForgotToUpdateHashCodeEqualsToStringDetector" speed="moderate"
+                    reports="HE_NO_EQUALS_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE,HE_NO_HASHCODE_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE,USELESS_STRING_NO_TOSTRING_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE,HE_MEMBER_DOESNT_APPEAR_IN_EQUALS,HE_MEMBER_DOESNT_APPEAR_IN_HASHCODE,USELESS_STRING_MEMBER_DOESNT_APPEAR_IN_TOSTRING"/>
           <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath" speed="fast"
                     reports="UM_UNNECESSARY_MATH"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies" speed="moderate"
@@ -853,6 +855,12 @@
           <BugPattern abbrev="HE" type="HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="HE" type="HE_USE_OF_UNHASHABLE_CLASS" category="CORRECTNESS"/>
+          <BugPattern abbrev="HE" type="HE_NO_EQUALS_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE" category="CORRECTNESS"/>
+          <BugPattern abbrev="HE" type="HE_NO_HASHCODE_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE" category="CORRECTNESS"/>
+          <BugPattern abbrev="USELESS_STRING" type="USELESS_STRING_NO_TOSTRING_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE" category="CORRECTNESS"/>
+          <BugPattern abbrev="HE" type="HE_MEMBER_DOESNT_APPEAR_IN_EQUALS" category="CORRECTNESS"/>
+          <BugPattern abbrev="HE" type="HE_MEMBER_DOESNT_APPEAR_IN_HASHCODE" category="CORRECTNESS"/>
+          <BugPattern abbrev="USELESS_STRING" type="USELESS_STRING_MEMBER_DOESNT_APPEAR_IN_TOSTRING" category="CORRECTNESS"/>
           <BugPattern abbrev="Eq" type="EQ_COMPARETO_USE_OBJECT_EQUALS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="BAD_PRACTICE"/>

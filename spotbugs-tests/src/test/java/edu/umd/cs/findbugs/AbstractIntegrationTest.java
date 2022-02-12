@@ -110,6 +110,10 @@ public abstract class AbstractIntegrationTest {
      * low priority threshold.
      */
     protected void performAnalysis(@SlashedClassName final String... analyzeMe) {
+        performAnalysis(Priorities.LOW_PRIORITY, BugRanker.VISIBLE_RANK_MAX, analyzeMe);
+    }
+
+    protected void performAnalysis(int priorityThreshold, int bugRankThreshold, @SlashedClassName final String... analyzeMe) {
         AnalysisRunner runner = new AnalysisRunner();
 
         final File lib = getFindbugsTestCasesFile("lib");
@@ -125,6 +129,6 @@ public abstract class AbstractIntegrationTest {
                 .map(s -> getFindbugsTestCasesFile(BUILD_CLASSES_CLI + s).toPath())
                 .collect(Collectors.toList())
                 .toArray(new Path[analyzeMe.length]);
-        bugReporter = runner.run(paths);
+        bugReporter = runner.run(priorityThreshold, bugRankThreshold, paths);
     }
 }
