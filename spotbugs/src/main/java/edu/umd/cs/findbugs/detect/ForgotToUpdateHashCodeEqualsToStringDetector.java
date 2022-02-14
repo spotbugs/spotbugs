@@ -41,8 +41,8 @@ import edu.umd.cs.findbugs.visitclass.*;
  * <p>TODO: Many classes of spotbugs are detected by this detector. Too many to fix. 
  * However, since the bugs in this detector is IGNORE or EXP_PRIORITY, it is not detected in gradle tasks such as spotbugsMain.</p>
  * 
- * <p>NOTE: How to fix bugs of this detector. add 'transient' to fields,
- * or modify HET methods, or refactor class design, or ignore the bugs.</p>
+ * <p>NOTE: How to fix warnings by this detector. add 'transient' to fields,
+ * or modify HET methods, or refactor your class design, or ignore the warnings.</p>
  * 
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/1415">issue1415</a>
  * @author lifeinwild1@gmail.com https://github.com/lifeinwild
@@ -59,6 +59,10 @@ public class ForgotToUpdateHashCodeEqualsToStringDetector implements Detector2 {
     private final BugReporter bugReporter;
 
     /**
+     * parent class of targetCls
+     */
+    private JavaClass parentCls = null;
+    /**
      * parent class has hashCode() except {@link java.lang.Object}.
      */
     private boolean parentHasHashCode = false;
@@ -71,6 +75,9 @@ public class ForgotToUpdateHashCodeEqualsToStringDetector implements Detector2 {
      */
     private boolean parentHasToString = false;
 
+    private JavaClass interfaceDefinesHashCode = null;
+    private JavaClass interfaceDefinesEquals = null;
+    private JavaClass interfaceDefinesToString = null;
     private boolean interfaceHasHashCode = false;
     private boolean interfaceHasEquals = false;
     private boolean interfaceHasToString = false;
@@ -87,11 +94,6 @@ public class ForgotToUpdateHashCodeEqualsToStringDetector implements Detector2 {
      * class that this detector analyze
      */
     private JavaClass targetCls = null;
-
-    /**
-     * parent class of targetCls
-     */
-    private JavaClass parentCls = null;
 
     private boolean needOuterAnalysis = false;
     private JavaClass outerCls = null;
@@ -119,21 +121,51 @@ public class ForgotToUpdateHashCodeEqualsToStringDetector implements Detector2 {
     }
 
     private void checkAboutParent() {
-        if ((parentHasHashCode || interfaceHasHashCode || outerHasHashCode) && !targetClsHasHashCode) {
-            BugInstance bug = new BugInstance(this, HE_NO_HASHCODE_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE,
-                    EXP_PRIORITY).addClass(targetCls);
-            bugReporter.reportBug(bug);
+        if (!targetClsHasHashCode) {
+            JavaClass derivedFrom = null;
+            if (parentHasHashCode) {
+                derivedFrom = parentCls;
+            } else if (interfaceHasHashCode) {
+                derivedFrom = interfaceDefinesHashCode;
+            } else if (outerHasHashCode) {
+                derivedFrom = outerCls;
+            }
+            if (derivedFrom != null) {
+                BugInstance bug = new BugInstance(this, HE_NO_HASHCODE_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE,
+                        EXP_PRIORITY).addClass(targetCls).addClass(derivedFrom);
+                bugReporter.reportBug(bug);
+            }
         }
-        if ((parentHasEquals || interfaceHasEquals || outerHasEquals) && !targetClsHasEquals) {
-            BugInstance bug = new BugInstance(this, HE_NO_EQUALS_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE,
-                    EXP_PRIORITY).addClass(targetCls);
-            bugReporter.reportBug(bug);
+        if (!targetClsHasEquals) {
+            JavaClass derivedFrom = null;
+            if (parentHasEquals) {
+                derivedFrom = parentCls;
+            } else if (interfaceHasEquals) {
+                derivedFrom = interfaceDefinesEquals;
+            } else if (outerHasEquals) {
+                derivedFrom = outerCls;
+            }
+            if (derivedFrom != null) {
+                BugInstance bug = new BugInstance(this, HE_NO_EQUALS_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE,
+                        EXP_PRIORITY).addClass(targetCls).addClass(derivedFrom);
+                bugReporter.reportBug(bug);
+            }
         }
-        if ((parentHasToString || interfaceHasToString || outerHasToString) && !targetClsHasToString) {
-            BugInstance bug = new BugInstance(this,
-                    USELESS_STRING_NO_TOSTRING_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE, IGNORE_PRIORITY)
-                            .addClass(targetCls);
-            bugReporter.reportBug(bug);
+        if (!targetClsHasToString) {
+            JavaClass derivedFrom = null;
+            if (parentHasToString) {
+                derivedFrom = parentCls;
+            } else if (interfaceHasToString) {
+                derivedFrom = interfaceDefinesToString;
+            } else if (outerHasToString) {
+                derivedFrom = outerCls;
+            }
+            if (derivedFrom != null) {
+                BugInstance bug = new BugInstance(this,
+                        USELESS_STRING_NO_TOSTRING_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE, IGNORE_PRIORITY)
+                                .addClass(targetCls).addClass(derivedFrom);
+                bugReporter.reportBug(bug);
+            }
         }
     }
 
@@ -523,10 +555,13 @@ public class ForgotToUpdateHashCodeEqualsToStringDetector implements Detector2 {
         for (Method m : interf.getMethods()) {
             if (isHashCode(m)) {
                 interfaceHasHashCode = true;
+                interfaceDefinesHashCode = interf;
             } else if (isEquals(m)) {
                 interfaceHasEquals = true;
+                interfaceDefinesEquals = interf;
             } else if (isToString(m)) {
                 interfaceHasToString = true;
+                interfaceDefinesToString = interf;
             }
         }
     }

@@ -1736,8 +1736,37 @@ factory pattern to create these objects.</p>
   <Detector class="edu.umd.cs.findbugs.detect.ForgotToUpdateHashCodeEqualsToStringDetector">
     <Details>
 		<![CDATA[
-			<p> forgot to update hashCode() or equals() or toString().
+			<p>This detector detects incomplete hashCode(), equals() and toString() for preventing forgetting to update when member variables are updated.</p>
+
+			<p>The bug patterns of ForgotToUpdateHashCodeEqualsToStringDetector are not based on any contract, but 2 rules of thumb.
+			So reports by this detector are EXP_PRIORITY.</p>
+			
+			<p><i>1. equals and hashcode often must use all member variables, except transient fields.</i>
+			This is a rule of thumb and does not hold in some cases.
+			So the detection is often false positives.</p>
+
+			<p>There is another problem: some classes don't require to implement equals and hashcode. 
+			How do we distinguish between classes that require to implement equals and hashcode and those that don't?</p>
+			
+			<p>If equals or hashcode is overridden in abstract class, it means that equivalence comparison was chosen, not identity comparison, as a design decision that should be inherited by the concrete classes.
 			</p>
+			<p>XXX_<i>UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE</i> means that the design decision is not properly inherited.</p>
+			
+			<p>It also means that equals and hashcode are expected to be used in the use cases of the abstract class.
+			</p>
+			
+			<p><i>2. if an abstract class overrides equals and hashcode, the concrete classes must also do so.</i>
+			This is a rule of thumb and does not hold in some cases.
+			</p>
+			
+			<p>In the following two scenarios, ForgotToUpdateHashCodeEqualsToStringDetector should detects the bugs.</p>
+			
+			<p>Scenario1: Suppose an abstract class that has some member variables and implements equals and hashcode.
+			A programmer created a concrete class that has some member variables and inherit the abstract class.
+			But he forgot to implement equals and hashcode in the concrete class.</p>
+			
+			<p>Scenario2: He implemented equals and hashcode properly in the concrete class. But one day he added a member variable to the concrete class and forgot to update equals and hashcode.
+			the equals and hashcode are now incomplete implementation only with a part of member variables.</p>
 		]]>
     </Details>
   </Detector>
@@ -3296,60 +3325,108 @@ fix this problem of highest importance.
   </BugPattern>
   <BugPattern type="HE_NO_EQUALS_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE">
     <ShortDescription>There is no equals() unlike its parent or outer class or interface.</ShortDescription>
-    <LongDescription>There is no equals() unlike its parent or outer class or interface.</LongDescription>
+    <LongDescription>There is no equals() in {0} unlike {1}.
+        This warning is based on a not enough reliable assumption:
+        If an abstract class overrides equals(), the concrete classes must also do so.
+        How to fix: create equals(), or refactor your class design, or ignore this warnings.
+    </LongDescription>
     <Details>
 <![CDATA[
-  <p>No equals() unlike its parent or outer class or interface.</p>
+  <p>
+          There is no equals() in the target class unlike the parent or outer class or interface.
+        This warning is based on a not enough reliable assumption:
+        If an abstract class overrides equals(), the concrete classes must also do so.
+        How to fix: create equals(), or refactor your class design, or ignore this warnings.
+  </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_NO_HASHCODE_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE">
-    <ShortDescription>There is no hashCode() unlike its parent class or interface.</ShortDescription>
-    <LongDescription>There is no hashCode() unlike its parent class or interface.</LongDescription>
+    <ShortDescription>There is no hashCode() unlike its parent or outer class or interface.</ShortDescription>
+    <LongDescription>There is no hashCode() in {0} unlike {1}.
+        This warning is based on a not enough reliable assumption:
+        If an abstract class overrides hashCode(), the concrete classes must also do so.
+        How to fix: create hashCode(), or refactor your class design, or ignore this warnings.
+    </LongDescription>
     <Details>
 <![CDATA[
-  <p>No hashCode() unlike its parent or outer class or interface.</p>
+  <p>
+           There is no hashCode() in the target class unlike the parent or outer class or interface.
+        This warning is based on a not enough reliable assumption:
+        If an abstract class overrides hashCode(), the concrete classes must also do so.
+        How to fix: create hashCode(), or refactor your class design, or ignore this warnings.
+  </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="USELESS_STRING_NO_TOSTRING_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE">
-    <ShortDescription>There is no toString() unlike its parent or outer class or interface.</ShortDescription>
-    <LongDescription>There is no toString() unlike its parent or outer class or interface.</LongDescription>
+    <ShortDescription>This warning is ignorable in most cases. There is no toString() unlike its parent or outer class or interface.</ShortDescription>
+    <LongDescription>
+        This warning is ignorable in most cases. There is no toString() in {0} unlike {1}.
+        This warning is based on a not reliable assumption: 
+        If an abstract class overrides toString(), it must also be considered in concrete classes.
+    </LongDescription>
     <Details>
 <![CDATA[
-  <p>No toString() unlike its parent or outer class or interface.</p>
+    <p>
+        This warning is ignorable in most cases. There is no toString() in the target class unlike its parent or outer class or interface.
+        This warning is based on a not reliable assumption: 
+        If an abstract class overrides toString(), it must also be considered in concrete classes.
+    </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_MEMBER_DOESNT_APPEAR_IN_EQUALS">
-    <ShortDescription>Instance member doesn't appear in equals().</ShortDescription>
-    <LongDescription>Instance member doesn't appear in equals().</LongDescription>
+    <ShortDescription>An instance member doesn't appear in equals().</ShortDescription>
+    <LongDescription>
+        An instance member doesn't appear in {0}.
+        This warning is based on a not enough reliable rule of thumb:
+        equals() often must use all member variables if it is overridden, except transient fields.
+        How to fix: add 'transient' to fields, or modify equals() method, or refactor your class design, or ignore the warning.
+    </LongDescription>
     <Details>
 <![CDATA[
   <p>
-  Instance member doesn't appear in equals().
+        An instance member doesn't appear in the target class.
+        This warning is based on a not enough reliable assumption:
+        equals() often must use all member variables if it is overridden, except transient fields.
+        How to fix: add 'transient' to fields, or modify equals() method, or refactor your class design, or ignore the warning.
   </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_MEMBER_DOESNT_APPEAR_IN_HASHCODE">
-    <ShortDescription>Instance member doesn't appear in hashCode().</ShortDescription>
-    <LongDescription>Instance member doesn't appear in hashCode().</LongDescription>
+    <ShortDescription>An instance member doesn't appear in hashCode().</ShortDescription>
+    <LongDescription>
+        An instance member doesn't appear in {0}.
+        This warning is based on a not enough reliable rule of thumb:
+        hashCode() often must use all member variables if it is overridden, except transient fields.
+        How to fix: add 'transient' to fields, or modify hashCode() method, or refactor your class design, or ignore the warning.
+    </LongDescription>
     <Details>
 <![CDATA[
   <p>
-  Instance member doesn't appear in hashCode().
+        An instance member doesn't appear in hashCode() of the target class.
+        This warning is based on a not enough reliable rule of thumb:
+        hashCode() often must use all member variables if it is overridden, except transient fields.
+        How to fix: add 'transient' to fields, or modify hashCode() method, or refactor your class design, or ignore the warning.
   </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="USELESS_STRING_MEMBER_DOESNT_APPEAR_IN_TOSTRING">
-    <ShortDescription>Instance member doesn't appear in toString().</ShortDescription>
-    <LongDescription>Instance member doesn't appear in toString().</LongDescription>
+    <ShortDescription>This warning is ignorable in most cases. an instance member doesn't appear in toString().</ShortDescription>
+    <LongDescription>
+        This warning is ignorable in most cases. an instance member doesn't appear in {0}.
+        This warning is based on a not reliable rule of thumb:
+        Implementations of toString() by some major tools use all member variables, except transient fields.
+    </LongDescription>
     <Details>
 <![CDATA[
   <p>
-  Instance member doesn't appear in toString().
+        This warning is ignorable in most cases. an instance member doesn't appear in toString() of the target class.
+        This warning is based on a not reliable rule of thumb:
+        Implementations of toString() by some major tools use all member variables, except transient fields.
   </p>
 ]]>
     </Details>
