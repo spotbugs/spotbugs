@@ -3331,14 +3331,14 @@ fix this problem of highest importance.
         How to fix: create equals(), or refactor your class design, or ignore this warnings.
     </LongDescription>
     <Details>
-<![CDATA[
-  <p>
-          There is no equals() in the target class unlike the parent or outer class or interface.
-        This warning is based on a not enough reliable assumption:
-        If an abstract class overrides equals(), the concrete classes must also do so.
-        How to fix: create equals(), or refactor your class design, or ignore this warnings.
-  </p>
-]]>
+    <![CDATA[
+      <p>
+            There is no equals() in the target class unlike the parent or outer class or interface.
+            This warning is based on a not enough reliable assumption:
+            If an abstract class overrides equals(), the concrete classes must also do so.
+            How to fix: create equals(), or refactor your class design, or ignore this warnings.
+      </p>
+    ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_NO_HASHCODE_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE">
@@ -3349,14 +3349,14 @@ fix this problem of highest importance.
         How to fix: create hashCode(), or refactor your class design, or ignore this warnings.
     </LongDescription>
     <Details>
-<![CDATA[
-  <p>
-           There is no hashCode() in the target class unlike the parent or outer class or interface.
-        This warning is based on a not enough reliable assumption:
-        If an abstract class overrides hashCode(), the concrete classes must also do so.
-        How to fix: create hashCode(), or refactor your class design, or ignore this warnings.
-  </p>
-]]>
+    <![CDATA[
+      <p>
+            There is no hashCode() in the target class unlike the parent or outer class or interface.
+            This warning is based on a not enough reliable assumption:
+            If an abstract class overrides hashCode(), the concrete classes must also do so.
+            How to fix: create hashCode(), or refactor your class design, or ignore this warnings.
+      </p>
+    ]]>
     </Details>
   </BugPattern>
   <BugPattern type="USELESS_STRING_NO_TOSTRING_UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE">
@@ -3367,13 +3367,13 @@ fix this problem of highest importance.
         If an abstract class overrides toString(), it must also be considered in concrete classes.
     </LongDescription>
     <Details>
-<![CDATA[
-    <p>
-        This warning is ignorable in most cases. There is no toString() in the target class unlike its parent or outer class or interface.
-        This warning is based on a not reliable assumption: 
-        If an abstract class overrides toString(), it must also be considered in concrete classes.
-    </p>
-]]>
+    <![CDATA[
+        <p>
+            This warning is ignorable in most cases. There is no toString() in the target class unlike its parent or outer class or interface.
+            This warning is based on a not reliable assumption: 
+            If an abstract class overrides toString(), it must also be considered in concrete classes.
+        </p>
+    ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_MEMBER_DOESNT_APPEAR_IN_EQUALS">
@@ -3385,14 +3385,14 @@ fix this problem of highest importance.
         How to fix: add 'transient' to fields, or modify equals() method, or refactor your class design, or ignore the warning.
     </LongDescription>
     <Details>
-<![CDATA[
-  <p>
-        An instance member doesn't appear in the target class.
-        This warning is based on a not enough reliable assumption:
-        equals() often must use all member variables if it is overridden, except transient fields.
-        How to fix: add 'transient' to fields, or modify equals() method, or refactor your class design, or ignore the warning.
-  </p>
-]]>
+    <![CDATA[
+      <p>
+            An instance member doesn't appear in the target class.
+            This warning is based on a not enough reliable assumption:
+            equals() often must use all member variables if it is overridden, except transient fields.
+            How to fix: add 'transient' to fields, or modify equals() method, or refactor your class design, or ignore the warning.
+      </p>
+    ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_MEMBER_DOESNT_APPEAR_IN_HASHCODE">
@@ -3404,14 +3404,14 @@ fix this problem of highest importance.
         How to fix: add 'transient' to fields, or modify hashCode() method, or refactor your class design, or ignore the warning.
     </LongDescription>
     <Details>
-<![CDATA[
-  <p>
-        An instance member doesn't appear in hashCode() of the target class.
-        This warning is based on a not enough reliable rule of thumb:
-        hashCode() often must use all member variables if it is overridden, except transient fields.
-        How to fix: add 'transient' to fields, or modify hashCode() method, or refactor your class design, or ignore the warning.
-  </p>
-]]>
+    <![CDATA[
+      <p>
+            An instance member doesn't appear in hashCode() of the target class.
+            This warning is based on a not enough reliable rule of thumb:
+            hashCode() often must use all member variables if it is overridden, except transient fields.
+            How to fix: add 'transient' to fields, or modify hashCode() method, or refactor your class design, or ignore the warning.
+      </p>
+    ]]>
     </Details>
   </BugPattern>
   <BugPattern type="USELESS_STRING_MEMBER_DOESNT_APPEAR_IN_TOSTRING">
@@ -3422,13 +3422,13 @@ fix this problem of highest importance.
         Implementations of toString() by some major tools use all member variables, except transient fields.
     </LongDescription>
     <Details>
-<![CDATA[
-  <p>
-        This warning is ignorable in most cases. an instance member doesn't appear in toString() of the target class.
-        This warning is based on a not reliable rule of thumb:
-        Implementations of toString() by some major tools use all member variables, except transient fields.
-  </p>
-]]>
+    <![CDATA[
+      <p>
+            This warning is ignorable in most cases. an instance member doesn't appear in toString() of the target class.
+            This warning is based on a not reliable rule of thumb:
+            Implementations of toString() by some major tools use all member variables, except transient fields.
+      </p>
+    ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_HASHCODE_USE_OBJECT_EQUALS">
