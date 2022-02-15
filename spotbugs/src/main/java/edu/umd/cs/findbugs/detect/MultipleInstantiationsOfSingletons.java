@@ -61,8 +61,8 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         try {
             cloneableInterface = Repository.getInterfaces("java.lang.Cloneable")[0];
             serializableInterface = Repository.getInterfaces("java.io.Serializable")[0];
+        } catch (Exception e) {
         }
-        catch (Exception e) {}
     }
 
     @Override
@@ -92,13 +92,12 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                 if (implementedInterface.equals(cloneableInterface)) {
                     isCloneable = true;
                     implementsCloneableDirectly = true;
-                }
-                else if (implementedInterface.equals(serializableInterface)) {
+                } else if (implementedInterface.equals(serializableInterface)) {
                     isSerializable = true;
                 }
             }
+        } catch (ClassNotFoundException e) {
         }
-        catch (ClassNotFoundException e) {}
 
         if (!isCloneable || !isSerializable) {
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
@@ -109,7 +108,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                 if (subtypes2.isSubtype(DescriptorFactory.createClassDescriptorFromDottedClassName(obj.getSuperclassName()), cloneDescriptor)) {
                     implementsCloneableDirectly = false;
                 }
-                
+
                 if (subtypes2.isSubtype(getClassDescriptor(), serializableDescriptor)) {
                     isSerializable = true;
                 }
@@ -128,7 +127,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             methods.put(Methods.CLONE, getXMethod());
             hasCloneMethod = true;
         }
-        
+
         if (Const.CONSTRUCTOR_NAME.equals(getMethod().getName())) {
             constructors.add(getXMethod());
         }
@@ -149,7 +148,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         }
         return false;
     }
-    
+
     @Override
     public void sawOpcode(int seen) {
         if (seen == Const.ATHROW) {
@@ -159,8 +158,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                     cloneOnlyThrowsCloneNotSupportedException = true;
                 }
             }
-        }
-        else if (seen == Const.ARETURN) {
+        } else if (seen == Const.ARETURN) {
             OpcodeStack.Item item = stack.getStackItem(0);
             XField field = item.getXField();
             if (field != null) {
@@ -171,8 +169,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                     methods.put(Methods.INSTANCE_GETTER, getXMethod());
                 }
             }
-        }
-        else if (seen == Const.MONITORENTER) {
+        } else if (seen == Const.MONITORENTER) {
             methodsUsingMonitor.add(getXMethod());
         }
     }
