@@ -1745,28 +1745,28 @@ factory pattern to create these objects.</p>
 			This is a rule of thumb and does not hold in some cases.
 			So the detection is often false positives.</p>
 
-			<p>There is another problem: some classes don't require to implement equals and hashcode. 
+			<p>There is another problem that some classes don't require to implement equals and hashcode. 
 			How do we distinguish between classes that require to implement equals and hashcode and those that don't?</p>
 			
 			<p>If equals or hashcode is overridden in abstract class, it means that equivalence comparison was chosen, not identity comparison, as a design decision that should be inherited by the concrete classes.
 			</p>
 			<p>XXX_<i>UNLIKE_PARENT_OR_OUTER_CLASS_OR_INTERFACE</i> means that the design decision is not properly inherited.</p>
 			
-			<p>It also means that equals and hashcode are expected to be used in the use cases of the abstract class.
+			<p>It also means that equals and hashcode are expected to be used in the use cases in the abstract class.
 			</p>
 			
 			<p><i>2. if an abstract class overrides equals and hashcode, the concrete classes must also do so.</i>
 			This is a rule of thumb and does not hold in some cases.
 			</p>
 			
-			<p>In the following two scenarios, ForgotToUpdateHashCodeEqualsToStringDetector should detects the bugs.</p>
+			<p>In the following two scenarios, ForgotToUpdateHashCodeEqualsToStringDetector should detect the bugs.</p>
 			
 			<p>Scenario1: Suppose an abstract class that has some member variables and implements equals and hashcode.
 			A programmer created a concrete class that has some member variables and inherit the abstract class.
-			But he forgot to implement equals and hashcode in the concrete class.</p>
+			But he forgot to implement equals and hashcode of the concrete class.</p>
 			
 			<p>Scenario2: He implemented equals and hashcode properly in the concrete class. But one day he added a member variable to the concrete class and forgot to update equals and hashcode.
-			the equals and hashcode are now incomplete implementation only with a part of member variables.</p>
+			The equals and hashcode are now incomplete implementation only with a part of member variables.</p>
 		]]>
     </Details>
   </Detector>
@@ -3328,7 +3328,7 @@ fix this problem of highest importance.
     <LongDescription>There is no equals() in {0} unlike {1}.
         This warning is based on a not enough reliable assumption:
         If an abstract class overrides equals(), the concrete classes must also do so.
-        How to fix: create equals(), or refactor your class design, or ignore this warnings.
+        How to fix: create equals(), or refactor your class design, or ignore this warning.
     </LongDescription>
     <Details>
     <![CDATA[
@@ -3336,7 +3336,7 @@ fix this problem of highest importance.
             There is no equals() in the target class unlike the parent or outer class or interface.
             This warning is based on a not enough reliable assumption:
             If an abstract class overrides equals(), the concrete classes must also do so.
-            How to fix: create equals(), or refactor your class design, or ignore this warnings.
+            How to fix: create equals(), or refactor your class design, or ignore this warning.
       </p>
     ]]>
     </Details>
@@ -3346,7 +3346,7 @@ fix this problem of highest importance.
     <LongDescription>There is no hashCode() in {0} unlike {1}.
         This warning is based on a not enough reliable assumption:
         If an abstract class overrides hashCode(), the concrete classes must also do so.
-        How to fix: create hashCode(), or refactor your class design, or ignore this warnings.
+        How to fix: create hashCode(), or refactor your class design, or ignore this warning.
     </LongDescription>
     <Details>
     <![CDATA[
@@ -3354,7 +3354,7 @@ fix this problem of highest importance.
             There is no hashCode() in the target class unlike the parent or outer class or interface.
             This warning is based on a not enough reliable assumption:
             If an abstract class overrides hashCode(), the concrete classes must also do so.
-            How to fix: create hashCode(), or refactor your class design, or ignore this warnings.
+            How to fix: create hashCode(), or refactor your class design, or ignore this warning.
       </p>
     ]]>
     </Details>
@@ -3417,14 +3417,14 @@ fix this problem of highest importance.
   <BugPattern type="USELESS_STRING_MEMBER_DOESNT_APPEAR_IN_TOSTRING">
     <ShortDescription>This warning is ignorable in most cases. an instance member doesn't appear in toString().</ShortDescription>
     <LongDescription>
-        This warning is ignorable in most cases. an instance member doesn't appear in {0}.
+        This warning is ignorable in most cases. An instance member doesn't appear in {0}.
         This warning is based on a not reliable rule of thumb:
         Implementations of toString() by some major tools use all member variables, except transient fields.
     </LongDescription>
     <Details>
     <![CDATA[
       <p>
-            This warning is ignorable in most cases. an instance member doesn't appear in toString() of the target class.
+            This warning is ignorable in most cases. An instance member doesn't appear in toString() of the target class.
             This warning is based on a not reliable rule of thumb:
             Implementations of toString() by some major tools use all member variables, except transient fields.
       </p>
