@@ -201,6 +201,9 @@ public class ForgotToUpdateHashCodeEqualsToStringDetector implements Detector2 {
         interfaceHasHashCode = false;
         interfaceHasEquals = false;
         interfaceHasToString = false;
+        interfaceDefinesEquals = null;
+        interfaceDefinesHashCode = null;
+        interfaceDefinesToString = null;
     }
 
     private void clearAboutOuter() {
