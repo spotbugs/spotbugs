@@ -13,7 +13,7 @@ import org.apache.bcel.classfile.Method;
 
 public class ThrowingExceptions extends OpcodeStackDetector {
     private final BugReporter bugReporter;
-    
+
     public ThrowingExceptions(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -26,8 +26,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             for (String exception : exceptionNames) {
                 if ("java.lang.Exception".equals(exception)) {
                     reportBug("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", getXMethod());
-                }
-                else if ("java.lang.Throwable".equals(exception)) {
+                } else if ("java.lang.Throwable".equals(exception)) {
                     reportBug("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", getXMethod());
                 }
             }
@@ -45,7 +44,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             }
         }
     }
-    
+
     private void reportBug(String bugName, XMethod method) {
         bugReporter.reportBug(new BugInstance(this, bugName, NORMAL_PRIORITY).addClass(this).addMethod(method));
     }

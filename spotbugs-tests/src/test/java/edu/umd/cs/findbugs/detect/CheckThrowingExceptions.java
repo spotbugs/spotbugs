@@ -21,20 +21,20 @@ public class CheckThrowingExceptions extends AbstractIntegrationTest {
 
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 1, "MethodsThrowingExceptions", "isCapitalizedThrowingRuntimeException");
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 0, "MethodsThrowingExceptions", "isCapitalizedThrowingSpecializedException");
-        
+
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 1, "MethodsThrowingExceptions", "methodThrowingBasicException");
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 0, "MethodsThrowingExceptions", "methodThrowingIOException");
-        
+
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 1, "MethodsThrowingExceptions", "methodThrowingThrowable");
     }
-    
+
     private void assertNumOfTHROWSBugs(String bugType, int num) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
                 .build();
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
     }
-    
+
     private void assertNumOfTHROWSBugs(String bugType, int num, String className, String method) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
