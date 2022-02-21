@@ -334,6 +334,17 @@ public class ClassContext {
     }
 
     /**
+     * Get a ValueRangeDataflow for given method.
+     *
+     * @param method
+     *            the method
+     * @return the ValueRangeDataflow
+     */
+    public ValueRangeDataflow getValueRangeDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
+        return getMethodAnalysis(ValueRangeDataflow.class, method);
+    }
+
+    /**
      * Get an IsNullValueDataflow for given method.
      *
      * @param method

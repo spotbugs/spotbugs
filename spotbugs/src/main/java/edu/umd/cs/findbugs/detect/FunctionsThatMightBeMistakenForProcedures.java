@@ -170,7 +170,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             if (returnUnknown > 0) {
                 priority++;
             }
-            if (returnNew > 0 && priority > NORMAL_PRIORITY) {
+            if (priority > NORMAL_PRIORITY) {
                 priority = NORMAL_PRIORITY;
             }
             if (updates > 0) {

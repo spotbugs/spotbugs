@@ -116,7 +116,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
                         fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
                     }
                 }
-            } else if (seen == Const.PUTSTATIC && !Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
+            } else if (!Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
                 fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
             }
             OpcodeStack.Item top = stack.getStackItem(0);
