@@ -96,7 +96,7 @@ dependencies {
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   api project(':spotbugs-annotations')
 
-  api "com.google.code.gson:gson:2.8.9"
+  api "com.google.code.gson:gson:2.9.0"
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
