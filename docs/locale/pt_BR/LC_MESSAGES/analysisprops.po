@@ -170,5 +170,5 @@ msgstr ""
 "Se verdadeiro, o detector SwitchFallthrough apenas reporta avisos para "
 "casos onde o código fonte não tem comentários com as palavras "
 "\"fall\" ou \"nobreak\". (Um caminho de origem preciso deve ser usado para esse "
-"recurso funcionar corretamente.) Isso ajuda a encontrar casos onde a fallthrough não é intencional.
+"recurso funcionar corretamente.) Isso ajuda a encontrar casos onde a fallthrough não é intencional."
 
