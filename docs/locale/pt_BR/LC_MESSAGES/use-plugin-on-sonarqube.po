@@ -58,7 +58,6 @@ msgstr ""
 "<https://github.com/KengoTODA/guava-helper-for-java-8/tree/master"
 "/sonarqube-plugin>`_ como exemplo."
 
-"
 #: ../../use-plugin-on-sonarqube.rst:12
 msgid ""
 "You also need to configure the ``sonar-packaging-maven-plugin``, to make "
