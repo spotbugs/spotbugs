@@ -1747,7 +1747,7 @@ msgstr ""
 #: ../../generated/bugDescriptionList.inc:1418
 msgid "DMI: Random object created and used only once (DMI_RANDOM_USED_ONLY_ONCE)"
 msgstr "DMI: Criação de objeto randômico usado uma vez "
-"(DMI_RANDOM_USED_ONLY_ONCE)
+"(DMI_RANDOM_USED_ONLY_ONCE)"
 
 #: ../../generated/bugDescriptionList.inc:1420
 msgid ""
