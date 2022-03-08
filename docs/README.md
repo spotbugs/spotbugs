@@ -1,6 +1,7 @@
 # SpotBugs manual
 
 [![Documentation Status](https://readthedocs.org/projects/spotbugs/badge/?version=latest)](http://spotbugs.readthedocs.io/en/latest/?badge=latest)
+[![Translation status](https://hosted.weblate.org/widgets/spotbugs/-/svg-badge.svg)](https://hosted.weblate.org/engage/spotbugs/)
 
 This repository hosts official SpotBugs manual built by [Sphinx](http://www.sphinx-doc.org/en/stable/).
 
