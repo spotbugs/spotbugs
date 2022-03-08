@@ -279,7 +279,7 @@ msgstr ""
 "(0-índice) e os dados de `BugInstance "
 "<https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_"
 " serão inseridos nesse espaço. Portanto, o ``LongDescription`` é útil para fornecer informações detalhadas "
-"sobre os bugs encontrados.
+"sobre os bugs encontrados."
 
 #: ../../implement-plugin.rst:123
 msgid "It should be plain text, HTML is not supported."
