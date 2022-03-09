@@ -175,9 +175,65 @@ public abstract class ClassName {
      * @return true if it's a valid class name, false otherwise
      */
     public static boolean isValidClassName(String className) {
-        // FIXME: should use a regex
+        return !className.isEmpty() &&
+                (isValidBinaryClassName(className) ||
+                        isValidDottedClassName(className) ||
+                        isValidArrayFieldDescriptor(className) ||
+                        isValidClassFieldDescriptor(className));
+    }
 
-        return className.indexOf('(') < 0;
+    /**
+     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.2.1">
+     *     JVMS (Java SE 8 Edition) 4.2.1. Binary Class and Interface Names
+     *     </a>
+     */
+    private static boolean isValidBinaryClassName(String className) {
+        return className.indexOf('.') == -1 &&
+                className.indexOf('[') == -1 &&
+                className.indexOf(';') == -1;
+    }
+
+    private static boolean isValidDottedClassName(String className) {
+        return className.indexOf('/') == -1 &&
+                className.indexOf('[') == -1 &&
+                className.indexOf(';') == -1;
+    }
+
+    /**
+     * Determines whether a class name is a valid array field descriptor as per
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.2">
+     * JVMS (Java SE 8 Edition) 4.3.2</a>
+     *
+     * @param className a class name to test for validity - must be non-{@code null} and non-empty.
+     * @return {@code true} if {@code className} is a valid array field descriptor as
+     *          per JVMS 4.3.2, otherwise {@code false}
+     * @throws IndexOutOfBoundsException if {@code className} is empty.
+     * @throws NullPointerException if {@code className} is {@code null}.
+     */
+    private static boolean isValidArrayFieldDescriptor(String className) {
+        String tail = className.substring(1);
+        return className.startsWith("[") &&
+                (isValidArrayFieldDescriptor(tail) ||
+                        isValidClassFieldDescriptor(tail) ||
+                        isValidBaseTypeFieldDescriptor(tail));
+
+    }
+
+    private static boolean isValidClassFieldDescriptor(String className) {
+        return className.startsWith("L") &&
+                className.endsWith(";") &&
+                isValidBinaryClassName(className.substring(1, className.length() - 1));
+    }
+
+    private static boolean isValidBaseTypeFieldDescriptor(String className) {
+        return "B".equals(className) ||
+                "C".equals(className) ||
+                "D".equals(className) ||
+                "F".equals(className) ||
+                "I".equals(className) ||
+                "J".equals(className) ||
+                "S".equals(className) ||
+                "Z".equals(className);
     }
 
     /**

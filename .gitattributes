@@ -1,3 +1,7 @@
 gradlew linguist-generated=true
 gradlew.bat linguist-generated=true
-* text eol=lf
+* text=auto eol=lf
+
+*.jar binary
+*.png binary
+*.xsl binary
