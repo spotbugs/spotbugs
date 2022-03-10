@@ -5,6 +5,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2022-??-??
+### Fixed
+- Bumped Saxon-HE from 10.6 to 11.2 ([#1955](https://github.com/spotbugs/spotbugs/pull/1955))
 - Fixed reports to truncate existing files before writing new content ([#1950](https://github.com/spotbugs/spotbugs/issues/1950))
 
 ## 4.6.0 - 2022-03-08
