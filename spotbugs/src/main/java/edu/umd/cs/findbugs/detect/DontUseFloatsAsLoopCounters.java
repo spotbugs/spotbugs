@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 public class DontUseFloatsAsLoopCounters extends OpcodeStackDetector implements StatelessDetector {
 
-    BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public DontUseFloatsAsLoopCounters(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
