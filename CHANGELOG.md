@@ -8,7 +8,19 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 * Add new detector `CT_CONSTRUCTOR_THROW` for detecting constructors that throw exceptions.
 ### Fixed
+- Bumped Saxon-HE from 10.6 to 11.2 ([#1955](https://github.com/spotbugs/spotbugs/pull/1955))
+
+## 4.6.0 - 2022-03-08
+### Fixed
 - Fixed spotbugs build with ecj compiler ([#1903](https://github.com/spotbugs/spotbugs/issues/1903))
+- Moved tests from spotbugs project to spotbugs-tests project ([#1914](https://github.com/spotbugs/spotbugs/issues/1914))
+- Fixed UI freezes in Eclipse on bug count decorations update ([#285](https://github.com/spotbugs/spotbugs/issues/285))
+- Bumped log4j from 2.17.1 to 2.17.2 ([#1960](https://github.com/spotbugs/spotbugs/pull/1960))
+- Bumped gson from 2.8.9 to 2.9.0 ([#1960](https://github.com/spotbugs/spotbugs/pull/1966))
+
+### Added
+* New detector `FindInstanceLockOnSharedStaticData` for new bug type `SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA`. This detector reports a bug if an instance level lock is used to modify a shared static data. (See [SEI CERT rule LCK06-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK06-J.+Do+not+use+an+instance+lock+to+protect+shared+static+data))
+* New rule `PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS` to warn for custom class loaders who do not call their superclasses' `getPermissions()` in their `getPermissions()` method. This rule based on the SEI CERT rule *SEC07-J Call the superclass's getPermissions() method when writing a custom class loader*. ([#SEC07-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader))
 
 ## 4.5.3 - 2022-01-04
 ### Security
