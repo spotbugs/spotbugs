@@ -1741,6 +1741,17 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.PermissionsSuper">
+    <Details>
+      <![CDATA[
+            <p>Checks method getPermissions() of classes implementing interface
+               java.security.SecureClassLoader. The methods must always call
+               super.getPermissions() to get the initial value of the object
+               which they return at the end.
+              </p>
+              ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8635,6 +8646,7 @@ after the call to initLogging, the logger configuration is lost
       </p>]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA">
     <ShortDescription>Instance level lock was used on a shared static data</ShortDescription>
     <LongDescription>Static field "{1}" is modified by an instance level {2}.</LongDescription>
@@ -8699,6 +8711,20 @@ after the call to initLogging, the logger configuration is lost
         
         For more information, see the <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable">SEI CERT ERR07-J rule</a>.
         </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS">
+    <ShortDescription>Custom class loader does not call its superclass's getPermissions()</ShortDescription>
+    <LongDescription>Custom class loader {1} does not call its superclass's getPermissions()</LongDescription>
+    <Details>
+      <![CDATA[
+       <p>
+       <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader">SEI CERT rule SEC07-J</a> requires that custom class loaders must always call their superclass's getPermissions()
+       method in their own getPermissions() method to initialize the object they return at the end. Omitting it means
+       that a class defined using this custom class loader has permissions that are completely independent of those
+       specified in the systemwide policy file. In effect, the class's permissions override them.
+       </p>
+      ]]>
     </Details>
   </BugPattern>
   <!--
@@ -8852,4 +8878,5 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
   <BugCode abbrev="SSD">Do not use an instance lock to protect shared static data</BugCode>
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
+  <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
 </MessageCollection>
