@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Bumped Saxon-HE from 10.6 to 11.2 ([#1955](https://github.com/spotbugs/spotbugs/pull/1955))
 - Fixed traversal of nested archives governed by `-nested:true` ([#1930](https://github.com/spotbugs/spotbugs/pull/1930))
+- Fixed false positive SSD bug for locking on java.lang.Class objects ([#1978](https://github.com/spotbugs/spotbugs/issues/1978))
 
 ## 4.6.0 - 2022-03-08
 ### Fixed
