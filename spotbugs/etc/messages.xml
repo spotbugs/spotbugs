@@ -8629,7 +8629,8 @@ object explicitly.</p>
       affecting the behavior of clone(). It can also observe or modify the clone object in a partially initialized
       state. Only static, final or private methods should be invoked from the clone() method.</p>
       <p>
-      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">MET06-J. Do not invoke overridable methods in clone()</a>.
+      See SEI CERT rule
+      <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">MET06-J. Do not invoke overridable methods in clone()</a>.
       </p>]]>
     </Details>
   </BugPattern>
@@ -8644,7 +8645,11 @@ object explicitly.</p>
         that could leave the shared static data unprotected against concurrent access.
         This could occur in two ways, if a synchronization method uses a non-static lock object,
         or a synchronized method is declared as non-static. Both ways are ineffective.
-        Best solution is to use a private static final lock object to secure the shared static data.
+        Best solution is to use a private static final lock object to secure the shared static data.</p>
+      <p>
+      See SEI CERT rule
+      <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK06-J.+Do+not+use+an+instance+lock+to+protect+shared+static+data">
+      LCK06-J. Do not use an instance lock to protect shared static data</a>.
       </p>]]>
     </Details>
   </BugPattern>
