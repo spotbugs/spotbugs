@@ -7567,6 +7567,9 @@ For example
 <li>"ab|cd".replaceAll("|", "/") will return "/a/b/|/c/d/"</li>
 <li>"ab|cd".split("|") will return array with six (!) elements: [, a, b, |, c, d]</li>
 </ul>
+<p>
+Consider using <code>s.replace(".", "/")</code> or <code>s.split("\\.")</code> instead.
+</p>
 ]]>
     </Details>
   </BugPattern>
