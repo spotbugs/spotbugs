@@ -45,6 +45,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Make TypeQualifierResolver recognize org.apache.avro.reflect.Nullable ([#2066](https://github.com/spotbugs/spotbugs/pull/2066))
 - New detector `FindArgumentAssertions` detecting bug `ASSERTION_OF_ARGUMENTS` in case of validation of arguments of public functions using assertions (See [MET01-J. Never use assertions to validate method arguments](https://wiki.sei.cmu.edu/confluence/display/java/MET01-J.+Never+use+assertions+to+validate+method+arguments))
 - Add new detector `CT_CONSTRUCTOR_THROW` for detecting constructors that throw exceptions.
+- New detector `FindIncreasedAccessibilityOfMethods` for new bug type `IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY`. This detector reports a bug if a class increases the accessibility of overridden or hidden methods. (See [SEI CERT rule MET04-J](https://wiki.sei.cmu.edu/confluence/display/java/MET04-J.+Do+not+increase+the+accessibility+of+overridden+or+hidden+methods))
 
 ### Security
 - Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))
