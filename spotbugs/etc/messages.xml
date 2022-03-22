@@ -8358,8 +8358,9 @@ String constructComponentName() {
           </p>
 
           <p>
-          See Weimer and Necula, <i>Finding and Preventing Run-Time Error Handling Mistakes</i>, for
-          a description of the analysis technique.
+          See Weimer and Necula, <i>Finding and Preventing Run-Time Error Handling Mistakes</i>
+          (<a href="https://people.eecs.berkeley.edu/~necula/Papers/rte_oopsla04.pdf">PDF</a>),
+          for a description of the analysis technique.
           </p>
           ]]>
       </Details>
@@ -8408,8 +8409,9 @@ String constructComponentName() {
           </p>
 
           <p>
-          See Weimer and Necula, <i>Finding and Preventing Run-Time Error Handling Mistakes</i>, for
-          a description of the analysis technique.
+          See Weimer and Necula, <i>Finding and Preventing Run-Time Error Handling Mistakes</i>
+          (<a href="https://people.eecs.berkeley.edu/~necula/Papers/rte_oopsla04.pdf">PDF</a>),
+          for a description of the analysis technique.
           </p>
           ]]>
       </Details>
