@@ -1477,7 +1477,7 @@ factory pattern to create these objects.</p>
       <![CDATA[
       <p>
       This detector looks for final classes that declare protected members. As this
-      class can not be derived from, the use of protected access for members is
+      class cannot be derived from, the use of protected access for members is
       incorrect. The access should be changed to public or private to represent
       the correct intention of the field. This was probably caused by a change in
       use for this class, without completely changing all of the class to the new
@@ -1854,7 +1854,7 @@ of the double to create the BigDecimal (e.g., BigDecimal.valueOf(0.1) gives 0.1)
         <Details>
       <![CDATA[
     <p>
-This partical method invocation doesn't make sense, for reasons that should be apparent from inspection.
+This particular method invocation doesn't make sense, for reasons that should be apparent from inspection.
 </p>
 
 ]]>
@@ -2597,7 +2597,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     <LongDescription>{1} invokes toString() method on a String</LongDescription>
     <Details>
 <![CDATA[
-  <p> Calling <code>String.toString()</code> is just a redundant operation.
+  <p> Calling <code>String.toString()</code> is a redundant operation.
   Just use the String.</p>
 ]]>
     </Details>
@@ -3722,14 +3722,9 @@ Language Specification</a> for details.
     <LongDescription>wait() with two locks held in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> Waiting on a monitor while two locks are held may cause
-  deadlock.
-   &nbsp;
-   Performing a wait only releases the lock on the object
-   being waited on, not any other locks.
-   &nbsp;
-This not necessarily a bug, but is worth examining
-  closely.</p>
+  <p>Waiting on a monitor while two locks are held may cause deadlock.
+  Performing a wait only releases the lock on the object being waited on, not any other locks.
+  This not necessarily a bug, but is worth examining closely.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3755,7 +3750,7 @@ This not necessarily a bug, but is worth examining
     <Details>
 <![CDATA[
   <p> This method contains a call to <code>java.lang.Object.wait()</code> which
-  is not guarded by conditional control flow.&nbsp; The code should
+    is not guarded by conditional control flow. The code should
     verify that condition it intends to wait for is not already satisfied
     before calling wait; any previous notifications will be ignored.
   </p>
@@ -5779,7 +5774,7 @@ than are different than you would get using <code>.equals(...)</code>.
     <Details>
 <![CDATA[
 <p> This method uses pointer equality to compare two references that seem to be of
-different types.  The result of this comparison will always be false at runtime.
+different types. The result of this comparison will always be false at runtime.
 </p>
 ]]>
     </Details>
@@ -5881,8 +5876,7 @@ an <code>IllegalMonitorStateException</code> being thrown.</p>
     <Details>
 <![CDATA[
 <p> This method contains a self assignment of a local variable, and there
-is a field with an identical name.
-assignment appears to have been ; e.g.</p>
+is a field with an identical name, e.g.:</p>
 <pre><code>    int foo;
     public void setFoo(int foo) {
         foo = foo;
@@ -6202,13 +6196,13 @@ to get <code>0xffffffff</code>, and thus give the value
 
 <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
 <pre><code>int result = 0;
-for(int i = 0; i &lt; 4; i++) {
+for (int i = 0; i &lt; 4; i++) {
     result = ((result &lt;&lt; 8) | b[i]);
 }
 </code></pre>
 <p>The following idiom will work instead: </p>
 <pre><code>int result = 0;
-for(int i = 0; i &lt; 4; i++) {
+for (int i = 0; i &lt; 4; i++) {
     result = ((result &lt;&lt; 8) | (b[i] &amp; 0xff));
 }
 </code></pre>
@@ -6232,12 +6226,12 @@ to get <code>0xffffffff</code>, and thus give the value
 
 <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
 <pre><code>int result = 0;
-for(int i = 0; i &lt; 4; i++)
+for (int i = 0; i &lt; 4; i++)
     result = ((result &lt;&lt; 8) + b[i]);
 </code></pre>
 <p>The following idiom will work instead: </p>
 <pre><code>int result = 0;
-for(int i = 0; i &lt; 4; i++)
+for (int i = 0; i &lt; 4; i++)
     result = ((result &lt;&lt; 8) + (b[i] &amp; 0xff));
 </code></pre>
 ]]>
@@ -6387,7 +6381,7 @@ than using the <code>synchronized (...)</code> construct.
 <p> This method calls
 <code>wait()</code>,
 <code>notify()</code> or
-<code>notifyAll()()</code>
+<code>notifyAll()</code>
 on an object that also provides an
 <code>await()</code>,
 <code>signal()</code>,
@@ -6728,10 +6722,9 @@ correctly.
 <p>
 This method invokes the .equals(Object o) to compare an array and a reference that doesn't seem
 to be an array. If things being compared are of different types, they are guaranteed to be unequal
-and the comparison is almost certainly an error. Even if they are both arrays, the equals method
-on arrays only determines of the two arrays are the same object.
-To compare the
-contents of the arrays, use java.util.Arrays.equals(Object[], Object[]).
+and the comparison is almost certainly an error. Even if they are both arrays, the <code>equals()</code> method
+on arrays only determines if the two arrays are the same object.
+To compare the contents of the arrays, use <code>java.util.Arrays.equals(Object[], Object[])</code>.
 </p>
 ]]>
     </Details>
@@ -6771,8 +6764,9 @@ only checks to see if they are the same array, and ignores the contents of the a
     <Details>
 <![CDATA[
 <p>
-This method invokes the Thread.currentThread() call, just to call the interrupted() method. As interrupted() is a
-static method, is more simple and clear to use Thread.interrupted().
+This method invokes the <code>Thread.currentThread()</code> call, just to call the
+<code>interrupted()</code> method. As <code>interrupted()</code> is a static method, it is more
+simple and clear to use <code>Thread.interrupted()</code>.
 </p>
 ]]>
     </Details>
@@ -6831,8 +6825,8 @@ Often, this indicates an error, because the value computed is never
 used.
 </p>
 <p>
-Note that Sun's javac compiler often generates dead stores for
-final local variables.  Because SpotBugs is a bytecode-based tool,
+Note that Oracle's javac compiler often generates dead stores for
+final local variables. Because SpotBugs is a bytecode-based tool,
 there is no easy way to eliminate these false positives.
 </p>
 ]]>
@@ -6846,7 +6840,7 @@ there is no easy way to eliminate these false positives.
       <![CDATA[
 <p>
 This statement assigns to a local variable in a return statement. This assignment
-has effect. Please verify that this statement does the right thing.
+has no effect. Please verify that this statement does the right thing.
 </p>
 ]]>
     </Details>
@@ -6879,8 +6873,8 @@ In Java 1.4 and earlier, a reference to <code>Foo.class</code> would force the s
 for <code>Foo</code> to be executed, if it has not been executed already.
 In Java 5 and later, it does not.
 </p>
-<p>See Sun's <a href="http://www.oracle.com/technetwork/java/javase/compatibility-137462.html#literal">article on Java SE compatibility</a>
-for more details and examples, and suggestions on how to force class initialization in Java 5.
+<p>See Oracle's <a href="http://www.oracle.com/technetwork/java/javase/compatibility-137462.html#literal">article on Java SE compatibility</a>
+for more details and examples, and suggestions on how to force class initialization in Java 5+.
 </p>
 ]]>
     </Details>
@@ -7260,7 +7254,7 @@ This code converts an int value to a float precision
 floating point number and then
 passing the result to the Math.round() function, which returns the int/long closest
 to the argument. This operation should always be a no-op,
-since the converting an integer to a float should give a number with no fractional part.
+since converting an integer to a float should give a number with no fractional part.
 It is likely that the operation that generated the value to be passed
 to Math.round was intended to be performed using
 floating point arithmetic.
@@ -7280,7 +7274,7 @@ to a double precision
 floating point number and then
 passing the result to the Math.ceil() function, which rounds a double to
 the next higher integer value. This operation should always be a no-op,
-since the converting an integer to a double should give a number with no fractional part.
+since converting an integer to a double should give a number with no fractional part.
 It is likely that the operation that generated the value to be passed
 to Math.ceil was intended to be performed using double precision
 floating point arithmetic.
@@ -7296,10 +7290,9 @@ floating point arithmetic.
 <![CDATA[
 <p>
 This code casts the result of an integral division (e.g., int or long division)
-operation to double or
-float.
+operation to double or float.
 Doing division on integers truncates the result
-to the integer value closest to zero.  The fact that the result
+to the integer value closest to zero. The fact that the result
 was cast to double suggests that this precision should have been retained.
 What was probably meant was to cast one or both of the operands to
 double <em>before</em> performing the division.  Here is an example:
@@ -7412,10 +7405,9 @@ This cast will always throw a ClassCastException.
 SpotBugs tracks type information from instanceof checks,
 and also uses more precise information about the types
 of values returned from methods and loaded from fields.
-Thus, it may have more precise information that just
+Thus, it may have more precise information than just
 the declared type of a variable, and can use this to determine
 that a cast will always throw an exception at runtime.
-
 </p>
 ]]>
     </Details>
@@ -7905,7 +7897,7 @@ and the next method is supposed to change the state of the iterator.
       <![CDATA[
       <p>
       This class is declared to be final, but declares fields to be protected. Since the class
-      is final, it can not be derived from, and the use of protected is confusing. The access
+      is final, it cannot be derived from, and the use of protected is confusing. The access
       modifier for the field should be changed to private or public to represent the true
       use for the field.
       </p>
@@ -7931,7 +7923,7 @@ and the next method is supposed to change the state of the iterator.
     <Details>
       <![CDATA[
       <p>
-      This class makes a reference to a class or method that can not be
+      This class makes a reference to a class or method that cannot be
     resolved using against the libraries it is being analyzed with.
       </p>
       ]]>
@@ -8180,7 +8172,7 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
     <Details>
       <![CDATA[
         <p>
-        A value is being used in a way that requires the value be annotation with a type qualifier.
+        A value is being used in a way that requires the value to be annotated with a type qualifier.
     The type qualifier is strict, so the tool rejects any values that do not have
     the appropriate annotation.
         </p>
@@ -8226,7 +8218,7 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
     <Details>
       <![CDATA[
       <p>
-      A value that is annotated as possibility not being an instance of
+      A value that is annotated as possibly not being an instance of
     the values denoted by the type qualifier, and the value is guaranteed to be used
     in a way that requires values denoted by that type qualifier.
       </p>
@@ -8239,7 +8231,7 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
     <Details>
       <![CDATA[
       <p>
-      A value that is annotated as possibility being an instance of
+      A value that is annotated as possibly being an instance of
     the values denoted by the type qualifier, and the value is guaranteed to be used
     in a way that prohibits values denoted by that type qualifier.
       </p>
@@ -8312,7 +8304,7 @@ String constructComponentName() {
 }
 </code></pre>
      <p>Subclasses of <code>Label</code> won't synchronize on the same subclass, giving rise to a datarace.
-     Instead, this code should be synchronizing on <code>Label.class</code></p>
+     Instead, this code should be synchronizing on <code>Label.class</code>.</p>
 <pre><code>private static final String base = "label";
 private static int nameCounter = 0;
 
@@ -8322,7 +8314,7 @@ String constructComponentName() {
     }
 }
 </code></pre>
-      <p>Bug pattern contributed by Jason Mehrens</p>
+      <p>Bug pattern contributed by Jason Mehrens.</p>
       ]]>
     </Details>
   </BugPattern>
