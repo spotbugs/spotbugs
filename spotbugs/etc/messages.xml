@@ -6825,7 +6825,7 @@ Often, this indicates an error, because the value computed is never
 used.
 </p>
 <p>
-Note that Oracle's javac compiler often generates dead stores for
+Note that Sun's javac compiler often generates dead stores for
 final local variables. Because SpotBugs is a bytecode-based tool,
 there is no easy way to eliminate these false positives.
 </p>
