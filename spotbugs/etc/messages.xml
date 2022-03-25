@@ -1733,6 +1733,17 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.PermissionsSuper">
+    <Details>
+      <![CDATA[
+            <p>Checks method getPermissions() of classes implementing interface
+               java.security.SecureClassLoader. The methods must always call
+               super.getPermissions() to get the initial value of the object
+               which they return at the end.
+              </p>
+              ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource">
     <Details>
       <![CDATA[
@@ -8651,6 +8662,21 @@ after the call to initLogging, the logger configuration is lost
     </Details>
   </BugPattern>
 
+  <BugPattern type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS">
+    <ShortDescription>Custom class loader does not call its superclass's getPermissions()</ShortDescription>
+    <LongDescription>Custom class loader {1} does not call its superclass's getPermissions()</LongDescription>
+    <Details>
+      <![CDATA[
+       <p>
+       <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader">SEI CERT rule SEC07-J</a> requires that custom class loaders must always call their superclass's getPermissions()
+       method in their own getPermissions() method to initialize the object they return at the end. Omitting it means
+       that a class defined using this custom class loader has permissions that are completely independent of those
+       specified in the systemwide policy file. In effect, the class's permissions override them.
+       </p>
+      ]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE">
     <ShortDescription>Potential security check based on untrusted source.</ShortDescription>
     <LongDescription>Non-final method {4} was called at {5} before entering a doPrivileged block and was also called inside the block at {6} on a non-final class instance of {3} in public method {1}. If this call is a check before entering the doPrivileged() block then it may be unreliable since the method may receive an instance of a malicious descendant of the class which has this overridden to behave differently than expected.</LongDescription>
@@ -8821,5 +8847,6 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="REFLF">Reflection increasing accessibility of fields</BugCode>
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
   <BugCode abbrev="SSD">Do not use an instance lock to protect shared static data</BugCode>
+  <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
 </MessageCollection>

@@ -36,6 +36,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -48,6 +49,7 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IOpenable;
+import org.eclipse.jdt.core.IOrdinaryClassFile;
 import org.eclipse.jdt.core.IParent;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
@@ -578,7 +580,10 @@ public final class MarkerUtil {
                 return DetectorFactoryCollection.instance().getBugCode((String) bugCode);
             }
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Marker does not contain bug code");
+            int errorCode = e.getStatus().getCode();
+            if (errorCode != IResourceStatus.MARKER_NOT_FOUND && errorCode != IResourceStatus.RESOURCE_NOT_FOUND) {
+                FindbugsPlugin.getDefault().logException(e, "Marker does not contain bug code");
+            }
             return null;
         }
         return null;
@@ -614,7 +619,10 @@ public final class MarkerUtil {
         try {
             return (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Marker does not contain pattern id");
+            int errorCode = e.getStatus().getCode();
+            if (errorCode != IResourceStatus.MARKER_NOT_FOUND && errorCode != IResourceStatus.RESOURCE_NOT_FOUND) {
+                FindbugsPlugin.getDefault().logException(e, "Marker does not contain pattern id");
+            }
             return null;
         }
     }
@@ -626,7 +634,10 @@ public final class MarkerUtil {
                 return JavaCore.create((String) elementId);
             }
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid java element id");
+            int errorCode = e.getStatus().getCode();
+            if (errorCode != IResourceStatus.MARKER_NOT_FOUND && errorCode != IResourceStatus.RESOURCE_NOT_FOUND) {
+                FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid java element id");
+            }
             return null;
         }
         return null;
@@ -639,7 +650,10 @@ public final class MarkerUtil {
                 return DetectorFactoryCollection.instance().getPluginById((String) pluginId);
             }
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid plugin id");
+            int errorCode = e.getStatus().getCode();
+            if (errorCode != IResourceStatus.MARKER_NOT_FOUND && errorCode != IResourceStatus.RESOURCE_NOT_FOUND) {
+                FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid plugin id");
+            }
             return null;
         }
         return null;
@@ -669,7 +683,10 @@ public final class MarkerUtil {
                     markers.add(marker);
                 }
             } catch (CoreException e) {
-                FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid java element id");
+                int errorCode = e.getStatus().getCode();
+                if (errorCode != IResourceStatus.MARKER_NOT_FOUND && errorCode != IResourceStatus.RESOURCE_NOT_FOUND) {
+                    FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid java element id");
+                }
                 continue;
             }
         }
@@ -882,10 +899,10 @@ public final class MarkerUtil {
             allMarkers = getMarkers(resource, IResource.DEPTH_ZERO);
         } else {
             IClassFile classFile = (IClassFile) editor.getEditorInput().getAdapter(IClassFile.class);
-            if (classFile == null) {
+            if (!(classFile instanceof IOrdinaryClassFile)) {
                 return null;
             }
-            Set<IMarker> markers = getMarkers(classFile.getType());
+            Set<IMarker> markers = getMarkers(((IOrdinaryClassFile) classFile).getType());
             allMarkers = markers.toArray(new IMarker[markers.size()]);
         }
         // if editor contains only one FB marker, do some cheating and always
@@ -954,7 +971,10 @@ public final class MarkerUtil {
                     marker.exists() &&
                     marker.isSubtypeOf(FindBugsMarker.NAME);
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Exception while checking SpotBugs type on marker.");
+            int errorCode = e.getStatus().getCode();
+            if (errorCode != IResourceStatus.MARKER_NOT_FOUND && errorCode != IResourceStatus.RESOURCE_NOT_FOUND) {
+                FindbugsPlugin.getDefault().logException(e, "Exception while checking SpotBugs type on marker.");
+            }
         }
         return false;
     }
@@ -997,7 +1017,10 @@ public final class MarkerUtil {
         try {
             return fileOrFolder.findMarkers(FindBugsMarker.NAME, true, depth);
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Cannot collect SpotBugs warnings from: " + fileOrFolder);
+            int errorCode = e.getStatus().getCode();
+            if (errorCode != IResourceStatus.MARKER_NOT_FOUND && errorCode != IResourceStatus.RESOURCE_NOT_FOUND) {
+                FindbugsPlugin.getDefault().logException(e, "Cannot collect SpotBugs warnings from: " + fileOrFolder);
+            }
         }
         return EMPTY;
     }
