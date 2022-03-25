@@ -54,10 +54,10 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
     private static final Pattern NESTED_CLASS_VARIABLE_NAME_PATTERN = Pattern.compile("val\\$.*");
 
     private static class CalleeInfo {
-        ClassDescriptor calledClass;
-        XMethod calledMethod;
-        String calledOnName;
-        SourceLineAnnotation srcLine;
+        private final ClassDescriptor calledClass;
+        private final XMethod calledMethod;
+        private final String calledOnName;
+        private final SourceLineAnnotation srcLine;
 
         CalleeInfo(ClassDescriptor cls, XMethod called, String name, SourceLineAnnotation line) {
             calledClass = cls;
@@ -68,9 +68,9 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
     }
 
     private static class CallerInfo {
-        OpcodeStack.Item calledOn;
-        JavaClass callerClass;
-        SourceLineAnnotation srcLine;
+        private final OpcodeStack.Item calledOn;
+        private final JavaClass callerClass;
+        private final SourceLineAnnotation srcLine;
 
         CallerInfo(OpcodeStack.Item obj, JavaClass cls, SourceLineAnnotation line) {
             calledOn = obj;
@@ -80,8 +80,8 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
     }
 
     private static class LambdaInfo {
-        Method lambdaMethod;
-        String[] argumentNames;
+        private final Method lambdaMethod;
+        private final String[] argumentNames;
 
         LambdaInfo(Method method, String[] argNames) {
             lambdaMethod = method;
@@ -90,10 +90,10 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
     }
 
     private static class LambdaCallInfo {
-        JavaClass callerClass;
-        XMethod callerMethod;
-        SourceLineAnnotation srcLine;
-        String[] argumentNames;
+        private final JavaClass callerClass;
+        private final XMethod callerMethod;
+        private final SourceLineAnnotation srcLine;
+        private final String[] argumentNames;
 
         LambdaCallInfo(JavaClass cls, XMethod met, SourceLineAnnotation line, String[] argNames) {
             callerClass = cls;
@@ -104,8 +104,8 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
     }
 
     private static class CallPair {
-        CalleeInfo outside;
-        CallerInfo inside;
+        private final CalleeInfo outside;
+        private final CallerInfo inside;
 
         CallPair(CalleeInfo out, CallerInfo in) {
             outside = out;
@@ -126,7 +126,7 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
     private boolean isDoPrivilegedRun = false;
     private boolean isLambdaCalledInDoPrivileged = false;
 
-    BugAccumulator bugAccumulator;
+    private final BugAccumulator bugAccumulator;
 
     public FindPotentialSecurityCheckBasedOnUntrustedSource(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
