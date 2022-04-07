@@ -17,11 +17,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * New detector `ThrowingExceptions` and introduced new bug types:
   * `THROWS_METHOD_THROWS_RUNTIMEEXCEPTION` is reported in case of a method throwing RuntimeException, 
   * `THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION` is reported when a method has Exception in its throws clause and 
-  * `THROWS_METHOD_THROWS_CLAUSE_THROWABLE` is reported when a method has Throwable in its throws clause
-
-(See [SEI CERT ERR07-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable))
-
-### Added
+  * `THROWS_METHOD_THROWS_CLAUSE_THROWABLE` is reported when a method has Throwable in its throws clause (See [SEI CERT ERR07-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable))
 * New rule `PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS` to warn for custom class loaders who do not call their superclasses' `getPermissions()` in their `getPermissions()` method. This rule based on the SEI CERT rule *SEC07-J Call the superclass's getPermissions() method when writing a custom class loader*. ([#SEC07-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader))
 
 ## 4.6.0 - 2022-03-08
