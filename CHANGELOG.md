@@ -11,6 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Bumped Saxon-HE from 10.6 to 11.3 ([#1955](https://github.com/spotbugs/spotbugs/pull/1955), [#1999](https://github.com/spotbugs/spotbugs/pull/1999))
 - Fixed traversal of nested archives governed by `-nested:true` ([#1930](https://github.com/spotbugs/spotbugs/pull/1930))
+- Fixed false positive SSD bug for locking on java.lang.Class objects ([#1978](https://github.com/spotbugs/spotbugs/issues/1978))
 - Bump ObjectWeb ASM from 9.2 to 9.3 supporting JDK 19 ([#2004](https://github.com/spotbugs/spotbugs/pull/2004))
 
 ### Added
