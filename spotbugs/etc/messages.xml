@@ -8273,7 +8273,7 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
     <Details>
       <![CDATA[
       <p>
-     This code opens a file in append mode and then wraps the result in an object output stream:
+     This code opens a file in append mode and then wraps the result in an object output stream like as follows:
       </p>
       <pre><code>OutputStream out = new FileOutputStream(anyFile, true);
      new ObjectOutputStream(out);</code></pre>
