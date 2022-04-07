@@ -1,10 +1,12 @@
 package edu.umd.cs.findbugs.test;
 
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import edu.umd.cs.findbugs.IFindBugsEngine;
 import org.junit.rules.ExternalResource;
 
 import edu.umd.cs.findbugs.BugCollection;
@@ -76,6 +78,25 @@ public class SpotBugsRule extends ExternalResource {
      * <p>
      * Run SpotBugs under given condition, and return its result.
      * </p>
+     * @param engineCustomization
+     *      A customization of the engine to apply before running engine#execute
+     * @param paths
+     *     Paths of target class files
+     * @return a {@link BugCollection} which contains all detected bugs.
+     */
+    // TODO let users specify SlashedClassName, then find its file path automatically
+    @Nonnull
+    public BugCollection performAnalysis(Consumer<IFindBugsEngine> engineCustomization, Path... paths) {
+        if (runner == null) {
+            throw new IllegalStateException("Please call this performAnalysis() method in test method");
+        }
+        return runner.run(engineCustomization, paths).getBugCollection();
+    }
+
+    /**
+     * <p>
+     * Run SpotBugs under given condition, and return its result.
+     * </p>
      * @param paths
      *     Paths of target class files
      * @return a {@link BugCollection} which contains all detected bugs.
@@ -83,9 +104,7 @@ public class SpotBugsRule extends ExternalResource {
     // TODO let users specify SlashedClassName, then find its file path automatically
     @Nonnull
     public BugCollection performAnalysis(Path... paths) {
-        if (runner == null) {
-            throw new IllegalStateException("Please call this performAnalysis() method in test method");
-        }
-        return runner.run(paths).getBugCollection();
+        return performAnalysis(e -> {
+        }, paths);
     }
 }
