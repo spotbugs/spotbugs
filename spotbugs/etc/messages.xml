@@ -1889,7 +1889,7 @@ A ScheduledThreadPoolExecutor with zero core threads will never execute anything
     <LongDescription>Futile attempt to change max pool size of ScheduledThreadPoolExecutor in {1}</LongDescription>
     <Details>
       <![CDATA[
-    <p>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledThreadPoolExecutor.html">Javadoc</a>)
+    <p>(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html">Javadoc</a>)
 While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the inherited tuning methods are not useful for it. In particular, because it acts as a fixed-sized pool using corePoolSize threads and an unbounded queue, adjustments to maximumPoolSize have no useful effect.
     </p>
 
