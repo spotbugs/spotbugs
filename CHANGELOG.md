@@ -23,6 +23,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 (See [SEI CERT ERR07-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable))
 
+### Added
+* New rule `USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE` to detect cases where a non-final method of a non-final class is called from public methods of public classes and then the same method is called on the same object inside a doPrivileged block. Since the called method may have been overridden to behave differently on the first and second invocations this is a possible security check based on an unreliable source. This rule is based on *SEC02-J. Do not base security checks on untrusted sources*. ([#SEC02-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources))
+
 ## 4.6.0 - 2022-03-08
 ### Fixed
 - Fixed spotbugs build with ecj compiler ([#1903](https://github.com/spotbugs/spotbugs/issues/1903))
