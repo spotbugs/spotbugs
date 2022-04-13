@@ -623,6 +623,8 @@
                     reports="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM"/>
           <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true"
                     hidden="true" reports="TESTING"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ViewCFG" disabled="true"
+                    hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer"
                     speed="fast"
                     reports="GC_UNRELATED_TYPES,DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES,DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION,DMI_VACUOUS_SELF_COLLECTION_CALL,GC_UNCHECKED_TYPE_IN_GENERIC_CALL"/>
