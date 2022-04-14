@@ -1,8 +1,8 @@
 package edu.umd.cs.findbugs.detect;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,6 +22,7 @@ import edu.umd.cs.findbugs.ba.Edge;
 import static edu.umd.cs.findbugs.ba.EdgeTypes.*;
 
 public class ViewCFG implements Detector {
+
     private final BugReporter bugReporter;
     private Path tempDir;
 
@@ -39,18 +40,18 @@ public class ViewCFG implements Detector {
         if (tempDir == null) {
             return;
         }
-
+        //
         JavaClass cls = classContext.getJavaClass();
         String classDirName = (cls.getPackageName() != "") ? (cls.getPackageName() + "." + cls.getClassName()) : cls.getClassName();
         Path classDir;
-
+        //
         try {
             classDir = Files.createDirectory(Paths.get(tempDir.toString(), classDirName));
         } catch (IOException e) {
             bugReporter.logError("Could not create directory for class " + cls.getClassName(), e);
             return;
         }
-
+        //
         for (Method method : cls.getMethods()) {
             try {
                 analyzeMethod(classContext, method, classDir);
@@ -61,8 +62,9 @@ public class ViewCFG implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method, Path classDir) throws CFGBuilderException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(
-                Files.createFile(Paths.get(classDir.toString(), method.getName() + ".dot")).toFile()))) {
+        Path methodFile = getMethodFile(classDir, method.getName());
+
+        try (PrintStream out = new PrintStream(Files.createFile(methodFile).toFile(), Charset.defaultCharset().name())) {
             CFG cfg = classContext.getCFG(method);
             out.println("digraph " + method.getName() + " {");
             for (Iterator<BasicBlock> bi = cfg.blockIterator(); bi.hasNext();) {
@@ -72,13 +74,13 @@ public class ViewCFG implements Detector {
                             " (ENTRY) }\"];");
                     continue;
                 }
-
+                //
                 if (block == cfg.getExit()) {
                     out.println("  Node" + block.getLabel() + " [shape=record label=\"{" + block.getLabel() +
                             " (EXIT) }\"];");
                     continue;
                 }
-
+                //
                 out.print("  Node" + block.getLabel() + " [shape=record label=\"{" + block.getLabel());
                 if (block.getFirstInstruction() != null) {
                     out.print("|");
@@ -151,6 +153,18 @@ public class ViewCFG implements Detector {
         } catch (IOException e) {
             bugReporter.logError("Could not create file for method " + method.getName(), e);
         }
+    }
+
+    private Path getMethodFile(Path classDir, String methodName) {
+        String methodFileName = methodName;
+        Path methodFile;
+        int index = 0;
+
+        do {
+            methodFile = Paths.get(classDir.toString(), methodFileName + ".dot");
+            methodFileName = methodName + ++index;
+        } while (Files.exists(methodFile));
+        return methodFile;
     }
 
     @Override
