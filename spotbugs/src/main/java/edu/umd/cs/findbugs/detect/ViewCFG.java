@@ -100,7 +100,7 @@ public class ViewCFG implements Detector {
             for (Iterator<InstructionHandle> ii = block.instructionIterator(); ii.hasNext();) {
                 InstructionHandle ins = ii.next();
                 String insStr = NUMBER_SUFFIX.matcher(
-                                SPACE_ARROW.matcher(ins.toString(false)).replaceAll(""))
+                        SPACE_ARROW.matcher(ins.toString(false)).replaceAll(""))
                         .replaceAll(" #$1");
                 out.print(insStr + "\\l");
             }
@@ -168,7 +168,7 @@ public class ViewCFG implements Detector {
         if (out.checkError()) {
             bugReporter.logError("Error writing to file " + methodFile.toString());
         }
-}
+    }
 
     private Path getMethodFile(Path classDir, String methodName) {
         String methodFileName = SPECIAL_METHOD.matcher(methodName).replaceAll("____$1");
