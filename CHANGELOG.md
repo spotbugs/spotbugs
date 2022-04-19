@@ -13,6 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed traversal of nested archives governed by `-nested:true` ([#1930](https://github.com/spotbugs/spotbugs/pull/1930))
 - Warnings of deprecated System::setSecurityManager calls on Java 17 ([#1983](https://github.com/spotbugs/spotbugs/pull/1983))
 - Fixed false positive SSD bug for locking on java.lang.Class objects ([#1978](https://github.com/spotbugs/spotbugs/issues/1978))
+- FindReturnRef throws an IllegalArgumentException unexpectedly ([#2019](https://github.com/spotbugs/spotbugs/issues/2019))
 - Bump ObjectWeb ASM from 9.2 to 9.3 supporting JDK 19 ([#2004](https://github.com/spotbugs/spotbugs/pull/2004))
 
 ### Added
