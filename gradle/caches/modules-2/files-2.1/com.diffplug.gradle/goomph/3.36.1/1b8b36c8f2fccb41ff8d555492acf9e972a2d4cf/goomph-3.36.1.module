@@ -1,0 +1,378 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.diffplug.gradle",
+    "module": "goomph",
+    "version": "3.36.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.8.2",
+      "buildId": "cxcjqginxvbyrfwjoaqlkwasr4"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.osgi",
+          "version": {
+            "requires": "3.15.0"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.osgi.compatibility.state",
+          "version": {
+            "requires": "1.1.600"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "goomph-3.36.1.jar",
+          "url": "goomph-3.36.1.jar",
+          "size": 468508,
+          "sha512": "a7d4af96aa4b102a0002c26198a14b273ab3e84c02066fe572903c1b917fc1aefde1ed92980ab6df91e72f58a44be3694fac3c962feddf777b4b436fdcb7b9ad",
+          "sha256": "77adb95b7c175095cd9d1a160f3cbe4d6170eca0fd8579b3e04a4a02f7ca1152",
+          "sha1": "dce26dbee0933575c00290c7ec69b9d4b41c529d",
+          "md5": "dc5222db7f2641227b3d42a540dc04cc"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.diffplug.durian",
+          "module": "durian-core",
+          "version": {
+            "requires": "1.2.0"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "com.diffplug.durian",
+          "module": "durian-collect",
+          "version": {
+            "requires": "1.2.0"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "com.diffplug.durian",
+          "module": "durian-io",
+          "version": {
+            "requires": "1.2.0"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "com.diffplug.durian",
+          "module": "durian-swt.os",
+          "version": {
+            "requires": "3.5.0"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "commons-io",
+          "module": "commons-io",
+          "version": {
+            "requires": "2.6"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "com.diffplug.spotless",
+          "module": "spotless-lib",
+          "version": {
+            "requires": "2.20.0"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "com.squareup.okhttp3",
+          "module": "okhttp",
+          "version": {
+            "requires": "4.3.1"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "com.squareup.okio",
+          "module": "okio",
+          "version": {
+            "requires": "2.4.3"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "biz.aQute.bnd",
+          "module": "biz.aQute.bndlib",
+          "version": {
+            "requires": "6.1.0"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.osgi",
+          "version": {
+            "requires": "3.15.0"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.osgi.compatibility.state",
+          "version": {
+            "requires": "1.1.600"
+          },
+          "excludes": [
+            {
+              "group": "org.eclipse.platform",
+              "module": "org.eclipse.swt.${osgi.platform}"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna"
+            },
+            {
+              "group": "com.sun.jna",
+              "module": "com.sun.jna.platform"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "goomph-3.36.1.jar",
+          "url": "goomph-3.36.1.jar",
+          "size": 468508,
+          "sha512": "a7d4af96aa4b102a0002c26198a14b273ab3e84c02066fe572903c1b917fc1aefde1ed92980ab6df91e72f58a44be3694fac3c962feddf777b4b436fdcb7b9ad",
+          "sha256": "77adb95b7c175095cd9d1a160f3cbe4d6170eca0fd8579b3e04a4a02f7ca1152",
+          "sha1": "dce26dbee0933575c00290c7ec69b9d4b41c529d",
+          "md5": "dc5222db7f2641227b3d42a540dc04cc"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "goomph-3.36.1-javadoc.jar",
+          "url": "goomph-3.36.1-javadoc.jar",
+          "size": 590333,
+          "sha512": "c839e1b83324ee78d98c193f2bb09b93aad67c2d38fbd8e12cb365760a9199e5dc904c8890f835db446faa75b57e0f83f34fbb7108657cc35df632d5932ca41e",
+          "sha256": "4caca25b96675f316d83735102318bdb3992b5fb7a2312227ca7c27fe50f9b11",
+          "sha1": "38396b076f2b3895ad027a3028dc78f7dc47ca4f",
+          "md5": "4bc38b1ea4a849b7962060208180b3c6"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "goomph-3.36.1-sources.jar",
+          "url": "goomph-3.36.1-sources.jar",
+          "size": 343798,
+          "sha512": "903dca26a25d3041da8d4241e2f9e1895ecd769c5e0e01cf37f4442ca3fb773a473909b5d1c259d70d437bc6da09906d913b1175e706399fc231d282d41a1299",
+          "sha256": "d6a8774fe6df68290e6fae3e717c707824e7bb281a119d119561465de4ca4da2",
+          "sha1": "26806723ae4505dcd466a34462423b2e05056363",
+          "md5": "af5dce308cdea15b0ff1631c2aceebda"
+        }
+      ]
+    }
+  ]
+}
