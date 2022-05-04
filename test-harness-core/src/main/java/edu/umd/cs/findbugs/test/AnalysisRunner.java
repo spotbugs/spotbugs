@@ -18,6 +18,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
@@ -29,6 +30,7 @@ import edu.umd.cs.findbugs.BugCollectionBugReporter;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.Priorities;
@@ -40,7 +42,7 @@ import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 /**
  * <p>
  * This class runs analysis with SpotBugs. The target class files and
- * auxClasspathEntries should be specified before you invoke {@link #run(Path...)}
+ * auxClasspathEntries should be specified before you invoke {@link #run(Consumer, Path...)}
  * method.
  * </p>
  *
@@ -84,6 +86,12 @@ public class AnalysisRunner {
 
     @Nonnull
     public BugCollectionBugReporter run(Path... files) {
+        return this.run((engine) -> {
+        }, files);
+    }
+
+    @Nonnull
+    public BugCollectionBugReporter run(Consumer<IFindBugsEngine> engineCustomization, Path... files) {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
         try (FindBugs2 engine = new FindBugs2(); Project project = createProject(files)) {
@@ -102,6 +110,7 @@ public class AnalysisRunner {
             preferences.enableAllDetectors(true);
             engine.setUserPreferences(preferences);
 
+            engineCustomization.accept(engine);
             try {
                 engine.execute();
             } catch (final IOException | InterruptedException e) {
