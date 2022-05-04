@@ -1586,6 +1586,13 @@ factory pattern to create these objects.</p>
     ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ViewCFG">
+    <Details>
+      <![CDATA[
+      <p> Generate DOT files from the CFGs. </p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer">
     <Details>
     <![CDATA[
