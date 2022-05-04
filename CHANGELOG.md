@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Updated documentation by adding parenthesis `()` to the negative odd check message ([#1995](https://github.com/spotbugs/spotbugs/issues/1995))
 
 ### Fixed
+- Fixed reports to truncate existing files before writing new content ([#1950](https://github.com/spotbugs/spotbugs/issues/1950))
 - Bumped Saxon-HE from 10.6 to 11.3 ([#1955](https://github.com/spotbugs/spotbugs/pull/1955), [#1999](https://github.com/spotbugs/spotbugs/pull/1999))
 - Fixed traversal of nested archives governed by `-nested:true` ([#1930](https://github.com/spotbugs/spotbugs/pull/1930))
 - Warnings of deprecated System::setSecurityManager calls on Java 17 ([#1983](https://github.com/spotbugs/spotbugs/pull/1983))
@@ -23,6 +24,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   * `THROWS_METHOD_THROWS_CLAUSE_THROWABLE` is reported when a method has Throwable in its throws clause (See [SEI CERT ERR07-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable))
 * New rule `PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS` to warn for custom class loaders who do not call their superclasses' `getPermissions()` in their `getPermissions()` method. This rule based on the SEI CERT rule *SEC07-J Call the superclass's getPermissions() method when writing a custom class loader*. ([#SEC07-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader))
 * New rule `USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE` to detect cases where a non-final method of a non-final class is called from public methods of public classes and then the same method is called on the same object inside a doPrivileged block. Since the called method may have been overridden to behave differently on the first and second invocations this is a possible security check based on an unreliable source. This rule is based on *SEC02-J. Do not base security checks on untrusted sources*. ([#SEC02-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources))
+* New detector `DontUseFloatsAsLoopCounters` to detect usage of floating-point variables as loop counters (`FL_FLOATS_AS_LOOP_COUNTERS`), according to SEI CERT rules [NUM09-J. Do not use floating-point variables as loop counters](https://wiki.sei.cmu.edu/confluence/display/java/NUM09-J.+Do+not+use+floating-point+variables+as+loop+counters)
 * New test detector `ViewCFG` to visualize the control-flow graph for `SpotBugs` developers
 
 ## 4.6.0 - 2022-03-08
