@@ -148,15 +148,6 @@ public class TypeQualifierValue<A extends Annotation> {
                 try {
                     Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
 
-                    // found it.
-                    SecurityManager m = System.getSecurityManager();
-                    if (m == null) {
-                        if (DEBUG_CLASSLOADING) {
-                            System.out.println("Setting ValidationSecurityManager");
-                        }
-                        System.setSecurityManager(ValidationSecurityManager.INSTANCE);
-                    }
-
                     Class<?> c = ValidatorClassLoader.INSTANCE.loadClass(checkerName.getDottedClassName());
                     if (TypeQualifierValidator.class.isAssignableFrom(c)) {
 
@@ -186,14 +177,6 @@ public class TypeQualifierValue<A extends Annotation> {
                 } catch (Throwable e) {
                     AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName + " due to "
                             + e.getClass().getSimpleName() + ":" + e.getMessage());
-                }
-            } else if (DEBUG_CLASSLOADING) {
-                SecurityManager m = System.getSecurityManager();
-                if (m == null) {
-                    if (DEBUG_CLASSLOADING) {
-                        System.out.println("Setting ValidationSecurityManager");
-                    }
-                    System.setSecurityManager(ValidationSecurityManager.INSTANCE);
                 }
             }
         }
@@ -269,7 +252,7 @@ public class TypeQualifierValue<A extends Annotation> {
         Profiler profiler = analysisCache.getProfiler();
         profiler.start(validator.getClass());
         try {
-            return ValidationSecurityManager.sandboxedValidation(proxy, validator, constantValue);
+            return validator.forConstantValue(proxy, constantValue);
         } catch (Exception e) {
             AnalysisContext.logError("Error executing custom validator for " + typeQualifier + " " + constantValue, e);
             return When.UNKNOWN;
