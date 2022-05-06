@@ -124,7 +124,7 @@ This plugin contains all of the standard SpotBugs detectors.
   <BugCategory category="STYLE">
     <Description>Dodgy code</Description>
     <Abbreviation>D</Abbreviation>
-    <Details>code that is confusing, anomalous, or
+    <Details>Code that is confusing, anomalous, or
             written in a way that leads itself to errors.
             Examples include dead local stores, switch fall through,
             unconfirmed casts, and redundant null check of value
@@ -136,29 +136,27 @@ This plugin contains all of the standard SpotBugs detectors.
   <BugCategory category="PERFORMANCE">
     <Description>Performance</Description>
     <Abbreviation>P</Abbreviation>
-    <Details>code that is not necessarily incorrect but may be inefficient</Details>
+    <Details>Code that is not necessarily incorrect but may be inefficient</Details>
   </BugCategory>
   <BugCategory category="MALICIOUS_CODE">
     <Description>Malicious code vulnerability</Description>
     <Abbreviation>V</Abbreviation>
-    <Details>code that is vulnerable to attacks from untrusted code</Details>
+    <Details>Code that is vulnerable to attacks from untrusted code</Details>
   </BugCategory>
   <BugCategory category="MT_CORRECTNESS">
     <Description>Multithreaded correctness</Description>
     <Abbreviation>M</Abbreviation>
-    <Details>code flaws having to do with threads, locks, and volatiles</Details>
+    <Details>Code flaws having to do with threads, locks, and volatiles</Details>
   </BugCategory>
   <BugCategory category="I18N">
     <Description>Internationalization</Description>
     <Abbreviation>I</Abbreviation>
-    <Details>code flaws having to do with internationalization and locale</Details>
-    <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
+    <Details>Code flaws having to do with internationalization and locale</Details>
   </BugCategory>
   <BugCategory category="EXPERIMENTAL">
     <Description>Experimental</Description>
     <Abbreviation>X</Abbreviation>
     <Details>Experimental and not fully vetted bug patterns</Details>
-    <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
 
   <!--
@@ -247,7 +245,7 @@ applied to method parameters and uses of those method parameters. </p>
   <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems">
     <Details>
 <![CDATA[
-<p> Looks for problems with arising from Java 1.5 varargs.</p>
+<p> Looks for problems with arising from Java 5 varargs.</p>
 ]]>
     </Details>
   </Detector>
@@ -491,7 +489,7 @@ another package. </p>
   <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry">
     <Details>
 <![CDATA[
-<p> This looks for creation of empty zip file entries. It is a moderately fast detector.</p>
+<p> This looks for creation of empty ZIP file entries. It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -594,7 +592,7 @@ Normally, this detector does nothing.</p>
   <Detector class="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference">
     <Details>
 <![CDATA[
-<p> This detector finds code that behaves differently under OpenJDK 1.6, where
+<p> This detector finds code that behaves differently under OpenJDK 6, where
 weak references are used to hold onto Loggers.
 </p>
 ]]>
@@ -713,6 +711,14 @@ cloneable classes. </p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ThrowingExceptions">
+    <Details>
+<![CDATA[
+<p> This detector looks for methods throwing RuntimeException and methods 
+that have Exception or Throwable in their throws clause. </p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.ComparatorIdiom">
     <Details>
 <![CDATA[
@@ -774,7 +780,7 @@ such as the no-argument String constructor.
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck">
     <Details>
 <![CDATA[
-<p> This detector looks for instances of double checked locking.
+<p> This detector looks for instances of double-checked locking.
 </p>
 ]]>
     </Details>
@@ -1479,7 +1485,7 @@ factory pattern to create these objects.</p>
       <![CDATA[
       <p>
       This detector looks for final classes that declare protected members. As this
-      class can not be derived from, the use of protected access for members is
+      class cannot be derived from, the use of protected access for members is
       incorrect. The access should be changed to public or private to represent
       the correct intention of the field. This was probably caused by a change in
       use for this class, without completely changing all of the class to the new
@@ -1580,6 +1586,13 @@ factory pattern to create these objects.</p>
     ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ViewCFG">
+    <Details>
+      <![CDATA[
+      <p> Generate DOT files from the CFGs. </p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer">
     <Details>
     <![CDATA[
@@ -1655,7 +1668,7 @@ factory pattern to create these objects.</p>
     <Details>
 <![CDATA[
 <p> Checks for calls to methods which perform a byte to String (or String to byte) conversion using the user's default
- platform encoding. This can cause the application behaviour to vary between platforms.  </p>
+ platform encoding. This can cause the application behavior to vary between platforms.  </p>
 ]]>
       </Details>
   </Detector>
@@ -1733,6 +1746,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DontUseFloatsAsLoopCounters">
+    <Details>
+      <![CDATA[
+            <p>Checks for floats in loop counters.</p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.PermissionsSuper">
     <Details>
       <![CDATA[
@@ -1742,6 +1762,14 @@ factory pattern to create these objects.</p>
                which they return at the end.
               </p>
               ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource">
+    <Details>
+      <![CDATA[
+            <p>Looks for potential security checks on an untrusted source before entering a
+               doPrivileged block.</p>
+      ]]>
     </Details>
   </Detector>
   <!--
@@ -1856,7 +1884,7 @@ of the double to create the BigDecimal (e.g., BigDecimal.valueOf(0.1) gives 0.1)
         <Details>
       <![CDATA[
     <p>
-This partical method invocation doesn't make sense, for reasons that should be apparent from inspection.
+This particular method invocation doesn't make sense, for reasons that should be apparent from inspection.
 </p>
 
 ]]>
@@ -1879,7 +1907,7 @@ This partical method invocation doesn't make sense, for reasons that should be a
     <LongDescription>Creation of ScheduledThreadPoolExecutor with zero core threads in {1}</LongDescription>
     <Details>
       <![CDATA[
-    <p>(<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html#ScheduledThreadPoolExecutor%28int%29">Javadoc</a>)
+    <p>(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html#ScheduledThreadPoolExecutor-int-">Javadoc</a>)
 A ScheduledThreadPoolExecutor with zero core threads will never execute anything; changes to the max pool size are ignored.
 </p>
 
@@ -1891,7 +1919,7 @@ A ScheduledThreadPoolExecutor with zero core threads will never execute anything
     <LongDescription>Futile attempt to change max pool size of ScheduledThreadPoolExecutor in {1}</LongDescription>
     <Details>
       <![CDATA[
-    <p>(<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html">Javadoc</a>)
+    <p>(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html">Javadoc</a>)
 While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the inherited tuning methods are not useful for it. In particular, because it acts as a fixed-sized pool using corePoolSize threads and an unbounded queue, adjustments to maximumPoolSize have no useful effect.
     </p>
 
@@ -2255,8 +2283,8 @@ bug detectors.</p>
     <LongDescription>Unknown bug pattern BUG_PATTERN in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>A warning was recorded, but SpotBugs can't find the description of this bug pattern
-and so can't describe it. This should occur only in cases of a bug in SpotBugs or its configuration,
+<p>A warning was recorded, but SpotBugs cannot find the description of this bug pattern
+and so cannot describe it. This should occur only in cases of a bug in SpotBugs or its configuration,
 or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded.
 .</p>
 ]]>
@@ -2535,11 +2563,11 @@ Consider using <code>java.net.URI</code> instead.
     </Details>
   </BugPattern>
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
-    <ShortDescription>Can't use reflection to check for presence of annotation without runtime retention</ShortDescription>
+    <ShortDescription>Cannot use reflection to check for presence of annotation without runtime retention</ShortDescription>
     <LongDescription>Use of reflection to check for the presence the annotation {3} which doesn't have runtime retention, in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> Unless an annotation has itself been annotated with  @Retention(RetentionPolicy.RUNTIME), the annotation can't be observed using reflection
+  <p> Unless an annotation has itself been annotated with  @Retention(RetentionPolicy.RUNTIME), the annotation cannot be observed using reflection
 (e.g., by using the isAnnotationPresent method).
    .</p>
 ]]>
@@ -2599,7 +2627,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     <LongDescription>{1} invokes toString() method on a String</LongDescription>
     <Details>
 <![CDATA[
-  <p> Calling <code>String.toString()</code> is just a redundant operation.
+  <p> Calling <code>String.toString()</code> is a redundant operation.
   Just use the String.</p>
 ]]>
     </Details>
@@ -2627,7 +2655,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   <p> Creating new instances of <code>java.lang.Boolean</code> wastes
   memory, since <code>Boolean</code> objects are immutable and there are
   only two useful values of this type.&nbsp; Use the <code>Boolean.valueOf()</code>
-  method (or Java 1.5 autoboxing) to create <code>Boolean</code> objects instead.</p>
+  method (or Java 5 autoboxing) to create <code>Boolean</code> objects instead.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2647,7 +2675,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
       For values outside the constant range the performance of both styles is the same.
       </p>
       <p>
-      Unless the class must be compatible with JVMs predating Java 1.5,
+      Unless the class must be compatible with JVMs predating Java 5,
       use either autoboxing or the <code>valueOf()</code> method when creating instances of
       <code>Long</code>, <code>Integer</code>, <code>Short</code>, <code>Character</code>, and <code>Byte</code>.
       </p>
@@ -2665,7 +2693,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
       Using of cached values avoids object allocation and the code will be faster.
       </p>
       <p>
-      Unless the class must be compatible with JVMs predating Java 1.5,
+      Unless the class must be compatible with JVMs predating Java 5,
       use either autoboxing or the <code>valueOf()</code> method when creating instances of <code>Double</code> and <code>Float</code>.
       </p>
       ]]>
@@ -2769,8 +2797,8 @@ to immediately undo the work of the boxing.
     <LongDescription>Primitive is boxed to call {2}: use {3} instead</LongDescription>
     <Details>
 <![CDATA[
-  <p>A boxed primitive is created just to call compareTo method. It's more efficient to use static compare method
-  (for double and float since Java 1.4, for other primitive types since Java 1.7) which works on primitives directly.
+  <p>A boxed primitive is created just to call <code>compareTo()</code> method. It's more efficient to use static compare method
+  (for double and float since Java 1.4, for other primitive types since Java 7) which works on primitives directly.
   </p>
 ]]>
     </Details>
@@ -2872,8 +2900,8 @@ be used to make the prepared statement do something unexpected and undesirable.
     </Details>
   </BugPattern>
   <BugPattern type="DC_DOUBLECHECK">
-    <ShortDescription>Possible double check of field</ShortDescription>
-    <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
+    <ShortDescription>Possible double-check of field</ShortDescription>
+    <LongDescription>Possible double-check on {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method may contain an instance of double-checked locking.&nbsp;
@@ -3235,7 +3263,7 @@ by reversing the order of the operands rather than by negating the results.
   </BugPattern>
   <BugPattern type="CO_COMPARETO_RESULTS_MIN_VALUE">
     <ShortDescription>compareTo()/compare() returns Integer.MIN_VALUE</ShortDescription>
-    <LongDescription>{1} returns Integer.MIN_VALUE, which can't be negated</LongDescription>
+    <LongDescription>{1} returns Integer.MIN_VALUE, which cannot be negated</LongDescription>
     <Details>
 <![CDATA[
   <p> In some situation, this compareTo or compare method returns
@@ -3724,14 +3752,9 @@ Language Specification</a> for details.
     <LongDescription>wait() with two locks held in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> Waiting on a monitor while two locks are held may cause
-  deadlock.
-   &nbsp;
-   Performing a wait only releases the lock on the object
-   being waited on, not any other locks.
-   &nbsp;
-This not necessarily a bug, but is worth examining
-  closely.</p>
+  <p>Waiting on a monitor while two locks are held may cause deadlock.
+  Performing a wait only releases the lock on the object being waited on, not any other locks.
+  This not necessarily a bug, but is worth examining closely.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3757,7 +3780,7 @@ This not necessarily a bug, but is worth examining
     <Details>
 <![CDATA[
   <p> This method contains a call to <code>java.lang.Object.wait()</code> which
-  is not guarded by conditional control flow.&nbsp; The code should
+    is not guarded by conditional control flow. The code should
     verify that condition it intends to wait for is not already satisfied
     before calling wait; any previous notifications will be ignored.
   </p>
@@ -3857,8 +3880,8 @@ For example, in the following code, <code>foo</code> will be null.</p>
     </Details>
   </BugPattern>
   <BugPattern type="IT_NO_SUCH_ELEMENT">
-    <ShortDescription>Iterator next() method can't throw NoSuchElementException</ShortDescription>
-    <LongDescription>{1} can't throw NoSuchElementException</LongDescription>
+    <ShortDescription>Iterator next() method cannot throw NoSuchElementException</ShortDescription>
+    <LongDescription>{1} cannot throw NoSuchElementException</LongDescription>
     <Details>
 <![CDATA[
   <p> This class implements the <code>java.util.Iterator</code> interface.&nbsp;
@@ -4163,8 +4186,8 @@ could be changed by malicious code or
     </Details>
   </BugPattern>
   <BugPattern type="MS_CANNOT_BE_FINAL">
-    <ShortDescription>Field isn't final and can't be protected from malicious code</ShortDescription>
-    <LongDescription>{1} isn't final and can't be protected from malicious code</LongDescription>
+    <ShortDescription>Field isn't final and cannot be protected from malicious code</ShortDescription>
+    <LongDescription>{1} isn't final and cannot be protected from malicious code</LongDescription>
     <Details>
 <![CDATA[
   <p>
@@ -4216,7 +4239,7 @@ that you want to invoke the inherited method, not the method in the outer class.
 </p>
 <p>If you call <code>this.foo(17)</code>, then the inherited method will be invoked. However, since SpotBugs only looks at
 classfiles, it
-can't tell the difference between an invocation of <code>this.foo(17)</code> and <code>foo(17)</code>, it will still
+cannot tell the difference between an invocation of <code>this.foo(17)</code> and <code>foo(17)</code>, it will still
 complain about a potential ambiguous invocation.
 </p>
 ]]>
@@ -4385,7 +4408,7 @@ removing or deprecating the method with the similar but not identical signature.
   <p> This regular method has the same name as the class it is defined in. It is likely that this was intended to be a constructor.
       If it was intended to be a constructor, remove the declaration of a void return value.
     If you had accidentally defined this method, realized the mistake, defined a proper constructor
-    but can't get rid of this method due to backwards compatibility, deprecate the method.
+    but cannot get rid of this method due to backwards compatibility, deprecate the method.
 </p>
 ]]>
     </Details>
@@ -5296,7 +5319,7 @@ something like </p>
   </BugPattern>
   <BugPattern type="NP_CLOSING_NULL">
     <ShortDescription>close() invoked on a value that is always null</ShortDescription>
-    <LongDescription>Can't close {2.givenClass} since it is always null in {1}</LongDescription>
+    <LongDescription>Cannot close {2.givenClass} since it is always null in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> close() is being invoked on a value that is always null. If this statement is executed,
@@ -5350,7 +5373,7 @@ of the parameter or the annotation is wrong.
 a null value will be dereferenced, which
 would generate a <code>NullPointerException</code> when the code is executed.
 Of course, the problem might be that the branch or statement is infeasible and that
-the null pointer exception can't ever be executed; deciding that is beyond the ability of SpotBugs.
+the null pointer exception cannot ever be executed; deciding that is beyond the ability of SpotBugs.
 </p>
 ]]>
     </Details>
@@ -5364,7 +5387,7 @@ the null pointer exception can't ever be executed; deciding that is beyond the a
 a null value will be dereferenced, which
 would generate a <code>NullPointerException</code> when the code is executed.
 Of course, the problem might be that the branch or statement is infeasible and that
-the null pointer exception can't ever be executed; deciding that is beyond the ability of SpotBugs.
+the null pointer exception cannot ever be executed; deciding that is beyond the ability of SpotBugs.
 Due to the fact that this value had been previously tested for nullness,
 this is a definite possibility.
 </p>
@@ -5621,7 +5644,7 @@ body of an <code>if</code> statement, e.g.:</p>
     <LongDescription>Nullcheck of {2.givenClass} at {4.lineNumber} of value previously dereferenced in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> A value is checked here to see whether it is null, but this value can't
+<p> A value is checked here to see whether it is null, but this value cannot
 be null because it was previously dereferenced and if it were null a null pointer
 exception would have occurred at the earlier dereference.
 Essentially, this code and the previous dereference
@@ -5781,7 +5804,7 @@ than are different than you would get using <code>.equals(...)</code>.
     <Details>
 <![CDATA[
 <p> This method uses pointer equality to compare two references that seem to be of
-different types.  The result of this comparison will always be false at runtime.
+different types. The result of this comparison will always be false at runtime.
 </p>
 ]]>
     </Details>
@@ -5883,8 +5906,7 @@ an <code>IllegalMonitorStateException</code> being thrown.</p>
     <Details>
 <![CDATA[
 <p> This method contains a self assignment of a local variable, and there
-is a field with an identical name.
-assignment appears to have been ; e.g.</p>
+is a field with an identical name, e.g.:</p>
 <pre><code>    int foo;
     public void setFoo(int foo) {
         foo = foo;
@@ -5967,8 +5989,7 @@ public void foo() {
 <p> This method performs a nonsensical computation of a field with another
 reference to the same field (e.g., x&x or x-x). Because of the nature
 of the computation, this operation doesn't seem to make sense,
-and may indicate a typo or
-a logic error.  Double check the computation.
+and may indicate a typo or a logic error. Double-check the computation.
 </p>
 ]]>
     </Details>
@@ -5981,8 +6002,7 @@ a logic error.  Double check the computation.
 <p> This method performs a nonsensical computation of a local variable with another
 reference to the same variable (e.g., x&x or x-x). Because of the nature
 of the computation, this operation doesn't seem to make sense,
-and may indicate a typo or
-a logic error.  Double check the computation.
+and may indicate a typo or a logic error. Double-check the computation.
 </p>
 ]]>
     </Details>
@@ -6206,13 +6226,13 @@ to get <code>0xffffffff</code>, and thus give the value
 
 <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
 <pre><code>int result = 0;
-for(int i = 0; i &lt; 4; i++) {
+for (int i = 0; i &lt; 4; i++) {
     result = ((result &lt;&lt; 8) | b[i]);
 }
 </code></pre>
 <p>The following idiom will work instead: </p>
 <pre><code>int result = 0;
-for(int i = 0; i &lt; 4; i++) {
+for (int i = 0; i &lt; 4; i++) {
     result = ((result &lt;&lt; 8) | (b[i] &amp; 0xff));
 }
 </code></pre>
@@ -6236,12 +6256,12 @@ to get <code>0xffffffff</code>, and thus give the value
 
 <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
 <pre><code>int result = 0;
-for(int i = 0; i &lt; 4; i++)
+for (int i = 0; i &lt; 4; i++)
     result = ((result &lt;&lt; 8) + b[i]);
 </code></pre>
 <p>The following idiom will work instead: </p>
 <pre><code>int result = 0;
-for(int i = 0; i &lt; 4; i++)
+for (int i = 0; i &lt; 4; i++)
     result = ((result &lt;&lt; 8) + (b[i] &amp; 0xff));
 </code></pre>
 ]]>
@@ -6391,7 +6411,7 @@ than using the <code>synchronized (...)</code> construct.
 <p> This method calls
 <code>wait()</code>,
 <code>notify()</code> or
-<code>notifyAll()()</code>
+<code>notifyAll()</code>
 on an object that also provides an
 <code>await()</code>,
 <code>signal()</code>,
@@ -6490,7 +6510,7 @@ In each iteration, the String is converted to a StringBuffer/StringBuilder,
    as the growing string is recopied in each iteration. </p>
 
 <p>Better performance can be obtained by using
-a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
+a StringBuffer (or StringBuilder in Java 5) explicitly.</p>
 
 <p> For example:</p>
 <pre><code>// This is bad
@@ -6732,10 +6752,9 @@ correctly.
 <p>
 This method invokes the .equals(Object o) to compare an array and a reference that doesn't seem
 to be an array. If things being compared are of different types, they are guaranteed to be unequal
-and the comparison is almost certainly an error. Even if they are both arrays, the equals method
-on arrays only determines of the two arrays are the same object.
-To compare the
-contents of the arrays, use java.util.Arrays.equals(Object[], Object[]).
+and the comparison is almost certainly an error. Even if they are both arrays, the <code>equals()</code> method
+on arrays only determines if the two arrays are the same object.
+To compare the contents of the arrays, use <code>java.util.Arrays.equals(Object[], Object[])</code>.
 </p>
 ]]>
     </Details>
@@ -6775,8 +6794,9 @@ only checks to see if they are the same array, and ignores the contents of the a
     <Details>
 <![CDATA[
 <p>
-This method invokes the Thread.currentThread() call, just to call the interrupted() method. As interrupted() is a
-static method, is more simple and clear to use Thread.interrupted().
+This method invokes the <code>Thread.currentThread()</code> call, just to call the
+<code>interrupted()</code> method. As <code>interrupted()</code> is a static method, it is more
+simple and clear to use <code>Thread.interrupted()</code>.
 </p>
 ]]>
     </Details>
@@ -6836,7 +6856,7 @@ used.
 </p>
 <p>
 Note that Sun's javac compiler often generates dead stores for
-final local variables.  Because SpotBugs is a bytecode-based tool,
+final local variables. Because SpotBugs is a bytecode-based tool,
 there is no easy way to eliminate these false positives.
 </p>
 ]]>
@@ -6850,7 +6870,7 @@ there is no easy way to eliminate these false positives.
       <![CDATA[
 <p>
 This statement assigns to a local variable in a return statement. This assignment
-has effect. Please verify that this statement does the right thing.
+has no effect. Please verify that this statement does the right thing.
 </p>
 ]]>
     </Details>
@@ -6883,8 +6903,8 @@ In Java 1.4 and earlier, a reference to <code>Foo.class</code> would force the s
 for <code>Foo</code> to be executed, if it has not been executed already.
 In Java 5 and later, it does not.
 </p>
-<p>See Sun's <a href="http://www.oracle.com/technetwork/java/javase/compatibility-137462.html#literal">article on Java SE compatibility</a>
-for more details and examples, and suggestions on how to force class initialization in Java 5.
+<p>See Oracle's <a href="http://www.oracle.com/technetwork/java/javase/compatibility-137462.html#literal">article on Java SE compatibility</a>
+for more details and examples, and suggestions on how to force class initialization in Java 5+.
 </p>
 ]]>
     </Details>
@@ -7264,7 +7284,7 @@ This code converts an int value to a float precision
 floating point number and then
 passing the result to the Math.round() function, which returns the int/long closest
 to the argument. This operation should always be a no-op,
-since the converting an integer to a float should give a number with no fractional part.
+since converting an integer to a float should give a number with no fractional part.
 It is likely that the operation that generated the value to be passed
 to Math.round was intended to be performed using
 floating point arithmetic.
@@ -7284,7 +7304,7 @@ to a double precision
 floating point number and then
 passing the result to the Math.ceil() function, which rounds a double to
 the next higher integer value. This operation should always be a no-op,
-since the converting an integer to a double should give a number with no fractional part.
+since converting an integer to a double should give a number with no fractional part.
 It is likely that the operation that generated the value to be passed
 to Math.ceil was intended to be performed using double precision
 floating point arithmetic.
@@ -7300,10 +7320,9 @@ floating point arithmetic.
 <![CDATA[
 <p>
 This code casts the result of an integral division (e.g., int or long division)
-operation to double or
-float.
+operation to double or float.
 Doing division on integers truncates the result
-to the integer value closest to zero.  The fact that the result
+to the integer value closest to zero. The fact that the result
 was cast to double suggests that this precision should have been retained.
 What was probably meant was to cast one or both of the operands to
 double <em>before</em> performing the division.  Here is an example:
@@ -7416,10 +7435,9 @@ This cast will always throw a ClassCastException.
 SpotBugs tracks type information from instanceof checks,
 and also uses more precise information about the types
 of values returned from methods and loaded from fields.
-Thus, it may have more precise information that just
+Thus, it may have more precise information than just
 the declared type of a variable, and can use this to determine
 that a cast will always throw an exception at runtime.
-
 </p>
 ]]>
     </Details>
@@ -7451,11 +7469,13 @@ to a type more specific than <code>Object[]</code>, as in:</p>
 }
 </code></pre>
 <p>This will usually fail by throwing a ClassCastException. The <code>toArray()</code>
-of almost all collections return an <code>Object[]</code>. They can't really do anything else,
+of almost all collections return an <code>Object[]</code>. They cannot really do anything else,
 since the Collection object has no reference to the declared generic type of the collection.
 <p>The correct way to do get an array of a specific type from a collection is to use
-  <code>c.toArray(new String[]);</code>
-  or <code>c.toArray(new String[c.size()]);</code> (the latter is slightly more efficient).
+  <code>c.toArray(new String[0]);</code>
+  or <code>c.toArray(new String[c.size()]);</code> (the former is
+  <a href="https://shipilev.net/blog/2016/arrays-wisdom-ancients/#_historical_perspective">slightly more efficient</a>
+  since late Java 6 updates).
 <p>There is one common/known exception to this. The <code>toArray()</code>
 method of lists returned by <code>Arrays.asList(...)</code> will return a covariantly
 typed array. For example, <code>Arrays.asArray(new String[] { "a" }).toArray()</code>
@@ -7493,7 +7513,7 @@ an indication of some misunderstanding or some other logic error.
   </BugPattern>
   <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
     <ShortDescription>instanceof will always return false</ShortDescription>
-    <LongDescription>instanceof will always return false in {1}, since a {2} can't be a {3}</LongDescription>
+    <LongDescription>instanceof will always return false in {1}, since a {2} cannot be a {3}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7577,6 +7597,9 @@ For example
 <li>"ab|cd".replaceAll("|", "/") will return "/a/b/|/c/d/"</li>
 <li>"ab|cd".split("|") will return array with six (!) elements: [, a, b, |, c, d]</li>
 </ul>
+<p>
+Consider using <code>s.replace(".", "/")</code> or <code>s.split("\\.")</code> instead.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7750,7 +7773,7 @@ publicized the bug pattern</a>.
 <p>
 The code uses x % 2 == 1 to check to see if a value is odd, but this won't work
 for negative numbers (e.g., (-5) % 2 == -1). If this code is intending to check
-for oddness, consider using x &amp; 1 == 1, or x % 2 != 0.
+for oddness, consider using (x &amp; 1) == 1, or x % 2 != 0.
 </p>
 ]]>
     </Details>
@@ -7907,7 +7930,7 @@ and the next method is supposed to change the state of the iterator.
       <![CDATA[
       <p>
       This class is declared to be final, but declares fields to be protected. Since the class
-      is final, it can not be derived from, and the use of protected is confusing. The access
+      is final, it cannot be derived from, and the use of protected is confusing. The access
       modifier for the field should be changed to private or public to represent the true
       use for the field.
       </p>
@@ -7933,7 +7956,7 @@ and the next method is supposed to change the state of the iterator.
     <Details>
       <![CDATA[
       <p>
-      This class makes a reference to a class or method that can not be
+      This class makes a reference to a class or method that cannot be
     resolved using against the libraries it is being analyzed with.
       </p>
       ]]>
@@ -8020,8 +8043,8 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
      of nasty coding mistakes. If a map <code>m</code> returns
      such an iterator for an entrySet, then
      <code>c.addAll(m.entrySet())</code> will go badly wrong. All of
-     the Map implementations in OpenJDK 1.7 have been rewritten to avoid this,
-     you should to.
+     the Map implementations in OpenJDK 7 have been rewritten to avoid this,
+     you should too.
     </p>
      ]]>
     </Details>
@@ -8033,7 +8056,7 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
      <![CDATA[
      <p> The entrySet() method is allowed to return a view of the
      underlying Map in which a single Entry object is reused and returned
-     during the iteration.  As of Java 1.6, both IdentityHashMap
+     during the iteration. As of Java 6, both IdentityHashMap
      and EnumMap did so. When iterating through such a Map,
      the Entry value is only valid until you advance to the next iteration.
      If, for example, you try to pass such an entrySet to an addAll method,
@@ -8182,7 +8205,7 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
     <Details>
       <![CDATA[
         <p>
-        A value is being used in a way that requires the value be annotation with a type qualifier.
+        A value is being used in a way that requires the value to be annotated with a type qualifier.
     The type qualifier is strict, so the tool rejects any values that do not have
     the appropriate annotation.
         </p>
@@ -8228,7 +8251,7 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
     <Details>
       <![CDATA[
       <p>
-      A value that is annotated as possibility not being an instance of
+      A value that is annotated as possibly not being an instance of
     the values denoted by the type qualifier, and the value is guaranteed to be used
     in a way that requires values denoted by that type qualifier.
       </p>
@@ -8241,7 +8264,7 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
     <Details>
       <![CDATA[
       <p>
-      A value that is annotated as possibility being an instance of
+      A value that is annotated as possibly being an instance of
     the values denoted by the type qualifier, and the value is guaranteed to be used
     in a way that prohibits values denoted by that type qualifier.
       </p>
@@ -8280,17 +8303,17 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
     <Details>
       <![CDATA[
       <p>
-     This code opens a file in append mode and then wraps the result in an object output stream.
+     This code opens a file in append mode and then wraps the result in an object output stream like as follows:
+      </p>
+      <pre><code>OutputStream out = new FileOutputStream(anyFile, true);
+     new ObjectOutputStream(out);</code></pre>
+      <p>
      This won't allow you to append to an existing object output stream stored in a file. If you want to be
      able to append to an object output stream, you need to keep the object output stream open.
       </p>
       <p>The only situation in which opening a file in append mode and the writing an object output stream
       could work is if on reading the file you plan to open it in random access mode and seek to the byte offset
       where the append started.
-      </p>
-
-      <p>
-      TODO: example.
       </p>
       ]]>
     </Details>
@@ -8314,7 +8337,7 @@ String constructComponentName() {
 }
 </code></pre>
      <p>Subclasses of <code>Label</code> won't synchronize on the same subclass, giving rise to a datarace.
-     Instead, this code should be synchronizing on <code>Label.class</code></p>
+     Instead, this code should be synchronizing on <code>Label.class</code>.</p>
 <pre><code>private static final String base = "label";
 private static int nameCounter = 0;
 
@@ -8324,7 +8347,7 @@ String constructComponentName() {
     }
 }
 </code></pre>
-      <p>Bug pattern contributed by Jason Mehrens</p>
+      <p>Bug pattern contributed by Jason Mehrens.</p>
       ]]>
     </Details>
   </BugPattern>
@@ -8356,8 +8379,8 @@ String constructComponentName() {
           For sending feedback, check:
           </p>
           <ul>
-            <li><a href="https://github.com/spotbugs/spotbugs/blob/master/CONTRIBUTING.md">contributing guideline</a></li>
-            <li><a href="https://github.com/spotbugs/discuss/issues?q=">malinglist</a></li>
+            <li><a href="https://github.com/spotbugs/spotbugs/blob/master/.github/CONTRIBUTING.md">contributing guideline</a></li>
+            <li><a href="https://github.com/spotbugs/discuss/issues?q=">mailinglist</a></li>
           </ul>
 
           <p>
@@ -8368,8 +8391,9 @@ String constructComponentName() {
           </p>
 
           <p>
-          See Weimer and Necula, <i>Finding and Preventing Run-Time Error Handling Mistakes</i>, for
-          a description of the analysis technique.
+          See Weimer and Necula, <i>Finding and Preventing Run-Time Error Handling Mistakes</i>
+          (<a href="https://people.eecs.berkeley.edu/~necula/Papers/rte_oopsla04.pdf">PDF</a>),
+          for a description of the analysis technique.
           </p>
           ]]>
       </Details>
@@ -8406,8 +8430,8 @@ String constructComponentName() {
           For sending feedback, check:
           </p>
           <ul>
-            <li><a href="https://github.com/spotbugs/spotbugs/blob/master/CONTRIBUTING.md">contributing guideline</a></li>
-            <li><a href="https://github.com/spotbugs/discuss/issues?q=">malinglist</a></li>
+            <li><a href="https://github.com/spotbugs/spotbugs/blob/master/.github/CONTRIBUTING.md">contributing guideline</a></li>
+            <li><a href="https://github.com/spotbugs/discuss/issues?q=">mailinglist</a></li>
           </ul>
 
           <p>
@@ -8418,8 +8442,9 @@ String constructComponentName() {
           </p>
 
           <p>
-          See Weimer and Necula, <i>Finding and Preventing Run-Time Error Handling Mistakes</i>, for
-          a description of the analysis technique.
+          See Weimer and Necula, <i>Finding and Preventing Run-Time Error Handling Mistakes</i>
+          (<a href="https://people.eecs.berkeley.edu/~necula/Papers/rte_oopsla04.pdf">PDF</a>),
+          for a description of the analysis technique.
           </p>
           ]]>
       </Details>
@@ -8444,7 +8469,7 @@ String constructComponentName() {
     <LongDescription>Unexpected/undesired {2} SpotBugs warning in {1}</LongDescription>
     <Details>
           <![CDATA[
-          <p>SpotBugs generated a warning that, according to a @NoWarning annotated,
+          <p>SpotBugs generated a warning that, according to a <code>@NoWarning</code> annotation,
             is unexpected or undesired.</p>
           ]]>
       </Details>
@@ -8454,7 +8479,7 @@ String constructComponentName() {
     <LongDescription>Missing expected or desired {2} SpotBugs warning in {1}</LongDescription>
     <Details>
           <![CDATA[
-          <p>SpotBugs didn't generate generated a warning that, according to a @ExpectedWarning annotated,
+          <p>SpotBugs didn't generate a warning that, according to an <code>@ExpectedWarning</code> annotation,
             is expected or desired.</p>
           ]]>
       </Details>
@@ -8524,7 +8549,10 @@ after the call to initLogging, the logger configuration is lost
     <LongDescription>Found reliance on default encoding in {1}: {2}</LongDescription>
     <Details>
 <![CDATA[
-<p> Found a call to a method which will perform a byte to String (or String to byte) conversion, and will assume that the default platform encoding is suitable. This will cause the application behaviour to vary between platforms. Use an alternative API and specify a charset name or Charset object explicitly.  </p>
+<p> Found a call to a method which will perform a byte to String (or String to byte) conversion,
+and will assume that the default platform encoding is suitable. This will cause the application
+behavior to vary between platforms. Use an alternative API and specify a charset name or Charset
+object explicitly.</p>
 ]]>
       </Details>
   </BugPattern>
@@ -8574,7 +8602,9 @@ after the call to initLogging, the logger configuration is lost
       causes the read (probably in a loop) to end prematurely if the character 0xFF is met. Similarly, the method
       java.io.FileReader.read() also returns an int. If it is converted to a char then -1 becomes 0xFFFF which is
       Character.MAX_VALUE. Comparing the result to -1 is pointless, since characters are unsigned in Java. If the
-      checking for EOF is the condition of a loop then this loop is infinite.
+      checking for EOF is the condition of a loop then this loop is infinite.</p>
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/FIO08-J.+Distinguish+between+characters+or+bytes+read+from+a+stream+and+-1">FIO08-J. Distinguish between characters or bytes read from a stream and -1</a>.
       </p>]]>
     </Details>
   </BugPattern>
@@ -8634,7 +8664,8 @@ after the call to initLogging, the logger configuration is lost
       affecting the behavior of clone(). It can also observe or modify the clone object in a partially initialized
       state. Only static, final or private methods should be invoked from the clone() method.</p>
       <p>
-      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">MET06-J. Do not invoke overridable methods in clone()</a>.
+      See SEI CERT rule
+      <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">MET06-J. Do not invoke overridable methods in clone()</a>.
       </p>]]>
     </Details>
   </BugPattern>
@@ -8649,11 +8680,77 @@ after the call to initLogging, the logger configuration is lost
         that could leave the shared static data unprotected against concurrent access.
         This could occur in two ways, if a synchronization method uses a non-static lock object,
         or a synchronized method is declared as non-static. Both ways are ineffective.
-        Best solution is to use a private static final lock object to secure the shared static data.
+        Best solution is to use a private static final lock object to secure the shared static data.</p>
+      <p>
+      See SEI CERT rule
+      <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK06-J.+Do+not+use+an+instance+lock+to+protect+shared+static+data">
+      LCK06-J. Do not use an instance lock to protect shared static data</a>.
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="FL_FLOATS_AS_LOOP_COUNTERS">
+    <ShortDescription>Do not use floating-point variables as loop counters</ShortDescription>
+    <LongDescription>Using floating-point loop counters can lead to unexpected behavior.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+Using floating-point variables should not be used as loop counters, as they are not precise, which may result in incorrect loops. A loop counter is a variable that is changed with each iteration and controls when the loop should terminate. It is decreased or increased by a fixed amount each iteration.</p>
+<p>See rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/NUM09-J.+Do+not+use+floating-point+variables+as+loop+counters">NUM09-J</a>.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION">
+    <ShortDescription>Method intentionally throws RuntimeException.</ShortDescription>
+    <LongDescription>Method intentionally throws RuntimeException.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        Method intentionally throws RuntimeException.<br>
+        
+        According to the <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable">SEI CERT ERR07-J rule</a>, 
+        throwing a RuntimeException may cause errors, like the caller not being able to examine the exception and therefore cannot properly recover from it.<br>
 
+        Moreover, throwing a RuntimeException would force the caller to catch RuntimeException and therefore violate the 
+        <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors">SEI CERT ERR08-J rule</a>.<br>
+        
+        Please note that you can derive from Exception or RuntimeException and may throw a new instance of that exception.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION">
+    <ShortDescription>Method lists Exception in its throws clause.</ShortDescription>
+    <LongDescription>Method lists Exception in its throws clause.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        Method lists Exception in its throws clause.<br>
+
+
+        When declaring a method, the types of exceptions in the throws clause should be the most specific.
+        Therefore, using Exception in the throws clause would force the caller to either use it in its own throws clause, or use it in a try-catch block (when it does not necessarily 
+        contain any meaningful information about the thrown exception).<br><br>
+        
+        For more information, see the <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable">SEI CERT ERR07-J rule</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="THROWS_METHOD_THROWS_CLAUSE_THROWABLE">
+    <ShortDescription>Method lists Throwable in its throws clause.</ShortDescription>
+    <LongDescription>Method lists Throwable in its throws clause.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        Method lists Throwable in its throws clause.<br>
+
+        When declaring a method, the types of exceptions in the throws clause should be the most specific.
+        Therefore, using Throwable in the throws clause would force the caller to either use it in its own throws clause, or use it in a try-catch block (when it does not necessarily 
+        contain any meaningful information about the thrown exception).<br>
+        
+        Furthermore, using Throwable like that is semantically a bad practice, considered that Throwables include Errors as well, but by definition they occur in unrecoverable scenarios.<br><br>
+        
+        For more information, see the <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable">SEI CERT ERR07-J rule</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS">
     <ShortDescription>Custom class loader does not call its superclass's getPermissions()</ShortDescription>
     <LongDescription>Custom class loader {1} does not call its superclass's getPermissions()</LongDescription>
@@ -8666,6 +8763,27 @@ after the call to initLogging, the logger configuration is lost
        specified in the systemwide policy file. In effect, the class's permissions override them.
        </p>
       ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE">
+    <ShortDescription>Potential security check based on untrusted source.</ShortDescription>
+    <LongDescription>Non-final method {4} was called at {5} before entering a doPrivileged block and was also called inside the block at {6} on a non-final class instance of {3} in public method {1}. If this call is a check before entering the doPrivileged() block then it may be unreliable since the method may receive an instance of a malicious descendant of the class which has this overridden to behave differently than expected.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      A public method of a public class may be called from outside the package which means that untrusted
+      data may be passed to it. Calling a method before the doPrivileged to check its return value and then
+      calling the same method inside the class is dangerous if the method or its enclosing class is not
+      final. An attacker may pass an instance of a malicious descendant of the class instead of an instance
+      of the expected one where this method is overridden in a way that it returns different values upon
+      different invocations. For example, a method returning a file path may return a harmless path to check
+      before entering the doPrivileged block and then a sensitive file upon the call inside the doPrivileged
+      block. To avoid such scenario defensively copy the object received in the parameter, e.g. by using
+      the copy constructor of the class used as the type of the formal parameter. This ensures that the
+      method behaves exactly as expected.
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources">SEC02-J. Do not base security checks on untrusted sources</a>.
+      </p>]]>
     </Details>
   </BugPattern>
   <!--
@@ -8704,7 +8822,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="NN">Naked notify</BugCode>
   <BugCode abbrev="UW">Unconditional wait</BugCode>
   <BugCode abbrev="SP">Method spins on field</BugCode>
-  <BugCode abbrev="DC">Double check pattern</BugCode>
+  <BugCode abbrev="DC">Double-check pattern</BugCode>
   <BugCode abbrev="Wa">Wait not in loop</BugCode>
   <BugCode abbrev="No">Using notify() rather than notifyAll()</BugCode>
   <BugCode abbrev="DE">Dropped or ignored exception</BugCode>
@@ -8818,5 +8936,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="REFLF">Reflection increasing accessibility of fields</BugCode>
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
   <BugCode abbrev="SSD">Do not use an instance lock to protect shared static data</BugCode>
+  <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
+  <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
 </MessageCollection>

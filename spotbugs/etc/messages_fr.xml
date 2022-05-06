@@ -3253,7 +3253,7 @@ double value2 =  x / (double) y;
   <LongDescription>Un test d'impaire ne fonctionnera pas avec les négatifs dans {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Le code utilise <code>x % 2 == 1</code> pour véifier si une valeur est impaire, mais cela ne fonctionera pas avec une valeur négative (Ex. : <code>(-5) % 2 == -1</code>). Si ce code doit tester si une valeur est impaire, envisagez d'utiliser <code>x & 1 == 1</code> ou <code>x % 2 != 0</code>.</p>
+<p>Le code utilise <code>x % 2 == 1</code> pour véifier si une valeur est impaire, mais cela ne fonctionera pas avec une valeur négative (Ex. : <code>(-5) % 2 == -1</code>). Si ce code doit tester si une valeur est impaire, envisagez d'utiliser <code>(x & 1) == 1</code> ou <code>x % 2 != 0</code>.</p>
 ]]>
   </Details>
  </BugPattern>
