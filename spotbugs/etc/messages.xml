@@ -1772,6 +1772,26 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.BadVisibilityOnSharedPrimitiveVariables">
+    <Details>
+      <![CDATA[
+              <p>
+                Detector for patterns where a shared primitive variable in one thread
+                may not yield the value of the most recent write to the variable from another thread.
+                Consequently, the thread may observe a stale value of the shared variable.
+              </p>
+        ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.CompoundOperationsOnSharedVariables">
+    <Details>
+      <![CDATA[
+              <p>
+                Description of the detector....
+              </p>
+        ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8786,6 +8806,40 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SPV_BAD_VISIBILITY_ON_SHARED_PRIMITIVE_VARIABLES">
+    <ShortDescription>Bad visibility on shared primitive variables</ShortDescription>
+    <LongDescription>Shared primitive variable "{4}" in one thread may not yield the value of the most recent write to the variable from another thread.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables">SEI CERT rule VNA00-J</a>
+          describes that reading a shared primitive variable in one thread may not yield the value of the most recent write to the variable from another thread.
+          Consequently, the thread may observe a stale value of the shared variable.
+        </p>
+        <p>
+          The solution is declaring a variable volatile, changing the type to atomic or correctly synchronizing the code.
+          This guarantees that 64-bit primitive long and double variables are accessed atomically.
+        </p>
+     ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES">
+    <ShortDescription>Compound operations on shared variables</ShortDescription>
+    <LongDescription>Long desc....</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables">SEI CERT rule VNA00-J</a>
+          describes that reading a shared primitive variable in one thread may not yield the value of the most recent write to the variable from another thread.
+          Consequently, the thread may observe a stale value of the shared variable.
+        </p>
+        <p>
+          The solution is declaring a variable volatile, changing the type to atomic or correctly synchronizing the code.
+          This guarantees that 64-bit primitive long and double variables are accessed atomically.
+        </p>
+     ]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -8939,4 +8993,6 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
+  <BugCode abbrev="SPV">Bad visibility on shared primitive variables</BugCode>
+  <BugCode abbrev="COSV">Compound operations on shared variables</BugCode>
 </MessageCollection>
