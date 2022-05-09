@@ -30,6 +30,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * New detector `DontUseFloatsAsLoopCounters` to detect usage of floating-point variables as loop counters (`FL_FLOATS_AS_LOOP_COUNTERS`), according to SEI CERT rules [NUM09-J. Do not use floating-point variables as loop counters](https://wiki.sei.cmu.edu/confluence/display/java/NUM09-J.+Do+not+use+floating-point+variables+as+loop+counters)
 * New test detector `ViewCFG` to visualize the control-flow graph for `SpotBugs` developers
 
+### Added
+* New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See[SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions))
+
 ## 4.6.0 - 2022-03-08
 ### Fixed
 - Fixed spotbugs build with ecj compiler ([#1903](https://github.com/spotbugs/spotbugs/issues/1903))

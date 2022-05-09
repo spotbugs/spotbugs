@@ -458,9 +458,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             if (exitStatus == ResourceValueFrame.OPEN) {
                 bugType = "UL_UNRELEASED_LOCK";
                 priority = HIGH_PRIORITY;
-            } else {
+            } else if (exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
                 bugType = "UL_UNRELEASED_LOCK_EXCEPTION_PATH";
                 priority = NORMAL_PRIORITY;
+            } else {
+                bugType = "CWO_CLOSED_WITHOUT_OPENED";
+                priority = LOW_PRIORITY;
             }
             bugAccumulator.accumulateBug(new BugInstance(this, bugType, priority).addClassAndMethod(methodGen, sourceFile),
                     SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
