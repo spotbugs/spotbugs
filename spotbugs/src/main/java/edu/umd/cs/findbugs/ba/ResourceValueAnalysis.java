@@ -106,6 +106,9 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                 // If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
                 tmpFact = modifyFrame(fact, null);
                 tmpFact.setStatus(ResourceValueFrame.OPEN_ON_EXCEPTION_PATH);
+            } else {
+                tmpFact = modifyFrame(fact, null);
+                tmpFact.setStatus(ResourceValueFrame.NOT_OPEN_ON_EXCEPTION_PATH);
             }
 
             if (fact.isValid()) {
@@ -136,6 +139,11 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                     tmpFact.clearStack();
                     tmpFact.pushValue(ResourceValue.notInstance());
                 }
+            }
+        } else {
+            if (result.getStatus() == ResourceValueFrame.NOT_OPEN_ON_EXCEPTION_PATH && fact.getStatus() == ResourceValueFrame.CLOSED) {
+                tmpFact = modifyFrame(fact, null);
+                tmpFact.setStatus(ResourceValueFrame.CLOSED_WITHOUT_OPENED);
             }
         }
 
