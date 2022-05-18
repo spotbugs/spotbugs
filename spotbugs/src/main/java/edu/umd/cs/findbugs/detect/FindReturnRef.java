@@ -32,10 +32,12 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -44,6 +46,7 @@ import edu.umd.cs.findbugs.util.MutableClasses;
 
 public class FindReturnRef extends OpcodeStackDetector {
     boolean check = false;
+    boolean record = false;
 
     boolean publicClass = false;
 
@@ -67,6 +70,8 @@ public class FindReturnRef extends OpcodeStackDetector {
     private Map<OpcodeStack.Item, XField> arrayFieldClones = new HashMap<OpcodeStack.Item, XField>();
     private Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamClones = new HashMap<OpcodeStack.Item, OpcodeStack.Item>();
 
+    private Map<String, XField> accessMethodFields = new HashMap<>();
+
     private final BugAccumulator bugAccumulator;
 
     private static final Matcher BUFFER_CLASS_MATCHER = Pattern.compile("Ljava/nio/[A-Za-z]+Buffer;").matcher("");
@@ -74,6 +79,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             Pattern.compile("\\(\\)Ljava/nio/[A-Za-z]+Buffer;").matcher("");
     private static final Matcher WRAP_METHOD_SIGNATURE_MATCHER =
             Pattern.compile("\\(\\[.\\)Ljava/nio/[A-Za-z]+Buffer;").matcher("");
+    private static final Matcher ACCESS_METHOD_MATCHER = Pattern.compile("access\\$\\d{3}").matcher("");
 
     private enum CaptureKind {
         NONE, REP, ARRAY_CLONE, BUF
@@ -98,8 +104,10 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
+        record = publicClass && ACCESS_METHOD_MATCHER.reset(obj.getName()).matches();
         check = publicClass && (obj.getAccessFlags() & (Const.ACC_PUBLIC)) != 0;
-        if (!check) {
+
+        if (!check && !record) {
             return;
         }
         staticMethod = (obj.getAccessFlags() & (Const.ACC_STATIC)) != 0;
@@ -115,7 +123,7 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     @Override
     public void visit(Code obj) {
-        if (check) {
+        if (check || record) {
             super.visit(obj);
         }
     }
@@ -123,145 +131,198 @@ public class FindReturnRef extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if (!check) {
-            return;
-        }
+        if (check) {
+            fieldUnderClone = null;
+            paramUnderClone = null;
+            fieldCloneUnderCast = null;
+            paramCloneUnderCast = null;
+            fieldUnderWrapToBuffer = null;
+            paramUnderWrapToBuffer = null;
+            bufferFieldUnderDuplication = null;
+            bufferParamUnderDuplication = null;
 
-        fieldUnderClone = null;
-        paramUnderClone = null;
-        fieldCloneUnderCast = null;
-        paramCloneUnderCast = null;
-        fieldUnderWrapToBuffer = null;
-        paramUnderWrapToBuffer = null;
-        bufferFieldUnderDuplication = null;
-        bufferParamUnderDuplication = null;
-
-        if (staticMethod && seen == Const.PUTSTATIC && nonPublicFieldOperand()
-                && MutableClasses.mutableSignature(getSigConstantOperand())) {
-            OpcodeStack.Item top = stack.getStackItem(0);
-            CaptureKind capture = getPotentialCapture(top);
-            if (capture != CaptureKind.NONE) {
-                bugAccumulator.accumulateBug(
-                        new BugInstance(this, "EI_EXPOSE_STATIC_" + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
-                                capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                        .addClassAndMethod(this)
-                                        .addReferencedField(this)
-                                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
-                                                top.getRegisterNumber(),
-                                                getPC(), getPC() - 1)), this);
+            if (staticMethod && seen == Const.PUTSTATIC && nonPublicFieldOperand()
+                    && MutableClasses.mutableSignature(getSigConstantOperand())) {
+                OpcodeStack.Item top = stack.getStackItem(0);
+                CaptureKind capture = getPotentialCapture(top);
+                if (capture != CaptureKind.NONE) {
+                    bugAccumulator.accumulateBug(
+                            new BugInstance(this, "EI_EXPOSE_STATIC_" + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
+                                    capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                            .addClassAndMethod(this)
+                                            .addReferencedField(this)
+                                            .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
+                                                    top.getRegisterNumber(),
+                                                    getPC(), getPC() - 1)), this);
+                }
             }
-        }
-        if (!staticMethod && seen == Const.PUTFIELD && nonPublicFieldOperand()
-                && MutableClasses.mutableSignature(getSigConstantOperand())) {
-            OpcodeStack.Item top = stack.getStackItem(0);
-            OpcodeStack.Item target = stack.getStackItem(1);
-            CaptureKind capture = getPotentialCapture(top);
-            if (capture != CaptureKind.NONE && target.getRegisterNumber() == 0) {
-                bugAccumulator.accumulateBug(
-                        new BugInstance(this, "EI_EXPOSE_" + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
-                                capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                        .addClassAndMethod(this)
-                                        .addReferencedField(this)
-                                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
-                                                top.getRegisterNumber(),
-                                                getPC(), getPC() - 1)), this);
+            if (!staticMethod && seen == Const.PUTFIELD && nonPublicFieldOperand()
+                    && MutableClasses.mutableSignature(getSigConstantOperand())) {
+                OpcodeStack.Item top = stack.getStackItem(0);
+                OpcodeStack.Item target = stack.getStackItem(1);
+                CaptureKind capture = getPotentialCapture(top);
+                if (capture != CaptureKind.NONE && target.getRegisterNumber() == 0) {
+                    bugAccumulator.accumulateBug(
+                            new BugInstance(this, "EI_EXPOSE_" + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
+                                    capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                            .addClassAndMethod(this)
+                                            .addReferencedField(this)
+                                            .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
+                                                    top.getRegisterNumber(),
+                                                    getPC(), getPC() - 1)), this);
+                }
             }
-        }
 
-        if (seen == Const.ARETURN) {
-            OpcodeStack.Item item = stack.getStackItem(0);
-            XField field = item.getXField();
-            boolean isBuf = false;
-            boolean isArrayClone = false;
-            if (field == null) {
-                field = arrayFieldClones.get(item);
+            if (seen == Const.ARETURN) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                XField field = item.getXField();
+                boolean isBuf = false;
+                boolean isArrayClone = false;
+                if (field == null) {
+                    field = arrayFieldClones.get(item);
+                    if (field != null) {
+                        isArrayClone = true;
+                    }
+                }
+                if (field == null) {
+                    field = bufferFieldDuplicates.get(item);
+                    if (field != null) {
+                        isBuf = true;
+                    }
+                }
+                if (field == null) {
+                    field = arrayFieldsWrappedToBuffers.get(item);
+                    if (field != null) {
+                        isBuf = true;
+                    }
+                }
+                if (field == null ||
+                        !isFieldOf(field, getClassDescriptor()) ||
+                        field.isPublic() ||
+                        AnalysisContext.currentXFactory().isEmptyArrayField(field) ||
+                        field.getName().indexOf("EMPTY") != -1 ||
+                        !MutableClasses.mutableSignature(field.getSignature())) {
+                    return;
+                }
+                bugAccumulator.accumulateBug(new BugInstance(this, (staticMethod ? "MS" : "EI") + "_EXPOSE_"
+                        + (isBuf ? "BUF" : "REP"),
+                        (isBuf || isArrayClone) ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                .addClassAndMethod(this).addField(field.getClassName(), field.getName(),
+                                        field.getSignature(), field.isStatic()), this);
+
+            }
+
+            if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
+                MethodDescriptor method = getMethodDescriptorOperand();
+                OpcodeStack.Item item = stack.getStackItem(0);
+                XField field = item.getXField();
+                if (method == null) {
+                    return;
+                }
+
+                if ("clone".equals(method.getName()) && item.isArray()
+                        && MutableClasses.mutableSignature(item.getSignature().substring(1))) {
+                    if (field != null && isFieldOf(field, getClassDescriptor()) &&
+                            !field.isPublic()) {
+                        fieldUnderClone = field;
+                    } else if (item.isInitialParameter()) {
+                        paramUnderClone = item;
+                    }
+                }
+
+                if (seen == Const.INVOKEVIRTUAL && "duplicate".equals(method.getName())
+                        && DUPLICATE_METHODS_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
+                        && BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
+                    if (field != null && isFieldOf(field, getClassDescriptor()) && !field.isPublic()) {
+                        bufferFieldUnderDuplication = field;
+                    } else if (item.isInitialParameter()) {
+                        bufferParamUnderDuplication = item;
+                    }
+                }
+            }
+
+            if (seen == Const.INVOKESTATIC) {
+                XMethod method = getXMethodOperand();
+                if (method == null) {
+                    return;
+                }
+
+                if ("wrap".equals(method.getName())
+                        && WRAP_METHOD_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
+                        && BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
+                    OpcodeStack.Item arg = stack.getStackItem(0);
+                    XField fieldArg = arg.getXField();
+                    if (fieldArg != null && isFieldOf(fieldArg, getClassDescriptor())
+                            && !fieldArg.isPublic()) {
+                        fieldUnderWrapToBuffer = fieldArg;
+                    } else if (arg.isInitialParameter()) {
+                        paramUnderWrapToBuffer = arg;
+                    }
+                    return;
+                }
+
+                if (ACCESS_METHOD_MATCHER.reset(method.getName()).matches()) {
+                    if (method.getNumParams() == 0) {
+                        return;
+                    }
+
+                    if (method.getNumParams() == 1) {
+                        String signature = method.getSignature();
+                        if (method.getClassDescriptor().getSignature().equals(signature.substring(signature.indexOf('(') + 1,
+                                signature.indexOf(')')))) {
+                            return;
+                        }
+                    }
+
+                    XField field = accessMethodFields.get(method.getClassName() + "." + method.getName());
+                    if (field == null || field.isPublic()) {
+                        return;
+                    }
+
+                    OpcodeStack.Item top = stack.getStackItem(0);
+                    CaptureKind capture = getPotentialCapture(top);
+                    if (capture != CaptureKind.NONE) {
+                        bugAccumulator.accumulateBug(
+                                new BugInstance(this, "EI_EXPOSE_" + (staticMethod ? "STATIC_" : "") + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
+                                        capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                                .addClassAndMethod(this)
+                                                .addReferencedField(this)
+                                                .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
+                                                        top.getRegisterNumber(),
+                                                        getPC(), getPC() - 1)), this);
+                    }
+                }
+            }
+
+            if (seen == Const.CHECKCAST) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                XField field = arrayFieldClones.get(item);
                 if (field != null) {
-                    isArrayClone = true;
+                    fieldCloneUnderCast = field;
+                }
+                OpcodeStack.Item param = arrayParamClones.get(item);
+                if (param != null) {
+                    paramCloneUnderCast = param;
                 }
             }
-            if (field == null) {
-                field = bufferFieldDuplicates.get(item);
-                if (field != null) {
-                    isBuf = true;
+        } else if (record) {
+            if ((seen == Const.PUTSTATIC || seen == Const.PUTFIELD) && nonPublicFieldOperand()
+                    && MutableClasses.mutableSignature(getSigConstantOperand())) {
+                XField field = getXFieldOperand();
+                accessMethodFields.put(getClassName() + "." + getMethodName(), field);
+            }
+
+            if (seen == Const.ARETURN) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                XField field = item.getXField();
+                if (field == null ||
+                        field.isPublic() ||
+                        AnalysisContext.currentXFactory().isEmptyArrayField(field) ||
+                        field.getName().indexOf("EMPTY") != -1 ||
+                        !MutableClasses.mutableSignature(field.getSignature())) {
+                    return;
                 }
-            }
-            if (field == null) {
-                field = arrayFieldsWrappedToBuffers.get(item);
-                if (field != null) {
-                    isBuf = true;
-                }
-            }
-            if (field == null ||
-                    !isFieldOf(field, getClassDescriptor()) ||
-                    field.isPublic() ||
-                    AnalysisContext.currentXFactory().isEmptyArrayField(field) ||
-                    field.getName().indexOf("EMPTY") != -1 ||
-                    !MutableClasses.mutableSignature(field.getSignature())) {
-                return;
-            }
-            bugAccumulator.accumulateBug(new BugInstance(this, (staticMethod ? "MS" : "EI") + "_EXPOSE_"
-                    + (isBuf ? "BUF" : "REP"),
-                    (isBuf || isArrayClone) ? LOW_PRIORITY : NORMAL_PRIORITY)
-                            .addClassAndMethod(this).addField(field.getClassName(), field.getName(),
-                                    field.getSignature(), field.isStatic()), this);
-
-        }
-
-        if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
-            MethodDescriptor method = getMethodDescriptorOperand();
-            OpcodeStack.Item item = stack.getStackItem(0);
-            XField field = item.getXField();
-            if (method == null) {
-                return;
-            }
-
-            if ("clone".equals(method.getName()) && item.isArray()
-                    && MutableClasses.mutableSignature(item.getSignature().substring(1))) {
-                if (field != null && field.getClassDescriptor().equals(getClassDescriptor()) &&
-                        !field.isPublic()) {
-                    fieldUnderClone = field;
-                } else if (item.isInitialParameter()) {
-                    paramUnderClone = item;
-                }
-            }
-
-            if (seen == Const.INVOKEVIRTUAL && "duplicate".equals(method.getName())
-                    && DUPLICATE_METHODS_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
-                    && BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
-                if (field != null && field.getClassDescriptor().equals(getClassDescriptor()) && !field.isPublic()) {
-                    bufferFieldUnderDuplication = field;
-                } else if (item.isInitialParameter()) {
-                    bufferParamUnderDuplication = item;
-                }
-            }
-        }
-
-        if (seen == Const.INVOKESTATIC) {
-            MethodDescriptor method = getMethodDescriptorOperand();
-            if (method == null || !"wrap".equals(method.getName())
-                    || !WRAP_METHOD_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
-                    || !BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
-                return;
-            }
-            OpcodeStack.Item arg = stack.getStackItem(0);
-            XField fieldArg = arg.getXField();
-            if (fieldArg != null && fieldArg.getClassDescriptor().equals(getClassDescriptor())
-                    && !fieldArg.isPublic()) {
-                fieldUnderWrapToBuffer = fieldArg;
-            } else if (arg.isInitialParameter()) {
-                paramUnderWrapToBuffer = arg;
-            }
-        }
-
-        if (seen == Const.CHECKCAST) {
-            OpcodeStack.Item item = stack.getStackItem(0);
-            XField field = arrayFieldClones.get(item);
-            if (field != null) {
-                fieldCloneUnderCast = field;
-            }
-            OpcodeStack.Item param = arrayParamClones.get(item);
-            if (param != null) {
-                paramCloneUnderCast = param;
+                accessMethodFields.put(getClassName() + "." + getMethodName(), field);
             }
         }
     }
@@ -294,6 +355,28 @@ public class FindReturnRef extends OpcodeStackDetector {
             if (paramUnderWrapToBuffer != null) {
                 arrayParamsWrappedToBuffers.put(stack.getStackItem(0), paramUnderWrapToBuffer);
             }
+
+            XMethod method = getXMethodOperand();
+
+            if (method != null && ACCESS_METHOD_MATCHER.reset(method.getName()).matches()) {
+                XField field = accessMethodFields.get(method.getClassName() + "." + method.getName());
+                if (field == null) {
+                    return;
+                }
+
+                if (method.getNumParams() == 0) {
+                    stack.replaceTop(new OpcodeStack.Item(field.getSignature(), new FieldAnnotation(field.getClassName(), field.getName(),
+                            field.getSignature(), field.isStatic())));
+                } else if (method.getNumParams() == 1) {
+                    String signature = method.getSignature();
+                    if (method.getClassDescriptor().getSignature().equals(signature.substring(signature.indexOf('(') + 1, signature.indexOf(')')))) {
+                        stack.replaceTop(new OpcodeStack.Item(field.getSignature(), new FieldAnnotation(field.getClassName(), field.getName(),
+                                field.getSignature(), field.isStatic())));
+                    }
+                }
+            }
+
+
         }
 
         if (seen == Const.CHECKCAST && !stack.isTop()) {
@@ -340,11 +423,23 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     private boolean isFieldOf(XField field, ClassDescriptor klass) {
         do {
-            if (field.getClassDescriptor().equals(klass)) {
-                return true;
-            }
+            ClassDescriptor klass2 = klass;
+            do {
+                if (field.getClassDescriptor().equals(klass2)) {
+                    return true;
+                }
+                try {
+                    klass2 = klass2.getXClass().getSuperclassDescriptor();
+                } catch (CheckedAnalysisException e) {
+                    AnalysisContext.logError("Error checking for class " + klass2, e);
+                    return false;
+                }
+            } while (klass2 != null);
             try {
-                klass = klass.getXClass().getSuperclassDescriptor();
+                klass = klass.getXClass().getImmediateEnclosingClass();
+                if (klass != null && !klass.getXClass().isPublic()) {
+                    return false;
+                }
             } catch (CheckedAnalysisException e) {
                 AnalysisContext.logError("Error checking for class " + klass, e);
                 return false;

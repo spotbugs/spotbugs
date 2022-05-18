@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2022-??-??
 ### Fixed
 - Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
+- Fixed detector `FindReturnRef` not finding references exposed from nested and inner classes ([#2042](https://github.com/spotbugs/spotbugs/issues/2042))
 
 ## 4.7.0 - 2022-04-14
 ### Changed
