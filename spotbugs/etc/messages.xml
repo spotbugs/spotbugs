@@ -1586,6 +1586,13 @@ factory pattern to create these objects.</p>
     ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ViewCFG">
+    <Details>
+      <![CDATA[
+      <p> Generate DOT files from the CFGs. </p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer">
     <Details>
     <![CDATA[
@@ -1736,6 +1743,13 @@ factory pattern to create these objects.</p>
                when two or more instances of the class are created.
                Consequently, failure to use a static lock object leaves the shared state unprotected against concurrent access.
             </p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DontUseFloatsAsLoopCounters">
+    <Details>
+      <![CDATA[
+            <p>Checks for floats in loop counters.</p>
       ]]>
     </Details>
   </Detector>
@@ -8674,6 +8688,16 @@ object explicitly.</p>
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="FL_FLOATS_AS_LOOP_COUNTERS">
+    <ShortDescription>Do not use floating-point variables as loop counters</ShortDescription>
+    <LongDescription>Using floating-point loop counters can lead to unexpected behavior.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+Using floating-point variables should not be used as loop counters, as they are not precise, which may result in incorrect loops. A loop counter is a variable that is changed with each iteration and controls when the loop should terminate. It is decreased or increased by a fixed amount each iteration.</p>
+<p>See rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/NUM09-J.+Do+not+use+floating-point+variables+as+loop+counters">NUM09-J</a>.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION">
     <ShortDescription>Method intentionally throws RuntimeException.</ShortDescription>
     <LongDescription>Method intentionally throws RuntimeException.</LongDescription>
@@ -8699,6 +8723,7 @@ object explicitly.</p>
       <![CDATA[
         <p>
         Method lists Exception in its throws clause.<br>
+
 
         When declaring a method, the types of exceptions in the throws clause should be the most specific.
         Therefore, using Exception in the throws clause would force the caller to either use it in its own throws clause, or use it in a try-catch block (when it does not necessarily 
