@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class CheckThrowingExceptions extends AbstractIntegrationTest {
+public class ThrowingExceptionsTest extends AbstractIntegrationTest {
     @Test
     public void throwingExceptionsTests() {
         performAnalysis("MethodsThrowingExceptions.class");
@@ -26,6 +26,13 @@ public class CheckThrowingExceptions extends AbstractIntegrationTest {
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 0, "MethodsThrowingExceptions", "methodThrowingIOException");
 
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 1, "MethodsThrowingExceptions", "methodThrowingThrowable");
+    }
+
+    @Test
+    public void testNestedInterface() {
+        performAnalysis("MethodsThrowingExceptions$ThrowThrowable.class");
+
+        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 1);
     }
 
     private void assertNumOfTHROWSBugs(String bugType, int num) {
