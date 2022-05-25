@@ -102,10 +102,10 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                 return;
             }
 
-            if (fact.getStatus() == ResourceValueFrame.ResourceValueEnum.OPEN) {
+            if (fact.getStatus() == ResourceValueFrame.State.OPEN) {
                 // If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
                 tmpFact = modifyFrame(fact, null);
-                tmpFact.setStatus(ResourceValueFrame.ResourceValueEnum.OPEN_ON_EXCEPTION_PATH);
+                tmpFact.setStatus(ResourceValueFrame.State.OPEN_ON_EXCEPTION_PATH);
             }
 
             if (fact.isValid()) {
@@ -122,7 +122,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                         && resourceTracker.isResourceClose(fallThroughSuccessor, exceptionThrower, methodGen.getConstantPool(),
                                 resource, fact)) {
                     tmpFact = modifyFrame(fact, tmpFact);
-                    tmpFact.setStatus(ResourceValueFrame.ResourceValueEnum.CLOSED);
+                    tmpFact.setStatus(ResourceValueFrame.State.CLOSED);
                     if (DEBUG) {
                         System.out.print("(failed attempt to close)");
                     }
@@ -192,7 +192,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                             if ((isNullCheck && edgeType == IFCMP_EDGE) || (isNonNullCheck && edgeType == FALL_THROUGH_EDGE)) {
                                 // System.out.println("**** making resource nonexistent on edge "+edge.getId());
                                 tmpFact = modifyFrame(fact, tmpFact);
-                                tmpFact.setStatus(ResourceValueFrame.ResourceValueEnum.NONEXISTENT);
+                                tmpFact.setStatus(ResourceValueFrame.State.NONEXISTENT);
                             }
                         }
                     }

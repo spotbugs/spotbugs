@@ -57,7 +57,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         final Instruction ins = handle.getInstruction();
         final ResourceValueFrame frame = getFrame();
 
-        ResourceValueFrame.ResourceValueEnum status = ResourceValueFrame.ResourceValueEnum.NONEXISTENT;
+        ResourceValueFrame.State status = ResourceValueFrame.State.NONEXISTENT;
         boolean updated = false;
         boolean created = false;
 
@@ -66,23 +66,23 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
             // Resource creation
             if (stream.isOpenOnCreation()) {
-                status = ResourceValueFrame.ResourceValueEnum.OPEN;
+                status = ResourceValueFrame.State.OPEN;
                 stream.setOpenLocation(location);
                 resourceTracker.addStreamOpenLocation(location, stream);
             } else {
-                status = ResourceValueFrame.ResourceValueEnum.CREATED;
+                status = ResourceValueFrame.State.CREATED;
             }
             updated = true;
             created = true;
         } else if (resourceTracker.isResourceOpen(basicBlock, handle, cpg, stream, frame)) {
             // Resource opened
-            status = ResourceValueFrame.ResourceValueEnum.OPEN;
+            status = ResourceValueFrame.State.OPEN;
             updated = true;
             stream.setOpenLocation(location);
             resourceTracker.addStreamOpenLocation(location, stream);
         } else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream, frame)) {
             // Resource closed
-            status = ResourceValueFrame.ResourceValueEnum.CLOSED;
+            status = ResourceValueFrame.State.CLOSED;
             updated = true;
         }
 

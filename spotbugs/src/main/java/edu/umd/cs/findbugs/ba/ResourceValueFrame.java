@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 public class ResourceValueFrame extends Frame<ResourceValue> {
 
-    public enum ResourceValueEnum {
+    public enum State {
         /**
          * The resource escapes the method.
          */
@@ -54,7 +54,7 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
          */
         NONEXISTENT(5);
 
-        ResourceValueEnum(int type) {
+        State(int type) {
             this.type = type;
         }
 
@@ -65,18 +65,18 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
         }
     }
 
-    private ResourceValueEnum status;
+    private State status;
 
     public ResourceValueFrame(int numSlots) {
         super(numSlots);
-        this.status = ResourceValueEnum.NONEXISTENT;
+        this.status = State.NONEXISTENT;
     }
 
-    public ResourceValueEnum getStatus() {
+    public State getStatus() {
         return status;
     }
 
-    public void setStatus(ResourceValueEnum status) {
+    public void setStatus(State status) {
         this.status = status;
     }
 

@@ -488,22 +488,22 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         }
         ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 
-        ResourceValueFrame.ResourceValueEnum exitStatus = exitFrame.getStatus();
-        if (exitStatus == ResourceValueFrame.ResourceValueEnum.OPEN ||
-                exitStatus == ResourceValueFrame.ResourceValueEnum.OPEN_ON_EXCEPTION_PATH) {
+        ResourceValueFrame.State exitStatus = exitFrame.getStatus();
+        if (exitStatus == ResourceValueFrame.State.OPEN ||
+                exitStatus == ResourceValueFrame.State.OPEN_ON_EXCEPTION_PATH) {
 
             // FIXME: Stream object should be queried for the
             // priority.
 
             String bugType = stream.getBugType();
             int priority = NORMAL_PRIORITY;
-            if (exitStatus == ResourceValueFrame.ResourceValueEnum.OPEN_ON_EXCEPTION_PATH) {
+            if (exitStatus == ResourceValueFrame.State.OPEN_ON_EXCEPTION_PATH) {
                 bugType += "_EXCEPTION_PATH";
                 priority = LOW_PRIORITY;
             }
 
             potentialOpenStreamList.add(new PotentialOpenStream(bugType, priority, stream));
-        } else if (exitStatus == ResourceValueFrame.ResourceValueEnum.CLOSED) {
+        } else if (exitStatus == ResourceValueFrame.State.CLOSED) {
             // Remember that this stream was closed on all paths.
             // Later, we will mark all of the streams in its equivalence class
             // as having been closed.
