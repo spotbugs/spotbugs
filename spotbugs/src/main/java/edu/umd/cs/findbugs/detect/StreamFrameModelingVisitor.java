@@ -57,7 +57,8 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         final Instruction ins = handle.getInstruction();
         final ResourceValueFrame frame = getFrame();
 
-        int status = -1;
+        ResourceValueFrame.ResourceValueEnum status = ResourceValueFrame.ResourceValueEnum.NONEXISTENT;
+        boolean updated = false;
         boolean created = false;
 
         // Is a resource created, opened, or closed by this instruction?
@@ -65,28 +66,31 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
             // Resource creation
             if (stream.isOpenOnCreation()) {
-                status = ResourceValueFrame.OPEN;
+                status = ResourceValueFrame.ResourceValueEnum.OPEN;
                 stream.setOpenLocation(location);
                 resourceTracker.addStreamOpenLocation(location, stream);
             } else {
-                status = ResourceValueFrame.CREATED;
+                status = ResourceValueFrame.ResourceValueEnum.CREATED;
             }
+            updated = true;
             created = true;
         } else if (resourceTracker.isResourceOpen(basicBlock, handle, cpg, stream, frame)) {
             // Resource opened
-            status = ResourceValueFrame.OPEN;
+            status = ResourceValueFrame.ResourceValueEnum.OPEN;
+            updated = true;
             stream.setOpenLocation(location);
             resourceTracker.addStreamOpenLocation(location, stream);
         } else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream, frame)) {
             // Resource closed
-            status = ResourceValueFrame.CLOSED;
+            status = ResourceValueFrame.ResourceValueEnum.CLOSED;
+            updated = true;
         }
 
         // Model use of instance values in frame slots
         analyzeInstruction(ins);
 
         // If needed, update frame status
-        if (status != -1) {
+        if (updated) {
             frame.setStatus(status);
             if (created) {
                 frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());

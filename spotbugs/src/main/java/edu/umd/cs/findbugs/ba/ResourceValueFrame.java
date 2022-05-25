@@ -20,50 +20,63 @@
 package edu.umd.cs.findbugs.ba;
 
 public class ResourceValueFrame extends Frame<ResourceValue> {
-    /**
-     * The resource escapes the method.
-     */
-    public static final int ESCAPED = 0;
 
-    /**
-     * The resource is open (or locked, etc) on paths that include only normal
-     * control flow.
-     */
-    public static final int OPEN = 1;
+    public enum ResourceValueEnum {
+        /**
+         * The resource escapes the method.
+         */
+        ESCAPED(0),
 
-    /**
-     * The resource is open (or locked, etc) on paths that include exception
-     * control flow.
-     */
-    public static final int OPEN_ON_EXCEPTION_PATH = 2;
+        /**
+         * The resource is open (or locked, etc) on paths that include only normal
+         * control flow.
+         */
+        OPEN(1),
 
-    /**
-     * The resource is closed (or unlocked, etc).
-     */
-    public static final int CLOSED = 3;
+        /**
+         * The resource is open (or locked, etc) on paths that include exception
+         * control flow.
+         */
+        OPEN_ON_EXCEPTION_PATH(2),
 
-    /**
-     * The resource has been created, but is not open.
-     */
-    public static final int CREATED = 4;
+        /**
+         * The resource is closed (or unlocked, etc).
+         */
+        CLOSED(3),
 
-    /**
-     * The resource doesn't exist.
-     */
-    public static final int NONEXISTENT = 5;
+        /**
+         * The resource has been created, but is not open.
+         */
+        CREATED(4),
 
-    private int status;
+        /**
+         * The resource doesn't exist.
+         */
+        NONEXISTENT(5);
+
+        ResourceValueEnum(int type) {
+            this.type = type;
+        }
+
+        private final int type;
+
+        public int getType() {
+            return type;
+        }
+    }
+
+    private ResourceValueEnum status;
 
     public ResourceValueFrame(int numSlots) {
         super(numSlots);
-        this.status = NONEXISTENT;
+        this.status = ResourceValueEnum.NONEXISTENT;
     }
 
-    public int getStatus() {
+    public ResourceValueEnum getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(ResourceValueEnum status) {
         this.status = status;
     }
 
@@ -89,7 +102,7 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 
     @Override
     public String toString() {
-        return super.toString() + statusList[status];
+        return super.toString() + statusList[status.getType()];
     }
 
 }
