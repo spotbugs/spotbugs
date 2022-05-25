@@ -45,8 +45,11 @@ public class InefficientIndexOf extends OpcodeStackDetector {
             new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;)I"),
             new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;)I"),
             new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;I)I"),
-            new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;I)I"));
-
+            new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;I)I"),
+            new MethodDescriptor("java/lang/StringBuilder", "indexOf", "(Ljava/lang/String;)I"),
+            new MethodDescriptor("java/lang/StringBuilder", "lastIndexOf", "(Ljava/lang/String;)I"),
+            new MethodDescriptor("java/lang/StringBuilder", "indexOf", "(Ljava/lang/String;I)I"),
+            new MethodDescriptor("java/lang/StringBuilder", "lastIndexOf", "(Ljava/lang/String;I)I"));
     public InefficientIndexOf(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -60,7 +63,8 @@ public class InefficientIndexOf extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.INVOKEVIRTUAL && stack.getStackDepth() > 0 && "java/lang/String".equals(getClassConstantOperand())) {
+        if (seen == Const.INVOKEVIRTUAL && stack.getStackDepth() > 0 && ("java/lang/String".equals(getClassConstantOperand())||"java/lang/StringBuilder".equals(getClassConstantOperand()))
+        ) {
 
             boolean lastIndexOf = "lastIndexOf".equals(getNameConstantOperand());
             if (lastIndexOf || "indexOf".equals(getNameConstantOperand())) {
