@@ -728,7 +728,8 @@ public class DumbMethods extends OpcodeStackDetector {
                     BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_FOR_PARSING", HIGH_PRIORITY).addClassAndMethod(this)
                             .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
                     accumulator.accumulateBug(bug, this);
-                } else if ("compareTo".equals(called.getName())
+                }
+                else if ("compareTo".equals(called.getName())
                         && "valueOf".equals(previousMethodCall.getName())
                         && called.getClassDescriptor().equals(previousMethodCall.getClassDescriptor()) && !previousMethodCall.getSignature()
                                 .startsWith("(Ljava/lang/String;")) {
@@ -1266,8 +1267,9 @@ public class DumbMethods extends OpcodeStackDetector {
             }
 
             if ((seen == Const.INVOKESPECIAL) && "java/lang/String".equals(getClassConstantOperand())
-                    && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
-                    && !Subtypes2.isJSP(getThisClass())) {
+                    && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) &&
+                    ("(Ljava/lang/String;)V".equals(getSigConstantOperand())||"(Ljava/lang/StringBuffer;)V".equals(getSigConstantOperand())
+                    && !Subtypes2.isJSP(getThisClass()))) {
 
                 accumulator.accumulateBug(new BugInstance(this, "DM_STRING_CTOR", NORMAL_PRIORITY).addClassAndMethod(this), this);
 
@@ -1303,7 +1305,9 @@ public class DumbMethods extends OpcodeStackDetector {
                     && "gc".equals(getNameConstantOperand())
                     && "()V".equals(getSigConstantOperand())
                     && !getDottedClassName().startsWith("java.lang")
-                    && !getMethodName().startsWith("gc") && !getMethodName().endsWith("gc")) {
+                    && !getMethodName().startsWith("gc") && !getMethodName().endsWith("gc")
+            )
+            {
                 if (gcInvocationBugReport == null) {
                     // System.out.println("Saw call to GC");
                     if (isPublicStaticVoidMain) {
