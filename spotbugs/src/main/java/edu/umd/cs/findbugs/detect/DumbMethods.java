@@ -1298,8 +1298,29 @@ public class DumbMethods extends OpcodeStackDetector {
                 accumulator.accumulateBug(new BugInstance(this, "DM_EXIT", getMethod().isStatic() ? LOW_PRIORITY
                         : NORMAL_PRIORITY).addClassAndMethod(this), SourceLineAnnotation.fromVisitedInstruction(this));
             }
-            if (((seen == Const.INVOKESTATIC && "java/lang/System".equals(getClassConstantOperand())) || (seen == Const.INVOKEVIRTUAL
-                    && "java/lang/Runtime".equals(getClassConstantOperand())))
+            
+            if ((seen == Const.INVOKESTATIC && "java/lang/System".equals(getClassConstantOperand()))
+                    && "gc".equals(getNameConstantOperand())
+                    && "()V".equals(getSigConstantOperand())
+                    && !getDottedClassName().startsWith("java.lang")
+                    && !getMethodName().startsWith("gc") && !getMethodName().endsWith("gc")) {
+                if (gcInvocationBugReport == null) {
+                    // System.out.println("Saw call to GC");
+                    if (isTestMethod(getMethod())) {
+                        return;
+                    }
+                    // Just save this report in a field; it will be flushed
+                    // IFF there were no calls to System.currentTimeMillis();
+                    // in the method.
+                    gcInvocationBugReport = new BugInstance(this, "DM_GC", HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
+                            this);
+                    gcInvocationPC = getPC();
+                    // System.out.println("GC invocation at pc " + PC);
+                }
+            }
+            if ((
+//                    (seen == Const.INVOKESTATIC && "java/lang/System".equals(getClassConstantOperand())) ||
+                    (seen == Const.INVOKEVIRTUAL && "java/lang/Runtime".equals(getClassConstantOperand())))
                     && "gc".equals(getNameConstantOperand())
                     && "()V".equals(getSigConstantOperand())
                     && !getDottedClassName().startsWith("java.lang")
@@ -1313,13 +1334,6 @@ public class DumbMethods extends OpcodeStackDetector {
                     if (isTestMethod(getMethod())) {
                         return;
                     }
-                    // Just save this report in a field; it will be flushed
-                    // IFF there were no calls to System.currentTimeMillis();
-                    // in the method.
-                    gcInvocationBugReport = new BugInstance(this, "DM_GC", HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
-                            this);
-                    gcInvocationPC = getPC();
-                    // System.out.println("GC invocation at pc " + PC);
                 }
             }
             if (!isSynthetic && (seen == Const.INVOKESPECIAL) && "java/lang/Boolean".equals(getClassConstantOperand())
