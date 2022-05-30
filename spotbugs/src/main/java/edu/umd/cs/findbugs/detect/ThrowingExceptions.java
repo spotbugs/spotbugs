@@ -82,6 +82,22 @@ public class ThrowingExceptions extends OpcodeStackDetector {
                         : "THROWS_METHOD_THROWS_CLAUSE_THROWABLE", getXMethod());
             }
         }
+
+        if (exceptionStream != null) {
+            Optional<String> exception = exceptionStream
+                    .filter(s -> "java.lang.Exception".equals(s) || "java.lang.Throwable".equals(s))
+                    .findAny();
+            if (exception.isPresent() && !parentThrows(obj, exception.get())) {
+                exceptionThrown = exception.get();
+            }
+        }
+
+        if (obj.getCode() == null) {
+            if (exceptionThrown != null) {
+                reportBug("java.lang.Exception".equals(exceptionThrown) ? "THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"
+                        : "THROWS_METHOD_THROWS_CLAUSE_THROWABLE", getXMethod());
+            }
+        }
     }
 
     @Override
