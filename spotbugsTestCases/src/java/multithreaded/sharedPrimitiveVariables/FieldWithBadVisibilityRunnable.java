@@ -1,6 +1,6 @@
-package multithreaded.sharedPrimitiveVariables.sharedPrimitiveVariables;
+package multithreaded.sharedPrimitiveVariables;
 
-public class FieldWithBadVisibilityThread extends Thread {
+public class FieldWithBadVisibilityRunnable implements Runnable {
     private boolean done = false;
 
     @Override

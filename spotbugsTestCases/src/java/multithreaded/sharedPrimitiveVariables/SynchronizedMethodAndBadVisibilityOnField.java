@@ -1,9 +1,9 @@
-package multithreaded.sharedPrimitiveVariables.sharedPrimitiveVariables;
+package multithreaded.sharedPrimitiveVariables;
 
-public class SynchronizedMethod {
+public class SynchronizedMethodAndBadVisibilityOnField {
     private boolean done = false;
 
-    public synchronized void doSomething() {
+    public void run() {
         while (!done) {
             try {
                 Thread.currentThread().sleep(1000);
@@ -13,8 +13,11 @@ public class SynchronizedMethod {
         }
     }
 
-    public synchronized void shutdown() {
+    public void shutdown() {
         done = true;
     }
 
+    public synchronized void print() {
+        System.out.println("synchronized method");
+    }
 }

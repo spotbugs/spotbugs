@@ -1,6 +1,6 @@
-package multithreaded.sharedPrimitiveVariables.sharedPrimitiveVariables;
+package multithreaded.sharedPrimitiveVariables;
 
-public class SynchronizedMethodAndBadVisibilityOnField {
+public class SynchronizedBlockAndBadVisibilityOnField {
     private boolean done = false;
 
     public void run() {
@@ -17,7 +17,9 @@ public class SynchronizedMethodAndBadVisibilityOnField {
         done = true;
     }
 
-    public synchronized void print() {
-        System.out.println("synchronized method");
+    public void print() {
+        synchronized (SynchronizedBlockAndBadVisibilityOnField.class) {
+            System.out.println("synchronized block");
+        }
     }
 }

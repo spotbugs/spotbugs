@@ -1,8 +1,9 @@
-package multithreaded.sharedPrimitiveVariables.sharedPrimitiveVariables;
+package multithreaded.sharedPrimitiveVariables;
 
-public class SynchronizedBlockAndBadVisibilityOnField {
+public class FieldWithBadVisibilityThread extends Thread {
     private boolean done = false;
 
+    @Override
     public void run() {
         while (!done) {
             try {
@@ -15,11 +16,5 @@ public class SynchronizedBlockAndBadVisibilityOnField {
 
     public void shutdown() {
         done = true;
-    }
-
-    public void print() {
-        synchronized (SynchronizedBlockAndBadVisibilityOnField.class) {
-            System.out.println("synchronized block");
-        }
     }
 }

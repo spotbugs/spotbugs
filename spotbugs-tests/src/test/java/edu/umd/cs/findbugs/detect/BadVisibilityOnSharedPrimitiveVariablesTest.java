@@ -18,7 +18,7 @@ public class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegra
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockAndBadVisibilityOnField.class");
 
         assertSPVNumOfBugs(1);
-        assertSPVBug("SynchronizedBlockAndBadVisibilityOnField", "shutdown", 18);
+        assertSPVBug("SynchronizedBlockAndBadVisibilityOnField", "shutdown", 17);
     }
 
     @Test
@@ -27,7 +27,7 @@ public class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegra
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethodAndBadVisibilityOnField.class");
 
         assertSPVNumOfBugs(1);
-        assertSPVBug("SynchronizedMethodAndBadVisibilityOnField", "shutdown", 18);
+        assertSPVBug("SynchronizedMethodAndBadVisibilityOnField", "shutdown", 17);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegra
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityThread.class");
 
         assertSPVNumOfBugs(1);
-        assertSPVBug("FieldWithBadVisibilityThread", "shutdown", 19);
+        assertSPVBug("FieldWithBadVisibilityThread", "shutdown", 18);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegra
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityRunnable.class");
 
         assertSPVNumOfBugs(1);
-        assertSPVBug("FieldWithBadVisibilityRunnable", "shutdown", 19);
+        assertSPVBug("FieldWithBadVisibilityRunnable", "shutdown", 18);
     }
 
     @Test

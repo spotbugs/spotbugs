@@ -1,9 +1,9 @@
-package multithreaded.sharedPrimitiveVariables.sharedPrimitiveVariables;
+package multithreaded.sharedPrimitiveVariables;
 
-public class VolatileField {
-    private volatile boolean done = false;
+public class SynchronizedMethod {
+    private boolean done = false;
 
-    public void doSomething() {
+    public synchronized void doSomething() {
         while (!done) {
             try {
                 Thread.currentThread().sleep(1000);
@@ -13,7 +13,8 @@ public class VolatileField {
         }
     }
 
-    public void shutdown() {
+    public synchronized void shutdown() {
         done = true;
     }
+
 }
