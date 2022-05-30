@@ -39,18 +39,12 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
     private final BugAccumulator bugAccumulator;
     private final Map<XMethod, List<XField>> modifiedNotSecuredFieldsByMethods;
     private final Map<XMethod, List<XField>> comparedNotSecuredFieldsByMethods;
-    // Is this needed???
-    private boolean isInsideConstructor;
-    // Is this needed???
-    private boolean isInsideSynchronizedBlock;
     private boolean isInsideSynchronizedOrLockingMethod;
 
     public BadVisibilityOnSharedPrimitiveVariables(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
         this.modifiedNotSecuredFieldsByMethods = new HashMap();
         this.comparedNotSecuredFieldsByMethods = new HashMap();
-        this.isInsideConstructor = false;
-        this.isInsideSynchronizedBlock = false;
         this.isInsideSynchronizedOrLockingMethod = false;
     }
 
@@ -58,7 +52,6 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
     public void visit(Method method) {
         ClassContext currentClassContext = getClassContext();
         isInsideSynchronizedOrLockingMethod = MultiThreadedCodeIdentifierUtils.isMethodMultiThreaded(method, currentClassContext);
-        isInsideConstructor = nameIsConstructor(method.getName());
     }
 
     @Override
@@ -69,8 +62,6 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
     @Override
     public void visitClassContext(ClassContext classContext) {
         if (MultiThreadedCodeIdentifierUtils.isPartOfMultiThreadedCode(classContext)) {
-            isInsideConstructor = false;
-            isInsideSynchronizedBlock = false;
             isInsideSynchronizedOrLockingMethod = false;
 
             super.visitClassContext(classContext);
@@ -79,15 +70,7 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.MONITORENTER) {
-            isInsideSynchronizedBlock = true;
-            return;
-        } else if (seen == Const.MONITOREXIT) {
-            isInsideSynchronizedBlock = false;
-            return;
-        }
-
-        if (!isInsideSynchronizedBlock && !isInsideSynchronizedOrLockingMethod && !isInsideConstructor) {
+        if (!isInsideSynchronizedOrLockingMethod) {
             if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
                 XMethod modificationMethod = getXMethod();
                 Optional<XField> maybeFieldToModify = Optional.ofNullable(getXFieldOperand());

@@ -23,8 +23,6 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
     private final BugAccumulator bugAccumulator;
     private final Map<XMethod, List<XField>> compoundlyWroteNotSecuredFieldsByMethods;
     private final Map<XMethod, List<XField>> redNotSecuredFieldsByMethods;
-    // This field might not be needed at all
-    private boolean isInsideSynchronizedBlock;
     private boolean isInsideSynchronizedOrLockingMethod;
     private Optional<XField> maybeCompoundlyOperatedField;
     private int stepsMadeInCompoundOperationProcess;
@@ -33,7 +31,6 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
         this.bugAccumulator = new BugAccumulator(bugReporter);
         this.compoundlyWroteNotSecuredFieldsByMethods = new HashMap();
         this.redNotSecuredFieldsByMethods = new HashMap();
-        this.isInsideSynchronizedBlock = false;
         this.isInsideSynchronizedOrLockingMethod = false;
         this.maybeCompoundlyOperatedField = Optional.empty();
         this.stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
@@ -53,7 +50,6 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         if (MultiThreadedCodeIdentifierUtils.isPartOfMultiThreadedCode(classContext)) {
-            isInsideSynchronizedBlock = false;
             isInsideSynchronizedOrLockingMethod = false;
             maybeCompoundlyOperatedField = Optional.empty();
             stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
@@ -64,19 +60,7 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.MONITORENTER) {
-            isInsideSynchronizedBlock = true;
-            maybeCompoundlyOperatedField = Optional.empty();
-            stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
-            return;
-        } else if (seen == Const.MONITOREXIT) {
-            isInsideSynchronizedBlock = false;
-            maybeCompoundlyOperatedField = Optional.empty();
-            stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
-            return;
-        }
-
-        if (!isInsideSynchronizedBlock && !isInsideSynchronizedOrLockingMethod) {
+        if (!isInsideSynchronizedOrLockingMethod) {
             if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
                 XMethod readMethod = getXMethod();
                 Optional<XField> maybeFieldToRead = Optional.ofNullable(getXFieldOperand());
@@ -185,7 +169,8 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
         return opCode == Const.DCONST_0 || opCode == Const.DCONST_1
                 || opCode == Const.LCONST_0 || opCode == Const.LCONST_1
                 || opCode == Const.FCONST_0 || opCode == Const.FCONST_1 || opCode == Const.FCONST_2
-                || opCode == Const.ICONST_0 || opCode == Const.ICONST_1 || opCode == Const.ICONST_2 || opCode == Const.ICONST_3 || opCode == Const.ICONST_4
+                || opCode == Const.ICONST_0 || opCode == Const.ICONST_1 || opCode == Const.ICONST_2 || opCode == Const.ICONST_3
+                || opCode == Const.ICONST_4
                 || opCode == Const.ICONST_5
                 || opCode == Const.LDC || opCode == Const.LDC_W || opCode == Const.LDC2_W;
     }

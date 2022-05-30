@@ -1787,7 +1787,8 @@ factory pattern to create these objects.</p>
     <Details>
       <![CDATA[
               <p>
-                Description of the detector....
+                  Detector for patterns where a shared variable inside a multithreaded class gets modified by a compound operation.
+                  Compound operations on shared variables must be performed atomically to prevent data races and race conditions.
               </p>
         ]]>
     </Details>
@@ -8824,18 +8825,18 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES">
-    <ShortDescription>Compound operations on shared variables</ShortDescription>
-    <LongDescription>Long desc....</LongDescription>
+    <ShortDescription>Compound operation on shared variables</ShortDescription>
+    <LongDescription>A compound operation was used on a shared variable in a multithreaded class</LongDescription>
     <Details>
       <![CDATA[
         <p>
-          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables">SEI CERT rule VNA00-J</a>
-          describes that reading a shared primitive variable in one thread may not yield the value of the most recent write to the variable from another thread.
-          Consequently, the thread may observe a stale value of the shared variable.
-        </p>
+          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic">SEI CERT rule VNA02-J</a>
+          describes that compound operations on shared variables must be performed atomically to prevent data races and race conditions.
+          Compound operations are operations that consist of more than one discrete operation. Expressions that include postfix or prefix increment (++), postfix or prefix decrement (--),
+          or compound assignment operators always result in compound operations.
+          Important that declaring a variable volatile fails to guarantee the atomicity of compound operations on the variable.
         <p>
-          The solution is declaring a variable volatile, changing the type to atomic or correctly synchronizing the code.
-          This guarantees that 64-bit primitive long and double variables are accessed atomically.
+          To solve this issue, synchronize compound operations, use read-write locks, or declare these shared variables with an atomic type.
         </p>
      ]]>
     </Details>
