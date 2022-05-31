@@ -19,13 +19,13 @@ public class ThrowingExceptionsTest extends AbstractIntegrationTest {
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 1);
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 1);
 
-        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 1, "MethodsThrowingExceptions", "isCapitalizedThrowingRuntimeException");
-        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 0, "MethodsThrowingExceptions", "isCapitalizedThrowingSpecializedException");
+        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 1, "isCapitalizedThrowingRuntimeException");
+        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 0, "isCapitalizedThrowingSpecializedException");
 
-        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 1, "MethodsThrowingExceptions", "methodThrowingBasicException");
-        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 0, "MethodsThrowingExceptions", "methodThrowingIOException");
+        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 1, "methodThrowingBasicException");
+        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 0, "methodThrowingIOException");
 
-        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 1, "MethodsThrowingExceptions", "methodThrowingThrowable");
+        assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 1, "methodThrowingThrowable");
     }
 
     @Test
@@ -35,6 +35,7 @@ public class ThrowingExceptionsTest extends AbstractIntegrationTest {
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 1);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void assertNumOfTHROWSBugs(String bugType, int num) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -42,10 +43,10 @@ public class ThrowingExceptionsTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
     }
 
-    private void assertNumOfTHROWSBugs(String bugType, int num, String className, String method) {
+    private void assertNumOfTHROWSBugs(String bugType, int num, String method) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
-                .inClass(className)
+                .inClass("MethodsThrowingExceptions")
                 .inMethod(method)
                 .build();
         if (num > 0) {
