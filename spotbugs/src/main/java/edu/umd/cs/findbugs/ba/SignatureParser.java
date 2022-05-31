@@ -113,6 +113,7 @@ public class SignatureParser {
                     break;
 
                 case 'L':
+                case 'T':
                     int semi = signature.indexOf(';', index + 1);
                     if (semi < 0) {
                         throw new IllegalStateException("Invalid method signature: " + signature);

@@ -48,17 +48,22 @@ public class ThrowingExceptions extends OpcodeStackDetector {
 
         Stream<String> exceptionStream = null;
 
-        // If the method is generic or is a method of a generic class, then check the generic signature to avoid detection
+        // If the method is generic or is a method of a generic class, then first check the generic signature to avoid detection
         // of generic descendants of Exception or Throwable as Exception or Throwable itself.
         String signature = obj.getGenericSignature();
+        String[] exceptions = null;
         if (signature != null) {
-            String[] exceptions = StringUtils.substringsBetween(signature, "^", ";");
+            exceptions = StringUtils.substringsBetween(signature, "^", ";");
             if (exceptions != null) {
                 exceptionStream = Arrays.stream(exceptions)
                         .filter(s -> s.charAt(0) == 'L')
                         .map(s -> s.substring(1).replace('/', '.'));
             }
-        } else {
+        }
+
+        // If the method is not generic or it does not throw a generic exception then it has no exception specification in its generic
+        // signature.
+        if (signature == null || exceptions == null) {
             ExceptionTable exceptionTable = obj.getExceptionTable();
             if (exceptionTable != null) {
                 exceptionStream = Arrays.stream(exceptionTable.getExceptionNames());
@@ -139,7 +144,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             ancestor = clazz.getSuperClass();
             if (ancestor != null) {
                 Optional<Method> superMethod = Arrays.stream(ancestor.getMethods())
-                        .filter(m -> method.getName().equals(m.getName()) && sameSignature(method, m))
+                        .filter(m -> method.getName().equals(m.getName()) && signatureMatches(method, m))
                         .findAny();
                 if (superMethod.isPresent()) {
                     throwsEx = Arrays.stream(superMethod.get().getExceptionTable().getExceptionNames())
@@ -151,7 +156,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
 
             for (JavaClass intf : clazz.getInterfaces()) {
                 Optional<Method> superMethod = Arrays.stream(intf.getMethods())
-                        .filter(m -> method.getName().equals(m.getName()) && sameSignature(method, m))
+                        .filter(m -> method.getName().equals(m.getName()) && signatureMatches(method, m))
                         .findAny();
                 if (superMethod.isPresent()) {
                     throwsEx |= Arrays.stream(superMethod.get().getExceptionTable().getExceptionNames())
@@ -166,7 +171,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
         return throwsEx;
     }
 
-    private boolean sameSignature(Method child, Method parent) {
+    private boolean signatureMatches(Method child, Method parent) {
         String genSig = parent.getGenericSignature();
         if (genSig == null) {
             return child.getSignature().equals(parent.getSignature());
@@ -185,8 +190,8 @@ public class ThrowingExceptions extends OpcodeStackDetector {
         String[] args = sp.getArguments();
 
         for (int i = 0; i < sp.getNumParameters(); ++i) {
-            if (gArgs[i].charAt(i) == 'T') {
-                if (args[i].charAt(i) != 'L') {
+            if (gArgs[i].charAt(0) == 'T') {
+                if (args[i].charAt(0) != 'L') {
                     return false;
                 }
             } else {

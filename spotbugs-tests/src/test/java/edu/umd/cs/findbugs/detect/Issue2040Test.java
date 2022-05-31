@@ -13,17 +13,19 @@ public class Issue2040Test extends AbstractIntegrationTest {
     public void test() {
         performAnalysis("ghIssues/issue2040/Base.class",
                 "ghIssues/issue2040/Derived.class",
+                "ghIssues/issue2040/GenericBase.class",
+                "ghIssues/issue2040/GenericDerived.class",
                 "ghIssues/issue2040/Interface.class",
                 "ghIssues/issue2040/Generic.class",
                 "ghIssues/issue2040/Caller.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("THROWS_METHOD_THROWS_CLAUSE_THROWABLE")
                 .build();
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(3, bugTypeMatcher));
 
         bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION")
                 .build();
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(3, bugTypeMatcher));
     }
 }
