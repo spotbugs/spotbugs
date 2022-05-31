@@ -213,8 +213,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
         super.mergeInto(frame, result);
 
         // Merge status
-        result.setStatus(result.getStatus().getType() > frame.getStatus().getType() ?
-                frame.getStatus() : result.getStatus());
+        result.setStatus(result.getStatus().getType() > frame.getStatus().getType() ? frame.getStatus() : result.getStatus());
     }
 
     @Override
