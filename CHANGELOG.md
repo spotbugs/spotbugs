@@ -7,7 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2022-??-??
 ### Fixed
 - Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
-- Disabled detector `ThrowingExceptions` by default to avoid many false positives ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
+- Fixed detector `ThrowingExceptions` by removing false positive reports, such as syntetic methods (lambdas), methods which inherited their exception specications and methods which call throwing methods ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
 
 ## 4.7.0 - 2022-04-14
 ### Changed

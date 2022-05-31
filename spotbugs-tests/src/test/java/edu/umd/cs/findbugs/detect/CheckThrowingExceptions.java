@@ -4,7 +4,6 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
@@ -12,7 +11,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 public class CheckThrowingExceptions extends AbstractIntegrationTest {
-    @Ignore("Detector disabled, see issue #2040")
+
     @Test
     public void throwingExceptionsTests() {
         performAnalysis("MethodsThrowingExceptions.class");
