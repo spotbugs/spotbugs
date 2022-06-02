@@ -40,7 +40,7 @@ To introduce SpotBugs Plugin, please declare dependency in ``dependencies`` like
 .. code-block:: groovy
 
   dependencies {
-    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0'
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
   }
 
 Other usage

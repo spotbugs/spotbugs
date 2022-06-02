@@ -5,6 +5,11 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2022-??-??
+### Fixed
+- Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
+- Disabled detector `ThrowingExceptions` by default to avoid many false positives ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
+
+## 4.7.0 - 2022-04-14
 ### Changed
 - Updated documentation by adding parenthesis `()` to the negative odd check message ([#1995](https://github.com/spotbugs/spotbugs/issues/1995))
 - Let the Plugin class implement AutoCloseable so we can release the .jar file ([#2024](https://github.com/spotbugs/spotbugs/issues/2024))
