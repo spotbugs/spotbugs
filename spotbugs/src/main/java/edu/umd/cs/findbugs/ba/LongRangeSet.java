@@ -54,6 +54,11 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
         this.range = range;
     }
 
+    private LongRangeSet(TypeLongRange range, SortedMap<Long, Long> map) {
+        this.range = range;
+        this.map = map;
+    }
+
     public LongRangeSet(LongRangeSet other) {
         range = other.range;
         map = new ConcurrentSkipListMap<>(other.map);
@@ -67,9 +72,7 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     public LongRangeSet ge(long value) {
-        LongRangeSet rangeSet = new LongRangeSet(this);
-        rangeSet.splitGE(value);
-        return rangeSet;
+        return new LongRangeSet(range, splitGE(map, value));
     }
 
     public LongRangeSet lt(long value) {
@@ -80,9 +83,7 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     public LongRangeSet le(long value) {
-        LongRangeSet rangeSet = new LongRangeSet(this);
-        rangeSet.splitLE(value);
-        return rangeSet;
+        return new LongRangeSet(range, splitLE(map, value));
     }
 
     public LongRangeSet eq(long value) {
@@ -94,9 +95,17 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     public LongRangeSet ne(long value) {
-        LongRangeSet rangeSet = lt(value);
-        rangeSet.add(gt(value));
-        return rangeSet;
+        if (value == Long.MIN_VALUE) {
+            return gt(value);
+        }
+
+        if (value == Long.MAX_VALUE) {
+            return lt(value);
+        }
+
+        SortedMap<Long, Long> newMap = splitLE(map, value - 1);
+        newMap.putAll(splitGE(map, value + 1));
+        return new LongRangeSet(range, newMap);
     }
 
     public void addBordersTo(Set<Long> borders) {
@@ -164,8 +173,8 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     private void restrict(Long start, Long end) {
-        splitGE(start);
-        splitLE(end);
+        map = splitGE(map, start);
+        map = splitLE(map, end);
     }
 
     public void restrict(String signature) {
@@ -173,14 +182,14 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
         restrict(range.min, range.max);
     }
 
-    private void splitGE(long number) {
+    private static SortedMap<Long, Long> splitGE(SortedMap<Long, Long> map, long number) {
         if (number == Long.MIN_VALUE) {
-            return;
+            return map;
         }
 
         SortedMap<Long, Long> headMap = map.headMap(number);
         if (headMap.isEmpty()) {
-            return;
+            return map;
         }
         Long lastKey = headMap.lastKey();
         Long lastValue = headMap.get(lastKey);
@@ -188,16 +197,17 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
         if (number <= lastValue) {
             map.put(number, lastValue);
         }
+        return map;
     }
 
-    private void splitLE(long number) {
+    private static SortedMap<Long, Long> splitLE(SortedMap<Long, Long> map, long number) {
         if (number == Long.MAX_VALUE) {
-            return;
+            return map;
         }
 
         map = new ConcurrentSkipListMap<>(map.headMap(number + 1));
         if (map.isEmpty()) {
-            return;
+            return map;
         }
 
         Long lastKey = map.lastKey();
@@ -206,6 +216,7 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
         if (number < lastValue) {
             map.put(lastKey, number);
         }
+        return map;
     }
 
     public String getSignature() {
