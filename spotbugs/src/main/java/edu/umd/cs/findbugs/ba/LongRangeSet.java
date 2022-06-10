@@ -1,39 +1,65 @@
+/*
+ * SpotBugs - Find bugs in Java programs
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
+/**
+ * This class stores the set of possible values that a variable can store at a given point of the CFG.
+ * The set of these values is represented by a set of ranges.
+ */
+
 public class LongRangeSet implements Iterable<LongRangeSet> {
-    private static final Map<String, TypeLongRange> typeRanges;
+    private static final Map<String, TypeLongRange> TYPE_RANGES;
 
     static {
-        typeRanges = new HashMap<>();
+        Map<String, TypeLongRange> typeRanges = new HashMap<>();
         typeRanges.put("Z", new TypeLongRange(0, 1, "Z"));
         typeRanges.put("B", new TypeLongRange(Byte.MIN_VALUE, Byte.MAX_VALUE, "B"));
         typeRanges.put("S", new TypeLongRange(Short.MIN_VALUE, Short.MAX_VALUE, "S"));
         typeRanges.put("I", new TypeLongRange(Integer.MIN_VALUE, Integer.MAX_VALUE, "I"));
         typeRanges.put("J", new TypeLongRange(Long.MIN_VALUE, Long.MAX_VALUE, "J"));
         typeRanges.put("C", new TypeLongRange(Character.MIN_VALUE, Character.MAX_VALUE, "C"));
+        TYPE_RANGES = Collections.unmodifiableMap(typeRanges);
     }
 
     public static boolean isSignatureSupported(String signature) {
-        return typeRanges.containsKey(signature);
+        return TYPE_RANGES.containsKey(signature);
     }
 
-    private SortedMap<Long, Long> map = new ConcurrentSkipListMap<>();
+    private SortedMap<Long, Long> rangeMap = new TreeMap<>();
     private TypeLongRange range;
 
     public LongRangeSet(String type) {
-        TypeLongRange range = typeRanges.get(type);
+        TypeLongRange range = TYPE_RANGES.get(type);
         if (range == null) {
             throw new IllegalArgumentException("Type is not supported: " + type);
         }
-        map.put(range.min, range.max);
+        rangeMap.put(range.min, range.max);
         this.range = range;
     }
 
@@ -46,7 +72,7 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
             to = range.max;
         }
         if (from <= to) {
-            map.put(from, to);
+            rangeMap.put(from, to);
         }
     }
 
@@ -56,12 +82,12 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
 
     private LongRangeSet(TypeLongRange range, SortedMap<Long, Long> map) {
         this.range = range;
-        this.map = map;
+        this.rangeMap = map;
     }
 
     public LongRangeSet(LongRangeSet other) {
         range = other.range;
-        map = new ConcurrentSkipListMap<>(other.map);
+        rangeMap = new TreeMap<>(other.rangeMap);
     }
 
     public LongRangeSet gt(long value) {
@@ -72,7 +98,7 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     public LongRangeSet ge(long value) {
-        return new LongRangeSet(range, splitGE(map, value));
+        return new LongRangeSet(range, splitGE(rangeMap, value));
     }
 
     public LongRangeSet lt(long value) {
@@ -83,7 +109,7 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     public LongRangeSet le(long value) {
-        return new LongRangeSet(range, splitLE(map, value));
+        return new LongRangeSet(range, splitLE(rangeMap, value));
     }
 
     public LongRangeSet eq(long value) {
@@ -103,27 +129,30 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
             return lt(value);
         }
 
-        SortedMap<Long, Long> newMap = splitLE(map, value - 1);
-        newMap.putAll(splitGE(map, value + 1));
+        SortedMap<Long, Long> newMap = splitLE(rangeMap, value - 1);
+        newMap.putAll(splitGE(rangeMap, value + 1));
         return new LongRangeSet(range, newMap);
     }
 
-    public void addBordersTo(Set<Long> borders) {
-        if (map.isEmpty()) {
-            return;
+    public Set<Long> getBorders() {
+        Set<Long> borders = new HashSet<>();
+        if (rangeMap.isEmpty()) {
+            return borders;
         }
 
-        long min = map.firstKey();
+        long min = rangeMap.firstKey();
         borders.add(min);
         if (min > Long.MIN_VALUE) {
             borders.add(min - 1);
         }
 
-        long max = map.get(map.lastKey());
+        long max = rangeMap.get(rangeMap.lastKey());
         borders.add(max);
         if (max < Long.MAX_VALUE) {
             borders.add(max + 1);
         }
+
+        return borders;
     }
 
     public LongRangeSet empty() {
@@ -143,13 +172,13 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     public boolean contains(long value) {
-        if (map.isEmpty()) {
+        if (rangeMap.isEmpty()) {
             return false;
         }
         if (value == Long.MAX_VALUE) {
-            return map.get(map.lastKey()) == Long.MAX_VALUE;
+            return rangeMap.get(rangeMap.lastKey()) == Long.MAX_VALUE;
         }
-        SortedMap<Long, Long> headMap = map.headMap(value + 1);
+        SortedMap<Long, Long> headMap = rangeMap.headMap(value + 1);
         if (headMap.isEmpty()) {
             return false;
         }
@@ -157,14 +186,14 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     public boolean intersects(LongRangeSet other) {
-        for (Entry<Long, Long> entry : map.entrySet()) {
-            SortedMap<Long, Long> subMap = entry.getValue() == Long.MAX_VALUE ? other.map.tailMap(entry.getKey())
-                    : other.map
+        for (Entry<Long, Long> entry : rangeMap.entrySet()) {
+            SortedMap<Long, Long> subMap = entry.getValue() == Long.MAX_VALUE ? other.rangeMap.tailMap(entry.getKey())
+                    : other.rangeMap
                             .subMap(entry.getKey(), entry.getValue() + 1);
             if (!subMap.isEmpty()) {
                 return true;
             }
-            SortedMap<Long, Long> headMap = other.map.headMap(entry.getKey());
+            SortedMap<Long, Long> headMap = other.rangeMap.headMap(entry.getKey());
             if (!headMap.isEmpty() && headMap.get(headMap.lastKey()) >= entry.getKey()) {
                 return true;
             }
@@ -173,12 +202,12 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     private void restrict(Long start, Long end) {
-        map = splitGE(map, start);
-        map = splitLE(map, end);
+        rangeMap = splitGE(rangeMap, start);
+        rangeMap = splitLE(rangeMap, end);
     }
 
     public void restrict(String signature) {
-        range = typeRanges.get(signature);
+        range = TYPE_RANGES.get(signature);
         restrict(range.min, range.max);
     }
 
@@ -193,7 +222,7 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
         }
         Long lastKey = headMap.lastKey();
         Long lastValue = headMap.get(lastKey);
-        map = new ConcurrentSkipListMap<>(map.tailMap(number));
+        map = new TreeMap<>(map.tailMap(number));
         if (number <= lastValue) {
             map.put(number, lastValue);
         }
@@ -205,7 +234,7 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
             return map;
         }
 
-        map = new ConcurrentSkipListMap<>(map.headMap(number + 1));
+        map = new TreeMap<>(map.headMap(number + 1));
         if (map.isEmpty()) {
             return map;
         }
@@ -224,22 +253,22 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     public boolean isEmpty() {
-        return map.isEmpty();
+        return rangeMap.isEmpty();
     }
 
     public boolean isFull() {
-        if (map.size() != 1) {
+        if (rangeMap.size() != 1) {
             return false;
         }
-        Long min = map.firstKey();
-        Long max = map.get(min);
+        Long min = rangeMap.firstKey();
+        Long max = rangeMap.get(min);
         return min <= range.min && max >= range.max;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Entry<Long, Long> entry : map.entrySet()) {
+        for (Entry<Long, Long> entry : rangeMap.entrySet()) {
             if (sb.length() > 0) {
                 sb.append("+");
             }
@@ -254,7 +283,7 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
 
     @Override
     public Iterator<LongRangeSet> iterator() {
-        final Iterator<Entry<Long, Long>> iterator = map.entrySet().iterator();
+        final Iterator<Entry<Long, Long>> iterator = rangeMap.entrySet().iterator();
         return new Iterator<LongRangeSet>() {
             @Override
             public boolean hasNext() {
@@ -275,15 +304,15 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     }
 
     private void add(Long start, Long end) {
-        if (map.isEmpty()) {
-            map.put(start, end);
+        if (rangeMap.isEmpty()) {
+            rangeMap.put(start, end);
             return;
         }
 
         SortedMap<Long, Long> headMap;
         if (end < Long.MAX_VALUE) {
-            headMap = map.headMap(end + 1);
-            Long tailEnd = map.remove(end + 1);
+            headMap = rangeMap.headMap(end + 1);
+            Long tailEnd = rangeMap.remove(end + 1);
             if (tailEnd != null) {
                 end = tailEnd;
             }
@@ -294,28 +323,32 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
                 }
             }
         }
-        headMap = map.headMap(start);
+        headMap = rangeMap.headMap(start);
         if (!headMap.isEmpty()) {
             Long headStart = headMap.lastKey();
-            Long headEnd = map.get(headStart);
+            Long headEnd = rangeMap.get(headStart);
             if (headEnd >= start - 1) {
-                map.remove(headStart);
+                rangeMap.remove(headStart);
                 start = headStart;
             }
         }
-        map.subMap(start, end).clear();
-        map.remove(end);
-        map.put(start, end);
+        rangeMap.subMap(start, end).clear();
+        rangeMap.remove(end);
+        rangeMap.put(start, end);
     }
 
     public LongRangeSet add(LongRangeSet rangeSet) {
-        for (Entry<Long, Long> entry : rangeSet.map.entrySet()) {
+        if (rangeSet == this) {
+            return this;
+        }
+
+        for (Entry<Long, Long> entry : rangeSet.rangeMap.entrySet()) {
             add(entry.getKey(), entry.getValue());
         }
         return this;
     }
 
     public boolean same(LongRangeSet rangeSet) {
-        return map.equals(rangeSet.map);
+        return rangeMap.equals(rangeSet.rangeMap);
     }
 }

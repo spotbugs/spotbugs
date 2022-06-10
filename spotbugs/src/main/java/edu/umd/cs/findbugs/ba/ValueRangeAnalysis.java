@@ -1,3 +1,21 @@
+/*
+ * SpotBugs - Find bugs in Java programs
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.umd.cs.findbugs.ba;
 
 import java.util.HashMap;
@@ -139,37 +157,37 @@ public class ValueRangeAnalysis extends ForwardDataflowAnalysis<ValueRangeMap> {
                 case IFGT:
                     range = range.gt(number.longValue());
                     branch = new Branch(valueNumber, varName, (onFalseBranch ? "<=" : ">"), (onFalseBranch ? ">" : "<="),
-                            range, number);
+                            number);
                     break;
                 case IF_ICMPLE:
                 case IFLE:
                     range = range.le(number.longValue());
                     branch = new Branch(valueNumber, varName, (onFalseBranch ? ">" : "<="), (onFalseBranch ? "<=" : ">"),
-                            range, number);
+                            number);
                     break;
                 case IF_ICMPGE:
                 case IFGE:
                     range = range.ge(number.longValue());
                     branch = new Branch(valueNumber, varName, (onFalseBranch ? "<" : ">="), (onFalseBranch ? ">=" : "<"),
-                            range, number);
+                            number);
                     break;
                 case IF_ICMPLT:
                 case IFLT:
                     range = range.lt(number.longValue());
                     branch = new Branch(valueNumber, varName, (onFalseBranch ? ">=" : "<"), (onFalseBranch ? "<" : ">="),
-                            range, number);
+                            number);
                     break;
                 case IF_ICMPEQ:
                 case IFEQ:
                     range = range.eq(number.longValue());
                     branch = new Branch(valueNumber, varName, (onFalseBranch ? "!=" : "=="), (onFalseBranch ? "==" : "!="),
-                            range, number);
+                            number);
                     break;
                 case IF_ICMPNE:
                 case IFNE:
                     range = range.ne(number.longValue());
                     branch = new Branch(valueNumber, varName, (onFalseBranch ? "==" : "!="), (onFalseBranch ? "!=" : "=="),
-                            range, number);
+                            number);
                     break;
                 default:
                     break;

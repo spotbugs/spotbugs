@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -68,10 +67,8 @@ import edu.umd.cs.findbugs.classfile.engine.bcel.FinallyDuplicatesInfoFactory.Fi
  */
 public class RedundantConditions implements Detector {
     private final BugAccumulator bugAccumulator;
-    private final BugReporter bugReporter;
 
     public RedundantConditions(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
@@ -163,8 +160,7 @@ public class RedundantConditions implements Detector {
                             boolean isDeadCodeUnreachable = isSoleEdgeToTarget(cfg, deadEdge);
                             Location deadCodeLocation = getTargetLocation(cfg, deadEdge);
                             Location liveCodeLocation = getTargetLocation(cfg, liveEdge);
-                            Set<Long> borders = new HashSet<>();
-                            rangeBefore.addBordersTo(borders);
+                            Set<Long> borders = rangeBefore.getBorders();
 
                             int priority = getPriority(methodDescriptor, branch, rangeOnEdge, isByType, isDeadCodeUnreachable,
                                     deadCodeLocation, liveCodeLocation, borders);
