@@ -1,48 +1,64 @@
+/*
+ * FindBugs - Find Bugs in Java programs
+ * Copyright (C) 2003-2008 University of Maryland
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+import org.junit.Before;
 import org.junit.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.Matchers.hasItem;
-
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 
 public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTest {
 
+    @Before
+    public void setup() {
+        SystemProperties.setProperty("ful.debug", "true");
+    }
+
     @Test
     public void happyPath_compoundOperation_onSharedAtomicVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundOperationOnSharedAtomicVariable.class");
-
         assertCOSVNumOfBugs(0);
     }
 
     @Test
     public void happyPath_compoundOperationInsideSynchronizedBlock_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/SynchronizedBlockCompoundOperationOnSharedVariable.class");
-
         assertCOSVNumOfBugs(0);
     }
 
     @Test
     public void happyPath_compoundOperationInsideSynchronizedMethod_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/SynchronizedMethodCompoundOperationOnSharedVariable.class");
-
         assertCOSVNumOfBugs(0);
     }
 
     // --num
     @Test
     public void reportsBugFor_compoundPreDecrementation_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPreDecrementationOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundPreDecrementationOnSharedVariable", "getNum", 11);
     }
@@ -50,9 +66,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // num--
     @Test
     public void reportsBugFor_compoundPostDecrementation_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostDecrementationOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundPostDecrementationOnSharedVariable", "getNum", 11);
     }
@@ -60,9 +74,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // ++num
     @Test
     public void reportsBugFor_compoundPreIncrementation_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPreIncrementationOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundPreIncrementationOnSharedVariable", "getNum", 11);
     }
@@ -70,9 +82,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // num++
     @Test
     public void reportsBugFor_compoundPostIncrementation_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostIncrementationOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundPostIncrementationOnSharedVariable", "getNum", 11);
     }
@@ -80,9 +90,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // &=
     @Test
     public void reportsBugFor_compoundIAND_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIANDOperationOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundIANDOperationOnSharedVariable", "getNum", 11);
     }
@@ -90,9 +98,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // |=
     @Test
     public void reportsBugFor_compoundIOR_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIOROperationOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundIOROperationOnSharedVariable", "getNum", 11);
     }
@@ -100,9 +106,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // >>>=
     @Test
     public void reportsBugFor_compoundLogicalRightShifting_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLogicalRightShiftingOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundLogicalRightShiftingOnSharedVariable", "getNum", 11);
     }
@@ -110,9 +114,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // >>=
     @Test
     public void reportsBugFor_compoundRightShifting_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundRightShiftingOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundRightShiftingOnSharedVariable", "getNum", 11);
     }
@@ -120,9 +122,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // <<=
     @Test
     public void reportsBugFor_compoundLeftShifting_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLeftShiftingOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundLeftShiftingOnSharedVariable", "getNum", 11);
     }
@@ -130,9 +130,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // %=
     @Test
     public void reportsBugFor_compoundModulo_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundModuloOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundModuloOnSharedVariable", "getNum", 12);
     }
@@ -140,9 +138,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // *=
     @Test
     public void reportsBugFor_compoundMultiplication_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundMultiplicationOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundMultiplicationOnSharedVariable", "getNum", 11);
     }
@@ -150,9 +146,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // /=
     @Test
     public void reportsBugFor_compoundDivision_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivisionOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundDivisionOnSharedVariable", "getNum", 11);
     }
@@ -160,9 +154,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // -=
     @Test
     public void reportsBugFor_compoundSubtraction_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubtractionOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundSubtractionOnSharedVariable", "getNum", 11);
     }
@@ -171,9 +163,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // +=
     @Test
     public void reportsBugFor_compoundAddition_onSharedVolatileVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionOnSharedVolatileVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundAdditionOnSharedVolatileVariable", "getNum", 11);
     }
@@ -181,9 +171,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     // ^=
     @Test
     public void reportsBugFor_compoundXOROperation_onSharedVariable() {
-        SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundXOROperationOnSharedVariable.class");
-
         assertCOSVNumOfBugs(1);
         assertCOSVBug("CompoundXOROperationOnSharedVariable", "getFlag", 11);
     }

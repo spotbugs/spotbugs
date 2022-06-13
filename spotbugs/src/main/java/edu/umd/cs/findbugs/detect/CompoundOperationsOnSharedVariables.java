@@ -1,3 +1,22 @@
+/*
+ * FindBugs - Find bugs in Java programs
+ * Copyright (C) 2003,2004 University of Maryland
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -21,16 +40,16 @@ import org.apache.bcel.classfile.Method;
 public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
 
     private final BugAccumulator bugAccumulator;
-    private final Map<XMethod, List<XField>> compoundlyWroteNotSecuredFieldsByMethods;
-    private final Map<XMethod, List<XField>> redNotSecuredFieldsByMethods;
+    private final Map<XMethod, List<XField>> compoundlyWrittenNotSecuredFieldsByMethods;
+    private final Map<XMethod, List<XField>> readNotSecuredFieldsByMethods;
     private boolean isInsideSynchronizedOrLockingMethod;
     private Optional<XField> maybeCompoundlyOperatedField;
     private int stepsMadeInCompoundOperationProcess;
 
     public CompoundOperationsOnSharedVariables(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
-        this.compoundlyWroteNotSecuredFieldsByMethods = new HashMap();
-        this.redNotSecuredFieldsByMethods = new HashMap();
+        this.compoundlyWrittenNotSecuredFieldsByMethods = new HashMap();
+        this.readNotSecuredFieldsByMethods = new HashMap();
         this.isInsideSynchronizedOrLockingMethod = false;
         this.maybeCompoundlyOperatedField = Optional.empty();
         this.stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
@@ -65,7 +84,7 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
                 XMethod readMethod = getXMethod();
                 Optional<XField> maybeFieldToRead = Optional.ofNullable(getXFieldOperand());
                 lookForUnsecuredOperationsOnFieldInOtherMethods(
-                        maybeFieldToRead, readMethod, compoundlyWroteNotSecuredFieldsByMethods, redNotSecuredFieldsByMethods);
+                        maybeFieldToRead, readMethod, compoundlyWrittenNotSecuredFieldsByMethods, readNotSecuredFieldsByMethods);
                 maybeCompoundlyOperatedField = maybeFieldToRead;
                 stepsMadeInCompoundOperationProcess = 1;
                 return;
@@ -97,7 +116,6 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
             }
 
             if (stepsMadeInCompoundOperationProcess == 3 && (seen == Const.PUTFIELD || seen == Const.PUTSTATIC)) {
-                // This might be a compound operation:
                 XMethod modificationMethod = getXMethod();
                 Optional<XField> maybeFieldToModify = Optional.ofNullable(getXFieldOperand());
 
@@ -108,7 +126,7 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
                         .orElse(false);
                 if (matchWithReadField) {
                     lookForUnsecuredOperationsOnFieldInOtherMethods(
-                            maybeFieldToModify, modificationMethod, redNotSecuredFieldsByMethods, compoundlyWroteNotSecuredFieldsByMethods);
+                            maybeFieldToModify, modificationMethod, readNotSecuredFieldsByMethods, compoundlyWrittenNotSecuredFieldsByMethods);
 
                 }
 
