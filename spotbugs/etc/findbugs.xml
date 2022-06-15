@@ -657,6 +657,8 @@
                     reports="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS,REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindOverridableMethodCall"
                     reports="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR,MC_OVERRIDABLE_METHOD_CALL_IN_CLONE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ConstructorThrow" speed="fast"
+                    reports="CT_CONSTRUCTOR_THROW"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindInstanceLockOnSharedStaticData" speed="fast"
                     reports="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA"/>
           <Detector class="edu.umd.cs.findbugs.detect.PermissionsSuper"
@@ -687,10 +689,12 @@
           <BugCode abbrev="STCAL" cweid="366"/>
           <BugCode abbrev="ICAST" cweid="192"/>
           <BugCode abbrev="FB"/>
+          <BugCode abbrev="CT"/>
           <BugCode abbrev="AT"/>
           <BugCode abbrev="JUA"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
+          <BugPattern abbrev="CT" type="CT_CONSTRUCTOR_THROW" category="BAD_PRACTICE" />
           <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
           <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
 
