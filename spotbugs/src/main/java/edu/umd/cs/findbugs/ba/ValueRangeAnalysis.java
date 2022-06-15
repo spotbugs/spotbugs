@@ -156,38 +156,32 @@ public class ValueRangeAnalysis extends ForwardDataflowAnalysis<ValueRangeMap> {
                 case IF_ICMPGT:
                 case IFGT:
                     range = range.gt(number.longValue());
-                    branch = new Branch(valueNumber, varName, (onFalseBranch ? "<=" : ">"), (onFalseBranch ? ">" : "<="),
-                            number);
+                    branch = new Branch(valueNumber, varName, ">", "<=", number);
                     break;
                 case IF_ICMPLE:
                 case IFLE:
                     range = range.le(number.longValue());
-                    branch = new Branch(valueNumber, varName, (onFalseBranch ? ">" : "<="), (onFalseBranch ? "<=" : ">"),
-                            number);
+                    branch = new Branch(valueNumber, varName, "<=", ">", number);
                     break;
                 case IF_ICMPGE:
                 case IFGE:
                     range = range.ge(number.longValue());
-                    branch = new Branch(valueNumber, varName, (onFalseBranch ? "<" : ">="), (onFalseBranch ? ">=" : "<"),
-                            number);
+                    branch = new Branch(valueNumber, varName, ">=", "<", number);
                     break;
                 case IF_ICMPLT:
                 case IFLT:
                     range = range.lt(number.longValue());
-                    branch = new Branch(valueNumber, varName, (onFalseBranch ? ">=" : "<"), (onFalseBranch ? "<" : ">="),
-                            number);
+                    branch = new Branch(valueNumber, varName, "<", ">=", number);
                     break;
                 case IF_ICMPEQ:
                 case IFEQ:
                     range = range.eq(number.longValue());
-                    branch = new Branch(valueNumber, varName, (onFalseBranch ? "!=" : "=="), (onFalseBranch ? "==" : "!="),
-                            number);
+                    branch = new Branch(valueNumber, varName, "==", "!=", number);
                     break;
                 case IF_ICMPNE:
                 case IFNE:
                     range = range.ne(number.longValue());
-                    branch = new Branch(valueNumber, varName, (onFalseBranch ? "==" : "!="), (onFalseBranch ? "!=" : "=="),
-                            number);
+                    branch = new Branch(valueNumber, varName, "!=", "==", number);
                     break;
                 default:
                     break;

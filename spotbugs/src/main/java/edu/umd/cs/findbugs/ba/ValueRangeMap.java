@@ -101,4 +101,20 @@ public class ValueRangeMap {
     public int hashCode() {
         return variableRanges.hashCode();
     }
+
+    @Override
+    public String toString() {
+        StringBuffer result = new StringBuffer("Variable ranges: ");
+        boolean first = true;
+        for (Entry<ValueNumber, LongRangeSet> entry : variableRanges.entrySet()) {
+            if (!first) {
+                result.append("; ");
+            }
+            first = false;
+            result.append(entry.getKey() + ": " + entry.getValue());
+        }
+
+        result.append(". Branch data: " + branch);
+        return result.toString();
+    }
 }

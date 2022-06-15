@@ -61,4 +61,10 @@ public class Branch {
     public Number getNumber() {
         return number;
     }
+
+    @Override
+    public String toString() {
+        return "Value number: " + valueNumber + "; true condition: " + varName + " " + trueCondition + " " + number +
+                "; false condition: " + varName + " " + falseCondition + " " + number;
+    }
 }
