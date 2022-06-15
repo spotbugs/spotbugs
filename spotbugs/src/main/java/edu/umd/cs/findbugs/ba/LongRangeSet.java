@@ -63,6 +63,11 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
         this.range = range;
     }
 
+    public LongRangeSet(LongRangeSet other) {
+        range = other.range;
+        rangeMap = new TreeMap<>(other.rangeMap);
+    }
+
     private LongRangeSet(TypeLongRange range, long from, long to) {
         this.range = range;
         if (from < range.min) {
@@ -83,11 +88,6 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
     private LongRangeSet(TypeLongRange range, SortedMap<Long, Long> map) {
         this.range = range;
         this.rangeMap = map;
-    }
-
-    public LongRangeSet(LongRangeSet other) {
-        range = other.range;
-        rangeMap = new TreeMap<>(other.rangeMap);
     }
 
     public LongRangeSet gt(long value) {
@@ -153,10 +153,6 @@ public class LongRangeSet implements Iterable<LongRangeSet> {
         }
 
         return borders;
-    }
-
-    public LongRangeSet empty() {
-        return new LongRangeSet(range);
     }
 
     public long getTypeMin() {
