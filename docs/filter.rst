@@ -31,7 +31,7 @@ Types of Match clauses
 This element specifies a particular bug ``pattern`` or ``patterns`` to match. The ``pattern`` attribute is a comma-separated list of bug pattern types.
 You can find the bug pattern types for particular warnings by looking at the output produced by the **-xml** output option (the type attribute of BugInstance elements), or from the :doc:`bugDescriptions`.
 
-For more coarse-grained matching, use ``code`` attribute. It takes a comma-separated list of bug abbreviations. For most-coarse grained matching use ``category`` attribute, that takes a comma separated list of bug category names: ``CORRECTNESS``, ``MT_CORRECTNESS``, ``BAD_PRACTICICE``, ``PERFORMANCE``, ``STYLE``.
+For more coarse-grained matching, use ``code`` attribute. It takes a comma-separated list of bug abbreviations. For most-coarse grained matching use ``category`` attribute, that takes a comma separated list of bug category names: ``CORRECTNESS``, ``MT_CORRECTNESS``, ``BAD_PRACTICE``, ``PERFORMANCE``, ``STYLE``.
 
 If more than one of the attributes mentioned above are specified on the same <Bug> element, all bug patterns that match either one of specified pattern names, or abbreviations, or categories will be matched.
 

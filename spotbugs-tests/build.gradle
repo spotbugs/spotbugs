@@ -19,7 +19,7 @@ dependencies {
   implementation 'org.hamcrest:hamcrest-all:1.3'
   implementation 'org.apache.ant:ant:1.10.12'
   implementation "org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion"
-  implementation 'com.google.errorprone:error_prone_annotations:2.11.0'
+  implementation 'com.google.errorprone:error_prone_annotations:2.13.1'
   implementation files(project(":spotbugs").sourceSets.gui.output)
 }
 

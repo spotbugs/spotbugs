@@ -49,6 +49,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
 import org.apache.bcel.generic.INVOKEDYNAMIC;
+import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -1907,6 +1908,21 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             case Const.INVOKEVIRTUAL:
                 if (handle.getInstruction() instanceof INVOKEVIRTUAL) {
                     String methodName = ((INVOKEVIRTUAL) handle.getInstruction()).getMethodName(cpg);
+                    if ("close".equals(methodName)) {
+                        // the close methods get the line number of the end of the try block assigned
+                        if (throwables.stream().anyMatch(x -> lineNumberTable.getSourceLine(x.getEndPC()) == currentLine)) {
+                            closeCounter++;
+                        }
+                    } else if ("addSuppressed".equals(methodName)) {
+                        if (relevantLineNumbers.contains(currentLine)) {
+                            addSuppressedPresent = true;
+                        }
+                    }
+                }
+                break;
+            case Const.INVOKEINTERFACE:
+                if (handle.getInstruction() instanceof INVOKEINTERFACE) {
+                    String methodName = ((INVOKEINTERFACE) handle.getInstruction()).getMethodName(cpg);
                     if ("close".equals(methodName)) {
                         // the close methods get the line number of the end of the try block assigned
                         if (throwables.stream().anyMatch(x -> lineNumberTable.getSourceLine(x.getEndPC()) == currentLine)) {
