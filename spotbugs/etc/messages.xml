@@ -1772,6 +1772,15 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryEnvUsage">
+    <Details>
+      <![CDATA[
+            <p>Check for calls of System.getenv, where the variable has an equvivalent
+              java property too.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8786,6 +8795,43 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="ENV_USE_PROPERTY_INSTEAD_OF_ENV">
+    <ShortDescription>It is better to use the validated java property instead of the insecure environment variable.</ShortDescription>
+    <LongDescription>It is better to use the validated java property '{3}' instead of the insecure environment variable '{2}' in class {4} (method {1}).</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Environment variables can be altered by an attacker, so trusting those which contain important information is not a good idea.
+        However, environment variables are also taken by the JVM and it is preprocessing and checking the standard and important ones,
+        making them available as system properties.
+      </p>
+      <p>
+        Any standard value which can also be accessed through System.getProperty() should be accessed so instead of using System.getenv().
+      </p>
+      <p>
+        Mapping of identical or similar java properties:
+        <table>
+          <tr>
+             <th>Environment variable</th> <th>Property</th>
+          </tr>
+          <tr><td>OS</td> <td>os.name</td></tr>
+          <tr><td>PROCESSOR_ARCHITECTURE</td> <td>os.arch</td></tr>
+          <tr><td>USERNAME</td> <td>user.name</td></tr>
+          <tr><td>USER</td> <td>user.name</td></tr>
+          <tr><td>HOMEPATH</td> <td>user.home</td></tr>
+          <tr><td>HOME</td> <td>user.home</td></tr>
+          <tr><td>PWD</td> <td>user.dir</td></tr>
+          <tr><td>JAVA_HOME</td> <td>java.home</td></tr>
+          <tr><td>JAVA_VERSION</td> <td>java.version</td></tr>
+          <tr><td>TEMP</td> <td>java.io.tmpdir</td></tr>
+          <tr><td>TMP</td> <td>java.io.tmpdir</td></tr>
+        </table>
+      </p>
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables">ENV02-J. Do not trust the values of environment variables</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -8939,4 +8985,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
+  <BugCode abbrev="ENV">Environment variable is used instead of the corresponding java property</BugCode>
 </MessageCollection>
