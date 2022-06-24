@@ -1,6 +1,5 @@
 /*
- * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2008 University of Maryland
+ * SpotBugs - Find bugs in Java programs
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,7 +59,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundPreDecrementation_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPreDecrementationOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundPreDecrementationOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundPreDecrementationOnSharedVariable", "getNum", 29);
     }
 
     // num--
@@ -68,7 +67,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundPostDecrementation_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostDecrementationOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundPostDecrementationOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundPostDecrementationOnSharedVariable", "getNum", 29);
     }
 
     // ++num
@@ -76,7 +75,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundPreIncrementation_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPreIncrementationOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundPreIncrementationOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundPreIncrementationOnSharedVariable", "getNum", 29);
     }
 
     // num++
@@ -84,7 +83,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundPostIncrementation_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostIncrementationOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundPostIncrementationOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundPostIncrementationOnSharedVariable", "getNum", 29);
     }
 
     // &=
@@ -92,7 +91,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundIAND_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIANDOperationOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundIANDOperationOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundIANDOperationOnSharedVariable", "getNum", 29);
     }
 
     // |=
@@ -100,7 +99,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundIOR_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIOROperationOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundIOROperationOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundIOROperationOnSharedVariable", "getNum", 29);
     }
 
     // >>>=
@@ -108,7 +107,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundLogicalRightShifting_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLogicalRightShiftingOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundLogicalRightShiftingOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundLogicalRightShiftingOnSharedVariable", "getNum", 29);
     }
 
     // >>=
@@ -116,7 +115,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundRightShifting_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundRightShiftingOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundRightShiftingOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundRightShiftingOnSharedVariable", "getNum", 29);
     }
 
     // <<=
@@ -124,7 +123,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundLeftShifting_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLeftShiftingOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundLeftShiftingOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundLeftShiftingOnSharedVariable", "getNum", 29);
     }
 
     // %=
@@ -132,7 +131,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundModulo_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundModuloOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundModuloOnSharedVariable", "getNum", 31);
+        assertCOSVBug("CompoundModuloOnSharedVariable", "getNum", 30);
     }
 
     // *=
@@ -140,7 +139,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundMultiplication_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundMultiplicationOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundMultiplicationOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundMultiplicationOnSharedVariable", "getNum", 29);
     }
 
     // /=
@@ -148,7 +147,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundDivision_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivisionOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundDivisionOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundDivisionOnSharedVariable", "getNum", 29);
     }
 
     // -=
@@ -156,7 +155,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundSubtraction_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubtractionOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundSubtractionOnSharedVariable", "getNum", 30);
+        assertCOSVBug("CompoundSubtractionOnSharedVariable", "getNum", 29);
     }
 
 
@@ -165,7 +164,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundAddition_onSharedVolatileVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionOnSharedVolatileVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundAdditionOnSharedVolatileVariable", "getNum", 30);
+        assertCOSVBug("CompoundAdditionOnSharedVolatileVariable", "getNum", 29);
     }
 
     // ^=
@@ -173,7 +172,7 @@ public class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegra
     public void reportsBugFor_compoundXOROperation_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundXOROperationOnSharedVariable.class");
         assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundXOROperationOnSharedVariable", "getFlag", 30);
+        assertCOSVBug("CompoundXOROperationOnSharedVariable", "getFlag", 29);
     }
 
     private void assertCOSVNumOfBugs(int num) {

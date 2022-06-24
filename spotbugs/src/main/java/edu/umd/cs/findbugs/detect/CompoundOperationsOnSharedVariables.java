@@ -1,6 +1,5 @@
 /*
- * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * SpotBugs - Find bugs in Java programs
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +27,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.MultiThreadedCodeIdentifierUtils;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +38,34 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
+
+    private static final List<Short> readOpCodes = Arrays.asList(Const.GETFIELD, Const.GETSTATIC,
+            Const.ALOAD, Const.ALOAD_0, Const.ALOAD_1, Const.ALOAD_2, Const.ALOAD_3,
+            Const.DLOAD, Const.DLOAD_0, Const.DLOAD_1, Const.DLOAD_2, Const.DLOAD_3,
+            Const.LLOAD, Const.LLOAD_0, Const.LLOAD_1, Const.LLOAD_2, Const.LLOAD_3,
+            Const.FLOAD, Const.FLOAD_0, Const.FLOAD_1, Const.FLOAD_2, Const.FLOAD_3,
+            Const.ILOAD, Const.ILOAD_0, Const.ILOAD_1, Const.ILOAD_2, Const.ILOAD_3,
+            Const.DALOAD, Const.LALOAD, Const.FALOAD, Const.IALOAD);
+
+    private static final List<Short> pushOpCodes = Arrays.asList(Const.DCONST_0, Const.DCONST_1,
+            Const.LCONST_0, Const.LCONST_1,
+            Const.FCONST_0, Const.FCONST_1, Const.FCONST_2,
+            Const.ICONST_0, Const.ICONST_1, Const.ICONST_2, Const.ICONST_3, Const.ICONST_4, Const.ICONST_5,
+            Const.LDC, Const.LDC_W, Const.LDC2_W);
+
+    private static final List<Short> possibleCompoundOperationOpCodes = Arrays.asList(
+            // +=,++,       -=,--       *=,         /=,         %=
+            Const.DADD, Const.DSUB, Const.DMUL, Const.DDIV, Const.DREM,
+            Const.FADD, Const.FSUB, Const.FMUL, Const.FDIV, Const.FREM,
+            Const.LADD, Const.LSUB, Const.LMUL, Const.LDIV, Const.LREM,
+            Const.IADD, Const.ISUB, Const.IMUL, Const.IDIV, Const.IREM,
+            // <<=,         >>=,        >>>=
+            Const.ISHL, Const.ISHR, Const.IUSHR,
+            Const.LSHL, Const.LSHR, Const.LUSHR,
+            // &=
+            Const.IAND, Const.LAND,
+            // |=, ^=
+            Const.IOR, Const.IXOR, Const.LOR, Const.LXOR);
 
     private final BugAccumulator bugAccumulator;
     private final Map<XMethod, List<XField>> compoundlyWrittenNotSecuredFieldsByMethods;
@@ -174,37 +202,14 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
     }
 
     private boolean isReadOpCode(int opCode) {
-        return opCode == Const.GETFIELD || opCode == Const.GETSTATIC
-                || opCode == Const.ALOAD || opCode == Const.ALOAD_0 || opCode == Const.ALOAD_1 || opCode == Const.ALOAD_2 || opCode == Const.ALOAD_3
-                || opCode == Const.DLOAD || opCode == Const.DLOAD_0 || opCode == Const.DLOAD_1 || opCode == Const.DLOAD_2 || opCode == Const.DLOAD_3
-                || opCode == Const.LLOAD || opCode == Const.LLOAD_0 || opCode == Const.LLOAD_1 || opCode == Const.LLOAD_2 || opCode == Const.LLOAD_3
-                || opCode == Const.FLOAD || opCode == Const.FLOAD_0 || opCode == Const.FLOAD_1 || opCode == Const.FLOAD_2 || opCode == Const.FLOAD_3
-                || opCode == Const.ILOAD || opCode == Const.ILOAD_0 || opCode == Const.ILOAD_1 || opCode == Const.ILOAD_2 || opCode == Const.ILOAD_3
-                || opCode == Const.DALOAD || opCode == Const.LALOAD || opCode == Const.FALOAD || opCode == Const.IALOAD;
+        return readOpCodes.contains(Integer.valueOf(opCode).shortValue());
     }
 
     private boolean isPushConstant(int opCode) {
-        return opCode == Const.DCONST_0 || opCode == Const.DCONST_1
-                || opCode == Const.LCONST_0 || opCode == Const.LCONST_1
-                || opCode == Const.FCONST_0 || opCode == Const.FCONST_1 || opCode == Const.FCONST_2
-                || opCode == Const.ICONST_0 || opCode == Const.ICONST_1 || opCode == Const.ICONST_2 || opCode == Const.ICONST_3
-                || opCode == Const.ICONST_4
-                || opCode == Const.ICONST_5
-                || opCode == Const.LDC || opCode == Const.LDC_W || opCode == Const.LDC2_W;
+        return pushOpCodes.contains(Integer.valueOf(opCode).shortValue());
     }
 
     private boolean possibleCompoundOperation(int opCode) {
-        // +=, -=, *=, /=, %=, ++, --
-        return opCode == Const.DADD || opCode == Const.DSUB || opCode == Const.DMUL || opCode == Const.DDIV || opCode == Const.DREM
-                || opCode == Const.FADD || opCode == Const.FSUB || opCode == Const.FMUL || opCode == Const.FDIV || opCode == Const.FREM
-                || opCode == Const.LADD || opCode == Const.LSUB || opCode == Const.LMUL || opCode == Const.LDIV || opCode == Const.LREM
-                || opCode == Const.IADD || opCode == Const.ISUB || opCode == Const.IMUL || opCode == Const.IDIV || opCode == Const.IREM
-                // <<=, >>=, >>>=
-                || opCode == Const.ISHL || opCode == Const.ISHR || opCode == Const.IUSHR
-                || opCode == Const.LSHL || opCode == Const.LSHR || opCode == Const.LUSHR
-                // &=
-                || opCode == Const.IAND || opCode == Const.LAND
-                // |=, ^=
-                || opCode == Const.IOR || opCode == Const.IXOR || opCode == Const.LOR || opCode == Const.LXOR;
+        return possibleCompoundOperationOpCodes.contains(Integer.valueOf(opCode).shortValue());
     }
 }

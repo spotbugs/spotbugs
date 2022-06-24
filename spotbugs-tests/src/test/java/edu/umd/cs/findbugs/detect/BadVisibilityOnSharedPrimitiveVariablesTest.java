@@ -1,6 +1,5 @@
 /*
- * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2008 University of Maryland
+ * SpotBugs - Find bugs in Java programs
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,28 +40,28 @@ public class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegra
     public void failurePath_fieldWithBadVisibility_whenOtherMethodHasSynchronizedBlock() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockAndBadVisibilityOnField.class");
         assertSPVNumOfBugs(1);
-        assertSPVBug("SynchronizedBlockAndBadVisibilityOnField", "shutdown", 36);
+        assertSPVBug("SynchronizedBlockAndBadVisibilityOnField", "shutdown", 35);
     }
 
     @Test
     public void failurePath_fieldWithBadVisibility_whenOtherMethodIsSynchronized() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethodAndBadVisibilityOnField.class");
         assertSPVNumOfBugs(1);
-        assertSPVBug("SynchronizedMethodAndBadVisibilityOnField", "shutdown", 36);
+        assertSPVBug("SynchronizedMethodAndBadVisibilityOnField", "shutdown", 35);
     }
 
     @Test
     public void failurePath_fieldWithBadVisibility_whenClassExtendsThread() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityThread.class");
         assertSPVNumOfBugs(1);
-        assertSPVBug("FieldWithBadVisibilityThread", "shutdown", 37);
+        assertSPVBug("FieldWithBadVisibilityThread", "shutdown", 36);
     }
 
     @Test
     public void failurePath_fieldWithBadVisibility_whenClassImplementsRunnable() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityRunnable.class");
         assertSPVNumOfBugs(1);
-        assertSPVBug("FieldWithBadVisibilityRunnable", "shutdown", 37);
+        assertSPVBug("FieldWithBadVisibilityRunnable", "shutdown", 36);
     }
 
     @Test
