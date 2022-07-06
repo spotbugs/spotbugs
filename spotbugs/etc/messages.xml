@@ -6991,6 +6991,74 @@ does not need to be created, just access the static methods directly using the c
   ]]>
      </Details>
   </BugPattern>
+  <BugPattern type="REC2_CATCH_EXCEPTION">
+    <ShortDescription>Exception is caught when Exception is not thrown</ShortDescription>
+    <LongDescription>Exception is caught when Exception is not thrown in {1}</LongDescription>
+    <Details>
+  <![CDATA[
+  <p>
+    This method uses a try-catch block that catches Exception objects, but Exception is not
+    thrown within the try block. This is risky, because future changes to signatures of method
+    invoked in the try block could add more exceptions to the list of potential exceptions the
+    caller must handle, or adding method calls into the try block may also throw additional
+    exceptions which must be handled. Additionally, adding code into the try block in the future
+    may introduce the throwing of new runtime exceptions either because of programming errors
+    (e.g. improper checks such as a null pointer check) or intentionally but some of them may
+    require special handling. However, catching RuntimeException itself hides the problem of not
+    handling these exceptions and not fixing the errors.However, catching Exception itself hides
+    the problem of not handling these exceptions. Instead, specify all the exceptions that must
+    be handled here.
+  </p>
+  <p>
+    See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors">ERR08-J. Do not catch NullPointerException or any of its ancestors</a>.
+  </p>
+  ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="REC2_CATCH_RUNTIME_EXCEPTION">
+    <ShortDescription>Exception is caught when RuntimeException is not thrown</ShortDescription>
+    <LongDescription>Exception is caught when RuntimeException is not thrown in {1}</LongDescription>
+    <Details>
+  <![CDATA[
+  <p>
+    This method uses a try-catch block that catches RuntimeException objects, but RuntimeException is not
+    thrown explicitly within the try block. This is risky, because various runtime exceptions may occur
+    in the try block and adding code into the try block in the future may introduce the throwing
+    of new runtime exceptions either because of programming errors (e.g. improper checks such as a null
+    pointer check) or intentionally but some of them may require special handling. However, catching
+    RuntimeException itself hides the problem of not handling these exceptions and not fixing the errors.
+    Instead, specify all the runtime exceptions that must be handled here.
+  </p>
+  <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors">ERR08-J. Do not catch NullPointerException or any of its ancestors</a>.
+  </p>
+  ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="REC2_CATCH_THROWABLE">
+    <ShortDescription>Exception is caught when Throwable is not thrown</ShortDescription>
+    <LongDescription>Exception is caught when Throwable is not thrown in {1}</LongDescription>
+    <Details>
+  <![CDATA[
+  <p>
+    This method uses a try-catch block that catches Throwable objects, but Throwable is not
+    thrown explicitly within the try block. This is risky, because future changes to signatures
+    of method invoked in the try block could add more exceptions to the list of potential
+    exceptions the caller must handle, or adding method calls into the try block may also throw
+    additional exceptions which must be handled. Additionally, adding code into the try block in
+    the future may introduce the throwing of new runtime exceptions either because of programming
+    errors (e.g. improper checks such as a null pointer check) or intentionally but some of them may
+    require special handling. However, catching Throwable itself hides the problem of not
+    handling these exceptions and not fixing the errors.However, catching Throwable itself hides
+    the problem of not handling these exceptions. Instead, specify all the exceptions that must
+    be handled here.
+  </p>
+  <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors">ERR08-J. Do not catch NullPointerException or any of its ancestors</a>.
+  </p>
+  ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DCN_NULLPOINTER_EXCEPTION">
     <ShortDescription>NullPointerException caught</ShortDescription>
     <LongDescription>Do not catch NullPointerException like in {1}</LongDescription>
@@ -8890,6 +8958,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="ISC">Instantiated Static Class</BugCode>
   <BugCode abbrev="DCN">Don't Catch NullPointer Exception</BugCode>
   <BugCode abbrev="REC">RuntimeException capture</BugCode>
+  <BugCode abbrev="REC2">RuntimeException capture</BugCode>
   <BugCode abbrev="FE">Test for floating point equality</BugCode>
   <BugCode abbrev="UM">Unnecessary Math on constants</BugCode>
   <BugCode abbrev="UC">Useless code</BugCode>

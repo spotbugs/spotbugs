@@ -548,7 +548,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass" speed="fast"
                     reports="ISC_INSTANTIATE_STATIC_CLASS"/>
           <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture"
-                    reports="REC_CATCH_EXCEPTION" speed="fast"/>
+                    reports="REC_CATCH_EXCEPTION,REC2_CATCH_EXCEPTION,REC2_CATCH_RUNTIME_EXCEPTION,REC2_CATCH_THROWABLE" speed="fast"/>
           <Detector class="edu.umd.cs.findbugs.detect.DontCatchNullPointerException"
                     reports="DCN_NULLPOINTER_EXCEPTION" speed="fast"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality" speed="fast"
@@ -1154,6 +1154,9 @@
           <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"/>
           <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" cweid="396"/>
+          <BugPattern abbrev="REC2" type="REC2_CATCH_EXCEPTION" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="REC2" type="REC2_CATCH_RUNTIME_EXCEPTION" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="REC2" type="REC2_CATCH_THROWABLE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="DCN" type="DCN_NULLPOINTER_EXCEPTION" category="STYLE"/>
           <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="STYLE"/>
           <BugPattern abbrev="FE" type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER" category="CORRECTNESS"/>

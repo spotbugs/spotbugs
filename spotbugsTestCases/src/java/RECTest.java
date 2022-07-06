@@ -110,6 +110,21 @@ public class RECTest {
         }
     }
 
+    // should fail with LOW priority -- catches E, but E not thrown, however e
+    //// is used in the handler
+    public void testFail7() {
+        try {
+            for (int i = 0; i < 1000; i++)
+                for (int j = i; j < 1000; j++)
+                    throwsNothing();
+            for (int i = 0; i < 1000; i++)
+                for (int j = i; j < 1000; j++)
+                    throwsNothing();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     // should pass -- catches E, but E thrown
     public void testPass() {
         try {
@@ -169,6 +184,34 @@ public class RECTest {
             dontTriggerEmptyExceptionHandler();
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
+        }
+    }
+
+    // should pass -- catches E, but rethrows it
+    public void testPass6() {
+        try {
+            for (int i = 0; i < 1000; i++)
+                for (int j = i; j < 1000; j++)
+                    throwsNothing();
+            for (int i = 0; i < 1000; i++)
+                for (int j = i; j < 1000; j++)
+                    throwsNothing();
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    // should pass -- catches E, but rethrows it nested into a RuntimeException
+    public void testPass7() {
+        try {
+            for (int i = 0; i < 1000; i++)
+                for (int j = i; j < 1000; j++)
+                    throwsNothing();
+            for (int i = 0; i < 1000; i++)
+                for (int j = i; j < 1000; j++)
+                    throwsNothing();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

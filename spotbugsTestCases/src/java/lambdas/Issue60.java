@@ -20,5 +20,4 @@ public class Issue60 {
         return Stream.<Properties> of()
                 .flatMap(p -> p.stringPropertyNames().stream());
     }
-
 }
