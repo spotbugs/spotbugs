@@ -374,14 +374,16 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
         }
 
         LocalVariable localVar = null;
-        if (seen == Const.ALOAD_1 && getXMethod().getNumParams() >= 1) {
-            localVar = getMethod().getLocalVariableTable().getLocalVariable(1, getPC());
-        } else if (seen == Const.ALOAD_2 && getXMethod().getNumParams() >= 2) {
-            localVar = getMethod().getLocalVariableTable().getLocalVariable(2, getPC());
-        } else if (seen == Const.ALOAD_3 && getXMethod().getNumParams() >= 3) {
-            localVar = getMethod().getLocalVariableTable().getLocalVariable(3, getPC());
-        } else if (seen == Const.ALOAD && getXMethod().getNumParams() >= getRegisterOperand()) {
-            localVar = getMethod().getLocalVariableTable().getLocalVariable(getRegisterOperand(), getPC());
+        if (getMethod().getLocalVariableTable() != null) {
+            if (seen == Const.ALOAD_1 && getXMethod().getNumParams() >= 1) {
+                localVar = getMethod().getLocalVariableTable().getLocalVariable(1, getPC());
+            } else if (seen == Const.ALOAD_2 && getXMethod().getNumParams() >= 2) {
+                localVar = getMethod().getLocalVariableTable().getLocalVariable(2, getPC());
+            } else if (seen == Const.ALOAD_3 && getXMethod().getNumParams() >= 3) {
+                localVar = getMethod().getLocalVariableTable().getLocalVariable(3, getPC());
+            } else if (seen == Const.ALOAD && getXMethod().getNumParams() >= getRegisterOperand()) {
+                localVar = getMethod().getLocalVariableTable().getLocalVariable(getRegisterOperand(), getPC());
+            }
         }
 
         if (localVar == null) {
