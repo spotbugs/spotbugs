@@ -24,7 +24,7 @@ msgid ""
 "SpotBugs is a program to find bugs in Java programs. It looks for "
 "instances of \"bug patterns\" --- code instances that are likely to be "
 "errors."
-msgstr "SpotBugs は，Java プログラムの中のバグを見つけるプログラムです。このプログラムは「バグパターン」のインスタンスを探します。「バグパターン」とは，エラーとなる可能性の高いコードのインスタンスです。"
+msgstr "SpotBugsは、Javaプログラムの中のバグを見つけるプログラムです。このプログラムは「バグパターン」のインスタンスを探します。「バグパターン」とは、エラーとなる可能性の高いコードのインスタンスです。"
 
 #: ../../introduction.rst:7
 msgid ""
@@ -34,9 +34,9 @@ msgid ""
 "information, and support resources such as information about the SpotBugs"
 " GitHub organization."
 msgstr ""
-"この文書では，SpotBugs のバージョン |release| について説明します。私たちは，SpotBugs "
-"に対するフィードバックを心待ちにしています。SpotBugs の最新情報，連絡先，SpotBugs GitHub "
-"組織に関する情報などのサポートリソースは SpotBugs のウェブページを参照してください。"
+"この文書では、SpotBugsのバージョン |release| について説明します。私たちは、SpotBugs "
+"に対するフィードバックを心待ちにしています。SpotBugsの最新情報、連絡先、SpotBugs GitHub "
+"組織に関する情報などのサポートリソースはSpotBugsのウェブページを参照してください。"
 
 #: ../../introduction.rst:12
 msgid "Requirements"
@@ -47,15 +47,15 @@ msgid ""
 "To use SpotBugs, you need a runtime environment compatible with Java "
 "version 1.8 or later. SpotBugs is platform independent, and is known to "
 "run on GNU/Linux, Windows, and MacOS X platforms."
-msgstr "SpotBugs を使うためには，Java バージョン 1.8 以降のバージョンと互換性のあるランタイム環境が必要です。SpotBugs は，プラットフォームに依存せず，GNU/Linux，Windows，MacOS X で動作することが知られています。"
+msgstr "SpotBugsを使うためには、Javaバージョン1.8以降のバージョンと互換性のあるランタイム環境が必要です。SpotBugsは、プラットフォームに依存せず、GNU/Linux、Windows、MacOS Xで動作することが知られています。"
 
 #: ../../introduction.rst:17
 msgid ""
 "You should have at least 512 MB of memory to use SpotBugs. To analyze "
 "very large projects, more memory may be needed."
 msgstr ""
-"SpotBugs を使うためには，少なくとも 512MB "
-"のメモリが必要です。巨大なプロジェクトを解析するためには，より多くのメモリが必要になることがあります。"
+"SpotBugsを使うためには、少なくとも512MB "
+"のメモリが必要です。巨大なプロジェクトを解析するためには、より多くのメモリが必要になることがあります。"
 
 #: ../../introduction.rst:21
 msgid "Supported Java version"

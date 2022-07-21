@@ -46,7 +46,7 @@ public interface ExitCodes {
     public static int from(int errors, int missingClasses, int bugs) {
         Logger logger = LoggerFactory.getLogger(ExitCodes.class);
         int exitCode = 0;
-        logger.info("Calculating exit code...");
+        logger.debug("Calculating exit code...");
         if (errors > 0) {
             exitCode |= ERROR_FLAG;
             logger.debug("Setting 'errors encountered' flag ({})", ERROR_FLAG);

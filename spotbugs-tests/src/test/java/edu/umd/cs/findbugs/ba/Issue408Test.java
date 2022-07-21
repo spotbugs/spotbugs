@@ -3,10 +3,14 @@ package edu.umd.cs.findbugs.ba;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeThat;
 
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -22,6 +26,13 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 public class Issue408Test extends AbstractIntegrationTest {
     @Rule
     public ExpectedException expected = ExpectedException.none();
+
+    @Before
+    public void verifyJavaVersion() {
+        assumeFalse(System.getProperty("java.specification.version").startsWith("1."));
+        int javaVersion = Integer.parseInt(System.getProperty("java.specification.version"));
+        assumeThat(javaVersion, is(greaterThanOrEqualTo(11)));
+    }
 
     @Test
     public void testSingleClass() {

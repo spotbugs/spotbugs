@@ -436,7 +436,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" speed="fast"
                     reports="NN_NAKED_NOTIFY"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" speed="fast"
-                    reports="MS_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_REP2,EI_EXPOSE_STATIC_REP2"/>
+                    reports="MS_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_REP2,EI_EXPOSE_STATIC_REP2,MS_EXPOSE_BUF,EI_EXPOSE_BUF,EI_EXPOSE_STATIC_BUF2,EI_EXPOSE_BUF2"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast"
                     reports="RU_INVOKE_RUN"/>
           <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" speed="fast"
@@ -549,6 +549,8 @@
                     reports="ISC_INSTANTIATE_STATIC_CLASS"/>
           <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture"
                     reports="REC_CATCH_EXCEPTION" speed="fast"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DontCatchNullPointerException"
+                    reports="DCN_NULLPOINTER_EXCEPTION" speed="fast"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality" speed="fast"
                     reports="FE_FLOATING_POINT_EQUALITY,FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation" speed="slow"
@@ -621,6 +623,8 @@
                     reports="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM"/>
           <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true"
                     hidden="true" reports="TESTING"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ViewCFG" disabled="true"
+                    hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer"
                     speed="fast"
                     reports="GC_UNRELATED_TYPES,DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES,DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION,DMI_VACUOUS_SELF_COLLECTION_CALL,GC_UNCHECKED_TYPE_IN_GENERIC_CALL"/>
@@ -649,11 +653,28 @@
                     reports="NP_METHOD_RETURN_RELAXING_ANNOTATION,NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION"/>
           <Detector class="edu.umd.cs.findbugs.detect.DontAssertInstanceofInTests" speed="fast"
                     reports="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindBadEndOfStreamCheck" speed="fast"
+                    reports="EOS_BAD_END_OF_STREAM_CHECK"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ReflectionIncreaseAccessibility"
+                    reports="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS,REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindOverridableMethodCall"
+                    reports="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR,MC_OVERRIDABLE_METHOD_CALL_IN_CLONE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindInstanceLockOnSharedStaticData" speed="fast"
+                    reports="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DontUseFloatsAsLoopCounters" speed="fast"
+                    reports="FL_FLOATS_AS_LOOP_COUNTERS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ThrowingExceptions" speed="fast" disabled="true"
+                    reports="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION,THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION,THROWS_METHOD_THROWS_CLAUSE_THROWABLE" />
+          <Detector class="edu.umd.cs.findbugs.detect.PermissionsSuper"
+                    reports="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource" speed="fast"
+                    reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
           <BugCode abbrev="USELESS_STRING"/>
+          <BugCode abbrev="DCN"/>
           <BugCode abbrev="DMI" cweid="440"/>
           <BugCode abbrev="CN" cweid="580"/>
           <BugCode abbrev="DLS" cweid="563"/>
@@ -864,9 +885,13 @@
           <BugPattern abbrev="IS" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="MS" type="MS_EXPOSE_REP" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_EXPOSE_BUF" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="EI" type="EI_EXPOSE_REP" category="MALICIOUS_CODE" cweid="374"/>
+          <BugPattern abbrev="EI" type="EI_EXPOSE_BUF" category="MALICIOUS_CODE" cweid="374"/>
           <BugPattern abbrev="EI2" type="EI_EXPOSE_REP2" category="MALICIOUS_CODE" cweid="374"/>
           <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_REP2" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="EI2" type="EI_EXPOSE_BUF2" category="MALICIOUS_CODE" cweid="374"/>
+          <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_BUF2" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" cweid="572"/>
           <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="STYLE"/>
@@ -1129,6 +1154,7 @@
           <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"/>
           <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" cweid="396"/>
+          <BugPattern abbrev="DCN" type="DCN_NULLPOINTER_EXCEPTION" category="STYLE"/>
           <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="STYLE"/>
           <BugPattern abbrev="FE" type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER" category="CORRECTNESS"/>
           <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="PERFORMANCE"/>
@@ -1247,4 +1273,17 @@
           <BugPattern abbrev="NP" type="NP_METHOD_RETURN_RELAXING_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="STYLE" deprecated="true" />
+          <BugPattern abbrev="EOS" type="EOS_BAD_END_OF_STREAM_CHECK" category="CORRECTNESS" />
+          <BugPattern abbrev="REFLC" type="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS" category="MALICIOUS_CODE" />
+          <BugPattern abbrev="REFLF" type="REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD" category="MALICIOUS_CODE" />
+          <BugPattern abbrev="MC" type="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR" category="MALICIOUS_CODE" />
+          <BugPattern abbrev="MC" type="MC_OVERRIDABLE_METHOD_CALL_IN_CLONE" category="MALICIOUS_CODE" />
+          <BugPattern abbrev="SSD" type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA" category="MT_CORRECTNESS" />
+          <BugPattern abbrev="FL" type="FL_FLOATS_AS_LOOP_COUNTERS" category="CORRECTNESS" />
+          <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION" category="BAD_PRACTICE" />
+          <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION" category="BAD_PRACTICE" />
+          <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_CLAUSE_THROWABLE" category="BAD_PRACTICE" />
+          <BugPattern abbrev="PERM" type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS" category="MALICIOUS_CODE" />
+          <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"
+                    category="MALICIOUS_CODE"/>
 </FindbugsPlugin>

@@ -16,11 +16,11 @@ import sys
 import os
 
 html_context = {
-  'version' : '4.2',
-  'full_version' : '4.2.2',
-  'maven_plugin_version' : '4.2.0',
-  'gradle_plugin_version' : '4.6.2',
-  'archetype_version' : '0.2.3'
+  'version' : '4.7',
+  'full_version' : '4.7.1',
+  'maven_plugin_version' : '4.7.0.0',
+  'gradle_plugin_version' : '5.0.8',
+  'archetype_version' : '0.2.4'
 }
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'spotbugs'
-copyright = u'2016-2021, spotbugs community'
+copyright = u'2016-2022, spotbugs community'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -273,7 +273,7 @@ gettext_compact = False
 gettext_additional_targets = ['raw']
 
 def setup(app):
-    app.add_stylesheet('custom.css')
+    app.add_css_file('custom.css')
 
 sys.path.append(os.path.abspath('extensions'))
 extensions += ['generate_bug_description']

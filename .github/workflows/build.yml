@@ -3,6 +3,9 @@ on:
   pull_request:
     branches:
       - master
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -12,20 +15,17 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Set up JDK 15
-        uses: actions/setup-java@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
         with:
-          java-version: '15.0.x'
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          java-version: '17'
+          distribution: temurin
+          cache: gradle
+      - uses: gradle/wrapper-validation-action@v1
       - name: Download Eclipse
         run: |
           wget -nv 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.6.3-201703010400/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz&r=1' -O eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz
-          tar xzvf eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz eclipse
+          tar xzf eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Build
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
@@ -35,7 +35,7 @@ jobs:
           if [ "$GPG_SECRET_PASSPHRASE" != "" ]; then
             gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
           fi
-          ./gradlew spotlessCheck build smoketest ${SONAR_LOGIN:+sonarqube} --no-daemon -Dsonar.login=$SONAR_LOGIN
+          ./gradlew spotlessCheck build smoketest ${SONAR_LOGIN:+sonarqube} --no-daemon -Dsonar.login=$SONAR_LOGIN --scan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}

@@ -30,6 +30,7 @@ SpotBugs can be used standalone and through several integrations, including:
 * [Maven](http://spotbugs.readthedocs.io/en/latest/maven.html)
 * [Gradle](http://spotbugs.readthedocs.io/en/latest/gradle.html)
 * [Eclipse](http://spotbugs.readthedocs.io/en/latest/eclipse.html)
+* [IntelliJ IDEA](https://github.com/JetBrains/spotbugs-intellij-plugin)
 
 # Questions?
-You can contact us using [our general purpose mailing list](https://github.com/spotbugs/discuss/issues?q=).
+You can contact us using [GitHub Discussions](https://github.com/spotbugs/spotbugs/discussions).
