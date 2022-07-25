@@ -44,6 +44,10 @@ public class REC2Test {
         return new Resource();
     }
 
+    private interface Unknown {
+        void doesSomething();
+    }
+
     // should fail -- catches both Exception and RuntimeException
     public void testFail() {
         try {
@@ -111,6 +115,28 @@ public class REC2Test {
     // is skipped in the detector.
     public void testPass3() throws IOException {
         try (Resource res = getResource()) {
+        }
+    }
+
+    // should pass -- Invokation of an unknown method may require catching of
+    // `RutimeException`, `Exception` or `Throwable`.
+    public <U extends Unknown> void testPass4(U u) {
+        try {
+            u.doesSomething();
+        } catch (RuntimeException e) {
+            dontTriggerEmptyExceptionHandler();
+        }
+    }
+
+    public class TestPass5<U extends Unknown> {
+        // should pass -- Invokation of an unknown method may require catching of
+        // `RutimeException`, `Exception` or `Throwable`.
+        public void testPass5(U u) {
+            try {
+                u.doesSomething();
+            } catch (RuntimeException e) {
+                dontTriggerEmptyExceptionHandler();
+            }
         }
     }
 }

@@ -15,17 +15,23 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 public class RuntimeExceptionCapture2Test extends AbstractIntegrationTest {
     @Test
     public void test() {
-        performAnalysis("REC2Test.class");
+        performAnalysis("REC2Test.class",
+                "REC2Test$Resource.class",
+                "REC2Test$TestPass5.class",
+                "REC2Test$Unknown.class",
+                "REC2Test$1.class");
 
-        fail("testFail", 54, "REC2_CATCH_RUNTIME_EXCEPTION", Confidence.LOW);
-        fail("testFail", 56, "REC2_CATCH_EXCEPTION", Confidence.LOW);
-        fail("testFail2", 67, "REC2_CATCH_RUNTIME_EXCEPTION", Confidence.LOW);
-        fail("testFail3", 79, "REC2_CATCH_THROWABLE", Confidence.LOW);
+        fail("testFail", 58, "REC2_CATCH_RUNTIME_EXCEPTION", Confidence.LOW);
+        fail("testFail", 60, "REC2_CATCH_EXCEPTION", Confidence.LOW);
+        fail("testFail2", 71, "REC2_CATCH_RUNTIME_EXCEPTION", Confidence.LOW);
+        fail("testFail3", 83, "REC2_CATCH_THROWABLE", Confidence.LOW);
 
-        pass("testPass", "REC2_CATCH_RUNTIME_EXCEPTION");
-        pass("testPass", "REC2_CATCH_EXCEPTION");
-        pass("testPass2", "REC2_CATCH_THROWABLE");
-        pass("testPass3", "REC2_CATCH_THROWABLE");
+        pass("REC2Test", "testPass", "REC2_CATCH_RUNTIME_EXCEPTION");
+        pass("REC2Test", "testPass", "REC2_CATCH_EXCEPTION");
+        pass("REC2Test", "testPass2", "REC2_CATCH_THROWABLE");
+        pass("REC2Test", "testPass3", "REC2_CATCH_THROWABLE");
+        pass("REC2Test", "testPass4", "REC2_CATCH_RUNTIME_EXCEPTION");
+        pass("REC2Test$TestPass5", "testPass5", "REC2_CATCH_RUNTIME_EXCEPTION");
     }
 
     private void fail(String methodName, int line, String exceptionName, Confidence confidence) {
@@ -40,7 +46,7 @@ public class RuntimeExceptionCapture2Test extends AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
-    private void pass(String methodName, String exceptionName) {
+    private void pass(String className, String methodName, String exceptionName) {
         countBugs(methodName, exceptionName, 0);
     }
 

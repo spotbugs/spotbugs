@@ -26,6 +26,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.bcel.Const;
@@ -35,9 +36,11 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
+import org.apache.commons.lang3.StringUtils;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -83,6 +86,8 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
     private final List<ExceptionCaught> catchList = new ArrayList<>();
 
     private final List<ExceptionThrown> throwList = new ArrayList<>();
+
+    private boolean invokesMethodOfGenericParameter = false;
 
     private final BugAccumulator accumulator;
 
@@ -164,10 +169,12 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                     accumulator.accumulateBug(new BugInstance(this, "REC2_CATCH_EXCEPTION", LOW_PRIORITY).addClassAndMethod(this),
                             SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, caughtException.sourcePC));
                 }
-            } else if ("java.lang.RuntimeException".equals(caughtException.exceptionClass) && !caughtException.seen) {
+            } else if (!invokesMethodOfGenericParameter && "java.lang.RuntimeException".equals(caughtException.exceptionClass) &&
+                    !caughtException.seen) {
                 accumulator.accumulateBug(new BugInstance(this, "REC2_CATCH_RUNTIME_EXCEPTION", LOW_PRIORITY).addClassAndMethod(this),
                         SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, caughtException.sourcePC));
-            } else if ("java.lang.Throwable".equals(caughtException.exceptionClass) && !caughtException.seen) {
+            } else if ("java.lang.Throwable".equals(caughtException.exceptionClass) &&
+                    !caughtException.seen) {
                 Method method = getMethod();
                 ConstantPool cp = method.getConstantPool();
                 LineNumberTable lineNumberTable = method.getLineNumberTable();
@@ -183,6 +190,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         }
         catchList.clear();
         throwList.clear();
+        invokesMethodOfGenericParameter = false;
     }
 
     @Override
@@ -218,14 +226,12 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                         caughtException.dead = true;
                     }
 
-                    // See if the excpetion is rethrown at the end of the handler.
+                    // See if the exception is rethrown at the end of the handler.
                     while (block != null) {
                         InstructionHandle last = block.getLastInstruction();
-                        if (last != null) {
-                            if (last.getInstruction().getOpcode() == Const.ATHROW) {
-                                caughtException.rethrown = true;
-                                break;
-                            }
+                        if (last != null && last.getInstruction().getOpcode() == Const.ATHROW) {
+                            caughtException.rethrown = true;
+                            break;
                         }
                         block = cfg.getSuccessorWithEdgeType(block, EdgeTypes.FALL_THROUGH_EDGE);
                     }
@@ -264,7 +270,18 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         case Const.INVOKEVIRTUAL:
         case Const.INVOKESPECIAL:
         case Const.INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
             String className = getClassConstantOperand();
+            if (seen == Const.INVOKEINTERFACE) {
+                OpcodeStack.Item object = getStack().getStackItem(getStack().getStackDepth() - 1);
+                Optional<Signature> classSig = Arrays.stream(getThisClass().getAttributes())
+                        .filter(attr -> attr instanceof Signature)
+                        .map(attr -> (Signature) attr)
+                        .findAny();
+                if (maybeGenericParameter(object.getSignature(), getMethod().getGenericSignature(), classSig)) {
+                    invokesMethodOfGenericParameter = true;
+                }
+            }
             if (!className.startsWith("[")) {
                 try {
                     XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class,
@@ -291,6 +308,41 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             break;
         }
 
+    }
+
+    private boolean maybeGenericParameter(String signature, String genericSignature, Optional<Signature> classSig) {
+        List<String> genericParameters = extractGenericParameters(genericSignature);
+        if (classSig.isPresent()) {
+            genericParameters.addAll(extractGenericParameters(classSig.get().getSignature()));
+        }
+
+        for (String genParam : genericParameters) {
+            int doubleColonIdx = genParam.indexOf("::");
+            if (doubleColonIdx == -1) {
+                continue;
+            }
+            if (signature.equals(genParam.substring(doubleColonIdx + 2))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<String> extractGenericParameters(String genericSignature) {
+        List<String> result = new ArrayList<>();
+        String params = StringUtils.substringBetween(genericSignature, "<", ">");
+        if (params != null) {
+            int last = 0;
+            while (true) {
+                int newLast = params.indexOf(';', last) + 1;
+                if (newLast == 0) {
+                    break;
+                }
+                result.add(params.substring(last, newLast));
+                last = newLast;
+            }
+        }
+        return result;
     }
 
 }
