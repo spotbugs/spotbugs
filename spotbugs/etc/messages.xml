@@ -1772,12 +1772,18 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions">
+    <Details>
+      <![CDATA[
+            <p>Finds assertions that validates public method arguments.</p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
   **********************************************************************
    -->
-
   <BugPattern type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS">
     <ShortDescription> Asserting value of instanceof in tests is not recommended. </ShortDescription>
     <LongDescription> Assertion of type {0} in {2} at {3} may hide useful information about why a cast may have failed.</LongDescription>
@@ -8785,6 +8791,22 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="AA_ASSERTION_OF_ARGUMENTS">
+    <ShortDescription>Assertion is used to validate an argument of a public method</ShortDescription>
+    <LongDescription>Assertion validates method argument at {1}. If assertions are disabled, there won't be any argument validation.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>Asssertions must not be used to validate arguments of public methods because the validations are
+        not performed if assertions are disabled.</p>
+
+        <p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET01-J.+Never+use+assertions+to+validate+method+arguments">MET01-J. Never use assertions to validate method arguments</a>
+        for more information.
+        </p>
+        ]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -8938,4 +8960,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
+  <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
 </MessageCollection>

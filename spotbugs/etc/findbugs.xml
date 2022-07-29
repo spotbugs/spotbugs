@@ -669,6 +669,8 @@
                     reports="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource" speed="fast"
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions" speed="fast"
+                    reports="AA_ASSERTION_OF_ARGUMENTS"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -695,10 +697,12 @@
           <BugCode abbrev="STCAL" cweid="366"/>
           <BugCode abbrev="ICAST" cweid="192"/>
           <BugCode abbrev="FB"/>
+          <BugCode abbrev="DA"/>
           <BugCode abbrev="AT"/>
           <BugCode abbrev="JUA"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
+          <BugPattern abbrev="AA" type="AA_ASSERTION_OF_ARGUMENTS" category="BAD_PRACTICE" />
           <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
           <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
 

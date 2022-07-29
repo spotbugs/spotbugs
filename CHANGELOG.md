@@ -6,6 +6,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2022-??-??
 
+### Added
+- New detector `FindArgumentAssertions` detecting bug `ASSERTION_OF_ARGUMENTS` in case of validation of arguments of public functions using assertions (See [MET01-J. Never use assertions to validate method arguments](https://wiki.sei.cmu.edu/confluence/display/java/MET01-J.+Never+use+assertions+to+validate+method+arguments))
+
 ## 4.7.1 - 2022-06-26
 ### Fixed
 - Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
