@@ -6,6 +6,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2022-??-??
 
+### Added
+- New detector `FindAssertionsWithSideEffects` detecting bug `ASSERTION_WITH_SIDE_EFFECT` and `ASSERTION_WITH_SIDE_EFFECT_METHOD` in case of assertions which may have side effects (See [EXP06-J. Expressions used in assertions must not produce side effects](https://wiki.sei.cmu.edu/confluence/display/java/EXP06-J.+Expressions+used+in+assertions+must+not+produce+side+effects))
+
 ## 4.7.1 - 2022-06-26
 ### Fixed
 - Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
