@@ -8797,7 +8797,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     <LongDescription> The expression used in assertion at {1} may produce a side effect. If assertions are disabled, the expression won't get executed and the result of the method might change.</LongDescription>
     <Details>
       <![CDATA[
-            <p>Expressions used in assertions must not produce side effect.</p>
+            <p>Expressions used in assertions must not produce side effects.</p>
 
             <p>See <https://wiki.sei.cmu.edu/confluence/display/java/EXP06-J.+Expressions+used+in+assertions+must+not+produce+side+effects><code>SEI CERT Rule EXP06</code></a>
             for more information.
