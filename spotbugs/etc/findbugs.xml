@@ -563,8 +563,6 @@
                     reports="RI_REDUNDANT_INTERFACES"/>
           <Detector class="edu.umd.cs.findbugs.detect.MultithreadedInstanceAccess" speed="fast"
                     reports="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD,MTIA_SUSPECT_SERVLET_INSTANCE_FIELD"/>
-          <Detector class="edu.umd.cs.findbugs.detect.PublicAttributes" speed="fast"
-                    reports="PA_PUBLIC_PRIMITIVE_ATTRIBUTE,PA_PUBLIC_ARRAY_ATTRIBUTE,PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE"/>
           <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores" speed="fast" disabled="true"
                     reports="PS_PUBLIC_SEMAPHORES"/>
           <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue" speed="fast"
@@ -671,6 +669,8 @@
                     reports="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource" speed="fast"
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindPublicAttributes" speed="fast"
+                    reports="PA_PUBLIC_PRIMITIVE_ATTRIBUTE,PA_PUBLIC_ARRAY_ATTRIBUTE,PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -1164,9 +1164,6 @@
           <BugPattern abbrev="RI" type="RI_REDUNDANT_INTERFACES" category="STYLE"/>
           <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE"/>
           <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" category="STYLE"/>
-          <BugPattern abbrev="PA" type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="PA" type="PA_PUBLIC_ARRAY_ATTRIBUTE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="PA" type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE"/>
           <BugPattern abbrev="ICAST" type="ICAST_INT_2_LONG_AS_INSTANT" category="CORRECTNESS"/>
           <BugPattern abbrev="ICAST" type="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG" category="STYLE"/>
@@ -1291,4 +1288,7 @@
           <BugPattern abbrev="PERM" type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS" category="MALICIOUS_CODE" />
           <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"
                     category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="PA" type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="PA" type="PA_PUBLIC_ARRAY_ATTRIBUTE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="PA" type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE" category="BAD_PRACTICE"/>
 </FindbugsPlugin>

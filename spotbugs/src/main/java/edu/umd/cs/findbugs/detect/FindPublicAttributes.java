@@ -9,15 +9,13 @@ import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.MutableClasses;
 
-public class PublicAttributes
-        extends OpcodeStackDetector
-        implements Detector {
+public class FindPublicAttributes
+        extends OpcodeStackDetector {
 
     private static final Set<String> CONSTRUCTOR_LIKE_NAMES = new HashSet<String>(Arrays.asList(
             Const.CONSTRUCTOR_NAME, Const.STATIC_INITIALIZER_NAME,
@@ -32,7 +30,7 @@ public class PublicAttributes
 
     private Set<XField> writtenFields = new HashSet<XField>();
 
-    public PublicAttributes(BugReporter bugReporter) {
+    public FindPublicAttributes(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 

@@ -1337,14 +1337,6 @@ the subclass.</p>
 ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.PublicAttributes">
-    <Details>
-<![CDATA[
-<p>This detector looks for public attributes that are also written by the methods of the class.
-</p>
-]]>
-    </Details>
-  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores">
     <Details>
 <![CDATA[
@@ -1777,6 +1769,13 @@ factory pattern to create these objects.</p>
       <![CDATA[
             <p>Looks for potential security checks on an untrusted source before entering a
                doPrivileged block.</p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindPublicAttributes">
+    <Details>
+      <![CDATA[
+            <p>This detector looks for public attributes that are also written by the methods of the class.</p>
       ]]>
     </Details>
   </Detector>
@@ -7214,67 +7213,6 @@ just use the constant. Methods detected are:
     ]]>
       </Details>
   </BugPattern>
-  <BugPattern type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE">
-    <ShortDescription>Primitive-type field is both public and written by a method</ShortDescription>
-    <LongDescription>Primitive-type field {1} is both public and written by a method</LongDescription>
-    <Details>
-   <![CDATA[
-    <p>
-    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that access to fields is limited.
-    In general, requiring that no fields are allowed to be public is overkill and unrealistic. Even
-    the rule mentions that final fields may be public. Besides final fields, there may be other
-    usages for public fields: some public fields may serve as "flags" that affect the behavior of
-    the class. Such flag fields are expected to be read by the current instance, but written by
-    others. If a field is both written by the methods of the current instance and from the outside,
-    the code is suspicious. Consider making these fields private and provide appropriate setters,
-    if necessary. Please note that constructors, initializers and finalizers are exceptions, if only
-    they write the field inside the class, the field is not considered as written by the class
-    itself.
-    </p>
-    ]]>
-      </Details>
-  </BugPattern>
-  <BugPattern type="PA_PUBLIC_ARRAY_ATTRIBUTE">
-    <ShortDescription>Array-type field is both public and written by a method</ShortDescription>
-    <LongDescription>Array-type field {1} is both public and written by a method</LongDescription>
-    <Details>
-   <![CDATA[
-    <p>
-    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
-    Making an array-type field final does not prevent other classes from modifying the contents of
-    the array. However, in general, requiring that no fields are allowed to be public is overkill
-    and unrealistic. There may be usages for public fields: some public fields may serve as "flags"
-    that affect the behavior of the class. Such flag fields are expected to be read by the current
-    instance, but written by others. If a field is both written by the methods of the current
-    instance and from the outside, the code is suspicious. Consider making these fields private and
-    provide appropriate setters, if necessary. Please note that constructors, initializers and
-    finalizers are exceptions, if only they write the field inside the class, the field is not
-    considered as written by the class itself.
-    </p>
-    ]]>
-      </Details>
-  </BugPattern>
-  <BugPattern type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE">
-    <ShortDescription>Mutable object-type field is both public and written by a method</ShortDescription>
-    <LongDescription>Mutable object-type field {1} is both public and written by a method</LongDescription>
-    <Details>
-   <![CDATA[
-    <p>
-    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
-    Making a mutable object-type field final does not prevent other classes from modifying the
-    contents of the object. However, in general, requiring that no fields are allowed to be public
-    is overkill and unrealistic. There may be usages for public fields: some public fields may
-    serve as "flags" that affect the behavior of the class. Such flag fields are expected to be
-    read by the current instance, but written by others. If a field is both written by the methods
-    of the current instance and from the outside, the code is suspicious. Consider making these
-    fields private and provide appropriate setters, if necessary. Please note that constructors,
-    initializers and finalizers are exceptions, if only they write the field inside the class, the
-    field is not considered as written by the class itself. In case of object-type fields "writing"
-    means calling methods whose name suggests modification.
-    </p>
-    ]]>
-      </Details>
-  </BugPattern>
   <BugPattern type="PS_PUBLIC_SEMAPHORES">
     <ShortDescription>Class exposes synchronization and semaphores in its public interface</ShortDescription>
     <LongDescription>Class {0} exposes synchronization and semaphores in its public interface</LongDescription>
@@ -8854,6 +8792,67 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE">
+    <ShortDescription>Primitive-type field is public</ShortDescription>
+    <LongDescription>Primitive-type field {1} is public</LongDescription>
+    <Details>
+   <![CDATA[
+    <p>
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that access to fields is limited.
+    In general, requiring that no fields are allowed to be public is overkill and unrealistic. Even
+    the rule mentions that final fields may be public. Besides final fields, there may be other
+    usages for public fields: some public fields may serve as "flags" that affect the behavior of
+    the class. Such flag fields are expected to be read by the current instance (or the current
+    class, in case of static fields), but written by others. If a field is both written by the
+    methods of the current instance (or the current class, in case of static fields) and from the
+    outside, the code is suspicious. Consider making these fields private and provide appropriate
+    setters, if necessary. Please note that constructors, initializers and finalizers are
+    exceptions, if only they write the field inside the class, the field is not considered as
+    written by the class itself.</p>
+    ]]>
+      </Details>
+  </BugPattern>
+  <BugPattern type="PA_PUBLIC_ARRAY_ATTRIBUTE">
+    <ShortDescription>Array-type field is public</ShortDescription>
+    <LongDescription>Array-type field {1} is public</LongDescription>
+    <Details>
+   <![CDATA[
+    <p>
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
+    Making an array-type field final does not prevent other classes from modifying the contents of
+    the array. However, in general, requiring that no fields are allowed to be public is overkill
+    and unrealistic. There may be usages for public fields: some public fields may serve as "flags"
+    that affect the behavior of the class. Such flag fields are expected to be read by the current
+    instance (or the current class, in case of static fields), but written by others. If a field is
+    both written by the methods of the current instance (or the current class, in case of static
+    fields) and from the outside, the code is suspicious. Consider making these fields private and
+    provide appropriate setters, if necessary. Please note that constructors, initializers and
+    finalizers are exceptions, if only they write the field inside the class, the field is not
+    considered as written by the class itself.</p>
+    ]]>
+      </Details>
+  </BugPattern>
+  <BugPattern type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE">
+    <ShortDescription>Mutable object-type field is public</ShortDescription>
+    <LongDescription>Mutable object-type field {1} is public</LongDescription>
+    <Details>
+   <![CDATA[
+    <p>
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
+    Making a mutable object-type field final does not prevent other classes from modifying the
+    contents of the object. However, in general, requiring that no fields are allowed to be public
+    is overkill and unrealistic. There may be usages for public fields: some public fields may
+    serve as "flags" that affect the behavior of the class. Such flag fields are expected to be
+    read by the current instance (or the current class, in case of static fields), but written by
+    others. If a field is both written by the methods of the current instance (or the current
+    class, in case of static fields) and from the outside, the code is suspicious. Consider making
+    these fields private and provide appropriate setters, if necessary. Please note that
+    constructors, initializers and finalizers are exceptions, if only they write the field inside
+    the class, the field is not considered as written by the class itself. In case of object-type
+    fields "writing" means calling methods whose name suggest modification.</p>
+    ]]>
+      </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -8966,7 +8965,6 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="CD">Circular Dependencies</BugCode>
   <BugCode abbrev="RI">Redundant Interfaces</BugCode>
   <BugCode abbrev="MTIA">Multithreaded Instance Access</BugCode>
-  <BugCode abbrev="PA">Public Attributes</BugCode>
   <BugCode abbrev="PS">Public Semaphores</BugCode>
   <BugCode abbrev="BSHIFT">Bad shift</BugCode>
   <BugCode abbrev="ICAST">Casting from integer values</BugCode>
@@ -9008,4 +9006,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
+  <BugCode abbrev="PA">Public Attribute</BugCode>
 </MessageCollection>
