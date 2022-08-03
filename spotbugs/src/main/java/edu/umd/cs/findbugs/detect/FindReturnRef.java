@@ -296,7 +296,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         }
 
-        if (seen == Const.CHECKCAST) {
+        if (seen == Const.CHECKCAST && !stack.isTop()) {
             OpcodeStack.Item item = stack.getStackItem(0);
             if (fieldCloneUnderCast != null) {
                 arrayFieldClones.put(item, fieldCloneUnderCast);

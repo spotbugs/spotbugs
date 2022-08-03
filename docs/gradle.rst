@@ -8,7 +8,7 @@ Use SpotBugs Gradle Plugin
 
 Please follow instruction found on `official Gradle Plugin page <https://plugins.gradle.org/plugin/com.github.spotbugs>`_.
 
-Note that SpotBugs Gradle Plugin does not support Gradle v4, you need to use v5.6 or later.
+Note that SpotBugs Gradle Plugin does not support Gradle v6, you need to use v7.0 or later.
 
 Tasks introduced by this Gradle Plugin
 --------------------------------------
@@ -40,7 +40,7 @@ To introduce SpotBugs Plugin, please declare dependency in ``dependencies`` like
 .. code-block:: groovy
 
   dependencies {
-    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1'
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
   }
 
 Other usage

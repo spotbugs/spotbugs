@@ -9,6 +9,9 @@ IDE Integration
 `m2e-code-quality <https://github.com/m2e-code-quality/m2e-code-quality/>`_
   An Eclipse plugin which configures the FindBugs/SpotBugs Eclipse plugin to match the FindBugs/SpotBugs Maven plugin.
 
+`spotbugs-intellij-plugin <https://github.com/JetBrains/spotbugs-intellij-plugin>`_
+  The SpotBugs Plugin for IntelliJ IDEA.
+
 SpotBugs Plugins
 ----------------
 
@@ -23,9 +26,6 @@ SpotBugs Plugins
 
 Similar/Related Tools
 ---------------------
-
-`FindBugs-IDEA <https://plugins.jetbrains.com/plugin/3847-findbugs-idea>`_
-  The FindBugs plugin for `IntelliJ IDEA <https://www.jetbrains.com/idea/>`_.
 
 `sonar-findbugs <https://github.com/SonarQubeCommunity/sonar-findbugs>`_
   A `SonarQube <https://www.sonarqube.org/>`_ plugin which provides rules based on SpotBugs and its major plugins.
@@ -44,3 +44,6 @@ Similar/Related Tools
 
 `Checker Framework <https://checkerframework.org/>`_
   A pluggable type-checking for Java.
+
+`FindBugs-IDEA <https://plugins.jetbrains.com/plugin/3847-findbugs-idea>`_ (outdated)
+  The FindBugs plugin for `IntelliJ IDEA <https://www.jetbrains.com/idea/>`_.

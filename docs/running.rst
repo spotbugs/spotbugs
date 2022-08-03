@@ -166,8 +166,11 @@ Text UI Options
 
 These options are only accepted by the Text User Interface.
 
--sortByClass:
+-sortByClass=filepath:
   Sort reported bug instances by class name.
+
+  From SpotBugs 4.5.0, this option receives a file path like ``-sortByClass=path/to/spotbugs.txt``.
+  It is also supported to set multiple reports like ``-xml:spotbugs.xml -sortByClass:spotbugs.txt``.
 
 -include *filterFile.xml*:
   Only report bug instances that match the filter specified by filterFile.xml.
@@ -197,13 +200,16 @@ These options are only accepted by the Text User Interface.
   Relaxed reporting mode.
   For many detectors, this option suppresses the heuristics used to avoid reporting false positives.
 
--xml:
+-xml=filepath:
   Produce the bug reports as XML.
   The XML data produced may be viewed in the GUI at a later time.
   You may also specify this option as ``-xml:withMessages``; when this variant of the option is used, the XML output will contain human-readable messages describing the warnings contained in the file.
   XML files generated this way are easy to transform into reports.
 
--html:
+  From SpotBugs 4.5.0, this option receives a file path like ``-xml:withMessages=path/to/spotbugs.xml``.
+  It is also supported to set multiple reports like ``-xml:spotbugs.xml -html:spotbugs.html``.
+
+-html=filepath:
   Generate HTML output. By default, SpotBugs will use the default.xsl XSLT stylesheet to generate the HTML: you can find this file in spotbugs.jar, or in the SpotBugs source or binary distributions.
   Variants of this option include ``-html:plain.xsl``, ``-html:fancy.xsl`` and ``-html:fancy-hist.xsl``.
   The ``plain.xsl`` stylesheet does not use Javascript or DOM, and may work better with older web browsers, or for printing.
@@ -212,20 +218,26 @@ These options are only accepted by the Text User Interface.
 
   If you want to specify your own XSLT stylesheet to perform the transformation to HTML, specify the option as ``-html:myStylesheet.xsl``, where ``myStylesheet.xsl`` is the filename of the stylesheet you want to use.
 
--sarif:
+  From SpotBugs 4.5.0, this option receives a file path like ``-html:fancy-hist.xsl=path/to/spotbugs.html``.
+  It is also supported to set multiple reports like ``-xml:spotbugs.xml -html:spotbugs.html``.
+
+-sarif=filepath:
   Produce the bug reports in `SARIF 2.1.0 <https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html>`_.
 
--emacs:
+  From SpotBugs 4.5.0, this option receives a file path like ``-sarif=path/to/spotbugs.sarif``.
+  It is also supported to set multiple reports like ``-xml:spotbugs.xml -sarif:spotbugs.sarif``.
+
+-emacs=filepath:
   Produce the bug reports in Emacs format.
 
--xdocs:
+-xdocs=filepath:
   Produce the bug reports in xdoc XML format for use with Apache Maven.
 
 -output *filename*:
-  Produce the output in the specified file.
+  This argument is deprecated. Use report type option like ``-xml=spotbugs.xml`` instead.
 
 -outputFile *filename*:
-  This argument is deprecated. Use ``-output`` instead.
+  This argument is deprecated. Use report type option like ``-xml=spotbugs.xml`` instead.
 
 -nested[:true|false]:
   This option enables or disables scanning of nested jar and zip files found in the list of files and directories to be analyzed.
