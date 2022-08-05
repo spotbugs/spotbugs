@@ -437,7 +437,15 @@ public final class MarkerUtil {
         if (charContent == null) {
             return null;
         }
-        IScanner scanner = ToolFactory.createScanner(false, false, false, true);
+        IScanner scanner;
+        IJavaProject project = source.getJavaProject();
+        if (project != null) {
+            String sourceLevel = project.getOption(JavaCore.COMPILER_SOURCE, true);
+            String complianceLevel = project.getOption(JavaCore.COMPILER_COMPLIANCE, true);
+            scanner = ToolFactory.createScanner(false, false, true, sourceLevel, complianceLevel);
+        } else {
+            scanner = ToolFactory.createScanner(false, false, false, true);
+        }
         scanner.setSource(charContent);
         int offset = range.getOffset();
         try {
