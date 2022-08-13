@@ -39,7 +39,10 @@ public class MutableClasses {
             "com.google.common.collect.ImmutableSortedMap",
             "com.google.common.collect.ImmutableSortedMultiset",
             "com.google.common.collect.ImmutableSortedSet",
-            "com.google.common.collect.ImmutableTable"));
+            "com.google.common.collect.ImmutableTable",
+            "java.util.ImmutableCollections$AbstractImmutableList",
+            "java.util.ImmutableCollections$AbstractImmutableMap",
+            "java.util.ImmutableCollections$AbstractImmutableSet"));
 
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
             "java.math", "java.time"));

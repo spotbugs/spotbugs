@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2022-??-??
 ### Fixed
 - Fixed InvalidInputException in Eclipse while bug reporting ([#2134](https://github.com/spotbugs/spotbugs/issues/2134))
+- Fixed false positives `EI_EXPORES_REP` thrown in case of fields initialized by the `of` or `copyOf` method of a `List`, `Map` or `Set` ([#1771](https://github.com/spotbugs/spotbugs/issues/1771))
 
 ## 4.7.1 - 2022-06-26
 ### Fixed

@@ -124,6 +124,9 @@ public class OpcodeStack {
     }
 
     private static final String JAVA_UTIL_ARRAYS_ARRAY_LIST = "Ljava/util/Arrays$ArrayList;";
+    private static final String JAVA_UTIL_IMMUTABLECOLLECTIONS_ABSTRACTIMMUTABLELIST = "Ljava/util/ImmutableCollections$AbstractImmutableList;";
+    private static final String JAVA_UTIL_IMMUTABLECOLLECTIONS_ABSTRACTIMMUTABLEMAP = "Ljava/util/ImmutableCollections$AbstractImmutableMap;";
+    private static final String JAVA_UTIL_IMMUTABLECOLLECTIONS_ABSTRACTIMMUTABLESET = "Ljava/util/ImmutableCollections$AbstractImmutableSet;";
 
     private static final boolean DEBUG = SystemProperties.getBoolean("ocstack.debug");
 
@@ -2633,6 +2636,36 @@ public class OpcodeStack {
                 return;
             }
             push(requestParameter); // fall back to standard logic
+        } else if (seen == Const.INVOKESTATIC &&
+                ("of".equals(methodName) || "copyOf".equals(methodName)) &&
+                "java/util/List".equals(clsName)) {
+            SignatureParser sp = new SignatureParser(signature);
+            for (int i = 0; i < sp.getNumParameters(); ++i) {
+                pop();
+            }
+            Item result = new Item(JAVA_UTIL_IMMUTABLECOLLECTIONS_ABSTRACTIMMUTABLELIST);
+            push(result);
+            return;
+        } else if (seen == Const.INVOKESTATIC &&
+                ("of".equals(methodName) || "copyOf".equals(methodName)) &&
+                "java/util/Map".equals(clsName)) {
+            SignatureParser sp = new SignatureParser(signature);
+            for (int i = 0; i < sp.getNumParameters(); ++i) {
+                pop();
+            }
+            Item result = new Item(JAVA_UTIL_IMMUTABLECOLLECTIONS_ABSTRACTIMMUTABLEMAP);
+            push(result);
+            return;
+        } else if (seen == Const.INVOKESTATIC &&
+                ("of".equals(methodName) || "copyOf".equals(methodName)) &&
+                "java/util/Set".equals(clsName)) {
+            SignatureParser sp = new SignatureParser(signature);
+            for (int i = 0; i < sp.getNumParameters(); ++i) {
+                pop();
+            }
+            Item result = new Item(JAVA_UTIL_IMMUTABLECOLLECTIONS_ABSTRACTIMMUTABLESET);
+            push(result);
+            return;
         }
 
         pushByInvoke(dbc, seen != Const.INVOKESTATIC);
