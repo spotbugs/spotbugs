@@ -1,7 +1,14 @@
+plugins {
+  id 'groovy'
+}
+
 sourceSets {
   main {
     java {
       srcDirs = ['src/java', 'src/fakeAnnotations', 'src/fakeLibraries']
+    }
+    groovy {
+      srcDirs = ['src/groovy']
     }
   }
 }
@@ -31,6 +38,7 @@ dependencies {
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
+  implementation 'org.apache.groovy:groovy-all:4.0.4'
 }
 
 tasks.withType(JavaCompile).configureEach {
