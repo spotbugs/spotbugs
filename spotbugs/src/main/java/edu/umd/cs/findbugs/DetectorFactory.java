@@ -159,7 +159,7 @@ public class DetectorFactory {
      *            comma separated list of bug pattern codes reported by the
      *            detector; empty if unknown
      * @param requireJRE
-     *            string describing JRE version required to run the the
+     *            string describing JRE version required to run the
      *            detector: e.g., "1.5"
      */
     public DetectorFactory(@Nonnull Plugin plugin, @Nonnull String className,
