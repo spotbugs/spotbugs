@@ -1006,6 +1006,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                     throw new CFGBuilderException("Invalid stack at " + prev + " when checking " + handle);
                 }
                 if (depth == 1) {
+                    // now we assume that the previous instruction (prevPrev) is the opcode
+                    // that pushes the reference to the target of PUTFIELD
                     InstructionHandle prevPrev = prev.getPrev();
                     if (prevPrev != null && prevPrev.getInstruction() instanceof BranchInstruction) {
                         continue;
