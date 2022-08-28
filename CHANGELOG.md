@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Bumped gson from 2.9.0 to 2.9.1 ([#2136](https://github.com/spotbugs/spotbugs/pull/2136))
 - Fixed InvalidInputException in Eclipse while bug reporting ([#2134](https://github.com/spotbugs/spotbugs/issues/2134))
+- Fixed CFGBuilderException thrown when field size is 2 (double, long) ([#2146](https://github.com/spotbugs/spotbugs/pull/2146))
 
 ## 4.7.1 - 2022-06-26
 ### Fixed
