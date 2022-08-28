@@ -6,6 +6,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2022-??-??
 ### Fixed
+- Bumped gson from 2.9.0 to 2.9.1 ([#2136](https://github.com/spotbugs/spotbugs/pull/2136))
 - Fixed InvalidInputException in Eclipse while bug reporting ([#2134](https://github.com/spotbugs/spotbugs/issues/2134))
 
 ## 4.7.1 - 2022-06-26
