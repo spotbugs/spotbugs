@@ -1010,6 +1010,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         if (ins instanceof PUTFIELD && !methodGen.isStatic()) {
             // Assume that PUTFIELD on this object is not PEI
             int depth = ins.consumeStack(cpg);
+            int fieldSize = ((PUTFIELD)ins).getFieldType(cpg).getSize();
             for (InstructionHandle prev = handle.getPrev(); prev != null; prev = prev.getPrev()) {
                 Instruction prevInst = prev.getInstruction();
                 if (prevInst instanceof BranchInstruction) {
@@ -1028,10 +1029,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                     }
                 }
                 depth = depth - prevInst.produceStack(cpg) + prevInst.consumeStack(cpg);
-                if (depth < 1) {
+                if (depth < fieldSize) {
                     throw new CFGBuilderException("Invalid stack at " + prev + " when checking " + handle);
                 }
-                if (depth == 1) {
+                if (depth == fieldSize) {
                     InstructionHandle prevPrev = prev.getPrev();
                     if (prevPrev != null && prevPrev.getInstruction() instanceof BranchInstruction) {
                         continue;
