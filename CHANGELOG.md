@@ -11,7 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bump up logback to `1.4.0`
 - Bump up log4j2 binding to `2.18.0`
 - Fixed InvalidInputException in Eclipse while bug reporting ([#2134](https://github.com/spotbugs/spotbugs/issues/2134))
-- Fixed CFGBuilderException thrown when field size is 2 (double, long) ([#2146](https://github.com/spotbugs/spotbugs/pull/2146))
+- Fixed CFGBuilderException thrown when `dup_x2` is used to swap the reference and wide-value (double, long) in the stack ([#2146](https://github.com/spotbugs/spotbugs/pull/2146))
 
 ## 4.7.1 - 2022-06-26
 ### Fixed
