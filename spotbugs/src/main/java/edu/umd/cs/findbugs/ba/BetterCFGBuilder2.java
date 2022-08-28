@@ -1010,7 +1010,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         if (ins instanceof PUTFIELD && !methodGen.isStatic()) {
             // Assume that PUTFIELD on this object is not PEI
             int depth = ins.consumeStack(cpg);
-            int fieldSize = ((PUTFIELD)ins).getFieldType(cpg).getSize();
+            int fieldSize = ((PUTFIELD) ins).getFieldType(cpg).getSize();
             for (InstructionHandle prev = handle.getPrev(); prev != null; prev = prev.getPrev()) {
                 Instruction prevInst = prev.getInstruction();
                 if (prevInst instanceof BranchInstruction) {
