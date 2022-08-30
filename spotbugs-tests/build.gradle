@@ -2,7 +2,7 @@ apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
 
 ext {
-  log4jVersion = '2.17.2'
+  log4jVersion = '2.18.0'
 }
 
 dependencies {

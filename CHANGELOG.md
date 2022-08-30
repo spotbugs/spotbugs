@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2022-??-??
 ### Fixed
+- Bumped gson from 2.9.0 to 2.9.1 ([#2136](https://github.com/spotbugs/spotbugs/pull/2136))
+- Bump up SLF4J API to `2.0.0`
+- Bump up logback to `1.4.0`
+- Bump up log4j2 binding to `2.18.0`
 - Fixed InvalidInputException in Eclipse while bug reporting ([#2134](https://github.com/spotbugs/spotbugs/issues/2134))
 - Fixed false positives `EI_EXPORES_REP` thrown in case of fields initialized by the `of` or `copyOf` method of a `List`, `Map` or `Set` ([#1771](https://github.com/spotbugs/spotbugs/issues/1771))
 
