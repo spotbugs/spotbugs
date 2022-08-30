@@ -75,26 +75,25 @@ public class FindInstanceLockOnSharedStaticData extends OpcodeStackDetector {
         if (seen == Const.PUTSTATIC) {
             XMethod modificationMethod = getXMethod();
             Optional<XField> fieldToModify = Optional.ofNullable(getXFieldOperand());
-            if (fieldToModify.isPresent() && modificationMethod.isSynchronized() && !modificationMethod.isStatic()) {
+            boolean unsecuredModificationByMethod =
+                    fieldToModify.isPresent() && modificationMethod.isSynchronized() && !modificationMethod.isStatic();
+            boolean isLockObjectAppropriate =
+                    maybeLockObject.map(XField::isStatic).orElse(false) || isLockObjectInstanceOfJavaLangClass;
+
+            if (unsecuredModificationByMethod && !(isInsideSynchronizedBlock && isLockObjectAppropriate)) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA", NORMAL_PRIORITY)
                                 .addClassAndMethod(this)
-                                .addMethod(modificationMethod)
-                                .addField(fieldToModify.get())
                                 .addString(fieldToModify.get().getName())
                                 .addString("synchronized method"),
                         this);
                 return;
             }
 
-            boolean isLockObjectAppropriate = maybeLockObject.map(XField::isStatic).orElse(false)
-                    || isLockObjectInstanceOfJavaLangClass;
             if (fieldToModify.isPresent() && isInsideSynchronizedBlock && !isLockObjectAppropriate) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA", NORMAL_PRIORITY)
                                 .addClassAndMethod(this)
-                                .addMethod(modificationMethod)
-                                .addField(fieldToModify.get())
                                 .addString(fieldToModify.get().getName())
                                 .addString("synchronization lock"),
                         this);

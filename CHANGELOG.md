@@ -6,8 +6,20 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2022-??-??
 ### Fixed
-- Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
+- Bumped gson from 2.9.0 to 2.9.1 ([#2136](https://github.com/spotbugs/spotbugs/pull/2136))
+- Bump up SLF4J API to `2.0.0`
+- Bump up logback to `1.4.0`
+- Bump up log4j2 binding to `2.18.0`
+- Fixed InvalidInputException in Eclipse while bug reporting ([#2134](https://github.com/spotbugs/spotbugs/issues/2134))
 - Fixed detector `ThrowingExceptions` by removing false positive reports, such as syntetic methods (lambdas), methods which inherited their exception specications and methods which call throwing methods ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
+
+## 4.7.1 - 2022-06-26
+### Fixed
+- Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
+- Fixed NullPointerException thrown by detector `FindPotentialSecurityCheckBasedOnUntrustedSource` on Kotlin files. ([#2041](https://github.com/spotbugs/spotbugs/issues/2041))
+- Disabled detector `ThrowingExceptions` by default to avoid many false positives ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
+- Fixed False positives for `THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION` and `THROWS_METHOD_THROWS_CLAUSE_THROWABLE` on evaluating synthetic classes ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
+- Fixed False positive for `SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA` on proper protection by using static lock for synchronized block, but inside an unsecured (synchronized and not static) method ([#2089](https://github.com/spotbugs/spotbugs/issues/2089))
 
 ## 4.7.0 - 2022-04-14
 ### Changed
