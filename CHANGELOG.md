@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bump up SLF4J API to `2.0.0`
 - Bump up logback to `1.4.0`
 - Bump up log4j2 binding to `2.18.0`
+- Bump up Saxon-HE to `11.4` ([#2160](https://github.com/spotbugs/spotbugs/pull/2160))
 - Fixed InvalidInputException in Eclipse while bug reporting ([#2134](https://github.com/spotbugs/spotbugs/issues/2134))
 - Bug `SA_FIELD_SELF_ASSIGNMENT` is now reported from nested classes as well ([#2142](https://github.com/spotbugs/spotbugs/issues/2142))
 - Avoid warning on use of security manager on Java 17 and newer. ([#1579](https://github.com/spotbugs/spotbugs/issues/1579))
