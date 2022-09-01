@@ -69,6 +69,8 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 
     XField possibleOverwrite;
 
+    private int parentInstanceLoadFromRegister = -1;
+
     @Override
     public void sawOpcode(int seen) {
 
@@ -91,8 +93,12 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
                 OpcodeStack.Item fourth = stack.getStackItem(3);
                 XField f2 = third.getXField();
                 int registerNumber2 = fourth.getRegisterNumber();
-                if (f2 != null && f2.equals(getXFieldOperand()) && registerNumber2 >= 0
-                        && registerNumber2 == third.getFieldLoadedFromRegister()
+                int loadedFromRegister2 = fourth.getFieldLoadedFromRegister();
+                if (f2 != null && f2.equals(getXFieldOperand())
+                        && ((registerNumber2 >= 0 && registerNumber2 == third.getFieldLoadedFromRegister())
+                                || (loadedFromRegister2 >= 0 && third.getUserValue() != null
+                                        && third.getUserValue() instanceof Integer
+                                        && loadedFromRegister2 == (Integer) third.getUserValue()))
                         && !third.sameValue(top) && (third.getPC() == -1 || third.getPC() > lastMethodCall)) {
                     possibleOverwrite = f2;
                 }
@@ -161,7 +167,28 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
         default:
             break;
         }
+        if (seen == Const.GETFIELD) {
+            XField f = getXFieldOperand();
+            OpcodeStack.Item top = stack.getStackItem(0);
+            XField topF = top.getXField();
+            if (f == null || topF == null) {
+                return;
+            }
 
+            if ("this$0".equals(topF.getName())) {
+                parentInstanceLoadFromRegister = top.getFieldLoadedFromRegister();
+            }
+        }
     }
 
+    @Override
+    public void afterOpcode(int seen) {
+        super.afterOpcode(seen);
+
+        if (seen == Const.GETFIELD && parentInstanceLoadFromRegister > -1) {
+            OpcodeStack.Item top = stack.getStackItem(0);
+            top.setUserValue(parentInstanceLoadFromRegister);
+            parentInstanceLoadFromRegister = -1;
+        }
+    }
 }

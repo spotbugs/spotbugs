@@ -11,6 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bump up logback to `1.4.0`
 - Bump up log4j2 binding to `2.18.0`
 - Fixed InvalidInputException in Eclipse while bug reporting ([#2134](https://github.com/spotbugs/spotbugs/issues/2134))
+- Bug `SA_FIELD_SELF_ASSIGNMENT` is now reported from nested classes as well ([#2142](https://github.com/spotbugs/spotbugs/issues/2142))
 
 ## 4.7.1 - 2022-06-26
 ### Fixed
