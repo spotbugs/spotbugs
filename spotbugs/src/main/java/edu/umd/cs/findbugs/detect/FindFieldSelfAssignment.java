@@ -96,8 +96,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
                 int loadedFromRegister2 = fourth.getFieldLoadedFromRegister();
                 if (f2 != null && f2.equals(getXFieldOperand())
                         && ((registerNumber2 >= 0 && registerNumber2 == third.getFieldLoadedFromRegister())
-                                || (loadedFromRegister2 >= 0 && third.getUserValue() != null
-                                        && third.getUserValue() instanceof Integer
+                                || (loadedFromRegister2 >= 0 && third.getUserValue() instanceof Integer
                                         && loadedFromRegister2 == (Integer) third.getUserValue()))
                         && !third.sameValue(top) && (third.getPC() == -1 || third.getPC() > lastMethodCall)) {
                     possibleOverwrite = f2;
