@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.StatelessDetector;
@@ -36,10 +37,12 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
+@CustomUserValue
 public class FindFieldSelfAssignment extends OpcodeStackDetector implements StatelessDetector {
     private final BugReporter bugReporter;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("fsa.debug");
+    private static final int NO_REGISTER = -1;
     int state;
 
     public FindFieldSelfAssignment(BugReporter bugReporter) {
@@ -69,7 +72,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 
     XField possibleOverwrite;
 
-    private int parentInstanceLoadFromRegister = -1;
+    private int parentInstanceLoadFromRegister = NO_REGISTER;
 
     @Override
     public void sawOpcode(int seen) {
@@ -184,10 +187,10 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
     public void afterOpcode(int seen) {
         super.afterOpcode(seen);
 
-        if (seen == Const.GETFIELD && parentInstanceLoadFromRegister > -1) {
+        if (seen == Const.GETFIELD && parentInstanceLoadFromRegister > NO_REGISTER) {
             OpcodeStack.Item top = stack.getStackItem(0);
             top.setUserValue(parentInstanceLoadFromRegister);
-            parentInstanceLoadFromRegister = -1;
+            parentInstanceLoadFromRegister = NO_REGISTER;
         }
     }
 }
