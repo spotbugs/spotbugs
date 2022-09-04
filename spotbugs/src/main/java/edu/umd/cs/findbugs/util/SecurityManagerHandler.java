@@ -19,7 +19,7 @@ public class SecurityManagerHandler {
     /**
      * Determines if the security manager is used by SpotBugs.
      */
-    public static boolean SECURITY_MANAGER_DISABLED;
+    private static final boolean SECURITY_MANAGER_DISABLED;
 
     static {
         boolean securityManagerDisabled;
