@@ -58,6 +58,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
+import edu.umd.cs.findbugs.util.SecurityManagerHandler;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -1472,7 +1473,7 @@ public class PluginLoader implements AutoCloseable {
             // Thread.currentThread().getContextClassLoader().getResource("my.java.policy");
             // Policy.getPolicy().refresh();
             try {
-                System.setSecurityManager(null);
+                SecurityManagerHandler.disableSecurityManager();
             } catch (Throwable e) {
                 assert true; // keep going
             }
