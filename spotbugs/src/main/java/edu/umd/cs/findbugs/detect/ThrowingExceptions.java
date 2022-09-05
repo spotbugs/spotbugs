@@ -29,13 +29,13 @@ public class ThrowingExceptions extends OpcodeStackDetector {
         this.bugReporter = bugReporter;
     }
 
-    private JavaClass klass;
+    private JavaClass clazz;
     private String exceptionThrown = null;
 
     @Override
     public void visit(JavaClass obj) {
         exceptionThrown = null;
-        klass = obj;
+        clazz = obj;
     }
 
     @Override
@@ -81,11 +81,9 @@ public class ThrowingExceptions extends OpcodeStackDetector {
         }
 
         // If the method's body is empty then we report the bug immediately.
-        if (obj.getCode() == null) {
-            if (exceptionThrown != null) {
-                reportBug("java.lang.Exception".equals(exceptionThrown) ? "THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"
-                        : "THROWS_METHOD_THROWS_CLAUSE_THROWABLE", getXMethod());
-            }
+        if (obj.getCode() == null && exceptionThrown != null) {
+            reportBug("java.lang.Exception".equals(exceptionThrown) ? "THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"
+                    : "THROWS_METHOD_THROWS_CLAUSE_THROWABLE", getXMethod());
         }
     }
 
@@ -134,7 +132,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
     }
 
     private boolean parentThrows(@NonNull Method method, @DottedClassName String exception) {
-        return parentThrows(klass, method, exception);
+        return parentThrows(clazz, method, exception);
     }
 
     private boolean parentThrows(@NonNull JavaClass clazz, @NonNull Method method, @DottedClassName String exception) {
