@@ -5,6 +5,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2022-??-??
+### Fixed
+- Fixed detector `DontUseFloatsAsLoopCounters` to prevent false positives. ([#2126](https://github.com/spotbugs/spotbugs/issues/2126))
 
 ## 4.7.2 - 2022-09-02
 ### Fixed

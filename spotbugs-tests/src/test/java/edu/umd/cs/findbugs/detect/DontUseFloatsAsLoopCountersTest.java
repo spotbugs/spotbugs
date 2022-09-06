@@ -8,16 +8,16 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class DontUseFloatsAsLoopCountersTest extends AbstractIntegrationTest {
     @Test
     public void testChecks() {
         performAnalysis("DontUseFloatsAsLoopCounters.class");
         assertNumOfEOSBugs(3);
-        assertBug("main", 5);
-        assertBug("main", 9);
-        assertBug("main", 12);
+        assertBug("test1", 6);
+        assertBug("test2", 13);
+        assertBug("test3", 19);
     }
 
     private void assertBug(String method, int line) {
