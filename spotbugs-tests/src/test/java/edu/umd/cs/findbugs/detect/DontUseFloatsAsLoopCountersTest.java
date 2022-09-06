@@ -15,9 +15,9 @@ public class DontUseFloatsAsLoopCountersTest extends AbstractIntegrationTest {
     public void testChecks() {
         performAnalysis("DontUseFloatsAsLoopCounters.class");
         assertNumOfEOSBugs(3);
-        assertBug("test1", 6);
-        assertBug("test2", 13);
-        assertBug("test3", 19);
+        assertBug("test1", 8);
+        assertBug("test2", 15);
+        assertBug("test3", 21);
     }
 
     private void assertBug(String method, int line) {
