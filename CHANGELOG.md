@@ -9,10 +9,26 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * New detector `BadVisibilityOnSharedPrimitiveVariables` for new bug type `SPV_BAD_VISIBILITY_ON_SHARED_PRIMITIVE_VARIABLES` (See [SEI CERT rule VNA00-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables))
 * New detector `CompoundOperationsOnSharedVariables` for new bug type `COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES` (See [SEI CERT rule VNA02-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic))
 
+## 4.7.2 - 2022-09-02
+### Fixed
+- Bumped gson from 2.9.0 to 2.9.1 ([#2136](https://github.com/spotbugs/spotbugs/pull/2136))
+- Bump up SLF4J API to `2.0.0`
+- Bump up logback to `1.4.0`
+- Bump up log4j2 binding to `2.18.0`
+- Bump up Saxon-HE to `11.4` ([#2160](https://github.com/spotbugs/spotbugs/pull/2160))
+- Fixed InvalidInputException in Eclipse while bug reporting ([#2134](https://github.com/spotbugs/spotbugs/issues/2134))
+- Bug `SA_FIELD_SELF_ASSIGNMENT` is now reported from nested classes as well ([#2142](https://github.com/spotbugs/spotbugs/issues/2142))
+- Avoid warning on use of security manager on Java 17 and newer. ([#1579](https://github.com/spotbugs/spotbugs/issues/1579))
+- Fixed false positives `EI_EXPOSE_REP` thrown in case of fields initialized by the `of` or `copyOf` method of a `List`, `Map` or `Set` ([#1771](https://github.com/spotbugs/spotbugs/issues/1771))
+- Fixed CFGBuilderException thrown when `dup_x2` is used to swap the reference and wide-value (double, long) in the stack ([#2146](https://github.com/spotbugs/spotbugs/pull/2146))
+
+## 4.7.1 - 2022-06-26
 ### Fixed
 - Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
+- Fixed NullPointerException thrown by detector `FindPotentialSecurityCheckBasedOnUntrustedSource` on Kotlin files. ([#2041](https://github.com/spotbugs/spotbugs/issues/2041))
 - Disabled detector `ThrowingExceptions` by default to avoid many false positives ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
 - Fixed False positives for `THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION` and `THROWS_METHOD_THROWS_CLAUSE_THROWABLE` on evaluating synthetic classes ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
+- Fixed False positive for `SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA` on proper protection by using static lock for synchronized block, but inside an unsecured (synchronized and not static) method ([#2089](https://github.com/spotbugs/spotbugs/issues/2089))
 
 ## 4.7.0 - 2022-04-14
 ### Changed
