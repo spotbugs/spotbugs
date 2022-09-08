@@ -8,6 +8,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,28 +18,32 @@ public class DontUseFloatsAsLoopCounters extends OpcodeStackDetector implements 
 
     private final BugReporter bugReporter;
 
-    private static final Map<Integer, Integer> FLOAT_LOADERS = new HashMap<>();
+    private static final Map<Integer, Integer> FLOAT_LOADERS;
     static {
-        FLOAT_LOADERS.put((int) Const.FLOAD, 2);
-        FLOAT_LOADERS.put((int) Const.FLOAD_0, 1);
-        FLOAT_LOADERS.put((int) Const.FLOAD_1, 1);
-        FLOAT_LOADERS.put((int) Const.FLOAD_2, 1);
-        FLOAT_LOADERS.put((int) Const.FLOAD_3, 1);
-        FLOAT_LOADERS.put((int) Const.DLOAD, 2);
-        FLOAT_LOADERS.put((int) Const.DLOAD_0, 1);
-        FLOAT_LOADERS.put((int) Const.DLOAD_1, 1);
-        FLOAT_LOADERS.put((int) Const.DLOAD_2, 1);
-        FLOAT_LOADERS.put((int) Const.DLOAD_3, 1);
+        Map<Integer, Integer> tmp = new HashMap<>();
+        tmp.put((int) Const.FLOAD, 2);
+        tmp.put((int) Const.FLOAD_0, 1);
+        tmp.put((int) Const.FLOAD_1, 1);
+        tmp.put((int) Const.FLOAD_2, 1);
+        tmp.put((int) Const.FLOAD_3, 1);
+        tmp.put((int) Const.DLOAD, 2);
+        tmp.put((int) Const.DLOAD_0, 1);
+        tmp.put((int) Const.DLOAD_1, 1);
+        tmp.put((int) Const.DLOAD_2, 1);
+        tmp.put((int) Const.DLOAD_3, 1);
+        FLOAT_LOADERS = Collections.unmodifiableMap(tmp);
     }
 
-    private static final Map<Integer, Integer> FLOAT_CONSTANT_PUSHERS = new HashMap<>();
+    private static final Map<Integer, Integer> FLOAT_CONSTANT_PUSHERS;
     static {
-        FLOAT_CONSTANT_PUSHERS.put((int) Const.FCONST_1, 1);
-        FLOAT_CONSTANT_PUSHERS.put((int) Const.FCONST_2, 1);
-        FLOAT_CONSTANT_PUSHERS.put((int) Const.DCONST_1, 1);
-        FLOAT_CONSTANT_PUSHERS.put((int) Const.LDC, 2);
-        FLOAT_CONSTANT_PUSHERS.put((int) Const.LDC_W, 3);
-        FLOAT_CONSTANT_PUSHERS.put((int) Const.LDC2_W, 3);
+        Map<Integer, Integer> tmp = new HashMap<>();
+        tmp.put((int) Const.FCONST_1, 1);
+        tmp.put((int) Const.FCONST_2, 1);
+        tmp.put((int) Const.DCONST_1, 1);
+        tmp.put((int) Const.LDC, 2);
+        tmp.put((int) Const.LDC_W, 3);
+        tmp.put((int) Const.LDC2_W, 3);
+        FLOAT_CONSTANT_PUSHERS = Collections.unmodifiableMap(tmp);
     }
 
     private static final Set<Integer> FLOAT_COMPARERS = new HashSet<>(Arrays.asList(
@@ -80,11 +85,8 @@ public class DontUseFloatsAsLoopCounters extends OpcodeStackDetector implements 
     }
 
     private boolean checkLoopEnd() {
-        if (!FLOAT_STORERS.contains(getPrevOpcode(1))) {
-            return false;
-        }
-
-        return FLOAT_ADDITIVE_OPS.contains(getPrevOpcode(2));
+        return FLOAT_STORERS.contains(getPrevOpcode(1)) &&
+                FLOAT_ADDITIVE_OPS.contains(getPrevOpcode(2));
     }
 
     private boolean checkLoopStart(int startPC) {
