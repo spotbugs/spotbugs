@@ -59,6 +59,11 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
     @Override
     public void visitJavaClass(JavaClass obj) {
+        if (Values.DOTTED_JAVA_LANG_ENUM.equals(obj.getSuperclassName()) ||
+                Values.DOTTED_JAVA_LANG_RECORD.equals(obj.getSuperclassName())) {
+            return;
+        }
+
         try {
             obj.getSuperClass();
         } catch (ClassNotFoundException e) {

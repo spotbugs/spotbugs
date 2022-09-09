@@ -54,6 +54,10 @@ public final class Values {
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_STRINGBUFFER = "java.lang.StringBuffer";
     @DottedClassName
+    public static final String DOTTED_JAVA_LANG_ENUM = "java.lang.Enum";
+    @DottedClassName
+    public static final String DOTTED_JAVA_LANG_RECORD = "java.lang.Record";
+    @DottedClassName
     public static final String DOTTED_JAVA_IO_FILE = "java.io.File";
     @DottedClassName
     public static final String DOTTED_JAVA_NIO_PATH = "java.nio.file.Path";
