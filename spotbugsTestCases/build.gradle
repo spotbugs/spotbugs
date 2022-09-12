@@ -38,7 +38,7 @@ dependencies {
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
-  implementation 'org.apache.groovy:groovy-all:4.0.4'
+  implementation 'org.apache.groovy:groovy-all:4.0.5'
 }
 
 tasks.withType(JavaCompile).configureEach {
