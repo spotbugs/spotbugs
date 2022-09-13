@@ -2671,7 +2671,7 @@ public class OpcodeStack {
                 }
                 Item result;
                 if (requestParameter != null && JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
-                    result = new Item("Ljava/util/Collections$UnmodifiableRandomAccessList");
+                    result = new Item("Ljava/util/Collections$UnmodifiableRandomAccessList;");
                 } else {
                     result = new Item(returnTypeName);
                 }
