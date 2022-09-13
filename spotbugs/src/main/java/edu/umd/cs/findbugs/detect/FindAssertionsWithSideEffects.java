@@ -10,7 +10,6 @@ import edu.umd.cs.findbugs.util.MutableClasses;
  * This detector can find assertions that violates the EXP06 rule.
  */
 public class FindAssertionsWithSideEffects extends AbstractAssertDetector {
-    //private static final boolean CACHE = SystemProperties.getBoolean("da.se.usecache");
 
     public FindAssertionsWithSideEffects(BugReporter bugReporter) {
         super(bugReporter);
@@ -23,7 +22,8 @@ public class FindAssertionsWithSideEffects extends AbstractAssertDetector {
         return seen == Const.INVOKESTATIC ||
                 seen == Const.INVOKEVIRTUAL ||
                 seen == Const.INVOKEINTERFACE ||
-                seen == Const.INVOKESPECIAL;
+                seen == Const.INVOKESPECIAL ||
+                seen == Const.INVOKEDYNAMIC;
     }
 
     /**

@@ -37,12 +37,8 @@ public abstract class AbstractAssertDetector extends OpcodeStackDetector {
             inAssert = true;
         }
         if (seen == Const.NEW && getClassConstantOperand().equals("java/lang/AssertionError")) {
-            resetState();
+            inAssert = false;
         }
-    }
-
-    protected void resetState() {
-        inAssert = false;
     }
 
     protected void reportBug(BugInstance bug) {
