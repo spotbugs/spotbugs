@@ -104,7 +104,7 @@ public class ValueRangeMap {
 
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer("Variable ranges: ");
+        StringBuilder result = new StringBuilder("Variable ranges: ");
         boolean first = true;
         for (Entry<ValueNumber, LongRangeSet> entry : variableRanges.entrySet()) {
             if (!first) {
