@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -27,6 +28,10 @@ public class Issue1771 {
         List<String> l = new ArrayList<>();
         l.add("foo");
         l.add("bar");
+
+        List<String> l2 = new LinkedList<>();
+        l2.add("foo");
+        l2.add("bar");
 
         Map<String, String> m = new HashMap();
         m.put("FOO", "foo");
@@ -53,6 +58,7 @@ public class Issue1771 {
         ss.add("bar");
 
         list3 = Collections.unmodifiableList(l);
+        list3a = Collections.unmodifiableList(l2);
         map3 = Collections.unmodifiableMap(m);
         navigableMap3 = Collections.unmodifiableNavigableMap(nm);
         sortedMap3 = Collections.unmodifiableSortedMap(sm);
@@ -82,6 +88,7 @@ public class Issue1771 {
     private final Set<String> set2;
 
     private final List<String> list3;
+    private final List<String> list3a;
     private final Map<String, String> map3;
     private final NavigableMap<String, String> navigableMap3;
     private final SortedMap<String, String> sortedMap3;
@@ -127,6 +134,10 @@ public class Issue1771 {
 
     public List<String> getList3() {
         return list3;
+    }
+
+    public List<String> getList3a() {
+        return list3a;
     }
 
     public Map<String, String> getMap3() {
