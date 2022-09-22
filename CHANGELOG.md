@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fixed detector `DontUseFloatsAsLoopCounters` to prevent false positives. ([#2126](https://github.com/spotbugs/spotbugs/issues/2126))
 - Fixed regression in `4.7.2` caused by ([#2141](https://github.com/spotbugs/spotbugs/pull/2141))
+- Fixed detector `FindSqlInjection` to detect bug `SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE SQL` with high priority in case of unsafe appends also in Java 11 and above ([#2183](https://github.com/spotbugs/spotbugs/issues/2183))
 
 ## 4.7.2 - 2022-09-02
 ### Fixed
