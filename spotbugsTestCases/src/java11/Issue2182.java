@@ -18,8 +18,9 @@ public class Issue2182 {
         String add = "";
         while (it.hasNext()) {
             String retrieve = it.next();
-            if (retrieve != null && !"".equals(retrieve))
+            if (retrieve != null && !"".equals(retrieve)) {
                 add += retrieve;
+            }
             System.out.println(add);
         }
     }

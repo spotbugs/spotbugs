@@ -184,22 +184,23 @@ public class StringConcatenation extends OpcodeStackDetector implements Stateles
             break;
 
         case SEEN_NEW:
+            int registerOnStack = getRegisterOnStack();
             if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
                     && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
-                    && getClassConstantOperand().startsWith("java/lang/StringBu") && getRegisterOnStack() >= 0) {
+                    && getClassConstantOperand().startsWith("java/lang/StringBu") && registerOnStack >= 0) {
                 state = SEEN_APPEND1;
-                stringSource = getRegisterOnStack();
+                stringSource = registerOnStack;
             } else if (seen == Const.INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
                     && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 if (DEBUG) {
-                    System.out.println("Saw string being appended from register " + getRegisterOnStack());
+                    System.out.println("Saw string being appended from register " + registerOnStack);
                 }
-                if (getSigConstantOperand().startsWith("(Ljava/lang/String;)") && getRegisterOnStack() >= 0) {
+                if (getSigConstantOperand().startsWith("(Ljava/lang/String;)") && registerOnStack >= 0) {
                     if (DEBUG) {
-                        System.out.println("Saw string being appended, source = " + getRegisterOnStack());
+                        System.out.println("Saw string being appended, source = " + registerOnStack);
                     }
                     state = SEEN_APPEND1;
-                    stringSource = getRegisterOnStack();
+                    stringSource = registerOnStack;
                 } else {
                     reset();
                 }
@@ -282,7 +283,6 @@ public class StringConcatenation extends OpcodeStackDetector implements Stateles
         if (seen == Const.INVOKESTATIC && "valueOf".equals(getNameConstantOperand())
                 && "java/lang/String".equals(getClassConstantOperand())
                 && "(Ljava/lang/Object;)Ljava/lang/String;".equals(getSigConstantOperand())) {
-            // leave getRegisterOnStack() unchanged
         }
         if (DEBUG && state != oldState) {
             System.out.println("At PC " + getPC() + " changing from state " + oldState + " to state " + state + ", regOnStack = "
