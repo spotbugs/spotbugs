@@ -267,12 +267,8 @@ public class FindSqlInjection implements Detector {
     }
 
     private boolean isJava9AndAboveStringAppend(Instruction ins, ConstantPoolGen cpg) {
-        if (ins instanceof INVOKEDYNAMIC) {
-            INVOKEDYNAMIC invoke = (INVOKEDYNAMIC) ins;
-            return "makeConcatWithConstants".equals(invoke.getMethodName(cpg));
-        }
-
-        return false;
+        return ins instanceof INVOKEDYNAMIC
+            && "makeConcatWithConstants".equals(((INVOKEDYNAMIC) ins).getMethodName(cpg));
     }
 
     private boolean isConstantStringLoad(Location location, ConstantPoolGen cpg) {
@@ -343,17 +339,15 @@ public class FindSqlInjection implements Detector {
                 int u0001idx = concatArg.indexOf('\u0001');
                 if (u0001idx >= 0) {
                     String before = concatArg.substring(0, u0001idx).trim();
-                    if (before.startsWith(",") || before.endsWith(",")) {
+                    String after = concatArg.substring(u0001idx + 1).trim();
+                    if (before.startsWith(",") || before.endsWith(",") ||
+                            after.startsWith(",") || after.endsWith(",")) {
                         stringAppendState.setSawComma(handle);
                     }
                     if (isOpenQuote(before)) {
                         stringAppendState.setSawOpenQuote(handle);
                     }
 
-                    String after = concatArg.substring(u0001idx + 1).trim();
-                    if (after.startsWith(",") || after.endsWith(",")) {
-                        stringAppendState.setSawComma(handle);
-                    }
                     if (isCloseQuote(after) && stringAppendState.getSawOpenQuote(handle)) {
                         stringAppendState.setSawCloseQuote(handle);
                     }
