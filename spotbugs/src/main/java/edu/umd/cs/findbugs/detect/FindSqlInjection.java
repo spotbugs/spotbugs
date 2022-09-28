@@ -268,7 +268,7 @@ public class FindSqlInjection implements Detector {
 
     private boolean isJava9AndAboveStringAppend(Instruction ins, ConstantPoolGen cpg) {
         return ins instanceof INVOKEDYNAMIC
-            && "makeConcatWithConstants".equals(((INVOKEDYNAMIC) ins).getMethodName(cpg));
+                && "makeConcatWithConstants".equals(((INVOKEDYNAMIC) ins).getMethodName(cpg));
     }
 
     private boolean isConstantStringLoad(Location location, ConstantPoolGen cpg) {
