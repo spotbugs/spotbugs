@@ -2823,14 +2823,14 @@ public class OpcodeStack {
                     servletRequestParameterTainted = true;
                 }
                 Object sVal = i.getConstant();
-                if (sVal != null) {
+                if (sVal == null) {
+                    appenderValue = null;
+                } else {
                     JavaClass clazz = dbc.getThisClass();
                     BootstrapMethod bm = getBootstrapMethod(clazz.getAttributes(), dbc.getConstantRefOperand());
                     ConstantPool cp = clazz.getConstantPool();
                     String concatArg = ((ConstantString) cp.getConstant(bm.getBootstrapArguments()[0])).getBytes(cp);
                     appenderValue = concatArg.replace("\u0001", sVal.toString());
-                } else {
-                    appenderValue = null;
                 }
             } else if (args.length == 2) {
                 Item i1 = getStackItem(0);
@@ -2840,10 +2840,10 @@ public class OpcodeStack {
                 }
                 Object sVal1 = i1.getConstant();
                 Object sVal2 = i2.getConstant();
-                if (sVal1 != null && sVal2 != null) {
-                    appenderValue = sVal2.toString() + sVal1.toString();
-                } else {
+                if (sVal1 == null || sVal2 == null) {
                     appenderValue = null;
+                } else {
+                    appenderValue = sVal2.toString() + sVal1.toString();
                 }
             }
         }
