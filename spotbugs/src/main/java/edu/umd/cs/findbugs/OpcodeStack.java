@@ -60,6 +60,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
+import org.apache.commons.lang3.tuple.Pair;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
 import edu.umd.cs.findbugs.StackMapAnalyzer.JumpInfoFromStackMap;
@@ -128,6 +129,38 @@ public class OpcodeStack {
     private static final boolean DEBUG = SystemProperties.getBoolean("ocstack.debug");
 
     private static final boolean DEBUG2 = DEBUG;
+
+    private static final Map<Pair<String, String>, String> IMMUTABLE_RETURNER_MAP = new HashMap<>();
+    static {
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyList"), "Ljava/util/Collections$EmptyList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyMap"), "Ljava/util/Collections$EmptyMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyNavigableMap"), "Ljava/util/Collections$EmptyNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptySortedMap"), "Ljava/util/Collections$EmptyNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptySet"), "Ljava/util/Collections$EmptySet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyNavigableSet"), "Ljava/util/Collections$EmptyNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptySortedSet"), "Ljava/util/Collections$EmptyNavigableSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "singletonList"), "Ljava/util/Collections$SingletonList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "singletonMap"), "Ljava/util/Collections$SingletonMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "singleton"), "Ljava/util/Collections$SingletonSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableList"), "Ljava/util/Collections$UnmodifiableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableMap"), "Ljava/util/Collections$UnmodifiableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableNavigableMap"), "Ljava/util/Collections$UnmodifiableNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableSortedMap"), "Ljava/util/Collections$UnmodifiableSortedMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableSet"), "Ljava/util/Collections$UnmodifiableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableNavigableSet"), "Ljava/util/Collections$UnmodifiableNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableSortedSet"), "Ljava/util/Collections$UnmodifiableSortedSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/List", "of"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/List", "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Map", "of"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Map", "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Set", "of"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Set", "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
+    }
 
     @StaticConstant
     static final HashMap<String, String> boxedTypes = new HashMap<>();
@@ -2624,15 +2657,35 @@ public class OpcodeStack {
             Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
             push(result);
             return;
-        } else if (seen == Const.INVOKESTATIC && "(Ljava/util/List;)Ljava/util/List;".equals(signature)
-                && "java/util/Collections".equals(clsName)) {
-            Item requestParameter = pop();
-            if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
-                Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
+        } else if (seen == Const.INVOKESTATIC) {
+            Item requestParameter = null;
+            if ("(Ljava/util/List;)Ljava/util/List;".equals(signature)
+                    && "java/util/Collections".equals(clsName)) {
+                requestParameter = top();
+            }
+            String returnTypeName = IMMUTABLE_RETURNER_MAP.get(Pair.of(clsName, methodName));
+            if (returnTypeName != null) {
+                SignatureParser sp = new SignatureParser(signature);
+                for (int i = 0; i < sp.getNumParameters(); ++i) {
+                    pop();
+                }
+                Item result;
+                if (requestParameter != null && JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
+                    result = new Item("Ljava/util/Collections$UnmodifiableRandomAccessList;");
+                } else {
+                    result = new Item(returnTypeName);
+                }
                 push(result);
                 return;
+            } else if (requestParameter != null) {
+                pop();
+                if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
+                    Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
+                    push(result);
+                    return;
+                }
+                push(requestParameter); // fall back to standard logic
             }
-            push(requestParameter); // fall back to standard logic
         }
 
         pushByInvoke(dbc, seen != Const.INVOKESTATIC);
@@ -3170,6 +3223,10 @@ public class OpcodeStack {
 
     private Item pop() {
         return stack.remove(stack.size() - 1);
+    }
+
+    private Item top() {
+        return stack.get(stack.size() - 1);
     }
 
     public void replace(int stackOffset, Item value) {
