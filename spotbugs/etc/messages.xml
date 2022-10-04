@@ -1775,7 +1775,7 @@ factory pattern to create these objects.</p>
   <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions">
     <Details>
       <![CDATA[
-            <p>Finds assertions that validates public method arguments.</p>
+            <p>Finds assertions that validate public method arguments.</p>
       ]]>
     </Details>
   </Detector>

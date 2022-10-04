@@ -72,10 +72,10 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
     }
 
     /**
-     * Returns the numbor of arguments that is popped from the stack for the given opcode
+     * Returns the number of arguments that is popped from the stack for the given opcode
      */
     private int checkSeen(int seen) {
-        int stackSize = 0;
+        int stackSize;
         switch (seen) {
         // Handle nullchecks
         case Const.IFNONNULL:
@@ -109,6 +109,7 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
             stackSize = 2;
             break;
         default:
+            stackSize = 0;
             break;
         }
         return stackSize;
@@ -120,18 +121,18 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
     @Override
     protected void detect(int seen) {
         boolean wasArg = false;
-        // Handle method call
         if (isMethodCall(seen)) {
-            // If wasArg have not been found - Nested methods
-            if (!wasArg)
-                wasArg = isInitialArg();
-            // Handle comparison
+            // Handle method call
+            wasArg = isInitialArg();
         } else {
+            // Handle comparison
             int stackSize = checkSeen(seen);
             if (stackSize > 0) {
                 for (int i = 0; i < stackSize; i++) {
                     OpcodeStack.Item item = stack.getStackItem(i);
-                    wasArg = item.isInitialParameter();
+                    if (wasArg = item.isInitialParameter()) {
+                        break;
+                    }
                 }
             }
         }
