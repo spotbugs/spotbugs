@@ -23,7 +23,7 @@ configurations {
 }
 
 ext {
-  asmVersion = '9.3'
+  asmVersion = '9.4'
   log4jVersion = '2.19.0'
 }
 
