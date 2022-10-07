@@ -41,10 +41,6 @@ allprojects {
   }
 }
 
-wrapper {
-  distributionType = Wrapper.DistributionType.ALL
-}
-
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
 task jacocoRootReport(type: JacocoReport) {
   description = 'Merge all coverage reports before submit to SonarQube'
