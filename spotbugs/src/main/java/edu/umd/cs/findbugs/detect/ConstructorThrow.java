@@ -45,7 +45,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
         for (Method m : obj.getMethods()) {
             // First visit the constructor, it might not be at the start of the class.
-            if ("<init>".equals(m.getName())) {
+            if (Const.CONSTRUCTOR_NAME.equals(m.getName())) {
                 // This will visit all constructors.
                 doVisitMethod(m);
                 // Signature of the finalizer is also needed to be checked
