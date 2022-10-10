@@ -7,7 +7,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.util.MutableClasses;
 
 /**
- * This detector can find assertions that violates the EXP06 rule.
+ * This detector can find assertions that violate the EXP06 rule.
  */
 public class FindAssertionsWithSideEffects extends AbstractAssertDetector {
 
