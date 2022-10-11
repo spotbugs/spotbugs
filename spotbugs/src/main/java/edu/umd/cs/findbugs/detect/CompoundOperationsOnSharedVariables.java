@@ -71,15 +71,15 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
     private final Map<XMethod, List<XField>> compoundlyWrittenNotSecuredFieldsByMethods;
     private final Map<XMethod, List<XField>> readNotSecuredFieldsByMethods;
     private boolean isInsideSynchronizedOrLockingMethod;
-    private Optional<XField> maybeCompoundlyOperatedField;
+    private XField maybeCompoundlyOperatedField;
     private int stepsMadeInCompoundOperationProcess;
 
     public CompoundOperationsOnSharedVariables(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
-        this.compoundlyWrittenNotSecuredFieldsByMethods = new HashMap();
-        this.readNotSecuredFieldsByMethods = new HashMap();
+        this.compoundlyWrittenNotSecuredFieldsByMethods = new HashMap<>();
+        this.readNotSecuredFieldsByMethods = new HashMap<>();
         this.isInsideSynchronizedOrLockingMethod = false;
-        this.maybeCompoundlyOperatedField = Optional.empty();
+        this.maybeCompoundlyOperatedField = null;
         this.stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
     }
 
@@ -98,7 +98,7 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
     public void visitClassContext(ClassContext classContext) {
         if (MultiThreadedCodeIdentifierUtils.isPartOfMultiThreadedCode(classContext)) {
             isInsideSynchronizedOrLockingMethod = false;
-            maybeCompoundlyOperatedField = Optional.empty();
+            maybeCompoundlyOperatedField = null;
             stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
 
             super.visitClassContext(classContext);
@@ -113,7 +113,7 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
                 Optional<XField> maybeFieldToRead = Optional.ofNullable(getXFieldOperand());
                 lookForUnsecuredOperationsOnFieldInOtherMethods(
                         maybeFieldToRead, readMethod, compoundlyWrittenNotSecuredFieldsByMethods, readNotSecuredFieldsByMethods);
-                maybeCompoundlyOperatedField = maybeFieldToRead;
+                maybeCompoundlyOperatedField = maybeFieldToRead.orElse(null);
                 stepsMadeInCompoundOperationProcess = 1;
                 return;
             }
@@ -147,7 +147,7 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
                 XMethod modificationMethod = getXMethod();
                 Optional<XField> maybeFieldToModify = Optional.ofNullable(getXFieldOperand());
 
-                boolean matchWithReadField = maybeCompoundlyOperatedField
+                boolean matchWithReadField = Optional.ofNullable(maybeCompoundlyOperatedField)
                         .map(compoundlyOperatedField -> maybeFieldToModify
                                 .map(modifiedField -> modifiedField.getName().equals(compoundlyOperatedField.getName()))
                                 .orElse(false))
@@ -158,11 +158,11 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
 
                 }
 
-                maybeCompoundlyOperatedField = Optional.empty();
+                maybeCompoundlyOperatedField = null;
                 stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
             }
         } else {
-            maybeCompoundlyOperatedField = Optional.empty();
+            maybeCompoundlyOperatedField = null;
             stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
         }
     }
@@ -190,7 +190,7 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
                 boolean appendedExisting = putInMap.computeIfPresent(
                         operatingMethod, (method, fields) -> appendToList(field, fields)) != null;
                 if (!appendedExisting) {
-                    putInMap.put(operatingMethod, new ArrayList(Collections.singletonList(field)));
+                    putInMap.put(operatingMethod, new ArrayList<>(Collections.singletonList(field)));
                 }
             }
         }
