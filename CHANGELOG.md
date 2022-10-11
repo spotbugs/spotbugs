@@ -10,6 +10,13 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed regression in `4.7.2` caused by ([#2141](https://github.com/spotbugs/spotbugs/pull/2141))
 - improve compatibility with later version of jdk (>= 13). ([#2188](https://github.com/spotbugs/spotbugs/issues/2188))
 - Fixed detector `UncallableMethodOfAnonymousClass` to not report unused methods of method-local enumerations and records ([#2120](https://github.com/spotbugs/spotbugs/issues/2120))
+- Fixed detector `FindSqlInjection` to detect bug `SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE SQL` with high priority in case of unsafe appends also in Java 11 and above ([#2183](https://github.com/spotbugs/spotbugs/issues/2183))
+- Fixed detector `StringConcatenation` to detect bug `SBSC_USE_STRINGBUFFER_CONCATENATION` also in Java 11 and above ([#2182](https://github.com/spotbugs/spotbugs/issues/2182))
+- Fixed `OpcodeStackDetector` to to handle propagation of taints properly in case of string concatenation in Java 9 and above ([#2183](https://github.com/spotbugs/spotbugs/issues/2183))
+- Bump up log4j2 binding to `2.19.0`
+- Bump ObjectWeb ASM from 9.3 to 9.4 supporting JDK 20 ([#2200](https://github.com/spotbugs/spotbugs/pull/2200))
+- Bump up commons-text to 1.10.0 ([#2197](https://github.com/spotbugs/spotbugs/pull/2197))
+- Fixed debug detector `ViewCFG` to generate file names that are also valid on Windows ([#2209](https://github.com/spotbugs/spotbugs/issues/2209))
 
 ## 4.7.2 - 2022-09-02
 ### Fixed
