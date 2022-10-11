@@ -13,6 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bump up log4j2 binding to `2.19.0`
 - Bump ObjectWeb ASM from 9.3 to 9.4 supporting JDK 20 ([#2200](https://github.com/spotbugs/spotbugs/pull/2200))
 - Bump up commons-text to 1.10.0 ([#2197](https://github.com/spotbugs/spotbugs/pull/2197))
+- Fixed debug detector `ViewCFG` to generate file names that are also valid on Windows ([#2209](https://github.com/spotbugs/spotbugs/issues/2209))
 
 ## 4.7.2 - 2022-09-02
 ### Fixed
