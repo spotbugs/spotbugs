@@ -85,7 +85,7 @@ dependencies {
   }
   implementation 'jaxen:jaxen:1.2.0' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
   api 'org.apache.commons:commons-lang3:3.12.0'
-  api 'org.apache.commons:commons-text:1.9'
+  api 'org.apache.commons:commons-text:1.10.0'
   api 'org.slf4j:slf4j-api:2.0.0'
   implementation 'net.sf.saxon:Saxon-HE:11.4'
   implementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
