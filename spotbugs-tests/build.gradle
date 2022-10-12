@@ -20,7 +20,7 @@ dependencies {
   implementation 'org.apache.ant:ant:1.10.12'
   implementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
   implementation "org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion"
-  implementation 'com.google.errorprone:error_prone_annotations:2.15.0'
+  implementation 'com.google.errorprone:error_prone_annotations:2.16'
   implementation files(project(":spotbugs").sourceSets.gui.output)
 }
 
