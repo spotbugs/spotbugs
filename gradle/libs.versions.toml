@@ -2,8 +2,6 @@
 asm = "9.4"
 guice = "5.1.0"
 
-# Update the following constraints when we upgrade the log4j version
-# buildSrc/src/main/kotlin/constraints.gradle.kts
 log4j = "2.19.0"
 
 [libraries]
