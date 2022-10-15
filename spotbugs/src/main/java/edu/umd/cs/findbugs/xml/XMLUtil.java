@@ -27,7 +27,6 @@ import javax.xml.transform.TransformerFactory;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
-import edu.umd.cs.findbugs.FindBugs;
 
 /**
  * @author pugh
@@ -50,7 +49,7 @@ public class XMLUtil {
 
         return reader;
     }
-    
+
     public static TransformerFactory buildTransformerFactory() {
         TransformerFactory factory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
 
