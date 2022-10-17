@@ -1,7 +1,6 @@
 [versions]
 asm = "9.4"
 guice = "5.1.0"
-
 log4j = "2.19.0"
 
 [libraries]
