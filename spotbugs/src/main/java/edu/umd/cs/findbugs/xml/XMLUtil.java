@@ -44,7 +44,7 @@ public class XMLUtil {
         try {
             reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         } catch (Exception e) {
-            throw new IllegalArgumentException(e);
+            throw new RuntimeException("Error while disabling XML external entities", e);
         }
 
         return reader;
@@ -57,7 +57,7 @@ public class XMLUtil {
             factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
             factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
         } catch (Exception e) {
-            throw new IllegalArgumentException(e);
+            throw new RuntimeException("Error while disabling XML external entities", e);
         }
 
         return factory;
