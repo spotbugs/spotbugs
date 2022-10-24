@@ -58,6 +58,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
+import edu.umd.cs.findbugs.util.SecurityManagerHandler;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -1197,7 +1198,7 @@ public class PluginLoader implements AutoCloseable {
             throw new PluginDoesntContainMetadataException((corePlugin ? "Core plugin" : "Plugin ") + jarName
                     + " doesn't contain findbugs.xml; got " + findbugsXML_URL + " from " + classloaderName);
         }
-        SAXReader reader = new SAXReader();
+        SAXReader reader = XMLUtil.buildSAXReader();
 
         try (InputStream input = IO.openNonCachedStream(findbugsXML_URL);
                 Reader r = UTF8.bufferedReader(input)) {
@@ -1325,7 +1326,7 @@ public class PluginLoader implements AutoCloseable {
     private void addCollection(List<Document> messageCollectionList, String filename) throws PluginException {
         URL messageURL = getResource(filename);
         if (messageURL != null) {
-            SAXReader reader = new SAXReader();
+            SAXReader reader = XMLUtil.buildSAXReader();
             try (InputStream input = IO.openNonCachedStream(messageURL);
                     Reader stream = UTF8.bufferedReader(input)) {
                 Document messageCollection;
@@ -1472,7 +1473,7 @@ public class PluginLoader implements AutoCloseable {
             // Thread.currentThread().getContextClassLoader().getResource("my.java.policy");
             // Policy.getPolicy().refresh();
             try {
-                System.setSecurityManager(null);
+                SecurityManagerHandler.disableSecurityManager();
             } catch (Throwable e) {
                 assert true; // keep going
             }
@@ -1628,7 +1629,7 @@ public class PluginLoader implements AutoCloseable {
     private static Document parseDocument(@WillClose InputStream in) throws DocumentException {
         Reader r = UTF8.bufferedReader(in);
         try {
-            SAXReader reader = new SAXReader();
+            SAXReader reader = XMLUtil.buildSAXReader();
             Document d = reader.read(r);
             return d;
         } finally {

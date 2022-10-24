@@ -3253,7 +3253,7 @@ that classfile. See <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id
     <LongDescription>{1} negates the return value of {2}</LongDescription>
     <Details>
 <![CDATA[
-  <p> This code negatives the return value of a compareTo or compare method.
+  <p> This code negates the return value of a compareTo or compare method.
 This is a questionable or bad programming practice, since if the return
 value is Integer.MIN_VALUE, negating the return value won't
 negate the sign of the result. You can achieve the same intended result
@@ -8673,11 +8673,10 @@ object explicitly.</p>
 
   <BugPattern type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA">
     <ShortDescription>Instance level lock was used on a shared static data</ShortDescription>
-    <LongDescription>Static field "{1}" is modified by an instance level {2}.</LongDescription>
+    <LongDescription>Static field "{2}" is modified by an instance level {3}.</LongDescription>
     <Details>
       <![CDATA[<p>
-        Instance level synchronization, that modifies a static shared object could cause security leaks.
-        If the lock or the method is not static, that modifies the static field, and is synchronized,
+        If the lock or the synchronized method is not static, that modifies the static field,
         that could leave the shared static data unprotected against concurrent access.
         This could occur in two ways, if a synchronization method uses a non-static lock object,
         or a synchronized method is declared as non-static. Both ways are ineffective.

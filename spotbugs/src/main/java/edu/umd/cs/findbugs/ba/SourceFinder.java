@@ -358,7 +358,7 @@ public class SourceFinder implements AutoCloseable {
 
         public ZipSourceRepository(@WillCloseWhenClosed ZipFile zipFile) throws IOException {
             this.zipFile = zipFile;
-            this.zipFileSystem = FileSystems.newFileSystem(Paths.get(zipFile.getName()), null);
+            this.zipFileSystem = FileSystems.newFileSystem(Paths.get(zipFile.getName()), (ClassLoader) null);
         }
 
         @Override

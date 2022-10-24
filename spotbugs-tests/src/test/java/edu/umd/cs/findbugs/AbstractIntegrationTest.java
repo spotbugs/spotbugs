@@ -21,10 +21,14 @@ package edu.umd.cs.findbugs;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.test.AnalysisRunner;
@@ -64,40 +68,36 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 public abstract class AbstractIntegrationTest {
 
     /**
-     * Build path if running command line build
+     * Build prefix directories to search for classes
      */
-    private static final String BUILD_CLASSES_CLI = "/build/classes/java/main/";
-
-    /**
-     * Build path if running in Eclipse
-     */
-    private static final String BUILD_CLASSES_ECLIPSE = "/classesEclipse/";
+    private static final List<Path> BUILD_CLASS_SEARCH_PREFIXES = List.of(
+            // Build path if running command line build
+            Paths.get("build/classes/java/main"),
+            Paths.get("build/classes/groovy/main"),
+            // Build path if running in Eclipse
+            Paths.get("classesEclipse"));
 
     private BugCollectionBugReporter bugReporter;
 
-    private static File getFindbugsTestCases() {
-        final File f = new File(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
-        assertTrue("'spotbugsTestCases' directory not found", f.exists());
-        assertTrue(f.isDirectory());
-        assertTrue(f.canRead());
+    private static Path getFindbugsTestCases() {
+        final Path p = Paths.get(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
+        assertTrue("'spotbugsTestCases' directory not found", Files.exists(p));
+        assertTrue(Files.isDirectory(p));
+        assertTrue(Files.isReadable(p));
 
-        return f;
+        return p;
     }
 
-    private static File getFindbugsTestCasesFile(final String path) {
-        File f = new File(getFindbugsTestCases(), path);
-        if (!f.exists() && path.startsWith(BUILD_CLASSES_CLI)) {
-            String replaced = path.replace(BUILD_CLASSES_CLI, BUILD_CLASSES_ECLIPSE);
-            replaced = replaced.replace("../java9/", "");
-            File f2 = new File(getFindbugsTestCases(), replaced);
-            if (f2.exists()) {
-                f = f2;
-            }
-        }
-        assertTrue(f.getAbsolutePath() + " not found", f.exists());
-        assertTrue(f.getAbsolutePath() + " is not readable", f.canRead());
+    private static Path getFindbugsTestCasesFile(final String path) {
+        final Path root = getFindbugsTestCases();
+        final Path p = BUILD_CLASS_SEARCH_PREFIXES.stream()
+                .map(prefix -> root.resolve(prefix).resolve(path))
+                .filter(Files::exists)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError(path + " not found"));
 
-        return f;
+        assertTrue(p + " is not readable", Files.isReadable(p));
+        return p;
     }
 
     protected BugCollection getBugCollection() {
@@ -112,19 +112,21 @@ public abstract class AbstractIntegrationTest {
     protected void performAnalysis(@SlashedClassName final String... analyzeMe) {
         AnalysisRunner runner = new AnalysisRunner();
 
-        final File lib = getFindbugsTestCasesFile("lib");
-        for (final File f : lib.listFiles()) {
-            final String path = f.getPath();
-            if (f.canRead() && path.endsWith(".jar")) {
-                runner.addAuxClasspathEntry(f.toPath());
+        final Path lib = getFindbugsTestCases().resolve("lib");
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(lib, "*.jar")) {
+            for (Path jar : ds) {
+                if (Files.isReadable(jar)) {
+                    runner.addAuxClasspathEntry(jar);
+                }
             }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
 
         // TODO : Unwire this once we move bug samples to a proper sourceset
         Path[] paths = Arrays.stream(analyzeMe)
-                .map(s -> getFindbugsTestCasesFile(BUILD_CLASSES_CLI + s).toPath())
-                .collect(Collectors.toList())
-                .toArray(new Path[analyzeMe.length]);
+                .map(AbstractIntegrationTest::getFindbugsTestCasesFile)
+                .toArray(Path[]::new);
         bugReporter = runner.run(paths);
     }
 }

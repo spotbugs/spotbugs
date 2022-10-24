@@ -802,7 +802,7 @@ public class FindInconsistentSync2 implements Detector {
     }
 
     /**
-     * Determine whether or not the the given method is a getter method. I.e.,
+     * Determine whether or not the given method is a getter method. I.e.,
      * if it just returns the value of an instance field.
      *
      * @param classContext

@@ -6,7 +6,45 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2022-??-??
 ### Fixed
+- Bump up slf4j-api to 2.0.3 ([#2220](https://github.com/spotbugs/spotbugs/pull/2220))
+
+#### Security
+- Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))
+
+## 4.7.3 - 2022-10-15
+### Fixed
+- Fixed detector `DontUseFloatsAsLoopCounters` to prevent false positives. ([#2126](https://github.com/spotbugs/spotbugs/issues/2126))
+- Fixed regression in `4.7.2` caused by ([#2141](https://github.com/spotbugs/spotbugs/pull/2141))
+- improve compatibility with later version of jdk (>= 13). ([#2188](https://github.com/spotbugs/spotbugs/issues/2188))
+- Fixed detector `UncallableMethodOfAnonymousClass` to not report unused methods of method-local enumerations and records ([#2120](https://github.com/spotbugs/spotbugs/issues/2120))
+- Fixed detector `FindSqlInjection` to detect bug `SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE SQL` with high priority in case of unsafe appends also in Java 11 and above ([#2183](https://github.com/spotbugs/spotbugs/issues/2183))
+- Fixed detector `StringConcatenation` to detect bug `SBSC_USE_STRINGBUFFER_CONCATENATION` also in Java 11 and above ([#2182](https://github.com/spotbugs/spotbugs/issues/2182))
+- Fixed `OpcodeStackDetector` to to handle propagation of taints properly in case of string concatenation in Java 9 and above ([#2195](https://github.com/spotbugs/spotbugs/issues/2195))
+- Bump up log4j2 binding to `2.19.0`
+- Bump ObjectWeb ASM from 9.3 to 9.4 supporting JDK 20 ([#2200](https://github.com/spotbugs/spotbugs/pull/2200))
+- Bump up commons-text to 1.10.0 ([#2197](https://github.com/spotbugs/spotbugs/pull/2197))
+- Fixed debug detector `ViewCFG` to generate file names that are also valid on Windows ([#2209](https://github.com/spotbugs/spotbugs/issues/2209))
+
+## 4.7.2 - 2022-09-02
+### Fixed
+- Bumped gson from 2.9.0 to 2.9.1 ([#2136](https://github.com/spotbugs/spotbugs/pull/2136))
+- Bump up SLF4J API to `2.0.0`
+- Bump up logback to `1.4.0`
+- Bump up log4j2 binding to `2.18.0`
+- Bump up Saxon-HE to `11.4` ([#2160](https://github.com/spotbugs/spotbugs/pull/2160))
+- Fixed InvalidInputException in Eclipse while bug reporting ([#2134](https://github.com/spotbugs/spotbugs/issues/2134))
+- Bug `SA_FIELD_SELF_ASSIGNMENT` is now reported from nested classes as well ([#2142](https://github.com/spotbugs/spotbugs/issues/2142))
+- Avoid warning on use of security manager on Java 17 and newer. ([#1579](https://github.com/spotbugs/spotbugs/issues/1579))
+- Fixed false positives `EI_EXPOSE_REP` thrown in case of fields initialized by the `of` or `copyOf` method of a `List`, `Map` or `Set` ([#1771](https://github.com/spotbugs/spotbugs/issues/1771))
+- Fixed CFGBuilderException thrown when `dup_x2` is used to swap the reference and wide-value (double, long) in the stack ([#2146](https://github.com/spotbugs/spotbugs/pull/2146))
+
+## 4.7.1 - 2022-06-26
+### Fixed
 - Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
+- Fixed NullPointerException thrown by detector `FindPotentialSecurityCheckBasedOnUntrustedSource` on Kotlin files. ([#2041](https://github.com/spotbugs/spotbugs/issues/2041))
+- Disabled detector `ThrowingExceptions` by default to avoid many false positives ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
+- Fixed False positives for `THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION` and `THROWS_METHOD_THROWS_CLAUSE_THROWABLE` on evaluating synthetic classes ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
+- Fixed False positive for `SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA` on proper protection by using static lock for synchronized block, but inside an unsecured (synchronized and not static) method ([#2089](https://github.com/spotbugs/spotbugs/issues/2089))
 
 ### Added
 * New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See[SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions))
