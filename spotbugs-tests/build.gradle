@@ -1,10 +1,6 @@
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
 
-ext {
-  log4jVersion = '2.18.0'
-}
-
 dependencies {
   implementation(project(':spotbugs')) {
     transitive = true
@@ -18,8 +14,9 @@ dependencies {
   implementation 'junit:junit:4.13.2'
   implementation 'org.hamcrest:hamcrest-all:1.3'
   implementation 'org.apache.ant:ant:1.10.12'
-  implementation "org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion"
-  implementation 'com.google.errorprone:error_prone_annotations:2.15.0'
+  implementation libs.log4j.core
+  implementation libs.log4j.slf4j2.impl
+  implementation 'com.google.errorprone:error_prone_annotations:2.16'
   implementation files(project(":spotbugs").sourceSets.gui.output)
 }
 

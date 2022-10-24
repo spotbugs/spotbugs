@@ -5,9 +5,30 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2022-??-??
+
 ### Added
 * New detector `BadVisibilityOnSharedPrimitiveVariables` for new bug type `SPV_BAD_VISIBILITY_ON_SHARED_PRIMITIVE_VARIABLES` (See [SEI CERT rule VNA00-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables))
 * New detector `CompoundOperationsOnSharedVariables` for new bug type `COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES` (See [SEI CERT rule VNA02-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic))
+
+### Fixed
+- Bump up slf4j-api to 2.0.3 ([#2220](https://github.com/spotbugs/spotbugs/pull/2220))
+
+#### Security
+- Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))
+
+## 4.7.3 - 2022-10-15
+### Fixed
+- Fixed detector `DontUseFloatsAsLoopCounters` to prevent false positives. ([#2126](https://github.com/spotbugs/spotbugs/issues/2126))
+- Fixed regression in `4.7.2` caused by ([#2141](https://github.com/spotbugs/spotbugs/pull/2141))
+- improve compatibility with later version of jdk (>= 13). ([#2188](https://github.com/spotbugs/spotbugs/issues/2188))
+- Fixed detector `UncallableMethodOfAnonymousClass` to not report unused methods of method-local enumerations and records ([#2120](https://github.com/spotbugs/spotbugs/issues/2120))
+- Fixed detector `FindSqlInjection` to detect bug `SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE SQL` with high priority in case of unsafe appends also in Java 11 and above ([#2183](https://github.com/spotbugs/spotbugs/issues/2183))
+- Fixed detector `StringConcatenation` to detect bug `SBSC_USE_STRINGBUFFER_CONCATENATION` also in Java 11 and above ([#2182](https://github.com/spotbugs/spotbugs/issues/2182))
+- Fixed `OpcodeStackDetector` to to handle propagation of taints properly in case of string concatenation in Java 9 and above ([#2195](https://github.com/spotbugs/spotbugs/issues/2195))
+- Bump up log4j2 binding to `2.19.0`
+- Bump ObjectWeb ASM from 9.3 to 9.4 supporting JDK 20 ([#2200](https://github.com/spotbugs/spotbugs/pull/2200))
+- Bump up commons-text to 1.10.0 ([#2197](https://github.com/spotbugs/spotbugs/pull/2197))
+- Fixed debug detector `ViewCFG` to generate file names that are also valid on Windows ([#2209](https://github.com/spotbugs/spotbugs/issues/2209))
 
 ## 4.7.2 - 2022-09-02
 ### Fixed

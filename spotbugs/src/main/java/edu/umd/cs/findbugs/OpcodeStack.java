@@ -44,6 +44,9 @@ import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.BootstrapMethod;
+import org.apache.bcel.classfile.BootstrapMethods;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
@@ -51,7 +54,9 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantInteger;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantLong;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
@@ -2671,7 +2676,7 @@ public class OpcodeStack {
                 }
                 Item result;
                 if (requestParameter != null && JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
-                    result = new Item("Ljava/util/Collections$UnmodifiableRandomAccessList");
+                    result = new Item("Ljava/util/Collections$UnmodifiableRandomAccessList;");
                 } else {
                     result = new Item(returnTypeName);
                 }
@@ -2800,12 +2805,74 @@ public class OpcodeStack {
     }
 
     private void processInvokeDynamic(DismantleBytecode dbc) {
+        String methodName = dbc.getNameConstantOperand();
+        String appenderValue = null;
+        boolean servletRequestParameterTainted = false;
+        Item topItem = null;
+        if (getStackDepth() > 0) {
+            topItem = getStackItem(0);
+        }
+
         String signature = dbc.getSigConstantOperand();
+
+        if ("makeConcatWithConstants".equals(methodName)) {
+            String[] args = new SignatureParser(signature).getArguments();
+            if (args.length == 1) {
+                Item i = getStackItem(0);
+                if (i.isServletParameterTainted()) {
+                    servletRequestParameterTainted = true;
+                }
+                Object sVal = i.getConstant();
+                if (sVal == null) {
+                    appenderValue = null;
+                } else {
+                    JavaClass clazz = dbc.getThisClass();
+                    BootstrapMethod bm = getBootstrapMethod(clazz.getAttributes(), dbc.getConstantRefOperand());
+                    ConstantPool cp = clazz.getConstantPool();
+                    String concatArg = ((ConstantString) cp.getConstant(bm.getBootstrapArguments()[0])).getBytes(cp);
+                    appenderValue = concatArg.replace("\u0001", sVal.toString());
+                }
+            } else if (args.length == 2) {
+                Item i1 = getStackItem(0);
+                Item i2 = getStackItem(1);
+                if (i1.isServletParameterTainted() || i2.isServletParameterTainted()) {
+                    servletRequestParameterTainted = true;
+                }
+                Object sVal1 = i1.getConstant();
+                Object sVal2 = i2.getConstant();
+                if (sVal1 == null || sVal2 == null) {
+                    appenderValue = null;
+                } else {
+                    appenderValue = sVal2.toString() + sVal1.toString();
+                }
+            }
+        }
 
         int numberArguments = PreorderVisitor.getNumberArguments(signature);
 
         pop(numberArguments);
         pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
+
+        if ((appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
+            Item i = this.getStackItem(0);
+            i.constValue = appenderValue;
+            if (servletRequestParameterTainted) {
+                i.injection = topItem.injection;
+                i.setServletParameterTainted();
+            }
+            return;
+        }
+
+    }
+
+    private BootstrapMethod getBootstrapMethod(Attribute[] attribs, Constant index) {
+        ConstantInvokeDynamic bmidx = (ConstantInvokeDynamic) index;
+        for (Attribute attr : attribs) {
+            if (attr instanceof BootstrapMethods) {
+                return ((BootstrapMethods) attr).getBootstrapMethods()[bmidx.getBootstrapMethodAttrIndex()];
+            }
+        }
+        return null;
     }
 
     private boolean mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
