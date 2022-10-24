@@ -61,8 +61,8 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
 
     public BadVisibilityOnSharedPrimitiveVariables(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
-        this.modifiedNotSecuredFieldsByMethods = new HashMap();
-        this.comparedNotSecuredFieldsByMethods = new HashMap();
+        this.modifiedNotSecuredFieldsByMethods = new HashMap<>();
+        this.comparedNotSecuredFieldsByMethods = new HashMap<>();
         this.isInsideSynchronizedOrLockingMethod = false;
     }
 

@@ -71,15 +71,15 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
     private final Map<XMethod, List<XField>> compoundlyWrittenNotSecuredFieldsByMethods;
     private final Map<XMethod, List<XField>> readNotSecuredFieldsByMethods;
     private boolean isInsideSynchronizedOrLockingMethod;
-    private Optional<XField> maybeCompoundlyOperatedField;
+    private XField maybeCompoundlyOperatedField;
     private int stepsMadeInCompoundOperationProcess;
 
     public CompoundOperationsOnSharedVariables(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
-        this.compoundlyWrittenNotSecuredFieldsByMethods = new HashMap();
-        this.readNotSecuredFieldsByMethods = new HashMap();
+        this.compoundlyWrittenNotSecuredFieldsByMethods = new HashMap<>();
+        this.readNotSecuredFieldsByMethods = new HashMap<>();
         this.isInsideSynchronizedOrLockingMethod = false;
-        this.maybeCompoundlyOperatedField = Optional.empty();
+        this.maybeCompoundlyOperatedField = null;
         this.stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
     }
 
@@ -98,7 +98,7 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
     public void visitClassContext(ClassContext classContext) {
         if (MultiThreadedCodeIdentifierUtils.isPartOfMultiThreadedCode(classContext)) {
             isInsideSynchronizedOrLockingMethod = false;
-            maybeCompoundlyOperatedField = Optional.empty();
+            maybeCompoundlyOperatedField = null;
             stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
 
             super.visitClassContext(classContext);
@@ -110,9 +110,9 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
         if (!isInsideSynchronizedOrLockingMethod) {
             if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
                 XMethod readMethod = getXMethod();
-                Optional<XField> maybeFieldToRead = Optional.ofNullable(getXFieldOperand());
-                lookForUnsecuredOperationsOnFieldInOtherMethods(
-                        maybeFieldToRead, readMethod, compoundlyWrittenNotSecuredFieldsByMethods, readNotSecuredFieldsByMethods);
+                XField maybeFieldToRead = getXFieldOperand();
+                lookForUnsecuredOperationsOnFieldInOtherMethods(maybeFieldToRead, readMethod,
+                        compoundlyWrittenNotSecuredFieldsByMethods, readNotSecuredFieldsByMethods);
                 maybeCompoundlyOperatedField = maybeFieldToRead;
                 stepsMadeInCompoundOperationProcess = 1;
                 return;
@@ -145,52 +145,52 @@ public class CompoundOperationsOnSharedVariables extends OpcodeStackDetector {
 
             if (stepsMadeInCompoundOperationProcess == 3 && (seen == Const.PUTFIELD || seen == Const.PUTSTATIC)) {
                 XMethod modificationMethod = getXMethod();
-                Optional<XField> maybeFieldToModify = Optional.ofNullable(getXFieldOperand());
+                XField maybeFieldToModify = getXFieldOperand();
 
-                boolean matchWithReadField = maybeCompoundlyOperatedField
-                        .map(compoundlyOperatedField -> maybeFieldToModify
+                boolean matchWithReadField = Optional.ofNullable(maybeCompoundlyOperatedField)
+                        .map(compoundlyOperatedField -> Optional.ofNullable(maybeFieldToModify)
                                 .map(modifiedField -> modifiedField.getName().equals(compoundlyOperatedField.getName()))
                                 .orElse(false))
                         .orElse(false);
                 if (matchWithReadField) {
                     lookForUnsecuredOperationsOnFieldInOtherMethods(
-                            maybeFieldToModify, modificationMethod, readNotSecuredFieldsByMethods, compoundlyWrittenNotSecuredFieldsByMethods);
+                            maybeFieldToModify, modificationMethod, readNotSecuredFieldsByMethods,
+                            compoundlyWrittenNotSecuredFieldsByMethods);
 
                 }
 
-                maybeCompoundlyOperatedField = Optional.empty();
+                maybeCompoundlyOperatedField = null;
                 stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
             }
         } else {
-            maybeCompoundlyOperatedField = Optional.empty();
+            maybeCompoundlyOperatedField = null;
             stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
         }
     }
 
     private void lookForUnsecuredOperationsOnFieldInOtherMethods(
-            Optional<XField> maybeField, XMethod operatingMethod,
+            XField maybeField, XMethod operatingMethod,
             Map<XMethod, List<XField>> checkAgainstMap, Map<XMethod, List<XField>> putInMap) {
-        boolean isFieldSecured = maybeField
+        boolean isFieldSecured = Optional.ofNullable(maybeField)
                 .map(field -> MultiThreadedCodeIdentifierUtils.signatureIsFromAtomicPackage(field.getSignature())
                         || field.isFinal())
                 .orElse(true);
         if (!isFieldSecured) {
-            XField field = maybeField.get();
             boolean fieldIsDangerouslyUsedByOtherMethod = checkAgainstMap.entrySet().stream()
-                    .anyMatch(entry -> entry.getValue().contains(field) && entry.getKey() != operatingMethod);
+                    .anyMatch(entry -> entry.getValue().contains(maybeField) && entry.getKey() != operatingMethod);
             if (fieldIsDangerouslyUsedByOtherMethod) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES", NORMAL_PRIORITY)
                                 .addClassAndMethod(this)
                                 .addMethod(operatingMethod)
-                                .addField(field)
-                                .addString(field.getName()),
+                                .addField(maybeField)
+                                .addString(maybeField.getName()),
                         this);
             } else {
                 boolean appendedExisting = putInMap.computeIfPresent(
-                        operatingMethod, (method, fields) -> appendToList(field, fields)) != null;
+                        operatingMethod, (method, fields) -> appendToList(maybeField, fields)) != null;
                 if (!appendedExisting) {
-                    putInMap.put(operatingMethod, new ArrayList(Collections.singletonList(field)));
+                    putInMap.put(operatingMethod, new ArrayList<>(Collections.singletonList(maybeField)));
                 }
             }
         }
