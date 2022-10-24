@@ -5,6 +5,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2022-??-??
+### Added
+* New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See [SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions))([#2055](https://github.com/spotbugs/spotbugs/pull/2055))
+
 ### Fixed
 - Bump up slf4j-api to 2.0.3 ([#2220](https://github.com/spotbugs/spotbugs/pull/2220))
 
@@ -45,9 +48,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Disabled detector `ThrowingExceptions` by default to avoid many false positives ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
 - Fixed False positives for `THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION` and `THROWS_METHOD_THROWS_CLAUSE_THROWABLE` on evaluating synthetic classes ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
 - Fixed False positive for `SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA` on proper protection by using static lock for synchronized block, but inside an unsecured (synchronized and not static) method ([#2089](https://github.com/spotbugs/spotbugs/issues/2089))
-
-### Added
-* New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See[SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions))
 
 ## 4.7.0 - 2022-04-14
 ### Changed
