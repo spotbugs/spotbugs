@@ -1,3 +1,4 @@
+apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
