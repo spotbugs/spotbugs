@@ -25,7 +25,6 @@ public class XDocsBugReporterTest {
         ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName("org.example.Bar");
         bugReporter.reportMissingClass(classDescriptor);
         SortedBugCollection bugCollection = (SortedBugCollection) bugReporter.getBugCollection();
-        String expectedClassName = "org.example.Bar".replace(".", "/");
-        assertThat(bugCollection.missingClassIterator().next(), is(expectedClassName));
+        assertThat(bugCollection.missingClassIterator().next(), is("org.example.Bar"));
     }
 }

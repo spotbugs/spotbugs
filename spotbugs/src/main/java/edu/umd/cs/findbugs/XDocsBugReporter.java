@@ -94,7 +94,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
     @Override
     public void reportMissingClass(ClassDescriptor classDescriptor) {
-        String missing = classDescriptor.getClassName();
+        String missing = classDescriptor.getDottedClassName();
         if (!isValidMissingClassMessage(missing)) {
             return;
         }

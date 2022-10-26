@@ -94,7 +94,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 
     @Override
     public void reportMissingClass(ClassDescriptor classDescriptor) {
-        String missing = classDescriptor.getClassName();
+        String missing = classDescriptor.getDottedClassName();
         if (!isValidMissingClassMessage(missing)) {
             return;
         }
