@@ -170,7 +170,7 @@ These options are only accepted by the Text User Interface.
   Sort reported bug instances by class name.
 
   From SpotBugs 4.5.0, this option receives a file path like ``-sortByClass=path/to/spotbugs.txt``.
-  It is also supported to set multiple reports like ``-xml:spotbugs.xml -sortByClass:spotbugs.txt``.
+  It is also supported to set multiple reports like ``-xml=spotbugs.xml -sortByClass=spotbugs.txt``.
 
 -include *filterFile.xml*:
   Only report bug instances that match the filter specified by filterFile.xml.
@@ -207,7 +207,7 @@ These options are only accepted by the Text User Interface.
   XML files generated this way are easy to transform into reports.
 
   From SpotBugs 4.5.0, this option receives a file path like ``-xml:withMessages=path/to/spotbugs.xml``.
-  It is also supported to set multiple reports like ``-xml:spotbugs.xml -html:spotbugs.html``.
+  It is also supported to set multiple reports like ``-xml=spotbugs.xml -html=spotbugs.html``.
 
 -html=filepath:
   Generate HTML output. By default, SpotBugs will use the default.xsl XSLT stylesheet to generate the HTML: you can find this file in spotbugs.jar, or in the SpotBugs source or binary distributions.
@@ -219,13 +219,13 @@ These options are only accepted by the Text User Interface.
   If you want to specify your own XSLT stylesheet to perform the transformation to HTML, specify the option as ``-html:myStylesheet.xsl``, where ``myStylesheet.xsl`` is the filename of the stylesheet you want to use.
 
   From SpotBugs 4.5.0, this option receives a file path like ``-html:fancy-hist.xsl=path/to/spotbugs.html``.
-  It is also supported to set multiple reports like ``-xml:spotbugs.xml -html:spotbugs.html``.
+  It is also supported to set multiple reports like ``-xml=spotbugs.xml -html=spotbugs.html``.
 
 -sarif=filepath:
   Produce the bug reports in `SARIF 2.1.0 <https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html>`_.
 
   From SpotBugs 4.5.0, this option receives a file path like ``-sarif=path/to/spotbugs.sarif``.
-  It is also supported to set multiple reports like ``-xml:spotbugs.xml -sarif:spotbugs.sarif``.
+  It is also supported to set multiple reports like ``-xml=spotbugs.xml -sarif=spotbugs.sarif``.
 
 -emacs=filepath:
   Produce the bug reports in Emacs format.
