@@ -76,7 +76,7 @@ public class ErrorCountingBugReporter extends DelegatingBugReporter {
 
     @Override
     public void reportMissingClass(ClassDescriptor classDescriptor) {
-        String missing = classDescriptor.getClassName();
+        String missing = classDescriptor.getDottedClassName();
         if (!AbstractBugReporter.isValidMissingClassMessage(missing)) {
             return;
         }
