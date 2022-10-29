@@ -23,7 +23,7 @@ public class CheckReturnValueNegativeCases {
 
   public void test1() {
     test2();
-    Object obj = new String();
+    Object obj = "";
     obj.toString();
   }
 

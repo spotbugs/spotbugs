@@ -4220,7 +4220,7 @@ public class EclipseNullReferenceTestCases {
                     o = new Object();
                     break;
                 case 1:
-                    o = new String();
+                    o = "";
                     break;
                 default:
                     o = new X();

@@ -44,7 +44,7 @@ public class FindReturnRefNegativeTest {
     private static String[] sStringArray;
     static {
         for (int i = 0; i < sStringArray.length; i++) {
-            sStringArray[i] = new String();
+            sStringArray[i] = "";
         }
     }
 

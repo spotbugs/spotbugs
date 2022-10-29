@@ -76,7 +76,6 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
             makeBleem();
         }
 
-        System.out.println(new String());
     }
 
     private int yoom;
@@ -91,7 +90,6 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
             x.wait();
         }
 
-        System.out.println(new String("hello"));
         return yoom;
     }
 
