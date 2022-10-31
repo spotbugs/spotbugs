@@ -470,8 +470,8 @@ public class OpcodeStack {
             case NOT_SPECIAL:
                 break;
             default:
-                buf.append(", #" + specialKind);
-                buf.append("(" + specialKindToName.get(specialKind) + ")");
+                buf.append(", #").append(specialKind);
+                buf.append("(").append(specialKindToName.get(specialKind)).append(")");
                 break;
 
             }
@@ -512,7 +512,7 @@ public class OpcodeStack {
             }
             if (userValue != null) {
                 buf.append(", uv: ");
-                buf.append(userValue.toString());
+                buf.append(userValue);
             }
 
             buf.append(" >");
@@ -740,7 +740,7 @@ public class OpcodeStack {
             setSpecialKindFromSignature();
             constValue = constantValue;
             if (constantValue instanceof Integer) {
-                int value = ((Integer) constantValue).intValue();
+                int value = (Integer) constantValue;
                 if (value != 0 && (value & 0xff) == 0) {
                     specialKind = LOW_8_BITS_CLEAR;
                 }
@@ -749,7 +749,7 @@ public class OpcodeStack {
                 }
 
             } else if (constantValue instanceof Long) {
-                long value = ((Long) constantValue).longValue();
+                long value = (Long) constantValue;
                 if (value != 0 && (value & 0xff) == 0) {
                     specialKind = LOW_8_BITS_CLEAR;
                 }
@@ -1114,7 +1114,7 @@ public class OpcodeStack {
         public static @SpecialKind int defineSpecialKind(String name) {
             @SpecialKind
             int specialKind = nextSpecialKind.getAndIncrement();
-            specialKindToName.put(Integer.valueOf(specialKind), name);
+            specialKindToName.put(specialKind, name);
             return specialKind;
         }
 
@@ -1124,7 +1124,7 @@ public class OpcodeStack {
          * @since 3.1.0
          */
         public static Optional<String> getSpecialKindName(@SpecialKind int specialKind) {
-            return Optional.ofNullable(specialKindToName.get(Integer.valueOf(specialKind)));
+            return Optional.ofNullable(specialKindToName.get(specialKind));
         }
     }
 
@@ -1196,12 +1196,12 @@ public class OpcodeStack {
 
         List<Item> jumpEntry = null;
         if (jumpEntryLocations.get(dbc.getPC())) {
-            jumpEntry = jumpEntries.get(Integer.valueOf(dbc.getPC()));
+            jumpEntry = jumpEntries.get(dbc.getPC());
         }
         boolean wasReachOnlyByBranch = isReachOnlyByBranch();
         if (jumpEntry != null) {
             setReachOnlyByBranch(false);
-            List<Item> jumpStackEntry = jumpStackEntries.get(Integer.valueOf(dbc.getPC()));
+            List<Item> jumpStackEntry = jumpStackEntries.get(dbc.getPC());
 
             if (DEBUG2) {
                 if (wasReachOnlyByBranch) {
@@ -1284,16 +1284,16 @@ public class OpcodeStack {
 
     private void setLastUpdate(int reg, int pc) {
         while (lastUpdate.size() <= reg) {
-            lastUpdate.add(Integer.valueOf(0));
+            lastUpdate.add(0);
         }
-        lastUpdate.set(reg, Integer.valueOf(pc));
+        lastUpdate.set(reg, pc);
     }
 
     public int getLastUpdate(int reg) {
         if (lastUpdate.size() <= reg) {
             return 0;
         }
-        return lastUpdate.get(reg).intValue();
+        return lastUpdate.get(reg);
     }
 
     public int getNumLastUpdates() {
@@ -1306,8 +1306,6 @@ public class OpcodeStack {
         Item it, it2;
         Constant cons;
 
-        // System.out.printf("%3d %12s%s%n", dbc.getPC(), Const.getOpcodeName(seen),
-        // this);
         if (dbc.isRegisterStore()) {
             setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
         }
@@ -1505,8 +1503,6 @@ public class OpcodeStack {
                 seenTransferOfControl = true; {
                 Item topItem = pop();
 
-                // System.out.printf("%4d %10s %s%n",
-                // dbc.getPC(),Const.getOpcodeName(seen), topItem);
                 if (seen == Const.IFLT || seen == Const.IFLE) {
                     registerTestedFoundToBeNonnegative = topItem.registerNumber;
                 }
@@ -1595,8 +1591,8 @@ public class OpcodeStack {
                         takeJump = seen == Const.IF_ACMPNE;
                     }
                 } else if (lConstant instanceof Integer && rConstant instanceof Integer) {
-                    int lC = ((Integer) lConstant).intValue();
-                    int rC = ((Integer) rConstant).intValue();
+                    int lC = (Integer) lConstant;
+                    int rC = (Integer) rConstant;
                     switch (seen) {
                     case Const.IF_ICMPEQ:
                         takeJump = lC == rC;
@@ -1923,7 +1919,7 @@ public class OpcodeStack {
             case Const.LNEG:
                 it = pop();
                 if (it.getConstant() instanceof Long) {
-                    push(new Item("J", Long.valueOf(-constantToLong(it))));
+                    push(new Item("J", -constantToLong(it)));
                 } else {
                     push(new Item("J"));
                 }
@@ -1931,7 +1927,7 @@ public class OpcodeStack {
             case Const.FNEG:
                 it = pop();
                 if (it.getConstant() instanceof Float) {
-                    push(new Item("F", Float.valueOf(-constantToFloat(it))));
+                    push(new Item("F", -constantToFloat(it)));
                 } else {
                     push(new Item("F"));
                 }
@@ -1939,7 +1935,7 @@ public class OpcodeStack {
             case Const.DNEG:
                 it = pop();
                 if (it.getConstant() instanceof Double) {
-                    push(new Item("D", Double.valueOf(-constantToDouble(it))));
+                    push(new Item("D", -constantToDouble(it)));
                 } else {
                     push(new Item("D"));
                 }
@@ -2058,7 +2054,7 @@ public class OpcodeStack {
             case Const.I2F:
                 it = pop();
                 if (it.getConstant() != null) {
-                    push(new Item("F", Float.valueOf(constantToFloat(it))));
+                    push(new Item("F", constantToFloat(it)));
                 } else {
                     push(new Item("F"));
                 }
@@ -2069,7 +2065,7 @@ public class OpcodeStack {
             case Const.L2D:
                 it = pop();
                 if (it.getConstant() != null) {
-                    push(new Item("D", Double.valueOf(constantToDouble(it))));
+                    push(new Item("D", constantToDouble(it)));
                 } else {
                     push(new Item("D"));
                 }
@@ -2230,11 +2226,11 @@ public class OpcodeStack {
             return ((Number) constant).intValue();
         }
         if (constant instanceof Character) {
-            return ((Character) constant).charValue();
+            return (Character) constant;
         }
         if (constant instanceof Boolean) {
             Boolean val = (Boolean) constant;
-            return val.booleanValue() ? 1 : 0;
+            return val ? 1 : 0;
         }
         throw new IllegalArgumentException(String.valueOf(constant));
     }
@@ -2245,7 +2241,7 @@ public class OpcodeStack {
             return ((Number) constant).floatValue();
         }
         if (constant instanceof Character) {
-            return ((Character) constant).charValue();
+            return (Character) constant;
         }
         throw new IllegalArgumentException(String.valueOf(constant));
     }
@@ -2256,7 +2252,7 @@ public class OpcodeStack {
             return ((Number) constant).doubleValue();
         }
         if (constant instanceof Character) {
-            return ((Character) constant).charValue();
+            return (Character) constant;
         }
         throw new IllegalArgumentException(String.valueOf(constant));
     }
@@ -2267,7 +2263,7 @@ public class OpcodeStack {
             return ((Number) constant).longValue();
         }
         if (constant instanceof Character) {
-            return ((Character) constant).charValue();
+            return (Character) constant;
         }
         throw new IllegalArgumentException(String.valueOf(constant));
     }
@@ -2574,7 +2570,7 @@ public class OpcodeStack {
                     servletRequestParameterTainted = true;
                 }
             } else if ("append".equals(methodName)) {
-                if (signature.indexOf("II)") == -1 && getStackDepth() >= 2) {
+                if (!signature.contains("II)") && getStackDepth() >= 2) {
                     sbItem = getStackItem(1);
                     Item i = getStackItem(0);
                     if (i.isServletParameterTainted() || sbItem.isServletParameterTainted()) {
@@ -2599,7 +2595,7 @@ public class OpcodeStack {
                 && ("(Ljava/io/File;Z)V".equals(signature) || "(Ljava/lang/String;Z)V".equals(signature)) && stack.size() > 3) {
             OpcodeStack.Item item = getStackItem(0);
             Object value = item.getConstant();
-            if (value instanceof Integer && ((Integer) value).intValue() == 1) {
+            if (value instanceof Integer && (Integer) value == 1) {
                 pop(3);
                 Item newTop = getStackItem(0);
                 if ("Ljava/io/FileOutputStream;".equals(newTop.signature)) {
@@ -2845,7 +2841,7 @@ public class OpcodeStack {
                 if (sVal1 == null || sVal2 == null) {
                     appenderValue = null;
                 } else {
-                    appenderValue = sVal2.toString() + sVal1.toString();
+                    appenderValue = sVal2.toString() + sVal1;
                 }
             }
         }
@@ -2864,7 +2860,6 @@ public class OpcodeStack {
                 }
                 i.setServletParameterTainted();
             }
-            return;
         }
 
     }
@@ -3091,20 +3086,20 @@ public class OpcodeStack {
         if (from >= target) {
             backwardsBranch = true;
         }
-        List<Item> atTarget = jumpEntries.get(Integer.valueOf(target));
+        List<Item> atTarget = jumpEntries.get(target);
         if (atTarget == null) {
             setJumpInfoChangedByBackwardBranch("new target", from, target);
             setJumpInfoChangedByNewTarget();
-            jumpEntries.put(Integer.valueOf(target), new ArrayList<>(lvValues));
+            jumpEntries.put(target, new ArrayList<>(lvValues));
             jumpEntryLocations.set(target);
             if (stack.size() > 0) {
-                jumpStackEntries.put(Integer.valueOf(target), new ArrayList<>(stack));
+                jumpStackEntries.put(target, new ArrayList<>(stack));
             }
         } else {
             if (mergeLists(atTarget, lvValues, false)) {
                 setJumpInfoChangedByBackwardBranch("locals", from, target);
             }
-            List<Item> stackAtTarget = jumpStackEntries.get(Integer.valueOf(target));
+            List<Item> stackAtTarget = jumpStackEntries.get(target);
             if (!stack.isEmpty() && stackAtTarget != null && mergeLists(stackAtTarget, stack, false)) {
                 setJumpInfoChangedByBackwardBranch("stack", from, target);
             }
@@ -3148,7 +3143,7 @@ public class OpcodeStack {
         if (code == null) {
             return result;
         }
-        JumpInfo jump = null;
+        JumpInfo jump;
         if (useIterativeAnalysis) {
             if (visitor instanceof OpcodeStackDetector.WithCustomJumpInfo) {
                 jump = ((OpcodeStackDetector.WithCustomJumpInfo) visitor).customJumpInfo();
@@ -3218,7 +3213,6 @@ public class OpcodeStack {
             System.out.printf("%s jump info at %d changed by jump from %d%n", kind, to, from);
         }
         this.setJumpInfoChangedByBackwardsBranch(from, to);
-        return;
     }
 
     private int resetForMethodEntry0(PreorderVisitor visitor) {
@@ -3339,11 +3333,11 @@ public class OpcodeStack {
             int s = ((ConstantString) c).getStringIndex();
             push(new Item("Ljava/lang/String;", getStringFromIndex(dbc, s)));
         } else if (c instanceof ConstantFloat) {
-            push(new Item("F", Float.valueOf(((ConstantFloat) c).getBytes())));
+            push(new Item("F", ((ConstantFloat) c).getBytes()));
         } else if (c instanceof ConstantDouble) {
-            push(new Item("D", Double.valueOf(((ConstantDouble) c).getBytes())));
+            push(new Item("D", ((ConstantDouble) c).getBytes()));
         } else if (c instanceof ConstantLong) {
-            push(new Item("J", Long.valueOf(((ConstantLong) c).getBytes())));
+            push(new Item("J", ((ConstantLong) c).getBytes()));
         } else {
             throw new UnsupportedOperationException("StaticConstant type not expected");
         }
@@ -3523,42 +3517,42 @@ public class OpcodeStack {
 
                 long lhsValue = constantToLong(lhs);
                 if (seen == Const.LSHL) {
-                    newValue = new Item("J", Long.valueOf(lhsValue << constantToInt(rhs)));
+                    newValue = new Item("J", lhsValue << constantToInt(rhs));
                     if (constantToInt(rhs) >= 8) {
                         newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
                     }
                 } else if (seen == Const.LSHR) {
-                    newValue = new Item("J", Long.valueOf(lhsValue >> constantToInt(rhs)));
+                    newValue = new Item("J", lhsValue >> constantToInt(rhs));
                 } else if (seen == Const.LUSHR) {
-                    newValue = new Item("J", Long.valueOf(lhsValue >>> constantToInt(rhs)));
+                    newValue = new Item("J", lhsValue >>> constantToInt(rhs));
                 } else {
                     long rhsValue = constantToLong(rhs);
                     if (seen == Const.LADD) {
-                        newValue = new Item("J", Long.valueOf(lhsValue + rhsValue));
+                        newValue = new Item("J", lhsValue + rhsValue);
                     } else if (seen == Const.LSUB) {
-                        newValue = new Item("J", Long.valueOf(lhsValue - rhsValue));
+                        newValue = new Item("J", lhsValue - rhsValue);
                     } else if (seen == Const.LMUL) {
-                        newValue = new Item("J", Long.valueOf(lhsValue * rhsValue));
+                        newValue = new Item("J", lhsValue * rhsValue);
                     } else if (seen == Const.LDIV) {
                         if (rhsValue != 0) {
-                            newValue = new Item("J", Long.valueOf(lhsValue / rhsValue));
+                            newValue = new Item("J", lhsValue / rhsValue);
                         } else {
                             // Code like "return 1L / (1L / 2);"
                             // Here we could report bug, because it will throw java.lang.ArithmeticException: / by zero,
                             // see #413
                         }
                     } else if (seen == Const.LAND) {
-                        newValue = new Item("J", Long.valueOf(lhsValue & rhsValue));
+                        newValue = new Item("J", lhsValue & rhsValue);
                         if ((rhsValue & 0xff) == 0 && rhsValue != 0 || (lhsValue & 0xff) == 0 && lhsValue != 0) {
                             newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
                         }
                     } else if (seen == Const.LOR) {
-                        newValue = new Item("J", Long.valueOf(lhsValue | rhsValue));
+                        newValue = new Item("J", lhsValue | rhsValue);
                     } else if (seen == Const.LXOR) {
-                        newValue = new Item("J", Long.valueOf(lhsValue ^ rhsValue));
+                        newValue = new Item("J", lhsValue ^ rhsValue);
                     } else if (seen == Const.LREM) {
                         if (rhsValue != 0) {
-                            newValue = new Item("J", Long.valueOf(lhsValue % rhsValue));
+                            newValue = new Item("J", lhsValue % rhsValue);
                         } else {
                             // Code like "return 1L % (1L / 2);"
                             // Here we could report bug, because it will throw java.lang.ArithmeticException: / by zero,
@@ -3579,7 +3573,7 @@ public class OpcodeStack {
             String context = v != null ? v.getFullyQualifiedMethodName() : toString();
             AnalysisContext.logError(
                     String.format("Exception processing 'pushByLongMath' with opcode %d, lhs %s and rhs %s in %s",
-                            seen, String.valueOf(lhs), String.valueOf(rhs), context), e);
+                            seen, lhs, rhs, context), e);
         }
         push(newValue);
     }
@@ -3590,15 +3584,15 @@ public class OpcodeStack {
         int specialKind = Item.FLOAT_MATH;
         if ((it.getConstant() instanceof Float) && it2.getConstant() instanceof Float) {
             if (seen == Const.FADD) {
-                result = new Item("F", Float.valueOf(constantToFloat(it2) + constantToFloat(it)));
+                result = new Item("F", constantToFloat(it2) + constantToFloat(it));
             } else if (seen == Const.FSUB) {
-                result = new Item("F", Float.valueOf(constantToFloat(it2) - constantToFloat(it)));
+                result = new Item("F", constantToFloat(it2) - constantToFloat(it));
             } else if (seen == Const.FMUL) {
-                result = new Item("F", Float.valueOf(constantToFloat(it2) * constantToFloat(it)));
+                result = new Item("F", constantToFloat(it2) * constantToFloat(it));
             } else if (seen == Const.FDIV) {
-                result = new Item("F", Float.valueOf(constantToFloat(it2) / constantToFloat(it)));
+                result = new Item("F", constantToFloat(it2) / constantToFloat(it));
             } else if (seen == Const.FREM) {
-                result = new Item("F", Float.valueOf(constantToFloat(it2) % constantToFloat(it)));
+                result = new Item("F", constantToFloat(it2) % constantToFloat(it));
             } else {
                 result = new Item("F");
             }
@@ -3618,15 +3612,15 @@ public class OpcodeStack {
         int specialKind = Item.FLOAT_MATH;
         if ((it.getConstant() instanceof Double) && it2.getConstant() instanceof Double) {
             if (seen == Const.DADD) {
-                result = new Item("D", Double.valueOf(constantToDouble(it2) + constantToDouble(it)));
+                result = new Item("D", constantToDouble(it2) + constantToDouble(it));
             } else if (seen == Const.DSUB) {
-                result = new Item("D", Double.valueOf(constantToDouble(it2) - constantToDouble(it)));
+                result = new Item("D", constantToDouble(it2) - constantToDouble(it));
             } else if (seen == Const.DMUL) {
-                result = new Item("D", Double.valueOf(constantToDouble(it2) * constantToDouble(it)));
+                result = new Item("D", constantToDouble(it2) * constantToDouble(it));
             } else if (seen == Const.DDIV) {
-                result = new Item("D", Double.valueOf(constantToDouble(it2) / constantToDouble(it)));
+                result = new Item("D", constantToDouble(it2) / constantToDouble(it));
             } else if (seen == Const.DREM) {
-                result = new Item("D", Double.valueOf(constantToDouble(it2) % constantToDouble(it)));
+                result = new Item("D", constantToDouble(it2) % constantToDouble(it));
             } else {
                 result = new Item("D"); // ?
             }
