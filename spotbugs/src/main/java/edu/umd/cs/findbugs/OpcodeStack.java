@@ -2829,8 +2829,10 @@ public class OpcodeStack {
                     JavaClass clazz = dbc.getThisClass();
                     BootstrapMethod bm = getBootstrapMethod(clazz.getAttributes(), dbc.getConstantRefOperand());
                     ConstantPool cp = clazz.getConstantPool();
-                    String concatArg = ((ConstantString) cp.getConstant(bm.getBootstrapArguments()[0])).getBytes(cp);
-                    appenderValue = concatArg.replace("\u0001", sVal.toString());
+                    if(bm != null) {
+                        String concatArg = ((ConstantString) cp.getConstant(bm.getBootstrapArguments()[0])).getBytes(cp);
+                        appenderValue = concatArg.replace("\u0001", sVal.toString());
+                    }
                 }
             } else if (args.length == 2) {
                 Item i1 = getStackItem(0);
@@ -2857,7 +2859,9 @@ public class OpcodeStack {
             Item i = this.getStackItem(0);
             i.constValue = appenderValue;
             if (servletRequestParameterTainted) {
-                i.injection = topItem.injection;
+                if(topItem != null) {
+                    i.injection = topItem.injection;
+                }
                 i.setServletParameterTainted();
             }
             return;
