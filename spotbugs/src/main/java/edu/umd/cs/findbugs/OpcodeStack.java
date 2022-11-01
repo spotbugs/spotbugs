@@ -2855,7 +2855,7 @@ public class OpcodeStack {
             Item i = this.getStackItem(0);
             i.constValue = appenderValue;
             if (servletRequestParameterTainted) {
-                if(topItem != null) {
+                if (topItem != null) {
                     i.injection = topItem.injection;
                 }
                 i.setServletParameterTainted();
