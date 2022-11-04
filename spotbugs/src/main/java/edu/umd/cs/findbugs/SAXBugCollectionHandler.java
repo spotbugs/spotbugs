@@ -522,7 +522,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             String classjas = getOptionalAttribute(attributes, "classjas");
             bugAnnotation = bugAnnotationWithSourceLines = new ClassAnnotation(className);
             if (classjas != null) {
-                ((PackageMemberAnnotation) bugAnnotation).setJavaAnnotationNames(List.of(classjas.split(",")));
+                ((PackageMemberAnnotation) bugAnnotation).setJavaAnnotationNames(Arrays.asList(classjas.split(",")));
             }
         } else if ("Type".equals(qName)) {
             String typeDescriptor = getRequiredAttribute(attributes, "descriptor", qName);
@@ -554,7 +554,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         sourceSignature, Boolean.valueOf(isStatic));
             }
             if (classjas != null) {
-                ((PackageMemberAnnotation) bugAnnotation).setJavaAnnotationNames(List.of(classjas.split(",")));
+                ((PackageMemberAnnotation) bugAnnotation).setJavaAnnotationNames(Arrays.asList(classjas.split(",")));
             }
         } else if ("SourceLine".equals(qName)) {
             SourceLineAnnotation sourceAnnotation = createSourceLineAnnotation(qName, attributes);
