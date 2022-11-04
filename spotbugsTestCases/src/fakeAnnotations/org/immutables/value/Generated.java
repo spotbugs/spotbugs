@@ -6,7 +6,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Generated {
 
-	String from() default "";
+    String from() default "";
 
-	String generator() default "";
+    String generator() default "";
 }

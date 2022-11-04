@@ -168,20 +168,20 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     }
 
     /**
-	 * @return the javaAnnotationNames
-	 */
-	public List<String> getJavaAnnotationNames() {
-		return javaAnnotationNames;
-	}
+     * @return the javaAnnotationNames
+     */
+    public List<String> getJavaAnnotationNames() {
+        return javaAnnotationNames;
+    }
 
-	/**
-	 * @param aJavaAnnotationNames the javaAnnotationNames to set
-	 */
-	public void setJavaAnnotationNames(List<String> aJavaAnnotationNames) {
-		javaAnnotationNames = aJavaAnnotationNames;
-	}
+    /**
+     * @param aJavaAnnotationNames the javaAnnotationNames to set
+     */
+    public void setJavaAnnotationNames(List<String> aJavaAnnotationNames) {
+        javaAnnotationNames = aJavaAnnotationNames;
+    }
 
-	/**
+    /**
      * Shorten a type name of remove extraneous components. Candidates for
      * shortening are classes in same package as this annotation and classes in
      * the <code>java.lang</code> package.

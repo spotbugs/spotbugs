@@ -175,16 +175,16 @@ public class SAXBugCollectionHandlerTest {
         // read it in
         origBC.readXML(new StringReader(
                 "<BugCollection version='1.3.10-dev-20100728' sequence='0' timestamp='1280333223462' analysisTimestamp='1280333224881' release=''>"
-				+ "<BugInstance type=\"UUF_UNUSED_FIELD\" priority=\"1\" rank=\"16\" abbrev=\"UuF\" category=\"PERFORMANCE\">\n"
-				+ "  <Class classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" classjas=\"org.immutables.value.Generated\">\n"
-				+ "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
-				+ "  </Class>\n"
-				+ "  <Method classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classjas=\"org.immutables.value.Generated\"/>\n"
-				+ "  <Field classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classjas=\"org.immutables.value.Generated\">\n"
-				+ "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
-				+ "  </Field>\n"
-				+ "</BugInstance>\n"
-                + "</BugCollection>"));
+                        + "<BugInstance type=\"UUF_UNUSED_FIELD\" priority=\"1\" rank=\"16\" abbrev=\"UuF\" category=\"PERFORMANCE\">\n"
+                        + "  <Class classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" classjas=\"org.immutables.value.Generated\">\n"
+                        + "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
+                        + "  </Class>\n"
+                        + "  <Method classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classjas=\"org.immutables.value.Generated\"/>\n"
+                        + "  <Field classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classjas=\"org.immutables.value.Generated\">\n"
+                        + "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
+                        + "  </Field>\n"
+                        + "</BugInstance>\n"
+                        + "</BugCollection>"));
         // write it out
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
         origBC.writeXML(outBytes);
@@ -199,10 +199,10 @@ public class SAXBugCollectionHandlerTest {
         assertEquals("UUF_UNUSED_FIELD", bug.getBugPattern().getType());
         assertEquals(3, bug.getAnnotations().size());
         for (BugAnnotation annotation : bug.getAnnotations()) {
-			assertTrue(annotation instanceof PackageMemberAnnotation);
-			List<String> javaAnnotationNames = ((PackageMemberAnnotation) annotation).getJavaAnnotationNames();
-			assertEquals(1, javaAnnotationNames.size());
-			assertEquals("org.immutables.value.Generated", javaAnnotationNames.get(0));
-		}
+            assertTrue(annotation instanceof PackageMemberAnnotation);
+            List<String> javaAnnotationNames = ((PackageMemberAnnotation) annotation).getJavaAnnotationNames();
+            assertEquals(1, javaAnnotationNames.size());
+            assertEquals("org.immutables.value.Generated", javaAnnotationNames.get(0));
+        }
     }
 }

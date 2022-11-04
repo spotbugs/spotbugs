@@ -1,22 +1,11 @@
 /*
- * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2008 University of Maryland
- *
- *  Author: Andrey Loskutov
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * FindBugs - Find Bugs in Java programs Copyright (C) 2003-2008 University of Maryland Author: Andrey Loskutov This
+ * library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any
+ * later version. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details. You should have received a copy of the GNU Lesser General Public License along with this
+ * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 package edu.umd.cs.findbugs.filter;
@@ -46,11 +35,12 @@ import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class AnnotationMatcherTest {
-	
+
     @Rule
     public SpotBugsRule spotbugs = new SpotBugsRule();
 
     private BugInstance bug;
+
     private String annotationName;
 
     @Before
@@ -86,7 +76,8 @@ public class AnnotationMatcherTest {
         String filterXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "\n<FindBugsFilter>"
                 + "\n<Match>"
-                + "\n" + matcherXml
+                + "\n"
+                + matcherXml
                 + "\n</Match>"
                 + "\n</FindBugsFilter>\n";
 
@@ -96,29 +87,31 @@ public class AnnotationMatcherTest {
         assertFalse(filter.match(bug));
 
         // added primary class annotation; should match
-        
+
         bug.addClass("bla", annotationName);
-        
+
         assertTrue(filter.match(bug));
     }
-    
+
     @Test
     public void testPerformAnalysis() throws Exception {
         BugCollection bugCollection = spotbugs.performAnalysis(
-        		Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
+                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value$Immutable.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$1.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
-        
+                Paths.get(
+                        "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$1.class"),
+                Paths.get(
+                        "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
+
         assertThat(bugCollection.getCollection(), hasSize(3));
-		
+
         AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher(annotationName);
-		for (BugInstance bugInstance : bugCollection) {
-			assertTrue(bugInstanceMatcher.match(bugInstance));
-		}
+        for (BugInstance bugInstance : bugCollection) {
+            assertTrue(bugInstanceMatcher.match(bugInstance));
+        }
     }
 
     private String writeXMLAndGetStringOutput(AnnotationMatcher matcher, boolean disabled) throws IOException {

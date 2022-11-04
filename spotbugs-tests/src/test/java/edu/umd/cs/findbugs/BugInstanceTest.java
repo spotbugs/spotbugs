@@ -28,38 +28,38 @@ public class BugInstanceTest {
         b.setProperty("B", "b");
         b.setProperty("C", "c");
     }
-    
-	private static final String EXPECTED_XML = ""
-			+ "<BugInstance type=\"UUF_UNUSED_FIELD\" priority=\"1\" rank=\"16\" abbrev=\"UuF\" category=\"PERFORMANCE\">\n"
-			+ "  <Class classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" classjas=\"org.immutables.value.Generated\">\n"
-			+ "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
-			+ "  </Class>\n"
-			+ "  <Method classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classjas=\"org.immutables.value.Generated\"/>\n"
-			+ "  <Field classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classjas=\"org.immutables.value.Generated\">\n"
-			+ "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
-			+ "  </Field>\n"
-			+ "</BugInstance>";
-	
-	@Test
-	public void testWriteXML() throws Exception {
-		BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
-		// test all PackageMemberAnnotations
-		String className = "ghIssues.issue543.ImmutableFoobarValue.class";
-		ClassAnnotation classAnnotation = new ClassAnnotation(className);
-		classAnnotation.setJavaAnnotationNames(List.of("org.immutables.value.Generated"));
-		bug.add(classAnnotation);
 
-		MethodAnnotation methodAnnotation = new MethodAnnotation(className, "foo", "int", false);
-		methodAnnotation.setJavaAnnotationNames(List.of("org.immutables.value.Generated"));
-		bug.add(methodAnnotation);
+    private static final String EXPECTED_XML = ""
+            + "<BugInstance type=\"UUF_UNUSED_FIELD\" priority=\"1\" rank=\"16\" abbrev=\"UuF\" category=\"PERFORMANCE\">\n"
+            + "  <Class classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" classjas=\"org.immutables.value.Generated\">\n"
+            + "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
+            + "  </Class>\n"
+            + "  <Method classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classjas=\"org.immutables.value.Generated\"/>\n"
+            + "  <Field classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classjas=\"org.immutables.value.Generated\">\n"
+            + "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
+            + "  </Field>\n"
+            + "</BugInstance>";
 
-		FieldAnnotation fieldAnnotation = new FieldAnnotation(className, "foo", "int", false);
-		fieldAnnotation.setJavaAnnotationNames(List.of("org.immutables.value.Generated"));
-		bug.add(fieldAnnotation);
-		
-		String xml = writeXMLAndGetStringOutput(bug);
-		assertThat(xml, equalTo(EXPECTED_XML));
-	}
+    @Test
+    public void testWriteXML() throws Exception {
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
+        // test all PackageMemberAnnotations
+        String className = "ghIssues.issue543.ImmutableFoobarValue.class";
+        ClassAnnotation classAnnotation = new ClassAnnotation(className);
+        classAnnotation.setJavaAnnotationNames(List.of("org.immutables.value.Generated"));
+        bug.add(classAnnotation);
+
+        MethodAnnotation methodAnnotation = new MethodAnnotation(className, "foo", "int", false);
+        methodAnnotation.setJavaAnnotationNames(List.of("org.immutables.value.Generated"));
+        bug.add(methodAnnotation);
+
+        FieldAnnotation fieldAnnotation = new FieldAnnotation(className, "foo", "int", false);
+        fieldAnnotation.setJavaAnnotationNames(List.of("org.immutables.value.Generated"));
+        bug.add(fieldAnnotation);
+
+        String xml = writeXMLAndGetStringOutput(bug);
+        assertThat(xml, equalTo(EXPECTED_XML));
+    }
 
     @Test
     public void testPropertyIterator() {
