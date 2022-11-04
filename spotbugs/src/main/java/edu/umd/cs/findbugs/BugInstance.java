@@ -2113,7 +2113,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
                 IAnalysisCache analysisCache = Global.getAnalysisCache();
                 ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
                 AnnotationEntry[] annotationEntries = classContext.getJavaClass().getAnnotationEntries();
-                List<String> javaAnnotationNames = List.of(annotationEntries).stream().map((AnnotationEntry ae) -> {
+                List<String> javaAnnotationNames = Arrays.asList(annotationEntries).stream().map((AnnotationEntry ae) -> {
                     // map annotation entry type to dotted class name, for example
                     // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
                     String annotationType = ae.getAnnotationType().substring(1); // remove starting L
