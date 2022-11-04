@@ -4,20 +4,20 @@ import java.lang.annotation.*;
 
 public @interface Value {
 
-	@Documented
-	@Target(ElementType.TYPE)
-	@interface Immutable {
+    @Documented
+    @Target(ElementType.TYPE)
+    @interface Immutable {
 
-		boolean singleton() default false;
+        boolean singleton() default false;
 
-		boolean intern() default false;
+        boolean intern() default false;
 
-		boolean copy() default true;
+        boolean copy() default true;
 
-		boolean prehash() default false;
+        boolean prehash() default false;
 
-		boolean lazyhash() default false;
+        boolean lazyhash() default false;
 
-		boolean builder() default true;
-	}
+        boolean builder() default true;
+    }
 }

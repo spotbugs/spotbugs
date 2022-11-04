@@ -197,12 +197,12 @@ public class ClassAnnotation extends PackageMemberAnnotation {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName());
         if (isPrimary) {
             attributeList.addAttribute("primary", "true");
-		}
-        
-		if (!getJavaAnnotationNames().isEmpty()) {
-			attributeList.addAttribute("classjas", // similar to classname, short for classJavaAnnotations
-					getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
-		}
+        }
+
+        if (!getJavaAnnotationNames().isEmpty()) {
+            attributeList.addAttribute("classjas", // similar to classname, short for classJavaAnnotations
+                    getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
+        }
 
         String role = getDescription();
         if (!DEFAULT_ROLE.equals(role)) {

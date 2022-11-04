@@ -23,43 +23,43 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class AnnotationMatcher implements Matcher {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AnnotationMatcher.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AnnotationMatcher.class);
 
-	private final NameMatch annotationName;
+    private final NameMatch annotationName;
 
-	@Override
-	public String toString() {
-		return "Annotation(name=\"" + annotationName.getValue() + "\")";
-	}
+    @Override
+    public String toString() {
+        return "Annotation(name=\"" + annotationName.getValue() + "\")";
+    }
 
-	public AnnotationMatcher(String annotationName) {
-		this.annotationName = new NameMatch(annotationName);
-	}
+    public AnnotationMatcher(String annotationName) {
+        this.annotationName = new NameMatch(annotationName);
+    }
 
-	@Override
-	public boolean match(BugInstance bugInstance) {
-		// Match on the pure filename first
-		ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
-		if (primaryClassAnnotation == null) {
-			return false;
-		}
-		String bugClassName = primaryClassAnnotation.getSourceFileName();
-		List<String> javaAnnotationNames = primaryClassAnnotation.getJavaAnnotationNames();
-		boolean matchesAny = false;
-		for (String javaAnnotationName : javaAnnotationNames) {
-			boolean result = annotationName.match(javaAnnotationName);
-			LOG.debug("Matching {} in {} with {}, result = {}", bugClassName, annotationName, result);
-			matchesAny = matchesAny || result;
-		}
-		return matchesAny;
-	}
+    @Override
+    public boolean match(BugInstance bugInstance) {
+        // Match on the pure filename first
+        ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
+        if (primaryClassAnnotation == null) {
+            return false;
+        }
+        String bugClassName = primaryClassAnnotation.getSourceFileName();
+        List<String> javaAnnotationNames = primaryClassAnnotation.getJavaAnnotationNames();
+        boolean matchesAny = false;
+        for (String javaAnnotationName : javaAnnotationNames) {
+            boolean result = annotationName.match(javaAnnotationName);
+            LOG.debug("Matching {} in {} with {}, result = {}", bugClassName, annotationName, result);
+            matchesAny = matchesAny || result;
+        }
+        return matchesAny;
+    }
 
-	@Override
-	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", annotationName.getSpec());
-		if (disabled) {
-			attributes.addAttribute("disabled", "true");
-		}
-		xmlOutput.openCloseTag("Annotation", attributes);
-	}
+    @Override
+    public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+        XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", annotationName.getSpec());
+        if (disabled) {
+            attributes.addAttribute("disabled", "true");
+        }
+        xmlOutput.openCloseTag("Annotation", attributes);
+    }
 }

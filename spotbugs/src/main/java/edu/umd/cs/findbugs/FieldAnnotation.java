@@ -396,10 +396,10 @@ public class FieldAnnotation extends PackageMemberAnnotation {
             attributeList.addAttribute("role", role);
         }
 
-		if (!getJavaAnnotationNames().isEmpty()) {
-			attributeList.addAttribute("classjas", // similar to classname, short for classJavaAnnotations
-					getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
-		}
+        if (!getJavaAnnotationNames().isEmpty()) {
+            attributeList.addAttribute("classjas", // similar to classname, short for classJavaAnnotations
+                    getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
+        }
 
         xmlOutput.openTag(ELEMENT_NAME, attributeList);
         getSourceLines().writeXML(xmlOutput, addMessages, false);
