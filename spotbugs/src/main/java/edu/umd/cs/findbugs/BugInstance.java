@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -35,6 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -43,6 +45,8 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.Type;
 import org.objectweb.asm.tree.ClassNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -100,6 +104,8 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  */
 public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Cloneable {
 
+    private static final Logger LOG = LoggerFactory.getLogger(BugInstance.class);
+    
     private final String type;
 
     private int priority;
@@ -2094,7 +2100,37 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     public BugInstance add(@Nonnull BugAnnotation annotation) {
         requireNonNull(annotation, "Missing BugAnnotation!");
-
+        
+        // The java annotations for the class were not stored before, 
+        // thus we add a post-hook to lookup the java annotations for
+        // bug annotation types that have a class descriptor. Then 
+        // post-analysis matcher can easily filter based on the java
+        // annotations (without having to look at the bytecode again).
+        if (annotation instanceof PackageMemberAnnotation) {
+			try {
+	        	PackageMemberAnnotation pma = (PackageMemberAnnotation) annotation;
+	        	ClassDescriptor classDescriptor = pma.getClassDescriptor();
+	        	IAnalysisCache analysisCache = Global.getAnalysisCache();
+				ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
+				AnnotationEntry[] annotationEntries = classContext.getJavaClass().getAnnotationEntries();
+				List<String> javaAnnotationNames = List.of(annotationEntries)
+						.stream()
+						.map((AnnotationEntry ae) -> {
+							// map annotation entry type to dotted class name, for example
+							// Lorg/immutables/value/Generated; -> org.immutables.value.Generated
+ 							String annotationType = ae.getAnnotationType().substring(1); // remove starting L
+							annotationType = annotationType.replace("/", ".");
+							annotationType = annotationType.replace(";", "");
+							return annotationType;
+						})
+						.collect(Collectors.toList());
+				pma.setJavaAnnotationNames(javaAnnotationNames);
+			} catch (Exception e) {
+				// Note: The AnalysisCache is not available during testing (will throw an exception)
+				LOG.debug(e.getMessage(), e);
+			}
+        }
+        
         // Add to list
         annotationList.add(annotation);
 

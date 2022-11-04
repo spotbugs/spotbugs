@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
@@ -196,7 +197,12 @@ public class ClassAnnotation extends PackageMemberAnnotation {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName());
         if (isPrimary) {
             attributeList.addAttribute("primary", "true");
-        }
+		}
+        
+		if (!getJavaAnnotationNames().isEmpty()) {
+			attributeList.addAttribute("classjas", // similar to classname, short for classJavaAnnotations
+					getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
+		}
 
         String role = getDescription();
         if (!DEFAULT_ROLE.equals(role)) {
