@@ -2098,6 +2098,31 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         return add(annotation).describe(role);
     }
 
+    private void addJavaAnnotationNames(BugAnnotation annotation) {
+        try {
+            IAnalysisCache analysisCache = Global.getAnalysisCache();
+            if (analysisCache == null) { // Note: IAnalysisCache is not available during testing or spotbugs:gui
+                return;
+            }
+            PackageMemberAnnotation pma = (PackageMemberAnnotation) annotation;
+            ClassDescriptor classDescriptor = pma.getClassDescriptor();
+            ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
+            JavaClass javaClass = classContext.getJavaClass();
+            AnnotationEntry[] annotationEntries = javaClass.getAnnotationEntries();
+            List<String> javaAnnotationNames = Arrays.asList(annotationEntries).stream().map((AnnotationEntry ae) -> {
+                // map annotation entry type to dotted class name, for example
+                // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
+                String annotationType = ae.getAnnotationType().substring(1); // remove starting L
+                annotationType = annotationType.replace("/", ".");
+                annotationType = annotationType.replace(";", "");
+                return annotationType;
+            }).collect(Collectors.toList());
+            pma.setJavaAnnotationNames(javaAnnotationNames);
+        } catch (Exception e) {
+            LOG.debug(e.getMessage(), e);
+        }
+    }
+    
     public BugInstance add(@Nonnull BugAnnotation annotation) {
         requireNonNull(annotation, "Missing BugAnnotation!");
         
@@ -2107,25 +2132,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         // post-analysis matcher can easily filter based on the java
         // annotations (without having to look at the bytecode again).
         if (annotation instanceof PackageMemberAnnotation) {
-            try {
-                PackageMemberAnnotation pma = (PackageMemberAnnotation) annotation;
-                ClassDescriptor classDescriptor = pma.getClassDescriptor();
-                IAnalysisCache analysisCache = Global.getAnalysisCache();
-                ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
-                AnnotationEntry[] annotationEntries = classContext.getJavaClass().getAnnotationEntries();
-                List<String> javaAnnotationNames = Arrays.asList(annotationEntries).stream().map((AnnotationEntry ae) -> {
-                    // map annotation entry type to dotted class name, for example
-                    // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
-                    String annotationType = ae.getAnnotationType().substring(1); // remove starting L
-                    annotationType = annotationType.replace("/", ".");
-                    annotationType = annotationType.replace(";", "");
-                    return annotationType;
-                }).collect(Collectors.toList());
-                pma.setJavaAnnotationNames(javaAnnotationNames);
-            } catch (Exception e) {
-                // Note: The AnalysisCache is not available during testing (will throw an exception)
-                LOG.debug(e.getMessage(), e);
-            }
+            addJavaAnnotationNames(annotation);
         }
         
         // Add to list
