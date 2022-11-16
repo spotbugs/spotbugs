@@ -105,7 +105,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Cloneable {
 
     private static final Logger LOG = LoggerFactory.getLogger(BugInstance.class);
-    
+
     private final String type;
 
     private int priority;
@@ -2122,10 +2122,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             LOG.debug(e.getMessage(), e);
         }
     }
-    
+
     public BugInstance add(@Nonnull BugAnnotation annotation) {
         requireNonNull(annotation, "Missing BugAnnotation!");
-        
+
         // The java annotations for the class were not stored before, 
         // thus we add a post-hook to lookup the java annotations for
         // bug annotation types that have a class descriptor. Then 
@@ -2134,7 +2134,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         if (annotation instanceof PackageMemberAnnotation) {
             addJavaAnnotationNames(annotation);
         }
-        
+
         // Add to list
         annotationList.add(annotation);
 
