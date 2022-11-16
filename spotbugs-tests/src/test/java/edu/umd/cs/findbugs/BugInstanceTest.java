@@ -19,7 +19,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class BugInstanceTest {
 
-	private BugInstance b;
+    private BugInstance b;
 
     @Before
     public void setUp() {
@@ -125,7 +125,7 @@ public class BugInstanceTest {
         removeThroughIterator(b.propertyIterator(), "C");
         checkPropertyIterator(b.propertyIterator(), new String[0], new String[0]);
     }
-    
+
     private String writeXMLAndGetStringOutput(BugInstance bug) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         XMLOutput xmlOutput = new OutputStreamXMLOutput(outputStream);

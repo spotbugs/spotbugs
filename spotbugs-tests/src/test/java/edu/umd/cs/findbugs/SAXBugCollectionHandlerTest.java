@@ -168,7 +168,7 @@ public class SAXBugCollectionHandlerTest {
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
     }
-    
+
     @Test
     public void testReadAndThenStoreJasAttribute() throws Exception {
         SortedBugCollection origBC = new SortedBugCollection();
