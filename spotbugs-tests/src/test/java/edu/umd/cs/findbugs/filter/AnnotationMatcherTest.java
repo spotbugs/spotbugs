@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.After;
@@ -29,6 +30,7 @@ import org.junit.Test;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.test.SpotBugsRule;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -39,13 +41,10 @@ public class AnnotationMatcherTest {
     @Rule
     public SpotBugsRule spotbugs = new SpotBugsRule();
 
-    private BugInstance bug;
-
     private String annotationName;
 
     @Before
     public void setUp() {
-        bug = new BugInstance("UUF_UNUSED_FIELD", 0);
         annotationName = "org.immutables.value.Generated";
     }
 
@@ -69,7 +68,46 @@ public class AnnotationMatcherTest {
     }
 
     @Test
-    public void readXML() throws Exception {
+    public void testMatchMissingPrimaryAnnotationIsFalse() throws Exception {
+        Filter filter = readFilterFromXML();
+        // no primary annotation; should not match
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
+        assertFalse(filter.match(bug));
+    }
+
+    @Test
+    public void testMatchMissingJavaAnnotationIsFalse() throws Exception {
+        Filter filter = readFilterFromXML();
+        // added primary class annotation; should not match b.c. missing java annotation
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
+        ClassAnnotation buggyClass = new ClassAnnotation("BuggyClass", "BuggyClass.java");
+        bug.add(buggyClass);
+        assertFalse(filter.match(bug));
+    }
+
+    @Test
+    public void testMatchOtherJavaAnnotationIsFalse() throws Exception {
+        Filter filter = readFilterFromXML();
+        // added primary class annotation; should not match b.c. other java annotation
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
+        ClassAnnotation buggyClass = new ClassAnnotation("BuggyClass", "BuggyClass.java");
+        buggyClass.setJavaAnnotationNames(Arrays.asList("org.immutables.value.Other"));
+        bug.add(buggyClass);
+        assertFalse(filter.match(bug));
+    }
+
+    @Test
+    public void testMatchJavaAnnotationIsTrue() throws Exception {
+        Filter filter = readFilterFromXML();
+        // added primary class annotation; should match b.c. has java annotation
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
+        ClassAnnotation buggyClass = new ClassAnnotation("AnnotatedBuggyClass", "AnnotatedBuggyClass.java");
+        buggyClass.setJavaAnnotationNames(Arrays.asList(annotationName));
+        bug.add(buggyClass);
+        assertTrue(filter.match(bug));
+    }
+
+    private Filter readFilterFromXML() throws IOException {
         AnnotationMatcher sm = new AnnotationMatcher(annotationName);
 
         String matcherXml = writeXMLAndGetStringOutput(sm, false);
@@ -82,15 +120,7 @@ public class AnnotationMatcherTest {
                 + "\n</FindBugsFilter>\n";
 
         Filter filter = new Filter(new StringInputStream(filterXml));
-
-        // no primary annotation; should not match
-        assertFalse(filter.match(bug));
-
-        // added primary class annotation; should match
-
-        bug.addClass("bla", annotationName);
-
-        assertTrue(filter.match(bug));
+        return filter;
     }
 
     @Test
