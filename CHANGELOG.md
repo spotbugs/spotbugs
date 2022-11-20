@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bump up Apache Commons BCEL to the version 6.6.1 ([#2223](https://github.com/spotbugs/spotbugs/pull/2223))
 - Bump up slf4j-api to 2.0.3 ([#2220](https://github.com/spotbugs/spotbugs/pull/2220))
 - Bump up gson to 2.10 ([#2235](https://github.com/spotbugs/spotbugs/pull/2235))
+- New function added to detector `SynchronizationOnSharedBuiltinConstant`to detect `DL_SYNCHRONIZATION_ON_INTERNED_STRING` ([#2266](https://github.com/spotbugs/spotbugs/pull/2266))
 
 ### Fixed
 - Fixed missing classes not in report if using IErrorLogger.reportMissingClass(ClassDescriptor) ([#219](https://github.com/spotbugs/spotbugs/issues/219))
