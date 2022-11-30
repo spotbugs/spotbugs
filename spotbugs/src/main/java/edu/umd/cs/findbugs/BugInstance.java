@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DateFormat;
@@ -104,7 +105,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  */
 public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Cloneable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BugInstance.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final String type;
 
