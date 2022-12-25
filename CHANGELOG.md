@@ -12,6 +12,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Fixed missing classes not in report if using IErrorLogger.reportMissingClass(ClassDescriptor) ([#219](https://github.com/spotbugs/spotbugs/issues/219))
+- Added support for jakarta namespace ([#2289](https://github.com/spotbugs/spotbugs/pull/2289))
 
 #### Security
 - Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))

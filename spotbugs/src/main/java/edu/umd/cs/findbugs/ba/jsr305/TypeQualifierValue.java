@@ -198,7 +198,7 @@ public class TypeQualifierValue<A extends Annotation> {
         if (DEBUG_CLASSLOADING) {
             System.out.println("Getting qualifier class for " + className);
         }
-        if (className.startsWith("javax.annotation")) {
+        if (className.startsWith("javax.annotation") || className.startsWith("jakarta.annotation")) {
             return (Class<A>) Class.forName(className);
         }
         try {

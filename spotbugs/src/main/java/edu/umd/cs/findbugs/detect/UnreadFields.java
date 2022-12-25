@@ -313,10 +313,13 @@ public class UnreadFields extends OpcodeStackDetector {
 
     public static boolean isInjectionAttribute(@DottedClassName String annotationClass) {
         if (annotationClass.startsWith("javax.annotation.")
+                || annotationClass.startsWith("jakarta.annotation.")
                 || annotationClass.startsWith("javax.ejb")
+                || annotationClass.startsWith("jakarta.ejb")
                 || "org.apache.tapestry5.annotations.Persist".equals(annotationClass)
                 || "org.jboss.seam.annotations.In".equals(annotationClass)
                 || annotationClass.startsWith("javax.persistence")
+                || annotationClass.startsWith("jakarta.persistence")
                 || annotationClass.endsWith("SpringBean")
                 || "com.google.inject.Inject".equals(annotationClass)
                 || annotationClass.startsWith("com.google.") && annotationClass.endsWith(".Bind")
@@ -325,6 +328,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 || annotationClass.startsWith("com.google.gwt.uibinder.client")
                 || annotationClass.startsWith("org.springframework.beans.factory.annotation")
                 || "javax.ws.rs.core.Context".equals(annotationClass)
+                || "jakarta.ws.rs.core.Context".equals(annotationClass)
                 || "javafx.fxml.FXML".equals(annotationClass)) {
             return true;
         }
