@@ -305,6 +305,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 * Avoid changing the SecurityManager when launched as an IntelliJ IDEA plugin.
 
+### Fixed
+
+- Spotbugs does not find some warnings/errors within class that extends some other class([Bug#675](https://github.com/spotbugs/spotbugs/issues/675))
+
 ## 4.0.2 - 2020-04-15
 
 ### Fixed
@@ -718,3 +722,4 @@ This version contains no change, except for the solution for [a deployment probl
 ## FindBugs 3.0.1 or older
 
 Check [changelog at SourceForge](http://findbugs.sourceforge.net/Changes.html).
+
