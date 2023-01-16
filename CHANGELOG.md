@@ -16,8 +16,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed AbstractBugReporter emits wrong non-sensical debug output during filtering ([#184](https://github.com/spotbugs/spotbugs/issues/184))
 - Added support for jakarta namespace ([#2289](https://github.com/spotbugs/spotbugs/pull/2289))
 
-#### Security
+### Security
 - Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))
+
+### Build
+- Bump Eclipse from 4.6.3 to 4.14 ([#2314](https://github.com/spotbugs/spotbugs/pull/2314))
 
 ## 4.7.3 - 2022-10-15
 ### Fixed
