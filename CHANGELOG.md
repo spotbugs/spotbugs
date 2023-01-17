@@ -21,6 +21,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Build
 - Bump Eclipse from 4.6.3 to 4.14 ([#2314](https://github.com/spotbugs/spotbugs/pull/2314))
+- Use jakarta annotation 1.3.5 instead of legacy javax annotation 1.3.2 ([#2315](https://github.com/spotbugs/spotbugs/pull/2315))
 
 ## 4.7.3 - 2022-10-15
 ### Fixed
