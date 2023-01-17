@@ -11,6 +11,7 @@ jobs:
     permissions:
       contents: write # to push pages branch (peaceiris/actions-gh-pages)
 
+    if: github.repository_owner == 'spotbugs'
     runs-on: ubuntu-latest
 
     steps:
