@@ -362,7 +362,7 @@ dependencies {
     logBinding("ch.qos.logback:logback-core") {
       version {
         strictly("[1.2.9, 2[")
-        prefer("1.4.0")
+        prefer("1.4.8")
       }
       because("CVE-2021-42550: Logback vulnerable to remote code execution vulnerabilities")
     }
