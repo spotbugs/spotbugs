@@ -152,7 +152,7 @@ public class UnionResults {
             String fileName = arguments.get(i);
             try {
                 SortedBugCollection more = new SortedBugCollection();
-                if(fileName.endsWith(".txt")){
+                if (fileName.endsWith(".txt")) {
                     List<String> wrappedArguments = readWrappedArguments(fileName);
                     if (results == null) {
                         results = more.createEmptyCollectionWithMetadata();
@@ -176,12 +176,12 @@ public class UnionResults {
 
     private static List<String> readWrappedArguments(String fileName) throws IOException {
         List<String> wrappedArguments = new ArrayList<>();
-        try(BufferedReader reader = new BufferedReader(new FileReader(fileName))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String next;
-            while((next = reader.readLine()) != null){
+            while ((next = reader.readLine()) != null) {
                 wrappedArguments.add(next);
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             return Collections.emptyList();
         }
         return wrappedArguments;
