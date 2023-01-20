@@ -41,7 +41,6 @@ import org.apache.tools.ant.types.FileSet;
  * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>}
  *
  * @ant.task category="utility"
- *
  */
 
 public class UnionBugs2 extends AbstractFindBugsTask {
@@ -113,7 +112,7 @@ public class UnionBugs2 extends AbstractFindBugsTask {
             throw new BuildException("unable to create temporary argument file", e);
         }
         String pathAsString = tempFile.toAbsolutePath().toString();
-        try(PrintWriter writer = new PrintWriter(tempFile.toFile())) {
+        try (PrintWriter writer = new PrintWriter(tempFile.toFile())) {
             writer.print(builder);
         } catch (FileNotFoundException e) {
             throw new BuildException(String.format("unable to write to temporary argument file: '%s'", pathAsString), e);

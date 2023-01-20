@@ -50,9 +50,9 @@ public class UnionBugs2Test {
 
     private static List<String> readArgumentsFile(String textFile) {
         List<String> compiledXmlFiles = new ArrayList<>();
-        try(BufferedReader reader = new BufferedReader(new FileReader(textFile))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(textFile))) {
             String next;
-            while((next = reader.readLine()) != null){
+            while ((next = reader.readLine()) != null) {
                 compiledXmlFiles.add(next);
             }
         } catch (FileNotFoundException e) {
