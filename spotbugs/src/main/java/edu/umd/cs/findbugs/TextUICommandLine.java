@@ -405,18 +405,21 @@ public class TextUICommandLine extends FindBugsCommandLine {
         } else if ("-exitcode".equals(option)) {
             setExitCode = true;
         } else if ("-auxclasspathFromInput".equals(option)) {
-            try {
-                BufferedReader in = UTF8.bufferedReader(System.in);
-                while (true) {
-                    String s = in.readLine();
-                    if (s == null) {
-                        break;
+            // 'synchronized' to handle concurrent executions (e.g. by the mvn plugin)
+            synchronized (System.in) {
+                try {
+                    BufferedReader in = UTF8.bufferedReader(System.in);
+                    while (true) {
+                        String s = in.readLine();
+                        if (s == null) {
+                            break;
+                        }
+                        addAuxClassPathEntries(s);
                     }
-                    addAuxClassPathEntries(s);
+                    in.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-                in.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         } else if ("-noClassOk".equals(option)) {
             noClassOk = true;
@@ -762,13 +765,16 @@ public class TextUICommandLine extends FindBugsCommandLine {
      */
     public void handleXArgs() throws IOException {
         if (getXargs()) {
-            try (BufferedReader in = UTF8.bufferedReader(System.in)) {
-                while (true) {
-                    String s = in.readLine();
-                    if (s == null) {
-                        break;
+            // 'synchronized' to handle concurrent executions (e.g. by the mvn plugin)
+            synchronized (System.in) {
+                try (BufferedReader in = UTF8.bufferedReader(System.in)) {
+                    while (true) {
+                        String s = in.readLine();
+                        if (s == null) {
+                            break;
+                        }
+                        project.addFile(s);
                     }
-                    project.addFile(s);
                 }
             }
         }
