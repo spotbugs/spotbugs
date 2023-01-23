@@ -20,7 +20,7 @@ public class UnionResultsTest {
         File outputFile = new File("src/test/resources/output.xml");
 
         //Act
-        UnionResults.main(new String[]{"-withMessages", "-output", outputFile.getAbsolutePath(), fileName});
+        UnionResults.main(new String[] { "-withMessages", "-output", outputFile.getAbsolutePath(), fileName });
 
         //Verify
         List<String> output = readOutPut(outputFile.getAbsolutePath());
@@ -34,9 +34,9 @@ public class UnionResultsTest {
 
     private List<String> readOutPut(String absolutePath) throws IOException {
         ArrayList<String> retVal = new ArrayList<>();
-        try(BufferedReader reader = new BufferedReader(new FileReader(absolutePath))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(absolutePath))) {
             String next;
-            while((next = reader.readLine()) != null){
+            while ((next = reader.readLine()) != null) {
                 retVal.add(next);
             }
         }
@@ -50,7 +50,7 @@ public class UnionResultsTest {
         File secondFile = new File("src/test/resources/secondFile.xml");
         Files.deleteIfExists(firstFile.toPath());
         Files.deleteIfExists(secondFile.toPath());
-        try(PrintWriter fileWriter = new PrintWriter(new FileWriter(fileName))){
+        try (PrintWriter fileWriter = new PrintWriter(new FileWriter(fileName))) {
             fileWriter.write(firstFile.getAbsolutePath() + "\n");
             fileWriter.write(secondFile.getAbsolutePath());
         }
