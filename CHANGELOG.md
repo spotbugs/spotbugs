@@ -15,6 +15,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Stop exposing junit-bom to consumers ([#2255](https://github.com/spotbugs/spotbugs/pull/2255))
 - Fixed AbstractBugReporter emits wrong non-sensical debug output during filtering ([#184](https://github.com/spotbugs/spotbugs/issues/184))
 - Added support for jakarta namespace ([#2289](https://github.com/spotbugs/spotbugs/pull/2289))
+- Report a low priority bug for an unread field in reflective classes ([#2325](https://github.com/spotbugs/spotbugs/issues/2325))
 
 ### Security
 - Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))

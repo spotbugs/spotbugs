@@ -865,8 +865,8 @@ public class UnreadFields extends OpcodeStackDetector {
         XFactory xFactory = AnalysisContext.currentXFactory();
         for (XField f : AnalysisContext.currentXFactory().allFields()) {
             ClassDescriptor classDescriptor = f.getClassDescriptor();
-            if (currentAnalysisContext.isApplicationClass(classDescriptor) && !currentAnalysisContext.isTooBig(classDescriptor)
-                    && !xFactory.isReflectiveClass(classDescriptor)) {
+            if (currentAnalysisContext.isApplicationClass(classDescriptor)
+                    && !currentAnalysisContext.isTooBig(classDescriptor)) {
                 declaredFields.add(f);
             }
         }
@@ -986,6 +986,9 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldSignature = f.getSignature();
             if (f.isResolved() && !data.fieldsOfNativeClasses.contains(f)) {
                 int priority = NORMAL_PRIORITY;
+                if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
+                    priority++;
+                }
                 if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')) {
                     priority++;
                 }
@@ -1044,6 +1047,9 @@ public class UnreadFields extends OpcodeStackDetector {
                 } else {
                     priority--;
                 }
+                if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
+                    priority++;
+                }
                 String pattern = (f.isPublic() || f.isProtected()) ? "NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"
                         : "NP_UNWRITTEN_FIELD";
                 for (ProgramPoint p : assumedNonNullAt) {
@@ -1053,6 +1059,9 @@ public class UnreadFields extends OpcodeStackDetector {
                 }
 
             } else {
+                if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
+                    priority++;
+                }
                 if (f.isStatic()) {
                     priority++;
                 }
@@ -1199,11 +1208,18 @@ public class UnreadFields extends OpcodeStackDetector {
                 } else if (data.fieldsOfSerializableOrNativeClassed.contains(f)) {
                     // ignore it
                 } else if (!data.writtenFields.contains(f)) {
+                    int priority = NORMAL_PRIORITY;
+                    if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
+                        priority++;
+                    }
                     bugReporter.reportBug(new BugInstance(this,
                             (f.isPublic() || f.isProtected()) ? "UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" : "UUF_UNUSED_FIELD",
-                            NORMAL_PRIORITY).addClass(className).addField(f).lowerPriorityIfDeprecated());
+                            priority).addClass(className).addField(f).lowerPriorityIfDeprecated());
                 } else if (f.getName().toLowerCase().indexOf("guardian") < 0) {
                     int priority = NORMAL_PRIORITY;
+                    if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
+                        priority++;
+                    }
                     if (f.isStatic()) {
                         priority++;
                     }
