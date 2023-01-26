@@ -405,7 +405,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
         } else if ("-exitcode".equals(option)) {
             setExitCode = true;
         } else if ("-auxclasspathFromInput".equals(option)) {
-            // 'synchronized' to handle concurrent executions (e.g. by the mvn plugin)
             synchronized (System.in) {
                 try {
                     BufferedReader in = UTF8.bufferedReader(System.in);
@@ -765,7 +764,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
      */
     public void handleXArgs() throws IOException {
         if (getXargs()) {
-            // 'synchronized' to handle concurrent executions (e.g. by the mvn plugin)
             synchronized (System.in) {
                 try (BufferedReader in = UTF8.bufferedReader(System.in)) {
                     while (true) {
