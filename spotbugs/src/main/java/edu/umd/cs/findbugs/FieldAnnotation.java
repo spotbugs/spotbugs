@@ -397,7 +397,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
         }
 
         if (!getJavaAnnotationNames().isEmpty()) {
-            attributeList.addAttribute("classjas", // similar to classname, short for classJavaAnnotations
+            attributeList.addAttribute("classAnnotationNames",
                     getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
         }
 
