@@ -519,10 +519,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         BugAnnotation bugAnnotation = null;
         if ("Class".equals(qName)) {
             String className = getRequiredAttribute(attributes, "classname", qName);
-            String classjas = getOptionalAttribute(attributes, "classjas");
+            String classAnnotationNames = getOptionalAttribute(attributes, "classAnnotationNames");
             bugAnnotation = bugAnnotationWithSourceLines = new ClassAnnotation(className);
-            if (classjas != null) {
-                ((PackageMemberAnnotation) bugAnnotation).setJavaAnnotationNames(Arrays.asList(classjas.split(",")));
+            if (classAnnotationNames != null) {
+                ((PackageMemberAnnotation) bugAnnotation)
+                        .setJavaAnnotationNames(Arrays.asList(classAnnotationNames.split(",")));
             }
         } else if ("Type".equals(qName)) {
             String typeDescriptor = getRequiredAttribute(attributes, "descriptor", qName);
@@ -537,7 +538,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             String classname = getRequiredAttribute(attributes, "classname", qName);
             String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
             String signature = getRequiredAttribute(attributes, "signature", qName);
-            String classjas = getOptionalAttribute(attributes, "classjas");
+            String classAnnotationNames = getOptionalAttribute(attributes, "classAnnotationNames");
             if ("Method".equals(qName)) {
                 String isStatic = getOptionalAttribute(attributes, "isStatic");
                 if (isStatic == null) {
@@ -553,8 +554,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 bugAnnotation = bugAnnotationWithSourceLines = new FieldAnnotation(classname, fieldOrMethodName, signature,
                         sourceSignature, Boolean.valueOf(isStatic));
             }
-            if (classjas != null) {
-                ((PackageMemberAnnotation) bugAnnotation).setJavaAnnotationNames(Arrays.asList(classjas.split(",")));
+            if (classAnnotationNames != null) {
+                ((PackageMemberAnnotation) bugAnnotation)
+                        .setJavaAnnotationNames(Arrays.asList(classAnnotationNames.split(",")));
             }
         } else if ("SourceLine".equals(qName)) {
             SourceLineAnnotation sourceAnnotation = createSourceLineAnnotation(qName, attributes);
