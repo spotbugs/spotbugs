@@ -184,7 +184,7 @@
         </annotation>
         <attribute name="name" type="string">
             <annotation>
-                <documentation>The exact or regex match pattern for a java class annotation name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
+                <documentation>The exact or regex match pattern for a java class annotation name. If the name starts with the ~ character the rest of the attribute content is interpreted as a Java regular expression.</documentation>
             </annotation></attribute>
     </complexType>
     
