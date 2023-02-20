@@ -7,17 +7,17 @@ import java.io.ObjectOutput;
 
 public class BadExternalizableTest implements Externalizable {
 
-  private String name;
-  private int UID;
+    private String name;
+    private int UID;
 
-  @Override
-  public void writeExternal(ObjectOutput out) throws IOException {
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
 
-  }
+    }
 
-  @Override
-  public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-    name = (String) in.readObject();
-    UID = in.readInt();
-  }
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        name = (String) in.readObject();
+        UID = in.readInt();
+    }
 }

@@ -7,28 +7,27 @@ import java.io.ObjectOutput;
 
 public class BadExternalizableTest4 implements Externalizable {
 
-  private String name;
-  private int UID;
+    private final Object lock = new Object();
+    private String name;
+    private int UID;
+    private boolean initialized = false;
 
-  private final Object lock = new Object();
-  private boolean initialized = false;
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
 
-  @Override
-  public void writeExternal(ObjectOutput out) throws IOException {
-
-  }
-
-  @Override
-  public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-    synchronized (lock) {
-      if (!initialized) {
-        name = (String) in.readObject();
-
-        initialized = true;
-      } else {
-        return;
-      }
-      UID = in.readInt();
     }
-  }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        synchronized (lock) {
+            if (!initialized) {
+                name = (String) in.readObject();
+
+                initialized = true;
+            } else {
+                return;
+            }
+            UID = in.readInt();
+        }
+    }
 }
