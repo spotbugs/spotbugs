@@ -8833,7 +8833,7 @@ Using floating-point variables should not be used as loop counters, as they are 
           describes that compound operations on shared variables must be performed atomically to prevent data races and race conditions.
           Compound operations are operations that consist of more than one discrete operation. Expressions that include postfix or prefix increment (++), postfix or prefix decrement (--),
           or compound assignment operators always result in compound operations.
-          Important that declaring a variable volatile fails to guarantee the atomicity of compound operations on the variable.
+          It is important to note that declaring a variable volatile fails to guarantee the atomicity of compound operations on the variable.
         <p>
           To solve this issue, synchronize compound operations, use read-write locks, or declare these shared variables with an atomic type.
         </p>
