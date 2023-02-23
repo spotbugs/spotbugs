@@ -971,7 +971,8 @@ public class OpcodeStack {
             XMethod writingToSource = getReturnValueOf();
 
 
-            return writingToSource != null && "javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
+            return writingToSource != null && ("javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
+                    || "jakarta.servlet.http.HttpServletResponse".equals(writingToSource.getClassName()))
                     && ("getWriter".equals(writingToSource.getName()) || "getOutputStream".equals(writingToSource.getName()));
         }
 

@@ -4,15 +4,31 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2022-??-??
+## Unreleased - 2023-??-??
 ### Added
 * New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See [SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions))([#2055](https://github.com/spotbugs/spotbugs/pull/2055))
 
-### Fixed
+### Changed
+- Bump up Apache Commons BCEL to the version 6.6.1 ([#2223](https://github.com/spotbugs/spotbugs/pull/2223))
 - Bump up slf4j-api to 2.0.3 ([#2220](https://github.com/spotbugs/spotbugs/pull/2220))
+- Bump up gson to 2.10 ([#2235](https://github.com/spotbugs/spotbugs/pull/2235))
 
-#### Security
+### Fixed
+- Fixed missing classes not in report if using IErrorLogger.reportMissingClass(ClassDescriptor) ([#219](https://github.com/spotbugs/spotbugs/issues/219))
+- Stop exposing junit-bom to consumers ([#2255](https://github.com/spotbugs/spotbugs/pull/2255))
+- Fixed AbstractBugReporter emits wrong non-sensical debug output during filtering ([#184](https://github.com/spotbugs/spotbugs/issues/184))
+- Added support for jakarta namespace ([#2289](https://github.com/spotbugs/spotbugs/pull/2289))
+- Report a low priority bug for an unread field in reflective classes ([#2325](https://github.com/spotbugs/spotbugs/issues/2325))
+- Fixed "Unhandled event loop exception" opening Bug Filter Configuration dialog in Eclipse ([#2327](https://github.com/spotbugs/spotbugs/issues/2327))
+
+### Security
 - Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))
+
+### Build
+- Bump Eclipse from 4.6.3 to 4.14 ([#2314](https://github.com/spotbugs/spotbugs/pull/2314))
+- Use jakarta annotation 1.3.5 instead of legacy javax annotation 1.3.2 ([#2315](https://github.com/spotbugs/spotbugs/pull/2315))
+- Change hamcrest-all to hamcrest-core as that is what was actually used and then update to 2.2 ([#2316](https://github.com/spotbugs/spotbugs/pull/2316))
+- Only run release action on 'spotbugs' and use Eclipse 4.14 ([#2317](https://github.com/spotbugs/spotbugs/pull/2317))
 
 ## 4.7.3 - 2022-10-15
 ### Fixed

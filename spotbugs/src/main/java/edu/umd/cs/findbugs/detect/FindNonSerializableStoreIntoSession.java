@@ -102,7 +102,7 @@ public class FindNonSerializableStoreIntoSession implements Detector {
                 continue;
             }
             String cName = invoke.getClassName(cpg);
-            if (!"javax.servlet.http.HttpSession".equals(cName)) {
+            if (!("javax.servlet.http.HttpSession".equals(cName) || "jakarta.servlet.http.HttpSession".equals(cName))) {
                 continue;
             }
 
