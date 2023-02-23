@@ -271,7 +271,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
         isGUIClass = (Subtypes2.instanceOf(obj, "java.lang.Throwable") || Subtypes2.instanceOf(obj, "java.awt.Component")
                 || Subtypes2.instanceOf(obj, "java.awt.Component$AccessibleAWTComponent")
                 || Subtypes2.instanceOf(obj, "java.awt.event.ActionListener") || Subtypes2.instanceOf(obj,
-                "java.util.EventListener"));
+                        "java.util.EventListener"));
         if (!isGUIClass) {
             JavaClass o = obj;
             while (o != null) {
@@ -321,7 +321,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 || sawWriteObject
                 || seenTransientField
                 || AnalysisContext.currentAnalysisContext().getUnreadFieldsData()
-                .existsStrongEvidenceForIntendedSerialization(this.getClassDescriptor());
+                        .existsStrongEvidenceForIntendedSerialization(this.getClassDescriptor());
     }
 
     @Override
