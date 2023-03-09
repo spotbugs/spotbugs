@@ -27,7 +27,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Added
 - Extend `SerializableIdiom` detector with new bug type:
-  - `SE_PREVENT_EXT_OBJ_OVERWRITE` is reported in case if `readExternal()` method allows any caller to reset any value of an object
+  - `SE_PREVENT_EXT_OBJ_OVERWRITE` is reported in case of the `readExternal()` method allows any caller to reset any value of an object
 
 ### Security
 - Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))
