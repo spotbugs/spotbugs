@@ -7,7 +7,6 @@ import java.io.ObjectOutput;
 
 public class BadExternalizableTest4 implements Externalizable {
 
-    private final Object lock = new Object();
     private String name;
     private int UID;
     private boolean initialized = false;
@@ -19,15 +18,13 @@ public class BadExternalizableTest4 implements Externalizable {
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        synchronized (lock) {
-            if (!initialized) {
-                name = (String) in.readObject();
+        if (!initialized) {
+            name = (String) in.readObject();
 
-                initialized = true;
-            } else {
-                return;
-            }
-            UID = in.readInt();
+            initialized = true;
+        } else {
+            return;
         }
+        UID = in.readInt();
     }
 }

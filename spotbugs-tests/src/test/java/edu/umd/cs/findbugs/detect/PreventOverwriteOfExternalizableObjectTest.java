@@ -25,7 +25,7 @@ public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrat
         performAnalysis("externalizable/BadExternalizableTest2.class");
 
         assertNumOfBugs(1);
-        assertBug("BadExternalizableTest2", 31);
+        assertBug("BadExternalizableTest2", 28);
     }
 
     @Test
@@ -33,7 +33,7 @@ public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrat
         performAnalysis("externalizable/BadExternalizableTest3.class");
 
         assertNumOfBugs(1);
-        assertBug("BadExternalizableTest3", 23);
+        assertBug("BadExternalizableTest3", 21);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrat
         performAnalysis("externalizable/BadExternalizableTest4.class");
 
         assertNumOfBugs(1);
-        assertBug("BadExternalizableTest4", 30);
+        assertBug("BadExternalizableTest4", 28);
     }
 
     @Test
@@ -49,8 +49,8 @@ public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrat
         performAnalysis("externalizable/BadExternalizableTest5.class");
 
         assertNumOfBugs(2);
-        assertBug("BadExternalizableTest5", 24);
-        assertBug("BadExternalizableTest5", 25);
+        assertBug("BadExternalizableTest5", 22);
+        assertBug("BadExternalizableTest5", 23);
     }
 
     @Test
