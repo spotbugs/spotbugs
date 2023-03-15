@@ -669,7 +669,9 @@
                     reports="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource" speed="fast"
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
-            <!-- Bug Categories -->
+          <Detector class="edu.umd.cs.findbugs.detect.FindVulnerableSecurityCheckMethods" speed="fast"
+                    reports="VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS"/>
+    <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
@@ -697,6 +699,8 @@
           <BugCode abbrev="FB"/>
           <BugCode abbrev="AT"/>
           <BugCode abbrev="JUA"/>
+          <BugCode abbrev="VSC"/>
+
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
           <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
@@ -1285,5 +1289,8 @@
           <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_CLAUSE_THROWABLE" category="BAD_PRACTICE" />
           <BugPattern abbrev="PERM" type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS" category="MALICIOUS_CODE" />
           <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"
+                    category="MALICIOUS_CODE"/>
+
+          <BugPattern abbrev="VSC" type="VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS"
                     category="MALICIOUS_CODE"/>
 </FindbugsPlugin>
