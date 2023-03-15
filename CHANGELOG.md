@@ -5,6 +5,11 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2023-??-??
+### Added 
+- New Detector `FindVulnerableSecurityCheckMethods` for new bug type `VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS`. 
+- This bug is reported whenever a non-final and non-private method of a non-final class performs a secuirty check
+- using the `java.lang.SecurityManager`. (See [SEI CERT MET03-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET03-J.+Methods+that+perform+a+security+check+must+be+declared+private+or+final)) 
+
 ### Changed
 - Bump up Apache Commons BCEL to the version 6.6.1 ([#2223](https://github.com/spotbugs/spotbugs/pull/2223))
 - Bump up slf4j-api to 2.0.3 ([#2220](https://github.com/spotbugs/spotbugs/pull/2220))
