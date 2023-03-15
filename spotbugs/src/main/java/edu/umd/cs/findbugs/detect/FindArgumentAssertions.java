@@ -43,7 +43,7 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
     }
 
     /**
-     * Checks if the methods paramaeter is an initial arg.
+     * Checks if the methods parameter is an initial arg.
      */
     private boolean isInitialArg() {
         XMethod m = getXMethodOperand();
@@ -61,14 +61,10 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
      * Returns true if the opcode is a method invocation false otherwise
      */
     private boolean isMethodCall(int seen) {
-        boolean methodCall = false;
-        if (seen == Const.INVOKESTATIC ||
+        return seen == Const.INVOKESTATIC ||
                 seen == Const.INVOKEVIRTUAL ||
                 seen == Const.INVOKEINTERFACE ||
-                seen == Const.INVOKESPECIAL) {
-            methodCall = true;
-        }
-        return methodCall;
+                seen == Const.INVOKESPECIAL;
     }
 
     /**
@@ -130,7 +126,8 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
             if (stackSize > 0) {
                 for (int i = 0; i < stackSize; i++) {
                     OpcodeStack.Item item = stack.getStackItem(i);
-                    if (wasArg = item.isInitialParameter()) {
+                    wasArg = item.isInitialParameter();
+                    if (wasArg) {
                         break;
                     }
                 }
