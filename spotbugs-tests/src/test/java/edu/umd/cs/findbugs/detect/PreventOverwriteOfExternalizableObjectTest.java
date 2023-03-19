@@ -60,6 +60,13 @@ public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrat
         assertNumOfBugs(0);
     }
 
+    @Test
+    public void testGoodReadExternal2() {
+        performAnalysis("externalizable/GoodExternalizableTest2.class");
+
+        assertNumOfBugs(0);
+    }
+
     private void assertNumOfBugs(int num) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("SE_PREVENT_EXT_OBJ_OVERWRITE").build();

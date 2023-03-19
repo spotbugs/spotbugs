@@ -100,7 +100,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     private final HashSet<XField> transientFieldsSetToDefaultValueInConstructor = new HashSet<>();
 
-    private final Map<XField, BugInstance> fieldsSetInReadExternal = new HashMap();
+    private final Map<XField, BugInstance> optionalBugsInReadExternal = new HashMap();
 
     private Optional<XField> initializedCheckerVariable = Optional.empty();
 
@@ -422,9 +422,9 @@ public class SerializableIdiom extends OpcodeStackDetector {
             bugReporter.reportBug(new BugInstance(this, "WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
         }
 
-        if (isExternalizable && sawReadExternal && !fieldsSetInReadExternal.isEmpty() && initializedCheckerVariable.isPresent()
-                && !fieldsSetInReadExternal.containsKey(initializedCheckerVariable.get())) {
-            fieldsSetInReadExternal.values().forEach(bugReporter::reportBug);
+        if (isExternalizable && sawReadExternal && !optionalBugsInReadExternal.isEmpty() && initializedCheckerVariable.isPresent()
+                && !optionalBugsInReadExternal.containsKey(initializedCheckerVariable.get())) {
+            optionalBugsInReadExternal.values().forEach(bugReporter::reportBug);
         }
     }
 
@@ -621,7 +621,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                 .addClassAndMethod(this)
                                 .addField(xField)
                                 .addSourceLine(this);
-                        fieldsSetInReadExternal.put(xField, bug);
+                        optionalBugsInReadExternal.put(xField, bug);
                         if (!initializedCheckerVariable.isPresent() || sawReadExternalExit) {
                             bugReporter.reportBug(bug);
                         }
