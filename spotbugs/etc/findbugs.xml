@@ -679,7 +679,9 @@
                     reports="VSC_VULNERABLE_SECURITY_CHECK_METHODS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions" speed="fast"
                     reports="AA_ASSERTION_OF_ARGUMENTS"/>
-    <!-- Bug Categories -->
+          <Detector class="edu.umd.cs.findbugs.detect.DontReusePublicIdentifiers" speed="fast"
+                    reports="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS"/>
+          <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
@@ -1312,4 +1314,5 @@
           <BugPattern abbrev="PA" type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="VSC" type="VSC_VULNERABLE_SECURITY_CHECK_METHODS"
                     category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS" category="BAD_PRACTICE"/>
 </FindbugsPlugin>

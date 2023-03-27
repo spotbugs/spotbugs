@@ -1811,6 +1811,14 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DontReusePublicIdentifiers">
+    <Details>
+      <![CDATA[
+            <p>Checks for reuse of public identifiers, public utility classes, interfaces, or
+             packages in the Java Standard Library.</p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -9149,4 +9157,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="PA">Public Attribute</BugCode>
   <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
+  <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
 </MessageCollection>
