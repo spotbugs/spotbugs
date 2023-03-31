@@ -61,7 +61,7 @@
     
     <element name="Annotation" type="fb:AnnotationType">
         <annotation>
-            <documentation>This element matches warnings associated with a particular class that is annoted with a 
+            <documentation>This element matches warnings associated with a particular class that is annotated with a 
                 particular java class annotation.</documentation>
         </annotation>
     </element>
