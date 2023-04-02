@@ -12,7 +12,7 @@ class GrantUserAccess extends GrantAccess {
         System.out.print("Account details for user: XX");
     }
 }
-public class GooddFindHidingSubClassTest {
+public class GoodFindHidingSubClassTest {
     public static void choose(String username) {
         GrantAccess admin = new GrantAccess();
         GrantAccess user = new GrantUserAccess();
