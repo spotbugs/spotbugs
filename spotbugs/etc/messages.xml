@@ -1772,6 +1772,25 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindHidingSubClass">
+    <Details>
+      <![CDATA[
+            <p>
+              Hiding and overriding differ in the determination of which method is invoked from a call site.
+              For overriding, the method invoked is determined at runtime on the basis of the specific object instance
+              in hand.
+              For hiding, the method invoked is determined at compile time on the basis of the specific qualified name
+              or method invocation expression used at the call site.
+              Although the Java language provides unambiguous rules for determining which method is invoked,
+              the results of these rules are often unexpected.
+              Additionally, programmers sometimes expect method overriding in cases where the language provides
+              method hiding. Consequently,
+              programs must never declare a class method that hides a method declared in a superclass or superinterface.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8785,6 +8804,27 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="HSBC_FIND_HIDING_SUB_CLASS">
+    <ShortDescription>Find class methods hiding a method from superclass or superinterface</ShortDescription>
+    <LongDescription>The method '{1}' in class '{2}' hides a method '{3}' in class '{4}'. </LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+        Hiding and overriding differ in the determination of which method is invoked from a call site.
+        For overriding, the method invoked is determined at runtime on the basis of the specific object instance
+        in hand.
+        For hiding, the method invoked is determined at compile time on the basis of the specific qualified name
+        or method invocation expression used at the call site.
+        Although the Java language provides unambiguous rules for determining which method is invoked,
+        the results of these rules are often unexpected.
+        Additionally, programmers sometimes expect method overriding in cases where the language provides
+        method hiding. Consequently,
+        programs must never declare a class method that hides a method declared in a superclass or superinterface.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
@@ -8938,4 +8978,6 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
+
+  <BugCode abbrev="HSBC">FIND HIDING SUB CLASS</BugCode>
 </MessageCollection>

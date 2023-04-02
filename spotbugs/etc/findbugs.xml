@@ -669,6 +669,11 @@
                     reports="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource" speed="fast"
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
+
+          <Detector class="edu.umd.cs.findbugs.detect.FindHidingSubClass" speed="fast"
+              reports="HSBC_FIND_HIDING_SUB_CLASS"/>
+
+
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -697,6 +702,9 @@
           <BugCode abbrev="FB"/>
           <BugCode abbrev="AT"/>
           <BugCode abbrev="JUA"/>
+
+          <BugCode abbrev="HSBC"/>
+
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
           <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
@@ -1286,4 +1294,7 @@
           <BugPattern abbrev="PERM" type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS" category="MALICIOUS_CODE" />
           <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"
                     category="MALICIOUS_CODE"/>
+
+          <BugPattern abbrev="HSBC" type="HSC_FIND_HIDING_SUB_CLASS"
+                category="CORRECTNESS"/>
 </FindbugsPlugin>
