@@ -1295,6 +1295,6 @@
           <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"
                     category="MALICIOUS_CODE"/>
 
-          <BugPattern abbrev="HSBC" type="HSC_FIND_HIDING_SUB_CLASS"
+          <BugPattern abbrev="HSBC" type="HSBC_FIND_HIDING_SUB_CLASS"
                 category="CORRECTNESS"/>
 </FindbugsPlugin>

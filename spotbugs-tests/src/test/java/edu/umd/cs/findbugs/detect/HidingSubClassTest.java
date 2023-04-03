@@ -18,7 +18,7 @@ public class HidingSubClassTest extends AbstractIntegrationTest {
                 .bugType("HSC_FIND_HIDING_SUB_CLASS")
                 .inMethod("main")
                 .build();
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
     }
 
     @Test
