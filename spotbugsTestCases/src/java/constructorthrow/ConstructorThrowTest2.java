@@ -1,3 +1,5 @@
+package constructorthrow;
+
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;

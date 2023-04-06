@@ -1,3 +1,5 @@
+package constructorthrow;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 /**
@@ -16,7 +18,6 @@ public class ConstructorThrowTest5{
         testMethod();
     }
 
-    @ExpectWarning("CT")
     public void testMethod() {
         System.out.println(i);
         throw new RuntimeException();

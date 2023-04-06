@@ -1,3 +1,5 @@
+package constructorthrow;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 /**
