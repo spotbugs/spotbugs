@@ -1,16 +1,28 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.annotations.NonNull;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.stream.JsonWriter;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.URI;
-import java.util.*;
-import java.util.stream.Collectors;
+import edu.umd.cs.findbugs.BugCollectionBugReporter;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.ExitCodes;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.Version;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.cwe.WeaknessCatalog;
 
 public class SarifBugReporter extends BugCollectionBugReporter {
     private final Gson gson = new Gson();
@@ -49,6 +61,10 @@ public class SarifBugReporter extends BugCollectionBugReporter {
 
         jsonWriter.name("originalUriBaseIds");
         gson.toJson(analyser.getOriginalUriBaseIds(), jsonWriter);
+
+        jsonWriter.name("taxonomies").beginArray();
+        gson.toJson(analyser.getCweTaxonomy());
+        jsonWriter.endArray();
 
         jsonWriter.endObject().endArray(); // end "runs", end "runs" array
     }
@@ -95,6 +111,8 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         rules.forEach((rule) -> gson.toJson(rule, jsonWriter));
         jsonWriter.endArray();
 
+        addSupportedTaxonomies(jsonWriter);
+
         jsonWriter.endObject().endObject(); // end "driver", end "tool"
     }
 
@@ -103,6 +121,25 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         jsonWriter.name("extensions").beginArray();
         DetectorFactoryCollection.instance().plugins().stream().map(Extension::fromPlugin).map(Extension::toJsonObject).forEach((
                 jsonObject) -> gson.toJson(jsonObject, jsonWriter));
+        jsonWriter.endArray();
+    }
+
+    private void addSupportedTaxonomies(@NonNull JsonWriter jsonWriter) throws IOException {
+        WeaknessCatalog weaknessCatalog = WeaknessCatalog.getInstance();
+        String name = weaknessCatalog.getName();
+        String version = weaknessCatalog.getVersion();
+
+        UUID uuid = GUIDCalculator.fromString(name + version);
+
+
+        jsonWriter.name("supportedTaxonomies").beginArray();
+
+        jsonWriter.beginObject();
+        jsonWriter.name("name").value(name);
+
+        jsonWriter.name("guid").value(uuid.toString());
+
+        jsonWriter.endObject();
         jsonWriter.endArray();
     }
 

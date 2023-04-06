@@ -46,6 +46,7 @@ sourceSets {
       exclude 'script.properties'
       include '*.xsl'
       include '**/*.db'
+      include 'CWE_4.10.json'
     }
   }
   gui {
