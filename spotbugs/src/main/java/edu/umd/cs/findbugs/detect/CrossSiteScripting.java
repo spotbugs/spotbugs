@@ -251,7 +251,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
         }
         XMethod method = writing.getReturnValueOf();
         if (method != null && "getParameter".equals(method.getName())
-                && "javax.servlet.http.HttpServletRequest".equals(method.getClassName())) {
+                && ("javax.servlet.http.HttpServletRequest".equals(method.getClassName())
+                        || "jakarta.servlet.http.HttpServletRequest".equals(method.getClassName()))) {
             return Priorities.HIGH_PRIORITY;
         }
         return Priorities.NORMAL_PRIORITY;

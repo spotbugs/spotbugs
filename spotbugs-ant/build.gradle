@@ -5,11 +5,11 @@ apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
   implementation project(':spotbugs')
-  compileOnly 'org.apache.ant:ant:1.10.12'
+  compileOnly 'org.apache.ant:ant:1.10.13'
 
-  testImplementation 'org.apache.ant:ant:1.10.12'
+  testImplementation 'org.apache.ant:ant:1.10.13'
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'org.hamcrest:hamcrest-all:1.3'
+  testImplementation 'org.hamcrest:hamcrest-core:2.2'
 }
 
 tasks.named('javadoc', Javadoc).configure {

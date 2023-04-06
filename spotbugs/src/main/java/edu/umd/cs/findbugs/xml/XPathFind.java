@@ -66,7 +66,7 @@ public abstract class XPathFind {
         String fileName = argv[0];
         String xpath = argv[1];
 
-        SAXReader reader = new SAXReader();
+        SAXReader reader = XMLUtil.buildSAXReader();
         Document document = reader.read(fileName);
 
         XPathFind finder = new XPathFind(document) {

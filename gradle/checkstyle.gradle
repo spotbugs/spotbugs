@@ -2,7 +2,7 @@
 apply plugin: 'checkstyle'
 
 checkstyle {
-  toolVersion '7.3'
+  toolVersion '7.8.2'
   ignoreFailures false
   configFile file("$rootDir/spotbugs/etc/checkstyle.xml") // TODO : This config file is lame and should be moved out...
 }

@@ -3,17 +3,23 @@ on:
   pull_request:
     branches:
       - master
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: temurin
@@ -21,8 +27,8 @@ jobs:
       - uses: gradle/wrapper-validation-action@v1
       - name: Download Eclipse
         run: |
-          wget -nv 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.6.3-201703010400/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz&r=1' -O eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz
-          tar xzf eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz eclipse
+          wget -nv 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.14-201912100610/eclipse-SDK-4.14-linux-gtk-x86_64.tar.gz&r=1' -O eclipse-SDK-4.14-linux-gtk-x86_64.tar.gz
+          tar xzf eclipse-SDK-4.14-linux-gtk-x86_64.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Build
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17

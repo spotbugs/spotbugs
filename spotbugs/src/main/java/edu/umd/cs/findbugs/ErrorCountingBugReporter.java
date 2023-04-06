@@ -18,6 +18,8 @@
  */
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -69,6 +71,17 @@ public class ErrorCountingBugReporter extends DelegatingBugReporter {
         }
         if (missingClassSet.add(missing)) {
             super.reportMissingClass(ex);
+        }
+    }
+
+    @Override
+    public void reportMissingClass(ClassDescriptor classDescriptor) {
+        String missing = classDescriptor.getDottedClassName();
+        if (!AbstractBugReporter.isValidMissingClassMessage(missing)) {
+            return;
+        }
+        if (missingClassSet.add(missing)) {
+            super.reportMissingClass(classDescriptor);
         }
     }
 }

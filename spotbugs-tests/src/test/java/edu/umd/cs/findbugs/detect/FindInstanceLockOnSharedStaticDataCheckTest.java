@@ -30,6 +30,13 @@ public class FindInstanceLockOnSharedStaticDataCheckTest extends AbstractIntegra
     }
 
     @Test
+    public void findNoSSDBugInClass_StaticLockInsideNotStaticSynchronizedMethod() {
+        performAnalysis("instanceLockOnSharedStaticData/StaticLockInsideNotStaticSynchronizedMethod.class");
+
+        assertNumOfSSDBugs(0);
+    }
+
+    @Test
     public void findNoSSDBugInClass_LockingOnJavaLangClassObject() {
         performAnalysis("instanceLockOnSharedStaticData/LockingOnJavaLangClassObject.class");
 

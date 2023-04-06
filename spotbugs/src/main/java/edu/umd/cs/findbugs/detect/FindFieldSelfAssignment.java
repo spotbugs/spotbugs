@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.StatelessDetector;
@@ -36,10 +37,12 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
+@CustomUserValue
 public class FindFieldSelfAssignment extends OpcodeStackDetector implements StatelessDetector {
     private final BugReporter bugReporter;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("fsa.debug");
+    private static final int NO_REGISTER = -1;
     int state;
 
     public FindFieldSelfAssignment(BugReporter bugReporter) {
@@ -69,6 +72,8 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 
     XField possibleOverwrite;
 
+    private int parentInstanceLoadFromRegister = NO_REGISTER;
+
     @Override
     public void sawOpcode(int seen) {
 
@@ -91,8 +96,11 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
                 OpcodeStack.Item fourth = stack.getStackItem(3);
                 XField f2 = third.getXField();
                 int registerNumber2 = fourth.getRegisterNumber();
-                if (f2 != null && f2.equals(getXFieldOperand()) && registerNumber2 >= 0
-                        && registerNumber2 == third.getFieldLoadedFromRegister()
+                int loadedFromRegister2 = fourth.getFieldLoadedFromRegister();
+                if (f2 != null && f2.equals(getXFieldOperand())
+                        && ((registerNumber2 >= 0 && registerNumber2 == third.getFieldLoadedFromRegister())
+                                || (loadedFromRegister2 >= 0 && third.getUserValue() instanceof Integer
+                                        && loadedFromRegister2 == ((Integer) third.getUserValue()).intValue()))
                         && !third.sameValue(top) && (third.getPC() == -1 || third.getPC() > lastMethodCall)) {
                     possibleOverwrite = f2;
                 }
@@ -161,7 +169,28 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
         default:
             break;
         }
+        if (seen == Const.GETFIELD) {
+            XField f = getXFieldOperand();
+            OpcodeStack.Item top = stack.getStackItem(0);
+            XField topF = top.getXField();
+            if (f == null || topF == null) {
+                return;
+            }
 
+            if ("this$0".equals(topF.getName())) {
+                parentInstanceLoadFromRegister = top.getFieldLoadedFromRegister();
+            }
+        }
     }
 
+    @Override
+    public void afterOpcode(int seen) {
+        super.afterOpcode(seen);
+
+        if (seen == Const.GETFIELD && parentInstanceLoadFromRegister > NO_REGISTER) {
+            OpcodeStack.Item top = stack.getStackItem(0);
+            top.setUserValue(parentInstanceLoadFromRegister);
+            parentInstanceLoadFromRegister = NO_REGISTER;
+        }
+    }
 }

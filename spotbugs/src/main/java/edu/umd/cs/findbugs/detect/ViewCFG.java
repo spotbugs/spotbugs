@@ -171,13 +171,14 @@ public class ViewCFG implements Detector {
     }
 
     private Path getMethodFile(Path classDir, String methodName) {
-        String methodFileName = SPECIAL_METHOD.matcher(methodName).replaceAll("____$1");
+        String methodFileNameBase = SPECIAL_METHOD.matcher(methodName).replaceAll("____$1");
         Path methodFile;
         int index = 0;
 
+        String methodFileName = methodFileNameBase;
         do {
             methodFile = Paths.get(classDir.toString(), methodFileName + ".dot");
-            methodFileName = methodName + ++index;
+            methodFileName = methodFileNameBase + ++index;
         } while (Files.exists(methodFile));
         return methodFile;
     }
