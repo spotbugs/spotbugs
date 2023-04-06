@@ -47,7 +47,7 @@ public class FindAssertionsWithSideEffects extends AbstractAssertDetector {
             String retSig = new SignatureParser(getXMethodOperand().getSignature()).getReturnTypeSignature();
             String classSig = getXClassOperand().getSourceSignature();
             if (MutableClasses.mutableSignature("L" + getClassConstantOperand() + ";") &&
-                    MutableClasses.looksLikeASetter(getNameConstantOperand(), retSig, classSig)) {
+                    MutableClasses.looksLikeASetter(getNameConstantOperand(), classSig, retSig)) {
                 BugInstance bug = new BugInstance(this, "ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD", LOW_PRIORITY)
                         .addClassAndMethod(this)
                         .addSourceLine(this, getPC());
