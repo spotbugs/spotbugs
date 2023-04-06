@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.workflow.FileBugHash;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
@@ -509,7 +510,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         }
         StreamSource xsl = new StreamSource(xslInputStream);
 
-        TransformerFactory tf = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+        TransformerFactory tf = XMLUtil.buildTransformerFactory();
         Transformer transformer = tf.newTransformer(xsl);
         transformer.transform(in, out);
 

@@ -187,7 +187,9 @@ public class AssertionMethods {
                     INVOKEINTERFACE iInterface = (INVOKEINTERFACE) next;
                     String className = iInterface.getClassName(cpg);
                     String fieldName = iInterface.getMethodName(cpg);
-                    if ("javax.servlet.http.HttpServletResponse".equals(className) && "setStatus".equals(fieldName)) {
+                    if (("javax.servlet.http.HttpServletResponse".equals(className)
+                            || "jakarta.servlet.http.HttpServletResponse".equals(className))
+                            && "setStatus".equals(fieldName)) {
                         return true;
                     }
 
