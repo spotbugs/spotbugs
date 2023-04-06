@@ -16,7 +16,7 @@ public class FindArgumentAssertionsTest extends AbstractIntegrationTest {
     public void testArgumentAssertions() {
         performAnalysis("ArgumentAssertions.class");
 
-        assertNumOfDABugs(22);
+        assertNumOfDABugs(24);
 
         assertDABug("getAbsAdd", 4);
         assertDABug("getAbsAdd", 5);
@@ -40,6 +40,8 @@ public class FindArgumentAssertionsTest extends AbstractIntegrationTest {
         assertDABug("getAbs", 122);
         assertDABug("compDouble", 129);
         assertDABug("indirect", 136);
+        assertDABug("assertingArgInFor", 196);
+        assertDABug("lambda$assertingArgInStream$0", 204); // -- false negative
         // assertDABug("indirect2", 143); -- indirect assertions of arguments are not supported yet (except copies)
     }
 
