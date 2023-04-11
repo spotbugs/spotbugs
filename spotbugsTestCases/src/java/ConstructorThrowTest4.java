@@ -1,13 +1,8 @@
-package constructorthrow;
-
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-
 /**
  * In this test case, the constructor calls a method, that throws an
  * unchecked exception. The order of the method definitions are the
  * key in this test case, as the constructor is defined lastly.
  */
-
 public class ConstructorThrowTest4{
     public static void main(String[] args) {
         ConstructorThrowTest4 t = new ConstructorThrowTest4();
@@ -22,5 +17,4 @@ public class ConstructorThrowTest4{
     public ConstructorThrowTest4() {
         testMethod();
     }
-
 }
