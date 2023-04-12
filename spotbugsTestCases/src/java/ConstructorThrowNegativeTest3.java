@@ -1,6 +1,6 @@
 /**
  * In this test case, the constructor calls a method, which throws
- * an unchecked exception.
+ * an unchecked exception, but the constructor handles it.
  */
 public class ConstructorThrowNegativeTest3 {
     public ConstructorThrowNegativeTest3() {

@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 public class ConstructorThrowTest extends AbstractIntegrationTest {
     @Test
@@ -53,6 +52,27 @@ public class ConstructorThrowTest extends AbstractIntegrationTest {
     }
 
     @Test
+    public void testConstructorThrowCheck7() {
+        performAnalysis("ConstructorThrowTest7.class");
+
+        assertNumOfCTBugs(1);
+    }
+
+    @Test
+    public void testConstructorThrowCheck8() {
+        performAnalysis("ConstructorThrowTest8.class");
+
+        assertNumOfCTBugs(1);
+    }
+
+    @Test
+    public void testConstructorThrowCheck9() {
+        performAnalysis("ConstructorThrowTest9.class");
+
+        assertNumOfCTBugs(1);
+    }
+
+    @Test
     public void testGoodConstructorThrowCheck1() {
         performAnalysis("ConstructorThrowNegativeTest1.class");
 
@@ -72,20 +92,16 @@ public class ConstructorThrowTest extends AbstractIntegrationTest {
         // This is a false positive - this test should fail, there should be no CT bugs
         assertNumOfCTBugs(1);
     }
+    @Test
+    public void testGoodConstructorThrowCheck4() {
+        performAnalysis("ConstructorThrowNegativeTest4.class");
+
+        assertNumOfCTBugs(0);
+    }
 
     private void assertNumOfCTBugs(int num) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("CT_CONSTRUCTOR_THROW").build();
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertCTBug(String className, String method, int line) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("CT_CONSTRUCTOR_THROW")
-                .inClass(className)
-                .inMethod(method)
-                .atLine(line)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 }
