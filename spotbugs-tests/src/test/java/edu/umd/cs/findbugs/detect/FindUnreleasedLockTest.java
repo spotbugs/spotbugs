@@ -20,7 +20,6 @@ public class FindUnreleasedLockTest extends AbstractIntegrationTest {
 
     @Test
     public void findPossibleUnlockCall_withoutLockCall() {
-        //SystemProperties.setProperty("ful.debug", "true");
         performAnalysis("unreleasedLock/ThrowExceptionAndUnlockBeforeLock.class");
 
         assertAnalyzedClassHasBug("CWO_CLOSED_WITHOUT_OPENED", 1);
