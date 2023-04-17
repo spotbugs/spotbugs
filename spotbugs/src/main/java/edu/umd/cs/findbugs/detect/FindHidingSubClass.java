@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugInstance;
+import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -27,31 +29,52 @@ public class FindHidingSubClass extends OpcodeStackDetector {
 
         try {
             directSuperClass = subClass.getSuperClass();
-            superClasses = subClass.getSuperClasses();
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
             //return;
         }
 
-        Method[] methods = subClass.getMethods();
-        System.out.println("I am stuck here!!!");
-        /*
-        for (Method method : methods) {
-            if (method == null) {
-                return;
-            }
-        
-        }
-        */
 
+        Method[] superMethods = directSuperClass.getMethods();
+        Method[] methods = subClass.getMethods();
+        for (Method method : methods) {
+            if (!method.getName().equals("main") && !(method.isPrivate() && method.isStatic())) {
+                if (!method.isPrivate() && method.isStatic()) {
+                    int index = Arrays.asList(superMethods).indexOf(method);
+                    Method superClassMethod;
+                    if (index != -1) {
+                        superClassMethod = superMethods[index];
+                    } else {
+                        return;
+                    }
+                    if (isOverridable(superClassMethod, method) && method.getReturnType().equals(superClassMethod.getReturnType())) {
+                        bugReporter.reportBug(new BugInstance(this, "HSBC_FIND_HIDING_SUB_CLASS", NORMAL_PRIORITY)
+                                .addClassAndMethod(this.getClassContext().getJavaClass(), method)
+                                .addString(subClass.getClassName())
+                                .addString(superClassMethod.getName())
+                                .addString(directSuperClass.getClassName()));
+                        /*System.out.println("Sub Class Method: "
+                                + method.getReturnType() + " " + method.getName() + "(" + printTypeArray(method.getArgumentTypes()) + ")"
+                                + "    ->    "
+                                + "Super Class Method: "
+                                + superClassMethod.getReturnType() + " " + superClassMethod.getName() + "(" + printTypeArray(superClassMethod.getArgumentTypes()) + ")");*/
+                    }
+                }
+            }
+
+        }
+    }
+
+    private String printTypeArray(Type[] types) {
+        String s = "";
+        for (Type t : types) {
+            s += t + ",";
+        }
+        return s;
     }
 
     private boolean isPackagePrivate(Method method) {
         return !(method.isPublic() || method.isProtected() || method.isPrivate());
-    }
-
-    private boolean isAccessibleFromSubClass(Method method) {
-        return method.isProtected() || (subClass.getPackageName().equals(directSuperClass.getPackageName()) && isPackagePrivate(method));
     }
 
     private boolean isOverridable(Method original, Method overrider) {
