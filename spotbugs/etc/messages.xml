@@ -8793,12 +8793,14 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE">
-    <ShortDescription>Primitive-type field is public</ShortDescription>
-    <LongDescription>Primitive-type field {1} is public</LongDescription>
+    <ShortDescription>Primitive field is public</ShortDescription>
+    <LongDescription>Primitive field {1} is public and set from inside the class, which makes it too exposed. Consider making it private to limit external accessibility.</LongDescription>
     <Details>
    <![CDATA[
     <p>
-    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that access to fields is limited.
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility to fields must be limited.
+    Otherwise, the values of the fields may be manipulated from outside the class, which may be unexpected or
+    undesired behaviour.
     In general, requiring that no fields are allowed to be public is overkill and unrealistic. Even
     the rule mentions that final fields may be public. Besides final fields, there may be other
     usages for public fields: some public fields may serve as "flags" that affect the behavior of
@@ -8814,7 +8816,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PA_PUBLIC_ARRAY_ATTRIBUTE">
     <ShortDescription>Array-type field is public</ShortDescription>
-    <LongDescription>Array-type field {1} is public</LongDescription>
+    <LongDescription>Array-type field {1} is public, which makes it too exposed. Consider making it private to limit external accessibility.</LongDescription>
     <Details>
    <![CDATA[
     <p>
@@ -8834,7 +8836,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE">
     <ShortDescription>Mutable object-type field is public</ShortDescription>
-    <LongDescription>Mutable object-type field {1} is public</LongDescription>
+    <LongDescription>Mutable object-type field {1} is public, which makes it too exposed. Consider making it private to limit external accessibility.</LongDescription>
     <Details>
    <![CDATA[
     <p>
