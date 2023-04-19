@@ -27,8 +27,8 @@ public class FindPublicAttributesTest extends AbstractIntegrationTest {
         assertBugTypeAtField(PRIMITIVE_PUBLIC, "attr1", 11);
         assertBugTypeAtField(PRIMITIVE_PUBLIC, "attr2");
         assertBugTypeAtField(PRIMITIVE_PUBLIC, "sattr1");
-        assertBugTypeAtField(MUTABLE_PUBLIC, "hm", 19);
-        assertBugTypeAtField(ARRAY_PUBLIC, "items", 26);
+        assertBugTypeAtField(MUTABLE_PUBLIC, "hm", 20);
+        assertBugTypeAtField(ARRAY_PUBLIC, "items", 27);
         assertBugTypeAtField(ARRAY_PUBLIC, "sitems");
         assertBugTypeAtField(ARRAY_PUBLIC, "SFITEMS");
     }

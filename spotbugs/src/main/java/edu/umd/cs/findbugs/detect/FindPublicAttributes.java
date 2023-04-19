@@ -95,9 +95,7 @@ public class FindPublicAttributes extends OpcodeStackDetector {
                 return;
             }
 
-            BugInstance bi = new BugInstance(this,
-                    "PA_PUBLIC_PRIMITIVE_ATTRIBUTE",
-                    NORMAL_PRIORITY)
+            BugInstance bi = new BugInstance(this, "PA_PUBLIC_PRIMITIVE_ATTRIBUTE", NORMAL_PRIORITY)
                     .addClass(this).addField(field);
             if (fieldDefLineMap.containsKey(field)) {
                 bi.addSourceLine(fieldDefLineMap.get(field));
@@ -121,9 +119,7 @@ public class FindPublicAttributes extends OpcodeStackDetector {
                 return;
             }
 
-            BugInstance bi = new BugInstance(this,
-                    "PA_PUBLIC_ARRAY_ATTRIBUTE",
-                    NORMAL_PRIORITY)
+            BugInstance bi = new BugInstance(this, "PA_PUBLIC_ARRAY_ATTRIBUTE", NORMAL_PRIORITY)
                     .addClass(this).addField(field);
             if (fieldDefLineMap.containsKey(field)) {
                 bi.addSourceLine(fieldDefLineMap.get(field));
@@ -169,9 +165,7 @@ public class FindPublicAttributes extends OpcodeStackDetector {
                 return;
             }
 
-            BugInstance bi = new BugInstance(this,
-                    "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE",
-                    NORMAL_PRIORITY)
+            BugInstance bi = new BugInstance(this, "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE", NORMAL_PRIORITY)
                     .addClass(this).addField(field);
             if (fieldDefLineMap.containsKey(field)) {
                 bi.addSourceLine(fieldDefLineMap.get(field));
