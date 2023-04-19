@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.Test;
@@ -19,15 +18,19 @@ public class FindPublicAttributesTest extends AbstractIntegrationTest {
     public void testPublicAttributesChecks() {
         performAnalysis("PublicAttributesTest.class");
 
-        assertNumOfBugs(PRIMITIVE_PUBLIC, 2);
-        assertNumOfBugs(ARRAY_PUBLIC, 2);
+        assertNumOfBugs(PRIMITIVE_PUBLIC, 3);
+        assertNumOfBugs(ARRAY_PUBLIC, 3);
         assertNumOfBugs(MUTABLE_PUBLIC, 1);
 
-        assertBugTypeAtField(PRIMITIVE_PUBLIC, "attr1");
+        // The current implementation can only mark the correct line if the variable is initialized
+        // at the field definition and the variable is not static
+        assertBugTypeAtField(PRIMITIVE_PUBLIC, "attr1", 11);
+        assertBugTypeAtField(PRIMITIVE_PUBLIC, "attr2");
         assertBugTypeAtField(PRIMITIVE_PUBLIC, "sattr1");
-        assertBugTypeAtField(MUTABLE_PUBLIC, "hm");
-        assertBugTypeAtField(ARRAY_PUBLIC, "items");
-        assertBugTypeAtField(ARRAY_PUBLIC, "SITEMS");
+        assertBugTypeAtField(MUTABLE_PUBLIC, "hm", 19);
+        assertBugTypeAtField(ARRAY_PUBLIC, "items", 26);
+        assertBugTypeAtField(ARRAY_PUBLIC, "sitems");
+        assertBugTypeAtField(ARRAY_PUBLIC, "SFITEMS");
     }
 
     @Test
@@ -44,13 +47,22 @@ public class FindPublicAttributesTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
     }
 
+    private void assertBugTypeAtField(String bugtype, String field, int line) {
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType(bugtype)
+                .inClass("PublicAttributesTest")
+                .atField(field)
+                .atLine(line)
+                .build();
+        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+    }
+
     private void assertBugTypeAtField(String bugtype, String field) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType(bugtype)
                 .inClass("PublicAttributesTest")
                 .atField(field)
                 .build();
-        BugCollection bc = getBugCollection();
-        assertThat(bc, hasItem(bugInstanceMatcher));
+        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 }

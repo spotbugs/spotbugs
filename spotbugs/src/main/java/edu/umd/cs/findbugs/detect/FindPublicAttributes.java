@@ -19,10 +19,13 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -32,8 +35,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.MutableClasses;
 
-public class FindPublicAttributes
-        extends OpcodeStackDetector {
+public class FindPublicAttributes extends OpcodeStackDetector {
 
     private static final Set<String> CONSTRUCTOR_LIKE_NAMES = new HashSet<String>(Arrays.asList(
             Const.CONSTRUCTOR_NAME, Const.STATIC_INITIALIZER_NAME,
@@ -46,7 +48,9 @@ public class FindPublicAttributes
 
     private final BugReporter bugReporter;
 
-    private Set<XField> writtenFields = new HashSet<XField>();
+    private final Set<XField> writtenFields = new HashSet<XField>();
+
+    private final Map<XField, SourceLineAnnotation> fieldDefLineMap = new HashMap<XField, SourceLineAnnotation>();
 
     public FindPublicAttributes(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -59,6 +63,14 @@ public class FindPublicAttributes
         // It is normal that classes used as simple data types have a
         // constructor to make initialization easy.
         if (isConstructorLikeMethod(getMethodName())) {
+            // For non-static fields the error marker location is the first assignment: the initialization if it exists
+            if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
+                XField field = getXFieldOperand();
+                if (field != null && !fieldDefLineMap.containsKey(field) && !field.isStatic()) {
+                    SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
+                    fieldDefLineMap.put(field, sla);
+                }
+            }
             return;
         }
 
@@ -83,10 +95,15 @@ public class FindPublicAttributes
                 return;
             }
 
-            bugReporter.reportBug(new BugInstance(this,
+            BugInstance bi = new BugInstance(this,
                     "PA_PUBLIC_PRIMITIVE_ATTRIBUTE",
                     NORMAL_PRIORITY)
-                            .addClass(this).addField(field));
+                    .addClass(this).addField(field);
+            if (fieldDefLineMap.containsKey(field)) {
+                bi.addSourceLine(fieldDefLineMap.get(field));
+            }
+
+            bugReporter.reportBug(bi);
             writtenFields.add(field);
         } else if (seen == Const.AASTORE) {
             XField field = stack.getStackItem(2).getXField();
@@ -104,13 +121,17 @@ public class FindPublicAttributes
                 return;
             }
 
-            bugReporter.reportBug(new BugInstance(this,
+            BugInstance bi = new BugInstance(this,
                     "PA_PUBLIC_ARRAY_ATTRIBUTE",
                     NORMAL_PRIORITY)
-                            .addClass(this).addField(field));
+                    .addClass(this).addField(field);
+            if (fieldDefLineMap.containsKey(field)) {
+                bi.addSourceLine(fieldDefLineMap.get(field));
+            }
+
+            bugReporter.reportBug(bi);
             writtenFields.add(field);
-        } else if (seen == Const.INVOKEINTERFACE ||
-                seen == Const.INVOKEVIRTUAL) {
+        } else if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             XMethod xmo = getXMethodOperand();
             if (xmo == null) {
                 return;
@@ -148,10 +169,15 @@ public class FindPublicAttributes
                 return;
             }
 
-            bugReporter.reportBug(new BugInstance(this,
+            BugInstance bi = new BugInstance(this,
                     "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE",
                     NORMAL_PRIORITY)
-                            .addClass(this).addField(field));
+                    .addClass(this).addField(field);
+            if (fieldDefLineMap.containsKey(field)) {
+                bi.addSourceLine(fieldDefLineMap.get(field));
+            }
+
+            bugReporter.reportBug(bi);
             writtenFields.add(field);
         }
     }
