@@ -2,7 +2,7 @@
 # Run `docker build -t spotbugs-sphinx .` to build docker image,
 # and run `docker run -it -v $(pwd):/documents spotbugs-sphinx make html` to generate documents.
 
-FROM sphinxdoc/sphinx:4.1.2
+FROM sphinxdoc/sphinx:5.3.0
 
 WORKDIR /docs/docs
 RUN pip3 install --upgrade pip

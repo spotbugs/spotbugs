@@ -39,7 +39,25 @@ public class MutableClasses {
             "com.google.common.collect.ImmutableSortedMap",
             "com.google.common.collect.ImmutableSortedMultiset",
             "com.google.common.collect.ImmutableSortedSet",
-            "com.google.common.collect.ImmutableTable"));
+            "com.google.common.collect.ImmutableTable",
+            "java.util.Collections$EmptyList",
+            "java.util.Collections$EmptyMap",
+            "java.util.Collections$EmptyNavigableMap",
+            "java.util.Collections$EmptySet",
+            "java.util.Collections$EmptyNavigableSet",
+            "java.util.Collections$SingletonList",
+            "java.util.Collections$SingletonMap",
+            "java.util.Collections$SingletonSet",
+            "java.util.Collections$UnmodifiableList",
+            "java.util.Collections$UnmodifiableMap",
+            "java.util.Collections$UnmodifiableNavigableMap",
+            "java.util.Collections$UnmodifiableSortedMap",
+            "java.util.Collections$UnmodifiableSet",
+            "java.util.Collections$UnmodifiableNavigableSet",
+            "java.util.Collections$UnmodifiableSortedSet",
+            "java.util.ImmutableCollections$AbstractImmutableList",
+            "java.util.ImmutableCollections$AbstractImmutableMap",
+            "java.util.ImmutableCollections$AbstractImmutableSet"));
 
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
             "java.math", "java.time"));
