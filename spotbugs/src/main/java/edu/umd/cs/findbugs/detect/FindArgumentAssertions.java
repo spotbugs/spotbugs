@@ -135,6 +135,11 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
     @Override
     protected void detect(int seen) {
         boolean wasArg = false;
+        XMethod method = getXMethod();
+        if (!method.isPublic()) {
+            return;
+        }
+
         if (isMethodCall(seen)) {
             // Handle method call
             wasArg = isInitialArg();

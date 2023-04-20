@@ -16,7 +16,7 @@ public class FindArgumentAssertionsTest extends AbstractIntegrationTest {
     public void testArgumentAssertions() {
         performAnalysis("ArgumentAssertions.class");
 
-        assertNumOfDABugs(24);
+        assertNumOfDABugs(23);
 
         assertDABug("getAbsAdd", 4);
         assertDABug("getAbsAdd", 5);
@@ -40,15 +40,32 @@ public class FindArgumentAssertionsTest extends AbstractIntegrationTest {
         assertDABug("getAbs", 122);
         assertDABug("compDouble", 129);
         assertDABug("indirect", 136);
-        assertDABug("assertingArgInFor", 196);
-        assertDABug("lambda$assertingArgInStream$0", 204); // -- false negative
         // assertDABug("indirect2", 143); -- indirect assertions of arguments are not supported yet (except copies)
+        assertNoDABug("literal");
+        assertNoDABug("literalAndMessage");
+        assertNoDABug("literalAndMessageStr");
+        assertNoDABug("conditionallyInMessage");
+        assertNoDABug("privateMethod");
+        assertNoDABug("privateFinalMethod");
+        assertNoDABug("privateStaticMethod");
+        assertDABug("assertingArgInFor", 198);
+        // assertDABug("lambda$assertingArgInStream$0", 206); // -- false negative
     }
 
     private void assertNumOfDABugs(int num) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("AA_ASSERTION_OF_ARGUMENTS").build();
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
+    }
+
+    private void assertNoDABug(String method) {
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType("AA_ASSERTION_OF_ARGUMENTS")
+                .inClass("ArgumentAssertions")
+                .inMethod(method)
+                .withConfidence(Confidence.LOW)
+                .build();
+        assertThat(getBugCollection(), containsExactly(0, bugInstanceMatcher));
     }
 
     private void assertDABug(String method, int line) {
