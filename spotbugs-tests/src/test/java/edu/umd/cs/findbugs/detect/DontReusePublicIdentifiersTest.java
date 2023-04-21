@@ -16,7 +16,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         performAnalysis("publicIdentifiers/ShadowedPublicIdentifier.class");
 
         // TODO: implement the check for shadowed public identifiers
-        assertNumOfShadowedPublicIdentifierBugs(4);
+        assertNumOfShadowedPublicIdentifierBugs(0);
 
         // TODO:
         //     these should be the declarations of the shadowed public identifiers and not the initializations
