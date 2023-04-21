@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  *
  * @author Jeremias Eppler
  */
-public class Taxon {
+public class Taxon implements Comparable<Taxon> {
     private final int id;
     private final UUID guid;
     private final String shortDescription;
@@ -38,11 +38,11 @@ public class Taxon {
 
     private Taxon(@NonNull int id, @NonNull UUID guid,
             @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String severity) {
-                this.id = id;
-                this.guid = guid;
-                this.shortDescription = shortDescription;
-                this.fullDescription = fullDescription;
-                this.severity = severity;
+        this.id = id;
+        this.guid = guid;
+        this.shortDescription = shortDescription;
+        this.fullDescription = fullDescription;
+        this.severity = severity;
     }
 
     /**
@@ -79,5 +79,10 @@ public class Taxon {
         taxonJson.add("defaultConfiguration", defaultConfigurationJson);
 
         return taxonJson;
+    }
+
+    @Override
+    public int compareTo(Taxon other) {
+        return Integer.compare(id, other.id);
     }
 }

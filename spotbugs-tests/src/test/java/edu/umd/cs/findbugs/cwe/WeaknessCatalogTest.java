@@ -66,7 +66,7 @@ public class WeaknessCatalogTest {
         assertNull(weakness);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testGetWeaknessByCweIdOrNullNonInvalidCweId() {
         int cweid = Integer.MIN_VALUE;
 
@@ -76,7 +76,7 @@ public class WeaknessCatalogTest {
         assertNull(weakness);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testGetWeaknessByCweIdOrNullCweIdIsZero() {
         int cweid = 0;
 

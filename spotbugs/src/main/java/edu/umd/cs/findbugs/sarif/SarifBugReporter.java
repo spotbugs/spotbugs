@@ -63,7 +63,7 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         gson.toJson(analyser.getOriginalUriBaseIds(), jsonWriter);
 
         jsonWriter.name("taxonomies").beginArray();
-        gson.toJson(analyser.getCweTaxonomy());
+        gson.toJson(analyser.getCweTaxonomy(), jsonWriter);
         jsonWriter.endArray();
 
         jsonWriter.endObject().endArray(); // end "runs", end "runs" array

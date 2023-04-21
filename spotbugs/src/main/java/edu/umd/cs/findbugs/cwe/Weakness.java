@@ -26,7 +26,7 @@ public class Weakness {
     /**
      * Creates a new immutable instance of a weakness
      *
-     * @param id
+     * @param cweid
      * @param name
      * @param description
      * @param severity

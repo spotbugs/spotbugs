@@ -69,7 +69,7 @@ class BugCollectionAnalyser {
         JsonObject cweTaxonomy = null;
 
         if (taxa.size() > 0) {
-            createCweTaxonomyJson();
+            cweTaxonomy = createCweTaxonomyJson();
         }
 
         return cweTaxonomy;
@@ -87,7 +87,7 @@ class BugCollectionAnalyser {
     }
 
     private JsonObject createCweTaxonomyJson() {
-        JsonObject cweTaxonomy = null;
+        JsonObject cweTaxonomy = new JsonObject();
 
         WeaknessCatalog weaknessCatalog = WeaknessCatalog.getInstance();
         String name = weaknessCatalog.getName();
@@ -97,12 +97,11 @@ class BugCollectionAnalyser {
         UUID cweTaxonomyGuid = GUIDCalculator.fromString(name + version);
 
         JsonArray taxaJson = new JsonArray();
-        taxa.stream().map(Taxon::toJsonObject).forEach((jsonObject) -> taxaJson.add(taxaJson));
+
+        taxa.stream().map(Taxon::toJsonObject).forEach((taxonJson) -> taxaJson.add(taxonJson));
 
         JsonObject shortDescriptionJson = new JsonObject();
         shortDescriptionJson.addProperty("text", "The MITRE Common Weakness Enumeration");
-
-        cweTaxonomy = new JsonObject();
 
         cweTaxonomy.addProperty("name", name);
         cweTaxonomy.addProperty("version", version);
