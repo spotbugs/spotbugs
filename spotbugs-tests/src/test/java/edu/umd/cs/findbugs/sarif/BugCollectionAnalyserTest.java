@@ -60,7 +60,10 @@ public class BugCollectionAnalyserTest {
         JsonArray taxaJson = taxonomyJson.get("taxa").getAsJsonArray();
 
         assertThat(taxonomyJson.get("name").getAsString(), is("CWE"));
-        assertThat(taxaJson.get(0).getAsJsonObject().get("id").getAsInt(), is(cweid));
+
+        JsonObject taxonJson = taxaJson.get(0).getAsJsonObject();
+        assertThat(taxonJson.get("id").getAsString(), is(String.valueOf(cweid)));
+        assertThat(taxonJson.get("defaultConfiguration").getAsJsonObject().get("level").getAsString(), is("error"));
 
         /* test rules */
         JsonObject ruleJson = analyser.getRules().get(0).getAsJsonObject();
@@ -68,7 +71,7 @@ public class BugCollectionAnalyserTest {
         JsonObject target = cweRelationshipJson.get("target").getAsJsonObject();
 
         assertThat(ruleJson.get("id").getAsString(), is(type));
-        assertThat(target.get("id").getAsInt(), is(cweid));
+        assertThat(target.get("id").getAsString(), is(String.valueOf(cweid)));
         assertThat(cweRelationshipJson.get("kinds").getAsJsonArray().get(0).getAsString(), is("superset"));
 
         /* test result */

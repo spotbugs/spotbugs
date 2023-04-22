@@ -158,8 +158,9 @@ class BugCollectionAnalyser {
 
         if (weakness != null) {
             UUID cweGuid = GUIDCalculator.fromNamespaceAndString(cweTaxonomyGuid, String.valueOf(cweid));
-            Taxon taxon = Taxon.from(weakness.getCweId(), cweGuid, weakness.getName(), weakness.getDescription(),
-                    weakness.getSeverity().toString().toLowerCase());
+            Level severityLevel = Level.fromWeaknessSeverity(weakness.getSeverity());
+            Taxon taxon = Taxon.from(String.valueOf(weakness.getCweId()), cweGuid, weakness.getName(),
+                    weakness.getDescription(), severityLevel);
 
             taxa.add(taxon);
         }

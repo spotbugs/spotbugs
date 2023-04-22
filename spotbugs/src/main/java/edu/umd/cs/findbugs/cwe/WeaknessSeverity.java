@@ -27,6 +27,10 @@ import com.google.gson.annotations.SerializedName;
  */
 public enum WeaknessSeverity {
     @SuppressWarnings("javadoc")
+    @SerializedName("none")
+    NONE,
+
+    @SuppressWarnings("javadoc")
     @SerializedName("low")
     LOW,
 

@@ -85,7 +85,7 @@ final class Rule {
     private JsonObject createCweRelationship() {
         WeaknessCatalog weaknessCatalog = WeaknessCatalog.getInstance();
 
-        Integer cweId = Integer.valueOf(cweid);
+        String cweId = String.valueOf(cweid);
         String name = weaknessCatalog.getName();
         String version = weaknessCatalog.getVersion();
         UUID guidOfCweTaxonomy = GUIDCalculator.fromString(name + version);

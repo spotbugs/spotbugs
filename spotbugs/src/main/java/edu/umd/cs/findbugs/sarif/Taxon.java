@@ -30,19 +30,19 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  * @author Jeremias Eppler
  */
 public class Taxon implements Comparable<Taxon> {
-    private final int id;
+    private final String id;
     private final UUID guid;
     private final String shortDescription;
     private final String fullDescription;
-    private final String severity;
+    private final Level severityLevel;
 
-    private Taxon(@NonNull int id, @NonNull UUID guid,
-            @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String severity) {
+    private Taxon(@NonNull String id, @NonNull UUID guid,
+            @NonNull String shortDescription, @NonNull String fullDescription, @NonNull Level severityLevel) {
         this.id = id;
         this.guid = guid;
         this.shortDescription = shortDescription;
         this.fullDescription = fullDescription;
-        this.severity = severity;
+        this.severityLevel = severityLevel;
     }
 
     /**
@@ -52,12 +52,12 @@ public class Taxon implements Comparable<Taxon> {
      * @param guid
      * @param shortDescription
      * @param fullDescription
-     * @param severity
+     * @param severityLevel
      * @return a new taxon
      */
-    public static Taxon from(@NonNull int id, @NonNull UUID guid,
-            @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String severity) {
-        return new Taxon(id, guid, shortDescription, fullDescription, severity);
+    public static Taxon from(@NonNull String id, @NonNull UUID guid,
+            @NonNull String shortDescription, @NonNull String fullDescription, @NonNull Level severityLevel) {
+        return new Taxon(id, guid, shortDescription, fullDescription, severityLevel);
     }
 
     JsonObject toJsonObject() {
@@ -70,9 +70,9 @@ public class Taxon implements Comparable<Taxon> {
         fullDescriptionJson.addProperty("text", fullDescription);
 
         JsonObject defaultConfigurationJson = new JsonObject();
-        defaultConfigurationJson.addProperty("level", severity);
+        defaultConfigurationJson.addProperty("level", severityLevel.toJsonString());
 
-        taxonJson.addProperty("id", Integer.valueOf(id));
+        taxonJson.addProperty("id", id);
         taxonJson.addProperty("guid", guid.toString());
         taxonJson.add("shortDescription", shortDescriptionJson);
         taxonJson.add("fullDescription", fullDescriptionJson);
@@ -83,6 +83,6 @@ public class Taxon implements Comparable<Taxon> {
 
     @Override
     public int compareTo(Taxon other) {
-        return Integer.compare(id, other.id);
+        return id.compareTo(other.id);
     }
 }
