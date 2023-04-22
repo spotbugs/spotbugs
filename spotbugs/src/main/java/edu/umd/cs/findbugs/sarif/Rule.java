@@ -101,6 +101,7 @@ final class Rule {
         JsonObject toolComponent = new JsonObject();
         toolComponent.addProperty("name", name);
         toolComponent.addProperty("guid", guidOfCweTaxonomy.toString());
+        target.add("toolComponent", toolComponent);
 
         JsonArray kinds = new JsonArray();
         kinds.add("superset");
