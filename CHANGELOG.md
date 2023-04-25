@@ -7,7 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2023-??-??
 ### Added 
 - New Detector `FindVulnerableSecurityCheckMethods` for new bug type `VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS`. 
-- This bug is reported whenever a non-final and non-private method of a non-final class performs a secuirty check
+- This bug is reported whenever a non-final and non-private method of a non-final class performs a security check
 - using the `java.lang.SecurityManager`. (See [SEI CERT MET03-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET03-J.+Methods+that+perform+a+security+check+must+be+declared+private+or+final)) 
 
 ### Changed
