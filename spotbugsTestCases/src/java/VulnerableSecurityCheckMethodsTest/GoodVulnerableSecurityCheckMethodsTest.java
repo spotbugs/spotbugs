@@ -6,37 +6,12 @@ import java.util.logging.Logger;
 public final class GoodVulnerableSecurityCheckMethodsTest {
     Logger logger = Logger.getAnonymousLogger();
 
-    public void goodVulnerableSecurityCheckMethodsTestCheck3() {
-        try {
-            SecurityManager sm = System.getSecurityManager();
-
-            //Temporary Variable for the sake of completeness if testing
-            /*
-            SecurityManager sm2 = System.getSecurityManager();
-
-
-            int i = 0;
-            double f = 1.0;
-            int[] ia = {1,2,3};
-
-            i = i+ia.length;
-            f = f+1.0;
-
-            if(sm2 != null) {
-                sm.checkRead("/temp/tempFile");
-                f = (double)i*2;
-            }
-            */
-
-            if (sm != null) {  // Check for permission to read file
-                sm.checkRead("/temp/tempFile");
-            }
-            // Access the file
-        } catch (SecurityException se) {
-            logger.log(Level.WARNING, se.toString());
-        }
-    }
-
+    /***
+     * This method is not vulnerable as it is in final class.
+     * It is using the Security Manager to perform checkRead Operation.
+     * But as it is in a final class so this class cannot be inherited anymore.
+     * Moreover, it is final by default.
+     */
     public void goodVulnerableSecurityCheckMethodsTestCheck() {
         try {
             SecurityManager sm = System.getSecurityManager();
@@ -49,6 +24,12 @@ public final class GoodVulnerableSecurityCheckMethodsTest {
         }
     }
 
+    /***
+     * This method is not vulnerable as it is in final class.
+     * It is using the Security Manager to perform checkRead Operation.
+     * But as it is in a final class so this class cannot be inherited anymore.
+     * Moreover, it is declared private.
+     */
     private void goodVulnerableSecurityCheckMethodsTestCheck2() {
         try {
             SecurityManager sm = System.getSecurityManager();
@@ -61,6 +42,10 @@ public final class GoodVulnerableSecurityCheckMethodsTest {
         }
     }
 
+    /***
+     * This method is not vulnerable as it is in final class.
+     * Moreover, it is not using Security Manager to perform any check.
+     */
     public void goodVulnerableSecurityCheckMethodsTestCheck4() {
         try {
             SecurityManager sm = System.getSecurityManager();

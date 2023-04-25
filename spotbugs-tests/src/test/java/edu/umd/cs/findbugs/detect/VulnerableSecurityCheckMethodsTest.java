@@ -9,13 +9,33 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest {
+
+    BugInstanceMatcher bugTypeMatcherGeneral;
+    BugInstanceMatcher bugTypeMatcherForGoodChecks;
+
+    BugInstanceMatcher bugTypeMatcherForGoodChecks2;
+    BugInstanceMatcher bugTypeMatcherForGoodChecks4;
+
+    public VulnerableSecurityCheckMethodsTest() {
+        bugTypeMatcherGeneral = new BugInstanceMatcherBuilder()
+                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
+                .build();
+        bugTypeMatcherForGoodChecks = new BugInstanceMatcherBuilder()
+                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
+                .inMethod("goodVulnerableSecurityCheckMethodsTestCheck")
+                .build();
+        bugTypeMatcherForGoodChecks2 = new BugInstanceMatcherBuilder()
+                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
+                .inMethod("goodVulnerableSecurityCheckMethodsTestCheck2").build();
+        bugTypeMatcherForGoodChecks4 = new BugInstanceMatcherBuilder()
+                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
+                .inMethod("goodVulnerableSecurityCheckMethodsTestCheck4").build();
+    }
+
     @Test
     public void testingAllCases() {
         performAnalysis("VulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
-
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS").build();
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcherGeneral));
     }
 
     @Test
@@ -30,72 +50,42 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
     @Test
     public void testingGoodCase1() {
         performAnalysis("VulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
-                .inMethod("goodVulnerableSecurityCheckMethodsTestCheck").build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherForGoodChecks));
     }
 
     @Test
     public void testingGoodCase2() {
         performAnalysis("VulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
-                .inMethod("goodVulnerableSecurityCheckMethodsTestCheck2").build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherForGoodChecks2));
     }
 
     @Test
     public void testingGoodCase3() {
         performAnalysis("VulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
-                .inMethod("goodVulnerableSecurityCheckMethodsTestCheck4").build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherForGoodChecks4));
     }
 
     @Test
     public void testingAllCases2() {
         performAnalysis("VulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
-
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS").build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
-    }
-
-    @Test
-    public void testingGoodCase4() {
-        performAnalysis("VulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
-                .inMethod("goodVulnerableSecurityCheckMethodsTestCheck3").build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherGeneral));
     }
 
     @Test
     public void testingGoodCase5() {
         performAnalysis("VulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
-                .inMethod("goodVulnerableSecurityCheckMethodsTestCheck").build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherForGoodChecks));
     }
 
     @Test
     public void testingGoodCase6() {
         performAnalysis("VulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
-                .inMethod("goodVulnerableSecurityCheckMethodsTestCheck2").build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherForGoodChecks2));
     }
 
     @Test
     public void testingGoodCase7() {
         performAnalysis("VulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS")
-                .inMethod("goodVulnerableSecurityCheckMethodsTestCheck4").build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherForGoodChecks4));
     }
 }

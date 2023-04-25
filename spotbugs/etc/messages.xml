@@ -1772,7 +1772,6 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindVulnerableSecurityCheckMethods">
     <Details>
       <![CDATA[
@@ -8796,15 +8795,16 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS">
-    <ShortDescription>Find vulnerable security check methods</ShortDescription>
+    <ShortDescription>Non-Private and non-final security check methods are vulnerable</ShortDescription>
     <LongDescription>The method '{1}' performs security check with variable '{2}' by using method '{3}', but is overrideable.</LongDescription>
     <Details>
       <![CDATA[<p>
         Methods that perform security checks should be prevented from being overridden, so they must be declared as
         private or final. Otherwise, these methods can be compromised when a malicious subclass overrides them
         and omits the checks.
+        <p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET03-J.+Methods+that+perform+a+security+check+must+be+declared+private+or+final">MET03-J. Methods that perform a security check must be declared private or final</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8961,6 +8961,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
-
   <BugCode abbrev="VSC">Find Vulnerable Security Check Methods</BugCode>
 </MessageCollection>
