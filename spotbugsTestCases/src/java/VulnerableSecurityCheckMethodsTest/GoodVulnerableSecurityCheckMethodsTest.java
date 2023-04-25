@@ -3,6 +3,11 @@ package VulnerableSecurityCheckMethodsTest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This is the final class case for the testing.
+ * All the methods are the true negative case for testing,
+ * as all the methods are final by default.
+ */
 public final class GoodVulnerableSecurityCheckMethodsTest {
     Logger logger = Logger.getAnonymousLogger();
 

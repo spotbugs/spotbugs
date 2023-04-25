@@ -3,6 +3,11 @@ package VulnerableSecurityCheckMethodsTest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This is the non-final class case for the testing.
+ * All the methods which are non-private and non-final,
+ * while using Security Manager to perform check are the true positive test cases for testing.
+ */
 public class FindVulnerableSecurityCheckMethodsTest {
     Logger logger = Logger.getAnonymousLogger();
 
