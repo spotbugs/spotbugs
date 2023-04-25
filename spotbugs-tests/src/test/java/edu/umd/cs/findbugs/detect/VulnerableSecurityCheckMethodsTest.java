@@ -13,49 +13,49 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
 
     @Test
     public void testingBadCases() {
-        performAnalysis("VulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
+        performAnalysis("vulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
         assertError(1, true, "badFindVulnerableSecurityCheckMethodsCheck");
     }
 
     @Test
     public void testingGoodCase1() {
-        performAnalysis("VulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
+        performAnalysis("vulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
         assertError(0, true, "goodVulnerableSecurityCheckMethodsTestCheck");
     }
 
     @Test
     public void testingGoodCase2() {
-        performAnalysis("VulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
+        performAnalysis("vulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
         assertError(0, true, "goodVulnerableSecurityCheckMethodsTestCheck2");
     }
 
     @Test
     public void testingGoodCase3() {
-        performAnalysis("VulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
+        performAnalysis("vulnerableSecurityCheckMethodsTest/FindVulnerableSecurityCheckMethodsTest.class");
         assertError(0, true, "goodVulnerableSecurityCheckMethodsTestCheck4");
     }
 
     @Test
     public void testingAllCases2() {
-        performAnalysis("VulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
+        performAnalysis("vulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
         assertError(0, false, "");
     }
 
     @Test
     public void testingGoodCase5() {
-        performAnalysis("VulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
+        performAnalysis("vulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
         assertError(0, true, "goodVulnerableSecurityCheckMethodsTestCheck");
     }
 
     @Test
     public void testingGoodCase6() {
-        performAnalysis("VulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
+        performAnalysis("vulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
         assertError(0, true, "goodVulnerableSecurityCheckMethodsTestCheck2");
     }
 
     @Test
     public void testingGoodCase7() {
-        performAnalysis("VulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
+        performAnalysis("vulnerableSecurityCheckMethodsTest/GoodVulnerableSecurityCheckMethodsTest.class");
         assertError(0, true, "goodVulnerableSecurityCheckMethodsTestCheck4");
     }
 

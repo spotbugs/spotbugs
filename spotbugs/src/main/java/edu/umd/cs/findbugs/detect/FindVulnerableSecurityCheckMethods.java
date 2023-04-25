@@ -40,11 +40,16 @@ import java.util.Set;
  */
 public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
     private final BugReporter bugReporter;
-    final Set<String> badMethodNames;
+
+    private static final Set<String> badMethodNames;
 
     public FindVulnerableSecurityCheckMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        this.badMethodNames = new HashSet<String>() {
+
+    }
+
+    static {
+        badMethodNames = new HashSet<String>() {
             {
                 add("checkAccept");
                 add("checkAccess");
@@ -85,8 +90,7 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        JavaClass currentClass;
-        currentClass = this.getClassContext().getJavaClass();
+        JavaClass currentClass = this.getClassContext().getJavaClass();
         if (!currentClass.isFinal()) {
             Method[] methods = currentClass.getMethods();
             for (Method method : methods) {
@@ -123,7 +127,7 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                         bugReporter.reportBug(new BugInstance(this, "VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS", NORMAL_PRIORITY)
                                 .addClassAndMethod(currentClass, method)
                                 .addString(l.getName())
-                                .addString(xMethod.getName()));
+                                .addMethod(xMethod));
                     }
                 }
             }
