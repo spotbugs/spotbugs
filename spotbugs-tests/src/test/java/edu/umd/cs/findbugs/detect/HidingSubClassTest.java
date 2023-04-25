@@ -17,7 +17,7 @@ public class HidingSubClassTest extends AbstractIntegrationTest {
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("HSBC_FIND_HIDING_SUB_CLASS")
                 .build();
-        //assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
     }
 
     @Test
@@ -26,6 +26,7 @@ public class HidingSubClassTest extends AbstractIntegrationTest {
 
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("HSBC_FIND_HIDING_SUB_CLASS")
+                .inMethod("main")
                 .build();
         assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
     }
