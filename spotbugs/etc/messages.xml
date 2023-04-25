@@ -8799,7 +8799,7 @@ Using floating-point variables should not be used as loop counters, as they are 
 
   <BugPattern type="VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS">
     <ShortDescription>Find vulnerable security check methods</ShortDescription>
-    <LongDescription>The method '{1}' perform security check with variable '{2}' by using method '{3}' but is overrideable. </LongDescription>
+    <LongDescription>The method '{1}' performs security check with variable '{2}' by using method '{3}', but is overrideable.</LongDescription>
     <Details>
       <![CDATA[<p>
         Methods that perform security checks should be prevented from being overridden, so they must be declared as
