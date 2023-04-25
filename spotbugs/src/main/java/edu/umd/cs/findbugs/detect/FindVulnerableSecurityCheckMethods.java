@@ -52,7 +52,7 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                 add("checkTopLevelWindow");
                 add("checkWrite");
 
-                //Depricated Method Call Support
+                //Deprecated Method Call Support
                 add("classDepth");
                 add("classLoaderDepth");
                 add("currentClassLoader");
