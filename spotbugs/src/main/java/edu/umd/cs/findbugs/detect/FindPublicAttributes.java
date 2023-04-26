@@ -58,7 +58,6 @@ public class FindPublicAttributes extends OpcodeStackDetector {
         this.bugReporter = bugReporter;
     }
 
-
     @Override
     public void sawField() {
         XField field = getXFieldOperand();
