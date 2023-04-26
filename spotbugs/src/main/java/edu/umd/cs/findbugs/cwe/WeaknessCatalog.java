@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
@@ -16,6 +19,8 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
+import edu.umd.cs.findbugs.AbstractBugReporter;
+
 /**
  * The weakness catalog contains a number of weaknesses
  *
@@ -23,6 +28,8 @@ import com.google.gson.stream.JsonReader;
  * @see Weakness
  */
 public class WeaknessCatalog {
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractBugReporter.class);
+
     private String version;
 
     private String name;
@@ -51,12 +58,13 @@ public class WeaknessCatalog {
     private static void loadFileAndInitialize() {
         InputStream inputStream = WeaknessCatalog.class.getClassLoader().getResourceAsStream(FILE_NAME);
         Gson gson = new Gson();
+        String characterEncoding = "UTF-8";
 
         if (inputStream == null) {
             throw new IllegalArgumentException("file not found! " + FILE_NAME);
         }
 
-        try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"))) {
+        try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream, characterEncoding))) {
             JsonElement rootElement = JsonParser.parseReader(reader);
             JsonPrimitive nameElement = rootElement.getAsJsonObject().get("name").getAsJsonPrimitive();
             JsonPrimitive versionElement = rootElement.getAsJsonObject().get("version").getAsJsonPrimitive();
@@ -74,9 +82,9 @@ public class WeaknessCatalog {
                 INSTANCE.weaknesses.put(Integer.valueOf(weakness.getCweId()), weakness);
             }
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            LOG.error("Character encoding '" + characterEncoding + "' is not supported.");
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            e.printStackTrace();
+            LOG.error("Unable to read the weakness catalog JSON.");
         }
     }
 
