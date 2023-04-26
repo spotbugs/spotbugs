@@ -34,6 +34,8 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.MutableClasses;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 public class FindPublicAttributes extends OpcodeStackDetector {
 
@@ -56,6 +58,27 @@ public class FindPublicAttributes extends OpcodeStackDetector {
         this.bugReporter = bugReporter;
     }
 
+
+    @Override
+    public void sawField() {
+        XField field = getXFieldOperand();
+        if (field != null && !fieldDefLineMap.containsKey(field)) {
+            SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
+            fieldDefLineMap.put(field, sla);
+        }
+    }
+
+    @Override
+    public void visit(JavaClass obj) {
+        for (Method m : obj.getMethods()) {
+            String methodName = m.getName();
+            // First visit the Constructor and the static initializer to collect the field initialization lines
+            if (Const.CONSTRUCTOR_NAME.equals(methodName) || Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
+                doVisitMethod(m);
+            }
+        }
+    }
+
     // Check for each statement which writes an own attribute of the class
     // instance. If the attribute written is public then report a bug.
     @Override
@@ -63,14 +86,6 @@ public class FindPublicAttributes extends OpcodeStackDetector {
         // It is normal that classes used as simple data types have a
         // constructor to make initialization easy.
         if (isConstructorLikeMethod(getMethodName())) {
-            // For non-static fields the error marker location is the first assignment: the initialization if it exists
-            if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
-                XField field = getXFieldOperand();
-                if (field != null && !fieldDefLineMap.containsKey(field) && !field.isStatic()) {
-                    SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
-                    fieldDefLineMap.put(field, sla);
-                }
-            }
             return;
         }
 
@@ -99,6 +114,8 @@ public class FindPublicAttributes extends OpcodeStackDetector {
                     .addClass(this).addField(field);
             if (fieldDefLineMap.containsKey(field)) {
                 bi.addSourceLine(fieldDefLineMap.get(field));
+            } else {
+                bi.addSourceLine(this);
             }
 
             bugReporter.reportBug(bi);
@@ -123,6 +140,8 @@ public class FindPublicAttributes extends OpcodeStackDetector {
                     .addClass(this).addField(field);
             if (fieldDefLineMap.containsKey(field)) {
                 bi.addSourceLine(fieldDefLineMap.get(field));
+            } else {
+                bi.addSourceLine(this);
             }
 
             bugReporter.reportBug(bi);
@@ -169,6 +188,8 @@ public class FindPublicAttributes extends OpcodeStackDetector {
                     .addClass(this).addField(field);
             if (fieldDefLineMap.containsKey(field)) {
                 bi.addSourceLine(fieldDefLineMap.get(field));
+            } else {
+                bi.addSourceLine(this);
             }
 
             bugReporter.reportBug(bi);

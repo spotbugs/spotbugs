@@ -12,19 +12,22 @@ public class PublicAttributesTest {
 
     public int attr2;
 
-    public static int sattr1 = 0;
+    public static int sattr1 = 2;
 
     // A final field. It cannot be written in methods.
     public final int const1 = 10;
 
     public final Map<Integer, String> hm = new HashMap<Integer, String>();
 
+    // Mutable static fields are already detected by MS. No PA warning expected.
     public final static Map<Integer, String> SHM = new HashMap<Integer, String>();
 
-    // This field is not written, but only read.
+    // This field is not written, but only read. No PA warning expected.
     public final Set<String> hs = new HashSet<String>();
 
     public final String[] items = { "foo", "bar", "baz" };
+
+    public String[] nitems;
 
     public static String[] sitems = { "foo", "bar", "baz" };
 
@@ -32,10 +35,6 @@ public class PublicAttributesTest {
 
     public PublicAttributesTest(int a1) {
         attr1 = a1;
-        // attr2 = a1; // attr2 is not initialized, so if this line is not commented out, the error marker will be here
-        // if static fields are not excluded in the detector,  the error marker for sattr1 is here,
-        // even if there is an initialization, since the init of static fields is not in a constructorlike method
-        sattr1 = a1;
     }
 
     public void doSomething() {
@@ -46,6 +45,7 @@ public class PublicAttributesTest {
         SHM.put(1, "test");
         boolean b = hs.contains("x");
         items[0] = "test";
+        nitems[0] = "test";
         sitems[0] = "test";
         SFITEMS[0] = "test";
     }
