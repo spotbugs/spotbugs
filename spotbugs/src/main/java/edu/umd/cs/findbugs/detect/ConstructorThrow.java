@@ -50,7 +50,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
 
     /**
      * Visit a class to find the constructor, then collect all the methods that gets called in it.
-     * Also we are checking for final declaration on the class, or a final finalizer, as if present
+     * Also, we are checking for final declaration on the class, or a final finalizer, as if present
      * no finalizer attack can happen.
      */
     @Override
@@ -116,8 +116,9 @@ public class ConstructorThrow extends OpcodeStackDetector {
             tryCollectMethod(seen);
         } else {
             if (isConstructor() || methodCalledFromCtor()) {
-                if (seen == Const.ATHROW)
+                if (seen == Const.ATHROW) {
                     accumulateBug();
+                }
             }
         }
     }
