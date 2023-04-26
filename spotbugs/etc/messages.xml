@@ -1786,8 +1786,8 @@ factory pattern to create these objects.</p>
   **********************************************************************
    -->
   <BugPattern type="CT_CONSTRUCTOR_THROW">
-    <ShortDescription> Be wary of letting constructors throw exceptions. </ShortDescription>
-    <LongDescription> Exception thrown in class {0} at {1} will leave the constructor. The object under construction remains partially initialized and may be vulnerable to Finalizer attacks. </LongDescription>
+    <ShortDescription>Be wary of letting constructors throw exceptions.</ShortDescription>
+    <LongDescription>Exception thrown in class {0} at {1} will leave the constructor. The object under construction remains partially initialized and may be vulnerable to Finalizer attacks.</LongDescription>
     <Details>
       <![CDATA[
             <p>Classes that throw exceptions in their constructors are vulnerable to Finalizer attacks</p>
