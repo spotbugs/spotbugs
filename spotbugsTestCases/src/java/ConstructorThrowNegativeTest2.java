@@ -2,7 +2,7 @@
  * In this test case the constructor throws an unchecked exception,
  * there is no throws declaration.
  */
-public class ConstructorThrowNegativeTest2{
+public class ConstructorThrowNegativeTest2 {
 
     public ConstructorThrowNegativeTest2() {
         throw new RuntimeException(); // No error, final finalize.
