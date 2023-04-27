@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +20,6 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
-import edu.umd.cs.findbugs.AbstractBugReporter;
-
 /**
  * The weakness catalog contains a number of weaknesses
  *
@@ -28,7 +27,7 @@ import edu.umd.cs.findbugs.AbstractBugReporter;
  * @see Weakness
  */
 public class WeaknessCatalog {
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractBugReporter.class);
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private String version;
 
@@ -82,9 +81,9 @@ public class WeaknessCatalog {
                 INSTANCE.weaknesses.put(Integer.valueOf(weakness.getCweId()), weakness);
             }
         } catch (UnsupportedEncodingException e) {
-            LOG.error("Character encoding '" + characterEncoding + "' is not supported.");
+            logger.error("Character encoding '" + characterEncoding + "' is not supported.");
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            LOG.error("Unable to read the weakness catalog JSON.");
+            logger.error("Unable to read the weakness catalog JSON.");
         }
     }
 
