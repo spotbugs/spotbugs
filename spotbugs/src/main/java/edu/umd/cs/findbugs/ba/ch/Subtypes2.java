@@ -166,8 +166,10 @@ public class Subtypes2 {
             }
         }
         return Subtypes2.instanceOf(className, "javax.servlet.jsp.JspPage")
+                || Subtypes2.instanceOf(className, "jakarta.servlet.jsp.JspPage")
                 || Subtypes2.instanceOf(className, "org.apache.jasper.runtime.HttpJspBase")
                 || Subtypes2.instanceOf(className, "javax.servlet.jsp.tagext.SimpleTagSupport")
+                || Subtypes2.instanceOf(className, "jakarta.servlet.jsp.tagext.SimpleTagSupport")
                 || Subtypes2.instanceOf(className, " org.apache.jasper.runtime.JspSourceDependent");
     }
 

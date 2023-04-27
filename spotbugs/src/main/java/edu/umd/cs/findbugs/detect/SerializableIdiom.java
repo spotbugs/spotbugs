@@ -260,7 +260,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
         // Is this a GUI or other class that is rarely serialized?
 
         isGUIClass = false;
-        isEjbImplClass = Subtypes2.instanceOf(obj, "javax.ejb.SessionBean");
+        isEjbImplClass = Subtypes2.instanceOf(obj, "javax.ejb.SessionBean") || Subtypes2.instanceOf(obj, "jakarta.ejb.SessionBean");
         isJSPClass = Subtypes2.isJSP(obj);
         isGUIClass = (Subtypes2.instanceOf(obj, "java.lang.Throwable") || Subtypes2.instanceOf(obj, "java.awt.Component")
                 || Subtypes2.instanceOf(obj, "java.awt.Component$AccessibleAWTComponent")
@@ -619,10 +619,15 @@ public class SerializableIdiom extends OpcodeStackDetector {
             ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(fieldSig);
             if (fieldType != null) {
                 if (Subtypes2.instanceOf(fieldType, "javax.ejb.SessionContext")
+                        || Subtypes2.instanceOf(fieldType, "jakarta.ejb.SessionContext")
                         || Subtypes2.instanceOf(fieldType, "javax.transaction.UserTransaction")
+                        || Subtypes2.instanceOf(fieldType, "jakarta.transaction.UserTransaction")
                         || Subtypes2.instanceOf(fieldType, "javax.ejb.EJBHome")
+                        || Subtypes2.instanceOf(fieldType, "jakarta.ejb.EJBHome")
                         || Subtypes2.instanceOf(fieldType, "javax.ejb.EJBObject")
-                        || Subtypes2.instanceOf(fieldType, "javax.naming.Context")) {
+                        || Subtypes2.instanceOf(fieldType, "jakarta.ejb.EJBObject")
+                        || Subtypes2.instanceOf(fieldType, "javax.naming.Context")
+                        || Subtypes2.instanceOf(fieldType, "jakarta.naming.Context")) {
                     if (testingEnabled && obj.isTransient()) {
                         bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClass(this)
                                 .addVisitedField(this)
