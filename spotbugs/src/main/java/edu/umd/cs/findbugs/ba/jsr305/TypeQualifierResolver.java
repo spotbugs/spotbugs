@@ -191,7 +191,7 @@ public class TypeQualifierResolver {
 
     public static void logMissingAnnotationClass(MissingClassException e) {
         ClassDescriptor c = e.getClassDescriptor();
-        if (c.getClassName().startsWith("javax.annotation")) {
+        if (c.getClassName().startsWith("javax.annotation") || c.getClassName().startsWith("jakarta.annotation")) {
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(c);
         }
     }

@@ -428,7 +428,7 @@ public class FindSqlInjection implements Detector {
                     } else if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8) {
                         // ignore it
                         assert true;
-                    } else if (className.startsWith("javax.servlet") && methodName.startsWith("get")) {
+                    } else if ((className.startsWith("javax.servlet") || className.startsWith("jakarta.servlet")) && methodName.startsWith("get")) {
                         stringAppendState.setSawTaint(handle);
                         stringAppendState.setSawSeriousTaint(handle);
                     } else {
