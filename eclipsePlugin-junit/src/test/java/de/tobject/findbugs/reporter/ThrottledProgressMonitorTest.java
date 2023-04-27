@@ -42,7 +42,7 @@ public class ThrottledProgressMonitorTest {
         verify(delegate).worked(2 + 4);
     }
 
-    private static class Clock {
+    private static final class Clock {
         private long currentTime;
 
         protected long getCurrentTime() {

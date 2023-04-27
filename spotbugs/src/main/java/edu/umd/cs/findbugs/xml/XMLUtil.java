@@ -21,7 +21,12 @@ package edu.umd.cs.findbugs.xml;
 
 import java.util.List;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.TransformerFactory;
+
 import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
+
 
 /**
  * @author pugh
@@ -33,4 +38,28 @@ public class XMLUtil {
         return (List<T>) node.selectNodes(arg0);
     }
 
+    public static SAXReader buildSAXReader() {
+        SAXReader reader = new SAXReader();
+
+        try {
+            reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while disabling XML external entities", e);
+        }
+
+        return reader;
+    }
+
+    public static TransformerFactory buildTransformerFactory() {
+        TransformerFactory factory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+
+        try {
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        } catch (Exception e) {
+            throw new RuntimeException("Error while disabling XML external entities", e);
+        }
+
+        return factory;
+    }
 }

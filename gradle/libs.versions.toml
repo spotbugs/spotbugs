@@ -1,0 +1,18 @@
+[versions]
+asm = "9.5"
+guice = "5.1.0"
+log4j = "2.20.0"
+
+[libraries]
+asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
+asm-analysis = { module = "org.ow2.asm:asm-analysis", version.ref = "asm" }
+asm-commons = { module = "org.ow2.asm:asm-commons", version.ref = "asm" }
+asm-tree = { module = "org.ow2.asm:asm-tree", version.ref = "asm" }
+asm-util = { module = "org.ow2.asm:asm-util", version.ref = "asm" }
+
+guice = { module = "com.google.inject:guice", version.ref = "guice" }
+guice-assistedinject = { module = "com.google.inject.extensions:guice-assistedinject", version.ref = "guice" }
+guice-servlet = { module = "com.google.inject.extensions:guice-servlet", version.ref = "guice" }
+
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+log4j-slf4j2-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
