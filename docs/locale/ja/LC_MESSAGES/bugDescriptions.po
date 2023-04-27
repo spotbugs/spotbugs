@@ -541,7 +541,7 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:524
 msgid ""
-"  <p> This code negatives the return value of a compareTo or compare "
+"  <p> This code negates the return value of a compareTo or compare "
 "method.\n"
 "This is a questionable or bad programming practice, since if the return\n"
 "value is Integer.MIN_VALUE, negating the return value won't\n"

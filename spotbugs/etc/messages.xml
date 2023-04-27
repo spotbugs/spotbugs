@@ -3252,7 +3252,7 @@ that classfile. See <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id
     <LongDescription>{1} negates the return value of {2}</LongDescription>
     <Details>
 <![CDATA[
-  <p> This code negatives the return value of a compareTo or compare method.
+  <p> This code negates the return value of a compareTo or compare method.
 This is a questionable or bad programming practice, since if the return
 value is Integer.MIN_VALUE, negating the return value won't
 negate the sign of the result. You can achieve the same intended result

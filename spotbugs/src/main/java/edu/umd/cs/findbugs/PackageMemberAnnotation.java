@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -40,6 +43,8 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     protected final @DottedClassName String className;
 
     protected String description;
+
+    private List<String> javaAnnotationNames = new ArrayList<>();
 
     /**
      * Constructor.
@@ -157,6 +162,20 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     @Override
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * @return the javaAnnotationNames
+     */
+    public List<String> getJavaAnnotationNames() {
+        return javaAnnotationNames;
+    }
+
+    /**
+     * @param aJavaAnnotationNames the javaAnnotationNames to set
+     */
+    public void setJavaAnnotationNames(List<String> aJavaAnnotationNames) {
+        javaAnnotationNames = aJavaAnnotationNames;
     }
 
     /**
