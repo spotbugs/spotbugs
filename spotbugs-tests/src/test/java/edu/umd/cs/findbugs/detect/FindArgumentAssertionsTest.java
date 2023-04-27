@@ -49,7 +49,7 @@ public class FindArgumentAssertionsTest extends AbstractIntegrationTest {
         assertNoDABug("privateFinalMethod");
         assertNoDABug("privateStaticMethod");
         assertDABug("assertingArgInFor", 198);
-        // assertDABug("lambda$assertingArgInStream$0", 206); // -- false negative
+        // assertDABug("lambda$assertingArgInStream$0", 206); // assertations inside streams are not supported yet
     }
 
     private void assertNumOfDABugs(int num) {
@@ -63,7 +63,6 @@ public class FindArgumentAssertionsTest extends AbstractIntegrationTest {
                 .bugType("AA_ASSERTION_OF_ARGUMENTS")
                 .inClass("ArgumentAssertions")
                 .inMethod(method)
-                .withConfidence(Confidence.LOW)
                 .build();
         assertThat(getBugCollection(), containsExactly(0, bugInstanceMatcher));
     }

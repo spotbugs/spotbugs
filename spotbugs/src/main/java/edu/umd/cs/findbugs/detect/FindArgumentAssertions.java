@@ -20,7 +20,6 @@ package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -40,23 +39,15 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
     }
 
     /**
-     * Only interested in public methods
-     */
-    @Override
-    public void visit(Method obj) {
-        if (!obj.isPublic())
-            return;
-    }
-
-    /**
      * Only interested in public classes
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass ctx = classContext.getJavaClass();
         // Break out of analyzing this class if not public
-        if (!ctx.isPublic())
+        if (!ctx.isPublic()) {
             return;
+        }
         super.visitClassContext(classContext);
     }
 
