@@ -109,15 +109,14 @@ public class FindPublicAttributes extends OpcodeStackDetector {
                 return;
             }
 
-            BugInstance bi = new BugInstance(this, "PA_PUBLIC_PRIMITIVE_ATTRIBUTE", NORMAL_PRIORITY)
-                    .addClass(this).addField(field);
-            if (fieldDefLineMap.containsKey(field)) {
-                bi.addSourceLine(fieldDefLineMap.get(field));
-            } else {
-                bi.addSourceLine(this);
-            }
+            SourceLineAnnotation sla = fieldDefLineMap.containsKey(field)
+                    ? fieldDefLineMap.get(field)
+                    : SourceLineAnnotation.fromVisitedInstruction(this);
 
-            bugReporter.reportBug(bi);
+            bugReporter.reportBug(new BugInstance(this,
+                    "PA_PUBLIC_PRIMITIVE_ATTRIBUTE",
+                    NORMAL_PRIORITY)
+                            .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         } else if (seen == Const.AASTORE) {
             XField field = stack.getStackItem(2).getXField();
@@ -135,15 +134,14 @@ public class FindPublicAttributes extends OpcodeStackDetector {
                 return;
             }
 
-            BugInstance bi = new BugInstance(this, "PA_PUBLIC_ARRAY_ATTRIBUTE", NORMAL_PRIORITY)
-                    .addClass(this).addField(field);
-            if (fieldDefLineMap.containsKey(field)) {
-                bi.addSourceLine(fieldDefLineMap.get(field));
-            } else {
-                bi.addSourceLine(this);
-            }
+            SourceLineAnnotation sla = fieldDefLineMap.containsKey(field)
+                    ? fieldDefLineMap.get(field)
+                    : SourceLineAnnotation.fromVisitedInstruction(this);
 
-            bugReporter.reportBug(bi);
+            bugReporter.reportBug(new BugInstance(this,
+                    "PA_PUBLIC_ARRAY_ATTRIBUTE",
+                    NORMAL_PRIORITY)
+                    .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         } else if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             XMethod xmo = getXMethodOperand();
@@ -183,15 +181,14 @@ public class FindPublicAttributes extends OpcodeStackDetector {
                 return;
             }
 
-            BugInstance bi = new BugInstance(this, "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE", NORMAL_PRIORITY)
-                    .addClass(this).addField(field);
-            if (fieldDefLineMap.containsKey(field)) {
-                bi.addSourceLine(fieldDefLineMap.get(field));
-            } else {
-                bi.addSourceLine(this);
-            }
+            SourceLineAnnotation sla = fieldDefLineMap.containsKey(field)
+                    ? fieldDefLineMap.get(field)
+                    : SourceLineAnnotation.fromVisitedInstruction(this);
 
-            bugReporter.reportBug(bi);
+            bugReporter.reportBug(new BugInstance(this,
+                    "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE",
+                    NORMAL_PRIORITY)
+                    .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         }
     }
