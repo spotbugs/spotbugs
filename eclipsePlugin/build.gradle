@@ -3,7 +3,7 @@ import static groovy.io.FileType.FILES
 // TODO: deploy not only jar but also sources and javadoc, to pass validation by Sonatype nexus
 // apply from: "$rootDir/gradle/maven.gradle"
 plugins {
-  id 'org.ajoberstar.grgit' version '5.0.0'
+  id 'org.ajoberstar.grgit' version '5.2.0'
   id "eclipse-convention"
 }
 
