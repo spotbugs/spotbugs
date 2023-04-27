@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +26,7 @@ import com.google.gson.stream.JsonReader;
  * @see Weakness
  */
 public class WeaknessCatalog {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(WeaknessCatalog.class);
 
     private String version;
 
