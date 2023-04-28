@@ -671,7 +671,7 @@
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindVulnerableSecurityCheckMethods" speed="fast"
                     reports="VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS"/>
-    <!-- Bug Categories -->
+            <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
