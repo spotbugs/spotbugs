@@ -90,7 +90,7 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
 
     @Override
     public void visitMethod(Method method) {
-        if(!method.isFinal() && !method.isPrivate() && !method.isStatic()) {
+        if (!method.isFinal() && !method.isPrivate() && !method.isStatic()) {
             super.visitMethod(method);
         }
     }
