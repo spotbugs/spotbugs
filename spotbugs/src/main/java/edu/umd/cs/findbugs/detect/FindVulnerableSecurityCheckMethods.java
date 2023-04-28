@@ -89,6 +89,22 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
     }
 
     @Override
+    public void visitMethod(Method method) {
+        if(!method.isFinal() && !method.isPrivate() && !method.isStatic()) {
+            super.visitMethod(method);
+        }
+    }
+
+    /*
+    I first check the class being final. Then I filter out all the non-final and non-private methods.
+    After the method is filtered, I find all the variables available in this method.
+    If there is some SecurityManager variable, I verify either some security check is being performed or not.
+    For this purpose I use the documentation of SecurityManager class and compile the list of method names
+    which can perform really perform security check.
+    I then check either any of these methods is being called over the SecurityManager variable.
+    If it does so, bug is reported.
+     */
+    @Override
     public void sawOpcode(int seen) {
         JavaClass currentClass = this.getClassContext().getJavaClass();
         if (!currentClass.isFinal()) {
