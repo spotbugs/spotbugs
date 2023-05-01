@@ -621,6 +621,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                 .addClassAndMethod(this)
                                 .addField(xField)
                                 .addSourceLine(this);
+                        // Collect the bugs and report them later, if the initializedCheckerVariable's value won't be changed
                         optionalBugsInReadExternal.put(xField, bug);
                         if (!initializedCheckerVariable.isPresent() || sawReadExternalExit) {
                             bugReporter.reportBug(bug);
