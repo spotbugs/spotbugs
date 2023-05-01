@@ -4549,10 +4549,10 @@ deserialized instance of the class.
   </BugPattern>
   <BugPattern type="SE_PREVENT_EXT_OBJ_OVERWRITE">
     <ShortDescription>Prevent overwriting of externalizable objects</ShortDescription>
-    <LongDescription>The readExternal() method allows any caller to reset the value of the object at any time.</LongDescription>
+    <LongDescription>Any caller can reset the value of the object by using the readExternal() method.</LongDescription>
     <Details>
       <![CDATA[
-  <p>The code allows any caller to reset the value of the object at any time because the <code>readExternal()</code> method is necessarily declared to be public and lacks protection against hostile callers.
+  <p>The <code>readExternal()</code> method must be declared as public and is not protected from malicious callers, so the code permits any caller to reset the value of the object at any time.
 </p>
 ]]>
     </Details>
