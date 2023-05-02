@@ -153,8 +153,7 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                                 .addMethod(currentClass, method)
                                 .addString(l.getName())
                                 .addMethod(xMethod)
-                                .addSourceLine(SourceLineAnnotation.fromVisitedInstruction(currentClass, method, getPC()))
-                        );
+                                .addSourceLine(SourceLineAnnotation.fromVisitedInstruction(currentClass, method, getPC())));
                     }
                 }
             }
