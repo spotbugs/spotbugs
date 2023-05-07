@@ -37,7 +37,7 @@ public class ShadowedPublicIdentifier {
         }
     }
 
-    private static class Vector {
+    public static class Vector {
         private final int size = 1;
 
         public boolean isEmpty() {
@@ -45,7 +45,7 @@ public class ShadowedPublicIdentifier {
         }
     }
 
-    private static class Buffer {
+    public static class Buffer {
         public Buffer() {
         }
 
@@ -54,7 +54,7 @@ public class ShadowedPublicIdentifier {
         }
     }
 
-    private static class File {
+    public static class File {
         private final String name;
         private final boolean hidden;
 
@@ -68,7 +68,7 @@ public class ShadowedPublicIdentifier {
         }
     }
 
-    private static class BigInteger {
+    public static class BigInteger {
         private final String number;
         private int signum = 0;
 
