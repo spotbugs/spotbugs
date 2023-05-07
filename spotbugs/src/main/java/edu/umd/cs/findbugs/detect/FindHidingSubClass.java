@@ -2,7 +2,6 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
 import org.apache.bcel.generic.BasicType;
-import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -12,9 +11,7 @@ import org.apache.bcel.classfile.Method;
 import java.util.Arrays;
 
 public class FindHidingSubClass extends OpcodeStackDetector {
-
     private final BugReporter bugReporter;
-    private JavaClass directSuperClass;
 
     public FindHidingSubClass(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -22,18 +19,17 @@ public class FindHidingSubClass extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        JavaClass subClass;
-
         //This is the current class. Named it subClass to better depict the idea of sub and super class.
-        subClass = this.getClassContext().getJavaClass();
-
+        JavaClass subClass = this.getClassContext().getJavaClass();
+        JavaClass directSuperClass = null;
         try {
             directSuperClass = subClass.getSuperClass();
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
         }
-
-
+        if (directSuperClass == null) {
+            return;
+        }
         Method[] superMethods = directSuperClass.getMethods();
         Method[] methods = subClass.getMethods();
         for (Method method : methods) {
@@ -61,14 +57,6 @@ public class FindHidingSubClass extends OpcodeStackDetector {
                 }
             }
         }
-    }
-
-    private String printTypeArray(Type[] types) {
-        String s = "";
-        for (Type t : types) {
-            s += t + ",";
-        }
-        return s;
     }
 
     private boolean isMainMethod(Method method) {
