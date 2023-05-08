@@ -3,15 +3,15 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class Bug3107916Test extends AbstractIntegrationTest {
+class Bug3107916Test extends AbstractIntegrationTest {
     @Test
-    public void test() {
+    void test() {
         performAnalysis("sfBugs/Bug3107916.class");
 
         assertNpBugInMethod("doCompare", 20);
@@ -34,9 +34,9 @@ public class Bug3107916Test extends AbstractIntegrationTest {
             "NP_METHOD_RETURN_RELAXING_ANNOTATION", "NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION",
             "NP_METHOD_PARAMETER_RELAXING_ANNOTATION",
         };
-        for (int i = 0; i < bugtypes.length; i++) {
+        for (String bugtype : bugtypes) {
             final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                    .bugType(bugtypes[i])
+                    .bugType(bugtype)
                     .inClass("Bug3107916")
                     .inMethod(method)
                     .build();
