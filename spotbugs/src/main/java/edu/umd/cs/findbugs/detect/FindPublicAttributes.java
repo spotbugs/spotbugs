@@ -1,10 +1,31 @@
+/*
+ * SpotBugs - Find bugs in Java programs
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.umd.cs.findbugs.detect;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -13,9 +34,10 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.MutableClasses;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
-public class FindPublicAttributes
-        extends OpcodeStackDetector {
+public class FindPublicAttributes extends OpcodeStackDetector {
 
     private static final Set<String> CONSTRUCTOR_LIKE_NAMES = new HashSet<String>(Arrays.asList(
             Const.CONSTRUCTOR_NAME, Const.STATIC_INITIALIZER_NAME,
@@ -28,13 +50,35 @@ public class FindPublicAttributes
 
     private final BugReporter bugReporter;
 
-    private Set<XField> writtenFields = new HashSet<XField>();
+    private final Set<XField> writtenFields = new HashSet<XField>();
+
+    private final Map<XField, SourceLineAnnotation> fieldDefLineMap = new HashMap<XField, SourceLineAnnotation>();
 
     public FindPublicAttributes(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-    // Check for each statements which write an own attribute of the class
+    @Override
+    public void sawField() {
+        XField field = getXFieldOperand();
+        if (field != null && !fieldDefLineMap.containsKey(field)) {
+            SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
+            fieldDefLineMap.put(field, sla);
+        }
+    }
+
+    @Override
+    public void visit(JavaClass obj) {
+        for (Method m : obj.getMethods()) {
+            String methodName = m.getName();
+            // First visit the Constructor and the static initializer to collect the field initialization lines
+            if (Const.CONSTRUCTOR_NAME.equals(methodName) || Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
+                doVisitMethod(m);
+            }
+        }
+    }
+
+    // Check for each statement which writes an own attribute of the class
     // instance. If the attribute written is public then report a bug.
     @Override
     public void sawOpcode(int seen) {
@@ -65,10 +109,14 @@ public class FindPublicAttributes
                 return;
             }
 
+            SourceLineAnnotation sla = fieldDefLineMap.containsKey(field)
+                    ? fieldDefLineMap.get(field)
+                    : SourceLineAnnotation.fromVisitedInstruction(this);
+
             bugReporter.reportBug(new BugInstance(this,
                     "PA_PUBLIC_PRIMITIVE_ATTRIBUTE",
                     NORMAL_PRIORITY)
-                            .addClass(this).addField(field));
+                            .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         } else if (seen == Const.AASTORE) {
             XField field = stack.getStackItem(2).getXField();
@@ -86,13 +134,16 @@ public class FindPublicAttributes
                 return;
             }
 
+            SourceLineAnnotation sla = fieldDefLineMap.containsKey(field)
+                    ? fieldDefLineMap.get(field)
+                    : SourceLineAnnotation.fromVisitedInstruction(this);
+
             bugReporter.reportBug(new BugInstance(this,
                     "PA_PUBLIC_ARRAY_ATTRIBUTE",
                     NORMAL_PRIORITY)
-                            .addClass(this).addField(field));
+                    .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
-        } else if (seen == Const.INVOKEINTERFACE ||
-                seen == Const.INVOKEVIRTUAL) {
+        } else if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             XMethod xmo = getXMethodOperand();
             if (xmo == null) {
                 return;
@@ -130,10 +181,14 @@ public class FindPublicAttributes
                 return;
             }
 
+            SourceLineAnnotation sla = fieldDefLineMap.containsKey(field)
+                    ? fieldDefLineMap.get(field)
+                    : SourceLineAnnotation.fromVisitedInstruction(this);
+
             bugReporter.reportBug(new BugInstance(this,
                     "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE",
                     NORMAL_PRIORITY)
-                            .addClass(this).addField(field));
+                    .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         }
     }
