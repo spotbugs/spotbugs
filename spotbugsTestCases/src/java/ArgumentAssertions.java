@@ -56,7 +56,7 @@ public class ArgumentAssertions {
 
     // Should fail
     public static void indirect(String s) {
-        assert helper(s) == null : "This is not a false pos" + s; 
+        assert helper(s) == null : "This is not a false pos" + s;
     }
 
     // Should fail
@@ -157,7 +157,7 @@ public class ArgumentAssertions {
     }
 
     // Should pass
-    public static String literalAndMessage(String s) {
+    public static String literalAndMessageStr(String s) {
         assert false : s;
         return s;
     }
@@ -165,7 +165,45 @@ public class ArgumentAssertions {
     // Should pass
     public static void conditionallyInMessage(int x, String s) {
         if (x < 0) {
-            assert false : "This is a false pos" + s; 
+            assert false : "This is a false pos" + s;
         }
+    }
+
+    // helper method
+    public void helper() {
+        privateMethod(1);
+        privateFinalMethod(1);
+        privateStaticMethod(0);
+    }
+
+    // Should pass - private method
+    private void privateMethod(int x) {
+        assert x != 0;
+    }
+
+    // Should pass - private method
+    private final void privateFinalMethod(int x) {
+        assert x != 0;
+    }
+
+    // Should pass - private method
+    private static void privateStaticMethod(int x) {
+        assert x == 0;
+    }
+
+    // Should fail
+    public static void assertingArgInFor(String prefix) {
+        java.util.List<String> strings = new java.util.ArrayList<>();
+        for (String s : strings) {
+            assert s.startsWith(prefix);
+        }
+    }
+
+    // Should fail
+    public static void assertingArgInStream(String prefix) {
+        java.util.List<String> strings = new java.util.ArrayList<>();
+        strings.forEach(s -> {
+            assert s.startsWith(prefix);
+        });
     }
 }
