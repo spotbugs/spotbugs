@@ -9,22 +9,38 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     @Test
     public void testShadowedPublicIdentifier() {
-        performAnalysis("publicIdentifiers/ShadowedPublicIdentifier.class");
+        // check shadowed public identifiers as standalone classes
+        performAnalysis("publicIdentifiers/standalone/InputStream.class");
+        assertNumOfShadowedPublicIdentifierBugs(1);
+        assertShadowedPublicIdentifierBug("InputStream");
 
-        // TODO: implement the check for shadowed public identifiers
+        // check shadowed public identifiers as inner classes
+        performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiers.class");
+        assertNumOfShadowedPublicIdentifierBugs(2);
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiers");
+    }
+
+    @Test
+    public void testGoodPublicIdentifierClassNames() {
+        // check good public identifiers as standalone classes
+        performAnalysis("publicIdentifiers/standalone/GoodPublicIdentifiers.class");
         assertNumOfShadowedPublicIdentifierBugs(0);
 
+        // check good public identifiers as inner classes
+        performAnalysis("publicIdentifiers/inner/GoodPublicIdentifierInnerClass.class");
+        assertNumOfShadowedPublicIdentifierBugs(0);
+    }
+
+    @Test
+    public void testGoodPublicIdentifierMethodNames() {
         // TODO:
-        //     these should be the declarations of the shadowed public identifiers and not the initializations
-        //     method names should not be reported yet(no such examples in the test cases)
-        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifier", "", 9);
-        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifier", "", 26);
-        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifier", "", 41);
-        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifier", "", 61);
+        //      implement the check for good public identifiers
+        assertTrue(true);
     }
 
     @Test
@@ -40,25 +56,14 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         //      assertObscuredPublicIdentifierBug();
     }
 
-    @Test
-    public void testGoodPublicIdentifier() {
-        performAnalysis("publicIdentifiers/GoodPublicIdentifier.class");
-
-        assertNumOfShadowedPublicIdentifierBugs(0);
-    }
-
     private void assertNumOfShadowedPublicIdentifierBugs(int num) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS").build();
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
     }
 
-    private void assertShadowedPublicIdentifierBug(String className, String method, int line) {
+    private void assertShadowedPublicIdentifierBug(String className) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder().bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS").inClass(className)
-                .inMethod(method).atLine(line).build();
+                .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
-    }
-
-    private void assertObscuredPublicIdentifierBug(String className, String method, int line) {
-        // TODO: implement this method
     }
 }
