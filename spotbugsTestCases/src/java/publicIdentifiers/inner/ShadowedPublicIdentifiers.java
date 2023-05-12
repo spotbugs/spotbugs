@@ -1,6 +1,8 @@
-package publicIdentifiers;
+package publicIdentifiers.inner;
 
-public class ShadowedPublicIdentifier {
+
+
+public class ShadowedPublicIdentifiers {
     public void shadowedVector() {
         Vector v = new Vector();
         if (v.isEmpty()) {
@@ -45,15 +47,6 @@ public class ShadowedPublicIdentifier {
         }
     }
 
-    public static class Buffer {
-        public Buffer() {
-        }
-
-        public boolean hasRemaining() {
-            return true;
-        }
-    }
-
     public static class File {
         private final String name;
         private final boolean hidden;
@@ -68,7 +61,16 @@ public class ShadowedPublicIdentifier {
         }
     }
 
-    public static class BigInteger {
+    private static class Buffer {
+        public Buffer() {
+        }
+
+        public boolean hasRemaining() {
+            return true;
+        }
+    }
+
+    protected static class BigInteger {
         private final String number;
         private int signum = 0;
 

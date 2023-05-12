@@ -1,8 +1,8 @@
-package publicIdentifiers;
+package publicIdentifiers.standalone;
 
 import java.util.Vector;
 import static java.lang.System.out;
-public class GoodPublicIdentifier {
+public class GoodPublicIdentifiers {
     void fullReferenceToVector() {
         java.util.Vector v = new java.util.Vector();
         if (v.isEmpty()) {
