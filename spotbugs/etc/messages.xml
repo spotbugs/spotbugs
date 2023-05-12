@@ -8999,6 +8999,20 @@ Using floating-point variables should not be used as loop counters, as they are 
         ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS">
+    <ShortDescription>Do not reuse public identifiers from the Java Standard Library</ShortDescription>
+    <LongDescription>The used identifier {1} in source file {2} the publicly available identifier {3} from the Java Standard Library.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        The publicly visible identifiers, public utility classes, interfaces, or packages in the Java Standard Library
+        should not be reused in the application code. This is because the Java Standard Library is a part of the
+        Java platform and is expected to be available in all Java environments. If the application code reuses
+        the publicly available identifiers from the Java Standard Library, it may cause confusion and may
+        lead to unexpected behavior. For example, if the application code reuses the identifier java.util.List,
+        it may cause confusion with the java.util.List class from the Java Standard Library.
+        </p>]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
