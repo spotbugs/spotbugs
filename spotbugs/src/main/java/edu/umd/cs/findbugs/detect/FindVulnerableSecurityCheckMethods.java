@@ -138,7 +138,7 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                         }
                         li++;
                     }
-                    if (doesCheckSecurity && l != null) {
+                    if (doesCheckSecurity) {
                         bugReporter.reportBug(new BugInstance(this, "VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS", NORMAL_PRIORITY)
                                 .addClass(currentClass.getClassName())
                                 .addMethod(currentClass, method)
