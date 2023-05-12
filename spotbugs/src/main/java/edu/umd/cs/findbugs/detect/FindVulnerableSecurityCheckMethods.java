@@ -20,7 +20,6 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -41,7 +40,6 @@ import java.util.Set;
  */
 public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
     private final BugReporter bugReporter;
-
     private static final Set<String> badMethodNames;
 
     public FindVulnerableSecurityCheckMethods(BugReporter bugReporter) {
@@ -96,22 +94,16 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
         }
     }
 
-    /*
-    I first check the class being final. Then I filter out all the non-final and non-private methods.
-    After the method is filtered, I find all the variables available in this method.
-    If there is some SecurityManager variable, I verify either some security check is being performed or not.
-    For this purpose I use the documentation of SecurityManager class and compile the list of method names
-    which can perform really perform security check.
-    I then check either any of these methods is being called over the SecurityManager variable.
-    If it does so, bug is reported.
-     */
     @Override
     public void sawOpcode(int seen) {
         JavaClass currentClass = this.getClassContext().getJavaClass();
+        //I first check the class being final.
         if (!currentClass.isFinal()) {
             Method[] methods = currentClass.getMethods();
             for (Method method : methods) {
+                //Then I filter out all the non-final and non-private methods.
                 if (!method.isFinal() && !method.isPrivate()) {
+                    //After the method is filtered, I find all the variables available in this method.
                     LocalVariableTable localVariableTable = method.getLocalVariableTable();
                     if (localVariableTable == null) {
                         continue;
@@ -120,6 +112,7 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                     if (localVariables == null) {
                         continue;
                     }
+                    //If there is some SecurityManager variable, I verify either some security check is being performed or not.
                     boolean doesCheckSecurity = false;
                     LocalVariable l = null;
                     int li = 0;
@@ -127,11 +120,16 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                     while (!doesCheckSecurity && li < localVariables.length) {
                         l = localVariables[li];
                         if (l.getSignature().contains("SecurityManager")) {
+                            //I then check either any of these methods is being called over the SecurityManager variable.
                             if (seen == Const.INVOKEVIRTUAL) {
                                 xMethod = this.getXMethodOperand();
                                 if (xMethod == null) {
                                     return;
                                 }
+                                //I used the documentation of SecurityManager class and compile the "badMethodNames"
+                                // list of method names which can perform really perform security check.
+                                //If really the security check is performed, I set the flag "doesCheckSecurity"
+                                // true to report the bug.
                                 if ("java.lang.SecurityManager".equals(xMethod.getClassName())
                                         && badMethodNames.contains(xMethod.getName())) {
                                     doesCheckSecurity = true;
@@ -140,20 +138,12 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                         }
                         li++;
                     }
-                    /*
-                    MethodAnnotation methodAnnotation = new MethodAnnotation(currentClass.getClassName(), method.getName(),
-                            method.getSignature(), method.isStatic());
-                    SourceLineAnnotation methodSourceLines = SourceLineAnnotation.forEntireMethod(currentClass, method);
-                    methodAnnotation.setSourceLines(methodSourceLines);
-                    //addMethod(methodAnnotation);
-                    */
                     if (doesCheckSecurity && l != null) {
                         bugReporter.reportBug(new BugInstance(this, "VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS", NORMAL_PRIORITY)
                                 .addClass(currentClass.getClassName())
                                 .addMethod(currentClass, method)
                                 .addString(l.getName())
-                                .addMethod(xMethod)
-                                .addSourceLine(SourceLineAnnotation.fromVisitedInstruction(currentClass, method, getPC())));
+                                .addMethod(xMethod));
                     }
                 }
             }
