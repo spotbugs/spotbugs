@@ -52,13 +52,27 @@ public class DontReusePublicIdentifiers extends OpcodeStackDetector {
     public void visit(Field obj) {
         String name = obj.getName();
         if (PUBLIC_IDENTIFIERS.contains(name)) {
-            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY)
-                    .addClass(this)
-                    .addString(topLevelClassName + "." + name)
-                    .addString("field " + name + " shadows")
-                    .addString(name));
+            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY).addClass(this).addString(topLevelClassName + "." + name).addString("field " + name + " shadows").addString(name));
         }
 
+    }
+
+    @Override
+    public void visit(LocalVariableTable obj) {
+        LocalVariable[] vars = obj.getLocalVariableTable();
+        System.out.println("LocalVariableTable: " + vars.length);
+
+        for (LocalVariable var : vars) {
+            String varName = var.getName();
+
+            if ("this".equals(varName)) {
+                continue;
+            }
+
+            if (PUBLIC_IDENTIFIERS.contains(varName)) {
+                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY).addClassAndMethod(this).addString(topLevelClassName + "." + varName).addString("variable " + varName + " shadows").addString(varName));
+            }
+        }
     }
 
     @Override
