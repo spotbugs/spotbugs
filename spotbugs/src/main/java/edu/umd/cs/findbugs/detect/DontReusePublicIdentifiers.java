@@ -5,10 +5,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import org.apache.bcel.Const;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.InnerClass;
-import org.apache.bcel.classfile.InnerClasses;
-import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.*;
 
 import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
 
@@ -22,7 +19,7 @@ public class DontReusePublicIdentifiers extends OpcodeStackDetector {
     //  check class name clashes - ony for public classes
 
     private final BugReporter bugReporter;
-    private String outerClassNameForInnerClasses = "";
+    private String topLevelClassName = "";
     private String sourceFileName = "";
 
     public DontReusePublicIdentifiers(BugReporter bugReporter) {
@@ -36,7 +33,7 @@ public class DontReusePublicIdentifiers extends OpcodeStackDetector {
         if (obj.isPublic()) {
             // save the source file name and class name for inner classes
             sourceFileName = obj.getFileName();
-            outerClassNameForInnerClasses = obj.getClassName();
+            topLevelClassName = obj.getClassName();
             classContext.getJavaClass().accept(this);
         }
     }
@@ -49,6 +46,19 @@ public class DontReusePublicIdentifiers extends OpcodeStackDetector {
         if (PUBLIC_IDENTIFIERS.contains(simpleName)) {
             bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY).addClass(this).addString(obj.getClassName()).addString(sourceFileName + " shadows").addString(simpleName));
         }
+    }
+
+    @Override
+    public void visit(Field obj) {
+        String name = obj.getName();
+        if (PUBLIC_IDENTIFIERS.contains(name)) {
+            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY)
+                    .addClass(this)
+                    .addString(topLevelClassName + "." + name)
+                    .addString("field " + name + " shadows")
+                    .addString(name));
+        }
+
     }
 
     @Override
@@ -69,7 +79,7 @@ public class DontReusePublicIdentifiers extends OpcodeStackDetector {
             int nameIndex = cls.getInnerNameIndex();
             String innerClassName = constantPool.getConstantUtf8(nameIndex).getBytes();
             if (PUBLIC_IDENTIFIERS.contains(innerClassName)) {
-                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY).addClass(this).addString(outerClassNameForInnerClasses + "$" + innerClassName).addString(sourceFileName + " shadows").addString(innerClassName));
+                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY).addClass(this).addString(topLevelClassName + "$" + innerClassName).addString(sourceFileName + " shadows").addString(innerClassName));
             }
         }
     }
