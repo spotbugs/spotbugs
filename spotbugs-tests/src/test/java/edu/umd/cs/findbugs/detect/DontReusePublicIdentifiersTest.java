@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     @Test
-    public void testShadowedPublicIdentifierClassNames() {
+    public void testShadowedPublicIdentifiersClassNames() {
         // check shadowed public identifiers as standalone classes
         performAnalysis("publicIdentifiers/standalone/InputStream.class");
         assertNumOfShadowedPublicIdentifierBugs(1);
@@ -26,13 +26,29 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGoodPublicIdentifierClassNames() {
+    public void testGoodPublicIdentifiersClassNames() {
         // check good public identifiers as standalone classes
         performAnalysis("publicIdentifiers/standalone/GoodPublicIdentifiersStandaloneClassNames.class");
         assertNumOfShadowedPublicIdentifierBugs(0);
 
         // check good public identifiers as inner classes
         performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames.class");
+        assertNumOfShadowedPublicIdentifierBugs(0);
+    }
+
+    @Test
+    public void testShadowedPublicIdentifiersVariableNames() {
+        performAnalysis("publicIdentifiers/ShadowedPublicIdentifiersVariableNames.class");
+        assertNumOfShadowedPublicIdentifierBugs(3);
+
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersVariableNames");
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersVariableNames", "containsShadowedLocalVariable1", 11);
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersVariableNames", "containsShadowedLocalVariable2", 15);
+    }
+
+    @Test
+    public void testGoodPublicIdentifiersVariableNames() {
+        performAnalysis("publicIdentifiers/GoodPublicIdentifiersVariableNames.class");
         assertNumOfShadowedPublicIdentifierBugs(0);
     }
 
@@ -63,6 +79,16 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
 
     private void assertShadowedPublicIdentifierBug(String className) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder().bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS").inClass(className)
+                .build();
+        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+    }
+
+    private void assertShadowedPublicIdentifierBug(String className, String methodName, int lineNumber) {
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS")
+                .inClass(className)
+                .inMethod(methodName)
+                .atLine(lineNumber)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
