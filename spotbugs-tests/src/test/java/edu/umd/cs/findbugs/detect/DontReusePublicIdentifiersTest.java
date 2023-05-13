@@ -13,26 +13,26 @@ import static org.junit.Assert.assertTrue;
 
 public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     @Test
-    public void testShadowedPublicIdentifier() {
+    public void testShadowedPublicIdentifierClassNames() {
         // check shadowed public identifiers as standalone classes
         performAnalysis("publicIdentifiers/standalone/InputStream.class");
         assertNumOfShadowedPublicIdentifierBugs(1);
         assertShadowedPublicIdentifierBug("InputStream");
 
         // check shadowed public identifiers as inner classes
-        performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiers.class");
+        performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames.class");
         assertNumOfShadowedPublicIdentifierBugs(2);
-        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiers");
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersInnerClassNames");
     }
 
     @Test
     public void testGoodPublicIdentifierClassNames() {
         // check good public identifiers as standalone classes
-        performAnalysis("publicIdentifiers/standalone/GoodPublicIdentifiers.class");
+        performAnalysis("publicIdentifiers/standalone/GoodPublicIdentifiersStandaloneClassNames.class");
         assertNumOfShadowedPublicIdentifierBugs(0);
 
         // check good public identifiers as inner classes
-        performAnalysis("publicIdentifiers/inner/GoodPublicIdentifierInnerClass.class");
+        performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames.class");
         assertNumOfShadowedPublicIdentifierBugs(0);
     }
 

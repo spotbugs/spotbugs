@@ -2,7 +2,7 @@ package publicIdentifiers.inner;
 
 
 
-public class ShadowedPublicIdentifiers {
+public class ShadowedPublicIdentifiersInnerClassNames {
     public void shadowedVector() {
         Vector v = new Vector();
         if (v.isEmpty()) {
