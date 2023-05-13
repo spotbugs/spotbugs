@@ -20,6 +20,7 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -143,7 +144,8 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                                 .addClass(currentClass.getClassName())
                                 .addMethod(currentClass, method)
                                 .addString(l.getName())
-                                .addMethod(xMethod));
+                                .addMethod(xMethod)
+                                .addSourceLine(SourceLineAnnotation.fromVisitedInstruction(currentClass, method, getPC())));
                     }
                 }
             }
