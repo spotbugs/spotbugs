@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
 import org.apache.bcel.generic.BasicType;
+import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -48,29 +49,45 @@ public class FindHidingSubClass extends OpcodeStackDetector {
                                 .addString(subClass.getClassName())
                                 .addString(superClassMethod.getName())
                                 .addString(directSuperClass.getClassName()));
-                        /*System.out.println("Sub Class Method: "
-                                + method.getReturnType() + " " + method.getName() + "(" + printTypeArray(method.getArgumentTypes()) + ")"
-                                + "    ->    "
-                                + "Super Class Method: "
-                                + superClassMethod.getReturnType() + " " + superClassMethod.getName() + "(" + printTypeArray(superClassMethod.getArgumentTypes()) + ")");*/
                     }
                 }
             }
         }
     }
 
+    /**
+     * This method checks either the received method is entry point for class or not.
+     * It does by checking public static void main(String[] args) signature element by element.
+     */
     private boolean isMainMethod(Method method) {
         return method.isPublic() && method.isStatic() && method.getReturnType().equals(BasicType.VOID)
-                && method.getName().equals("main");
-        //&& method.getArgumentTypes()[0].toString().equals("String[]");
+                && method.getName().equals("main")
+                && method.getArgumentTypes().length==1 &&
+                method.getArgumentTypes()[0].toString().equals("String[]");
     }
 
+    /**
+     * This method checks either the method 'overrider' in subClass is actually overriding the method 'original' in superclass
+     * It first evaluates that does the signature of 'overrider' is sub-signature of original or not.
+     * It then checks the name, signature and 'original' being non-final constraints of overriding.
+     */
     private boolean isOverridable(Method original, Method overrider) {
-        return original.getName().equals(overrider.getName())
-                && Arrays.equals(original.getArgumentTypes(), overrider.getArgumentTypes())
-                && !original.isFinal();
+        boolean isSignaturSubset = true;
+        Type[] overriderArguments = original.getArgumentTypes();
+        Type[] originalArguments = original.getArgumentTypes();
+
+        for(Type t : overriderArguments) {
+            if( !Arrays.asList(originalArguments).contains(t) ) {
+                isSignaturSubset=false;
+                break;
+            }
+        }
+        return original.getName().equals(overrider.getName()) && isSignaturSubset && !original.isFinal();
     }
 
+    /**
+     * This method checks the hiding constraints.
+     */
     private boolean isHiding(Method original, Method overrider) {
         return isOverridable(original, overrider) && original.getReturnType().equals(overrider.getReturnType());
     }

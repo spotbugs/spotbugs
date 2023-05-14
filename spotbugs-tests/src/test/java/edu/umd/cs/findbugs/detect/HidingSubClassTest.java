@@ -12,9 +12,9 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 public class HidingSubClassTest extends AbstractIntegrationTest {
     @Test
     public void testBadFindHidingSubClassTest() {
-        performAnalysis("FindHidingSubClassTest/BadFindHidingSubClassTest.class",
-                "FindHidingSubClassTest/GrantAccessStatic.class",
-                "FindHidingSubClassTest/GrantUserAccessStatic.class");
+        performAnalysis("findhidingsubclasstest/BadFindHidingSubClassTest.class",
+                "findhidingsubclasstest/GrantAccessStatic.class",
+                "findhidingsubclasstest/GrantUserAccessStatic.class");
 
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("HSBC_FIND_HIDING_SUB_CLASS")
@@ -24,9 +24,9 @@ public class HidingSubClassTest extends AbstractIntegrationTest {
 
     @Test
     public void testGoodFindHidingSubClassTest() {
-        performAnalysis("FindHidingSubClassTest/GoodFindHidingSubClassTest.class",
-                "FindHidingSubClassTest/GrantAccess.class",
-                "FindHidingSubClassTest/GoodFindHidingSubClassTest.class");
+        performAnalysis("findhidingsubclasstest/GoodFindHidingSubClassTest.class",
+                "findhidingsubclasstest/GrantAccess.class",
+                "findhidingsubclasstest/GoodFindHidingSubClassTest.class");
 
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("HSBC_FIND_HIDING_SUB_CLASS")

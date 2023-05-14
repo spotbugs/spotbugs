@@ -1,4 +1,4 @@
-package FindHidingSubClassTest;
+package findhidingsubclasstest;
 
 class GrantAccessStatic {
     public static void displayAccountStatus(String s, int i) {

@@ -1,4 +1,4 @@
-package FindHidingSubClassTest;
+package findhidingsubclasstest;
 
 class GrantAccess {
     public void displayAccountStatus() {
