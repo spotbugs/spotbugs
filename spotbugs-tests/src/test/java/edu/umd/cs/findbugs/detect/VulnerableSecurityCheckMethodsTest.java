@@ -9,8 +9,6 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest {
-    static String bugType = "VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS";
-
     @Test
     public void testingBadCases() {
         performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
@@ -54,6 +52,7 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
     }
 
     private BugInstanceMatcher createBugInstanceMatcher(String methodName) {
+        String bugType = "VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS";
         return new BugInstanceMatcherBuilder()
                 .bugType(bugType)
                 .inMethod(methodName)
