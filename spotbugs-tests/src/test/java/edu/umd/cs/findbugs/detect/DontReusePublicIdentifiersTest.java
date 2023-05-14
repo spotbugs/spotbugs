@@ -8,7 +8,6 @@ import org.junit.Test;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
@@ -54,10 +53,19 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGoodPublicIdentifierMethodNames() {
-        // TODO:
-        //      implement the check for good public identifiers
-        assertTrue(true);
+    public void testShadowedPublicIdentifiersMethodNames() {
+        performAnalysis("publicIdentifiers/ShadowedPublicIdentifiersMethodNames.class");
+        assertNumOfShadowedPublicIdentifierBugs(3);
+
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersMethodNames", "InputStream", 4);
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersMethodNames", "Integer", 8);
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersMethodNames", "ArrayList", 13);
+    }
+
+    @Test
+    public void testGoodPublicIdentifiersMethodNames() {
+        performAnalysis("publicIdentifiers/GoodPublicIdentifiersMethodNames.class");
+        assertNumOfShadowedPublicIdentifierBugs(0);
     }
 
 
