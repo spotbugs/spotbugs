@@ -1,8 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.ba.XMethod;
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
@@ -23,15 +21,6 @@ public class FindHidingSubClass extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        /*
-        if(seen == Const.INVOKESTATIC) {
-            if(stack != null && stack.getStackDepth()!=0) {
-                OpcodeStack.Item item = stack.getStackItem(0);
-                XMethod method = item.getReturnValueOf();
-                if(method == null) return;
-            }
-        }
-        */
         if(seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             //This is the current class. Named it subClass to better depict the idea of sub and super class.
             JavaClass subClass = this.getClassContext().getJavaClass();
@@ -57,8 +46,6 @@ public class FindHidingSubClass extends OpcodeStackDetector {
                             continue;
                         }
                         if (isHiding(superClassMethod, method)) {
-                            //System.out.println( method.getName() + ":" + subClass.getClassName() + ";" + seen);
-                            //this.stack.getItemMethodInvokedOn();
                             bugReporter.reportBug(new BugInstance(this, "HSBC_FIND_HIDING_SUB_CLASS", NORMAL_PRIORITY)
                                     .addClass(subClass.getClassName())
                                     .addMethod(subClass, method)
