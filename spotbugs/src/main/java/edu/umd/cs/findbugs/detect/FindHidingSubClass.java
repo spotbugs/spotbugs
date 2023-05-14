@@ -1,6 +1,9 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.XMethod;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugReporter;
@@ -20,35 +23,49 @@ public class FindHidingSubClass extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        //This is the current class. Named it subClass to better depict the idea of sub and super class.
-        JavaClass subClass = this.getClassContext().getJavaClass();
-        JavaClass directSuperClass = null;
-        try {
-            directSuperClass = subClass.getSuperClass();
-        } catch (ClassNotFoundException e) {
-            AnalysisContext.reportMissingClass(e);
+        /*
+        if(seen == Const.INVOKESTATIC) {
+            if(stack != null && stack.getStackDepth()!=0) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                XMethod method = item.getReturnValueOf();
+                if(method == null) return;
+            }
         }
-        if (directSuperClass == null) {
-            return;
-        }
-        Method[] superMethods = directSuperClass.getMethods();
-        Method[] methods = subClass.getMethods();
-        for (Method method : methods) {
-            if (!isMainMethod(method)) {
-                if (!method.isPrivate() && method.isStatic()) {
-                    int index = Arrays.asList(superMethods).indexOf(method);
-                    Method superClassMethod;
-                    if (index != -1) {
-                        superClassMethod = superMethods[index];
-                    } else {
-                        return;
-                    }
-                    if (isHiding(superClassMethod, method)) {
-                        bugReporter.reportBug(new BugInstance(this, "HSBC_FIND_HIDING_SUB_CLASS", NORMAL_PRIORITY)
-                                .addClassAndMethod(this.getClassContext().getJavaClass(), method)
-                                .addString(subClass.getClassName())
-                                .addString(superClassMethod.getName())
-                                .addString(directSuperClass.getClassName()));
+        */
+        if(seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
+            //This is the current class. Named it subClass to better depict the idea of sub and super class.
+            JavaClass subClass = this.getClassContext().getJavaClass();
+            JavaClass directSuperClass = null;
+            try {
+                directSuperClass = subClass.getSuperClass();
+            } catch (ClassNotFoundException e) {
+                AnalysisContext.reportMissingClass(e);
+            }
+            if (directSuperClass == null) {
+                return;
+            }
+            Method[] superMethods = directSuperClass.getMethods();
+            Method[] methods = subClass.getMethods();
+            for (Method method : methods) {
+                if (!isMainMethod(method)) {
+                    if (!method.isPrivate() && method.isStatic()) {
+                        int index = Arrays.asList(superMethods).indexOf(method);
+                        Method superClassMethod;
+                        if (index != -1) {
+                            superClassMethod = superMethods[index];
+                        } else {
+                            continue;
+                        }
+                        if (isHiding(superClassMethod, method)) {
+                            //System.out.println( method.getName() + ":" + subClass.getClassName() + ";" + seen);
+                            //this.stack.getItemMethodInvokedOn();
+                            bugReporter.reportBug(new BugInstance(this, "HSBC_FIND_HIDING_SUB_CLASS", NORMAL_PRIORITY)
+                                    .addClass(subClass.getClassName())
+                                    .addMethod(subClass, method)
+                                    .addString(subClass.getClassName())
+                                    .addString(superClassMethod.getName())
+                                    .addString(directSuperClass.getClassName()));
+                        }
                     }
                 }
             }
