@@ -11,6 +11,10 @@ class SubClass extends SuperClass {
         System.out.println("Account details for user: XX");
     }
 }
+
+//This class is the non-compliant test case for the bug.
+//As the displayAccountStatus() is being hided by subclass and invocation is on instance variable.
+//This test case is here to test the sub-signature check.
 public class BadFindHidingSubClassTest2 {
     public static void choose(String username) {
         SuperClass admin = new SuperClass();

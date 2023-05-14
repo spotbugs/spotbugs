@@ -11,6 +11,9 @@ class GrantUserAccessStatic extends GrantAccessStatic {
         System.out.println("Account details for user: XX");
     }
 }
+
+//This class is the non-compliant test case for the bug.
+//As the displayAccountStatus() is being hided by subclass and invocation is on instance variable.
 public class BadFindHidingSubClassTest {
     public static void choose(String username) {
         GrantAccessStatic admin = new GrantAccessStatic();

@@ -1,3 +1,21 @@
+/*
+ * SpotBugs - Find bugs in Java programs
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -12,6 +30,12 @@ import org.apache.bcel.classfile.Method;
 
 import java.util.Arrays;
 
+/**
+ * This detector finds all the methods of a subclass which are hiding the static methods of the superclass and
+ * tries to invoke that method using the instance variable.
+ * Please see @see <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface" SEI CERT MET07-J</a>
+ * @author Nazir, Muhammad Zafar Iqbal
+ */
 public class FindHidingSubClass extends OpcodeStackDetector {
     private final BugReporter bugReporter;
 
@@ -21,7 +45,9 @@ public class FindHidingSubClass extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
+        //I first try to filter out the part of code where there a call to overridden method.
         if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
+            //Then I get the subclass and superclass in variables.
             //This is the current class. Named it subClass to better depict the idea of sub and super class.
             JavaClass subClass = this.getClassContext().getJavaClass();
             JavaClass directSuperClass = null;
@@ -33,11 +59,16 @@ public class FindHidingSubClass extends OpcodeStackDetector {
             if (directSuperClass == null) {
                 return;
             }
+            //I store all the methods of both subclass and superclass (in separate variables)
             Method[] superMethods = directSuperClass.getMethods();
             Method[] methods = subClass.getMethods();
+            //I go through each method of the subclass and filter the non-private and static methods, as private methods can't be overridden.
+            //I also perform check for main method using auxiliary private method
             for (Method method : methods) {
                 if (!isMainMethod(method)) {
                     if (!method.isPrivate() && method.isStatic()) {
+                        //I check either the method of subclass is present in the super class.
+                        // If it is, I store it in a variable for further usage.
                         int index = Arrays.asList(superMethods).indexOf(method);
                         Method superClassMethod;
                         if (index != -1) {
@@ -45,6 +76,8 @@ public class FindHidingSubClass extends OpcodeStackDetector {
                         } else {
                             continue;
                         }
+                        //I check using an auxiliary private method, either the subclass method is hiding the superclass method.
+                        //If yes, then I report the bug.
                         if (isHiding(superClassMethod, method)) {
                             bugReporter.reportBug(new BugInstance(this, "HSBC_FIND_HIDING_SUB_CLASS", NORMAL_PRIORITY)
                                     .addClass(subClass.getClassName())

@@ -24,6 +24,9 @@ class Sample extends Demo
     }
 }
 
+//This class is the non-compliant test case for the bug.
+//As the displayAccountStatus() is declared static and invoked on instance variable.
+//This test case also clarifies the confusion of method overriding and method hiding.
 public class BadFindHidingSubClassTest3 {
     public static void main(String[] args) {
         Demo d1 = new Demo();
