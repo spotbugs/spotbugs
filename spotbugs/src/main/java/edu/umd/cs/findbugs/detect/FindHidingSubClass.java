@@ -21,7 +21,7 @@ public class FindHidingSubClass extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if(seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
+        if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             //This is the current class. Named it subClass to better depict the idea of sub and super class.
             JavaClass subClass = this.getClassContext().getJavaClass();
             JavaClass directSuperClass = null;
@@ -66,7 +66,7 @@ public class FindHidingSubClass extends OpcodeStackDetector {
     private boolean isMainMethod(Method method) {
         return method.isPublic() && method.isStatic() && method.getReturnType().equals(BasicType.VOID)
                 && method.getName().equals("main")
-                && method.getArgumentTypes().length==1 &&
+                && method.getArgumentTypes().length == 1 &&
                 method.getArgumentTypes()[0].toString().equals("String[]");
     }
 
@@ -80,9 +80,9 @@ public class FindHidingSubClass extends OpcodeStackDetector {
         Type[] overriderArguments = original.getArgumentTypes();
         Type[] originalArguments = original.getArgumentTypes();
 
-        for(Type t : overriderArguments) {
-            if( !Arrays.asList(originalArguments).contains(t) ) {
-                isSignaturSubset=false;
+        for (Type t : overriderArguments) {
+            if (!Arrays.asList(originalArguments).contains(t)) {
+                isSignaturSubset = false;
                 break;
             }
         }
