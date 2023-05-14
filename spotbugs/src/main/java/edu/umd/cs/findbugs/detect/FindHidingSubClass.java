@@ -33,7 +33,7 @@ import java.util.Arrays;
 /**
  * This detector finds all the methods of a subclass which are hiding the static methods of the superclass and
  * tries to invoke that method using the instance variable.
- * Please see @see <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface" SEI CERT MET07-J</a>
+ * Please see @see <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">SEI CERT MET07-J</a>
  * @author Nazir, Muhammad Zafar Iqbal
  */
 public class FindHidingSubClass extends OpcodeStackDetector {
