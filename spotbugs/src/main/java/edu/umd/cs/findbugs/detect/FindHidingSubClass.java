@@ -46,10 +46,13 @@ public class FindHidingSubClass extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         //I first try to filter out the part of code where there a call to overridden method.
-        if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
+        if (seen == Const.INVOKEVIRTUAL) {
             //Then I get the subclass and superclass in variables.
             //This is the current class. Named it subClass to better depict the idea of sub and super class.
             JavaClass subClass = this.getClassContext().getJavaClass();
+            if (subClass.getClass().getEnclosingClass() != null) {
+                return;
+            }
             JavaClass directSuperClass = null;
             try {
                 directSuperClass = subClass.getSuperClass();
@@ -76,6 +79,9 @@ public class FindHidingSubClass extends OpcodeStackDetector {
                         } else {
                             continue;
                         }
+                        if (isConstructor(superClassMethod)) {
+                            return;
+                        }
                         //I check using an auxiliary private method, either the subclass method is hiding the superclass method.
                         //If yes, then I report the bug.
                         if (isHiding(superClassMethod, method)) {
@@ -92,6 +98,10 @@ public class FindHidingSubClass extends OpcodeStackDetector {
         }
     }
 
+    private boolean isConstructor(Method method) {
+        return method.getName().contains("clinit") || method.getName().contains("init");
+    }
+
     /**
      * This method checks either the received method is entry point for class or not.
      * It does by checking public static void main(String[] args) signature element by element.
@@ -99,8 +109,13 @@ public class FindHidingSubClass extends OpcodeStackDetector {
     private boolean isMainMethod(Method method) {
         return method.isPublic() && method.isStatic() && method.getReturnType().equals(BasicType.VOID)
                 && method.getName().equals("main")
-                && method.getArgumentTypes().length == 1 &&
-                method.getArgumentTypes()[0].toString().equals("String[]");
+                && this.isStringArray(method);
+    }
+
+    private boolean isStringArray(Method method) {
+        return method.getArgumentTypes().length == 1 &&
+                method.getArgumentTypes()[0].toString().contains("String") &&
+                method.getArgumentTypes()[0].toString().contains("[");
     }
 
     /**
