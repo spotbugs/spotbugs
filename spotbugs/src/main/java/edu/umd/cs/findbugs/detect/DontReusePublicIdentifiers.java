@@ -2,21 +2,15 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.*;
 
 import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
 
 
-public class DontReusePublicIdentifiers extends OpcodeStackDetector {
-    // TODO: Implement this method
-    //  check method name clashes
-    //  check variable name clashes(obscuring)
-    //  add a constant set of public identifiers from the JSL
-    // DONE:
-    //  check class name clashes - ony for public classes
+public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
     private String topLevelClassName = "";
@@ -30,12 +24,10 @@ public class DontReusePublicIdentifiers extends OpcodeStackDetector {
     public void visitClassContext(ClassContext classContext) {
         JavaClass obj = classContext.getJavaClass();
 
-        if (obj.isPublic()) {
-            // save the source file name and class name for inner classes
-            sourceFileName = obj.getFileName();
-            topLevelClassName = obj.getClassName();
-            classContext.getJavaClass().accept(this);
-        }
+        // save the source file name and class name for inner classes
+        sourceFileName = obj.getFileName();
+        topLevelClassName = obj.getClassName();
+        classContext.getJavaClass().accept(this);
     }
 
     @Override
@@ -58,9 +50,16 @@ public class DontReusePublicIdentifiers extends OpcodeStackDetector {
     }
 
     @Override
+    public void visit(Method obj) {
+        String name = obj.getName();
+        if (PUBLIC_IDENTIFIERS.contains(name)) {
+            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY).addClassAndMethod(this).addString(topLevelClassName + "." + name).addString("method " + name + " shadows").addString(name));
+        }
+    }
+
+    @Override
     public void visit(LocalVariableTable obj) {
         LocalVariable[] vars = obj.getLocalVariableTable();
-        System.out.println("LocalVariableTable: " + vars.length);
 
         for (LocalVariable var : vars) {
             String varName = var.getName();
@@ -81,7 +80,6 @@ public class DontReusePublicIdentifiers extends OpcodeStackDetector {
 
         ConstantPool constantPool = obj.getConstantPool();
         for (InnerClass cls : obj.getInnerClasses()) {
-            // analyze the inner class itself
 
             // check if the inner class is public
             int accessFlags = cls.getInnerAccessFlags();
@@ -97,32 +95,4 @@ public class DontReusePublicIdentifiers extends OpcodeStackDetector {
             }
         }
     }
-
-    @Override
-    public void sawOpcode(int seen) {
-        // case #1: ASTORE is called when creating a new variable then the variable name should be checked
-        // variable name when instantiating an object
-        //        if (seen == Const.ASTORE) {
-        //            XField f = getXFieldOperand();
-        //            if (f != null) {
-        //                if (PUBLIC_IDENTIFIERS.contains(f.getName())) {
-        //                    bugAccumulator.accumulateBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY).addClassAndMethod(this),
-        //                            this);
-        //                }
-        //            }
-        //        }
-
-        // case #2: PUTFIELD/PUTFIELD is called inside a class to declare a variable
-        // TODO: NOTE: It is for giving a value to a field
-        // variable declared inside a class/interface
-        //        if ((seen == Const.PUTFIELD || seen == Const.PUTSTATIC)) {
-        //            XField f = getXFieldOperand();
-        //            if (f != null) {
-        //                bugAccumulator.accumulateBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY).addClassAndMethod(this),
-        //                        this);
-        //            }
-        //
-        //        }
-    }
-
 }
