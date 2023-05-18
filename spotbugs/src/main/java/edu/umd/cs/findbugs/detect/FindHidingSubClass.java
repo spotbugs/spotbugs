@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugInstance;
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
-import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -139,17 +138,9 @@ public class FindHidingSubClass extends OpcodeStackDetector {
      * It then checks the name, signature and 'original' being non-final constraints of overriding.
      */
     private boolean isOverridable(Method original, Method overrider) {
-        boolean isSignaturSubset = true;
-        Type[] overriderArguments = original.getArgumentTypes();
-        Type[] originalArguments = original.getArgumentTypes();
-
-        for (Type t : overriderArguments) {
-            if (!Arrays.asList(originalArguments).contains(t)) {
-                isSignaturSubset = false;
-                break;
-            }
-        }
-        return original.getName().equals(overrider.getName()) && isSignaturSubset && !original.isFinal();
+        return original.getName().equals(overrider.getName())
+                && Arrays.equals(original.getArgumentTypes(), overrider.getArgumentTypes())
+                && !original.isFinal();
     }
 
     /**
