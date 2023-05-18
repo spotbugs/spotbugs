@@ -1,8 +1,5 @@
 package findhidingsubclasstest;
 
-import javax.activation.CommandMap;
-import javax.activation.MailcapCommandMap;
-
 abstract class SuperDotClassTest{
     private static SuperDotClassTest defaultSuperDotClassTest = null;
 
@@ -24,9 +21,11 @@ public class DotClassTest extends SuperDotClassTest {
         if (debug) {
             System.out.println("MailcapCommandMap: load HOME");
         }
+        /*
         synchronized (class$findhidingsubclasstest$DotClassTest == null?class$("findhidingsubclasstest.DotClassTest"):class$findhidingsubclasstest$DotClassTest ) {
 
         }
+        */
     }
 
     public DotClassTest(String fileName) {
