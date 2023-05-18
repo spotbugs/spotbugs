@@ -79,8 +79,9 @@ public class FindHidingSubClass extends OpcodeStackDetector {
                         } else {
                             continue;
                         }
-                        if (isConstructor(superClassMethod)) {
-                            return;
+                        //Here I check for the exception cases of main method and inner class using two auxiliary private methods.
+                        if (isConstructor(method) || isHidingInnerClass(method)) {
+                            continue;
                         }
                         //I check using an auxiliary private method, either the subclass method is hiding the superclass method.
                         //If yes, then I report the bug.
@@ -98,6 +99,20 @@ public class FindHidingSubClass extends OpcodeStackDetector {
         }
     }
 
+    /**
+     *This method checks for the inner class exceptional cases.
+     * As whenever there an inner class, '.access$' methods are created hiddenly to access the outer class attributes.
+     */
+    private boolean isHidingInnerClass(Method method) {
+        return method.getName().contains("access$");
+    }
+
+    /**
+     * This method checks for the exceptional case of main method.
+     * As we know main method always have the signature "public static void main(String[] args)".
+     * It is static but usually public class have its own main method as its entry point.
+     * Therefore, it is not a error caused by Programming but a utility to provide UI to user.
+     */
     private boolean isConstructor(Method method) {
         return method.getName().contains("clinit") || method.getName().contains("init");
     }
