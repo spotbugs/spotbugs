@@ -117,22 +117,22 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                     boolean doesCheckSecurity = false;
                     LocalVariable l = null;
                     int li = 0;
-                    XMethod xMethod = null;
+                    XMethod calledMethod = null;
                     while (!doesCheckSecurity && li < localVariables.length) {
                         l = localVariables[li];
                         if (l.getSignature().contains("SecurityManager")) {
                             //I then check either any of these methods is being called over the SecurityManager variable.
                             if (seen == Const.INVOKEVIRTUAL) {
-                                xMethod = this.getXMethodOperand();
-                                if (xMethod == null) {
+                                calledMethod = this.getXMethodOperand();
+                                if (calledMethod == null) {
                                     return;
                                 }
                                 //I used the documentation of SecurityManager class and compile the "badMethodNames"
                                 // list of method names which can perform really perform security check.
                                 //If really the security check is performed, I set the flag "doesCheckSecurity"
                                 // true to report the bug.
-                                if ("java.lang.SecurityManager".equals(xMethod.getClassName())
-                                        && badMethodNames.contains(xMethod.getName())) {
+                                if ("java.lang.SecurityManager".equals(calledMethod.getClassName())
+                                        && badMethodNames.contains(calledMethod.getName())) {
                                     doesCheckSecurity = true;
                                 }
                             }
@@ -144,7 +144,7 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                                 .addClass(currentClass.getClassName())
                                 .addMethod(currentClass, method)
                                 .addString(l.getName())
-                                .addMethod(xMethod)
+                                .addMethod(calledMethod)
                                 .addSourceLine(SourceLineAnnotation.fromVisitedInstruction(currentClass, method, getPC())));
                     }
                 }
