@@ -20,8 +20,10 @@
 package edu.umd.cs.findbugs.workflow;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -176,7 +178,7 @@ public class UnionResults {
 
     private static List<String> readWrappedArguments(String fileName) throws IOException {
         List<String> wrappedArguments = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), Charset.forName("UTF-8")))) {
             String next;
             while ((next = reader.readLine()) != null) {
                 wrappedArguments.add(next);
