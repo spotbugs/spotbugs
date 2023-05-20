@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -112,9 +113,9 @@ public class UnionBugs2 extends AbstractFindBugsTask {
             throw new BuildException("unable to create temporary argument file", e);
         }
         String pathAsString = tempFile.toAbsolutePath().toString();
-        try (PrintWriter writer = new PrintWriter(tempFile.toFile())) {
+        try (PrintWriter writer = new PrintWriter(tempFile.toFile(), "UTF-8")) {
             writer.print(builder);
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
             throw new BuildException(String.format("unable to write to temporary argument file: '%s'", pathAsString), e);
         }
         addArg(pathAsString);
