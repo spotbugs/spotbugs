@@ -7,6 +7,7 @@ import static edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers.PUB
  */
 class LoadPublicIdentifiersVZ {
     public static void load() {
+        PUBLIC_IDENTIFIERS.add("Void");
         PUBLIC_IDENTIFIERS.add("ValidatedInfo");
         PUBLIC_IDENTIFIERS.add("ValidatePipe");
         PUBLIC_IDENTIFIERS.add("ValidationContext");

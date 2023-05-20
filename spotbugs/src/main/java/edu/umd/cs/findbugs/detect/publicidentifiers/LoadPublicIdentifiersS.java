@@ -7,6 +7,18 @@ import static edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers.PUB
  */
 class LoadPublicIdentifiersS {
     public static void load() {
+        PUBLIC_IDENTIFIERS.add("Short");
+        PUBLIC_IDENTIFIERS.add("StackTraceElement");
+        PUBLIC_IDENTIFIERS.add("StackWalker");
+        PUBLIC_IDENTIFIERS.add("StackWalker.Option");
+        PUBLIC_IDENTIFIERS.add("StackWalker.StackFrame");
+        PUBLIC_IDENTIFIERS.add("StrictMath");
+        PUBLIC_IDENTIFIERS.add("StringBuffer");
+        PUBLIC_IDENTIFIERS.add("StringBuilder");
+        PUBLIC_IDENTIFIERS.add("System");
+        PUBLIC_IDENTIFIERS.add("System.Logger");
+        PUBLIC_IDENTIFIERS.add("System.Logger.Level");
+        PUBLIC_IDENTIFIERS.add("System.LoggerFinder");
         PUBLIC_IDENTIFIERS.add("SAEditorPane");
         PUBLIC_IDENTIFIERS.add("SafepointBlob");
         PUBLIC_IDENTIFIERS.add("SafePointNode");

@@ -7,6 +7,7 @@ import static edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers.PUB
  */
 class LoadPublicIdentifiersDE {
     public static void load() {
+        PUBLIC_IDENTIFIERS.add("Double");
         PUBLIC_IDENTIFIERS.add("D2F");
         PUBLIC_IDENTIFIERS.add("D2I");
         PUBLIC_IDENTIFIERS.add("D2L");
@@ -764,6 +765,7 @@ class LoadPublicIdentifiersDE {
         PUBLIC_IDENTIFIERS.add("DynamicConstantDesc");
         PUBLIC_IDENTIFIERS.add("DynamicMBean");
         PUBLIC_IDENTIFIERS.add("DynamicMBean2");
+        PUBLIC_IDENTIFIERS.add("Enum.EnumDesc");
         PUBLIC_IDENTIFIERS.add("ECDSAOperations");
         PUBLIC_IDENTIFIERS.add("ECDSAOperations$Nonce");
         PUBLIC_IDENTIFIERS.add("ECDSAOperations$Seed");

@@ -650,6 +650,8 @@ class LoadPublicIdentifiersAB {
         PUBLIC_IDENTIFIERS.add("AWTKeyStroke");
         PUBLIC_IDENTIFIERS.add("AwtScreenData");
         PUBLIC_IDENTIFIERS.add("AxesWalker");
+        PUBLIC_IDENTIFIERS.add("Boolean");
+        PUBLIC_IDENTIFIERS.add("Byte");
         PUBLIC_IDENTIFIERS.add("BackAction");
         PUBLIC_IDENTIFIERS.add("BackBufferCapsProvider");
         PUBLIC_IDENTIFIERS.add("BackgroundLookupListener");

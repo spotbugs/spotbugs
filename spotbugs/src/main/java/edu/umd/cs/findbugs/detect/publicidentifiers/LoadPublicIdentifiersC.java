@@ -8,6 +8,11 @@ import static edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers.PUB
 class LoadPublicIdentifiersC {
 
     public static void load() {
+        PUBLIC_IDENTIFIERS.add("Character");
+        PUBLIC_IDENTIFIERS.add("Character.Subset");
+        PUBLIC_IDENTIFIERS.add("Character.UnicodeBlock");
+        PUBLIC_IDENTIFIERS.add("Character.UnicodeScript");
+        PUBLIC_IDENTIFIERS.add("Class");
         PUBLIC_IDENTIFIERS.add("C14NMethodParameterSpec");
         PUBLIC_IDENTIFIERS.add("Cache");
         PUBLIC_IDENTIFIERS.add("Cache$CacheVisitor");

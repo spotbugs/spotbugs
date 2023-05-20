@@ -7,6 +7,7 @@ import static edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers.PUB
  */
 class LoadPublicIdentifiersFH {
     public static void load() {
+        PUBLIC_IDENTIFIERS.add("Float");
         PUBLIC_IDENTIFIERS.add("F2D");
         PUBLIC_IDENTIFIERS.add("F2I");
         PUBLIC_IDENTIFIERS.add("F2L");

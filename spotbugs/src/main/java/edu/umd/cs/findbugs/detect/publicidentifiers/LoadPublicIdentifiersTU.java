@@ -7,6 +7,8 @@ import static edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers.PUB
  */
 class LoadPublicIdentifiersTU {
     public static void load() {
+        PUBLIC_IDENTIFIERS.add("Thread.State");
+        PUBLIC_IDENTIFIERS.add("Thread.UncaughtExceptionHandler");
         PUBLIC_IDENTIFIERS.add("Tab");
         PUBLIC_IDENTIFIERS.add("TabableView");
         PUBLIC_IDENTIFIERS.add("TabbedPaneUI");

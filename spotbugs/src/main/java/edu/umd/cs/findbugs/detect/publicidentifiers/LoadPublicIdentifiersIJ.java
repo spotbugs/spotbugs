@@ -397,6 +397,7 @@ class LoadPublicIdentifiersIJ {
         PUBLIC_IDENTIFIERS.add("IntBinaryOperator");
         PUBLIC_IDENTIFIERS.add("IntBuffer");
         PUBLIC_IDENTIFIERS.add("IntConsumer");
+        PUBLIC_IDENTIFIERS.add("Integer");
         PUBLIC_IDENTIFIERS.add("IntegerComponentRaster");
         PUBLIC_IDENTIFIERS.add("IntegerDV");
         PUBLIC_IDENTIFIERS.add("IntegerEditor");

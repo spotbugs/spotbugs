@@ -120,6 +120,7 @@ class LoadPublicIdentifiersKM {
         PUBLIC_IDENTIFIERS.add("KRBError");
         PUBLIC_IDENTIFIERS.add("KrbException");
         PUBLIC_IDENTIFIERS.add("KrbTgsReq");
+        PUBLIC_IDENTIFIERS.add("Long");
         PUBLIC_IDENTIFIERS.add("L2D");
         PUBLIC_IDENTIFIERS.add("L2F");
         PUBLIC_IDENTIFIERS.add("L2I");
@@ -763,6 +764,10 @@ class LoadPublicIdentifiersKM {
         PUBLIC_IDENTIFIERS.add("LXOR");
         PUBLIC_IDENTIFIERS.add("LZWCompressor");
         PUBLIC_IDENTIFIERS.add("LZWStringTable");
+        PUBLIC_IDENTIFIERS.add("Math");
+        PUBLIC_IDENTIFIERS.add("Module");
+        PUBLIC_IDENTIFIERS.add("ModuleLayer");
+        PUBLIC_IDENTIFIERS.add("ModuleLayer.Controller");
         PUBLIC_IDENTIFIERS.add("Mac");
         PUBLIC_IDENTIFIERS.add("MacArabic");
         PUBLIC_IDENTIFIERS.add("MacCentralEurope");

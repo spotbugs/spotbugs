@@ -20,7 +20,7 @@ public class PublicIdentifiers {
         LoadPublicIdentifiersFH.load();
         LoadPublicIdentifiersIJ.load();
         LoadPublicIdentifiersKM.load();
-        LoadPublicIdentifiersNQ.load();
+        LoadPublicIdentifiersNR.load();
         LoadPublicIdentifiersS.load();
         LoadPublicIdentifiersTU.load();
         LoadPublicIdentifiersVZ.load();
