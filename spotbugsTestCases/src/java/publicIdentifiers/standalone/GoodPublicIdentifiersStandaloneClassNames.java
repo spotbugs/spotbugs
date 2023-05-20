@@ -1,7 +1,7 @@
 package publicIdentifiers.standalone;
 
 import java.util.Vector;
-import static java.lang.System.out;
+
 public class GoodPublicIdentifiersStandaloneClassNames {
     void fullReferenceToVector() {
         java.util.Vector v = new java.util.Vector();
@@ -19,10 +19,5 @@ public class GoodPublicIdentifiersStandaloneClassNames {
         } else {
             System.out.println("Vector is not empty");
         }
-    }
-
-    void staticImportVariable() {
-        String System = "System";
-        out.println(System);
     }
 }
