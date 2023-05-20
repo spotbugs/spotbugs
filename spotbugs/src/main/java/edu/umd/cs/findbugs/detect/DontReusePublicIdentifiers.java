@@ -7,7 +7,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.*;
 
-import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
+import static edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers.PUBLIC_IDENTIFIERS;
 
 
 public class DontReusePublicIdentifiers extends BytecodeScanningDetector {

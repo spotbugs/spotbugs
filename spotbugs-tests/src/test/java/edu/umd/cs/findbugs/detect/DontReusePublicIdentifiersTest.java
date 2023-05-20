@@ -8,7 +8,6 @@ import org.junit.Test;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertTrue;
 
 public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     @Test
@@ -41,9 +40,9 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         assertNumOfShadowedPublicIdentifierBugs(4);
 
         assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersVariableNames");
-        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersVariableNames", "containsShadowedLocalVariable1", 13);
-        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersVariableNames", "containsShadowedLocalVariable2", 18);
-        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersVariableNames", "containsShadowedLocalVariable3", 24);
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersVariableNames", "containsShadowedLocalVariable1", 10);
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersVariableNames", "containsShadowedLocalVariable2", 17);
+        assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersVariableNames", "containsShadowedLocalVariable3", 21);
     }
 
     @Test
