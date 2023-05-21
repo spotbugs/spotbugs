@@ -49,8 +49,8 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
         performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
         assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck5", 94);
     }
-
-
+    
+    
     @Test
     public void testingBadCase6() {
         performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
