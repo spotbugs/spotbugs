@@ -43,20 +43,6 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
         performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
         assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck4", 94);
     }
-    /*
-    @Test
-    public void testingBadCase5() {
-        performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
-        assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck5", 94);
-    }
-    
-    
-    @Test
-    public void testingBadCase6() {
-        performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
-        assertVSCBug("badCalled", 111);
-    }
-    */
 
     @Test
     public void testingGoodCase1() {
@@ -165,7 +151,5 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
     private void assertVSCBug(String methodName, int lineNumber) {
         final BugInstanceMatcher bugTypeMatcher = createBugInstanceMatcher(methodName, lineNumber);
         assertThat(getBugCollection(), hasItem(bugTypeMatcher));
-        //assertThat("", getBugCollection().getCollection().contains(new BugInstance("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS", Priorities.NORMAL_PRIORITY)));
-        //assertThat(getBugCollection(), hasItem(new BugInstance("VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS", Priorities.NORMAL_PRIORITY)));
     }
 }
