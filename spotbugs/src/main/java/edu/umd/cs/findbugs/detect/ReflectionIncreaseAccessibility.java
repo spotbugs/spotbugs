@@ -68,7 +68,7 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
                 return;
             }
             XMethod met = getXMethodOperand();
-            if(met == null) {
+            if (met == null) {
                 return;
             }
             if (!securityCheck && obj.isInitialParameter() && obj.getXField() == null &&
