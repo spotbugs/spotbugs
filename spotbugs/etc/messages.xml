@@ -8797,7 +8797,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS">
     <ShortDescription>Non-Private and non-final security check methods are vulnerable</ShortDescription>
-    <LongDescription>The method '{1}' performs security check with variable '{2}' by using method '{3}', but is overrideable. Declare the method final or private in order to resolve the issue. </LongDescription>
+    <LongDescription>The method '{1}' performs security check by using '{2}' method of Security Manager Class, but is overrideable. Declare the method final or private in order to resolve the issue. </LongDescription>
     <Details>
       <![CDATA[<p>
         Methods that perform security checks should be prevented from being overridden, so they must be declared as
