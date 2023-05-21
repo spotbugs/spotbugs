@@ -27,9 +27,6 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.LocalVariableTable;
-import org.apache.bcel.classfile.Method;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -89,70 +86,55 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
         };
     }
 
+    /**
+     * Only interested in non-final classes
+     */
     @Override
-    public void visitClassContext(ClassContext classContext){
+    public void visitClassContext(ClassContext classContext) {
+        JavaClass ctx = classContext.getJavaClass();
+        // Break out of analyzing this class if declared as final
+        if (ctx.isFinal()) {
+            return;
+        }
         super.visitClassContext(classContext);
     }
 
-    @Override
-    public void visitMethod(Method method) {
-        if (!method.isFinal() && !method.isPrivate() && !method.isStatic()) {
-            super.visitMethod(method);
-        }
+    /**
+     * Returns true if the opcode is a method invocation false otherwise
+     */
+    private boolean isMethodCall(int seen) {
+        return seen == Const.INVOKESTATIC ||
+                seen == Const.INVOKEVIRTUAL ||
+                seen == Const.INVOKEINTERFACE ||
+                seen == Const.INVOKESPECIAL;
     }
 
     @Override
     public void sawOpcode(int seen) {
-        JavaClass currentClass = this.getClassContext().getJavaClass();
-        //I first check the class being final.
-        if (!currentClass.isFinal()) {
-            Method[] methods = currentClass.getMethods();
-            for (Method method : methods) {
-                //Then I filter out all the non-final and non-private methods.
-                if (!method.isFinal() && !method.isPrivate()) {
-                    //After the method is filtered, I find all the variables available in this method.
-                    LocalVariableTable localVariableTable = method.getLocalVariableTable();
-                    if (localVariableTable == null) {
-                        continue;
-                    }
-                    LocalVariable[] localVariables = localVariableTable.getLocalVariableTable();
-                    if (localVariables == null) {
-                        continue;
-                    }
-                    //If there is some SecurityManager variable, I verify either some security check is being performed or not.
-                    boolean doesCheckSecurity = false;
-                    LocalVariable l = null;
-                    int li = 0;
-                    XMethod calledMethod = null;
-                    while (!doesCheckSecurity && li < localVariables.length) {
-                        l = localVariables[li];
-                        if (l.getSignature().contains("SecurityManager")) {
-                            //I then check either any of these methods is being called over the SecurityManager variable.
-                            if (seen == Const.INVOKEVIRTUAL) {
-                                calledMethod = this.getXMethodOperand();
-                                if (calledMethod == null) {
-                                    return;
-                                }
-                                //I used the documentation of SecurityManager class and compile the "badMethodNames"
-                                // list of method names which can perform really perform security check.
-                                //If really the security check is performed, I set the flag "doesCheckSecurity"
-                                // true to report the bug.
-                                if ("java.lang.SecurityManager".equals(calledMethod.getClassName())
-                                        && badMethodNames.contains(calledMethod.getName())) {
-                                    doesCheckSecurity = true;
-                                }
-                            }
-                        }
-                        li++;
-                    }
-                    if (doesCheckSecurity) {
-                        bugReporter.reportBug(new BugInstance(this, "VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS", NORMAL_PRIORITY)
-                                .addClass(currentClass.getClassName())
-                                .addMethod(currentClass, method)
-                                .addString(l.getName())
-                                .addMethod(calledMethod)
-                                .addSourceLine(SourceLineAnnotation.fromVisitedInstruction(currentClass, method, getPC())));
-                    }
+        //I first check if there is any method invocation.
+        if (isMethodCall(seen)) {
+            //If yes then I get the method in which this invocation happened
+            XMethod method = getXMethod();
+            if (method == null) {
+                return;
+            }
+            //We examine only non-final and non-private methods
+            if (!method.isFinal() && !method.isPrivate()) {
+                //Then we get the method which was invoked
+                XMethod calledMethod = this.getXMethodOperand();
+                if (calledMethod == null) {
+                    return;
+                }
+                //I used the documentation of SecurityManager class and compile the "badMethodNames"
+                // list of method names which can perform really perform security check.
+                //If really the security check is performed, I report the bug.
+                if ("java.lang.SecurityManager".equals(calledMethod.getClassName())
+                        && badMethodNames.contains(calledMethod.getName())) {
+                    bugReporter.reportBug(new BugInstance(this, "VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS", NORMAL_PRIORITY)
+                            .addClass(this.getClassContext().getJavaClass())
+                            .addMethod(method)
+                            .addMethod(calledMethod)
+                            .addSourceLine(SourceLineAnnotation.fromVisitedInstruction(this, getPC())));
                 }
             }
         }
