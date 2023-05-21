@@ -20,6 +20,12 @@
 package edu.umd.cs.findbugs.anttask;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.apache.tools.ant.BuildException;
@@ -36,7 +42,6 @@ import org.apache.tools.ant.types.FileSet;
  * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>}
  *
  * @ant.task category="utility"
- *
  */
 
 public class UnionBugs2 extends AbstractFindBugsTask {
@@ -94,13 +99,26 @@ public class UnionBugs2 extends AbstractFindBugsTask {
         addArg("-withMessages");
         addArg("-output");
         addArg(to);
+        StringBuilder builder = new StringBuilder();
         for (FileSet s : fileSets) {
             File fromDir = s.getDir(getProject());
             for (String file : s.getDirectoryScanner(getProject()).getIncludedFiles()) {
-                addArg(new File(fromDir, file).toString());
+                builder.append(new File(fromDir, file)).append("\n");
             }
         }
-
+        Path tempFile;
+        try {
+            tempFile = Files.createTempFile("spotbugs-argument-file", ".txt");
+        } catch (IOException e) {
+            throw new BuildException("unable to create temporary argument file", e);
+        }
+        String pathAsString = tempFile.toAbsolutePath().toString();
+        try (PrintWriter writer = new PrintWriter(tempFile.toFile(), "UTF-8")) {
+            writer.print(builder);
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            throw new BuildException(String.format("unable to write to temporary argument file: '%s'", pathAsString), e);
+        }
+        addArg(pathAsString);
     }
 
 }
