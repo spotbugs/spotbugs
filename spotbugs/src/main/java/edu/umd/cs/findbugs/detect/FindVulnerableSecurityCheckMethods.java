@@ -125,7 +125,7 @@ public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
                 if (calledMethod == null) {
                     return;
                 }
-                //I used the documentation of SecurityManager class and compile the "badMethodNames"
+                //I used the documentation of SecurityManager class and compiled the "badMethodNames"
                 // list of method names which can really perform security check.
                 //If security check is really performed, I report the bug.
                 if ("java.lang.SecurityManager".equals(calledMethod.getClassName())
