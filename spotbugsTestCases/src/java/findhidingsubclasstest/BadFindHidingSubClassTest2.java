@@ -1,26 +1,42 @@
 package findhidingsubclasstest;
 
-class SuperClass {
-    public static void displayAccountStatus(String s, int i) {
-        System.out.println("Account details for admin: XX");
+class Demo
+{
+    public static void method1()
+    {
+        System.out.println("Method-1 of the Demo class is executed.");
+    }
+    public void method2()
+    {
+        System.out.println("Method-2 of the Demo class is executed.");
     }
 }
-
-class SubClass extends SuperClass {
-    public static void displayAccountStatus(String s) {
-        System.out.println("Account details for user: XX");
+//child class
+class Sample extends Demo
+{
+    public static void method1()
+    {
+        System.out.println("Method-1 of the Sample class is executed.");
+    }
+    public void method2()
+    {
+        System.out.println("Method-2 of the Sample class is executed.");
     }
 }
 
 //This class is the non-compliant test case for the bug.
-//As the displayAccountStatus() is being hided by subclass and invocation is on instance variable.
-//This test case is here to test the sub-signature check.
+//As the displayAccountStatus() is declared static.
+//This test case also clarifies the confusion of method overriding and method hiding.
 public class BadFindHidingSubClassTest2 {
-    public static void choose(String username) {
-        SuperClass admin = new SuperClass();
-        SuperClass user = new SubClass();
-
-        admin.displayAccountStatus("", 0);
-        user.displayAccountStatus("", 1);
+    public static void main(String[] args) {
+        Demo d1 = new Demo();
+        //d2 is reference variable of class Demo that points to object of class Sample
+        Demo d2 = new Sample();
+        //method calling with reference (method hiding)
+        d1.method1();
+        d2.method1();
+        //method calling with object (method overriding)
+        d1.method2();
+        d2.method2();
     }
 }

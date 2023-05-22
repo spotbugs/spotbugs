@@ -1,27 +1,27 @@
 package findhidingsubclasstest;
 
 class GrantAccessStatic {
-    public static void displayAccountStatus(String s, int i) {
-        System.out.println("Account details for admin: XX");
+    public static void displayAccountStatus(String s) {
+        System.out.println("Account details for admin: XX " + s);
     }
 }
 
 class GrantUserAccessStatic extends GrantAccessStatic {
-    public static void displayAccountStatus(String s, int i) {
-        System.out.println("Account details for user: XX");
+    public static void displayAccountStatus(String s) {
+        System.out.println("Account details for user: XX " + s);
     }
 }
 
 //This class is the non-compliant test case for the bug.
-//As the displayAccountStatus() is being hided by subclass and invocation is on instance variable.
+//As the displayAccountStatus() is being hided by subclass.
 public class BadFindHidingSubClassTest {
     public static void choose(String username) {
         GrantAccessStatic admin = new GrantAccessStatic();
         GrantAccessStatic user = new GrantUserAccessStatic();
         if (username.equals("admin")) {
-            admin.displayAccountStatus("", 0);
+            admin.displayAccountStatus("");
         } else {
-            user.displayAccountStatus("", 0);
+            user.displayAccountStatus("");
         }
     }
 

@@ -12,7 +12,6 @@ abstract class SuperDotClassTest{
         }
         return defaultSuperDotClassTest;
     }
-
 }
 public class DotClassTest extends SuperDotClassTest {
     private static boolean debug = false;
@@ -39,6 +38,7 @@ public class DotClassTest extends SuperDotClassTest {
         try {
             debug = Boolean.getBoolean("javax.activation.debug");
         } catch (Throwable var1) {
+            System.out.println("Error was caught!");
         }
 
     }
