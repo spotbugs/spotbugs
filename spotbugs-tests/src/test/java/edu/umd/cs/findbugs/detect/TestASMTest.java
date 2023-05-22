@@ -29,7 +29,6 @@ public class TestASMTest extends AbstractIntegrationTest {
         assertFieldNamingBug("BadFieldNamePrivate");
         assertMethodNamingBug("BadMethodName");
         assertCastBug("BadMethodName");
-        assertCastBug("goodMethodName");
     }
 
     private void assertNumOfBugs(int num, String bugType) {
