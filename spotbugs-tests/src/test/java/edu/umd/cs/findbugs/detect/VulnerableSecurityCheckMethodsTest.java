@@ -16,7 +16,9 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
     public void testingBadCases() {
         performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
 
-        BugInstanceMatcher bugInstanceMatcher = createBugInstanceMatcher();
+        BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .build();
         assertThat(getBugCollection(), containsExactly(7, bugInstanceMatcher));
     }
 
@@ -159,46 +161,20 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
         assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck8");
     }
 
-    private BugInstanceMatcher createBugInstanceMatcher() {
-        return new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .build();
-    }
-
-    private BugInstanceMatcher createBugInstanceMatcher(String methodName) {
-        return new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .inMethod(methodName)
-                .build();
-    }
-
-    private BugInstanceMatcher createBugInstanceMatcher(String methodName, int lineNUmber) {
-        return new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .inMethod(methodName)
-                .atLine(lineNUmber)
-                .build();
-    }
-
     private void assertNoVSCBug(String methodName) {
-        final BugInstanceMatcher bugTypeMatcher = createBugInstanceMatcher(methodName);
+        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inMethod(methodName)
+                .build();
         assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
     }
 
     private void assertVSCBug(String methodName, int lineNumber) {
-        final BugInstanceMatcher bugTypeMatcher = createBugInstanceMatcher(methodName, lineNumber);
+        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inMethod(methodName)
+                .atLine(lineNumber)
+                .build();
         assertThat(getBugCollection(), hasItem(bugTypeMatcher));
     }
-
-    /*
-    private void assertVSCBugExists(String methodName, int lineNumber) {
-        for(BugInstance i : getBugCollection().iterator() ) {
-            if(i.getType() == bugType && i.getPrimaryMethod().getMethodName() == methodName) {
-                org.junit.Assert.assertEquals(true, true);
-                return;
-            }
-        }
-        org.junit.Assert.assertEquals(true, false);
-    }
-    */
 }
