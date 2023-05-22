@@ -1,7 +1,7 @@
 package findhidingsubclasstest;
 
 /**
- * This class test what happen if there are multiple bad method overriding
+ * This class test what happens, if there are multiple bad method overridings
  */
 
 class SuperBadMultipleMethod {
