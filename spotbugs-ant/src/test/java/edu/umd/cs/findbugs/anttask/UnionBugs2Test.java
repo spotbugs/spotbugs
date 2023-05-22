@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class UnionBugs2Test {
 
     private static List<String> readArgumentsFile(String textFile) {
         List<String> compiledXmlFiles = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(textFile))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(textFile, StandardCharsets.UTF_8))) {
             String next;
             while ((next = reader.readLine()) != null) {
                 compiledXmlFiles.add(next);
