@@ -17,7 +17,7 @@ class GoodChildClass extends GoodParentClass {
 
 /**
  * This test case is a complaint test case with multiple level inheritance.
- * As the overridden methods are called using fully qualified name.
+ * As the overridden methods are called using fully qualified names.
  */
 public class GoodMultiLevelInheritance {
     public static void main(String[] args) {
