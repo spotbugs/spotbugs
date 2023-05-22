@@ -76,7 +76,7 @@ public class FindHidingSubClass implements Detector {
                     } else {
                         continue;
                     }
-                    //Here I check for the exception cases of main method and inner class using two auxiliary private methods.
+                    //Here I check for the exceptional cases of main method and inner class using two auxiliary private methods.
                     if (isConstructor(method) || isHidingInnerClass(method)) {
                         continue;
                     }
