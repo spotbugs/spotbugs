@@ -17,7 +17,7 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
         performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
 
         BugInstanceMatcher bugInstanceMatcher = createBugInstanceMatcher();
-        assertThat(getBugCollection(), containsExactly(6, bugInstanceMatcher));
+        assertThat(getBugCollection(), containsExactly(7, bugInstanceMatcher));
     }
 
     @Test
@@ -43,6 +43,13 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
         performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
         assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck4", 94);
     }
+
+    @Test
+    public void testingBadCase5() {
+        performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
+        assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck6", 128);
+    }
+
 
     @Test
     public void testingGoodCase1() {
@@ -122,6 +129,36 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
         assertNoVSCBug("goodFindVulnerableSecurityCheckMethodsCheck5");
     }
 
+    @Test
+    public void testingGoodCase14() {
+        performAnalysis("vulnerablesecuritycheckmethodstest/GoodVulnerableSecurityCheckMethodsTest.class");
+        assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck6");
+    }
+
+    @Test
+    public void testingGoodCase15() {
+        performAnalysis("vulnerablesecuritycheckmethodstest/GoodVulnerableSecurityCheckMethodsTest.class");
+        assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck7");
+    }
+
+    @Test
+    public void testingGoodCase16() {
+        performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
+        assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck6");
+    }
+
+    @Test
+    public void testingGoodCase17() {
+        performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class");
+        assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck7");
+    }
+
+    @Test
+    public void testingGoodCase18() {
+        performAnalysis("vulnerablesecuritycheckmethodstest/GoodVulnerableSecurityCheckMethodsTest.class");
+        assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck8");
+    }
+
     private BugInstanceMatcher createBugInstanceMatcher() {
         return new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -152,4 +189,16 @@ public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest 
         final BugInstanceMatcher bugTypeMatcher = createBugInstanceMatcher(methodName, lineNumber);
         assertThat(getBugCollection(), hasItem(bugTypeMatcher));
     }
+
+    /*
+    private void assertVSCBugExists(String methodName, int lineNumber) {
+        for(BugInstance i : getBugCollection().iterator() ) {
+            if(i.getType() == bugType && i.getPrimaryMethod().getMethodName() == methodName) {
+                org.junit.Assert.assertEquals(true, true);
+                return;
+            }
+        }
+        org.junit.Assert.assertEquals(true, false);
+    }
+    */
 }
