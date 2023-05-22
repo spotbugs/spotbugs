@@ -19,11 +19,11 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
-import org.apache.bcel.Const;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.generic.BasicType;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -35,7 +35,7 @@ import java.util.Arrays;
  * Please see @see <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">SEI CERT MET07-J</a>
  * @author Nazir, Muhammad Zafar Iqbal
  */
-public class FindHidingSubClass extends OpcodeStackDetector {
+public class FindHidingSubClass implements Detector {
     private final BugReporter bugReporter;
 
     public FindHidingSubClass(BugReporter bugReporter) {
@@ -43,60 +43,62 @@ public class FindHidingSubClass extends OpcodeStackDetector {
     }
 
     @Override
-    public void sawOpcode(int seen) {
-        //I first try to filter out the part of code where there a call to overridden method.
-        if (seen == Const.INVOKEVIRTUAL) {
-            //Then I get the subclass and superclass in variables.
-            //This is the current class. Named it subClass to better depict the idea of sub and super class.
-            JavaClass subClass = this.getClassContext().getJavaClass();
-            if (subClass.getClass().getEnclosingClass() != null) {
-                return;
-            }
-            JavaClass directSuperClass = null;
-            try {
-                directSuperClass = subClass.getSuperClass();
-            } catch (ClassNotFoundException e) {
-                AnalysisContext.reportMissingClass(e);
-            }
-            if (directSuperClass == null) {
-                return;
-            }
-            //I store all the methods of both subclass and superclass (in separate variables)
-            Method[] superMethods = directSuperClass.getMethods();
-            Method[] methods = subClass.getMethods();
-            //I go through each method of the subclass and filter the non-private and static methods, as private methods can't be overridden.
-            //I also perform check for main method using auxiliary private method
-            for (Method method : methods) {
-                if (!isMainMethod(method)) {
-                    if (!method.isPrivate() && method.isStatic()) {
-                        //I check either the method of subclass is present in the super class.
-                        // If it is, I store it in a variable for further usage.
-                        int index = Arrays.asList(superMethods).indexOf(method);
-                        Method superClassMethod;
-                        if (index != -1) {
-                            superClassMethod = superMethods[index];
-                        } else {
-                            continue;
-                        }
-                        //Here I check for the exception cases of main method and inner class using two auxiliary private methods.
-                        if (isConstructor(method) || isHidingInnerClass(method)) {
-                            continue;
-                        }
-                        //I check using an auxiliary private method, either the subclass method is hiding the superclass method.
-                        //If yes, then I report the bug.
-                        if (isHiding(superClassMethod, method)) {
-                            bugReporter.reportBug(new BugInstance(this, "HSBC_FIND_HIDING_SUB_CLASS", NORMAL_PRIORITY)
-                                    .addClass(subClass.getClassName())
-                                    .addMethod(subClass, method)
-                                    .addString(subClass.getClassName())
-                                    .addString(superClassMethod.getName())
-                                    .addString(directSuperClass.getClassName()));
-                        }
+    public void visitClassContext(ClassContext classContext) {
+        //Then I get the subclass and superclass in variables.
+        //This is the current class. Named it subClass to better depict the idea of sub and super class.
+        JavaClass subClass = classContext.getJavaClass();
+        if (subClass.getClass().getEnclosingClass() != null) {
+            return;
+        }
+        JavaClass directSuperClass = null;
+        try {
+            directSuperClass = subClass.getSuperClass();
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
+        if (directSuperClass == null) {
+            return;
+        }
+        //I store all the methods of both subclass and superclass (in separate variables)
+        Method[] superMethods = directSuperClass.getMethods();
+        Method[] methods = subClass.getMethods();
+        //I go through each method of the subclass and filter the non-private and static methods, as private methods can't be overridden.
+        //I also perform check for main method using auxiliary private method
+        for (Method method : methods) {
+            if (!isMainMethod(method)) {
+                if (!method.isPrivate() && method.isStatic()) {
+                    //I check either the method of subclass is present in the super class.
+                    // If it is, I store it in a variable for further usage.
+                    int index = Arrays.asList(superMethods).indexOf(method);
+                    Method superClassMethod;
+                    if (index != -1) {
+                        superClassMethod = superMethods[index];
+                    } else {
+                        continue;
+                    }
+                    //Here I check for the exception cases of main method and inner class using two auxiliary private methods.
+                    if (isConstructor(method) || isHidingInnerClass(method)) {
+                        continue;
+                    }
+                    //I check using an auxiliary private method, either the subclass method is hiding the superclass method.
+                    //If yes, then I report the bug.
+                    if (isHiding(superClassMethod, method)) {
+                        bugReporter.reportBug(new BugInstance(this, "HSBC_FIND_HIDING_SUB_CLASS", NORMAL_PRIORITY)
+                                .addClass(subClass.getClassName())
+                                .addMethod(subClass, method)
+                                .addString(subClass.getClassName())
+                                .addString(superClassMethod.getName())
+                                .addString(directSuperClass.getClassName()));
                     }
                 }
             }
         }
     }
+
+    @Override
+    public void report() {
+    }
+
 
     /**
      *This method checks for the inner class exceptional cases.
