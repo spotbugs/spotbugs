@@ -13,7 +13,7 @@ class SubProtected extends SuperProtected {
 }
 
 /**
- * This class test what happen if the access modifier is protected for the static hiding method
+ * This class test what happens if the access modifier is protected for the static hiding method
  */
 public class BadProtected {
     public static void main(String[] args) {
