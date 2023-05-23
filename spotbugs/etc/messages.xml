@@ -8796,7 +8796,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
-  <BugPattern type="VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS">
+  <BugPattern type="VSC_VULNERABLE_SECURITY_CHECK_METHODS">
     <ShortDescription>Non-Private and non-final security check methods are vulnerable</ShortDescription>
     <LongDescription>The method '{1}' performs security check by using '{2}' method of Security Manager Class, but is overrideable. Declare the method final or private in order to resolve the issue. </LongDescription>
     <Details>

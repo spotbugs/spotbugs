@@ -670,7 +670,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource" speed="fast"
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindVulnerableSecurityCheckMethods" speed="fast"
-                    reports="VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS"/>
+                    reports="VSC_VULNERABLE_SECURITY_CHECK_METHODS"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -1289,6 +1289,6 @@
           <BugPattern abbrev="PERM" type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS" category="MALICIOUS_CODE" />
           <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"
                     category="MALICIOUS_CODE"/>
-          <BugPattern abbrev="VSC" type="VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS"
+          <BugPattern abbrev="VSC" type="VSC_VULNERABLE_SECURITY_CHECK_METHODS"
                     category="MALICIOUS_CODE"/>
 </FindbugsPlugin>
