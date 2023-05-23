@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class VulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest {
+public class FindVulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest {
     static String bugType = "VSC_FIND_VULNERABLE_SECURITY_CHECK_METHODS";
 
     @Test
