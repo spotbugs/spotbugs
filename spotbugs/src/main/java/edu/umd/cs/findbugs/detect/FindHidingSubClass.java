@@ -93,9 +93,9 @@ public class FindHidingSubClass implements Detector {
                         bugReporter.reportBug(new BugInstance(this, "HSBC_HIDING_SUB_CLASS", NORMAL_PRIORITY)
                                 .addClass(subClass.getClassName())
                                 .addMethod(subClass, method)
-                                .addString(subClass.getClassName())
-                                .addString(superClassMethod.getName())
-                                .addString(superClass.getClassName())
+                                .addClass(subClass.getClassName())
+                                .addMethod(superClass, superClassMethod)
+                                .addClass(superClass.getClassName())
                                 .addSourceLine(SourceLineAnnotation.fromVisitedInstruction(subClass, method, 0)));
                     }
                 }
@@ -106,7 +106,6 @@ public class FindHidingSubClass implements Detector {
     @Override
     public void report() {
     }
-
 
     /**
      *This method checks for the inner class exceptional cases.
@@ -164,6 +163,6 @@ public class FindHidingSubClass implements Detector {
      * This method checks the hiding constraints.
      */
     private boolean isHiding(Method original, Method overrider) {
-        return isOverriding(original, overrider) && original.getReturnType().equals(overrider.getReturnType());
+        return isOverriding(original, overrider) && Objects.equals(original.getReturnType(), overrider.getReturnType());
     }
 }
