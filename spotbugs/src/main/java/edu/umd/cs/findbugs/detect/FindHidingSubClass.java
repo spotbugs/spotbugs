@@ -60,15 +60,14 @@ public class FindHidingSubClass implements Detector {
         JavaClass[] superClasses = null;
         try {
             superClasses = subClass.getSuperClasses();
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
         }
         //I store all the methods of both subclass (in separate variables)
         Method[] methods = subClass.getMethods();
         //For each super class, I go through each method of the subclass and filter the non-private and static methods, as private methods can't be overridden.
         //I also perform check for main method using auxiliary private method
-        for(JavaClass superClass: superClasses) {
+        for (JavaClass superClass : superClasses) {
             for (Method method : methods) {
                 // Careful!!! regarding the order of the conditions applied here
                 // Taking advantage of short circuit evaluation here by placing !isMainMethod(method)
