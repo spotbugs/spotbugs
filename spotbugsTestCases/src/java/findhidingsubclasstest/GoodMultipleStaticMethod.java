@@ -1,42 +1,29 @@
 package findhidingsubclasstest;
 
-class SuperMulti {
-    static void display(String s) {
+class SuperGoodMultipleStaticMethod {
+    private static void display(String s) {
         System.out.println("first method (Super)" + s);
     }
 
-    static void display2(String s) {
+    private static void display2(String s) {
         System.out.println("Second method (Super)" +s);
     }
 }
 
-class SubMulti extends SuperMulti {
-    static void display(String s) {
+class SubGoodMultipleStaticMethod extends SuperGoodMultipleStaticMethod {
+    private static void display(String s) {
         System.out.println("first method (sub) " + s);
     }
 
-    static void display2(String s) {
+    private static void display2(String s) {
         System.out.println("Second method (sub) " + s);
     }
 }
 
 /**
- * This class test what happen if there are multiple static methods overriding,
- * but the static methods are being called on the class name not the instance.
+ * This class test is a compliant test case for multiple static method declarations,
+ * but the static methods are declared as private.
+ * So there is no method inherited actually
  */
 public class GoodMultipleStaticMethod {
-    public static void main(String[] args) {
-        choose("superClass");
-        choose("anything");
-    }
-
-    public static void choose(String info) {
-        SuperMultipleNonStatic superClass = new SuperMultipleNonStatic();
-        SuperMultipleNonStatic subClass = new SubMultipleNonStatic();
-        if (info.equals("superClass")) {
-            SuperMulti.display("");
-        } else {
-            SubMulti.display("");
-        }
-    }
 }
