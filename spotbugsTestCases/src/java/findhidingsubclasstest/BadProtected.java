@@ -1,33 +1,20 @@
 package findhidingsubclasstest;
 
-class SuperProtected {
+class SuperBadProtected {
     protected static void display(String s) {
         System.out.println("Display some information " + s);
     }
 }
 
-class SubProtected extends SuperProtected {
+class SubBadProtected extends SuperBadProtected {
     protected static void display(String s) {
         System.out.println("Display some information in sub class " + s);
     }
 }
 
 /**
- * This class test what happens if the access modifier is protected for the static hiding method
+ * This test case is a non-compliant test case for the bug.
+ * As the display() is static, non-private (protected) and being hidden by subclass.
  */
 public class BadProtected {
-    public static void main(String[] args) {
-        choose("superClass");
-        choose("anything");
-    }
-
-    public static void choose(String info) {
-        SuperProtected superClass = new SuperProtected();
-        SuperProtected subClass = new SubProtected ();
-        if (info.equals("superClass")) {
-            superClass.display("");
-        } else {
-            subClass.display("");
-        }
-    }
 }

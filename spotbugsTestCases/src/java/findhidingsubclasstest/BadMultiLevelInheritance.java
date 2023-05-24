@@ -1,7 +1,7 @@
 package findhidingsubclasstest;
 
 class BadGrandClass {
-    static void display(String s) {
+    public static void display(String s) {
         System.out.println("Grand Information: " + s);
     }
 }
@@ -9,33 +9,15 @@ class BadGrandClass {
 class BadParentClass extends BadGrandClass {
 }
 
-class BadChildClass extends BadParentClass {
-    static void display(String s) {
-        System.out.println("Child information" + s);
-    }
-}
-
 /**
  * This test case is a non-complaint test case with multiple level inheritance.
- * As the overridden methods are static, non-private and invocation is on instance variables..
+ * As the overridden methods are static, non-private.
+ * The `BadParentClass` inherit `display` method form `BadGrandClass`
+ * The `BadChildClass` hides the `display` method.
  */
-public class BadMultiLevelInheritance {
-    public static void main(String[] args) {
-        choose("grant");
-        choose("parent");
-        choose("child");
-    }
-
-    public static void choose(String info) {
-        BadGrandClass grandClass = new BadGrandClass();
-        BadGrandClass parentClass = new BadParentClass();
-        BadGrandClass childClass = new BadChildClass();
-        if (info.equals("grant")) {
-            grandClass.display("");
-        } else if (info.equals("parent")){
-            parentClass.display("");
-        } else {
-            childClass.display("");
-        }
+class BadChildClass extends BadParentClass {
+    public static void display(String s) {
+        BadParentClass.display("");
+        System.out.println("Child information" + s);
     }
 }
