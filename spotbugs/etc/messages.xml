@@ -8802,7 +8802,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="HSBC_HIDING_SUB_CLASS">
     <ShortDescription>Method hiding must be avoided.</ShortDescription>
-    <LongDescription>The method '{1}' in class '{2}' hides a method '{3}' in class '{4}'. Call the static method by fully qualified class name or declare the respective methods non-static to eradicate the problem.</LongDescription>
+    <LongDescription>The method '{1}' in class '{2}' hides a method '{3}' in class '{4}'. Declare the respective methods non-static or private to eradicate the problem.</LongDescription>
     <Details>
       <![CDATA[
       <p>
