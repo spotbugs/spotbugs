@@ -69,11 +69,11 @@ public class FindHidingSubClass implements Detector {
         //For each super class, I go through each method of the subclass and filter the non-private and static methods, as private methods can't be overridden.
         //I also perform check for main method using auxiliary private method
         for (JavaClass superClass : superClasses) {
+            Method[] superMethods = superClass.getMethods();
             for (Method method : methods) {
                 // Careful!!! regarding the order of the conditions applied here
                 // Taking advantage of short circuit evaluation here by placing !isMainMethod(method)
                 if (method.isStatic() && !method.isPrivate() && !isMainMethod(method)) {
-                    Method[] superMethods = superClass.getMethods();
                     //I check either the method of subclass is present in the super class.
                     // If it is, I store it in a variable for further usage.
                     int index = Arrays.asList(superMethods).indexOf(method);
