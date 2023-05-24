@@ -30,7 +30,6 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * This detector finds all the methods of a subclass which are hiding the static methods of the superclass and
@@ -157,7 +156,7 @@ public class FindHidingSubClass implements Detector {
      */
     private boolean isOverriding(Method overridden, Method overrider) {
         return overridden.getName().equals(overrider.getName())
-                && Objects.equals(overridden.getArgumentTypes(), overrider.getArgumentTypes())
+                && Arrays.equals(overridden.getArgumentTypes(), overrider.getArgumentTypes())
                 && !overridden.isFinal();
     }
 
