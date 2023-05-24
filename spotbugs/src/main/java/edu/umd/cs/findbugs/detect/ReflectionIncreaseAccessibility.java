@@ -68,8 +68,7 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
                 return;
             }
             XMethod met = getXMethodOperand();
-            if (!securityCheck && obj.isInitialParameter()
-                    && obj.getXField() == null &&
+            if (!securityCheck && obj.isInitialParameter() && obj.getXField() == null &&
                     "java.lang.Class".equals(cls.getClassName()) &&
                     "newInstance".equals(met.getName()) &&
                     "()Ljava/lang/Object;".equals(met.getSignature())) {
