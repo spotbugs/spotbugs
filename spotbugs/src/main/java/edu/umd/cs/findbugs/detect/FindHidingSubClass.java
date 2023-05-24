@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * This detector finds all the methods of a subclass which are hiding the static methods of the superclass and
@@ -140,7 +141,7 @@ public class FindHidingSubClass implements Detector {
      */
     private boolean isMainMethod(Method method) {
         return method.isPublic() && method.isStatic() && method.getReturnType().equals(BasicType.VOID)
-                && method.getName().equals("main")
+                && "main".equals(method.getName())
                 && this.isStringArray(method.getArgumentTypes());
     }
 
@@ -156,7 +157,7 @@ public class FindHidingSubClass implements Detector {
      */
     private boolean isOverriding(Method overridden, Method overrider) {
         return overridden.getName().equals(overrider.getName())
-                && Arrays.equals(overridden.getArgumentTypes(), overrider.getArgumentTypes())
+                && Objects.equals(overridden.getArgumentTypes(), overrider.getArgumentTypes())
                 && !overridden.isFinal();
     }
 
