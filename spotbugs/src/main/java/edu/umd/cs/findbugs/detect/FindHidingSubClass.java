@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
 
 import java.util.Arrays;
 
@@ -55,7 +56,7 @@ public class FindHidingSubClass implements Detector {
         //First, I get the subclass and superclasses in variables.
         //This is the current class. Named it subClass to better depict the idea of sub and super class.
         JavaClass subClass = classContext.getJavaClass();
-        //No need for null check as every class has atleast `Object` as its super class.
+        //No need for null check as every class has at least `Object` as its super class.
         JavaClass[] superClasses = null;
         try {
             superClasses = subClass.getSuperClasses();
@@ -140,13 +141,13 @@ public class FindHidingSubClass implements Detector {
     private boolean isMainMethod(Method method) {
         return method.isPublic() && method.isStatic() && method.getReturnType().equals(BasicType.VOID)
                 && method.getName().equals("main")
-                && this.isStringArray(method);
+                && this.isStringArray(method.getArgumentTypes());
     }
 
-    private boolean isStringArray(Method method) {
-        return method.getArgumentTypes().length == 1 &&
-                method.getArgumentTypes()[0].toString().contains("String") &&
-                method.getArgumentTypes()[0].toString().contains("[");
+    private boolean isStringArray(Type[] methodArguments) {
+        return methodArguments.length == 1 &&
+                methodArguments[0].toString().contains("String") &&
+                methodArguments[0].toString().contains("[");
     }
 
     /**
