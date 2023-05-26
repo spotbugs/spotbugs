@@ -4301,12 +4301,13 @@ Methods should be verbs, in mixed case with the first letter lowercase, with the
     </Details>
   </BugPattern>
   <BugPattern type="NM_FIELD_NAMING_CONVENTION">
-    <ShortDescription>Field names should start with a lower case letter</ShortDescription>
-    <LongDescription>The field name {1} doesn't start with a lower case letter</LongDescription>
+    <ShortDescription>Non-final field names should start with a lower case letter, final fields should be uppercase with words separated by underscores</ShortDescription>
+    <LongDescription>The field name {1} is not conform to the naming convention. If final, it should be ALL_CAPS, otherwise lowerCamelCase.</LongDescription>
     <Details>
 <![CDATA[
   <p>
 Names of fields that are not final should be in mixed case with a lowercase first letter and the first letters of subsequent words capitalized.
+Names of final fields should be all uppercase with words separated by underscores ('_').
 </p>
 ]]>
     </Details>

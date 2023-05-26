@@ -1,9 +1,6 @@
 package edu.umd.cs.findbugs.util;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.apache.bcel.Repository;
@@ -104,7 +101,7 @@ public class MutableClasses {
     }
 
     public static boolean looksLikeASetter(String methodName, String classSig, String retSig) {
-        if (classSig.equals(retSig)) {
+        if (Objects.equals(classSig, retSig)) {
             return false;
         }
 
