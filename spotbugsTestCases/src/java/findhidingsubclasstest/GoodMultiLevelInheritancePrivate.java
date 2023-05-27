@@ -19,6 +19,3 @@ class GoodChildClassPrivate extends GoodParentClassPrivate {
         System.out.println("Child information" + s);
     }
 }
-
-public class GoodMultiLevelInheritancePrivate {
-}

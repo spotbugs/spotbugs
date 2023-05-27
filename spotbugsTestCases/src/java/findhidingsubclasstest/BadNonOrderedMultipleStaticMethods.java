@@ -28,8 +28,3 @@ class SubBadNonOrderedMultipleStaticMethods extends SuperBadNonOrderedMultipleSt
         System.out.println("Second method (sub) " + s);
     }
 }
-
-
-public class BadNonOrderedMultipleStaticMethods {
-
-}

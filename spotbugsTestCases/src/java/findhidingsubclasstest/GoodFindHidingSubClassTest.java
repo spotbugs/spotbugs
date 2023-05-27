@@ -16,6 +16,3 @@ class GrantUserAccess extends GrantAccess {
         System.out.print("displayAccountStatus (GrantUserAccess)");
     }
 }
-
-public class GoodFindHidingSubClassTest {
-}

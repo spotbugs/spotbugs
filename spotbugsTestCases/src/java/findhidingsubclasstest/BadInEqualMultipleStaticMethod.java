@@ -29,6 +29,3 @@ class SubBadInEqualMultipleMethod extends SuperBadInEqualMultipleMethod {
         System.out.println("Second method (sub) " + s);
     }
 }
-
-public class BadInEqualMultipleStaticMethod {
-}

@@ -28,6 +28,3 @@ class SubGoodInEqualMultipleMethod extends SuperGoodInEqualMultipleMethod {
         System.out.println("Second method (sub) " + s);
     }
 }
-
-public class GoodInEqualNonStaticMethods {
-}

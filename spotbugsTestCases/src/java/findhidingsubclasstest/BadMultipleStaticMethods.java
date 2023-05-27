@@ -23,6 +23,3 @@ class SubBadMultipleMethods extends SuperBadMultipleMethods {
         System.out.println("Second method (sub) " + s);
     }
 }
-
-public class BadMultipleStaticMethods {
-}

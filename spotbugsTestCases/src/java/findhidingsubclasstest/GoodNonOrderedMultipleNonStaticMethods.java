@@ -28,6 +28,3 @@ class SubGoodNonOrderedMultipleStaticMethods extends SuperGoodNonOrderedMultiple
         System.out.println("Second method (sub) " + s);
     }
 }
-
-public class GoodNonOrderedMultipleNonStaticMethods {
-}

@@ -15,6 +15,3 @@ class GrantUserAccessStatic extends GrantAccessStatic {
         System.out.println("displayAccountStatus (GrantUserAccessStatic)");
     }
 }
-
-public class BadFindHidingSubClassTest {
-}

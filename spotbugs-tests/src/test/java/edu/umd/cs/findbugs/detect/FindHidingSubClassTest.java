@@ -23,7 +23,7 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     public void testBadFindHidingSubClassTest2() {
         performAnalysis("findhidingsubclasstest/BadSuperClass.class",
                 "findhidingsubclasstest/BadSubClass.class");
-        assertHSBCBug("methodHiding", 16);
+        assertHSBCBug("methodHiding", 21);
     }
 
 
@@ -77,13 +77,13 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     public void testBadFindHidingSubClassTest9() {
         performAnalysis("findhidingsubclasstest/SuperBadProtected.class",
                 "findhidingsubclasstest/SubBadProtected.class");
-        assertHSBCBug("display", 11);
+        assertHSBCBug("display", 15);
     }
 
     @Test
     public void testGoodFindHidingSubClassTest() {
         performAnalysis("findhidingsubclasstest/GrantAccess.class",
-                "findhidingsubclasstest/GoodFindHidingSubClassTest.class");
+                "findhidingsubclasstest/GrantUserAccess.class");
         assertNoHSBCBug();
     }
 

@@ -24,6 +24,3 @@ class SubMultipleNonStatic extends SuperMultipleNonStatic {
         System.out.println("Second method (sub) " + s);
     }
 }
-
-public class GoodMultipleNonStaticMethods {
-}
