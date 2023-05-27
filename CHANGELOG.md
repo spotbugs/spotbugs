@@ -5,6 +5,10 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2023-??-??
+### Added
+* New detector `BadVisibilityOnSharedPrimitiveVariables` for new bug type `SPV_BAD_VISIBILITY_ON_SHARED_PRIMITIVE_VARIABLES` (See [SEI CERT rule VNA00-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables))
+* New detector `CompoundOperationsOnSharedVariables` for new bug type `COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES` (See [SEI CERT rule VNA02-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic))
+
 ### Changed
 - Bump up Apache Commons BCEL to the version 6.6.1 ([#2223](https://github.com/spotbugs/spotbugs/pull/2223))
 - Bump up slf4j-api to 2.0.3 ([#2220](https://github.com/spotbugs/spotbugs/pull/2220))
