@@ -4,7 +4,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import org.apache.bcel.Const;
 import org.apache.bcel.classfile.*;
 
 import static edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers.PUBLIC_IDENTIFIERS;
@@ -83,12 +82,6 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
         ConstantPool constantPool = obj.getConstantPool();
         for (InnerClass cls : obj.getInnerClasses()) {
-
-            // check if the inner class is public
-            int accessFlags = cls.getInnerAccessFlags();
-            if ((accessFlags & Const.ACC_PUBLIC) == 0) {
-                continue;
-            }
 
             // get the name of the cls through its name index
             int nameIndex = cls.getInnerNameIndex();

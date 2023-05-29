@@ -11,7 +11,7 @@ import java.util.Set;
  * classes, roughly the same size to avoid compiler limits.
  */
 public class PublicIdentifiers {
-    public static Set<String> PUBLIC_IDENTIFIERS;
+    public static final Set<String> PUBLIC_IDENTIFIERS;
 
     static {
         PUBLIC_IDENTIFIERS = new HashSet<>();
@@ -26,21 +26,4 @@ public class PublicIdentifiers {
         PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersTU.getPublicIdentifiers());
         PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersVZ.getPublicIdentifiers());
     }
-    //    public static Set<String> getPublicIdentifiers() {
-    //        if (PUBLIC_IDENTIFIERS == null) {
-    //            PUBLIC_IDENTIFIERS = new HashSet<>();
-    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersAB.getPublicIdentifiers());
-    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersC.getPublicIdentifiers());
-    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersDE.getPublicIdentifiers());
-    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersFH.getPublicIdentifiers());
-    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersIJ.getPublicIdentifiers());
-    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersKM.getPublicIdentifiers());
-    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersNR.getPublicIdentifiers());
-    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersS.getPublicIdentifiers());
-    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersTU.getPublicIdentifiers());
-    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersVZ.getPublicIdentifiers());
-    //        }
-    //        return PUBLIC_IDENTIFIERS;
-    //    }
-
 }
