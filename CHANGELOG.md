@@ -6,6 +6,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2023-??-??
+### Added
+- New detector `DontReusePublicIdentifiers` for new bug type `PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS`. This bug is reported whenever a new class, interface, field, method or variable is created reusing an identifier from the _Java Standard Library_ . (See [SEI CERT rule DCL01-J](https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library))
+
 ### Changed
 - Bump up Apache Commons BCEL to the version 6.6.1 ([#2223](https://github.com/spotbugs/spotbugs/pull/2223))
 - Bump up slf4j-api to 2.0.3 ([#2220](https://github.com/spotbugs/spotbugs/pull/2220))
