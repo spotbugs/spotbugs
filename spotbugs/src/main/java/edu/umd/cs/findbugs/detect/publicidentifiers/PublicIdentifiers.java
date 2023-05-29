@@ -11,7 +11,7 @@ import java.util.Set;
  * classes, roughly the same size to avoid compiler limits.
  */
 public class PublicIdentifiers {
-    public static Set<String> PUBLIC_IDENTIFIERS = null;
+    public static Set<String> PUBLIC_IDENTIFIERS;
 
     static {
         PUBLIC_IDENTIFIERS = new HashSet<>();

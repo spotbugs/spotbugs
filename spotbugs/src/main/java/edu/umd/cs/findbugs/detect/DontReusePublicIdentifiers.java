@@ -9,7 +9,6 @@ import org.apache.bcel.classfile.*;
 
 import static edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers.PUBLIC_IDENTIFIERS;
 
-
 public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
