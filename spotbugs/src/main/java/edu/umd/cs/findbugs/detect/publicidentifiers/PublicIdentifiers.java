@@ -11,18 +11,36 @@ import java.util.Set;
  * classes, roughly the same size to avoid compiler limits.
  */
 public class PublicIdentifiers {
-    public static Set<String> PUBLIC_IDENTIFIERS = new HashSet<>();
+    public static Set<String> PUBLIC_IDENTIFIERS = null;
 
     static {
-        LoadPublicIdentifiersAB.load();
-        LoadPublicIdentifiersC.load();
-        LoadPublicIdentifiersDE.load();
-        LoadPublicIdentifiersFH.load();
-        LoadPublicIdentifiersIJ.load();
-        LoadPublicIdentifiersKM.load();
-        LoadPublicIdentifiersNR.load();
-        LoadPublicIdentifiersS.load();
-        LoadPublicIdentifiersTU.load();
-        LoadPublicIdentifiersVZ.load();
+        PUBLIC_IDENTIFIERS = new HashSet<>();
+        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersAB.getPublicIdentifiers());
+        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersC.getPublicIdentifiers());
+        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersDE.getPublicIdentifiers());
+        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersFH.getPublicIdentifiers());
+        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersIJ.getPublicIdentifiers());
+        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersKM.getPublicIdentifiers());
+        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersNR.getPublicIdentifiers());
+        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersS.getPublicIdentifiers());
+        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersTU.getPublicIdentifiers());
+        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersVZ.getPublicIdentifiers());
     }
+    //    public static Set<String> getPublicIdentifiers() {
+    //        if (PUBLIC_IDENTIFIERS == null) {
+    //            PUBLIC_IDENTIFIERS = new HashSet<>();
+    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersAB.getPublicIdentifiers());
+    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersC.getPublicIdentifiers());
+    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersDE.getPublicIdentifiers());
+    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersFH.getPublicIdentifiers());
+    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersIJ.getPublicIdentifiers());
+    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersKM.getPublicIdentifiers());
+    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersNR.getPublicIdentifiers());
+    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersS.getPublicIdentifiers());
+    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersTU.getPublicIdentifiers());
+    //            PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersVZ.getPublicIdentifiers());
+    //        }
+    //        return PUBLIC_IDENTIFIERS;
+    //    }
+
 }
