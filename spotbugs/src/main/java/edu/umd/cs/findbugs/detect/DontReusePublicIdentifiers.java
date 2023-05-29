@@ -4,11 +4,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers;
 import org.apache.bcel.classfile.*;
 
-import static edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers.PUBLIC_IDENTIFIERS;
+import java.util.Set;
 
 public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
+
+    private final Set<String> PUBLIC_IDENTIFIERS = new PublicIdentifiers().getPublicIdentifiers();
 
     private final BugReporter bugReporter;
     private String topLevelClassName = "";
@@ -85,6 +88,9 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
             // get the name of the cls through its name index
             int nameIndex = cls.getInnerNameIndex();
+            if (nameIndex == 0) {
+                continue;
+            }
             String innerClassName = constantPool.getConstantUtf8(nameIndex).getBytes();
             if (PUBLIC_IDENTIFIERS.contains(innerClassName)) {
                 bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY).addClass(this).addString(

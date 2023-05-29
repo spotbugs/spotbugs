@@ -19,7 +19,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
 
         // check shadowed public identifiers as inner classes
         performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames.class");
-        assertNumOfShadowedPublicIdentifierBugs(2);
+        assertNumOfShadowedPublicIdentifierBugs(4);
         assertShadowedPublicIdentifierBug("ShadowedPublicIdentifiersInnerClassNames");
     }
 
@@ -80,11 +80,8 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     }
 
     private void assertShadowedPublicIdentifierBug(String className, String methodName, int lineNumber) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS")
-                .inClass(className)
-                .inMethod(methodName)
-                .build();
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder().bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS").inClass(className)
+                .inMethod(methodName).build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 }

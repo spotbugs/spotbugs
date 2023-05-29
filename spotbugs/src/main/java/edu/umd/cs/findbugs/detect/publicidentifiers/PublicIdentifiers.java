@@ -11,19 +11,22 @@ import java.util.Set;
  * classes, roughly the same size to avoid compiler limits.
  */
 public class PublicIdentifiers {
-    public static final Set<String> PUBLIC_IDENTIFIERS;
+    private Set<String> publicIdentifiers = null;
 
-    static {
-        PUBLIC_IDENTIFIERS = new HashSet<>();
-        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersAB.getPublicIdentifiers());
-        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersC.getPublicIdentifiers());
-        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersDE.getPublicIdentifiers());
-        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersFH.getPublicIdentifiers());
-        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersIJ.getPublicIdentifiers());
-        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersKM.getPublicIdentifiers());
-        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersNR.getPublicIdentifiers());
-        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersS.getPublicIdentifiers());
-        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersTU.getPublicIdentifiers());
-        PUBLIC_IDENTIFIERS.addAll(LoadPublicIdentifiersVZ.getPublicIdentifiers());
+    public Set<String> getPublicIdentifiers() {
+        if (publicIdentifiers == null) {
+            publicIdentifiers = new HashSet<>();
+            publicIdentifiers.addAll(LoadPublicIdentifiersAB.getPublicIdentifiers());
+            publicIdentifiers.addAll(LoadPublicIdentifiersC.getPublicIdentifiers());
+            publicIdentifiers.addAll(LoadPublicIdentifiersDE.getPublicIdentifiers());
+            publicIdentifiers.addAll(LoadPublicIdentifiersFH.getPublicIdentifiers());
+            publicIdentifiers.addAll(LoadPublicIdentifiersIJ.getPublicIdentifiers());
+            publicIdentifiers.addAll(LoadPublicIdentifiersKM.getPublicIdentifiers());
+            publicIdentifiers.addAll(LoadPublicIdentifiersNR.getPublicIdentifiers());
+            publicIdentifiers.addAll(LoadPublicIdentifiersS.getPublicIdentifiers());
+            publicIdentifiers.addAll(LoadPublicIdentifiersTU.getPublicIdentifiers());
+            publicIdentifiers.addAll(LoadPublicIdentifiersVZ.getPublicIdentifiers());
+        }
+        return publicIdentifiers;
     }
 }
