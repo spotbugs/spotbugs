@@ -671,6 +671,8 @@
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindHidingSubClass" speed="fast"
                     reports="HSBC_HIDING_SUB_CLASS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindAssertionsWithSideEffects" speed="fast"
+                    reports="ASE_ASSERTION_WITH_SIDE_EFFECT,ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -700,6 +702,7 @@
           <BugCode abbrev="AT"/>
           <BugCode abbrev="JUA"/>
           <BugCode abbrev="HSBC"/>
+          <BugCode abbrev="ASE"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
           <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
@@ -1290,4 +1293,6 @@
           <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"
                     category="MALICIOUS_CODE"/>
           <BugPattern abbrev="HSBC" type="HSBC_HIDING_SUB_CLASS" category="CORRECTNESS"/>
+          <BugPattern abbrev="ASE" type="ASE_ASSERTION_WITH_SIDE_EFFECT" category="SECURITY" />
+          <BugPattern abbrev="ASE" type="ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD" category="SECURITY" />
 </FindbugsPlugin>
