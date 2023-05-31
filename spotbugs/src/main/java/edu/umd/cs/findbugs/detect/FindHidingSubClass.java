@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
+import org.apache.bcel.Const;
 
 import java.util.Arrays;
 
@@ -114,7 +115,7 @@ public class FindHidingSubClass implements Detector {
      * This method is here to check the exceptional case of Constructors
      */
     private boolean isConstructor(Method method) {
-        return method.getName().contains("clinit") || method.getName().contains("init");
+        return Const.STATIC_INITIALIZER_NAME.equals(method.getName()) || Const.CONSTRUCTOR_NAME.equals(method.getName());
     }
 
     /**
