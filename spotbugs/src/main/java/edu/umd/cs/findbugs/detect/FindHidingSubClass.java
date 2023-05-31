@@ -134,6 +134,6 @@ public class FindHidingSubClass implements Detector {
      */
     private boolean isStringArray(Type[] methodArguments) {
         return methodArguments.length == 1 &&
-                methodArguments[0].toString().matches("java.lang.String\\s*\\Q[\\E\\s*\\Q]\\E\\s*");
+                "java.lang.String[]".equals(methodArguments[0].toString());
     }
 }
