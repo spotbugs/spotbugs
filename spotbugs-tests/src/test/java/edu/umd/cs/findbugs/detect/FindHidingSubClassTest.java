@@ -15,14 +15,14 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     @Test
     public void testBadFindHidingSubClassTest() {
         performAnalysis("findhidingsubclasstest/GrantAccessStatic.class",
-                "findhidingsubclasstest/GrantUserAccessStatic.class");
+                "findhidingsubclasstest/BadFindHidingSubClassTest.class");
         assertHSBCBug("displayAccountStatus", 15);
     }
 
     @Test
     public void testBadFindHidingSubClassTest2() {
         performAnalysis("findhidingsubclasstest/BadSuperClass.class",
-                "findhidingsubclasstest/BadSubClass.class");
+                "findhidingsubclasstest/BadHidingVsOverriding.class");
         assertHSBCBug("methodHiding", 21);
     }
 
@@ -30,7 +30,7 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     @Test
     public void testBadFindHidingSubClassTest3() {
         performAnalysis("findhidingsubclasstest/SuperBadInEqualMultipleMethod.class",
-                "findhidingsubclasstest/SubBadInEqualMultipleMethod.class");
+                "findhidingsubclasstest/BadInEqualMultipleStaticMethod.class");
         assertHSBCBug("display", 25);
         assertHSBCBug("display2", 29);
     }
@@ -46,14 +46,14 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     public void testBadFindHidingSubClassTest5() {
         performAnalysis("findhidingsubclasstest/BadGrandClass.class",
                 "findhidingsubclasstest/BadParentClass.class",
-                "findhidingsubclasstest/BadChildClass.class");
+                "findhidingsubclasstest/BadMultiLevelInheritance.class");
         assertHSBCBug("display", 20);
     }
 
     @Test
     public void testBadFindHidingSubClassTest6() {
         performAnalysis("findhidingsubclasstest/SuperBadMultipleMethods.class",
-                "findhidingsubclasstest/SubBadMultipleMethods.class");
+                "findhidingsubclasstest/BadMultipleStaticMethods.class");
         assertHSBCBug("display", 19);
         assertHSBCBug("display2", 23);
     }
@@ -61,7 +61,7 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     @Test
     public void testBadFindHidingSubClassTest7() {
         performAnalysis("findhidingsubclasstest/SuperBadNonOrderedMultipleStaticMethods.class",
-                "findhidingsubclasstest/SubBadNonOrderedMultipleStaticMethods.class");
+                "findhidingsubclasstest/BadNonOrderedMultipleStaticMethods.class");
         assertHSBCBug("display", 24);
         assertHSBCBug("display2", 28);
     }
@@ -76,21 +76,21 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     @Test
     public void testBadFindHidingSubClassTest9() {
         performAnalysis("findhidingsubclasstest/SuperBadProtected.class",
-                "findhidingsubclasstest/SubBadProtected.class");
+                "findhidingsubclasstest/BadProtected.class");
         assertHSBCBug("display", 15);
     }
 
     @Test
     public void testGoodFindHidingSubClassTest() {
         performAnalysis("findhidingsubclasstest/GrantAccess.class",
-                "findhidingsubclasstest/GrantUserAccess.class");
+                "findhidingsubclasstest/GoodFindHidingSubClassTest.class");
         assertNoHSBCBug();
     }
 
     @Test
     public void testGoodFindHidingSubClassTest2() {
         performAnalysis("findhidingsubclasstest/SuperGoodInEqualMultipleMethod.class",
-                "findhidingsubclasstest/SubGoodInEqualMultipleMethod.class");
+                "findhidingsubclasstest/GoodInEqualNonStaticMethods.class");
         assertNoHSBCBug();
     }
 
@@ -105,7 +105,7 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     public void testGoodFindHidingSubClassTest4() {
         performAnalysis("findhidingsubclasstest/GoodGrandNonStatic.class",
                 "findhidingsubclasstest/GoodParentNonStatic.class",
-                "findhidingsubclasstest/GoodChildNonStatic.class");
+                "findhidingsubclasstest/GoodMultiLevelInheritanceNonStatic.class");
         assertNoHSBCBug();
     }
 
@@ -113,28 +113,28 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     public void testGoodFindHidingSubClassTest5() {
         performAnalysis("findhidingsubclasstest/GoodGrandClassPrivate.class",
                 "findhidingsubclasstest/GoodParentClassPrivate.class",
-                "findhidingsubclasstest/GoodChildClassPrivate.class");
+                "findhidingsubclasstest/GoodMultiLevelInheritancePrivate.class");
         assertNoHSBCBug();
     }
 
     @Test
     public void testGoodFindHidingSubClassTest6() {
         performAnalysis("findhidingsubclasstest/SuperMultipleNonStatic.class",
-                "findhidingsubclasstest/SubMultipleNonStatic.class");
+                "findhidingsubclasstest/GoodMultipleNonStaticMethods.class");
         assertNoHSBCBug();
     }
 
     @Test
     public void testGoodFindHidingSubClassTest7() {
         performAnalysis("findhidingsubclasstest/SuperGoodMultipleStaticMethod.class",
-                "findhidingsubclasstest/SubGoodMultipleStaticMethod.class");
+                "findhidingsubclasstest/GoodMultipleStaticMethod.class");
         assertNoHSBCBug();
     }
 
     @Test
     public void testGoodFindHidingSubClassTest8() {
         performAnalysis("findhidingsubclasstest/SuperGoodNonOrderedMultipleStaticMethods.class",
-                "findhidingsubclasstest/SubGoodNonOrderedMultipleStaticMethods.class");
+                "findhidingsubclasstest/GoodNonOrderedMultipleNonStaticMethods.class");
         assertNoHSBCBug();
     }
 
@@ -155,7 +155,7 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     @Test
     public void testGoodFindHidingSubClassTest11() {
         performAnalysis("findhidingsubclasstest/SuperGoodProtected.class",
-                "findhidingsubclasstest/SubGoodProtected.class");
+                "findhidingsubclasstest/GoodProtected.class");
         assertNoHSBCBug();
     }
 
