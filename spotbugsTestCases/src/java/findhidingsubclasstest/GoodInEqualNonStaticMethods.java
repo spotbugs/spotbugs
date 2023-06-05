@@ -19,7 +19,7 @@ class SuperGoodInEqualMultipleMethod {
  * As the overridden methods are non-static.
  * Number of methods in both classes are different.
  */
-class SubGoodInEqualMultipleMethod extends SuperGoodInEqualMultipleMethod {
+class GoodInEqualNonStaticMethods extends SuperGoodInEqualMultipleMethod {
     void display(String s) {
         System.out.println("first method (sub) " + s);
     }

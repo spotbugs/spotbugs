@@ -13,7 +13,7 @@ class GoodParentNonStatic extends GoodGrandNonStatic {
  * This test case is a complaint test case with multiple level inheritance.
  * As the overridden methods are non-static.
  */
-class GoodChildNonStatic extends GoodParentNonStatic {
+class GoodMultiLevelInheritanceNonStatic extends GoodParentNonStatic {
     public void display(String s, int i) {
         System.out.println("Child information");
     }

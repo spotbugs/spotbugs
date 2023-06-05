@@ -19,7 +19,7 @@ class SuperGoodNonOrderedMultipleStaticMethods {
  * But the method definition is in different order and number of methods in both classes are different.
  * As the overridden methods are nonstatic. It is compliant.
  */
-class SubGoodNonOrderedMultipleStaticMethods extends SuperGoodNonOrderedMultipleStaticMethods {
+class GoodNonOrderedMultipleNonStaticMethods extends SuperGoodNonOrderedMultipleStaticMethods {
     void display(String s) {
         System.out.println("first method (sub) " + s);
     }

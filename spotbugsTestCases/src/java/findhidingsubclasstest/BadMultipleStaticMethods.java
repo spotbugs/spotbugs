@@ -14,7 +14,7 @@ class SuperBadMultipleMethods {
  * This test case is a non-complaint test case with multiple methods declared in both super and sub classes.
  * As the overridden methods are static, and non-private.
  */
-class SubBadMultipleMethods extends SuperBadMultipleMethods {
+class BadMultipleStaticMethods extends SuperBadMultipleMethods {
     static void display(String s) {
         System.out.println("first method (sub) " + s);
     }

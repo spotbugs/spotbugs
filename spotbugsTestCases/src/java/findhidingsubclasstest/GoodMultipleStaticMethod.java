@@ -15,7 +15,7 @@ class SuperGoodMultipleStaticMethod {
  * but the static methods are declared as private.
  * So there is no method inherited actually
  */
-class SubGoodMultipleStaticMethod extends SuperGoodMultipleStaticMethod {
+class GoodMultipleStaticMethod extends SuperGoodMultipleStaticMethod {
     private static void display(String s) {
         System.out.println("first method (sub) " + s);
     }

@@ -19,7 +19,7 @@ class SuperBadNonOrderedMultipleStaticMethods {
  * But the method definition is in different order and number of methods in both classes are different.
  * As the overridden methods are static, and non-private. It is non-compliant.
  */
-class SubBadNonOrderedMultipleStaticMethods extends SuperBadNonOrderedMultipleStaticMethods {
+class BadNonOrderedMultipleStaticMethods extends SuperBadNonOrderedMultipleStaticMethods {
     static void display(String s) {
         System.out.println("first method (sub) " + s);
     }

@@ -15,7 +15,7 @@ class SuperMultipleNonStatic {
  * As the overridden methods are non-static and non-private.
  * So, this is overriding instead of method hiding.
  */
-class SubMultipleNonStatic extends SuperMultipleNonStatic {
+class GoodMultipleNonStaticMethods extends SuperMultipleNonStatic {
     void display(String s) {
         System.out.println("first method (sub) " + s);
     }
