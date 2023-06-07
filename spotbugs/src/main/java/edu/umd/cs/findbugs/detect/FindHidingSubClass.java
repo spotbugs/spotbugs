@@ -47,10 +47,8 @@ public class FindHidingSubClass implements Detector {
 
     /**
      * This method analyze only the super classes, not the super interface.
-     * Because in case of the only existing test cases,
-     * we need to call the static method over the class - a compliant test case as per SEI CERT MET07-J rule.
+     * Because there are not enough test cases for it.
      * Thereof, it is useless to check this in our detector.
-     * Although both compliant and non-complaint test cases are added for it.
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
