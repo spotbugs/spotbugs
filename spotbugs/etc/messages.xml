@@ -1772,6 +1772,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindAssertionsWithSideEffects">
+    <Details>
+      <![CDATA[
+            <p>Finds assertions with side effects.</p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindHidingSubClass">
     <Details>
       <![CDATA[
@@ -1785,13 +1792,6 @@ factory pattern to create these objects.</p>
               Consequently, programmers must avoid the method hiding.
               Programmer should declare the respective methods non-static or restrict it as private to eradicate the problem.
             </p>
-      ]]>
-    </Details>
-  </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.FindAssertionsWithSideEffects">
-    <Details>
-      <![CDATA[
-            <p>Finds assertions with side effects.</p>
       ]]>
     </Details>
   </Detector>
@@ -8809,25 +8809,6 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
-  <BugPattern type="HSBC_HIDING_SUB_CLASS">
-    <ShortDescription>Method hiding must be avoided.</ShortDescription>
-    <LongDescription>The method '{1}' in class '{2}' hides a method in class '{3}'. Declare the respective methods non-static or private to eradicate the problem.</LongDescription>
-    <Details>
-      <![CDATA[
-      <p>
-        Hiding happens when a sub class defines a static method
-        with same header (signature plus return type) as in any of the super class.
-        In case of method hiding , the invoked method is determined based on the specific qualified name or
-        method invocation expression used at the calling site.
-        The results are often unexpected, although the Java language provides unambiguous rules method invocation for method hiding.
-        Moreover, method hiding and method overriding is often confused by programmers.
-        Consequently, programmers must avoid the method hiding.
-        Programmer should declare the respective methods non-static or restrict it as private to eradicate the problem.
-      </p>
-        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">MET07-J. Never declare a class method that hides a method declared in a superclass or superinterface</a>.
-        ]]>
-    </Details>
-  </BugPattern>
   <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT">
     <ShortDescription>Expression in assertion may produce a side effect</ShortDescription>
     <LongDescription>The expression used in assertion at {1} may produce a side effect. If assertions are disabled, the expression won't get executed and the result of the method might change.</LongDescription>
@@ -8853,6 +8834,25 @@ Using floating-point variables should not be used as loop counters, as they are 
             for more information.
             </p>
             ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="HSBC_HIDING_SUB_CLASS">
+    <ShortDescription>Method hiding must be avoided.</ShortDescription>
+    <LongDescription>The method '{1}' in class '{2}' hides a method in class '{3}'. Declare the respective methods non-static or private to eradicate the problem.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+        Hiding happens when a sub class defines a static method
+        with same header (signature plus return type) as in any of the super class.
+        In case of method hiding , the invoked method is determined based on the specific qualified name or
+        method invocation expression used at the calling site.
+        The results are often unexpected, although the Java language provides unambiguous rules method invocation for method hiding.
+        Moreover, method hiding and method overriding is often confused by programmers.
+        Consequently, programmers must avoid the method hiding.
+        Programmer should declare the respective methods non-static or restrict it as private to eradicate the problem.
+      </p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">MET07-J. Never declare a class method that hides a method declared in a superclass or superinterface</a>.
+        ]]>
     </Details>
   </BugPattern>
   <!--
