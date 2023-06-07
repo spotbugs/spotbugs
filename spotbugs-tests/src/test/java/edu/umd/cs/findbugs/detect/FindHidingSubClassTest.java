@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 public class FindHidingSubClassTest extends AbstractIntegrationTest {
-    static String bugType = "HSBC_HIDING_SUB_CLASS";
+    final static String BUG_TYPE = "HSBC_HIDING_SUB_CLASS";
 
     @Test
     public void testBadFindHidingSubClassTest() {
@@ -161,14 +161,14 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
 
     private void assertNoHSBCBug() {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
+                .bugType(BUG_TYPE)
                 .build();
         assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
     }
 
     private void assertHSBCBug(String methodName, int lineNumber) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
+                .bugType(BUG_TYPE)
                 .inMethod(methodName)
                 .atLine(lineNumber)
                 .build();
