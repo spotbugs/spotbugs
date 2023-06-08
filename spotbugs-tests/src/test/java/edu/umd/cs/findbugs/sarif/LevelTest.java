@@ -1,12 +1,14 @@
 package edu.umd.cs.findbugs.sarif;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import edu.umd.cs.findbugs.cwe.WeaknessSeverity;
 
 public class LevelTest {
     @Test
@@ -35,5 +37,25 @@ public class LevelTest {
     @Test
     public void testMapLowestRankToNote() {
         assertThat(Level.fromBugRank(20), is(Level.NOTE));
+    }
+
+    @Test
+    public void testMapWeaknessSeverityLevelHighToError() {
+        assertThat(Level.fromWeaknessSeverity(WeaknessSeverity.HIGH), is(Level.ERROR));
+    }
+
+    @Test
+    public void testMapWeaknessSeverityLevelMediumToWarning() {
+        assertThat(Level.fromWeaknessSeverity(WeaknessSeverity.MEDIUM), is(Level.WARNING));
+    }
+
+    @Test
+    public void testMapWeaknessSeverityLevelLowToNote() {
+        assertThat(Level.fromWeaknessSeverity(WeaknessSeverity.LOW), is(Level.NOTE));
+    }
+
+    @Test
+    public void testMapWeaknessSeverityLevelNoneToNone() {
+        assertThat(Level.fromWeaknessSeverity(WeaknessSeverity.NONE), is(Level.NONE));
     }
 }

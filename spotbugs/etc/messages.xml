@@ -1772,6 +1772,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindAssertionsWithSideEffects">
+    <Details>
+      <![CDATA[
+            <p>Finds assertions with side effects.</p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindPublicAttributes">
     <Details>
       <![CDATA[
@@ -4302,12 +4309,13 @@ Methods should be verbs, in mixed case with the first letter lowercase, with the
     </Details>
   </BugPattern>
   <BugPattern type="NM_FIELD_NAMING_CONVENTION">
-    <ShortDescription>Field names should start with a lower case letter</ShortDescription>
-    <LongDescription>The field name {1} doesn't start with a lower case letter</LongDescription>
+    <ShortDescription>Non-final field names should start with a lower case letter, final fields should be uppercase with words separated by underscores</ShortDescription>
+    <LongDescription>The field name {1} is not conform to the naming convention. If final, it should be ALL_CAPS, otherwise lowerCamelCase.</LongDescription>
     <Details>
 <![CDATA[
   <p>
 Names of fields that are not final should be in mixed case with a lowercase first letter and the first letters of subsequent words capitalized.
+Names of final fields should be all uppercase with words separated by underscores ('_').
 </p>
 ]]>
     </Details>
@@ -8792,11 +8800,39 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT">
+    <ShortDescription>Expression in assertion may produce a side effect</ShortDescription>
+    <LongDescription>The expression used in assertion at {1} may produce a side effect. If assertions are disabled, the expression won't get executed and the result of the method might change.</LongDescription>
+    <Details>
+      <![CDATA[
+            <p>Expressions used in assertions must not produce side effects.</p>
+
+            <p>See <https://wiki.sei.cmu.edu/confluence/display/java/EXP06-J.+Expressions+used+in+assertions+must+not+produce+side+effects><code>SEI CERT Rule EXP06</code></a>
+            for more information.
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD">
+    <ShortDescription>Method invoked in assertion may produce a side effect</ShortDescription>
+    <LongDescription>The method called in assertion at {1} may produce a side effect. If assertions are disabled, the method invocation won't get executed and the result of the method might change.</LongDescription>
+    <Details>
+      <![CDATA[
+            <p>Expressions used in assertions must not produce side effects.</p>
+
+            <p>See <https://wiki.sei.cmu.edu/confluence/display/java/EXP06-J.+Expressions+used+in+assertions+must+not+produce+side+effects><code>SEI CERT Rule EXP06</code></a>
+            for more information.
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE">
     <ShortDescription>Primitive field is public</ShortDescription>
     <LongDescription>Primitive field {1} is public and set from inside the class, which makes it too exposed. Consider making it private to limit external accessibility.</LongDescription>
     <Details>
-   <![CDATA[
+      <![CDATA[
     <p>
     <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility to fields must be limited.
     Otherwise, the values of the fields may be manipulated from outside the class, which may be unexpected or
@@ -8812,13 +8848,13 @@ Using floating-point variables should not be used as loop counters, as they are 
     exceptions, if only they write the field inside the class, the field is not considered as
     written by the class itself.</p>
     ]]>
-      </Details>
+    </Details>
   </BugPattern>
   <BugPattern type="PA_PUBLIC_ARRAY_ATTRIBUTE">
     <ShortDescription>Array-type field is public</ShortDescription>
     <LongDescription>Array-type field {1} is public, which makes it too exposed. Consider making it private to limit external accessibility.</LongDescription>
     <Details>
-   <![CDATA[
+      <![CDATA[
     <p>
     <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
     Making an array-type field final does not prevent other classes from modifying the contents of
@@ -8832,13 +8868,13 @@ Using floating-point variables should not be used as loop counters, as they are 
     finalizers are exceptions, if only they write the field inside the class, the field is not
     considered as written by the class itself.</p>
     ]]>
-      </Details>
+    </Details>
   </BugPattern>
   <BugPattern type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE">
     <ShortDescription>Mutable object-type field is public</ShortDescription>
     <LongDescription>Mutable object-type field {1} is public, which makes it too exposed. Consider making it private to limit external accessibility.</LongDescription>
     <Details>
-   <![CDATA[
+      <![CDATA[
     <p>
     <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
     Making a mutable object-type field final does not prevent other classes from modifying the
@@ -8853,7 +8889,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     the class, the field is not considered as written by the class itself. In case of object-type
     fields "writing" means calling methods whose name suggest modification.</p>
     ]]>
-      </Details>
+    </Details>
   </BugPattern>
   <!--
   **********************************************************************
@@ -9008,5 +9044,6 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
+  <BugCode abbrev="ASE">Assertion with side effect</BugCode>
   <BugCode abbrev="PA">Public Attribute</BugCode>
 </MessageCollection>
