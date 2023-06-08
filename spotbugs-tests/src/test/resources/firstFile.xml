@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<BugCollection version="4.7.4-SNAPSHOT" sequence="0" timestamp="-1" analysisTimestamp="1686229089190" release="">
+<BugCollection version="4.7.4-SNAPSHOT" sequence="0" timestamp="-1" analysisTimestamp="1674144996716" release="">
   <Project></Project>
   <BugInstance type="Test" priority="1" rank="18" abbrev="TEST" category="EXPERIMENTAL">
     <Method classname="TestClass" name="TestMethod" signature="(Lorg/test/TestClass2;Ljava/util/List;)V" isStatic="false"/>
@@ -10,7 +10,7 @@
     </Class>
   </BugInstance>
   <Errors errors="0" missingClasses="0"></Errors>
-  <FindBugsSummary timestamp="Thu, 8 Jun 2023 14:58:09 +0200" total_classes="0" referenced_classes="0" total_bugs="1" total_size="0" num_packages="1" java_version="17.0.7" vm_version="17.0.7+7" cpu_seconds="0.00" clock_seconds="0.00" peak_mbytes="692.10" alloc_mbytes="512.00" gc_seconds="0.00" priority_1="1">
+  <FindBugsSummary timestamp="Thu, 19 Jan 2023 17:16:36 +0100" total_classes="0" referenced_classes="0" total_bugs="1" total_size="0" num_packages="1" java_version="17.0.2" vm_version="17.0.2+8-86" cpu_seconds="1.25" clock_seconds="0.21" peak_mbytes="230.26" alloc_mbytes="512.00" gc_seconds="0.00" priority_1="1">
     <FindBugsProfile></FindBugsProfile>
   </FindBugsSummary>
   <ClassFeatures></ClassFeatures>
