@@ -1772,6 +1772,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindAssertionsWithSideEffects">
+    <Details>
+      <![CDATA[
+            <p>Finds assertions with side effects.</p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions">
     <Details>
       <![CDATA[
@@ -1784,6 +1791,7 @@ factory pattern to create these objects.</p>
   BugPatterns
   **********************************************************************
    -->
+
   <BugPattern type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS">
     <ShortDescription> Asserting value of instanceof in tests is not recommended. </ShortDescription>
     <LongDescription> Assertion of type {0} in {2} at {3} may hide useful information about why a cast may have failed.</LongDescription>
@@ -4301,12 +4309,13 @@ Methods should be verbs, in mixed case with the first letter lowercase, with the
     </Details>
   </BugPattern>
   <BugPattern type="NM_FIELD_NAMING_CONVENTION">
-    <ShortDescription>Field names should start with a lower case letter</ShortDescription>
-    <LongDescription>The field name {1} doesn't start with a lower case letter</LongDescription>
+    <ShortDescription>Non-final field names should start with a lower case letter, final fields should be uppercase with words separated by underscores</ShortDescription>
+    <LongDescription>The field name {1} is not conform to the naming convention. If final, it should be ALL_CAPS, otherwise lowerCamelCase.</LongDescription>
     <Details>
 <![CDATA[
   <p>
 Names of fields that are not final should be in mixed case with a lowercase first letter and the first letters of subsequent words capitalized.
+Names of final fields should be all uppercase with words separated by underscores ('_').
 </p>
 ]]>
     </Details>
@@ -8792,6 +8801,33 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
 
+  <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT">
+    <ShortDescription>Expression in assertion may produce a side effect</ShortDescription>
+    <LongDescription>The expression used in assertion at {1} may produce a side effect. If assertions are disabled, the expression won't get executed and the result of the method might change.</LongDescription>
+    <Details>
+      <![CDATA[
+            <p>Expressions used in assertions must not produce side effects.</p>
+
+            <p>See <https://wiki.sei.cmu.edu/confluence/display/java/EXP06-J.+Expressions+used+in+assertions+must+not+produce+side+effects><code>SEI CERT Rule EXP06</code></a>
+            for more information.
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD">
+    <ShortDescription>Method invoked in assertion may produce a side effect</ShortDescription>
+    <LongDescription>The method called in assertion at {1} may produce a side effect. If assertions are disabled, the method invocation won't get executed and the result of the method might change.</LongDescription>
+    <Details>
+      <![CDATA[
+            <p>Expressions used in assertions must not produce side effects.</p>
+
+            <p>See <https://wiki.sei.cmu.edu/confluence/display/java/EXP06-J.+Expressions+used+in+assertions+must+not+produce+side+effects><code>SEI CERT Rule EXP06</code></a>
+            for more information.
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="AA_ASSERTION_OF_ARGUMENTS">
     <ShortDescription>Assertion is used to validate an argument of a public method</ShortDescription>
     <LongDescription>Assertion validates method argument at {1}. If assertions are disabled, there won't be any argument validation.</LongDescription>
@@ -8960,5 +8996,6 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
+  <BugCode abbrev="ASE">Assertion with side effect</BugCode>
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
 </MessageCollection>

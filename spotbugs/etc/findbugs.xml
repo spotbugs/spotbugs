@@ -622,7 +622,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream" speed="fast"
                     reports="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM"/>
           <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true"
-                    hidden="true" reports="TESTING"/>
+                    hidden="true" reports="NM_METHOD_NAMING_CONVENTION,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,NM_FIELD_NAMING_CONVENTION"/>
           <Detector class="edu.umd.cs.findbugs.detect.ViewCFG" disabled="true"
                     hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer"
@@ -669,6 +669,8 @@
                     reports="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource" speed="fast"
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindAssertionsWithSideEffects" speed="fast"
+                    reports="ASE_ASSERTION_WITH_SIDE_EFFECT,ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions" speed="fast"
                     reports="AA_ASSERTION_OF_ARGUMENTS"/>
             <!-- Bug Categories -->
@@ -697,9 +699,10 @@
           <BugCode abbrev="STCAL" cweid="366"/>
           <BugCode abbrev="ICAST" cweid="192"/>
           <BugCode abbrev="FB"/>
-          <BugCode abbrev="DA"/>
           <BugCode abbrev="AT"/>
           <BugCode abbrev="JUA"/>
+          <BugCode abbrev="ASE"/>
+          <BugCode abbrev="DA"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
           <BugPattern abbrev="AA" type="AA_ASSERTION_OF_ARGUMENTS" category="BAD_PRACTICE" />
@@ -1290,4 +1293,6 @@
           <BugPattern abbrev="PERM" type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS" category="MALICIOUS_CODE" />
           <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"
                     category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="ASE" type="ASE_ASSERTION_WITH_SIDE_EFFECT" category="SECURITY" />
+          <BugPattern abbrev="ASE" type="ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD" category="SECURITY" />
 </FindbugsPlugin>
