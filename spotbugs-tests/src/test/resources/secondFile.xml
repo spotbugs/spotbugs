@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="4.7.4-SNAPSHOT" sequence="0" timestamp="-1" analysisTimestamp="1686229089191" release="">
+  <Project></Project>
+  <BugInstance type="Test2" priority="1" rank="18" abbrev="TEST" category="EXPERIMENTAL">
+    <Method classname="TestClass2" name="TestMethod2" signature="(Lorg/test/TestClass;Ljava/util/List;)V" isStatic="false"/>
+    <SourceLine classname="TestClass2" start="69" end="6969" startBytecode="10" endBytecode="20" sourcefile="TestFile2" sourcepath="TestFile2"/>
+    <Class classname="TestClass2">
+      <SourceLine classname="TestClass2"/>
+    </Class>
+  </BugInstance>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Thu, 8 Jun 2023 14:58:09 +0200" total_classes="0" referenced_classes="0" total_bugs="1" total_size="0" num_packages="1" java_version="17.0.7" vm_version="17.0.7+7" cpu_seconds="0.00" clock_seconds="0.00" peak_mbytes="692.10" alloc_mbytes="512.00" gc_seconds="0.00" priority_1="1">
+    <FindBugsProfile></FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>
