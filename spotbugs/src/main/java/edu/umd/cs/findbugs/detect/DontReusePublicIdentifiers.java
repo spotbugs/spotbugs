@@ -22,7 +22,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.detect.publicidentifiers.PublicIdentifiers;
 import org.apache.bcel.classfile.*;
 
 import java.util.Set;
@@ -53,7 +52,8 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
         String simpleName = fullName[fullName.length - 1];
 
         if (PUBLIC_IDENTIFIERS.contains(simpleName)) {
-            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES", NORMAL_PRIORITY).addClass(this).addUnknownSourceLine(simpleName, sourceFileName));
+            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES", NORMAL_PRIORITY).addClass(this)
+                    .addUnknownSourceLine(simpleName, sourceFileName));
         }
     }
 
@@ -61,7 +61,8 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
     public void visit(Field obj) {
         String name = obj.getName();
         if (PUBLIC_IDENTIFIERS.contains(name)) {
-            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES", NORMAL_PRIORITY).addClass(this).addField(this).addUnknownSourceLine(getClassName(), sourceFileName));
+            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES", NORMAL_PRIORITY).addClass(this).addField(
+                    this).addUnknownSourceLine(getClassName(), sourceFileName));
             // .addSourceLine(this)); //java.lang.IllegalStateException: getMethod called while not visiting method
         }
 
@@ -71,7 +72,8 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
     public void visit(Method obj) {
         String name = obj.getName();
         if (PUBLIC_IDENTIFIERS.contains(name)) {
-            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(this));
+            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY).addClassAndMethod(this)
+                    .addSourceLine(this));
         }
     }
 
@@ -87,7 +89,8 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
             }
 
             if (PUBLIC_IDENTIFIERS.contains(varName)) {
-                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES", NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(getClassContext(), this, this.getPC()).addString(varName));
+                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES", NORMAL_PRIORITY)
+                        .addClassAndMethod(this).addSourceLine(getClassContext(), this, this.getPC()).addString(varName));
             }
         }
     }
@@ -106,7 +109,8 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
             }
             String innerClassName = constantPool.getConstantUtf8(nameIndex).getBytes();
             if (PUBLIC_IDENTIFIERS.contains(innerClassName)) {
-                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES", NORMAL_PRIORITY).addClass(this).addClass(innerClassName, sourceFileName).addUnknownSourceLine(innerClassName, sourceFileName));
+                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES", NORMAL_PRIORITY).addClass(this)
+                        .addClass(innerClassName, sourceFileName).addUnknownSourceLine(innerClassName, sourceFileName));
             }
         }
     }
