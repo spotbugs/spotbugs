@@ -29,10 +29,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.After;
 import org.junit.Before;
@@ -135,7 +132,7 @@ public class AnnotationMatcherTest {
     }
 
     @Test
-    public void testPerformAnalysis() throws Exception {
+    public void testPerformAnalysis() {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
@@ -148,22 +145,10 @@ public class AnnotationMatcherTest {
                         "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
 
         // Edit:
-        // AnnotationMatcherTest uses two public identifiers from the Java Standard Library (namely 'Value' and 'Generated')
+        // AnnotationMatcherTest uses public identifiers from the Java Standard Library
         // that are found by DontReusePublicIdentifiers detector, which causes the test to fails
-        BugInstanceMatcher publicIdentifierMatcher = new BugInstanceMatcherBuilder().bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
-                .build();
-
-        assertThat(bugCollection.getCollection().stream().filter(
-                bugInstance -> !publicIdentifierMatcher.matches(bugInstance)).collect(Collectors.toList()),
-                hasSize(3));
-
         AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher(annotationName);
-        for (BugInstance bugInstance : bugCollection) {
-            if (publicIdentifierMatcher.matches(bugInstance)) {
-                continue;
-            }
-            assertTrue(bugInstanceMatcher.match(bugInstance));
-        }
+        assertThat(bugCollection.getCollection().stream().filter(bugInstanceMatcher::match).toList(), hasSize(5));
     }
 
     private String writeXMLAndGetStringOutput(AnnotationMatcher matcher, boolean disabled) throws IOException {
