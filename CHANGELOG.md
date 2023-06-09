@@ -26,6 +26,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Added the Common Weakness Enumeration (CWE) taxonomy to the Static Analysis Results Interchange Format (SARIF) report. The short and long description for the CWEs are retrived from a JSON file which is a slimmed down version of the official comprehensive CWE XML from MITRE. The JSON contains information about all CWEs. ([#2410](https://github.com/spotbugs/spotbugs/pull/2410)).
 * New detector `FindAssertionsWithSideEffects` detecting bug `ASSERTION_WITH_SIDE_EFFECT` and `ASSERTION_WITH_SIDE_EFFECT_METHOD` in case of assertions which may have side effects (See [EXP06-J. Expressions used in assertions must not produce side effects](https://wiki.sei.cmu.edu/confluence/display/java/EXP06-J.+Expressions+used+in+assertions+must+not+produce+side+effects))
 * New rule set `PA_PUBLIC_PRIMITIVE_ATTRIBUTE`, `PA_PUBLIC_ARRAY_ATTRIBUTE` and `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` to warn for public attributes which are written by the methods of the class. This rule is loosely based on the SEI CERT rule *OBJ01-J Limit accessibility of fields*. ([#OBJ01-J](https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields))
+* Extend `SerializableIdiom` detector with new bug type: `SE_PREVENT_EXT_OBJ_OVERWRITE`. It's reported in case of the `readExternal()` method allows any caller to reset any value of an object
 
 ### Security
 - Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))
