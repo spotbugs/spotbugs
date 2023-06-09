@@ -1,8 +1,5 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
-
 public class Bug3107916 {
 
     public static void main(String[] args) {
@@ -11,7 +8,6 @@ public class Bug3107916 {
         doCompare(s1, s2);
     }
 
-    @ExpectWarning("NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE")
     public static int doCompare(String s1, String s2) {
         int result;
         if (s1 == null && s2 == null) {
@@ -27,7 +23,8 @@ public class Bug3107916 {
         }
         return result;
     }
-    @NoWarning("NP")
+
+
     public static int doCompare2(String s1, String s2) {
         int result;
         if (s1 == null && s2 == null) {
