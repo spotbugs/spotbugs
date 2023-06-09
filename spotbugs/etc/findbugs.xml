@@ -671,7 +671,9 @@
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindAssertionsWithSideEffects" speed="fast"
                     reports="ASE_ASSERTION_WITH_SIDE_EFFECT,ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD"/>
-            <!-- Bug Categories -->
+          <Detector class="edu.umd.cs.findbugs.detect.FindPublicAttributes" speed="fast"
+                    reports="PA_PUBLIC_PRIMITIVE_ATTRIBUTE,PA_PUBLIC_ARRAY_ATTRIBUTE,PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE"/>
+    <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
@@ -1292,4 +1294,7 @@
                     category="MALICIOUS_CODE"/>
           <BugPattern abbrev="ASE" type="ASE_ASSERTION_WITH_SIDE_EFFECT" category="SECURITY" />
           <BugPattern abbrev="ASE" type="ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD" category="SECURITY" />
+          <BugPattern abbrev="PA" type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="PA" type="PA_PUBLIC_ARRAY_ATTRIBUTE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="PA" type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE" category="BAD_PRACTICE"/>
 </FindbugsPlugin>
