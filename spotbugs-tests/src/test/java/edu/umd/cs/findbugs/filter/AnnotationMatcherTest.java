@@ -150,7 +150,8 @@ public class AnnotationMatcherTest {
         // Edit:
         // AnnotationMatcherTest uses two public identifiers from the Java Standard Library (namely 'Value' and 'Generated')
         // that are found by DontReusePublicIdentifiers detector, which causes the test to fails
-        BugInstanceMatcher publicIdentifierMatcher = new BugInstanceMatcherBuilder().bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS").build();
+        BugInstanceMatcher publicIdentifierMatcher = new BugInstanceMatcherBuilder().bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
+                .build();
 
         assertThat(bugCollection.getCollection().stream().filter(
                 bugInstance -> !publicIdentifierMatcher.matches(bugInstance)).collect(Collectors.toList()),

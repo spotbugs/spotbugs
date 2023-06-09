@@ -4,16 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class ShadowedPublicIdentifiersVariableNames {
-    private final static String String = "String";
-
-    public static ArrayList containsShadowedLocalVariable2() {
+    public static ArrayList containsShadowedLocalVariable1() {
         ArrayList ArrayList = new ArrayList();
         ArrayList.clear();
         ArrayList.add("String");
         return ArrayList;
     }
 
-    public void containsShadowedLocalVariable1() {
+    public void containsShadowedLocalVariable2() {
         Integer Integer = 1;
         System.out.println(Integer);
     }
