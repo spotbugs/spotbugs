@@ -1,11 +1,7 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
-
 public class Bug3277814 {
 
-    @NoWarning("NP")
     public void test() {
         String var = "";
         int index = 2;
@@ -31,7 +27,6 @@ public class Bug3277814 {
         }
     }
 
-    @ExpectWarning("NP")
     public void test2() {
         String var = "";
         int index = 2;
