@@ -46,7 +46,7 @@ public class FindHidingSubClass implements Detector {
     }
 
     /**
-     * This method analyze only the super classes, not the super interface.
+     * This method analyzes only the super classes, not the super interface.
      * Because there are not enough test cases for it.
      * Thereof, it is useless to check this in our detector.
      */
