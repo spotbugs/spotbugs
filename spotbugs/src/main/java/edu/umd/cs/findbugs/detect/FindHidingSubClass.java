@@ -125,7 +125,7 @@ public class FindHidingSubClass implements Detector {
     private boolean isMainMethod(Method method) {
         return method.isPublic() && method.isStatic() && method.getReturnType().equals(BasicType.VOID)
                 && "main".equals(method.getName())
-                && this.isStringArray(method.getArgumentTypes());
+                && isStringArray(method.getArgumentTypes());
     }
 
     /**
