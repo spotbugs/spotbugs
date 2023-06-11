@@ -45,10 +45,14 @@ public class FindHidingSubClass implements Detector {
         this.bugReporter = bugReporter;
     }
 
-    /**
+    /*
+     * Note:
      * This method analyzes only the super classes, not the super interface.
-     * Because there are not enough test cases for it.
-     * Thereof, it is useless to check this in our detector.
+     * Reason: when I looked in detail of the super classes,
+     * I found there is no point to super-classes as whenever we have method hiding due to super class,
+     * We can call the method by fully qualified name only (as Interface can't be instantiated).
+     * Calling a hided method by fully qualified name is a test compliant. See @see <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">SEI CERT MET07-J</a>
+     * Thereof, it is useless to analyze super interfaces in the detector.
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
