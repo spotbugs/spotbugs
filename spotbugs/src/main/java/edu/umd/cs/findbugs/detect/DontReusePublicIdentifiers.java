@@ -24,12 +24,9 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.classfile.*;
 
-import java.util.Set;
+import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
 
 public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
-
-    private static final Set<String> PUBLIC_IDENTIFIERS = new PublicIdentifiers().getPublicIdentifiers();
-
     private final BugReporter bugReporter;
     private String sourceFileName = "";
 

@@ -149,10 +149,10 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         List<StringAnnotation> bugAnnotations = getBugCollection().getCollection().stream()
                 .flatMap(bugInstance -> bugInstance.getAnnotations().stream())
                 .filter(bugAnnotation -> variableAnnotation.getClass().equals(bugAnnotation.getClass()))
-                .map(bugAnnotation -> (StringAnnotation)bugAnnotation)
+                .map(bugAnnotation -> (StringAnnotation) bugAnnotation)
                 .toList();
 
-         assertThat(bugAnnotations, hasItem(variableAnnotation));
+        assertThat(bugAnnotations, hasItem(variableAnnotation));
     }
 
     private void assertShadowedPublicIdentifierInnerClassBug(String innerClassName) {
@@ -167,7 +167,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         List<ClassAnnotation> bugAnnotations = getBugCollection().getCollection().stream()
                 .flatMap(bugInstance -> bugInstance.getAnnotations().stream())
                 .filter(bugAnnotation -> innerClassAnnotation.getClass().equals(bugAnnotation.getClass()))
-                .map(bugAnnotation -> (ClassAnnotation)bugAnnotation)
+                .map(bugAnnotation -> (ClassAnnotation) bugAnnotation)
                 .toList();
         assertThat(bugAnnotations, hasItem(innerClassAnnotation));
     }
