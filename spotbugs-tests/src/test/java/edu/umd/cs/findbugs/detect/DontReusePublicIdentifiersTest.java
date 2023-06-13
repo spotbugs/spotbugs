@@ -1,9 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.StringAnnotation;
-import edu.umd.cs.findbugs.filter.NameMatch;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.Test;
@@ -13,7 +10,6 @@ import java.util.List;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertTrue;
 
 public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     private static final String PI_CLASS_BUG = "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES";
@@ -27,7 +23,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         // check shadowed public identifiers as standalone classes
         performAnalysis("publicIdentifiers/standalone/InputStream.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_CLASS_BUG, 1);
-        assertShadowedPublicIdentifierClassBug(PI_CLASS_BUG, "InputStream");
+        assertShadowedPublicIdentifierClassBug();
 
         // check shadowed public identifiers as inner classes
         performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames.class");
@@ -42,12 +38,10 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     public void testGoodPublicIdentifiersClassNames() {
         // check good public identifiers as standalone classes
         performAnalysis("publicIdentifiers/standalone/GoodPublicIdentifiersStandaloneClassNames.class");
-        // assertDoesNotContainPublicIdentifierBugs();
         assertZeroPublicIdentifierBug();
 
         // check good public identifiers as inner classes
         performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames.class");
-        // assertDoesNotContainPublicIdentifierBugs();
         assertZeroPublicIdentifierBug();
     }
 
@@ -74,9 +68,9 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         //  addSourceLine(this)
         //  addSourceLine(context, start, end) etc
         //  lineNumberTable is not returning the correct line number
-        assertShadowedPublicIdentifierMethodBug(PI_METHOD_BUG, "ShadowedPublicIdentifiersMethodNames", "InputStream", 5);
-        assertShadowedPublicIdentifierMethodBug(PI_METHOD_BUG, "ShadowedPublicIdentifiersMethodNames", "Integer", 10);
-        assertShadowedPublicIdentifierMethodBug(PI_METHOD_BUG, "ShadowedPublicIdentifiersMethodNames", "ArrayList", 14);
+        assertShadowedPublicIdentifierMethodBug("InputStream", 5);
+        assertShadowedPublicIdentifierMethodBug("Integer", 10);
+        assertShadowedPublicIdentifierMethodBug("ArrayList", 14);
     }
 
     @Test
@@ -90,13 +84,9 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         performAnalysis("publicIdentifiers/ShadowedPublicIdentifiersVariableNames.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_VARIABLE_BUG, 3);
 
-        // NOTE: BUG there is a 2-3 line offset in detected bug:
-        //  addSourceLine(this)
-        //  addSourceLine(context, start, end) etc
-        //  lineNumberTable is not returning the correct line number
-        assertShadowedPublicIdentifierVariableBug("containsShadowedLocalVariable1", "ArrayList", 11);
-        assertShadowedPublicIdentifierVariableBug("containsShadowedLocalVariable2", "Integer", 17);
-        assertShadowedPublicIdentifierVariableBug("containsShadowedLocalVariable3", "File", 21);
+        assertShadowedPublicIdentifierVariableBug("containsShadowedLocalVariable1", "ArrayList");
+        assertShadowedPublicIdentifierVariableBug("containsShadowedLocalVariable2", "Integer");
+        assertShadowedPublicIdentifierVariableBug("containsShadowedLocalVariable3", "File");
     }
 
     @Test
@@ -106,7 +96,9 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     }
 
     private void assertNumOfShadowedPublicIdentifierBugs(String bugType, int num) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType(bugType).build();
+        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .build();
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
     }
 
@@ -118,43 +110,65 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         assertNumOfShadowedPublicIdentifierBugs(PI_VARIABLE_BUG, 0);
     }
 
-    private void assertShadowedPublicIdentifierClassBug(String bugType, String className) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder().bugType(bugType).inClass(className).build();
+    private void assertShadowedPublicIdentifierClassBug() {
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType(PI_CLASS_BUG)
+                .inClass("InputStream")
+                .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
     private void assertShadowedPublicIdentifierFieldBug(String fieldName) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder().bugType(DontReusePublicIdentifiersTest.PI_FIELD_BUG).inClass(
-                "ShadowedPublicIdentifiersFieldNames").atField(fieldName).build();
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType(PI_FIELD_BUG)
+                .inClass("ShadowedPublicIdentifiersFieldNames")
+                .atField(fieldName)
+                .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
-    private void assertShadowedPublicIdentifierMethodBug(String bugType, String className, String methodName, int sourceLine) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder().bugType(bugType).inClass(className).inMethod(methodName).atLine(
-                sourceLine).build();
+    private void assertShadowedPublicIdentifierMethodBug(String methodName, int sourceLine) {
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType(PI_METHOD_BUG)
+                .inClass("ShadowedPublicIdentifiersMethodNames")
+                .inMethod(methodName)
+                .atLine(sourceLine)
+                .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
-    private void assertShadowedPublicIdentifierVariableBug(String methodName, String variableName, int sourceLine) {
-        assertShadowedPublicIdentifierMethodBug(DontReusePublicIdentifiersTest.PI_VARIABLE_BUG, "ShadowedPublicIdentifiersVariableNames", methodName,
-                sourceLine);
+    private void assertShadowedPublicIdentifierVariableBug(String methodName, String variableName) {
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType(PI_VARIABLE_BUG)
+                .inClass("ShadowedPublicIdentifiersVariableNames")
+                .inMethod(methodName)
+                .build();
+        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
 
-        NameMatch variableNameMatcher = new NameMatch(variableName);
+        final StringAnnotation variableAnnotation = new StringAnnotation(variableName);
+        List<StringAnnotation> bugAnnotations = getBugCollection().getCollection().stream()
+                .flatMap(bugInstance -> bugInstance.getAnnotations().stream())
+                .filter(bugAnnotation -> variableAnnotation.getClass().equals(bugAnnotation.getClass()))
+                .map(bugAnnotation -> (StringAnnotation)bugAnnotation)
+                .toList();
 
-        List<String> variableNameAnnotations = getBugCollection().getCollection().stream().map(bugInstance -> (StringAnnotation) bugInstance
-                .getAnnotations().get(3)).map(StringAnnotation::getValue).toList();
-
-        assertTrue(variableNameAnnotations.stream().anyMatch(variableNameMatcher::match));
+         assertThat(bugAnnotations, hasItem(variableAnnotation));
     }
 
     private void assertShadowedPublicIdentifierInnerClassBug(String innerClassName) {
-        assertShadowedPublicIdentifierClassBug(DontReusePublicIdentifiersTest.PI_INNER_CLASS_BUG, "ShadowedPublicIdentifiersInnerClassNames");
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType(PI_INNER_CLASS_BUG)
+                .inClass("ShadowedPublicIdentifiersInnerClassNames")
+                .build();
+        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
 
-        NameMatch innerClassMatcher = new NameMatch(innerClassName);
 
-        List<String> bugAnnotations = getBugCollection().getCollection().stream().map(bugInstance -> (ClassAnnotation) bugInstance.getAnnotations()
-                .get(1)).map(classAnnotation -> classAnnotation.format("simpleClass", classAnnotation)).toList();
-
-        assertTrue(bugAnnotations.stream().anyMatch(innerClassMatcher::match));
+        final ClassAnnotation innerClassAnnotation = new ClassAnnotation(innerClassName);
+        List<ClassAnnotation> bugAnnotations = getBugCollection().getCollection().stream()
+                .flatMap(bugInstance -> bugInstance.getAnnotations().stream())
+                .filter(bugAnnotation -> innerClassAnnotation.getClass().equals(bugAnnotation.getClass()))
+                .map(bugAnnotation -> (ClassAnnotation)bugAnnotation)
+                .toList();
+        assertThat(bugAnnotations, hasItem(innerClassAnnotation));
     }
 }
