@@ -44,22 +44,6 @@ public class PublicIdentifiers {
         addPUBLIC_IDENTIFIERSTU();
         addPUBLIC_IDENTIFIERSVZ();
     }
-    //    public Set<String> getPUBLIC_IDENTIFIERS() {
-    //        if (PUBLIC_IDENTIFIERS == null) {
-    //            PUBLIC_IDENTIFIERS = new HashSet<>();
-    //            addPUBLIC_IDENTIFIERSAB();
-    //            addPUBLIC_IDENTIFIERSCC();
-    //            addPUBLIC_IDENTIFIERSDE();
-    //            addPUBLIC_IDENTIFIERSFH();
-    //            addPUBLIC_IDENTIFIERSIJ();
-    //            addPUBLIC_IDENTIFIERSKM();
-    //            addPUBLIC_IDENTIFIERSNR();
-    //            addPUBLIC_IDENTIFIERSSS();
-    //            addPUBLIC_IDENTIFIERSTU();
-    //            addPUBLIC_IDENTIFIERSVZ();
-    //        }
-    //        return PUBLIC_IDENTIFIERS;
-    //    }
 
     private static void addPUBLIC_IDENTIFIERSAB() {
         PUBLIC_IDENTIFIERS.add("AALOAD");
