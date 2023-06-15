@@ -18,10 +18,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import org.apache.bcel.classfile.*;
 
 import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
@@ -29,6 +28,7 @@ import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
 public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private String sourceFileName = "";
+    private JavaClass currentClass;
 
     public DontReusePublicIdentifiers(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -40,6 +40,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
         // save the source file name and class name for inner classes
         sourceFileName = obj.getFileName();
+        currentClass = obj;
         classContext.getJavaClass().accept(this);
     }
 
@@ -72,16 +73,16 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
         if (PUBLIC_IDENTIFIERS.contains(name)) {
             bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY)
                     .addClassAndMethod(this)
-                    .addSourceLine(this));
+                    .addSourceLine(SourceLineAnnotation.forEntireMethod(currentClass, obj)));
         }
     }
 
     @Override
     public void visit(LocalVariableTable obj) {
-        LocalVariable[] vars = obj.getLocalVariableTable();
+        LocalVariable[] variables = obj.getLocalVariableTable();
 
-        for (LocalVariable var : vars) {
-            String varName = var.getName();
+        for (LocalVariable variable : variables) {
+            String varName = variable.getName();
 
             if ("this".equals(varName)) {
                 continue;
