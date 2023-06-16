@@ -28,10 +28,16 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         // check shadowed public identifiers as inner classes
         performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_INNER_CLASS_BUG, 4);
-        assertShadowedPublicIdentifierInnerClassBug("Vector");
-        assertShadowedPublicIdentifierInnerClassBug("File");
-        assertShadowedPublicIdentifierInnerClassBug("Buffer");
-        assertShadowedPublicIdentifierInnerClassBug("BigInteger");
+        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "Vector");
+        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "File");
+        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "Buffer");
+        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "BigInteger");
+
+        // check shadowed public identifiers as repeatedly nested classes
+        performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames2.class");
+        assertNumOfShadowedPublicIdentifierBugs(PI_INNER_CLASS_BUG, 2);
+        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames2", "List");
+        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames2", "Node");
     }
 
     @Test
@@ -64,12 +70,8 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         performAnalysis("publicIdentifiers/ShadowedPublicIdentifiersMethodNames.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_METHOD_BUG, 3);
 
-        // NOTE: BUG there is a 2-3 line offset in detected bug:
-        //  addSourceLine(this)
-        //  addSourceLine(context, start, end) etc
-        //  lineNumberTable is not returning the correct line number
         assertShadowedPublicIdentifierMethodBug("InputStream", 5);
-        assertShadowedPublicIdentifierMethodBug("Integer", 10);
+        assertShadowedPublicIdentifierMethodBug("Integer", 9);
         assertShadowedPublicIdentifierMethodBug("ArrayList", 14);
     }
 
@@ -142,6 +144,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
                 .bugType(PI_VARIABLE_BUG)
                 .inClass("ShadowedPublicIdentifiersVariableNames")
                 .inMethod(methodName)
+                // .atVariable(variableName)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
 
@@ -155,10 +158,10 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         assertThat(bugAnnotations, hasItem(variableAnnotation));
     }
 
-    private void assertShadowedPublicIdentifierInnerClassBug(String innerClassName) {
+    private void assertShadowedPublicIdentifierInnerClassBug(String applicationClassName, String innerClassName) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType(PI_INNER_CLASS_BUG)
-                .inClass("ShadowedPublicIdentifiersInnerClassNames")
+                .inClass(applicationClassName)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
 
