@@ -77,7 +77,8 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
 
     @Test
     public void testGoodPublicIdentifiersMethodNames() {
-        performAnalysis("publicIdentifiers/GoodPublicIdentifiersMethodNames.class");
+        performAnalysis("publicIdentifiers/GoodPublicIdentifiersMethodNames.class",
+                "publicIdentifiers/ShadowedPublicIdentifiersOverriddenMethods.class");
         assertZeroPublicIdentifierBug();
     }
 
