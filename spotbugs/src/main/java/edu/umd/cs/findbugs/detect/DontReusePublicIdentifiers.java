@@ -28,6 +28,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private String sourceFileName = "";
     private JavaClass currentClass;
+
     public DontReusePublicIdentifiers(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -65,13 +66,48 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
         }
     }
 
+    private boolean lookUpMethod(Method method, JavaClass[] classes) {
+        for (JavaClass cls : classes) {
+            Method[] methods = cls.getMethods();
+            for (Method m : methods) {
+                if (m.getName().equals(method.getName()) && method.getSignature().equals(m.getSignature())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public void visit(Method obj) {
         String name = obj.getName();
+
         if (PUBLIC_IDENTIFIERS.contains(name)) {
-            bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY)
-                    .addClassAndMethod(this)
-                    .addSourceLine(SourceLineAnnotation.forEntireMethod(currentClass, obj)));
+            try {
+                boolean foundInSupers = false;
+                boolean foundInInterfaces = false;
+
+                JavaClass[] supers = currentClass.getSuperClasses();
+                foundInSupers = lookUpMethod(obj, supers);
+
+                JavaClass[] interfaces = currentClass.getAllInterfaces();
+                foundInInterfaces = lookUpMethod(obj, interfaces);
+
+                if (!foundInSupers && !foundInInterfaces) {
+                    bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addSourceLine(SourceLineAnnotation.forEntireMethod(currentClass, obj)));
+                }
+
+            } catch (ClassNotFoundException e) {
+                // if supers couldn't be found, we can't check for the method
+                // but should not let the bug go unnoticed
+                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY)
+                        .addClassAndMethod(this)
+                        .addSourceLine(SourceLineAnnotation.forEntireMethod(currentClass, obj)));
+                System.err.println("Could not get supers for " + currentClass.getClassName());
+            }
         }
     }
 

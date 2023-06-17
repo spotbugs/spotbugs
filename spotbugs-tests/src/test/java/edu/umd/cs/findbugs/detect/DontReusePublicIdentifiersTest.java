@@ -70,16 +70,22 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         performAnalysis("publicIdentifiers/ShadowedPublicIdentifiersMethodNames.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_METHOD_BUG, 3);
 
-        assertShadowedPublicIdentifierMethodBug("InputStream", 5);
-        assertShadowedPublicIdentifierMethodBug("Integer", 9);
-        assertShadowedPublicIdentifierMethodBug("ArrayList", 14);
+        assertShadowedPublicIdentifierMethodBug("ShadowedPublicIdentifiersMethodNames", "InputStream", 5);
+        assertShadowedPublicIdentifierMethodBug("ShadowedPublicIdentifiersMethodNames", "Integer", 9);
+        assertShadowedPublicIdentifierMethodBug("ShadowedPublicIdentifiersMethodNames", "ArrayList", 14);
     }
 
     @Test
     public void testGoodPublicIdentifiersMethodNames() {
-        performAnalysis("publicIdentifiers/GoodPublicIdentifiersMethodNames.class",
-                "publicIdentifiers/ShadowedPublicIdentifiersOverriddenMethods.class");
+        performAnalysis("publicIdentifiers/GoodPublicIdentifiersMethodNames.class");
         assertZeroPublicIdentifierBug();
+
+        // check that the overridden method is detected only once inside superclass
+        performAnalysis("publicIdentifiers/ShadowedPublicIdentifiersOverriddenMethods.class",
+                "publicIdentifiers/ShadowedPublicIdentifiersOverridableMethods.class");
+
+        assertNumOfShadowedPublicIdentifierBugs(PI_METHOD_BUG, 1);
+        assertShadowedPublicIdentifierMethodBug("ShadowedPublicIdentifiersOverridableMethods", "ArrayList", 5);
     }
 
     @Test
@@ -130,10 +136,10 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
-    private void assertShadowedPublicIdentifierMethodBug(String methodName, int sourceLine) {
+    private void assertShadowedPublicIdentifierMethodBug(String className, String methodName, int sourceLine) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType(PI_METHOD_BUG)
-                .inClass("ShadowedPublicIdentifiersMethodNames")
+                .inClass(className)
                 .inMethod(methodName)
                 .atLine(sourceLine)
                 .build();
@@ -156,7 +162,6 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
                 .inClass(applicationClassName)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
-
 
         final ClassAnnotation innerClassAnnotation = new ClassAnnotation(innerClassName);
         List<ClassAnnotation> bugAnnotations = getBugCollection().getCollection().stream()
