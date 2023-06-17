@@ -20,7 +20,6 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import org.apache.bcel.classfile.*;
 
 import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
@@ -29,7 +28,6 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private String sourceFileName = "";
     private JavaClass currentClass;
-
     public DontReusePublicIdentifiers(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -89,10 +87,11 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
             }
 
             if (PUBLIC_IDENTIFIERS.contains(varName)) {
+                LocalVariableAnnotation localVariableAnnotation = new LocalVariableAnnotation(varName, variable.getIndex(), this.getPC());
                 bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES", NORMAL_PRIORITY)
                         .addClassAndMethod(this)
                         .addSourceLine(getClassContext(), this, this.getPC())
-                        .addString(varName));
+                        .add(localVariableAnnotation));
             }
         }
     }

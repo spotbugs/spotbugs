@@ -145,18 +145,9 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
                 .bugType(PI_VARIABLE_BUG)
                 .inClass("ShadowedPublicIdentifiersVariableNames")
                 .inMethod(methodName)
-                // .atVariable(variableName)
+                .atVariable(variableName)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
-
-        final StringAnnotation variableAnnotation = new StringAnnotation(variableName);
-        List<StringAnnotation> bugAnnotations = getBugCollection().getCollection().stream()
-                .flatMap(bugInstance -> bugInstance.getAnnotations().stream())
-                .filter(bugAnnotation -> variableAnnotation.getClass().equals(bugAnnotation.getClass()))
-                .map(bugAnnotation -> (StringAnnotation) bugAnnotation)
-                .toList();
-
-        assertThat(bugAnnotations, hasItem(variableAnnotation));
     }
 
     private void assertShadowedPublicIdentifierInnerClassBug(String applicationClassName, String innerClassName) {
