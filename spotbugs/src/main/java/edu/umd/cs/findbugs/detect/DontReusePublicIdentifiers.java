@@ -85,8 +85,8 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
         if (PUBLIC_IDENTIFIERS.contains(name)) {
             try {
-                boolean foundInSupers = false;
-                boolean foundInInterfaces = false;
+                boolean foundInSupers;
+                boolean foundInInterfaces;
 
                 JavaClass[] supers = currentClass.getSuperClasses();
                 foundInSupers = lookUpMethod(obj, supers);
