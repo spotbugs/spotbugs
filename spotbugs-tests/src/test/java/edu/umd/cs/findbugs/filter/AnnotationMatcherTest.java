@@ -30,6 +30,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.After;
 import org.junit.Before;
@@ -134,21 +136,30 @@ public class AnnotationMatcherTest {
     @Test
     public void testPerformAnalysis() {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
+                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"), // @Target
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value$Immutable.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue.class"),
+                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"), // @Value.Immutable
+                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue.class"), // @Generated
                 Paths.get(
                         "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$1.class"),
                 Paths.get(
-                        "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
+                        "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class")); // @Generated
 
-        // Edit:
-        // AnnotationMatcherTest uses public identifiers from the Java Standard Library
-        // that are found by DontReusePublicIdentifiers detector, which causes the test to fails
-        AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher(annotationName);
-        assertThat(bugCollection.getCollection().stream().filter(bugInstanceMatcher::match).toList(), hasSize(5));
+
+        assertThat(bugCollection.getCollection(), hasSize(10));
+
+        AnnotationMatcher annotationMatcher = new AnnotationMatcher(annotationName);
+        BugInstanceMatcher piClassBug = new BugInstanceMatcherBuilder()
+                .bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
+                .build();
+        BugInstanceMatcher piInnerClassBug = new BugInstanceMatcherBuilder()
+                .bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES")
+                .build();
+        for (BugInstance bugInstance : bugCollection) {
+            assertTrue(annotationMatcher.match(bugInstance) ||
+                    piClassBug.matches(bugInstance) || piInnerClassBug.matches(bugInstance));
+        }
     }
 
     private String writeXMLAndGetStringOutput(AnnotationMatcher matcher, boolean disabled) throws IOException {
