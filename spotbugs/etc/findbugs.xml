@@ -474,7 +474,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" speed="fast"
                     reports="RR_NOT_CHECKED,SR_NOT_CHECKED"/>
           <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" speed="fast"
-                    reports="SE_NO_SERIALVERSIONID,SE_METHOD_MUST_BE_PRIVATE,WS_WRITEOBJECT_SYNC,RS_READOBJECT_SYNC,SE_INNER_CLASS,SE_BAD_FIELD,SE_BAD_FIELD_STORE,SE_NONLONG_SERIALVERSIONID,SE_NONSTATIC_SERIALVERSIONID,SE_NONFINAL_SERIALVERSIONID,SE_NO_SUITABLE_CONSTRUCTOR,SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION,SE_READ_RESOLVE_MUST_RETURN_OBJECT,SE_TRANSIENT_FIELD_NOT_RESTORED,SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS,SE_BAD_FIELD_INNER_CLASS,SE_READ_RESOLVE_IS_STATIC,SE_PRIVATE_READ_RESOLVE_NOT_INHERITED"/>
+                    reports="SE_NO_SERIALVERSIONID,SE_METHOD_MUST_BE_PRIVATE,WS_WRITEOBJECT_SYNC,RS_READOBJECT_SYNC,SE_INNER_CLASS,SE_BAD_FIELD,SE_BAD_FIELD_STORE,SE_NONLONG_SERIALVERSIONID,SE_NONSTATIC_SERIALVERSIONID,SE_NONFINAL_SERIALVERSIONID,SE_NO_SUITABLE_CONSTRUCTOR,SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION,SE_READ_RESOLVE_MUST_RETURN_OBJECT,SE_TRANSIENT_FIELD_NOT_RESTORED,SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS,SE_BAD_FIELD_INNER_CLASS,SE_READ_RESOLVE_IS_STATIC,SE_PRIVATE_READ_RESOLVE_NOT_INHERITED,SE_PREVENT_EXT_OBJ_OVERWRITE"/>
           <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" speed="fast"
                     reports="SC_START_IN_CTOR"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadForLoop" speed="fast"
@@ -622,7 +622,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream" speed="fast"
                     reports="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM"/>
           <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true"
-                    hidden="true" reports="TESTING"/>
+                    hidden="true" reports="NM_METHOD_NAMING_CONVENTION,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,NM_FIELD_NAMING_CONVENTION"/>
           <Detector class="edu.umd.cs.findbugs.detect.ViewCFG" disabled="true"
                     hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer"
@@ -669,7 +669,13 @@
                     reports="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindPotentialSecurityCheckBasedOnUntrustedSource" speed="fast"
                     reports="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"/>
-            <!-- Bug Categories -->
+          <Detector class="edu.umd.cs.findbugs.detect.FindAssertionsWithSideEffects" speed="fast"
+                    reports="ASE_ASSERTION_WITH_SIDE_EFFECT,ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindPublicAttributes" speed="fast"
+                    reports="PA_PUBLIC_PRIMITIVE_ATTRIBUTE,PA_PUBLIC_ARRAY_ATTRIBUTE,PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindVulnerableSecurityCheckMethods" speed="fast"
+                    reports="VSC_VULNERABLE_SECURITY_CHECK_METHODS"/>
+    <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
@@ -697,6 +703,8 @@
           <BugCode abbrev="FB"/>
           <BugCode abbrev="AT"/>
           <BugCode abbrev="JUA"/>
+          <BugCode abbrev="ASE"/>
+          <BugCode abbrev="VSC"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
           <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
@@ -960,6 +968,7 @@
           <BugPattern abbrev="SnVI" type="SE_NO_SERIALVERSIONID" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Se" type="SE_READ_RESOLVE_MUST_RETURN_OBJECT" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Se" type="SE_TRANSIENT_FIELD_NOT_RESTORED" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_PREVENT_EXT_OBJ_OVERWRITE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="Se" type="SE_NONFINAL_SERIALVERSIONID" category="BAD_PRACTICE"/>
@@ -1287,5 +1296,12 @@
           <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_CLAUSE_THROWABLE" category="BAD_PRACTICE" />
           <BugPattern abbrev="PERM" type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS" category="MALICIOUS_CODE" />
           <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"
+                    category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="ASE" type="ASE_ASSERTION_WITH_SIDE_EFFECT" category="SECURITY" />
+          <BugPattern abbrev="ASE" type="ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD" category="SECURITY" />
+          <BugPattern abbrev="PA" type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="PA" type="PA_PUBLIC_ARRAY_ATTRIBUTE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="PA" type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="VSC" type="VSC_VULNERABLE_SECURITY_CHECK_METHODS"
                     category="MALICIOUS_CODE"/>
 </FindbugsPlugin>

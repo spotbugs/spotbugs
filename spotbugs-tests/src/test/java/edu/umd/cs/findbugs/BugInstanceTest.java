@@ -1,11 +1,21 @@
 package edu.umd.cs.findbugs;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class BugInstanceTest {
 
@@ -17,6 +27,38 @@ public class BugInstanceTest {
         b.setProperty("A", "a");
         b.setProperty("B", "b");
         b.setProperty("C", "c");
+    }
+
+    private static final String EXPECTED_XML = ""
+            + "<BugInstance type=\"UUF_UNUSED_FIELD\" priority=\"1\" rank=\"16\" abbrev=\"UuF\" category=\"PERFORMANCE\">\n"
+            + "  <Class classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" classAnnotationNames=\"org.immutables.value.Generated\">\n"
+            + "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
+            + "  </Class>\n"
+            + "  <Method classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classAnnotationNames=\"org.immutables.value.Generated\"/>\n"
+            + "  <Field classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classAnnotationNames=\"org.immutables.value.Generated\">\n"
+            + "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
+            + "  </Field>\n"
+            + "</BugInstance>";
+
+    @Test
+    public void testWriteXML() throws Exception {
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
+        // test all PackageMemberAnnotations
+        String className = "ghIssues.issue543.ImmutableFoobarValue.class";
+        ClassAnnotation classAnnotation = new ClassAnnotation(className);
+        classAnnotation.setJavaAnnotationNames(List.of("org.immutables.value.Generated"));
+        bug.add(classAnnotation);
+
+        MethodAnnotation methodAnnotation = new MethodAnnotation(className, "foo", "int", false);
+        methodAnnotation.setJavaAnnotationNames(List.of("org.immutables.value.Generated"));
+        bug.add(methodAnnotation);
+
+        FieldAnnotation fieldAnnotation = new FieldAnnotation(className, "foo", "int", false);
+        fieldAnnotation.setJavaAnnotationNames(List.of("org.immutables.value.Generated"));
+        bug.add(fieldAnnotation);
+
+        String xml = writeXMLAndGetStringOutput(bug);
+        assertThat(xml, equalTo(EXPECTED_XML));
     }
 
     @Test
@@ -82,6 +124,16 @@ public class BugInstanceTest {
         checkPropertyIterator(b.propertyIterator(), new String[] { "C" }, new String[] { "c" });
         removeThroughIterator(b.propertyIterator(), "C");
         checkPropertyIterator(b.propertyIterator(), new String[0], new String[0]);
+    }
+
+    private String writeXMLAndGetStringOutput(BugInstance bug) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        XMLOutput xmlOutput = new OutputStreamXMLOutput(outputStream);
+
+        bug.writeXML(xmlOutput);
+        xmlOutput.finish();
+
+        return outputStream.toString(StandardCharsets.UTF_8.name()).trim();
     }
 
     private void get(Iterator<BugProperty> iter) {

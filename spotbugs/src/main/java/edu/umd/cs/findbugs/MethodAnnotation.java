@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.apache.bcel.Const;
 
@@ -518,6 +519,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         String role = getDescription();
         if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
+        }
+
+        if (!getJavaAnnotationNames().isEmpty()) {
+            attributeList.addAttribute("classAnnotationNames",
+                    getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
         }
 
         if (sourceLines == null && !addMessages) {

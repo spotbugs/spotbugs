@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
@@ -393,6 +394,11 @@ public class FieldAnnotation extends PackageMemberAnnotation {
         String role = getDescription();
         if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
+        }
+
+        if (!getJavaAnnotationNames().isEmpty()) {
+            attributeList.addAttribute("classAnnotationNames",
+                    getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
         }
 
         xmlOutput.openTag(ELEMENT_NAME, attributeList);
