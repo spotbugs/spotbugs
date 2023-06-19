@@ -134,18 +134,17 @@ public class AnnotationMatcherTest {
     }
 
     @Test
-    public void testPerformAnalysis() {
+    public void testPerformAnalysis() throws Exception {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"), // @Target
+                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value$Immutable.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"), // @Value.Immutable
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue.class"), // @Generated
+                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"),
+                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue.class"),
                 Paths.get(
                         "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$1.class"),
                 Paths.get(
-                        "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class")); // @Generated
-
+                        "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
 
         assertThat(bugCollection.getCollection(), hasSize(10));
 
