@@ -3917,11 +3917,11 @@ For example, in the following code, <code>foo</code> will be null.</p>
     </Details>
   </BugPattern>
   <BugPattern type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT">
-    <ShortDescription>Synchronization on interned String</ShortDescription>
-    <LongDescription>Synchronization on interned String in {1}</LongDescription>
+    <ShortDescription>Synchronization on String literal</ShortDescription>
+    <LongDescription>Synchronization on String literal in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The code synchronizes on interned String.</p>
+  <p> The code synchronizes on String literal.</p>
 <pre><code>private static String LOCK = "LOCK";
 ...
 synchronized(LOCK) {
@@ -3933,7 +3933,28 @@ synchronized(LOCK) {
 is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
 blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
 </p>
-<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DL_SYNCHRONIZATION_ON_INTERNED_STRING">
+    <ShortDescription>Synchronization on interned String</ShortDescription>
+    <LongDescription>Synchronization on interned String in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The code synchronizes on interned String.</p>
+<pre><code>private static String LOCK = new String("LOCK").intern();
+...
+synchronized(LOCK) {
+    ...
+}
+...
+</code></pre>
+<p>Constant Strings are interned and shared across all other classes loaded by the JVM. Thus, this code
+is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
+blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
+</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3955,7 +3976,7 @@ synchronized(inited) {
 </code></pre>
 <p>Since there normally exist only two Boolean objects, this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock.</p>
-<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4001,7 +4022,7 @@ synchronized(count) {
 <p>Since Integer objects can be cached and shared,
 this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock.</p>
-<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
