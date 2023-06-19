@@ -21,10 +21,13 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.classfile.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
 
 public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final BugReporter bugReporter;
     private String sourceFileName = "";
     private JavaClass currentClass;
@@ -70,7 +73,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
         for (JavaClass cls : classes) {
             Method[] methods = cls.getMethods();
             for (Method m : methods) {
-                if (m.getName().equals(method.getName()) && method.getSignature().equals(m.getSignature())) {
+                if (method.equals(m)) {
                     return true;
                 }
             }
@@ -85,14 +88,11 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
         if (PUBLIC_IDENTIFIERS.contains(name)) {
             try {
-                boolean foundInSupers;
-                boolean foundInInterfaces;
-
                 JavaClass[] supers = currentClass.getSuperClasses();
-                foundInSupers = lookUpMethod(obj, supers);
+                boolean foundInSupers = lookUpMethod(obj, supers);
 
                 JavaClass[] interfaces = currentClass.getAllInterfaces();
-                foundInInterfaces = lookUpMethod(obj, interfaces);
+                boolean foundInInterfaces = lookUpMethod(obj, interfaces);
 
                 if (!foundInSupers && !foundInInterfaces) {
                     bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY)
@@ -106,7 +106,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
                 bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY)
                         .addClassAndMethod(this)
                         .addSourceLine(SourceLineAnnotation.forEntireMethod(currentClass, obj)));
-                System.err.println("Could not get supers for " + currentClass.getClassName());
+                log.debug("Could not get supers for " + currentClass.getClassName());
             }
         }
     }
