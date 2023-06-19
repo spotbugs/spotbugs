@@ -71,6 +71,8 @@ public class Archive {
         return extension;
     }
 
+    @Deprecated
+    @SuppressWarnings("unused") // unused within the codebase, but deprecated until next release for public API reasons
     public static boolean isLibraryFileName(String fileName) {
         String extension = getExtension(fileName);
         return ".jar".equals(extension);

@@ -1,10 +1,12 @@
 package edu.umd.cs.findbugs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -165,5 +167,42 @@ public class SAXBugCollectionHandlerTest {
         assertEquals("MS_MUTABLE_ARRAY", bug.getBugPattern().getType());
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
+    }
+
+    @Test
+    public void testReadAndThenStoreJasAttribute() throws Exception {
+        SortedBugCollection origBC = new SortedBugCollection();
+        // read it in
+        origBC.readXML(new StringReader(
+                "<BugCollection version='1.3.10-dev-20100728' sequence='0' timestamp='1280333223462' analysisTimestamp='1280333224881' release=''>"
+                        + "<BugInstance type=\"UUF_UNUSED_FIELD\" priority=\"1\" rank=\"16\" abbrev=\"UuF\" category=\"PERFORMANCE\">\n"
+                        + "  <Class classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" classAnnotationNames=\"org.immutables.value.Generated\">\n"
+                        + "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
+                        + "  </Class>\n"
+                        + "  <Method classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classAnnotationNames=\"org.immutables.value.Generated\"/>\n"
+                        + "  <Field classname=\"ghIssues.issue543.ImmutableFoobarValue.class\" name=\"foo\" signature=\"int\" isStatic=\"false\" classAnnotationNames=\"org.immutables.value.Generated\">\n"
+                        + "    <SourceLine classname=\"ghIssues.issue543.ImmutableFoobarValue.class\"/>\n"
+                        + "  </Field>\n"
+                        + "</BugInstance>\n"
+                        + "</BugCollection>"));
+        // write it out
+        ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
+        origBC.writeXML(outBytes);
+
+        // read it back in
+        SortedBugCollection bc = new SortedBugCollection();
+        bc.readXML(new StringReader(new String(outBytes.toByteArray(), StandardCharsets.UTF_8)));
+
+        // check it
+        assertEquals(1, bc.getCollection().size());
+        BugInstance bug = bc.getCollection().iterator().next();
+        assertEquals("UUF_UNUSED_FIELD", bug.getBugPattern().getType());
+        assertEquals(3, bug.getAnnotations().size());
+        for (BugAnnotation annotation : bug.getAnnotations()) {
+            assertTrue(annotation instanceof PackageMemberAnnotation);
+            List<String> javaAnnotationNames = ((PackageMemberAnnotation) annotation).getJavaAnnotationNames();
+            assertEquals(1, javaAnnotationNames.size());
+            assertEquals("org.immutables.value.Generated", javaAnnotationNames.get(0));
+        }
     }
 }

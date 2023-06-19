@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -196,7 +197,7 @@ public class FindReturnRef extends OpcodeStackDetector {
                     field.isPublic() ||
                     AnalysisContext.currentXFactory().isEmptyArrayField(field) ||
                     field.getName().indexOf("EMPTY") != -1 ||
-                    !MutableClasses.mutableSignature(field.getSignature())) {
+                    !MutableClasses.mutableSignature(TypeFrameModelingVisitor.getType(field).getSignature())) {
                 return;
             }
             bugAccumulator.accumulateBug(new BugInstance(this, (staticMethod ? "MS" : "EI") + "_EXPOSE_"
@@ -296,7 +297,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         }
 
-        if (seen == Const.CHECKCAST) {
+        if (seen == Const.CHECKCAST && !stack.isTop()) {
             OpcodeStack.Item item = stack.getStackItem(0);
             if (fieldCloneUnderCast != null) {
                 arrayFieldClones.put(item, fieldCloneUnderCast);

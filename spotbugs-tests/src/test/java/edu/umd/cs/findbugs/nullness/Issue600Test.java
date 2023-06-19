@@ -37,14 +37,20 @@ public class Issue600Test {
 
     private void assertBugCount(String clazz, int count) {
         BugCollection bugCollection = analyse(clazz);
+
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE").build();
         assertThat(bugCollection, containsExactly(count, bugTypeMatcher));
+
+        final BugInstanceMatcher bugTypeMatcher2 = new BugInstanceMatcherBuilder()
+                .bugType("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE").build();
+        assertThat(bugCollection, containsExactly(0, bugTypeMatcher2));
     }
 
     private BugCollection analyse(String clazz) {
         return spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/" + clazz + ".class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/MyAutocloseable.class"));
+                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/MyAutocloseable.class"),
+                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/IMyAutocloseable.class"));
     }
 }

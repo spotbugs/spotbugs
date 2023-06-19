@@ -381,6 +381,13 @@ public class WorkItem {
         return Archive.isArchiveFileName(file.getName());
     }
 
+    /**
+     * @return true if this work item corresponds to a project
+     */
+    public boolean isProject() {
+        return resource instanceof IProject || javaElt instanceof IJavaProject;
+    }
+
     @Override
     public String toString() {
         return getName();

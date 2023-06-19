@@ -58,6 +58,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
+import edu.umd.cs.findbugs.util.SecurityManagerHandler;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -102,7 +103,7 @@ import edu.umd.cs.findbugs.xml.XMLUtil;
  * @see Plugin
  * @see PluginException
  */
-public class PluginLoader {
+public class PluginLoader implements AutoCloseable {
 
     private static final String XPATH_PLUGIN_SHORT_DESCRIPTION = "/MessageCollection/Plugin/ShortDescription";
     private static final String XPATH_PLUGIN_WEBSITE = "/FindbugsPlugin/@website";
@@ -139,6 +140,9 @@ public class PluginLoader {
     private final String jarName;
 
     private final URI loadedFromUri;
+
+    // The classloaders we have created, so we can close then if we want to close the plugin
+    private List<URLClassLoader> createdClassLoaders = new ArrayList<>();
 
     /** plugin Id for parent plugin */
     String parentId;
@@ -196,7 +200,7 @@ public class PluginLoader {
      */
     private PluginLoader(@Nonnull URL url, URI uri, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
         URL[] loaderURLs = createClassloaderUrls(url);
-        classLoaderForResources = new URLClassLoader(loaderURLs);
+        classLoaderForResources = buildURLClassLoader(loaderURLs);
         loadedFrom = url;
         loadedFromUri = uri;
         jarName = getJarName(url);
@@ -205,7 +209,7 @@ public class PluginLoader {
         optionalPlugin = optional;
         plugin = init();
         if (!hasParent()) {
-            classLoader = new URLClassLoader(loaderURLs, parent);
+            classLoader = buildURLClassLoader(loaderURLs, parent);
         } else {
             if (parent != PluginLoader.class.getClassLoader()) {
                 throw new IllegalArgumentException("Can't specify parentid " + parentId + " and provide a separate class loader");
@@ -213,7 +217,7 @@ public class PluginLoader {
             Plugin parentPlugin = Plugin.getByPluginId(parentId);
             if (parentPlugin != null) {
                 parent = parentPlugin.getClassLoader();
-                classLoader = new URLClassLoader(loaderURLs, parent);
+                classLoader = buildURLClassLoader(loaderURLs, parent);
             }
         }
         if (classLoader == null) {
@@ -246,7 +250,7 @@ public class PluginLoader {
                     i.remove();
                     try {
                         URL[] loaderURLs = PluginLoader.createClassloaderUrls(pluginLoader.loadedFrom);
-                        pluginLoader.classLoader = new URLClassLoader(loaderURLs, parent.getClassLoader());
+                        pluginLoader.classLoader = pluginLoader.buildURLClassLoader(loaderURLs, parent.getClassLoader());
                         pluginLoader.loadPluginComponents();
                         Plugin.putPlugin(pluginLoader.loadedFromUri, pluginLoader.plugin);
                     } catch (PluginException e) {
@@ -274,6 +278,50 @@ public class PluginLoader {
         }
         lazyInitialization = false;
     }
+
+    /**
+     * Creates a new {@link URLClassLoader} and adds it to the list of classloaders
+     * we need to close if we close the corresponding plugin
+     * 
+     * @param 
+     *            urls the URLs from which to load classes and resources
+     * @return a new {@link URLClassLoader}
+     */
+    private URLClassLoader buildURLClassLoader(URL[] urls) {
+        URLClassLoader urlClassLoader = new URLClassLoader(urls);
+        createdClassLoaders.add(urlClassLoader);
+
+        return urlClassLoader;
+    }
+
+    /**
+     * Creates a new {@link URLClassLoader} and adds it to the list of classloaders
+     * we need to close if we close the corresponding plugin
+     * 
+     * @param 
+     *            urls the URLs from which to load classes and resources
+     * @param 
+     *            parent the parent class loader for delegation
+     * @return a new {@link URLClassLoader}
+     */
+    private URLClassLoader buildURLClassLoader(URL[] urls, ClassLoader parent) {
+        URLClassLoader urlClassLoader = new URLClassLoader(urls, parent);
+        createdClassLoaders.add(urlClassLoader);
+
+        return urlClassLoader;
+    }
+
+    /**
+     * Closes the class loaders created in this {@link PluginLoader}
+     * @throws IOException if a class loader fails to close, in that case the other classloaders won't be closed
+     */
+    @Override
+    public void close() throws IOException {
+        for (URLClassLoader urlClassLoader : createdClassLoaders) {
+            urlClassLoader.close();
+        }
+    }
+
 
     /**
      * Patch for issue 3429143: allow plugins load classes/resources from 3rd
@@ -1150,7 +1198,7 @@ public class PluginLoader {
             throw new PluginDoesntContainMetadataException((corePlugin ? "Core plugin" : "Plugin ") + jarName
                     + " doesn't contain findbugs.xml; got " + findbugsXML_URL + " from " + classloaderName);
         }
-        SAXReader reader = new SAXReader();
+        SAXReader reader = XMLUtil.buildSAXReader();
 
         try (InputStream input = IO.openNonCachedStream(findbugsXML_URL);
                 Reader r = UTF8.bufferedReader(input)) {
@@ -1278,7 +1326,7 @@ public class PluginLoader {
     private void addCollection(List<Document> messageCollectionList, String filename) throws PluginException {
         URL messageURL = getResource(filename);
         if (messageURL != null) {
-            SAXReader reader = new SAXReader();
+            SAXReader reader = XMLUtil.buildSAXReader();
             try (InputStream input = IO.openNonCachedStream(messageURL);
                     Reader stream = UTF8.bufferedReader(input)) {
                 Document messageCollection;
@@ -1425,7 +1473,7 @@ public class PluginLoader {
             // Thread.currentThread().getContextClassLoader().getResource("my.java.policy");
             // Policy.getPolicy().refresh();
             try {
-                System.setSecurityManager(null);
+                SecurityManagerHandler.disableSecurityManager();
             } catch (Throwable e) {
                 assert true; // keep going
             }
@@ -1581,7 +1629,7 @@ public class PluginLoader {
     private static Document parseDocument(@WillClose InputStream in) throws DocumentException {
         Reader r = UTF8.bufferedReader(in);
         try {
-            SAXReader reader = new SAXReader();
+            SAXReader reader = XMLUtil.buildSAXReader();
             Document d = reader.read(r);
             return d;
         } finally {

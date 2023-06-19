@@ -25,22 +25,25 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
 public class FindInstanceLockOnSharedStaticData extends OpcodeStackDetector {
+
+    private static final String JAVA_LANG_CLASS = "java.lang.Class";
 
     private final BugAccumulator bugAccumulator;
     private boolean isInsideSynchronizedBlock;
     private Optional<XField> maybeLockObject;
+    private boolean isLockObjectInstanceOfJavaLangClass;
 
     public FindInstanceLockOnSharedStaticData(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
         isInsideSynchronizedBlock = false;
         maybeLockObject = Optional.empty();
+        isLockObjectInstanceOfJavaLangClass = false;
     }
 
     @Override
@@ -50,6 +53,18 @@ public class FindInstanceLockOnSharedStaticData extends OpcodeStackDetector {
             isInsideSynchronizedBlock = true;
             OpcodeStack.Item lockObject = stack.getStackItem(0);
             maybeLockObject = Optional.ofNullable(lockObject.getXField());
+
+            // Locking on java.lang.Class objects is appropriate, since there is only a single instance of them
+            if (!maybeLockObject.isPresent()) {
+                try {
+                    Optional<JavaClass> javaClassOfLockObject = Optional.ofNullable(lockObject.getJavaClass());
+                    isLockObjectInstanceOfJavaLangClass = javaClassOfLockObject
+                            .map(javaClass -> javaClass.getClassName().equals(JAVA_LANG_CLASS))
+                            .orElse(false);
+                } catch (ClassNotFoundException ignored) {
+                }
+            }
+
             return;
         } else if (seen == Const.MONITOREXIT) {
             isInsideSynchronizedBlock = false;
@@ -60,25 +75,25 @@ public class FindInstanceLockOnSharedStaticData extends OpcodeStackDetector {
         if (seen == Const.PUTSTATIC) {
             XMethod modificationMethod = getXMethod();
             Optional<XField> fieldToModify = Optional.ofNullable(getXFieldOperand());
-            if (fieldToModify.isPresent() && modificationMethod.isSynchronized() && !modificationMethod.isStatic()) {
+            boolean unsecuredModificationByMethod =
+                    fieldToModify.isPresent() && modificationMethod.isSynchronized() && !modificationMethod.isStatic();
+            boolean isLockObjectAppropriate =
+                    maybeLockObject.map(XField::isStatic).orElse(false) || isLockObjectInstanceOfJavaLangClass;
+
+            if (unsecuredModificationByMethod && !(isInsideSynchronizedBlock && isLockObjectAppropriate)) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA", NORMAL_PRIORITY)
                                 .addClassAndMethod(this)
-                                .addMethod(modificationMethod)
-                                .addField(fieldToModify.get())
                                 .addString(fieldToModify.get().getName())
                                 .addString("synchronized method"),
                         this);
                 return;
             }
 
-            boolean isLockObjectAppropriate = maybeLockObject.map(XField::isStatic).orElse(false);
             if (fieldToModify.isPresent() && isInsideSynchronizedBlock && !isLockObjectAppropriate) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA", NORMAL_PRIORITY)
                                 .addClassAndMethod(this)
-                                .addMethod(modificationMethod)
-                                .addField(fieldToModify.get())
                                 .addString(fieldToModify.get().getName())
                                 .addString("synchronization lock"),
                         this);
@@ -98,6 +113,7 @@ public class FindInstanceLockOnSharedStaticData extends OpcodeStackDetector {
         if (classIsInteresting) {
             isInsideSynchronizedBlock = false;
             maybeLockObject = Optional.empty();
+            isLockObjectInstanceOfJavaLangClass = false;
             super.visit(obj);
         }
     }

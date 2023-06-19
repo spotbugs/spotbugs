@@ -8272,7 +8272,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 <![CDATA[
 <p>
 このコードは <code>x % 2 == 1</code> を使用して値が負数なのか確かめていますが，負数 (たとえば， <code>(-5) % 2 == -1</code>) なので機能しません。
-奇数チェックを意図しているなら， <code>x &amp; 1 == 1</code> または <code>x % 2 != 0</code> を使用することを検討してください。
+奇数チェックを意図しているなら， <code>(x &amp; 1) == 1</code> または <code>x % 2 != 0</code> を使用することを検討してください。
 </p>
 ]]>
     </Details>
