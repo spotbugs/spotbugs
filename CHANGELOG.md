@@ -28,6 +28,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - New rule set `PA_PUBLIC_PRIMITIVE_ATTRIBUTE`, `PA_PUBLIC_ARRAY_ATTRIBUTE` and `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` to warn for public attributes which are written by the methods of the class. This rule is loosely based on the SEI CERT rule *OBJ01-J Limit accessibility of fields*. ([#OBJ01-J](https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields))
 - Extend `SerializableIdiom` detector with new bug type: `SE_PREVENT_EXT_OBJ_OVERWRITE`. It's reported in case of the `readExternal()` method allows any caller to reset any value of an object
 - New Detector `FindVulnerableSecurityCheckMethods` for new bug type `VSC_VULNERABLE_SECURITY_CHECK_METHODS`. This bug is reported whenever a non-final and non-private method of a non-final class performs a security check using the `java.lang.SecurityManager`. (See [SEI CERT MET03-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET03-J.+Methods+that+perform+a+security+check+must+be+declared+private+or+final))
+- New function added to detector `SynchronizationOnSharedBuiltinConstant`to detect `DL_SYNCHRONIZATION_ON_INTERNED_STRING` ([#2266](https://github.com/spotbugs/spotbugs/pull/2266))
 - New detector `MultipleInstantiationsOfSingletons` and introduced new bug types:
   - `SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR` is reported in case of a non-private constructor, 
   - `SING_SINGLETON_IMPLEMENTS_CLONEABLE` is reported in case of a class directly implementing the `Cloneable` interface, 
