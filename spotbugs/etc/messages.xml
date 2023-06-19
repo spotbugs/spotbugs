@@ -1786,6 +1786,16 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindVulnerableSecurityCheckMethods">
+    <Details>
+      <![CDATA[
+        <p>
+        Methods that perform security checks should be prevented from being overridden, so they must be declared as
+        private or final. Otherwise, these methods can be compromised when a malicious subclass overrides them
+        and omits the checks.
+        </p>]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8902,6 +8912,19 @@ Using floating-point variables should not be used as loop counters, as they are 
     ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="VSC_VULNERABLE_SECURITY_CHECK_METHODS">
+    <ShortDescription>Non-Private and non-final security check methods are vulnerable</ShortDescription>
+    <LongDescription>The method '{1}' performs security check by using '{2}' method of Security Manager Class, but is overrideable. Declare the method final or private in order to resolve the issue. </LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Methods that perform security checks should be prevented from being overridden, so they must be declared as
+        private or final. Otherwise, these methods can be compromised when a malicious subclass overrides them
+        and omits the checks.
+        <p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET03-J.+Methods+that+perform+a+security+check+must+be+declared+private+or+final">MET03-J. Methods that perform a security check must be declared private or final</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -9057,4 +9080,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
   <BugCode abbrev="ASE">Assertion with side effect</BugCode>
   <BugCode abbrev="PA">Public Attribute</BugCode>
+  <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
 </MessageCollection>
