@@ -1,3 +1,5 @@
+package constructorthrow;
+
 /**
  * In this test case, the constructor calls a method, which in which an
  * exception is thrown and handled.

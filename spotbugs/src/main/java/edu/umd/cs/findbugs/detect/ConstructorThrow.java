@@ -130,7 +130,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
         String classConstantOperand = "";
         try {
-            classConstantOperand = getClassConstantOperand();
+            classConstantOperand = getDottedClassConstantOperand();
         } catch (IllegalStateException e) {
             bugReporter.logError("Seen OPcode and failed to get ClassConstantOperand: " + seen, e);
             return;

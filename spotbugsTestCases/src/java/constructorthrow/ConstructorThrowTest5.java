@@ -1,3 +1,5 @@
+package constructorthrow;
+
 /**
  * In this test case, the constructor calls an overloaded constructor,
  * which calls a method, which throws an unchecked exception.

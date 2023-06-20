@@ -1,3 +1,5 @@
+package constructorthrow;
+
 import java.util.Arrays;
 
 /**
