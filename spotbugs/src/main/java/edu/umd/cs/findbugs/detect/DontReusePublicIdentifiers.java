@@ -24,6 +24,9 @@ import org.apache.bcel.classfile.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.ListIterator;
+
 import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
 
 public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
@@ -126,17 +129,54 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
                 LocalVariableAnnotation localVariableAnnotation = new LocalVariableAnnotation(varName, variable.getIndex(), this.getPC());
                 bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES", NORMAL_PRIORITY)
                         .addClassAndMethod(this)
-                        .addSourceLine(getClassContext(), this, this.getPC())
-                        .add(localVariableAnnotation));
+                        .add(localVariableAnnotation)
+                        .addSourceLine(getClassContext(), this, this.getPC()));
             }
         }
+    }
+
+    private String lookUpHierarchy(InnerClass clazz, InnerClasses obj) {
+        ConstantPool constantPool = obj.getConstantPool();
+        int outerClassIndex = currentClass.getClassNameIndex();
+
+        if (clazz.getOuterClassIndex() == outerClassIndex) {
+            int parentNameIndex = ((ConstantClass) constantPool.getConstant(outerClassIndex)).getNameIndex();
+            return constantPool.getConstantUtf8(parentNameIndex).getBytes() + "." + constantPool.getConstantUtf8(clazz.getInnerNameIndex()).getBytes();
+        }
+
+        ArrayList<String> classHierarchy = new ArrayList<>();
+        InnerClass[] innerClasses = obj.getInnerClasses();
+        classHierarchy.add(constantPool.getConstantUtf8(clazz.getInnerNameIndex()).getBytes());
+
+        InnerClass current = clazz;
+        int parentIndex = current.getOuterClassIndex();
+        while (parentIndex != outerClassIndex) {
+            for (InnerClass cls : innerClasses) {
+                if (cls.getInnerClassIndex() == parentIndex) {
+                    current = cls;
+                    parentIndex = current.getOuterClassIndex();
+                    break;
+                }
+            }
+            classHierarchy.add(constantPool.getConstantUtf8(current.getInnerNameIndex()).getBytes());
+        }
+
+        final int outerClassNameIndex = ((ConstantClass) constantPool.getConstant(outerClassIndex)).getNameIndex();
+        final StringBuilder sb = new StringBuilder();
+        sb.append(constantPool.getConstantUtf8(outerClassNameIndex).getBytes());
+
+        ListIterator<String> revIterator = classHierarchy.listIterator(classHierarchy.size());
+        while (revIterator.hasPrevious()) {
+            sb.append("/").append(revIterator.previous());
+        }
+
+        return sb.toString().replace("/", ".");
     }
 
     @Override
     public void visitInnerClasses(InnerClasses obj) {
         super.visitInnerClasses(obj);
 
-        ConstantPool constantPool = obj.getConstantPool();
         for (InnerClass cls : obj.getInnerClasses()) {
 
             // get the name of the cls through its name index
@@ -144,12 +184,15 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
             if (nameIndex == 0) {
                 continue;
             }
-            String innerClassName = constantPool.getConstantUtf8(nameIndex).getBytes();
+
+            String classHierarchy = lookUpHierarchy(cls, obj);
+            String innerClassName = obj.getConstantPool().getConstantUtf8(nameIndex).getBytes();
             if (PUBLIC_IDENTIFIERS.contains(innerClassName)) {
                 bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES", NORMAL_PRIORITY)
                         .addClass(this)
                         .addClass(innerClassName, sourceFileName)
-                        .addUnknownSourceLine(innerClassName, sourceFileName));
+                        .addUnknownSourceLine(innerClassName, sourceFileName)
+                        .addString(classHierarchy));
             }
         }
     }
