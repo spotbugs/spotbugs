@@ -332,7 +332,7 @@
                     disabled="false" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant"
                     speed="fast"
-                    reports="DL_SYNCHRONIZATION_ON_BOOLEAN,DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_SHARED_CONSTANT"
+                    reports="DL_SYNCHRONIZATION_ON_BOOLEAN,DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_SHARED_CONSTANT,DL_SYNCHRONIZATION_ON_INTERNED_STRING"
                     hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations" speed="fast"
                     reports="" requirejre="1.5" hidden="true"/>
@@ -675,6 +675,8 @@
                     reports="ASE_ASSERTION_WITH_SIDE_EFFECT,ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindPublicAttributes" speed="fast"
                     reports="PA_PUBLIC_PRIMITIVE_ATTRIBUTE,PA_PUBLIC_ARRAY_ATTRIBUTE,PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindVulnerableSecurityCheckMethods" speed="fast"
+                    reports="VSC_VULNERABLE_SECURITY_CHECK_METHODS"/>
     <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -705,6 +707,7 @@
           <BugCode abbrev="AT"/>
           <BugCode abbrev="JUA"/>
           <BugCode abbrev="ASE"/>
+          <BugCode abbrev="VSC"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
           <BugPattern abbrev="CT" type="CT_CONSTRUCTOR_THROW" category="BAD_PRACTICE" />
@@ -886,6 +889,8 @@
           <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE"
                     category="MT_CORRECTNESS"/>
           <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_INTERNED_STRING"
                     category="MT_CORRECTNESS"/>
           <BugPattern abbrev="WL" type="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL"
                     category="MT_CORRECTNESS"/>
@@ -1301,4 +1306,6 @@
           <BugPattern abbrev="PA" type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PA" type="PA_PUBLIC_ARRAY_ATTRIBUTE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PA" type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="VSC" type="VSC_VULNERABLE_SECURITY_CHECK_METHODS"
+                    category="MALICIOUS_CODE"/>
 </FindbugsPlugin>
