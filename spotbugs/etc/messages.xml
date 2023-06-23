@@ -1786,6 +1786,16 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindVulnerableSecurityCheckMethods">
+    <Details>
+      <![CDATA[
+        <p>
+        Methods that perform security checks should be prevented from being overridden, so they must be declared as
+        private or final. Otherwise, these methods can be compromised when a malicious subclass overrides them
+        and omits the checks.
+        </p>]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindHidingSubClass">
     <Details>
       <![CDATA[
@@ -3923,11 +3933,11 @@ For example, in the following code, <code>foo</code> will be null.</p>
     </Details>
   </BugPattern>
   <BugPattern type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT">
-    <ShortDescription>Synchronization on interned String</ShortDescription>
-    <LongDescription>Synchronization on interned String in {1}</LongDescription>
+    <ShortDescription>Synchronization on String literal</ShortDescription>
+    <LongDescription>Synchronization on String literal in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The code synchronizes on interned String.</p>
+  <p> The code synchronizes on String literal.</p>
 <pre><code>private static String LOCK = "LOCK";
 ...
 synchronized(LOCK) {
@@ -3939,7 +3949,28 @@ synchronized(LOCK) {
 is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
 blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
 </p>
-<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DL_SYNCHRONIZATION_ON_INTERNED_STRING">
+    <ShortDescription>Synchronization on interned String</ShortDescription>
+    <LongDescription>Synchronization on interned String in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The code synchronizes on interned String.</p>
+<pre><code>private static String LOCK = new String("LOCK").intern();
+...
+synchronized(LOCK) {
+    ...
+}
+...
+</code></pre>
+<p>Constant Strings are interned and shared across all other classes loaded by the JVM. Thus, this code
+is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
+blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
+</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3961,7 +3992,7 @@ synchronized(inited) {
 </code></pre>
 <p>Since there normally exist only two Boolean objects, this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock.</p>
-<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4007,7 +4038,7 @@ synchronized(count) {
 <p>Since Integer objects can be cached and shared,
 this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock.</p>
-<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -8918,6 +8949,19 @@ Using floating-point variables should not be used as loop counters, as they are 
     ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="VSC_VULNERABLE_SECURITY_CHECK_METHODS">
+    <ShortDescription>Non-Private and non-final security check methods are vulnerable</ShortDescription>
+    <LongDescription>The method '{1}' performs security check by using '{2}' method of Security Manager Class, but is overrideable. Declare the method final or private in order to resolve the issue. </LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Methods that perform security checks should be prevented from being overridden, so they must be declared as
+        private or final. Otherwise, these methods can be compromised when a malicious subclass overrides them
+        and omits the checks.
+        <p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET03-J.+Methods+that+perform+a+security+check+must+be+declared+private+or+final">MET03-J. Methods that perform a security check must be declared private or final</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="HSBC_HIDING_SUB_CLASS">
     <ShortDescription>Method hiding must be avoided.</ShortDescription>
     <LongDescription>The method '{1}' in class '{2}' hides a method in class '{3}'. Declare the respective methods non-static or private to eradicate the problem.</LongDescription>
@@ -9092,5 +9136,6 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
   <BugCode abbrev="ASE">Assertion with side effect</BugCode>
   <BugCode abbrev="PA">Public Attribute</BugCode>
+  <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
   <BugCode abbrev="HSBC">Avoid method hiding</BugCode>
 </MessageCollection>
