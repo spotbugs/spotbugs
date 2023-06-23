@@ -1,7 +1,6 @@
 package findhidingsubclasstest;
 
-class BadSuperClass
-{
+class BadSuperClass {
     public static void methodHiding() {
         System.out.println("methodHiding (BadSuperClass)");
     }
