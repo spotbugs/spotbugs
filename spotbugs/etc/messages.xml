@@ -1801,7 +1801,7 @@ factory pattern to create these objects.</p>
       <![CDATA[
             <p>
               Hiding happens when a sub class defines a static method
-              with same header (signature plus return type) as any of its super class.
+              with same header (signature plus return type) as any of its super classes.
               In case of method hiding, the invoked method is determined based on the specific qualified name or
               method invocation expression used at the calling site.
               The results are often unexpected, although the Java language provides unambiguous rules method invocation for method hiding.
@@ -8969,7 +8969,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       <![CDATA[
       <p>
         Hiding happens when a sub class defines a static method
-        with same header (signature plus return type) as in any of the super class.
+        with same header (signature plus return type) as in any of the super classes.
         In case of method hiding , the invoked method is determined based on the specific qualified name or
         method invocation expression used at the calling site.
         The results are often unexpected, although the Java language provides unambiguous rules method invocation for method hiding.
