@@ -105,7 +105,6 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
                 if (!foundInSupers && !foundInInterfaces) {
                     bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY)
                             .addClassAndMethod(this)
-                            //TODO: review reported messages
                             .addSourceLine(SourceLineAnnotation.forEntireMethod(currentClass, obj)));
                 }
 
