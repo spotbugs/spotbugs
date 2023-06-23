@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
+import static edu.umd.cs.findbugs.detect.PublicIdentifiers.isPartOfStandardLibrary;
 
 public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -42,6 +43,10 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass obj = classContext.getJavaClass();
+
+        if (isPartOfStandardLibrary(classContext.getXClass().getClassDescriptor().getPackageName())) {
+            return;
+        }
 
         // save the source file name and class name for inner classes
         sourceFileName = obj.getFileName();
@@ -100,6 +105,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
                 if (!foundInSupers && !foundInInterfaces) {
                     bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY)
                             .addClassAndMethod(this)
+                            //TODO: review reported messages
                             .addSourceLine(SourceLineAnnotation.forEntireMethod(currentClass, obj)));
                 }
 
@@ -141,7 +147,9 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
         if (clazz.getOuterClassIndex() == outerClassIndex) {
             int parentNameIndex = ((ConstantClass) constantPool.getConstant(outerClassIndex)).getNameIndex();
-            return constantPool.getConstantUtf8(parentNameIndex).getBytes() + "." + constantPool.getConstantUtf8(clazz.getInnerNameIndex()).getBytes();
+            return constantPool.getConstantUtf8(parentNameIndex).getBytes().replace("/", ".") + "." + constantPool.getConstantUtf8(clazz
+                    .getInnerNameIndex())
+                    .getBytes();
         }
 
         ArrayList<String> classHierarchy = new ArrayList<>();
@@ -151,12 +159,18 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
         InnerClass current = clazz;
         int parentIndex = current.getOuterClassIndex();
         while (parentIndex != outerClassIndex) {
+            boolean foundParent = false;
             for (InnerClass cls : innerClasses) {
                 if (cls.getInnerClassIndex() == parentIndex) {
                     current = cls;
                     parentIndex = current.getOuterClassIndex();
+                    foundParent = true;
                     break;
                 }
+            }
+            // fallback to inner class name only
+            if (!foundParent) {
+                return constantPool.getConstantUtf8(clazz.getInnerNameIndex()).getBytes();
             }
             classHierarchy.add(constantPool.getConstantUtf8(current.getInnerNameIndex()).getBytes());
         }

@@ -30,9 +30,11 @@ import java.util.Set;
  * of identifiers.
  */
 public class PublicIdentifiers {
+    private static final Set<String> STANDARD_LIBRARY_PACKAGES = new HashSet<>();
     public static final Set<String> PUBLIC_IDENTIFIERS = new HashSet<>();
 
     static {
+        addSTANDARD_PACKAGES();
         addPUBLIC_IDENTIFIERSAB();
         addPUBLIC_IDENTIFIERSCC();
         addPUBLIC_IDENTIFIERSDE();
@@ -43,6 +45,102 @@ public class PublicIdentifiers {
         addPUBLIC_IDENTIFIERSSS();
         addPUBLIC_IDENTIFIERSTU();
         addPUBLIC_IDENTIFIERSVZ();
+    }
+
+    public static boolean isPartOfStandardLibrary(String containingPackage) {
+        return STANDARD_LIBRARY_PACKAGES.stream().anyMatch(containingPackage::startsWith);
+    }
+
+    private static void addSTANDARD_PACKAGES() {
+        STANDARD_LIBRARY_PACKAGES.add("com.sun");
+
+        STANDARD_LIBRARY_PACKAGES.add("java.applet");
+        STANDARD_LIBRARY_PACKAGES.add("java.awt");
+        STANDARD_LIBRARY_PACKAGES.add("java.beans");
+        STANDARD_LIBRARY_PACKAGES.add("java.io");
+        STANDARD_LIBRARY_PACKAGES.add("java.lang");
+        STANDARD_LIBRARY_PACKAGES.add("java.math");
+        STANDARD_LIBRARY_PACKAGES.add("java.net");
+        STANDARD_LIBRARY_PACKAGES.add("java.nio");
+        STANDARD_LIBRARY_PACKAGES.add("java.rmi");
+        STANDARD_LIBRARY_PACKAGES.add("java.security");
+        STANDARD_LIBRARY_PACKAGES.add("java.sql");
+        STANDARD_LIBRARY_PACKAGES.add("java.text");
+        STANDARD_LIBRARY_PACKAGES.add("java.time");
+        STANDARD_LIBRARY_PACKAGES.add("java.util");
+
+        STANDARD_LIBRARY_PACKAGES.add("javax.accessibility");
+        STANDARD_LIBRARY_PACKAGES.add("javax.annotation");
+        STANDARD_LIBRARY_PACKAGES.add("javax.crypto");
+        STANDARD_LIBRARY_PACKAGES.add("javax.imageio");
+        STANDARD_LIBRARY_PACKAGES.add("javax.lang");
+        STANDARD_LIBRARY_PACKAGES.add("javax.management");
+        STANDARD_LIBRARY_PACKAGES.add("javax.naming");
+        STANDARD_LIBRARY_PACKAGES.add("javax.net");
+        STANDARD_LIBRARY_PACKAGES.add("javax.print");
+        STANDARD_LIBRARY_PACKAGES.add("javax.rmi");
+        STANDARD_LIBRARY_PACKAGES.add("javax.script");
+        STANDARD_LIBRARY_PACKAGES.add("javax.security");
+        STANDARD_LIBRARY_PACKAGES.add("javax.smartcardio");
+        STANDARD_LIBRARY_PACKAGES.add("javax.sound");
+        STANDARD_LIBRARY_PACKAGES.add("javax.sql");
+        STANDARD_LIBRARY_PACKAGES.add("javax.swing");
+        STANDARD_LIBRARY_PACKAGES.add("javax.tools");
+        STANDARD_LIBRARY_PACKAGES.add("javax.transaction");
+        STANDARD_LIBRARY_PACKAGES.add("javax.xml");
+
+        STANDARD_LIBRARY_PACKAGES.add("jdk.dynalink");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.editpad");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.incubator");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.internal");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.javadoc");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.jfr");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.jpackage");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.jshell");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.management");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.net");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.nio");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.random");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.security");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.swing");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.tools");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.vm");
+        STANDARD_LIBRARY_PACKAGES.add("jdk.xml");
+
+        STANDARD_LIBRARY_PACKAGES.add("netscape.javascript");
+
+        STANDARD_LIBRARY_PACKAGES.add("org.ietf");
+        STANDARD_LIBRARY_PACKAGES.add("org.jcp");
+        STANDARD_LIBRARY_PACKAGES.add("org.w3c");
+        STANDARD_LIBRARY_PACKAGES.add("org.xml");
+
+        STANDARD_LIBRARY_PACKAGES.add("sun.awt");
+        STANDARD_LIBRARY_PACKAGES.add("sun.datatransfer");
+        STANDARD_LIBRARY_PACKAGES.add("sun.font");
+        STANDARD_LIBRARY_PACKAGES.add("sun.instrument");
+        STANDARD_LIBRARY_PACKAGES.add("sun.invoke");
+        STANDARD_LIBRARY_PACKAGES.add("sun.java2d");
+        STANDARD_LIBRARY_PACKAGES.add("sun.jvm");
+        STANDARD_LIBRARY_PACKAGES.add("sun.jvmstat");
+        STANDARD_LIBRARY_PACKAGES.add("sun.launcher");
+        STANDARD_LIBRARY_PACKAGES.add("sun.management");
+        STANDARD_LIBRARY_PACKAGES.add("sun.misc");
+        STANDARD_LIBRARY_PACKAGES.add("sun.net");
+        STANDARD_LIBRARY_PACKAGES.add("sun.nio");
+        STANDARD_LIBRARY_PACKAGES.add("sun.print");
+        STANDARD_LIBRARY_PACKAGES.add("sun.reflect");
+        STANDARD_LIBRARY_PACKAGES.add("sun.rmi");
+        STANDARD_LIBRARY_PACKAGES.add("sun.security");
+        STANDARD_LIBRARY_PACKAGES.add("sun.swing");
+        STANDARD_LIBRARY_PACKAGES.add("sun.text");
+        STANDARD_LIBRARY_PACKAGES.add("sun.tools");
+        STANDARD_LIBRARY_PACKAGES.add("sun.usagetracker");
+        STANDARD_LIBRARY_PACKAGES.add("sun.util");
+
+        STANDARD_LIBRARY_PACKAGES.add("toolbarButtonGraphics.development");
+        STANDARD_LIBRARY_PACKAGES.add("toolbarButtonGraphics.general");
+        STANDARD_LIBRARY_PACKAGES.add("toolbarButtonGraphics.navigation");
+        STANDARD_LIBRARY_PACKAGES.add("toolbarButtonGraphics.text");
     }
 
     private static void addPUBLIC_IDENTIFIERSAB() {
