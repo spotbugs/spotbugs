@@ -23,7 +23,7 @@ public class FindHidingSubClassTest extends AbstractIntegrationTest {
     public void testBadFindHidingSubClassTest2() {
         performAnalysis("findhidingsubclasstest/BadSuperClass.class",
                 "findhidingsubclasstest/BadHidingVsOverriding.class");
-        assertHSBCBug("methodHiding", 21);
+        assertHSBCBug("methodHiding", 19);
     }
 
 
