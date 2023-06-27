@@ -29,6 +29,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Extend `SerializableIdiom` detector with new bug type: `SE_PREVENT_EXT_OBJ_OVERWRITE`. It's reported in case of the `readExternal()` method allows any caller to reset any value of an object
 - New Detector `FindVulnerableSecurityCheckMethods` for new bug type `VSC_VULNERABLE_SECURITY_CHECK_METHODS`. This bug is reported whenever a non-final and non-private method of a non-final class performs a security check using the `java.lang.SecurityManager`. (See [SEI CERT MET03-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET03-J.+Methods+that+perform+a+security+check+must+be+declared+private+or+final))
 - New function added to detector `SynchronizationOnSharedBuiltinConstant`to detect `DL_SYNCHRONIZATION_ON_INTERNED_STRING` ([#2266](https://github.com/spotbugs/spotbugs/pull/2266))
+- Make TypeQualifierResolver recognize org.apache.avro.reflect.Nullable ([#2066](https://github.com/spotbugs/spotbugs/pull/2066))
 
 ### Security
 - Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))
@@ -65,9 +66,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Avoid warning on use of security manager on Java 17 and newer. ([#1579](https://github.com/spotbugs/spotbugs/issues/1579))
 - Fixed false positives `EI_EXPOSE_REP` thrown in case of fields initialized by the `of` or `copyOf` method of a `List`, `Map` or `Set` ([#1771](https://github.com/spotbugs/spotbugs/issues/1771))
 - Fixed CFGBuilderException thrown when `dup_x2` is used to swap the reference and wide-value (double, long) in the stack ([#2146](https://github.com/spotbugs/spotbugs/pull/2146))
-
-### Added
-- Make TypeQualifierResolver recognize org.apache.avro.reflect.Nullable ([#2066](https://github.com/spotbugs/spotbugs/pull/2066))
 
 ## 4.7.1 - 2022-06-26
 ### Fixed
