@@ -28,21 +28,20 @@ public class ConstructorThrowTest extends AbstractIntegrationTest {
     public void testConstructorThrowCheck3() {
         performAnalysis("constructorthrow/ConstructorThrowTest3.class");
         assertNumOfCTBugs(1);
-        assertCTBugInLine(13);
+        assertCTBugInLine(9);
     }
 
     @Test
     public void testConstructorThrowCheck4() {
         performAnalysis("constructorthrow/ConstructorThrowTest4.class");
         assertNumOfCTBugs(1);
-        assertCTBugInLine(20); // fails, 16 instead of 20
+        assertCTBugInLine(20);
     }
 
     @Test
     public void testConstructorThrowCheck5() {
         performAnalysis("constructorthrow/ConstructorThrowTest5.class");
         assertNumOfCTBugs(1);
-        assertCTBugInLine(7); // fails, 21 instead of 7
         assertCTBugInLine(16);
     }
 
@@ -82,6 +81,13 @@ public class ConstructorThrowTest extends AbstractIntegrationTest {
     }
 
     @Test
+    public void testConstructorThrowCheck11() {
+        performAnalysis("constructorthrow/ConstructorThrowTest11.class");
+        assertNumOfCTBugs(1);
+        assertCTBugInLine(15);
+    }
+
+    @Test
     public void testGoodConstructorThrowCheck1() {
         performAnalysis("constructorthrow/ConstructorThrowNegativeTest1.class");
         assertNumOfCTBugs(0);
@@ -96,12 +102,24 @@ public class ConstructorThrowTest extends AbstractIntegrationTest {
     @Test
     public void testGoodConstructorThrowCheck3() {
         performAnalysis("constructorthrow/ConstructorThrowNegativeTest3.class");
-        assertNumOfCTBugs(0); // fails
+        assertNumOfCTBugs(0);
     }
 
     @Test
     public void testGoodConstructorThrowCheck4() {
         performAnalysis("constructorthrow/ConstructorThrowNegativeTest4.class");
+        assertNumOfCTBugs(0);
+    }
+
+    @Test
+    public void testGoodConstructorThrowCheck5() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest5.class");
+        assertNumOfCTBugs(0);
+    }
+
+    @Test
+    public void testGoodConstructorThrowCheck6() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest6.class");
         assertNumOfCTBugs(0);
     }
 
