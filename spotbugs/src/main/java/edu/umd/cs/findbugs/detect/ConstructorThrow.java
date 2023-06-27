@@ -21,18 +21,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.BootstrapMethods;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ExceptionTable;
@@ -104,7 +109,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
     /**
      * 1. Check for any throw expression in the constructor.
      * 2. Check for any unchecked exception throw inside constructor,
-     *    or any of the called methods.
+     * or any of the called methods.
      * If the class is final, we are fine, no finalizer attack can happen.
      * In the first pass the detector shouldn't report, because there could be
      * a final finalizer and a throwing constructor. Reporting in this case
@@ -137,12 +142,28 @@ public class ConstructorThrow extends OpcodeStackDetector {
                             AnalysisContext.reportMissingClass(e);
                         }
                     }
+                } else if (Const.INVOKEDYNAMIC == seen) {
+                    String calledMethodFQN = getCalledMethodFQN(seen);
+                    Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethodFQN);
+                    if (!unhandledExes.isEmpty()) {
+                        CodeException tryBlock = getSurroundingTryBlock(getPC());
+                        if (tryBlock != null) {
+                            boolean hasNotCaughtExFromBody = unhandledExes.stream()
+                                    .anyMatch(ex -> isThrownExNotCaught(ex, tryBlock, getConstantPool()));
+
+                            if (hasNotCaughtExFromBody) {
+                                accumulateBug();
+                            }
+                        } else {
+                            accumulateBug();
+                        }
+                    }
                 } else if (isMethodCall(seen)) {
                     XMethod calledXMethod = getXMethodOperand();
-                    String calledMethodName = getCalledMethodFQN();
+                    String calledMethodFQN = getCalledMethodFQN(seen);
                     if (!Const.CONSTRUCTOR_NAME.equals(calledXMethod.getName())) {
                         String[] thrownExes = calledXMethod.getThrownExceptions();
-                        Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethodName);
+                        Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethodFQN);
                         if (thrownExes != null || !unhandledExes.isEmpty()) {
                             CodeException tryBlock = getSurroundingTryBlock(getPC());
                             if (tryBlock != null) {
@@ -265,7 +286,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
             }
         } else if (isMethodCall(seen)) {
             String calledMethod = getNameConstantOperand();
-            String calledMethodFullName = getCalledMethodFQN();
+            String calledMethodFullName = getCalledMethodFQN(seen);
             // not interested in call of the constructor or recursion
             if (!Const.CONSTRUCTOR_NAME.equals(calledMethod) && !surroundingMethod.equals(calledMethodFullName)) {
                 CodeException tryBlock = getSurroundingTryBlock(getPC());
@@ -328,8 +349,23 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
     }
 
-    private String getCalledMethodFQN() {
-        return String.format("%s.%s : %s", getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+    private String getCalledMethodFQN(int seen) {
+        if (Const.INVOKEDYNAMIC == seen) {
+            ConstantInvokeDynamic constDyn = (ConstantInvokeDynamic) getConstantRefOperand();
+            for (Attribute attr : getThisClass().getAttributes()) {
+                if (attr instanceof BootstrapMethods) {
+                    Optional<Method> optionalMethod = BootstrapMethodsUtil.getMethodFromBootstrap((BootstrapMethods) attr,
+                            constDyn.getBootstrapMethodAttrIndex(), getConstantPool(), getThisClass());
+                    if (optionalMethod.isPresent()) {
+                        Method method = optionalMethod.get();
+                        return String.format("%s.%s : %s", toDotted(getClassName()), method.getName(), toDotted(method.getSignature()));
+                    }
+                }
+            }
+        } else {
+            return String.format("%s.%s : %s", getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+        }
+        return "";
     }
 
     private void resetState() {
@@ -348,7 +384,11 @@ public class ConstructorThrow extends OpcodeStackDetector {
     }
 
     private boolean isMethodCall(int seen) {
-        return seen == Const.INVOKESTATIC || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE || seen == Const.INVOKESPECIAL;
+        return seen == Const.INVOKESTATIC
+                || seen == Const.INVOKEVIRTUAL
+                || seen == Const.INVOKEINTERFACE
+                || seen == Const.INVOKESPECIAL
+                || seen == Const.INVOKEDYNAMIC;
     }
 
     private boolean isConstructor() {
