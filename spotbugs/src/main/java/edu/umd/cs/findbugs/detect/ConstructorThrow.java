@@ -17,17 +17,11 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 import org.apache.bcel.Const;
 
@@ -74,12 +68,10 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
         for (Method m : obj.getMethods()) {
             doVisitMethod(m);
+            // Check for final finalizer.
             // Signature of the finalizer is also needed to be checked
-            if ("finalize".equals(m.getName()) && "()V".equals(m.getSignature())) {
-                // Check for final finalizer.
-                if (m.isFinal()) {
-                    isFinalFinalizer = true;
-                }
+            if ("finalize".equals(m.getName()) && "()V".equals(m.getSignature()) && m.isFinal()) {
+                isFinalFinalizer = true;
             }
         }
         isFirstPass = false;
@@ -123,73 +115,81 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
         if (isFirstPass) {
             collectExeptionsByMethods(seen);
-        } else {
-            if (isConstructor()) {
-                if (seen == Const.ATHROW) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    if (item != null) {
-                        try {
-                            JavaClass thrownExClass = item.getJavaClass();
-                            CodeException tryBlock = getSurroundingTryBlock(getPC());
-                            if (tryBlock != null) {
-                                if (isThrownExNotCaught(thrownExClass, tryBlock, getConstantPool())) {
-                                    accumulateBug();
-                                }
-                            } else {
-                                accumulateBug();
-                            }
-                        } catch (ClassNotFoundException e) {
-                            AnalysisContext.reportMissingClass(e);
-                        }
-                    }
-                } else if (Const.INVOKEDYNAMIC == seen) {
-                    String calledMethodFQN = getCalledMethodFQN(seen);
-                    Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethodFQN);
-                    if (!unhandledExes.isEmpty()) {
-                        CodeException tryBlock = getSurroundingTryBlock(getPC());
-                        if (tryBlock != null) {
-                            boolean hasNotCaughtExFromBody = unhandledExes.stream()
-                                    .anyMatch(ex -> isThrownExNotCaught(ex, tryBlock, getConstantPool()));
+        } else if (isConstructor()) {
+            reportConstructorThrow(seen);
+        }
+    }
 
-                            if (hasNotCaughtExFromBody) {
-                                accumulateBug();
-                            }
-                        } else {
+    private void reportConstructorThrow(int seen) {
+        // if there is a throw in the Constructor which is not handled in a try-catch block, it's a bug
+        if (seen == Const.ATHROW) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            if (item != null) {
+                try {
+                    JavaClass thrownExClass = item.getJavaClass();
+                    CodeException tryBlock = getSurroundingTryBlock(getPC());
+                    if (tryBlock != null) {
+                        if (isThrownExNotCaught(thrownExClass, tryBlock, getConstantPool())) {
                             accumulateBug();
                         }
+                    } else {
+                        accumulateBug();
                     }
-                } else if (isMethodCall(seen)) {
-                    XMethod calledXMethod = getXMethodOperand();
-                    String calledMethodFQN = getCalledMethodFQN(seen);
-                    if (!Const.CONSTRUCTOR_NAME.equals(calledXMethod.getName())) {
-                        String[] thrownExes = calledXMethod.getThrownExceptions();
-                        Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethodFQN);
-                        if (thrownExes != null || !unhandledExes.isEmpty()) {
-                            CodeException tryBlock = getSurroundingTryBlock(getPC());
-                            if (tryBlock != null) {
-                                boolean hasNotCaughtExFromThrows = thrownExes == null ? false
-                                        : Arrays.stream(thrownExes)
-                                                .map(ConstructorThrow::toDotted)
-                                                .anyMatch(ex -> isThrownExNotCaught(ex, tryBlock, getConstantPool()));
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
+                }
+            }
+        } else if (Const.INVOKEDYNAMIC == seen) {
+            // invoke dynamic is a bit different from other method calls, doesn't have throws,
+            String calledMethodFQN = getCalledMethodFQN(seen);
+            Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethodFQN, new HashSet<>());
+            if (!unhandledExes.isEmpty()) {
+                CodeException tryBlock = getSurroundingTryBlock(getPC());
+                if (tryBlock != null) {
+                    boolean hasNotCaughtExFromBody = unhandledExes.stream()
+                            .anyMatch(ex -> isThrownExNotCaught(ex, tryBlock, getConstantPool()));
 
-                                boolean hasNotCaughtExFromBody = unhandledExes.stream()
-                                        .anyMatch(ex -> isThrownExNotCaught(ex, tryBlock, getConstantPool()));
+                    if (hasNotCaughtExFromBody) {
+                        accumulateBug();
+                    }
+                } else {
+                    accumulateBug();
+                }
+            }
+        } else if (isMethodCall(seen)) {
+            if (!Const.CONSTRUCTOR_NAME.equals(getMethodDescriptorOperand().getName())) {
+                String[] thrownExes = getXMethodOperand().getThrownExceptions();
+                String calledMethodFQN = getCalledMethodFQN(seen);
+                Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethodFQN, new HashSet<>());
+                if (thrownExes != null || !unhandledExes.isEmpty()) {
+                    CodeException tryBlock = getSurroundingTryBlock(getPC());
+                    if (tryBlock != null) {
+                        boolean hasNotCaughtExFromThrows = thrownExes != null && Arrays.stream(thrownExes)
+                                .map(ConstructorThrow::toDotted)
+                                .anyMatch(ex -> isThrownExNotCaught(ex, tryBlock, getConstantPool()));
 
-                                if (hasNotCaughtExFromThrows || hasNotCaughtExFromBody) {
-                                    accumulateBug();
-                                }
-                            } else {
-                                accumulateBug();
-                            }
+                        boolean hasNotCaughtExFromBody = unhandledExes.stream()
+                                .anyMatch(ex -> isThrownExNotCaught(ex, tryBlock, getConstantPool()));
+
+                        if (hasNotCaughtExFromThrows || hasNotCaughtExFromBody) {
+                            accumulateBug();
                         }
+                    } else {
+                        accumulateBug();
                     }
                 }
             }
         }
     }
 
-    private Set<JavaClass> getUndhandledExesInMethod(String method) {
+    private Set<JavaClass> getUndhandledExesInMethod(String method, Set<String> visitedMethods) {
         Set<JavaClass> unhandledExesInMethod = new HashSet<>();
+        if (visitedMethods.contains(method)) {
+            return unhandledExesInMethod;
+        } else {
+            visitedMethods.add(method);
+        }
+
         if (thrownExsByMethodMap.containsKey(method)) {
             unhandledExesInMethod.addAll(thrownExsByMethodMap.get(method));
         }
@@ -198,7 +198,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
             Map<String, Set<String>> exHandlesByMethodCalls = exHandlesToMethodCallsByMethodsMap.get(method);
             for (Map.Entry<String, Set<String>> entry : exHandlesByMethodCalls.entrySet()) {
                 String calledMethod = entry.getKey();
-                Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethod);
+                Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethod, visitedMethods);
                 Set<String> exHandles = entry.getValue();
                 Set<JavaClass> remainingUnhandledExes = unhandledExes.stream()
                         .filter(ex -> !isHandled(ex, exHandles))
@@ -236,7 +236,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
         int caughtExType = tryBlock.getCatchType();
         if (caughtExType != 0) {
             String caughtExName = constantPool.constantToString(constantPool.getConstant(caughtExType));
-            // TODO any caughtEx is parent of thrownEx
+              // TODO any caughtEx is parent of thrownEx
             return !thrownEx.equals(caughtExName);
         }
         return false;
@@ -250,7 +250,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
     }
 
     private void collectExeptionsByMethods(int seen) {
-        String surroundingMethod = getFullyQualifiedMethodName();
+        String containingMethod = getFullyQualifiedMethodName();
         if (seen == Const.ATHROW) {
             OpcodeStack.Item item = stack.getStackItem(0);
             if (item != null) {
@@ -259,26 +259,10 @@ public class ConstructorThrow extends OpcodeStackDetector {
                     CodeException tryBlock = getSurroundingTryBlock(getPC());
                     if (tryBlock != null) {
                         if (isThrownExNotCaught(thrownExClass, tryBlock, getConstantPool())) {
-                            if (thrownExsByMethodMap.containsKey(surroundingMethod)) {
-                                thrownExsByMethodMap.get(surroundingMethod).add(thrownExClass);
-                            } else {
-                                thrownExsByMethodMap.put(surroundingMethod, new HashSet<JavaClass>() {
-                                    {
-                                        add(thrownExClass);
-                                    }
-                                });
-                            }
+                            addToThrownExsByMethodMap(containingMethod, thrownExClass);
                         }
                     } else {
-                        if (thrownExsByMethodMap.containsKey(surroundingMethod)) {
-                            thrownExsByMethodMap.get(surroundingMethod).add(thrownExClass);
-                        } else {
-                            thrownExsByMethodMap.put(surroundingMethod, new HashSet<JavaClass>() {
-                                {
-                                    add(thrownExClass);
-                                }
-                            });
-                        }
+                        addToThrownExsByMethodMap(containingMethod, thrownExClass);
                     }
                 } catch (ClassNotFoundException e) {
                     AnalysisContext.reportMissingClass(e);
@@ -288,64 +272,46 @@ public class ConstructorThrow extends OpcodeStackDetector {
             String calledMethod = getNameConstantOperand();
             String calledMethodFullName = getCalledMethodFQN(seen);
             // not interested in call of the constructor or recursion
-            if (!Const.CONSTRUCTOR_NAME.equals(calledMethod) && !surroundingMethod.equals(calledMethodFullName)) {
+            if (!Const.CONSTRUCTOR_NAME.equals(calledMethod) && !containingMethod.equals(calledMethodFullName)) {
                 CodeException tryBlock = getSurroundingTryBlock(getPC());
                 if (tryBlock != null) {
                     int caughtExType = tryBlock.getCatchType();
                     if (caughtExType != 0) {
                         ConstantPool cp = getConstantPool();
                         String caughtExName = cp.constantToString(cp.getConstant(caughtExType));
-                        if (exHandlesToMethodCallsByMethodsMap.containsKey(surroundingMethod)) {
-                            Map<String, Set<String>> map = exHandlesToMethodCallsByMethodsMap.get(surroundingMethod);
-                            if (!map.containsKey(calledMethodFullName)) {
-                                map.put(calledMethodFullName, new HashSet<String>() {
-                                    {
-                                        add(caughtExName);
-                                    }
-                                });
-                            } else {
-                                map.get(calledMethodFullName).add(caughtExName);
-                            }
-                        } else {
-                            exHandlesToMethodCallsByMethodsMap.put(surroundingMethod,
-                                    new HashMap<String, Set<String>>() {
-                                        {
-                                            put(calledMethodFullName, new HashSet<String>() {
-                                                {
-                                                    add(caughtExName);
-                                                }
-                                            });
-                                        }
-                                    });
-                        }
+                        addToExHandlesToMethodCallsByMethodsMap(containingMethod, calledMethodFullName, caughtExName);
                     }
                 } else {
                     // No Exception is handled, then add an empty string to represent this
-                    if (exHandlesToMethodCallsByMethodsMap.containsKey(surroundingMethod)) {
-                        Map<String, Set<String>> map = exHandlesToMethodCallsByMethodsMap.get(surroundingMethod);
-                        if (!map.containsKey(calledMethodFullName)) {
-                            map.put(calledMethodFullName, new HashSet<String>() {
-                                {
-                                    add("");
-                                }
-                            });
-                        } else {
-                            map.get(calledMethodFullName).add("");
-                        }
-                    } else {
-                        exHandlesToMethodCallsByMethodsMap.put(surroundingMethod,
-                                new HashMap<String, Set<String>>() {
-                                    {
-                                        put(calledMethodFullName, new HashSet<String>() {
-                                            {
-                                                add("");
-                                            }
-                                        });
-                                    }
-                                });
-                    }
+                    addToExHandlesToMethodCallsByMethodsMap(containingMethod, calledMethodFullName, "");
                 }
             }
+        }
+    }
+
+    private void addToExHandlesToMethodCallsByMethodsMap(String containingMethod, String calledMethod, String caughtEx) {
+        if (exHandlesToMethodCallsByMethodsMap.containsKey(containingMethod)) {
+            Map<String, Set<String>> map = exHandlesToMethodCallsByMethodsMap.get(containingMethod);
+            if (!map.containsKey(calledMethod)) {
+                map.put(calledMethod, new HashSet<>(Collections.singletonList(caughtEx)));
+            } else {
+                map.get(calledMethod).add(caughtEx);
+            }
+        } else {
+            exHandlesToMethodCallsByMethodsMap.put(containingMethod,
+                    new HashMap<String, Set<String>>() {
+                        {
+                            put(calledMethod, new HashSet<>(Collections.singletonList(caughtEx)));
+                        }
+                    });
+        }
+    }
+
+    private void addToThrownExsByMethodMap(String containingMethod, JavaClass thrownExClass) {
+        if (thrownExsByMethodMap.containsKey(containingMethod)) {
+            thrownExsByMethodMap.get(containingMethod).add(thrownExClass);
+        } else {
+            thrownExsByMethodMap.put(containingMethod, new HashSet<>(Collections.singletonList(thrownExClass)));
         }
     }
 
@@ -354,16 +320,18 @@ public class ConstructorThrow extends OpcodeStackDetector {
             ConstantInvokeDynamic constDyn = (ConstantInvokeDynamic) getConstantRefOperand();
             for (Attribute attr : getThisClass().getAttributes()) {
                 if (attr instanceof BootstrapMethods) {
-                    Optional<Method> optionalMethod = BootstrapMethodsUtil.getMethodFromBootstrap((BootstrapMethods) attr,
+                    Optional<Method> optMethod = BootstrapMethodsUtil.getMethodFromBootstrap((BootstrapMethods) attr,
                             constDyn.getBootstrapMethodAttrIndex(), getConstantPool(), getThisClass());
-                    if (optionalMethod.isPresent()) {
-                        Method method = optionalMethod.get();
-                        return String.format("%s.%s : %s", toDotted(getClassName()), method.getName(), toDotted(method.getSignature()));
+                    if (optMethod.isPresent()) {
+                        Method method = optMethod.get();
+                        return String.format("%s.%s : %s", toDotted(getClassName()), method.getName(),
+                                toDotted(method.getSignature()));
                     }
                 }
             }
         } else {
-            return String.format("%s.%s : %s", getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+            return String.format("%s.%s : %s", getDottedClassConstantOperand(), getNameConstantOperand(),
+                    getSigConstantOperand());
         }
         return "";
     }
