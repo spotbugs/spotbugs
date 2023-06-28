@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -32,7 +33,6 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.BootstrapMethods;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
-import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
@@ -127,62 +127,33 @@ public class ConstructorThrow extends OpcodeStackDetector {
             if (item != null) {
                 try {
                     JavaClass thrownExClass = item.getJavaClass();
-                    CodeException tryBlock = getSurroundingTryBlock(getPC());
-                    if (tryBlock != null) {
-                        if (isThrownExNotCaught(thrownExClass, tryBlock, getConstantPool())) {
-                            accumulateBug();
-                        }
-                    } else {
+                    Set<String> caughtExes = getSurroundingCaughtExes(getConstantPool());
+                    if (isThrownExNotCaught(thrownExClass, caughtExes)) {
                         accumulateBug();
                     }
                 } catch (ClassNotFoundException e) {
                     AnalysisContext.reportMissingClass(e);
                 }
             }
-        } else if (Const.INVOKEDYNAMIC == seen) {
-            // invoke dynamic is a bit different from other method calls, doesn't have throws,
-            String calledMethodFQN = getCalledMethodFQN(seen);
-            Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethodFQN, new HashSet<>());
-            if (!unhandledExes.isEmpty()) {
-                CodeException tryBlock = getSurroundingTryBlock(getPC());
-                if (tryBlock != null) {
-                    boolean hasNotCaughtExFromBody = unhandledExes.stream()
-                            .anyMatch(ex -> isThrownExNotCaught(ex, tryBlock, getConstantPool()));
-
-                    if (hasNotCaughtExFromBody) {
-                        accumulateBug();
-                    }
-                } else {
-                    accumulateBug();
-                }
-            }
         } else if (isMethodCall(seen)) {
-            if (!Const.CONSTRUCTOR_NAME.equals(getMethodDescriptorOperand().getName())) {
-                String[] thrownExes = getXMethodOperand().getThrownExceptions();
-                String calledMethodFQN = getCalledMethodFQN(seen);
-                Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethodFQN, new HashSet<>());
-                if (thrownExes != null || !unhandledExes.isEmpty()) {
-                    CodeException tryBlock = getSurroundingTryBlock(getPC());
-                    if (tryBlock != null) {
-                        boolean hasNotCaughtExFromThrows = thrownExes != null && Arrays.stream(thrownExes)
-                                .map(ConstructorThrow::toDotted)
-                                .anyMatch(ex -> isThrownExNotCaught(ex, tryBlock, getConstantPool()));
+            // checked exceptions are handled when visiting the method
+            // if a called method throws a checked exception, and it is not handled, then it must appear in the `throws`
+            // here only the explicitly thrown exceptions are examined
+            String calledMethodFQN = getCalledMethodFQN(seen);
+            Set<JavaClass> unhandledExes = getUndhandledExThrowsInMethod(calledMethodFQN, new HashSet<>());
+            if (!unhandledExes.isEmpty()) {
+                Set<String> caughtExes = getSurroundingCaughtExes(getConstantPool());
+                boolean hasNotCaughtExFromBody = unhandledExes.stream()
+                        .anyMatch(ex -> isThrownExNotCaught(ex, caughtExes));
 
-                        boolean hasNotCaughtExFromBody = unhandledExes.stream()
-                                .anyMatch(ex -> isThrownExNotCaught(ex, tryBlock, getConstantPool()));
-
-                        if (hasNotCaughtExFromThrows || hasNotCaughtExFromBody) {
-                            accumulateBug();
-                        }
-                    } else {
-                        accumulateBug();
-                    }
+                if (hasNotCaughtExFromBody) {
+                    accumulateBug();
                 }
             }
         }
     }
 
-    private Set<JavaClass> getUndhandledExesInMethod(String method, Set<String> visitedMethods) {
+    private Set<JavaClass> getUndhandledExThrowsInMethod(String method, Set<String> visitedMethods) {
         Set<JavaClass> unhandledExesInMethod = new HashSet<>();
         if (visitedMethods.contains(method)) {
             return unhandledExesInMethod;
@@ -198,7 +169,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
             Map<String, Set<String>> exHandlesByMethodCalls = exHandlesToMethodCallsByMethodsMap.get(method);
             for (Map.Entry<String, Set<String>> entry : exHandlesByMethodCalls.entrySet()) {
                 String calledMethod = entry.getKey();
-                Set<JavaClass> unhandledExes = getUndhandledExesInMethod(calledMethod, visitedMethods);
+                Set<JavaClass> unhandledExes = getUndhandledExThrowsInMethod(calledMethod, visitedMethods);
                 Set<String> exHandles = entry.getValue();
                 Set<JavaClass> remainingUnhandledExes = unhandledExes.stream()
                         .filter(ex -> !isHandled(ex, exHandles))
@@ -223,30 +194,22 @@ public class ConstructorThrow extends OpcodeStackDetector {
         return false;
     }
 
-    private static boolean isThrownExNotCaught(JavaClass thrownEx, CodeException tryBlock, ConstantPool constantPool) {
-        int caughtExType = tryBlock.getCatchType();
-        if (caughtExType != 0) {
-            String caughtExName = constantPool.constantToString(constantPool.getConstant(caughtExType));
-            return !isHandled(thrownEx, caughtExName);
-        }
-        return true;
+    private Set<String> getSurroundingCaughtExes(ConstantPool cp) {
+        return getSurroundingCaughtExceptionTypes(getPC(), Integer.MAX_VALUE).stream()
+                .filter(i -> i != 0)
+                .map(caughtExType -> cp.constantToString(cp.getConstant(caughtExType)))
+                .collect(Collectors.toSet());
     }
 
-    private static boolean isThrownExNotCaught(String thrownEx, CodeException tryBlock, ConstantPool constantPool) {
-        int caughtExType = tryBlock.getCatchType();
-        if (caughtExType != 0) {
-            String caughtExName = constantPool.constantToString(constantPool.getConstant(caughtExType));
-              // TODO any caughtEx is parent of thrownEx
-            return !thrownEx.equals(caughtExName);
-        }
-        return false;
+    private static boolean isThrownExNotCaught(JavaClass thrownEx, Set<String> caughtExes) {
+        return caughtExes.stream().noneMatch(caughtEx -> isHandled(thrownEx, caughtEx));
     }
 
     private static String toDotted(String signature) {
         if (signature.startsWith("L") && signature.endsWith(";")) {
-            return signature.substring(1, signature.length() - 1).replace('/', '.');
+            return ClassName.toDottedClassName(signature.substring(1, signature.length() - 1));
         }
-        return signature.replace('/', '.');
+        return ClassName.toDottedClassName(signature);
     }
 
     private void collectExeptionsByMethods(int seen) {
@@ -256,12 +219,8 @@ public class ConstructorThrow extends OpcodeStackDetector {
             if (item != null) {
                 try {
                     JavaClass thrownExClass = item.getJavaClass();
-                    CodeException tryBlock = getSurroundingTryBlock(getPC());
-                    if (tryBlock != null) {
-                        if (isThrownExNotCaught(thrownExClass, tryBlock, getConstantPool())) {
-                            addToThrownExsByMethodMap(containingMethod, thrownExClass);
-                        }
-                    } else {
+                    Set<String> caughtExes = getSurroundingCaughtExes(getConstantPool());
+                    if (isThrownExNotCaught(thrownExClass, caughtExes)) {
                         addToThrownExsByMethodMap(containingMethod, thrownExClass);
                     }
                 } catch (ClassNotFoundException e) {
@@ -273,35 +232,30 @@ public class ConstructorThrow extends OpcodeStackDetector {
             String calledMethodFullName = getCalledMethodFQN(seen);
             // not interested in call of the constructor or recursion
             if (!Const.CONSTRUCTOR_NAME.equals(calledMethod) && !containingMethod.equals(calledMethodFullName)) {
-                CodeException tryBlock = getSurroundingTryBlock(getPC());
-                if (tryBlock != null) {
-                    int caughtExType = tryBlock.getCatchType();
-                    if (caughtExType != 0) {
-                        ConstantPool cp = getConstantPool();
-                        String caughtExName = cp.constantToString(cp.getConstant(caughtExType));
-                        addToExHandlesToMethodCallsByMethodsMap(containingMethod, calledMethodFullName, caughtExName);
-                    }
-                } else {
+                Set<String> caughtExes = getSurroundingCaughtExes(getConstantPool());
+                if (caughtExes.isEmpty()) {
                     // No Exception is handled, then add an empty string to represent this
-                    addToExHandlesToMethodCallsByMethodsMap(containingMethod, calledMethodFullName, "");
+                    addToExHandlesToMethodCallsByMethodsMap(containingMethod, calledMethodFullName, Collections.singletonList(""));
+                } else {
+                    addToExHandlesToMethodCallsByMethodsMap(containingMethod, calledMethodFullName, caughtExes);
                 }
             }
         }
     }
 
-    private void addToExHandlesToMethodCallsByMethodsMap(String containingMethod, String calledMethod, String caughtEx) {
-        if (exHandlesToMethodCallsByMethodsMap.containsKey(containingMethod)) {
-            Map<String, Set<String>> map = exHandlesToMethodCallsByMethodsMap.get(containingMethod);
+    private void addToExHandlesToMethodCallsByMethodsMap(String containerMethod, String calledMethod, Collection<String> caughtExes) {
+        if (exHandlesToMethodCallsByMethodsMap.containsKey(containerMethod)) {
+            Map<String, Set<String>> map = exHandlesToMethodCallsByMethodsMap.get(containerMethod);
             if (!map.containsKey(calledMethod)) {
-                map.put(calledMethod, new HashSet<>(Collections.singletonList(caughtEx)));
+                map.put(calledMethod, new HashSet<>(caughtExes));
             } else {
-                map.get(calledMethod).add(caughtEx);
+                map.get(calledMethod).addAll(caughtExes);
             }
         } else {
-            exHandlesToMethodCallsByMethodsMap.put(containingMethod,
+            exHandlesToMethodCallsByMethodsMap.put(containerMethod,
                     new HashMap<String, Set<String>>() {
                         {
-                            put(calledMethod, new HashSet<>(Collections.singletonList(caughtEx)));
+                            put(calledMethod, new HashSet<>(caughtExes));
                         }
                     });
         }
