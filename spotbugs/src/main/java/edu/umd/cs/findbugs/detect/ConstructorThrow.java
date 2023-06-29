@@ -21,7 +21,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
@@ -43,7 +45,17 @@ import org.apache.bcel.classfile.Method;
  */
 public class ConstructorThrow extends OpcodeStackDetector {
     private final BugAccumulator bugAccumulator;
+
+    /**
+     * The containing methods (DottedClassName complete with signature) to the methods called directly from the containing one
+     * to the caught Exceptions by the surrounding try-catches of the call sites.
+     * If the call site is not inside a try-catch then an empty string.
+     */
     private final Map<String, Map<String, Set<String>>> exHandlesToMethodCallsByMethodsMap = new HashMap<>();
+
+    /**
+     * The DottedClassName complete with signature of the method to the set of the Exceptions thrown directly from the method.
+     */
     private final Map<String, Set<JavaClass>> thrownExsByMethodMap = new HashMap<>();
 
     private boolean isFinalClass = false;
@@ -120,6 +132,14 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
     }
 
+    /**
+     * Reports ContructorThrow bug if there is an unhandled unchecked exception thrown directly or indirectly
+     * from the currently visited method.
+     *
+     * If the exception is thrown directly, the bug is reported at the throw.
+     * If the exception is thrown indirectly (through a method call), the bug is reported at the call of the method
+     * which throws the exception.
+     */
     private void reportConstructorThrow(int seen) {
         // if there is a throw in the Constructor which is not handled in a try-catch block, it's a bug
         if (seen == Const.ATHROW) {
@@ -153,6 +173,14 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
     }
 
+    /**
+     * Get the Exceptions thrown from the inside of the method, either directly or indirectly from called methods.
+     * Uses inner collections which are needed to filled correctly.
+     *
+     * @param method the method to visit and get the exceptions thrown out of it
+     * @param visitedMethods the names of the already visited methods, needed to prevent stackoverflow by recursively checking method call cycles
+     * @return the JavaClasses of the Exceptions thrown from the method
+     */
     private Set<JavaClass> getUndhandledExThrowsInMethod(String method, Set<String> visitedMethods) {
         Set<JavaClass> unhandledExesInMethod = new HashSet<>();
         if (visitedMethods.contains(method)) {
@@ -180,11 +208,24 @@ public class ConstructorThrow extends OpcodeStackDetector {
         return unhandledExesInMethod;
     }
 
+    /**
+     * Checks whether the Exception is handled in all call sites.
+     * @param thrownEx the thrown Exception which needs to be handled
+     * @param exHandles the set of the dotted class names of the caught Exceptions in the call sites.
+     * @return true if the Exception handled in all call sites.
+     */
     private boolean isHandled(JavaClass thrownEx, Set<String> exHandles) {
         return exHandles.stream().allMatch(handle -> isHandled(thrownEx, handle));
     }
 
-    private static boolean isHandled(JavaClass thrownEx, String caughtEx) {
+    /**
+     * Checks if the thrown Exception is handled by the caught Exception.
+     * @param thrownEx the thrown Exception which needs to be handled
+     * @param caughtEx the name of the caught Exception at the call site. If no Exception is caught,
+     *                 then it's an empty string or other nonnull string which is not a name of any Exception.
+     * @return true if the Exception is handled.
+     */
+    private static boolean isHandled(JavaClass thrownEx, @NonNull @DottedClassName String caughtEx) {
         try {
             return thrownEx.getClassName().equals(caughtEx)
                     || Arrays.stream(thrownEx.getSuperClasses()).anyMatch(e -> e.getClassName().equals(caughtEx));
@@ -194,6 +235,11 @@ public class ConstructorThrow extends OpcodeStackDetector {
         return false;
     }
 
+    /**
+     * Gets the DottedClassNames of the Exceptions which are caught by a try-catch block at the current PC.
+     * @param cp ConstantPool
+     * @return Set of the DottedClassNames of the caught Exceptions.
+     */
     private Set<String> getSurroundingCaughtExes(ConstantPool cp) {
         return getSurroundingCaughtExceptionTypes(getPC(), Integer.MAX_VALUE).stream()
                 .filter(i -> i != 0)
@@ -201,6 +247,12 @@ public class ConstructorThrow extends OpcodeStackDetector {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Checks if the thrown exception is not caught.
+     * @param thrownEx the Exception to catch.
+     * @param caughtExes the set of the DottedClassNames of the caught Exceptions at call site.
+     * @return true if the exception is not caught.
+     */
     private static boolean isThrownExNotCaught(JavaClass thrownEx, Set<String> caughtExes) {
         return caughtExes.stream().noneMatch(caughtEx -> isHandled(thrownEx, caughtEx));
     }
@@ -212,6 +264,10 @@ public class ConstructorThrow extends OpcodeStackDetector {
         return ClassName.toDottedClassName(signature);
     }
 
+    /**
+     * Fills the inner collections while visiting the method.
+     * @param seen the opcode @see #sawOpcode(int)
+     */
     private void collectExeptionsByMethods(int seen) {
         String containingMethod = getFullyQualifiedMethodName();
         if (seen == Const.ATHROW) {
@@ -269,6 +325,13 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
     }
 
+    /**
+     * Gives back the fully qualified name (DottedClassName) of the called method complete with the signature.
+     * Needs to be called from method call opcode. Works for invokedynamic as well.
+     *
+     * @param seen the opcode @see #sawOpcode(int)
+     * @return the fully qualified name of the method (dotted) with the signature.
+     */
     private String getCalledMethodFQN(int seen) {
         if (Const.INVOKEDYNAMIC == seen) {
             ConstantInvokeDynamic constDyn = (ConstantInvokeDynamic) getConstantRefOperand();
