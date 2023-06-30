@@ -18,7 +18,7 @@ dependencies {
   implementation fileTree(dir: 'lib', include: '*.jar')
 
   implementation 'com.google.code.gson:gson:2.10.1'
-  implementation 'com.google.guava:guava:32.0.1-jre'
+  implementation 'com.google.guava:guava:32.1.1-jre'
   implementation libs.guice
   implementation libs.guice.assistedinject
   implementation libs.guice.servlet
