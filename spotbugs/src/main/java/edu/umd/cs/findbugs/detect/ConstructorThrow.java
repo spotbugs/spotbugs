@@ -147,6 +147,12 @@ public class ConstructorThrow extends OpcodeStackDetector {
             if (item != null) {
                 try {
                     JavaClass thrownExClass = item.getJavaClass();
+                    // in case of try-with-resources the compiler generates a nested try-catch with Throwable
+                    // so filter out Throwables
+                    // however this filters out throwables explicitly thrown by the programmer, that is not so common
+                    if ("java.lang.Throwable".equals(thrownExClass.getClassName())) {
+                        return;
+                    }
                     Set<String> caughtExes = getSurroundingCaughtExes(getConstantPool());
                     if (isThrownExNotCaught(thrownExClass, caughtExes)) {
                         accumulateBug();
@@ -275,6 +281,12 @@ public class ConstructorThrow extends OpcodeStackDetector {
             if (item != null) {
                 try {
                     JavaClass thrownExClass = item.getJavaClass();
+                    // in case of try-with-resources the compiler generates a nested try-catch with Throwable
+                    // so filter out Throwables
+                    // however this filters out throwables explicitly thrown by the programmer, that is not so common
+                    if ("java.lang.Throwable".equals(thrownExClass.getClassName())) {
+                        return;
+                    }
                     Set<String> caughtExes = getSurroundingCaughtExes(getConstantPool());
                     if (isThrownExNotCaught(thrownExClass, caughtExes)) {
                         addToThrownExsByMethodMap(containingMethod, thrownExClass);
