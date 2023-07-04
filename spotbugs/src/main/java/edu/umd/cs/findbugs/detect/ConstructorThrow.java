@@ -148,8 +148,8 @@ public class ConstructorThrow extends OpcodeStackDetector {
                 try {
                     JavaClass thrownExClass = item.getJavaClass();
                     // in case of try-with-resources the compiler generates a nested try-catch with Throwable
-                    // so filter out Throwables
-                    // however this filters out throwables explicitly thrown by the programmer, that is not so common
+                    // so filter out Throwable
+                    // however this filters out throwable explicitly thrown by the programmer, that is not so common
                     if ("java.lang.Throwable".equals(thrownExClass.getClassName())) {
                         return;
                     }
@@ -282,8 +282,8 @@ public class ConstructorThrow extends OpcodeStackDetector {
                 try {
                     JavaClass thrownExClass = item.getJavaClass();
                     // in case of try-with-resources the compiler generates a nested try-catch with Throwable
-                    // so filter out Throwables
-                    // however this filters out throwables explicitly thrown by the programmer, that is not so common
+                    // so filter out Throwable
+                    // however this filters out throwable explicitly thrown by the programmer, that is not so common
                     if ("java.lang.Throwable".equals(thrownExClass.getClassName())) {
                         return;
                     }

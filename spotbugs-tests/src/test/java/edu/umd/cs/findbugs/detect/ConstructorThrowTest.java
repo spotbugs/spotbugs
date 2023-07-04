@@ -103,6 +103,27 @@ public class ConstructorThrowTest extends AbstractIntegrationTest {
     }
 
     @Test
+    public void testConstructorThrowCheck14() {
+        performAnalysis("constructorthrow/ConstructorThrowTest14.class");
+        assertNumOfCTBugs(1);
+        assertCTBugInLine(24);
+    }
+
+    @Test
+    public void testConstructorThrowCheck15() {
+        performAnalysis("constructorthrow/ConstructorThrowTest15.class");
+        assertNumOfCTBugs(1);
+        assertCTBugInLine(15);
+    }
+
+    @Test
+    public void testConstructorThrowCheck16() {
+        performAnalysis("constructorthrow/ConstructorThrowTest16.class");
+        assertNumOfCTBugs(1);
+        assertCTBugInLine(10);
+    }
+
+    @Test
     public void testGoodConstructorThrowCheck1() {
         performAnalysis("constructorthrow/ConstructorThrowNegativeTest1.class");
         assertNumOfCTBugs(0);
@@ -159,6 +180,12 @@ public class ConstructorThrowTest extends AbstractIntegrationTest {
     @Test
     public void testGoodConstructorThrowCheck10() {
         performAnalysis("constructorthrow/ConstructorThrowNegativeTest10.class");
+        assertNumOfCTBugs(0);
+    }
+
+    @Test
+    public void testGoodConstructorThrowCheck11() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest11.class");
         assertNumOfCTBugs(0);
     }
 
