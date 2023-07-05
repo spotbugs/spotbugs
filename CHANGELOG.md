@@ -30,6 +30,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - New Detector `FindVulnerableSecurityCheckMethods` for new bug type `VSC_VULNERABLE_SECURITY_CHECK_METHODS`. This bug is reported whenever a non-final and non-private method of a non-final class performs a security check using the `java.lang.SecurityManager`. (See [SEI CERT MET03-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET03-J.+Methods+that+perform+a+security+check+must+be+declared+private+or+final))
 - New function added to detector `SynchronizationOnSharedBuiltinConstant`to detect `DL_SYNCHRONIZATION_ON_INTERNED_STRING` ([#2266](https://github.com/spotbugs/spotbugs/pull/2266))
 - Make TypeQualifierResolver recognize org.apache.avro.reflect.Nullable ([#2066](https://github.com/spotbugs/spotbugs/pull/2066))
+- New detector `FindArgumentAssertions` detecting bug `ASSERTION_OF_ARGUMENTS` in case of validation of arguments of public functions using assertions (See [MET01-J. Never use assertions to validate method arguments](https://wiki.sei.cmu.edu/confluence/display/java/MET01-J.+Never+use+assertions+to+validate+method+arguments))
 - Add new detector `CT_CONSTRUCTOR_THROW` for detecting constructors that throw exceptions.
 
 ### Security
