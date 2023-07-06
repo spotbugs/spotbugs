@@ -1,4 +1,4 @@
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
+package constructorthrow;
 
 /**
  * In this test case the constructor throws an unchecked exception,
@@ -7,7 +7,6 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
  * Inspired by @KengoToda's suggestion.
  */
 public class ConstructorThrowTest6 {
-    @ExpectWarning("CT")
     public ConstructorThrowTest6() {
         throw new RuntimeException(); // Error, constructor throw.
     }

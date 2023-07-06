@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationDefault;
@@ -177,7 +178,13 @@ public class PreorderVisitor extends BetterVisitor {
     }
 
     public Set<String> getSurroundingCaughtExceptions(int pc, int maxTryBlockSize) {
-        HashSet<String> result = new HashSet<>();
+        return getSurroundingCaughtExceptionTypes(pc, maxTryBlockSize).stream()
+                .map(ex -> "C" + ex)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Integer> getSurroundingCaughtExceptionTypes(int pc, int maxTryBlockSize) {
+        HashSet<Integer> result = new HashSet<>();
         if (code == null) {
             throw new IllegalStateException("Not visiting Code");
         }
@@ -193,9 +200,9 @@ public class PreorderVisitor extends BetterVisitor {
                 if (size > thisSize) {
                     result.clear();
                     size = thisSize;
-                    result.add("C" + catchBlock.getCatchType());
+                    result.add(catchBlock.getCatchType());
                 } else if (size == thisSize) {
-                    result.add("C" + catchBlock.getCatchType());
+                    result.add(catchBlock.getCatchType());
                 }
             }
         }

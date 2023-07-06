@@ -19,12 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
+import java.net.URI;
+import java.util.Optional;
+
 import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.util.HTML;
-
-import java.net.URI;
-import java.util.Optional;
 
 /**
  * A BugPattern object collects all of the metadata for a particular species of
@@ -72,12 +72,14 @@ public class BugPattern implements Comparable<BugPattern> {
      * @param shortDescription
      *            short one-line description of the bug species
      * @param longDescription
-     *            longer one-line description; may contain placeholders for use
-     *            by {@link FindBugsMessageFormat} to format BugAnnotations
+     *            longer one-line description; may contain placeholders for use by {@link FindBugsMessageFormat} to
+     *            format BugAnnotations
      * @param detailText
      *            HTML text containing a full description of the bug species
      * @param bugsUrl
      *            URL of web-page containing bug descriptions or null if there's no such page.
+     * @param cweid
+     *            Common Weakness Enumeration (CWE) ID of the bug pattern
      */
     public BugPattern(String type, String abbrev, String category, boolean experimental, String shortDescription,
             String longDescription, String detailText, String bugsUrl, int cweid) {

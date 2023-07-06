@@ -1,10 +1,10 @@
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
+package constructorthrow;
 
 /**
  * In this test case, the constructor calls an overloaded constructor,
  * which calls a method, which throws an unchecked exception.
  */
-public class ConstructorThrowTest5{
+public class ConstructorThrowTest5 {
     private int i = 0;
 
     public ConstructorThrowTest5() {
@@ -16,7 +16,6 @@ public class ConstructorThrowTest5{
         testMethod();
     }
 
-    @ExpectWarning("CT")
     public void testMethod() {
         System.out.println(i);
         throw new RuntimeException();
