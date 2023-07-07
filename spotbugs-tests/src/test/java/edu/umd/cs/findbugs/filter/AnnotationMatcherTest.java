@@ -18,8 +18,6 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -30,8 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.After;
 import org.junit.Before;
@@ -146,19 +142,12 @@ public class AnnotationMatcherTest {
                 Paths.get(
                         "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
 
-        assertThat(bugCollection.getCollection(), hasSize(10));
+        AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher(annotationName);
+        long numberOfMatchedBugs = bugCollection.getCollection().stream()
+                .filter(bugInstanceMatcher::match)
+                .count();
 
-        AnnotationMatcher annotationMatcher = new AnnotationMatcher(annotationName);
-        BugInstanceMatcher piClassBug = new BugInstanceMatcherBuilder()
-                .bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
-                .build();
-        BugInstanceMatcher piInnerClassBug = new BugInstanceMatcherBuilder()
-                .bugType("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES")
-                .build();
-        for (BugInstance bugInstance : bugCollection) {
-            assertTrue(annotationMatcher.match(bugInstance) ||
-                    piClassBug.matches(bugInstance) || piInnerClassBug.matches(bugInstance));
-        }
+        assertEquals(5, numberOfMatchedBugs);
     }
 
     private String writeXMLAndGetStringOutput(AnnotationMatcher matcher, boolean disabled) throws IOException {

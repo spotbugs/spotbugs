@@ -19,6 +19,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.classfile.*;
 import org.slf4j.Logger;
@@ -28,10 +29,8 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
-import static edu.umd.cs.findbugs.detect.PublicIdentifiers.isPartOfStandardLibrary;
 
 public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
-    private final Logger log = LoggerFactory.getLogger(getClass());
     private final BugReporter bugReporter;
     private String sourceFileName = "";
     private JavaClass currentClass;
@@ -44,7 +43,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         JavaClass obj = classContext.getJavaClass();
 
-        if (isPartOfStandardLibrary(classContext.getXClass().getClassDescriptor().getPackageName())) {
+        if (PublicIdentifiers.isPartOfStandardLibrary(classContext.getXClass().getClassDescriptor().getPackageName())) {
             return;
         }
 
@@ -61,8 +60,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
         if (PUBLIC_IDENTIFIERS.contains(simpleName)) {
             bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES", NORMAL_PRIORITY)
-                    .addClass(this)
-                    .addUnknownSourceLine(simpleName, sourceFileName));
+                    .addClass(this));
         }
     }
 
@@ -72,8 +70,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
         if (PUBLIC_IDENTIFIERS.contains(name)) {
             bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES", NORMAL_PRIORITY)
                     .addClass(this)
-                    .addField(this)
-                    .addUnknownSourceLine(getClassName(), sourceFileName));
+                    .addField(this));
         }
     }
 
@@ -86,7 +83,6 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
                 }
             }
         }
-
         return false;
     }
 
@@ -109,12 +105,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
                 }
 
             } catch (ClassNotFoundException e) {
-                // if supers couldn't be found, we can't check for the method
-                // but should not let the bug go unnoticed
-                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES", NORMAL_PRIORITY)
-                        .addClassAndMethod(this)
-                        .addSourceLine(SourceLineAnnotation.forEntireMethod(currentClass, obj)));
-                log.debug("Could not get supers for " + currentClass.getClassName());
+                AnalysisContext.reportMissingClass(e);
             }
         }
     }
@@ -146,9 +137,9 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
         if (clazz.getOuterClassIndex() == outerClassIndex) {
             int parentNameIndex = ((ConstantClass) constantPool.getConstant(outerClassIndex)).getNameIndex();
-            return constantPool.getConstantUtf8(parentNameIndex).getBytes().replace("/", ".") + "." + constantPool.getConstantUtf8(clazz
-                    .getInnerNameIndex())
-                    .getBytes();
+            return String.format("%s.%s",
+                    edu.umd.cs.findbugs.util.ClassName.toDottedClassName(constantPool.getConstantUtf8(parentNameIndex).getBytes()),
+                    constantPool.getConstantUtf8(clazz.getInnerNameIndex()).getBytes());
         }
 
         ArrayList<String> classHierarchy = new ArrayList<>();
@@ -180,10 +171,10 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
         ListIterator<String> revIterator = classHierarchy.listIterator(classHierarchy.size());
         while (revIterator.hasPrevious()) {
-            sb.append("/").append(revIterator.previous());
+            sb.append(".").append(revIterator.previous());
         }
 
-        return sb.toString().replace("/", ".");
+        return sb.toString();
     }
 
     @Override
@@ -204,7 +195,6 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
                 bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES", NORMAL_PRIORITY)
                         .addClass(this)
                         .addClass(innerClassName, sourceFileName)
-                        .addUnknownSourceLine(innerClassName, sourceFileName)
                         .addString(classHierarchy));
             }
         }
