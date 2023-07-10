@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.classfile.*;
 
 import java.util.ArrayList;
@@ -136,7 +137,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
         if (clazz.getOuterClassIndex() == outerClassIndex) {
             int parentNameIndex = ((ConstantClass) constantPool.getConstant(outerClassIndex)).getNameIndex();
             return String.format("%s.%s",
-                    edu.umd.cs.findbugs.util.ClassName.toDottedClassName(constantPool.getConstantUtf8(parentNameIndex).getBytes()),
+                    ClassName.toDottedClassName(constantPool.getConstantUtf8(parentNameIndex).getBytes()),
                     constantPool.getConstantUtf8(clazz.getInnerNameIndex()).getBytes());
         }
 
@@ -184,6 +185,21 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
             // get the name of the cls through its name index
             int nameIndex = cls.getInnerNameIndex();
             if (nameIndex == 0) {
+                continue;
+            }
+
+            // check whether the inner class is from the standard library
+            int innerClassIndex = cls.getInnerClassIndex();
+            if (innerClassIndex == 0) {
+                continue;
+            }
+
+            ConstantClass constantClass = obj.getConstantPool().getConstant(innerClassIndex);
+            int constantClassIndex = constantClass.getNameIndex();
+            String fullQualifiedName = ClassName.toDottedClassName(obj.getConstantPool().getConstantUtf8(constantClassIndex).getBytes());
+
+            boolean isPartOfJSL = PublicIdentifiers.isPartOfStandardLibrary(ClassName.extractPackageName(fullQualifiedName));
+            if (isPartOfJSL) {
                 continue;
             }
 

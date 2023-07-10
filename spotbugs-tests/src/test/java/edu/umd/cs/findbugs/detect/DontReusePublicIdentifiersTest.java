@@ -50,6 +50,10 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         // check good public identifiers as inner classes
         performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames.class");
         assertZeroPublicIdentifierBug();
+
+        // check inner classes imported from the standard library
+        performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames2.class");
+        assertZeroPublicIdentifierBug();
     }
 
     @Test
