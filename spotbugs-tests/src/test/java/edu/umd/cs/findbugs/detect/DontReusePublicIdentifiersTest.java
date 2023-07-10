@@ -172,7 +172,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         List<ClassAnnotation> bugAnnotations = getBugCollection().getCollection().stream()
                 .filter(bugInstanceMatcher::matches)
                 .flatMap(bugInstance -> bugInstance.getAnnotations().stream())
-                .filter(instanceOf(ClassAnnotation.class)::matches)
+                .filter(bugInstance -> bugInstance instanceof ClassAnnotation)
                 .map(bugAnnotation -> (ClassAnnotation) bugAnnotation)
                 .toList();
         assertThat(bugAnnotations, hasItem(innerClassAnnotation));
