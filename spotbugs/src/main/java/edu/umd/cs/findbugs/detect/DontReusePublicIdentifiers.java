@@ -54,9 +54,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
 
     @Override
     public void visit(JavaClass obj) {
-        String[] fullName = obj.getClassName().split("\\.");
-        String simpleName = fullName[fullName.length - 1];
-
+        String simpleName = ClassName.extractSimpleName(obj.getClassName());
         if (PUBLIC_IDENTIFIERS.contains(simpleName)) {
             bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES", NORMAL_PRIORITY)
                     .addClass(this));
