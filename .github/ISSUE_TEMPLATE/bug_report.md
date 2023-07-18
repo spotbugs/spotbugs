@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-** Do not open intellij plugin issues here, open them at https://github.com/JetBrains/spotbugs-intellij-plugin/issues **
+** Do not open intellij plugin issues here, open them at [intellij-plugin](https://github.com/JetBrains/spotbugs-intellij-plugin/issues) **
 
 **Describe the bug**
 A clear and concise description of what the bug is.
