@@ -190,6 +190,8 @@ def jar = tasks.named('jar', Jar) {
                'Class-Path': project.providers.provider { jarInClasspath.collect{it.getName()}.join(' ') + ' config/' }
   }
 }
+tasks.spotbugsMain.dependsOn(jar)
+tasks.spotbugsGui.dependsOn(jar)
 
 // Populate bin folder with scripts
 def scripts = tasks.register('scripts', Copy) {
