@@ -362,6 +362,8 @@ def siteHtml = tasks.register('siteHtml', Copy) {
     // even if we have generated file, we should rerun this task to overwrite it.
     false
   }
+  dependsOn(pluginCandidateJar)
+  dependsOn(testPluginJar)
 }
 
 def siteCandidateHtml = tasks.register('siteCandidateHtml', Copy) {
