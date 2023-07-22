@@ -34,6 +34,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Make TypeQualifierResolver recognize org.apache.avro.reflect.Nullable ([#2066](https://github.com/spotbugs/spotbugs/pull/2066))
 - New detector `FindArgumentAssertions` detecting bug `ASSERTION_OF_ARGUMENTS` in case of validation of arguments of public functions using assertions (See [MET01-J. Never use assertions to validate method arguments](https://wiki.sei.cmu.edu/confluence/display/java/MET01-J.+Never+use+assertions+to+validate+method+arguments))
 - Add new detector `CT_CONSTRUCTOR_THROW` for detecting constructors that throw exceptions.
+- New detector `FindHidingSubClass` for bug type `HSBC_HIDING_SUB_CLASS`. This bug is reported whenever a subclass method hides the static method of super class. (See [SEI CERT MET07-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface)).
 
 ### Security
 - Disable access to external entities when processing XML ([#2217](https://github.com/spotbugs/spotbugs/pull/2217))
