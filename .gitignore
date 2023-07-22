@@ -51,3 +51,4 @@ spotbugs/web/
 spotbugsTestCases/build/
 spotbugsTestCases/history/
 *.log
+spotbugs-tests/src/test/resources/
