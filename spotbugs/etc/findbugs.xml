@@ -480,7 +480,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.FindBadForLoop" speed="fast"
                     reports="QF_QUESTIONABLE_FOR_LOOP"/>
           <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization" speed="fast"
-        reports=""/>
+                    reports=""/>
           <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" speed="fast"
                     reports="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD,NP_UNWRITTEN_FIELD,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_NULL_FIELD,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS,SIC_THREADLOCAL_DEADLY_EMBRACE,UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD,UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD,URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" speed="fast"
@@ -659,6 +659,8 @@
                     reports="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS,REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindOverridableMethodCall"
                     reports="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR,MC_OVERRIDABLE_METHOD_CALL_IN_CLONE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ConstructorThrow" speed="fast"
+                    reports="CT_CONSTRUCTOR_THROW"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindInstanceLockOnSharedStaticData" speed="fast"
                     reports="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA"/>
           <Detector class="edu.umd.cs.findbugs.detect.DontUseFloatsAsLoopCounters" speed="fast"
@@ -675,10 +677,13 @@
                     reports="PA_PUBLIC_PRIMITIVE_ATTRIBUTE,PA_PUBLIC_ARRAY_ATTRIBUTE,PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindVulnerableSecurityCheckMethods" speed="fast"
                     reports="VSC_VULNERABLE_SECURITY_CHECK_METHODS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions" speed="fast"
+                    reports="AA_ASSERTION_OF_ARGUMENTS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindHidingSubClass" speed="fast"
                     reports="HSBC_HIDING_SUB_CLASS"/>
-    <!-- Bug Categories -->
-           <BugCategory category="NOISE" hidden="true"/>
+
+          <!-- Bug Categories -->
+          <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
           <BugCode abbrev="USELESS_STRING"/>
@@ -703,13 +708,17 @@
           <BugCode abbrev="STCAL" cweid="366"/>
           <BugCode abbrev="ICAST" cweid="192"/>
           <BugCode abbrev="FB"/>
+          <BugCode abbrev="CT"/>
           <BugCode abbrev="AT"/>
           <BugCode abbrev="JUA"/>
           <BugCode abbrev="ASE"/>
           <BugCode abbrev="VSC"/>
+          <BugCode abbrev="DA"/>
           <BugCode abbrev="HSBC"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
+          <BugPattern abbrev="AA" type="AA_ASSERTION_OF_ARGUMENTS" category="BAD_PRACTICE" />
+          <BugPattern abbrev="CT" type="CT_CONSTRUCTOR_THROW" category="BAD_PRACTICE" />
           <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
           <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
 
