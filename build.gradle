@@ -37,7 +37,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    def junitVersion = '5.9.3'
+    def junitVersion = '5.10.0'
     compileOnly platform("org.junit:junit-bom:$junitVersion")
     testImplementation platform("org.junit:junit-bom:$junitVersion")
   }
