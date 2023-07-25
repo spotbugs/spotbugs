@@ -24,14 +24,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.classfile.*;
 
-import java.util.ArrayList;
-import java.util.ListIterator;
-
 import static edu.umd.cs.findbugs.detect.PublicIdentifiers.PUBLIC_IDENTIFIERS;
 
 public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
-    private String sourceFileName = "";
     private JavaClass currentClass;
 
     public DontReusePublicIdentifiers(BugReporter bugReporter) {
@@ -46,8 +42,6 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
             return;
         }
 
-        // save the source file name and class name for inner classes
-        sourceFileName = obj.getFileName();
         currentClass = obj;
         classContext.getJavaClass().accept(this);
     }
@@ -124,90 +118,6 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
                         .addClassAndMethod(this)
                         .add(localVariableAnnotation)
                         .addSourceLine(getClassContext(), this, this.getPC()));
-            }
-        }
-    }
-
-    private String lookUpHierarchy(InnerClass clazz, InnerClasses obj) {
-        ConstantPool constantPool = obj.getConstantPool();
-        int outerClassIndex = currentClass.getClassNameIndex();
-
-        if (clazz.getOuterClassIndex() == outerClassIndex) {
-            int parentNameIndex = ((ConstantClass) constantPool.getConstant(outerClassIndex)).getNameIndex();
-            return String.format("%s.%s",
-                    ClassName.toDottedClassName(constantPool.getConstantUtf8(parentNameIndex).getBytes()),
-                    constantPool.getConstantUtf8(clazz.getInnerNameIndex()).getBytes());
-        }
-
-        ArrayList<String> classHierarchy = new ArrayList<>();
-        InnerClass[] innerClasses = obj.getInnerClasses();
-        classHierarchy.add(constantPool.getConstantUtf8(clazz.getInnerNameIndex()).getBytes());
-
-        InnerClass current = clazz;
-        int parentIndex = current.getOuterClassIndex();
-        while (parentIndex != outerClassIndex) {
-            boolean foundParent = false;
-            for (InnerClass cls : innerClasses) {
-                if (cls.getInnerClassIndex() == parentIndex) {
-                    current = cls;
-                    parentIndex = current.getOuterClassIndex();
-                    foundParent = true;
-                    break;
-                }
-            }
-            // fallback to inner class name only
-            if (!foundParent) {
-                return constantPool.getConstantUtf8(clazz.getInnerNameIndex()).getBytes();
-            }
-            classHierarchy.add(constantPool.getConstantUtf8(current.getInnerNameIndex()).getBytes());
-        }
-
-        final int outerClassNameIndex = ((ConstantClass) constantPool.getConstant(outerClassIndex)).getNameIndex();
-        final StringBuilder sb = new StringBuilder();
-        sb.append(constantPool.getConstantUtf8(outerClassNameIndex).getBytes());
-
-        ListIterator<String> revIterator = classHierarchy.listIterator(classHierarchy.size());
-        while (revIterator.hasPrevious()) {
-            sb.append(".").append(revIterator.previous());
-        }
-
-        return sb.toString();
-    }
-
-    @Override
-    public void visitInnerClasses(InnerClasses obj) {
-        super.visitInnerClasses(obj);
-
-        for (InnerClass cls : obj.getInnerClasses()) {
-
-            // get the name of the cls through its name index
-            int nameIndex = cls.getInnerNameIndex();
-            if (nameIndex == 0) {
-                continue;
-            }
-
-            // check whether the inner class is from the standard library
-            int innerClassIndex = cls.getInnerClassIndex();
-            if (innerClassIndex == 0) {
-                continue;
-            }
-
-            ConstantClass constantClass = obj.getConstantPool().getConstant(innerClassIndex);
-            int constantClassIndex = constantClass.getNameIndex();
-            String fullQualifiedName = ClassName.toDottedClassName(obj.getConstantPool().getConstantUtf8(constantClassIndex).getBytes());
-
-            boolean isPartOfJSL = PublicIdentifiers.isPartOfStandardLibrary(ClassName.extractPackageName(fullQualifiedName));
-            if (isPartOfJSL) {
-                continue;
-            }
-
-            String classHierarchy = lookUpHierarchy(cls, obj);
-            String innerClassName = obj.getConstantPool().getConstantUtf8(nameIndex).getBytes();
-            if (PUBLIC_IDENTIFIERS.contains(innerClassName)) {
-                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES", NORMAL_PRIORITY)
-                        .addClass(this)
-                        .addClass(innerClassName, sourceFileName)
-                        .addString(classHierarchy));
             }
         }
     }

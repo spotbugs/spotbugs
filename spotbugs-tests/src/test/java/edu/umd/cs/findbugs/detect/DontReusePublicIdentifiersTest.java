@@ -5,7 +5,6 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.Test;
 
-import java.util.List;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,16 +30,18 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
                 "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$File.class",
                 "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$BigInteger.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_CLASS_BUG, 4);
-        assertShadowedPublicIdentifierClassBug("Vector");
-        assertShadowedPublicIdentifierClassBug("File");
-        assertShadowedPublicIdentifierClassBug("Buffer");
-        assertShadowedPublicIdentifierClassBug("BigInteger");
+        assertShadowedPublicIdentifierClassBug("ShadowedPublicIdentifiersInnerClassNames$Vector");
+        assertShadowedPublicIdentifierClassBug("ShadowedPublicIdentifiersInnerClassNames$Buffer");
+        assertShadowedPublicIdentifierClassBug("ShadowedPublicIdentifiersInnerClassNames$File");
+        assertShadowedPublicIdentifierClassBug("ShadowedPublicIdentifiersInnerClassNames$BigInteger");
 
         // check shadowed public identifiers as repeatedly nested classes
-        performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames2.class");
+        performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames2.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames2$List.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames2$List$Node.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_CLASS_BUG, 2);
-        assertShadowedPublicIdentifierClassBug("List");
-        assertShadowedPublicIdentifierClassBug("Node");
+        assertShadowedPublicIdentifierClassBug("ShadowedPublicIdentifiersInnerClassNames2$List");
+        assertShadowedPublicIdentifierClassBug("ShadowedPublicIdentifiersInnerClassNames2$List$Node");
     }
 
     @Test
