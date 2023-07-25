@@ -13,7 +13,6 @@ import static org.hamcrest.Matchers.hasItem;
 
 public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     private static final String PI_CLASS_BUG = "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES";
-    private static final String PI_INNER_CLASS_BUG = "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES";
     private static final String PI_FIELD_BUG = "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES";
     private static final String PI_METHOD_BUG = "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES";
     private static final String PI_VARIABLE_BUG = "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES";
@@ -31,7 +30,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
                 "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$Buffer.class",
                 "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$File.class",
                 "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$BigInteger.class");
-        assertNumOfShadowedPublicIdentifierBugs(PI_INNER_CLASS_BUG, 4);
+        assertNumOfShadowedPublicIdentifierBugs(PI_CLASS_BUG, 4);
         assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "Vector");
         assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "File");
         assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "Buffer");
@@ -39,7 +38,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
 
         // check shadowed public identifiers as repeatedly nested classes
         performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames2.class");
-        assertNumOfShadowedPublicIdentifierBugs(PI_INNER_CLASS_BUG, 2);
+        assertNumOfShadowedPublicIdentifierBugs(PI_CLASS_BUG, 2);
         assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames2", "List");
         assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames2", "Node");
     }
@@ -125,7 +124,6 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
 
     private void assertZeroPublicIdentifierBug() {
         assertNumOfShadowedPublicIdentifierBugs(PI_CLASS_BUG, 0);
-        assertNumOfShadowedPublicIdentifierBugs(PI_INNER_CLASS_BUG, 0);
         assertNumOfShadowedPublicIdentifierBugs(PI_METHOD_BUG, 0);
         assertNumOfShadowedPublicIdentifierBugs(PI_FIELD_BUG, 0);
         assertNumOfShadowedPublicIdentifierBugs(PI_VARIABLE_BUG, 0);
@@ -170,7 +168,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
 
     private void assertShadowedPublicIdentifierInnerClassBug(String applicationClassName, String innerClassName) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(PI_INNER_CLASS_BUG)
+                .bugType(PI_CLASS_BUG)
                 .inClass(applicationClassName)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));

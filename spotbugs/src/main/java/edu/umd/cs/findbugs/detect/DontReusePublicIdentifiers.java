@@ -204,7 +204,7 @@ public class DontReusePublicIdentifiers extends BytecodeScanningDetector {
             String classHierarchy = lookUpHierarchy(cls, obj);
             String innerClassName = obj.getConstantPool().getConstantUtf8(nameIndex).getBytes();
             if (PUBLIC_IDENTIFIERS.contains(innerClassName)) {
-                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES", NORMAL_PRIORITY)
+                bugReporter.reportBug(new BugInstance(this, "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES", NORMAL_PRIORITY)
                         .addClass(this)
                         .addClass(innerClassName, sourceFileName)
                         .addString(classHierarchy));
