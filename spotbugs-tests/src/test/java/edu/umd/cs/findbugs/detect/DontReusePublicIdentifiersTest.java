@@ -22,7 +22,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         // check shadowed public identifiers as standalone classes
         performAnalysis("publicIdentifiers/standalone/InputStream.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_CLASS_BUG, 1);
-        assertShadowedPublicIdentifierClassBug();
+        assertShadowedPublicIdentifierClassBug("InputStream");
 
         // check shadowed public identifiers as inner classes
         performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames.class",
@@ -31,16 +31,16 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
                 "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$File.class",
                 "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$BigInteger.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_CLASS_BUG, 4);
-        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "Vector");
-        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "File");
-        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "Buffer");
-        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "BigInteger");
+        assertShadowedPublicIdentifierClassBug("Vector");
+        assertShadowedPublicIdentifierClassBug("File");
+        assertShadowedPublicIdentifierClassBug("Buffer");
+        assertShadowedPublicIdentifierClassBug("BigInteger");
 
         // check shadowed public identifiers as repeatedly nested classes
         performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames2.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_CLASS_BUG, 2);
-        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames2", "List");
-        assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames2", "Node");
+        assertShadowedPublicIdentifierClassBug("List");
+        assertShadowedPublicIdentifierClassBug("Node");
     }
 
     @Test
@@ -129,10 +129,10 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         assertNumOfShadowedPublicIdentifierBugs(PI_VARIABLE_BUG, 0);
     }
 
-    private void assertShadowedPublicIdentifierClassBug() {
+    private void assertShadowedPublicIdentifierClassBug(String className) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType(PI_CLASS_BUG)
-                .inClass("InputStream")
+                .inClass(className)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
@@ -166,20 +166,4 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
-    private void assertShadowedPublicIdentifierInnerClassBug(String applicationClassName, String innerClassName) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(PI_CLASS_BUG)
-                .inClass(applicationClassName)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
-
-        final ClassAnnotation innerClassAnnotation = new ClassAnnotation(innerClassName);
-        List<ClassAnnotation> bugAnnotations = getBugCollection().getCollection().stream()
-                .filter(bugInstanceMatcher::matches)
-                .flatMap(bugInstance -> bugInstance.getAnnotations().stream())
-                .filter(bugInstance -> bugInstance instanceof ClassAnnotation)
-                .map(bugAnnotation -> (ClassAnnotation) bugAnnotation)
-                .toList();
-        assertThat(bugAnnotations, hasItem(innerClassAnnotation));
-    }
 }
