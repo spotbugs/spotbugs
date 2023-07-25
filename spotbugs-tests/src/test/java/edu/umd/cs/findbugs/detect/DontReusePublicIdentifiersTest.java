@@ -26,7 +26,11 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         assertShadowedPublicIdentifierClassBug();
 
         // check shadowed public identifiers as inner classes
-        performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames.class");
+        performAnalysis("publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$Vector.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$Buffer.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$File.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$BigInteger.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_INNER_CLASS_BUG, 4);
         assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "Vector");
         assertShadowedPublicIdentifierInnerClassBug("ShadowedPublicIdentifiersInnerClassNames", "File");
@@ -47,7 +51,11 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         assertZeroPublicIdentifierBug();
 
         // check good public identifiers as inner classes
-        performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames.class");
+        performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames.class",
+                "publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames$1.class",
+                "publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames$MyBuffer.class",
+                "publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames$MyFile.class",
+                "publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames$MyBigInteger.class");
         assertZeroPublicIdentifierBug();
 
         // check inner classes imported from the standard library
