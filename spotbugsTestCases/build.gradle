@@ -29,7 +29,7 @@ dependencies {
   compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5'
   implementation 'org.checkerframework:checker-qual:3.36.0'
 
-  implementation 'org.junit.vintage:junit-vintage-engine:5.9.3'
+  implementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
   implementation 'org.testng:testng:7.8.0'
 
   implementation project(':spotbugs')

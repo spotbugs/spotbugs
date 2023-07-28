@@ -11,7 +11,7 @@ dependencies {
   implementation project(':spotbugsTestCases')
   implementation project(':test-harness')
 
-  implementation 'org.junit.vintage:junit-vintage-engine:5.9.3'
+  implementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
   implementation 'org.hamcrest:hamcrest-core:2.2'
   implementation 'org.apache.ant:ant:1.10.13'
   implementation libs.log4j.core

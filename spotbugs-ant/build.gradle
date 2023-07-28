@@ -8,7 +8,7 @@ dependencies {
   compileOnly 'org.apache.ant:ant:1.10.13'
 
   testImplementation 'org.apache.ant:ant:1.10.13'
-  testImplementation 'org.junit.vintage:junit-vintage-engine:5.9.3'
+  testImplementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
   testImplementation 'org.hamcrest:hamcrest-core:2.2'
 }
 
