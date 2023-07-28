@@ -45,6 +45,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Only run release action on 'spotbugs' and use Eclipse 4.14 ([#2317](https://github.com/spotbugs/spotbugs/pull/2317))
 - Prefer log4j2 2.20.0 ([#2480](https://github.com/spotbugs/spotbugs/pull/2480))
 - Prefer logback 1.4.8 ([#2480](https://github.com/spotbugs/spotbugs/pull/2480))
+- Switch junit 4 for junit 5 vintage engine ([#2483](https://github.com/spotbugs/spotbugs/pull/2483))
 
 ## 4.7.3 - 2022-10-15
 ### Fixed
