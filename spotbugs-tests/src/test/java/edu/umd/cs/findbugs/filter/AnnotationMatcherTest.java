@@ -147,7 +147,7 @@ public class AnnotationMatcherTest {
                 .filter(bugInstanceMatcher::match)
                 .count();
 
-        assertEquals(6, numberOfMatchedBugs);
+        assertEquals(4, numberOfMatchedBugs);
     }
 
     private String writeXMLAndGetStringOutput(AnnotationMatcher matcher, boolean disabled) throws IOException {

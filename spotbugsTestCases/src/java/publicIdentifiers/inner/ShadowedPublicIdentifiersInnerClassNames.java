@@ -49,14 +49,14 @@ public class ShadowedPublicIdentifiersInnerClassNames {
 
     public static class File {
         private final String name;
-        private final boolean hidden;
+        private static boolean hidden = false;
 
         public File(String name) {
             this.name = name;
-            this.hidden = true;
+            hidden = true;
         }
 
-        public boolean isHidden() {
+        public static boolean isHidden() {
             return hidden;
         }
     }
