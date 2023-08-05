@@ -60,6 +60,11 @@ public class TestCheckerFrameworkTypeAnnotations extends AbstractIntegrationTest
                 .inMethod("usingNullOnNonNullParameterWithNonNullOnGenerics")
                 .build();
 
+        final BugInstanceMatcher matcherUsingNonNullArrayOfNullable = new BugInstanceMatcherBuilder()
+                .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+                .inMethod("usingNonNullArrayOfNullable")
+                .build();
+
         assertThat(getBugCollection(), containsExactly(1, matcherReturningNullOnNonNullMethod));
         assertThat(getBugCollection(), containsExactly(0, matcherReturningNullWithNonNullOnGenerics));
         assertThat(getBugCollection(), containsExactly(1, matcherReturningNullOnNonNullMethodWithNonNullOnGenerics));
@@ -72,6 +77,8 @@ public class TestCheckerFrameworkTypeAnnotations extends AbstractIntegrationTest
         assertThat(getBugCollection(), containsExactly(1, matcherNonNullParameterWithNonNullOnGenerics));
 
         assertThat(getBugCollection(), containsExactly(2, matcherMethodParameters));
+        
+        assertThat(getBugCollection(), containsExactly(0, matcherUsingNonNullArrayOfNullable));
 
     }
 
