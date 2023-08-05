@@ -49,4 +49,14 @@ public class CheckerFrameworkTypeAnnotations {
     
     public <V extends @NonNull Object> void nonNullParameterWithNonNullOnGenerics(@NonNull List<@NonNull V> list) {
     }
+    
+    // We should NOT get a NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE here
+    public int usingNonNullArrayOfNullable() {
+    	return returningNonNullArrayOfNullable().hashCode();
+    }
+    
+    // The elements are nullable but the array itself is not, see https://github.com/spotbugs/spotbugs/issues/1938
+    public @Nullable String @NonNull [] returningNonNullArrayOfNullable() {
+    	return new String[5];
+    }
 }
