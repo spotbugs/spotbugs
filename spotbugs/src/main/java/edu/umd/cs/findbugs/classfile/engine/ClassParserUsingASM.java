@@ -508,13 +508,13 @@ public class ClassParserUsingASM implements ClassParserInterface {
         public org.objectweb.asm.AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath,
                 String desc, boolean visible) {
             TypeReference typeRefObject = new TypeReference(typeRef);
-            if (typeRefObject.getSort() == TypeReference.METHOD_FORMAL_PARAMETER) {
+            if (typeRefObject.getSort() == TypeReference.METHOD_FORMAL_PARAMETER && typePath == null) {
                 // treat as parameter annotation
                 AnnotationValue value = new AnnotationValue(desc);
                 mBuilder.addParameterAnnotation(typeRefObject.getFormalParameterIndex(), desc, value);
                 return value.getAnnotationVisitor();
             }
-            if (typeRefObject.getSort() == TypeReference.METHOD_RETURN) {
+            if (typeRefObject.getSort() == TypeReference.METHOD_RETURN && typePath == null) {
                 // treat as method annotation
                 AnnotationValue value = new AnnotationValue(desc);
                 mBuilder.addAnnotation(desc, value);
