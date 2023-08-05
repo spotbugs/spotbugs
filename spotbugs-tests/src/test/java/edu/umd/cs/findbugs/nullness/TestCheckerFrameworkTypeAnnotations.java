@@ -77,7 +77,7 @@ public class TestCheckerFrameworkTypeAnnotations extends AbstractIntegrationTest
         assertThat(getBugCollection(), containsExactly(1, matcherNonNullParameterWithNonNullOnGenerics));
 
         assertThat(getBugCollection(), containsExactly(2, matcherMethodParameters));
-        
+
         assertThat(getBugCollection(), containsExactly(0, matcherUsingNonNullArrayOfNullable));
 
     }
