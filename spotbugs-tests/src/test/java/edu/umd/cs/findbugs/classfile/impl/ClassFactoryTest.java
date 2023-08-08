@@ -114,11 +114,11 @@ public class ClassFactoryTest {
     @Test
     public void acceptConstantDynamic() throws Exception {
         String fileName = "../spotbugsTestCases/src/classSamples/recordCompileWithBazel6.2/Foo.clazz";
-        
-        try (SingleFileCodeBase codeBase = new SingleFileCodeBase(null, fileName)) {
-        	ClassDescriptor classDescriptor = codeBase.getClassDescriptor();
 
-        	assertNotNull(classDescriptor);
+        try (SingleFileCodeBase codeBase = new SingleFileCodeBase(null, fileName)) {
+            ClassDescriptor classDescriptor = codeBase.getClassDescriptor();
+
+            assertNotNull(classDescriptor);
         }
     }
 }
