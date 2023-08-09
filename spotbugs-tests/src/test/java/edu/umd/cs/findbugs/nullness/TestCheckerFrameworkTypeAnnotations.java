@@ -21,96 +21,77 @@ public class TestCheckerFrameworkTypeAnnotations extends AbstractIntegrationTest
 
     @Test
     public void methodReturns() {
-        // A matcher for all NP_NONNULL_RETURN_VIOLATION
-        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_NONNULL_RETURN_VIOLATION")
-                .build();
-
-        assertThat(getBugCollection(), containsExactly(2, matcher));
+        assertBugsSpottedCount("NP_NONNULL_RETURN_VIOLATION", 2);
     }
 
     @Test
     public void returningNullOnNonNullMethod() {
-        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_NONNULL_RETURN_VIOLATION")
-                .inMethod("returningNullOnNonNullMethod")
-                .atLine(13)
-                .build();
-        assertThat(getBugCollection(), containsExactly(1, matcher));
+        assertBugSpotted("NP_NONNULL_RETURN_VIOLATION", "returningNullOnNonNullMethod", 13);
     }
 
     @Test
     public void returningNullWithNonNullOnGenerics() {
-        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_NONNULL_RETURN_VIOLATION")
-                .inMethod("returningNullWithNonNullOnGenerics")
-                .build();
-
-        assertThat(getBugCollection(), containsExactly(0, matcher));
+        assertNoBugSpotted("NP_NONNULL_RETURN_VIOLATION", "returningNullWithNonNullOnGenerics");
     }
 
     @Test
     public void returningNullOnNonNullMethodWithNonNullOnGenerics() {
-        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_NONNULL_RETURN_VIOLATION")
-                .inMethod("returningNullOnNonNullMethodWithNonNullOnGenerics")
-                .atLine(25)
-                .build();
-
-        assertThat(getBugCollection(), containsExactly(1, matcher));
+        assertBugSpotted("NP_NONNULL_RETURN_VIOLATION", "returningNullOnNonNullMethodWithNonNullOnGenerics", 25);
     }
 
     @Test
     public void methodParametersTests() {
-        // A matcher for all NP_NONNULL_PARAM_VIOLATION
-        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_NONNULL_PARAM_VIOLATION")
-                .build();
-
-        assertThat(getBugCollection(), containsExactly(2, matcher));
+        assertBugsSpottedCount("NP_NONNULL_PARAM_VIOLATION", 2);
     }
 
     @Test
     public void usingNullForNonNullParameter() {
-        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_NONNULL_PARAM_VIOLATION")
-                .inMethod("usingNullForNonNullParameter")
-                .atLine(30)
-                .build();
-
-        assertThat(getBugCollection(), containsExactly(1, matcher));
+        assertBugSpotted("NP_NONNULL_PARAM_VIOLATION", "usingNullForNonNullParameter", 30);
     }
 
     @Test
     public void usingNullParameterWithNonNullOnGenerics() {
-        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_NONNULL_PARAM_VIOLATION")
-                .inMethod("usingNullParameterWithNonNullOnGenerics")
-                .build();
-
-        assertThat(getBugCollection(), containsExactly(0, matcher));
+        assertNoBugSpotted("NP_NONNULL_PARAM_VIOLATION", "usingNullParameterWithNonNullOnGenerics");
     }
 
     @Test
     public void usingNullOnNonNullParameterWithNonNullOnGenerics() {
+        assertBugSpotted("NP_NONNULL_PARAM_VIOLATION", "usingNullOnNonNullParameterWithNonNullOnGenerics", 47);
+    }
+
+    @Test
+    public void usingNonNullArrayOfNullable() {
+        assertNoBugSpotted("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "usingNonNullArrayOfNullable");
+
+    }
+
+    private void assertBugSpotted(String bugType, String method, int line) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_NONNULL_PARAM_VIOLATION")
-                .inMethod("usingNullOnNonNullParameterWithNonNullOnGenerics")
-                .atLine(47)
+                .bugType(bugType)
+                .inClass("CheckerFrameworkTypeAnnotations")
+                .inMethod(method)
+                .atLine(line)
                 .build();
 
         assertThat(getBugCollection(), containsExactly(1, matcher));
     }
 
-    @Test
-    public void usingNonNullArrayOfNullable() {
+    private void assertNoBugSpotted(String bugType, String method) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-                .inMethod("usingNonNullArrayOfNullable")
+                .bugType(bugType)
+                .inClass("CheckerFrameworkTypeAnnotations")
+                .inMethod(method)
                 .build();
 
         assertThat(getBugCollection(), containsExactly(0, matcher));
-
     }
 
+    private void assertBugsSpottedCount(String bugType, int expectedCount) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass("CheckerFrameworkTypeAnnotations")
+                .build();
+
+        assertThat(getBugCollection(), containsExactly(expectedCount, matcher));
+    }
 }
