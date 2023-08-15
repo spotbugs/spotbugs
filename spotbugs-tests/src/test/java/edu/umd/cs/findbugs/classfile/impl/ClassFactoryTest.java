@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.junit.jupiter.api.AfterEach;
@@ -113,12 +114,16 @@ class ClassFactoryTest {
 
     @Test
     void acceptConstantDynamic() throws Exception {
-        String fileName = "../spotbugsTestCases/src/classSamples/recordCompileWithBazel6.2/Foo.clazz";
+        ArrayList<String> fileNames = new ArrayList<>();
+        fileNames.add("../spotbugsTestCases/src/classSamples/recordCompileWithJaCoCo0.8.8/Foo.clazz");
+        fileNames.add("../spotbugsTestCases/src/classSamples/recordCompileWithJaCoCo0.8.8/FooWithMember.clazz");
 
-        try (SingleFileCodeBase codeBase = new SingleFileCodeBase(null, fileName)) {
-            ClassDescriptor classDescriptor = codeBase.getClassDescriptor();
+        for (String fileName : fileNames) {
+            try (SingleFileCodeBase codeBase = new SingleFileCodeBase(null, fileName)) {
+                ClassDescriptor classDescriptor = codeBase.getClassDescriptor();
 
-            assertNotNull(classDescriptor);
+                assertNotNull(classDescriptor);
+            }
         }
     }
 }
