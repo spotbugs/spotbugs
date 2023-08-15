@@ -25,6 +25,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Eclipse annotation classpath initializer is hard-coded to jsr305 version 3.0.1, fix to 3.0.2 per #2470
 - Fixed annotation on generic or array incorrectly considered for the nullability of a method parameter or return type ([#2502](https://github.com/spotbugs/spotbugs/issues/2502))
 - Added support for CONSTANT_Dynamic in constant class pool ([#2506](https://github.com/spotbugs/spotbugs/issues/2506))
+- Recognise enums and records as immutable ([#2356](https://github.com/spotbugs/spotbugs/issues/2356))
 - Added detections of reliance on default encoding in java.nio.file.Files ([#2114](https://github.com/spotbugs/spotbugs/issues/2114))
 
 ### Added
