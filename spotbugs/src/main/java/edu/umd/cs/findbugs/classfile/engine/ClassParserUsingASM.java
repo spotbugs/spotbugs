@@ -686,6 +686,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
             case Const.CONSTANT_Integer:
             case Const.CONSTANT_Float:
             case Const.CONSTANT_NameAndType:
+            case Const.CONSTANT_Dynamic:
             case Const.CONSTANT_InvokeDynamic:
                 size = 5;
                 break;
