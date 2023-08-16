@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.Test;
@@ -12,8 +13,11 @@ public class Issue2436Test extends AbstractIntegrationTest {
 
     @Test
     public void test() {
-        performAnalysis("lambdas/Issue2436.class");
-        BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder().build();
+        performAnalysis("ghIssues/Issue2436.class");
+        BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder()
+                .bugType("SE_NO_SERIALVERSIONID")
+                .withConfidence(Confidence.LOW)
+                .build();
         assertThat(getBugCollection(), containsExactly(1, bugMatcher));
     }
 

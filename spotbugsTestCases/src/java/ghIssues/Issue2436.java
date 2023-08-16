@@ -1,4 +1,4 @@
-package lambdas;
+package ghIssues;
 
 import java.io.Serializable;
 
