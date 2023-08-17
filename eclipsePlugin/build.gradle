@@ -280,12 +280,16 @@ def pluginDailyJar = tasks.register('pluginDailyJar', Copy) {
   dependsOn pluginJar
   from pluginJar.map { it.outputs.files }
   into "${buildDir}/site/eclipse-daily/plugins/"
+  mustRunAfter(siteHtml)
+  mustRunAfter(siteXml)
 }
 
 def pluginStableLatestJar = tasks.register('pluginStableLatestJar', Copy) {
   dependsOn pluginJar
   from pluginJar.map { it.outputs.files }
   into "${buildDir}/site/eclipse-stable-latest/plugins/"
+  mustRunAfter(siteHtml)
+  mustRunAfter(siteXml)
 }
 
 def siteFilterTokens = [
@@ -362,6 +366,8 @@ def siteHtml = tasks.register('siteHtml', Copy) {
     // even if we have generated file, we should rerun this task to overwrite it.
     false
   }
+  dependsOn(pluginCandidateJar)
+  dependsOn(testPluginJar)
 }
 
 def siteCandidateHtml = tasks.register('siteCandidateHtml', Copy) {
@@ -412,6 +418,8 @@ def siteXml = tasks.register('siteXml', Copy) {
     // even if we have generated file, we should rerun this task to overwrite it.
     false
   }
+  dependsOn(pluginCandidateJar)
+  dependsOn(testPluginJar)
 }
 
 def siteCandidateXml = tasks.register('siteCandidateXml', Copy) {
