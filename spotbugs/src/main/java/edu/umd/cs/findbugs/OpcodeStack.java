@@ -44,6 +44,9 @@ import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.BootstrapMethod;
+import org.apache.bcel.classfile.BootstrapMethods;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
@@ -51,7 +54,9 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantInteger;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantLong;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
@@ -60,6 +65,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
+import org.apache.commons.lang3.tuple.Pair;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
 import edu.umd.cs.findbugs.StackMapAnalyzer.JumpInfoFromStackMap;
@@ -128,6 +134,38 @@ public class OpcodeStack {
     private static final boolean DEBUG = SystemProperties.getBoolean("ocstack.debug");
 
     private static final boolean DEBUG2 = DEBUG;
+
+    private static final Map<Pair<String, String>, String> IMMUTABLE_RETURNER_MAP = new HashMap<>();
+    static {
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyList"), "Ljava/util/Collections$EmptyList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyMap"), "Ljava/util/Collections$EmptyMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyNavigableMap"), "Ljava/util/Collections$EmptyNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptySortedMap"), "Ljava/util/Collections$EmptyNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptySet"), "Ljava/util/Collections$EmptySet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyNavigableSet"), "Ljava/util/Collections$EmptyNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptySortedSet"), "Ljava/util/Collections$EmptyNavigableSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "singletonList"), "Ljava/util/Collections$SingletonList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "singletonMap"), "Ljava/util/Collections$SingletonMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "singleton"), "Ljava/util/Collections$SingletonSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableList"), "Ljava/util/Collections$UnmodifiableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableMap"), "Ljava/util/Collections$UnmodifiableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableNavigableMap"), "Ljava/util/Collections$UnmodifiableNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableSortedMap"), "Ljava/util/Collections$UnmodifiableSortedMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableSet"), "Ljava/util/Collections$UnmodifiableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableNavigableSet"), "Ljava/util/Collections$UnmodifiableNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableSortedSet"), "Ljava/util/Collections$UnmodifiableSortedSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/List", "of"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/List", "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Map", "of"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Map", "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Set", "of"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Set", "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
+    }
 
     @StaticConstant
     static final HashMap<String, String> boxedTypes = new HashMap<>();
@@ -933,7 +971,8 @@ public class OpcodeStack {
             XMethod writingToSource = getReturnValueOf();
 
 
-            return writingToSource != null && "javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
+            return writingToSource != null && ("javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
+                    || "jakarta.servlet.http.HttpServletResponse".equals(writingToSource.getClassName()))
                     && ("getWriter".equals(writingToSource.getName()) || "getOutputStream".equals(writingToSource.getName()));
         }
 
@@ -2624,15 +2663,35 @@ public class OpcodeStack {
             Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
             push(result);
             return;
-        } else if (seen == Const.INVOKESTATIC && "(Ljava/util/List;)Ljava/util/List;".equals(signature)
-                && "java/util/Collections".equals(clsName)) {
-            Item requestParameter = pop();
-            if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
-                Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
+        } else if (seen == Const.INVOKESTATIC) {
+            Item requestParameter = null;
+            if ("(Ljava/util/List;)Ljava/util/List;".equals(signature)
+                    && "java/util/Collections".equals(clsName)) {
+                requestParameter = top();
+            }
+            String returnTypeName = IMMUTABLE_RETURNER_MAP.get(Pair.of(clsName, methodName));
+            if (returnTypeName != null) {
+                SignatureParser sp = new SignatureParser(signature);
+                for (int i = 0; i < sp.getNumParameters(); ++i) {
+                    pop();
+                }
+                Item result;
+                if (requestParameter != null && JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
+                    result = new Item("Ljava/util/Collections$UnmodifiableRandomAccessList;");
+                } else {
+                    result = new Item(returnTypeName);
+                }
                 push(result);
                 return;
+            } else if (requestParameter != null) {
+                pop();
+                if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
+                    Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
+                    push(result);
+                    return;
+                }
+                push(requestParameter); // fall back to standard logic
             }
-            push(requestParameter); // fall back to standard logic
         }
 
         pushByInvoke(dbc, seen != Const.INVOKESTATIC);
@@ -2747,12 +2806,74 @@ public class OpcodeStack {
     }
 
     private void processInvokeDynamic(DismantleBytecode dbc) {
+        String methodName = dbc.getNameConstantOperand();
+        String appenderValue = null;
+        boolean servletRequestParameterTainted = false;
+        Item topItem = null;
+        if (getStackDepth() > 0) {
+            topItem = getStackItem(0);
+        }
+
         String signature = dbc.getSigConstantOperand();
+
+        if ("makeConcatWithConstants".equals(methodName)) {
+            String[] args = new SignatureParser(signature).getArguments();
+            if (args.length == 1) {
+                Item i = getStackItem(0);
+                if (i.isServletParameterTainted()) {
+                    servletRequestParameterTainted = true;
+                }
+                Object sVal = i.getConstant();
+                if (sVal == null) {
+                    appenderValue = null;
+                } else {
+                    JavaClass clazz = dbc.getThisClass();
+                    BootstrapMethod bm = getBootstrapMethod(clazz.getAttributes(), dbc.getConstantRefOperand());
+                    ConstantPool cp = clazz.getConstantPool();
+                    String concatArg = ((ConstantString) cp.getConstant(bm.getBootstrapArguments()[0])).getBytes(cp);
+                    appenderValue = concatArg.replace("\u0001", sVal.toString());
+                }
+            } else if (args.length == 2) {
+                Item i1 = getStackItem(0);
+                Item i2 = getStackItem(1);
+                if (i1.isServletParameterTainted() || i2.isServletParameterTainted()) {
+                    servletRequestParameterTainted = true;
+                }
+                Object sVal1 = i1.getConstant();
+                Object sVal2 = i2.getConstant();
+                if (sVal1 == null || sVal2 == null) {
+                    appenderValue = null;
+                } else {
+                    appenderValue = sVal2.toString() + sVal1.toString();
+                }
+            }
+        }
 
         int numberArguments = PreorderVisitor.getNumberArguments(signature);
 
         pop(numberArguments);
         pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
+
+        if ((appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
+            Item i = this.getStackItem(0);
+            i.constValue = appenderValue;
+            if (servletRequestParameterTainted) {
+                i.injection = topItem.injection;
+                i.setServletParameterTainted();
+            }
+            return;
+        }
+
+    }
+
+    private BootstrapMethod getBootstrapMethod(Attribute[] attribs, Constant index) {
+        ConstantInvokeDynamic bmidx = (ConstantInvokeDynamic) index;
+        for (Attribute attr : attribs) {
+            if (attr instanceof BootstrapMethods) {
+                return ((BootstrapMethods) attr).getBootstrapMethods()[bmidx.getBootstrapMethodAttrIndex()];
+            }
+        }
+        return null;
     }
 
     private boolean mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
@@ -3170,6 +3291,10 @@ public class OpcodeStack {
 
     private Item pop() {
         return stack.remove(stack.size() - 1);
+    }
+
+    private Item top() {
+        return stack.get(stack.size() - 1);
     }
 
     public void replace(int stackOffset, Item value) {

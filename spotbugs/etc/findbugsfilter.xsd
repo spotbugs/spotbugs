@@ -58,6 +58,13 @@
             <documentation>This element matches warnings associated with a particular class.</documentation>
         </annotation>
     </element>
+    
+    <element name="Annotation" type="fb:AnnotationType">
+        <annotation>
+            <documentation>This element matches warnings associated with a particular class that is annotated with a 
+                particular java class annotation.</documentation>
+        </annotation>
+    </element>
 
     <element name="Type" type="fb:TypeType">
         <annotation>
@@ -171,6 +178,16 @@
             </annotation></attribute>
     </complexType>
 
+    <complexType name="AnnotationType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="name" type="string">
+            <annotation>
+                <documentation>The exact or regex match pattern for a java class annotation name. If the name starts with the ~ character the rest of the attribute content is interpreted as a Java regular expression.</documentation>
+            </annotation></attribute>
+    </complexType>
+    
     <complexType name="TypeType">
         <annotation>
             <documentation></documentation>
@@ -314,6 +331,7 @@
             <choice maxOccurs="unbounded" minOccurs="1">
                 <element ref="fb:Bug"/>
                 <element ref="fb:Class"/>
+                <element ref="fb:Annotation"/>
                 <element ref="fb:Source"/>
                 <element ref="fb:Field"/>
                 <element ref="fb:Local"/>

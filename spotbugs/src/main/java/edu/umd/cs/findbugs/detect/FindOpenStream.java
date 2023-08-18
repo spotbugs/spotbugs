@@ -148,6 +148,14 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
                 "()Ljavax/servlet/ServletOutputStream;"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletResponse", "getWriter",
                 "()Ljava/io/PrintWriter;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletRequest", "getInputStream",
+                "()Ljakarta/servlet/ServletInputStream;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletRequest", "getReader",
+                "()Ljava/io/BufferedReader;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletResponse", "getOutputStream",
+                "()Ljakarta/servlet/ServletOutputStream;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletResponse", "getWriter",
+                "()Ljava/io/PrintWriter;"));
 
         // Ignore System.{in,out,err}
         streamFactoryCollection.add(new StaticFieldLoadStreamFactory("java.io.InputStream", "java.lang.System", "in",
