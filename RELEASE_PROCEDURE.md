@@ -14,12 +14,12 @@ When we push a tag, the build result on GitHub Actions will be deployed to the [
 
 ## Release to Eclipse Update Site
 
-It's automated by Travis CI.
+It's automated by Github CI.
 
 When we push tag, the build result will be deployed to [eclipse-candidate repository](https://github.com/spotbugs/eclipse-candidate).
 When we push tag and its name doesn't contain `_RC`, the build result will be deployed to [eclipse repository](https://github.com/spotbugs/eclipse).
 
-See `deploy` phase in `.travis.yml` for detail.
+See `deploy` phase in `.github/workflows/release.yml` for detail.
 
 ## Release to Eclipse Marketplace
 
@@ -27,9 +27,9 @@ Update version in [Eclipse Marketplace page](https://marketplace.eclipse.org/con
 
 ## Release to Gradle Plugin Portal
 
-No action necessary. When we push tag, the build result on Travis CI will be deployed to Gradle Plugin Portal.
+No action necessary. When we push tag, the build result on Github CI will be deployed to Gradle Plugin Portal.
 
-See `deploy` phase in `.travis.yml` for detail.
+See `deploy` phase in `.github/workflows/release.yml` for detail.
 
 ## Update installation manual
 

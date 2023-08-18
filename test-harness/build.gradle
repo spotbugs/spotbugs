@@ -3,7 +3,7 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
-  compileOnly 'junit:junit:4.13.2'
+  compileOnly 'org.junit.vintage:junit-vintage-engine:5.10.0'
   testImplementation project(':spotbugs')
   api project(':test-harness-core')
 }
