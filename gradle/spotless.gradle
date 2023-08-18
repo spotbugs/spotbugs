@@ -4,7 +4,7 @@ spotless {
   java {
     removeUnusedImports()
     trimTrailingWhitespace()
-    eclipse("4.13").configFile "${rootProject.projectDir}/gradle/eclipse-formatter.xml"
+    eclipse().configFile "${rootProject.projectDir}/gradle/eclipse-formatter.xml"
     endWithNewline()
   }
 }

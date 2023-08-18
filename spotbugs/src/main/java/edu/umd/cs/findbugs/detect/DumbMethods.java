@@ -208,7 +208,7 @@ public class DumbMethods extends OpcodeStackDetector {
                     && "setMaximumPoolSize".equals(getNameConstantOperand())) {
                 accumulator.accumulateBug(new BugInstance(DumbMethods.this,
                         "DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR", HIGH_PRIORITY)
-                                .addClassAndMethod(DumbMethods.this), DumbMethods.this);
+                        .addClassAndMethod(DumbMethods.this), DumbMethods.this);
             }
         }
     }
@@ -756,7 +756,7 @@ public class DumbMethods extends OpcodeStackDetector {
                                 primitiveType.equals("Z") ? LOW_PRIORITY
                                         : primitiveType.equals("B") ? NORMAL_PRIORITY
                                                 : HIGH_PRIORITY).addClassAndMethod(this).addCalledMethod(this).addMethod(shouldCall)
-                                                        .describe(MethodAnnotation.SHOULD_CALL);
+                                .describe(MethodAnnotation.SHOULD_CALL);
                         accumulator.accumulateBug(bug, this);
                     }
                 }
@@ -1264,7 +1264,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
                 accumulator.accumulateBug(new BugInstance(this, "DMI_CALLING_NEXT_FROM_HASNEXT", item.isInitialParameter()
                         && item.getRegisterNumber() == 0 ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this)
-                                .addCalledMethod(this), this);
+                        .addCalledMethod(this), this);
 
             }
 
@@ -1422,9 +1422,9 @@ public class DumbMethods extends OpcodeStackDetector {
                                 && dblString.toUpperCase().indexOf('E') == -1;
                         bugReporter.reportBug(new BugInstance(this, "DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE",
                                 scary ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this).addCalledMethod(this)
-                                        .addMethod("java.math.BigDecimal", "valueOf", "(D)Ljava/math/BigDecimal;", true)
-                                        .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addString(dblString)
-                                        .addString(bigDecimalString).addSourceLine(this));
+                                .addMethod("java.math.BigDecimal", "valueOf", "(D)Ljava/math/BigDecimal;", true)
+                                .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addString(dblString)
+                                .addString(bigDecimalString).addSourceLine(this));
                     }
                 }
 
