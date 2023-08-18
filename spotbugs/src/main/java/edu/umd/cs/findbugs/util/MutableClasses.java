@@ -180,6 +180,14 @@ public class MutableClasses {
         }
 
         private boolean computeByImmutableContract() {
+            if ("java.lang.Enum".equals(cls.getClassName())) {
+                return true;
+            }
+
+            if ("java.lang.Record".equals(cls.getClassName())) {
+                return true;
+            }
+
             for (AnnotationEntry entry : cls.getAnnotationEntries()) {
                 // Error-Prone's @Immutable annotation is @Inherited, hence it applies to subclasses as well
                 if (entry.getAnnotationType().equals("Lcom/google/errorprone/annotations/Immutable;")) {
