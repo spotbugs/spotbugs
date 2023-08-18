@@ -9,10 +9,7 @@ public class SafeHtml {
     private static final Map<String, String> CHARS_TO_ESCAPE = Stream.of(new Object[][] {
         { ">", "&gt;" },
         { "<", "&lt;" },
-        { "&", "&amp;" },
-        { "\"", "&quot;" },
-        { "'", "&#39;" },
-        { "/", "&#47;" }
+        { "&", "&amp;" }
     }).collect(Collectors.toMap(data -> (String) data[0], data -> (String) data[1]));
 
     public static String escape(String s) {
