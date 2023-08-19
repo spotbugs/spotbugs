@@ -1,4 +1,8 @@
+Before opening 'pull request'
 
+** Search existing issues and pull requests to see if issue was already discussed.
+** Check our discussions to see if issue was already discussed.
+** Check for specific project to raise issue on that we support under [spotbugs](https://github.com/spotbugs)
 
 ----
 
