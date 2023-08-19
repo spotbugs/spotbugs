@@ -27,6 +27,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Added support for CONSTANT_Dynamic in constant class pool ([#2506](https://github.com/spotbugs/spotbugs/issues/2506))
 - Recognise enums and records as immutable ([#2356](https://github.com/spotbugs/spotbugs/issues/2356))
 - Added detections of reliance on default encoding in java.nio.file.Files ([#2114](https://github.com/spotbugs/spotbugs/issues/2114))
+- Fixed a regression in the Value Number Analysis ([#2465](https://github.com/spotbugs/spotbugs/issues/2465))
 - Fix XML Output incorrectly escaped in Eclipse Bug Info view ([#2520](https://github.com/spotbugs/spotbugs/pull/2520))
 
 ### Added
