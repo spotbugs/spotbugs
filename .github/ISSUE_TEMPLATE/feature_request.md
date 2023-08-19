@@ -1,6 +1,5 @@
 Before opening 'issue'
 
-** Do not open intellij plugin issues here, open them at [intellij-plugin](https://github.com/JetBrains/spotbugs-intellij-plugin) **
 ** Search existing issues and pull requests to see if issue was already discussed.
 ** Check our discussions to see if issue was already discussed.
 ** Check for specific project to raise issue on that we support under [spotbugs](https://github.com/spotbugs)
