@@ -1,4 +1,4 @@
-Before opening 'issue'
+Before opening 'pull request'
 
 ** Search existing issues and pull requests to see if issue was already discussed.
 ** Check our discussions to see if issue was already discussed.
