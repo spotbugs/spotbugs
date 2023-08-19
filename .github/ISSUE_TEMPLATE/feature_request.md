@@ -1,3 +1,5 @@
+** Do not open intellij plugin issues here, open them at intellij-plugin **
+
 ---
 name: Feature request
 about: Suggest an idea for this project
