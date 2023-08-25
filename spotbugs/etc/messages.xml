@@ -8999,21 +8999,7 @@ Using floating-point variables should not be used as loop counters, as they are 
         ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS">
-    <ShortDescription>Do not reuse public identifiers from the Java Standard Library</ShortDescription>
-    <LongDescription>The used identifier {1} in source file {2} the publicly available identifier {3} from the Java Standard Library.</LongDescription>
-    <Details>
-        <![CDATA[<p>
-        The publicly visible identifiers, public utility classes, interfaces, or packages in the Java Standard Library
-        should not be reused in the application code. This is because the Java Standard Library is a part of the
-        Java platform and is expected to be available in all Java environments. If the application code reuses
-        the publicly available identifiers from the Java Standard Library, it may cause confusion and may
-        lead to unexpected behavior. For example, if the application code reuses the identifier java.util.List,
-        it may cause confusion with the java.util.List class from the Java Standard Library.
-        </p>]]>
-    </Details>
-  </BugPattern>
-    <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES">
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as class name</ShortDescription>
         <LongDescription>Class name {1} in source file {2} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
@@ -9036,13 +9022,13 @@ Using floating-point variables should not be used as loop counters, as they are 
       <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
       ]]>
         </Details>
-    </BugPattern>
-    <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES">
+  </BugPattern>
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as field name</ShortDescription>
         <LongDescription>The used identifier {2} as field name in class {1} in source file {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
-      It is crucial to avoid reusing public identifiers from the Java Standard Library as field names in your code.
+      It is a good practice to avoid reusing public identifiers from the Java Standard Library as field names in your code.
       Doing so can lead to confusion and potential conflicts, making it harder to understand and maintain your codebase.
       Instead, it is recommended to choose unique and descriptive names for your fields that accurately represent their purpose and differentiate them from Standard Library identifiers.
 
@@ -9062,14 +9048,14 @@ Using floating-point variables should not be used as loop counters, as they are 
       <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
       ]]>
         </Details>
-    </BugPattern>
-    <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES">
+  </BugPattern>
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as method name</ShortDescription>
         <LongDescription>The used identifier {2} as method name in class {1} at line {3} as a method name shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
 
-      It is crucial to avoid reusing public identifiers from the Java Standard Library as method names in your code.
+      It is a good practice to avoid reusing public identifiers from the Java Standard Library as method names in your code.
       Doing so can lead to confusion, potential conflicts, and unexpected behavior. To maintain code clarity and ensure proper functionality,
       it is recommended to choose unique and descriptive names for your methods that accurately represent their purpose
       and differentiate them from standard library identifiers.
@@ -9087,8 +9073,8 @@ Using floating-point variables should not be used as loop counters, as they are 
       <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
       ]]>
         </Details>
-    </BugPattern>
-    <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES">
+  </BugPattern>
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as method name</ShortDescription>
         <LongDescription>The used identifier {4} as variable name in the class {1} inside {2} method at line {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
@@ -9111,8 +9097,8 @@ Using floating-point variables should not be used as loop counters, as they are 
       <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
       ]]>
         </Details>
-    </BugPattern>
-    <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES">
+  </BugPattern>
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as inner name</ShortDescription>
         <LongDescription>Inner class name {2} of class {1} in source file {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
@@ -9135,7 +9121,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
       ]]>
         </Details>
-    </BugPattern>
+  </BugPattern>
     <!--
   **********************************************************************
    BugCodes
