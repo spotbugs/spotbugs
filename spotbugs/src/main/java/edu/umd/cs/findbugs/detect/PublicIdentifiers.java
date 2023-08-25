@@ -34,24 +34,24 @@ public class PublicIdentifiers {
     public static final Set<String> PUBLIC_IDENTIFIERS = new HashSet<>();
 
     static {
-        addSTANDARD_PACKAGES();
-        addPUBLIC_IDENTIFIERSAB();
-        addPUBLIC_IDENTIFIERSCC();
-        addPUBLIC_IDENTIFIERSDE();
-        addPUBLIC_IDENTIFIERSFH();
-        addPUBLIC_IDENTIFIERSIJ();
-        addPUBLIC_IDENTIFIERSKM();
-        addPUBLIC_IDENTIFIERSNR();
-        addPUBLIC_IDENTIFIERSSS();
-        addPUBLIC_IDENTIFIERSTU();
-        addPUBLIC_IDENTIFIERSVZ();
+        addStandardPackages();
+        addPublicIdentifiersAB();
+        addPublicIdentifiersCC();
+        addPublicIdentifiersDE();
+        addPublicIdentifiersFH();
+        addPublicIdentifiersIJ();
+        addPublicIdentifiersKM();
+        addPublicIdentifiersNR();
+        addPublicIdentifiersSS();
+        addPublicIdentifiersTU();
+        addPublicIdentifiersVZ();
     }
 
     public static boolean isPartOfStandardLibrary(String containingPackage) {
         return STANDARD_LIBRARY_PACKAGES.stream().anyMatch(containingPackage::startsWith);
     }
 
-    private static void addSTANDARD_PACKAGES() {
+    private static void addStandardPackages() {
         STANDARD_LIBRARY_PACKAGES.add("com.sun");
 
         STANDARD_LIBRARY_PACKAGES.add("java.applet");
@@ -143,7 +143,7 @@ public class PublicIdentifiers {
         STANDARD_LIBRARY_PACKAGES.add("toolbarButtonGraphics.text");
     }
 
-    private static void addPUBLIC_IDENTIFIERSAB() {
+    private static void addPublicIdentifiersAB() {
         PUBLIC_IDENTIFIERS.add("AALOAD");
         PUBLIC_IDENTIFIERS.add("AArch64");
         PUBLIC_IDENTIFIERS.add("AArch64Architecture");
@@ -1306,7 +1306,7 @@ public class PublicIdentifiers {
 
     }
 
-    private static void addPUBLIC_IDENTIFIERSCC() {
+    private static void addPublicIdentifiersCC() {
         PUBLIC_IDENTIFIERS.add("C14NMethodParameterSpec");
         PUBLIC_IDENTIFIERS.add("Cache");
         PUBLIC_IDENTIFIERS.add("CachedPainter");
@@ -2648,7 +2648,7 @@ public class PublicIdentifiers {
         PUBLIC_IDENTIFIERS.add("CyclicBarrier");
     }
 
-    private static void addPUBLIC_IDENTIFIERSDE() {
+    private static void addPublicIdentifiersDE() {
         PUBLIC_IDENTIFIERS.add("D2F");
         PUBLIC_IDENTIFIERS.add("D2I");
         PUBLIC_IDENTIFIERS.add("D2L");
@@ -3712,7 +3712,7 @@ public class PublicIdentifiers {
         PUBLIC_IDENTIFIERS.add("ExternalVFrame");
     }
 
-    private static void addPUBLIC_IDENTIFIERSFH() {
+    private static void addPublicIdentifiersFH() {
         PUBLIC_IDENTIFIERS.add("F2D");
         PUBLIC_IDENTIFIERS.add("F2I");
         PUBLIC_IDENTIFIERS.add("F2L");
@@ -4952,7 +4952,7 @@ public class PublicIdentifiers {
         PUBLIC_IDENTIFIERS.add("Hypot");
     }
 
-    private static void addPUBLIC_IDENTIFIERSIJ() {
+    private static void addPublicIdentifiersIJ() {
         PUBLIC_IDENTIFIERS.add("I18NImpl");
         PUBLIC_IDENTIFIERS.add("I2B");
         PUBLIC_IDENTIFIERS.add("I2C");
@@ -6037,7 +6037,7 @@ public class PublicIdentifiers {
         PUBLIC_IDENTIFIERS.add("JWindow");
     }
 
-    private static void addPUBLIC_IDENTIFIERSKM() {
+    private static void addPublicIdentifiersKM() {
         PUBLIC_IDENTIFIERS.add("KAKeyDerivation");
         PUBLIC_IDENTIFIERS.add("KdcErrException");
         PUBLIC_IDENTIFIERS.add("KDCOptions");
@@ -7436,7 +7436,7 @@ public class PublicIdentifiers {
         PUBLIC_IDENTIFIERS.add("MXBeanSupport");
     }
 
-    private static void addPUBLIC_IDENTIFIERSNR() {
+    private static void addPublicIdentifiersNR() {
         PUBLIC_IDENTIFIERS.add("Name");
         PUBLIC_IDENTIFIERS.add("NameAlreadyBoundException");
         PUBLIC_IDENTIFIERS.add("NameCallback");
@@ -8798,7 +8798,7 @@ public class PublicIdentifiers {
         PUBLIC_IDENTIFIERS.add("RuntimeVisibleTypeAnnotations_attribute");
     }
 
-    private static void addPUBLIC_IDENTIFIERSSS() {
+    private static void addPublicIdentifiersSS() {
         PUBLIC_IDENTIFIERS.add("SAEditorPane");
         PUBLIC_IDENTIFIERS.add("SafepointBlob");
         PUBLIC_IDENTIFIERS.add("SafePointNode");
@@ -9719,7 +9719,7 @@ public class PublicIdentifiers {
         PUBLIC_IDENTIFIERS.add("SysVVaList");
     }
 
-    private static void addPUBLIC_IDENTIFIERSTU() {
+    private static void addPublicIdentifiersTU() {
         PUBLIC_IDENTIFIERS.add("TextAccessibleContext");
         PUBLIC_IDENTIFIERS.add("Tab");
         PUBLIC_IDENTIFIERS.add("TabableView");
@@ -10624,7 +10624,7 @@ public class PublicIdentifiers {
         PUBLIC_IDENTIFIERS.add("Utils");
     }
 
-    private static void addPUBLIC_IDENTIFIERSVZ() {
+    private static void addPublicIdentifiersVZ() {
         PUBLIC_IDENTIFIERS.add("V10");
         PUBLIC_IDENTIFIERS.add("V12");
         PUBLIC_IDENTIFIERS.add("ValidatedInfo");
