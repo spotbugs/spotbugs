@@ -1512,7 +1512,7 @@ public int hashCode() {
   </Details>
  </BugPattern>
  <BugPattern type="MS_EXPOSE_REP">
-  <ShortDescription>Une méthode statique publique risque d'exposer une représentation interne en renvoyant un objet modifiable ou un tableau</ShortDescription>
+  <ShortDescription>Une méthode statique publique risque d'exposer une représentation interne en renvoyant un object modifiable ou un tableau</ShortDescription>
   <LongDescription>La méthode statique publique {1} peut exposer une représentation interne en renvoyant {2}</LongDescription>
   <Details>
 <![CDATA[
