@@ -675,15 +675,15 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
             if (this == obj) {
                 return true;
             }
-            
+
             if (obj == null) {
                 return false;
             }
-            
+
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            
+
             PotentialBugKey other = (PotentialBugKey) obj;
             return Objects.equals(bugType, other.bugType) && Objects.equals(className, other.className);
         }
