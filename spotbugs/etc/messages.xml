@@ -7005,7 +7005,7 @@ does not need to be created, just access the static methods directly using the c
     may introduce the throwing of new runtime exceptions either because of programming errors
     (e.g. improper checks such as a null pointer check) or intentionally but some of them may
     require special handling. However, catching RuntimeException itself hides the problem of not
-    handling these exceptions and not fixing the errors.However, catching Exception itself hides
+    handling these exceptions and not fixing the errors.  However, catching Exception itself hides
     the problem of not handling these exceptions. Instead, specify all the exceptions that must
     be handled here.
   </p>
@@ -7049,7 +7049,7 @@ does not need to be created, just access the static methods directly using the c
     the future may introduce the throwing of new runtime exceptions either because of programming
     errors (e.g. improper checks such as a null pointer check) or intentionally but some of them may
     require special handling. However, catching Throwable itself hides the problem of not
-    handling these exceptions and not fixing the errors.However, catching Throwable itself hides
+    handling these exceptions and not fixing the errors.  However, catching Throwable itself hides
     the problem of not handling these exceptions. Instead, specify all the exceptions that must
     be handled here.
   </p>
