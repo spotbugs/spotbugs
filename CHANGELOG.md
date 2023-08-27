@@ -30,6 +30,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed a regression in the Value Number Analysis ([#2465](https://github.com/spotbugs/spotbugs/issues/2465))
 - Fix XML Output incorrectly escaped in Eclipse Bug Info view ([#2520](https://github.com/spotbugs/spotbugs/pull/2520))
 - Updated the MS_EXPOSE_REP description to mention mutable objects, not just arrays ([#1669](https://github.com/spotbugs/spotbugs/issues/1669))
+- Described Configuration option frc.suspicious for bug RC_REF_COMPARISON in bug description ([#2297](https://github.com/spotbugs/spotbugs/issues/2297))
 - Fixed FindHEMismatch not reporting HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS for some classes ([#2402](https://github.com/spotbugs/spotbugs/issues/2402))
 
 ### Added
