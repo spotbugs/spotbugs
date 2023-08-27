@@ -14,12 +14,6 @@ public class Issue2402Test extends AbstractIntegrationTest {
 
     @Test
     public void test() {
-        //        performAnalysis("ghIssues/issue2402/TestA.class",
-        //                "ghIssues/issue2402/TestB.class",
-        //               "ghIssues/issue2402/TestC.class",
-        //              "ghIssues/issue2402/TestD.class");
-
-
         performAnalysis("ghIssues/issue2402/TestA.class",
                 "ghIssues/issue2402/TestA$UMap.class",
                 "ghIssues/issue2402/TestB.class",
