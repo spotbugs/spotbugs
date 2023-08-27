@@ -3031,8 +3031,15 @@ msgid ""
 "compare as == since\n"
 "they are different objects.\n"
 "Examples of classes which should generally\n"
-"not be compared by reference are java.lang.Integer, java.lang.Float, "
-"etc.</p>"
+"not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>"
+"RC_REF_COMPARISON covers only wrapper types for primitives. \n"
+"Suspicious types list can be expended by adding frc.suspicious \n"
+"system property with comma-separated classes:</p>"
+"<pre><code><systemPropertyVariables> \n"
+"              <frc.suspicious>java.time.LocalDate,java.util.List</frc.suspicious>\n"
+"           </systemPropertyVariables>\n"
+"</code></pre></p>"
+
 msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:2691
