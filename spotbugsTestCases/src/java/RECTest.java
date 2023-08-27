@@ -111,7 +111,7 @@ public class RECTest {
     }
 
     // should fail with LOW priority -- catches E, but E not thrown, however e
-    //// is used in the handler
+    // is used in the handler
     public void testFail7() {
         try {
             for (int i = 0; i < 1000; i++)
