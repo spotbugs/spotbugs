@@ -5854,9 +5854,9 @@ Examples of classes which should generally
 not be compared by reference are java.lang.Integer, java.lang.Float, etc. RC_REF_COMPARISON covers
 only wrapper types for primitives. Suspicious types list can be extended by adding frc.suspicious
 system property with comma-separated classes:</p>
-<pre><code><systemPropertyVariables>
-              <frc.suspicious>java.time.LocalDate,java.util.List</frc.suspicious>
-           </systemPropertyVariables>
+<pre><code>&lt;systemPropertyVariables&gt;
+              &lt;frc.suspicious&gt;java.time.LocalDate,java.util.List&lt;/frc.suspicious&gt;
+           &lt;/systemPropertyVariables&gt;
 </code></pre>
 ]]>
     </Details>
