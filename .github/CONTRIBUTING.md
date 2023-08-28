@@ -2,6 +2,11 @@
 
 Before you submit issue or pull request, please check the following points.
 
+** Do not open intellij plugin issues here, open them at [intellij-plugin](https://github.com/JetBrains/spotbugs-intellij-plugin) **
+** Search existing issues and pull requests to see if the issue was already discussed.
+** Check our discussions to see if the issue was already discussed.
+** Check for specific project we support to raise issue on, under [spotbugs](https://github.com/spotbugs)
+
 ## Before reporting a problem with detectors
 
 When you find problems such as false-positives or false-negatives, consider to add a JUnit test case to reproduce.
