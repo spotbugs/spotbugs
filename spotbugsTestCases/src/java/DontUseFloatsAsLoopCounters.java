@@ -102,6 +102,7 @@ class DontUseFloatsAsLoopCounters {
     }
     
     //compliant
+    //false positive sample provided in issue #2071
     public static int ilog10(double x) {
         if (x >= 1.0) {
             int i = 0;
