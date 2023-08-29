@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 
 public class Issue2040Test extends AbstractIntegrationTest {
     @Test
@@ -18,14 +19,30 @@ public class Issue2040Test extends AbstractIntegrationTest {
                 "ghIssues/issue2040/Interface.class",
                 "ghIssues/issue2040/Generic.class",
                 "ghIssues/issue2040/Caller.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("THROWS_METHOD_THROWS_CLAUSE_THROWABLE")
-                .build();
-        assertThat(getBugCollection(), containsExactly(3, bugTypeMatcher));
 
-        bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION")
+        assertNumOfBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 3);
+        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", "Base", "method");
+        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", "GenericBase", "method1");
+        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", "GenericBase", "method2");
+
+        assertNumOfBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 3);
+        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "GenericBase", "method");
+        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "GenericBase", "method2");
+        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "Interface", "iMethod");
+    }
+
+    private void assertNumOfBugs(String bugtype, int num) {
+        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType(bugtype).build();
+        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
+    }
+
+    private void assertBugInMethod(String bugType, String className, String method) {
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .inMethod(method)
                 .build();
-        assertThat(getBugCollection(), containsExactly(3, bugTypeMatcher));
+        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 }
