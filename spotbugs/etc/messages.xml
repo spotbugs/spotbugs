@@ -3615,11 +3615,11 @@ Thus, having a mutable instance field generally creates race conditions.
     </Details>
   </BugPattern>
   <BugPattern type="MS_EXPOSE_REP">
-    <ShortDescription>Public static method may expose internal representation by returning array</ShortDescription>
+    <ShortDescription>Public static method may expose internal representation by returning a mutable object or array</ShortDescription>
     <LongDescription>Public static {1} may expose internal representation by returning {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
-  <p> A public static method returns a reference to
+  <p> A public static method returns a reference to a mutable object or
    an array that is part of the static state of the class.
    Any code that calls this method can freely modify
    the underlying array.
@@ -5851,7 +5851,13 @@ with the equals() method.
 It is possible to create distinct instances that are equal but do not compare as == since
 they are different objects.
 Examples of classes which should generally
-not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
+not be compared by reference are java.lang.Integer, java.lang.Float, etc. RC_REF_COMPARISON covers
+only wrapper types for primitives. Suspicious types list can be extended by adding frc.suspicious
+system property with comma-separated classes:</p>
+<pre><code>&lt;systemPropertyVariables&gt;
+              &lt;frc.suspicious&gt;java.time.LocalDate,java.util.List&lt;/frc.suspicious&gt;
+           &lt;/systemPropertyVariables&gt;
+</code></pre>
 ]]>
     </Details>
   </BugPattern>

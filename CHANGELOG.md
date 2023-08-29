@@ -25,6 +25,13 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Eclipse annotation classpath initializer is hard-coded to jsr305 version 3.0.1, fix to 3.0.2 per #2470
 - Fixed annotation on generic or array incorrectly considered for the nullability of a method parameter or return type ([#2502](https://github.com/spotbugs/spotbugs/issues/2502))
 - Added support for CONSTANT_Dynamic in constant class pool ([#2506](https://github.com/spotbugs/spotbugs/issues/2506))
+- Recognise enums and records as immutable ([#2356](https://github.com/spotbugs/spotbugs/issues/2356))
+- Added detections of reliance on default encoding in java.nio.file.Files ([#2114](https://github.com/spotbugs/spotbugs/issues/2114))
+- Fixed a regression in the Value Number Analysis ([#2465](https://github.com/spotbugs/spotbugs/issues/2465))
+- Fix XML Output incorrectly escaped in Eclipse Bug Info view ([#2520](https://github.com/spotbugs/spotbugs/pull/2520))
+- Updated the MS_EXPOSE_REP description to mention mutable objects, not just arrays ([#1669](https://github.com/spotbugs/spotbugs/issues/1669))
+- Described Configuration option frc.suspicious for bug RC_REF_COMPARISON in bug description ([#2297](https://github.com/spotbugs/spotbugs/issues/2297))
+- Fixed FindHEMismatch not reporting HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS for some classes ([#2402](https://github.com/spotbugs/spotbugs/issues/2402))
 - Fixed detector `ThrowingExceptions` by removing false positive reports, such as synthetic methods (lambdas), methods which inherited their exception specifications and methods which call throwing methods ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
 
 ### Added

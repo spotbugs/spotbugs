@@ -308,7 +308,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
                 changed = !this.getAvailableLoadMap().isEmpty();
                 setAvailableLoadMap(AvailableLoadBiMap.emptyMap());
             } else if (!other.isTop()) {
-                for (Map.Entry<AvailableLoad, ValueNumber[]> e : getUpdateableAvailableLoadMap().entrySet()) {
+                AvailableLoadBiMap updateableAvailableLoadMap = getUpdateableAvailableLoadMap();
+
+                for (Map.Entry<AvailableLoad, ValueNumber[]> e : updateableAvailableLoadMap.entrySet()) {
                     AvailableLoad load = e.getKey();
                     ValueNumber[] myVN = e.getValue();
                     ValueNumber[] otherVN = other.getAvailableLoadMap().get(load);
@@ -354,7 +356,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
                                         + " x " + Arrays.toString(otherVN) + " in " + System.identityHashCode(this));
                             }
                             changed = true;
-                            e.setValue(new ValueNumber[] { phi });
+                            updateableAvailableLoadMap.updateEntryValue(e, phi);
                         } else {
                             if (RLE_DEBUG) {
                                 System.out.println("Reusing phi node : " + phi + " for " + load + " from "
@@ -362,7 +364,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
                                         + System.identityHashCode(this));
                             }
                             if (myVN.length != 1 || !myVN[0].equals(phi)) {
-                                e.setValue(new ValueNumber[] { phi });
+                                updateableAvailableLoadMap.updateEntryValue(e, phi);
                             }
                         }
 
@@ -743,6 +745,16 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
             return previous;
         }
 
+        public void updateEntryValue(Entry<AvailableLoad, ValueNumber[]> e, ValueNumber value) {
+            for (ValueNumber v : e.getValue()) {
+                reverseMap.remove(v);
+            }
+
+            e.setValue(new ValueNumber[] { value });
+
+            reverseMap.put(value, e.getKey());
+        }
+
         /**
          * Remove an {@link AvailableLoad} and update the reverse map
          */
@@ -757,6 +769,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         }
 
         public AvailableLoad getLoad(ValueNumber v) {
+            if (!REDUNDANT_LOAD_ELIMINATION) {
+                return null;
+            }
+
             return reverseMap.get(v);
         }
 
