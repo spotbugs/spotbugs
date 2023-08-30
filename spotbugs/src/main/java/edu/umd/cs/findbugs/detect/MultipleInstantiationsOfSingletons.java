@@ -17,6 +17,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
@@ -146,7 +147,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     }
 
     @Override
-    public void visitAfter(JavaClass obj) {
+    public void visitAfter(JavaClass javaClass) {
         if (!isSingleton) {
             return;
         }
@@ -188,9 +189,27 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         }
 
         if (isSerializable) {
-            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", NORMAL_PRIORITY).addClass(this));
+            if (javaClass.isEnum()) {
+                int numberOfEnumValues = getNumberOfEnumValues(javaClass);
+                if (numberOfEnumValues > 0) {
+                    bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", NORMAL_PRIORITY).addClass(this));
+                }
+            } else {
+                bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", NORMAL_PRIORITY).addClass(this));
+            }
         }
 
-        super.visitAfter(obj);
+        super.visitAfter(javaClass);
+    }
+
+    private static int getNumberOfEnumValues(JavaClass javaClass) {
+        try {
+            java.lang.reflect.Method valuesMethod = javaClass.getClass().getDeclaredMethod("values");
+            Object[] result = (Object[]) valuesMethod.invoke(null);
+            return result.length;
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 }
