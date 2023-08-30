@@ -60,7 +60,8 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         try {
             cloneableInterface = Repository.getInterfaces("java.lang.Cloneable")[0];
             serializableInterface = Repository.getInterfaces("java.io.Serializable")[0];
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
         }
     }
 
@@ -96,6 +97,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                 }
             }
         } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
         }
 
         if (!isCloneable || !isSerializable) {
