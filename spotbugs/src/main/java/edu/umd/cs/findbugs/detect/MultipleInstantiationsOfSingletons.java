@@ -141,9 +141,6 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         if (seen == Const.ATHROW && "clone".equals(getMethodName())) {
             return true;
         }
-        if (seen == Const.ARETURN && Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
-            return true;
-        }
         if (seen == Const.ARETURN || seen == Const.MONITORENTER) {
             return true;
         }
