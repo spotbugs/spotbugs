@@ -3,8 +3,6 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.OpcodeStack;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
@@ -12,8 +10,6 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -34,8 +30,6 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     private final BugReporter bugReporter;
 
-    private final ClassDescriptor cloneDescriptor = DescriptorFactory.createClassDescriptor(java.lang.Cloneable.class);
-    private final ClassDescriptor serializableDescriptor = DescriptorFactory.createClassDescriptor(java.io.Serializable.class);
     private JavaClass cloneableInterface;
     private JavaClass serializableInterface;
 
@@ -88,34 +82,13 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
         // Does this class directly implement Cloneable or Serializable?
         try {
-            for (JavaClass implementedInterface : obj.getInterfaces()) {
-                if (implementedInterface.equals(cloneableInterface)) {
-                    isCloneable = true;
-                    implementsCloneableDirectly = true;
-                } else if (implementedInterface.equals(serializableInterface)) {
-                    isSerializable = true;
-                }
-            }
+            JavaClass[] interfaces = obj.getAllInterfaces();
+            isCloneable = java.util.stream.Stream.of(interfaces).anyMatch(i -> i.equals(cloneableInterface));
+            isSerializable = java.util.stream.Stream.of(interfaces).anyMatch(i -> i.equals(serializableInterface));
+
+            implementsCloneableDirectly = java.util.stream.Stream.of(obj.getInterfaces()).anyMatch(i -> i.equals(cloneableInterface));
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
-        }
-
-        if (!isCloneable || !isSerializable) {
-            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-            try {
-                if (subtypes2.isSubtype(getClassDescriptor(), cloneDescriptor)) {
-                    isCloneable = true;
-                }
-                if (subtypes2.isSubtype(DescriptorFactory.createClassDescriptorFromDottedClassName(obj.getSuperclassName()), cloneDescriptor)) {
-                    implementsCloneableDirectly = false;
-                }
-
-                if (subtypes2.isSubtype(getClassDescriptor(), serializableDescriptor)) {
-                    isSerializable = true;
-                }
-            } catch (ClassNotFoundException e) {
-                bugReporter.reportMissingClass(e);
-            }
         }
 
         super.visit(obj);
