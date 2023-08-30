@@ -123,7 +123,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
-        if ("clone".equals(getMethodName())) {
+        if ("clone".equals(getMethodName()) && "()Ljava/lang/Object;".equals(getMethodSig())) {
             cloneOnlyThrowsException = PruneUnconditionalExceptionThrowerEdges.doesMethodUnconditionallyThrowException(getXMethod());
             methods.put(Methods.CLONE, getXMethod());
             hasCloneMethod = true;
