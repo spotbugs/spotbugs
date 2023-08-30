@@ -20,12 +20,20 @@ public class Issue2040Test extends AbstractIntegrationTest {
                 "ghIssues/issue2040/Generic.class",
                 "ghIssues/issue2040/Caller.class");
 
-        assertNumOfBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 3);
+        assertNumOfBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 2);
+        assertBugInMethod("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", "Derived", "runtimeExThrownFromCatch");
+        assertBugInMethod("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", "Derived", "runtimeExceptionThrowingMethod");
+
+        assertNumOfBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 4);
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", "Base", "method");
+        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", "Derived", "throwableThrowingMethod");
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", "GenericBase", "method1");
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", "GenericBase", "method2");
 
-        assertNumOfBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 3);
+        assertNumOfBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 5);
+        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "Derived", "exceptionThrowingMethod");
+        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "Derived", "exThrownFromCatch");
+//        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "Derived", "exCaughtAndThrown");
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "GenericBase", "method");
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "GenericBase", "method2");
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "Interface", "iMethod");
