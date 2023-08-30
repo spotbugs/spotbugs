@@ -123,13 +123,13 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
-        if (obj.getName().equals("clone")) {
-            cloneOnlyThrowsException = PruneUnconditionalExceptionThrowerEdges.doesMethodUnconditionallyThrowException(XFactory.createXMethod(this));
+        if ("clone".equals(getMethodName())) {
+            cloneOnlyThrowsException = PruneUnconditionalExceptionThrowerEdges.doesMethodUnconditionallyThrowException(getXMethod());
             methods.put(Methods.CLONE, getXMethod());
             hasCloneMethod = true;
         }
 
-        if (Const.CONSTRUCTOR_NAME.equals(getMethod().getName())) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
             constructors.add(getXMethod());
         }
 
@@ -138,10 +138,10 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     @Override
     public boolean beforeOpcode(int seen) {
-        if (seen == Const.ATHROW && "clone".equals(getMethod().getName())) {
+        if (seen == Const.ATHROW && "clone".equals(getMethodName())) {
             return true;
         }
-        if (seen == Const.ARETURN && Const.CONSTRUCTOR_NAME.equals(getMethod().getName())) {
+        if (seen == Const.ARETURN && Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
             return true;
         }
         if (seen == Const.ARETURN || seen == Const.MONITORENTER) {
@@ -164,7 +164,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             XField field = item.getXField();
             if (field != null) {
                 String className = "L" + getClassName() + ";";
-                if (field.isPrivate() && field.isStatic() && field.getSignature().equals(className)) {
+                if (field.isPrivate() && field.isStatic() && className.equals(field.getSignature())) {
                     isSingleton = true;
                     isGetterMethodSynchronized = getMethod().isSynchronized();
                     methods.put(Methods.INSTANCE_GETTER, getXMethod());
