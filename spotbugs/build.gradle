@@ -283,6 +283,7 @@ tasks.named('distTar', Tar) {
 }
 def distZip = tasks.named('distZip', Zip) {
   duplicatesStrategy = DuplicatesStrategy.FAIL
+  fileMode 0755
 }
 tasks.named('jar') {
   dependsOn tasks.named('updateManifest')
