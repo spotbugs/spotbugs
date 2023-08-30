@@ -164,6 +164,14 @@ This plugin contains all of the standard SpotBugs detectors.
   Detectors
   **********************************************************************
    -->
+  <Detector class="edu.umd.cs.findbugs.detect.ConstructorThrow">
+    <Details>
+<![CDATA[
+<p> Finds constructors that throw exceptions.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector">
     <Details>
 <![CDATA[
@@ -1804,11 +1812,33 @@ factory pattern to create these objects.</p>
         </p>]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions">
+    <Details>
+      <![CDATA[
+            <p>Finds assertions that validate public method arguments.</p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
   **********************************************************************
    -->
+  <BugPattern type="CT_CONSTRUCTOR_THROW">
+    <ShortDescription>Be wary of letting constructors throw exceptions.</ShortDescription>
+    <LongDescription>Exception thrown in class {0} at {1} will leave the constructor. The object under construction remains partially initialized and may be vulnerable to Finalizer attacks.</LongDescription>
+    <Details>
+      <![CDATA[
+            <p>Classes that throw exceptions in their constructors are vulnerable to Finalizer attacks</p>
+
+            <p>A finalizer attack can be prevented, by declaring the class final, using an empty finalizer declared as final, or by a clever use of a private constructor.</p>
+
+            <p>See <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ11-J.+Be+wary+of+letting+constructors+throw+exceptions"><code>SEI CERT Rule OBJ-11</code></a>
+            for more information.
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS">
     <ShortDescription> Asserting value of instanceof in tests is not recommended. </ShortDescription>
@@ -3593,11 +3623,11 @@ Thus, having a mutable instance field generally creates race conditions.
     </Details>
   </BugPattern>
   <BugPattern type="MS_EXPOSE_REP">
-    <ShortDescription>Public static method may expose internal representation by returning array</ShortDescription>
+    <ShortDescription>Public static method may expose internal representation by returning a mutable object or array</ShortDescription>
     <LongDescription>Public static {1} may expose internal representation by returning {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
-  <p> A public static method returns a reference to
+  <p> A public static method returns a reference to a mutable object or
    an array that is part of the static state of the class.
    Any code that calls this method can freely modify
    the underlying array.
@@ -5829,7 +5859,13 @@ with the equals() method.
 It is possible to create distinct instances that are equal but do not compare as == since
 they are different objects.
 Examples of classes which should generally
-not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
+not be compared by reference are java.lang.Integer, java.lang.Float, etc. RC_REF_COMPARISON covers
+only wrapper types for primitives. Suspicious types list can be extended by adding frc.suspicious
+system property with comma-separated classes:</p>
+<pre><code>&lt;systemPropertyVariables&gt;
+              &lt;frc.suspicious&gt;java.time.LocalDate,java.util.List&lt;/frc.suspicious&gt;
+           &lt;/systemPropertyVariables&gt;
+</code></pre>
 ]]>
     </Details>
   </BugPattern>
@@ -9032,6 +9068,21 @@ Using floating-point variables should not be used as loop counters, as they are 
         </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="AA_ASSERTION_OF_ARGUMENTS">
+    <ShortDescription>Assertion is used to validate an argument of a public method</ShortDescription>
+    <LongDescription>Assertion validates method argument at {1}. If assertions are disabled, there won't be any argument validation.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>Asssertions must not be used to validate arguments of public methods because the validations are
+        not performed if assertions are disabled.</p>
+
+        <p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET01-J.+Never+use+assertions+to+validate+method+arguments">MET01-J. Never use assertions to validate method arguments</a>
+        for more information.
+        </p>
+        ]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -9181,6 +9232,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="REFLC">Reflection increasing accessibility of classes</BugCode>
   <BugCode abbrev="REFLF">Reflection increasing accessibility of fields</BugCode>
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
+  <BugCode abbrev="CT">Constructor throws</BugCode>
   <BugCode abbrev="SSD">Do not use an instance lock to protect shared static data</BugCode>
   <BugCode abbrev="SING">Singleton problems</BugCode>
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
@@ -9189,4 +9241,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="ASE">Assertion with side effect</BugCode>
   <BugCode abbrev="PA">Public Attribute</BugCode>
   <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
+  <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
 </MessageCollection>

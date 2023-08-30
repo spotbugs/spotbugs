@@ -50,6 +50,8 @@ public class UnionResultsTest {
         File secondFile = new File("src/test/resources/secondFile.xml");
         Files.deleteIfExists(firstFile.toPath());
         Files.deleteIfExists(secondFile.toPath());
+        firstFile.getParentFile().mkdirs();
+        secondFile.getParentFile().mkdirs();
         try (PrintWriter fileWriter = new PrintWriter(new FileWriter(fileName))) {
             fileWriter.write(firstFile.getAbsolutePath() + "\n");
             fileWriter.write(secondFile.getAbsolutePath());

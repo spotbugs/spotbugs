@@ -3972,7 +3972,7 @@ Web サーバは，一般的にサーブレットや JSP クラスのインス�
   </BugPattern>
 
   <BugPattern type="MS_EXPOSE_REP">
-    <ShortDescription>配列を返すことによって内部表現を暴露するかもしれない public static メソッド</ShortDescription>
+    <ShortDescription>配列または可変オブジェクトを返すことによって内部表現を暴露するかもしれない public static メソッド</ShortDescription>
     <LongDescription>{1} は，{2.givenClass} を返すことによって，内部表現を暴露するかもしれません。</LongDescription>
     <Details>
 <![CDATA[
