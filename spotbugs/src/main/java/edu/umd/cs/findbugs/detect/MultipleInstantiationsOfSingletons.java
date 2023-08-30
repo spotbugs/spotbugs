@@ -18,12 +18,11 @@ import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.EnumMap;
 
 public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
@@ -51,7 +50,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     boolean isSerializable;
 
-    Map<Methods, XMethod> methods;
+    EnumMap<Methods, XMethod> methods;
     List<XMethod> methodsUsingMonitor;
     Set<XMethod> constructors;
 
@@ -79,7 +78,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         isSerializable = false;
 
         constructors = new HashSet<>();
-        methods = new HashMap<>();
+        methods = new EnumMap<>(Methods.class);
         methodsUsingMonitor = new ArrayList<>();
 
         if (obj.getClassName().endsWith("Singleton")) {
