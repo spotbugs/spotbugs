@@ -11,7 +11,6 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
-import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 import java.util.Set;
