@@ -21,9 +21,9 @@ public class Issue2040Test extends AbstractIntegrationTest {
                 "ghIssues/issue2040/Caller.class");
 
         assertNumOfBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 3);
-        assertBugInMethod("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", "Derived", "lambda$lambda2$1", 36);
-        assertBugInMethod("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", "Derived", "runtimeExThrownFromCatch", 97);
-        assertBugInMethod("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", "Derived", "runtimeExceptionThrowingMethod", 45);
+        assertREBugInMethod("Derived", "lambda$lambda2$1", 36);
+        assertREBugInMethod("Derived", "runtimeExThrownFromCatch", 97);
+        assertREBugInMethod("Derived", "runtimeExceptionThrowingMethod", 45);
 
         assertNumOfBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 4);
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", "Base", "method");
@@ -54,9 +54,9 @@ public class Issue2040Test extends AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
-    private void assertBugInMethod(String bugType, String className, String method, int line) {
+    private void assertREBugInMethod(String className, String method, int line) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
+                .bugType("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION")
                 .inClass(className)
                 .inMethod(method)
                 .atLine(line)
