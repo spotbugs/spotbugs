@@ -103,7 +103,11 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             OpcodeStack.Item item = stack.getStackItem(0);
             if (item != null) {
                 if ("Ljava/lang/RuntimeException;".equals(item.getSignature())) {
-                    reportBug("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", getXMethod());
+                    bugReporter.reportBug(
+                            new BugInstance(this, "THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", LOW_PRIORITY)
+                                    .addClass(this)
+                                    .addMethod(getXMethod())
+                                    .addSourceLine(this));
                 }
             }
         } else if (exceptionThrown != null &&
