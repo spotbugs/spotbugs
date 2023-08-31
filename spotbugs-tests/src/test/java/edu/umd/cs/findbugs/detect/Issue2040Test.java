@@ -20,7 +20,8 @@ public class Issue2040Test extends AbstractIntegrationTest {
                 "ghIssues/issue2040/Generic.class",
                 "ghIssues/issue2040/Caller.class");
 
-        assertNumOfBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 2);
+        assertNumOfBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 3);
+        assertBugInMethod("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", "Derived", "lambda$lambda2$1");
         assertBugInMethod("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", "Derived", "runtimeExThrownFromCatch");
         assertBugInMethod("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", "Derived", "runtimeExceptionThrowingMethod");
 
