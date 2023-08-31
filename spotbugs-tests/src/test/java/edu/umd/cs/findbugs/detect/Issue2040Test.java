@@ -33,7 +33,6 @@ public class Issue2040Test extends AbstractIntegrationTest {
         assertNumOfBugs("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 5);
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "Derived", "exceptionThrowingMethod");
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "Derived", "exThrownFromCatch");
-//        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "Derived", "exCaughtAndThrown");
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "GenericBase", "method");
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "GenericBase", "method2");
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "Interface", "iMethod");
