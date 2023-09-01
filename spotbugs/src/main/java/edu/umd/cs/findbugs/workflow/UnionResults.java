@@ -19,10 +19,17 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
-
-import org.dom4j.DocumentException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;
@@ -32,6 +39,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.CommandLine;
+import org.dom4j.DocumentException;
 
 /**
  * Compute the union of two sets of bug results, preserving annotations.
@@ -120,29 +128,13 @@ public class UnionResults {
         FindBugs.setNoAnalysis();
         final UnionResultsCommandLine commandLine = new UnionResultsCommandLine();
 
-        int argCount = commandLine.parse(argv, 2, Integer.MAX_VALUE, "Usage: " + UnionResults.class.getName()
+        int argCount = commandLine.parse(argv, 1, Integer.MAX_VALUE, "Usage: " + UnionResults.class.getName()
                 + " [options] [<results1> <results2> ... <resultsn>] ");
 
         SortedBugCollection results = null;
         HashSet<String> hashes = new HashSet<>();
 
-        for (int i = argCount; i < argv.length; i++) {
-            try {
-                SortedBugCollection more = new SortedBugCollection();
-
-                more.readXML(argv[i]);
-                if (results == null) {
-                    results = more.createEmptyCollectionWithMetadata();
-                }
-
-                merge(hashes, results, more);
-
-            } catch (IOException e) {
-                System.err.println("Trouble reading/parsing " + argv[i]);
-            } catch (DocumentException e) {
-                System.err.println("Trouble reading/parsing " + argv[i]);
-            }
-        }
+        results = iterateArguments(Stream.of(argv).collect(Collectors.toList()), argCount, results, hashes);
 
         if (results == null) {
             System.err.println("No files successfully read");
@@ -155,6 +147,46 @@ public class UnionResults {
         } else {
             results.writeXML(commandLine.outputFile);
         }
+    }
+
+    private static SortedBugCollection iterateArguments(List<String> arguments, int argCount, SortedBugCollection results, HashSet<String> hashes) {
+        for (int i = argCount; i < arguments.size(); i++) {
+            String fileName = arguments.get(i);
+            try {
+                SortedBugCollection more = new SortedBugCollection();
+                if (fileName.endsWith(".txt")) {
+                    List<String> wrappedArguments = readWrappedArguments(fileName);
+                    if (results == null) {
+                        results = more.createEmptyCollectionWithMetadata();
+                    }
+                    merge(hashes, results, iterateArguments(wrappedArguments, 0, results, hashes));
+                    continue;
+                }
+                more.readXML(fileName);
+                if (results == null) {
+                    results = more.createEmptyCollectionWithMetadata();
+                }
+                merge(hashes, results, more);
+            } catch (IOException e) {
+                System.err.println("Trouble reading/parsing " + fileName);
+            } catch (DocumentException e) {
+                System.err.println("Trouble reading/parsing " + fileName);
+            }
+        }
+        return results;
+    }
+
+    private static List<String> readWrappedArguments(String fileName) throws IOException {
+        List<String> wrappedArguments = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), Charset.forName("UTF-8")))) {
+            String next;
+            while ((next = reader.readLine()) != null) {
+                wrappedArguments.add(next);
+            }
+        } catch (IOException e) {
+            return Collections.emptyList();
+        }
+        return wrappedArguments;
     }
 
 }

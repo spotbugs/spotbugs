@@ -83,7 +83,7 @@ public class DumbMethods extends OpcodeStackDetector {
         abstract public void sawOpcode(int seen);
     }
 
-    private class InvalidMinMaxSubDetector extends SubDetector {
+    private final class InvalidMinMaxSubDetector extends SubDetector {
         Number lowerBound, upperBound;
 
         @Override
@@ -130,7 +130,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class NullMethodsSubDetector extends SubDetector {
+    private final class NullMethodsSubDetector extends SubDetector {
 
         @Override
         public void sawOpcode(int seen) {
@@ -201,7 +201,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class FutilePoolSizeSubDetector extends SubDetector {
+    private final class FutilePoolSizeSubDetector extends SubDetector {
         @Override
         public void sawOpcode(int seen) {
             if (seen == Const.INVOKEVIRTUAL && "java/util/concurrent/ScheduledThreadPoolExecutor".equals(getClassConstantOperand())
@@ -213,7 +213,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class RangeCheckSubDetector extends SubDetector {
+    private final class RangeCheckSubDetector extends SubDetector {
 
 
 
@@ -373,7 +373,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class UrlCollectionSubDetector extends SubDetector {
+    private final class UrlCollectionSubDetector extends SubDetector {
         @Override
         public void sawOpcode(int seen) {
             if ((seen == Const.INVOKEVIRTUAL && "java/util/HashMap".equals(getClassConstantOperand()) && "get".equals(getNameConstantOperand()))
@@ -391,7 +391,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class VacuousComparisonSubDetector extends SubDetector {
+    private final class VacuousComparisonSubDetector extends SubDetector {
         @Override
         public void sawOpcode(int seen) {
             boolean foundVacuousComparison = false;
@@ -428,7 +428,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class BadCastInEqualsSubDetector extends SubDetector {
+    private final class BadCastInEqualsSubDetector extends SubDetector {
         private boolean isEqualsObject;
 
         private boolean sawInstanceofCheck;
@@ -482,7 +482,7 @@ public class DumbMethods extends OpcodeStackDetector {
     @SlashedClassName
     private static final String CLASS_NAME_RANDOM = "java/util/Random";
 
-    private class RandomOnceSubDetector extends SubDetector {
+    private final class RandomOnceSubDetector extends SubDetector {
         /**
          * True if a freshly created {@code Random} instance exists on ToS (Top op Stack)
          */
@@ -501,6 +501,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 String classConstantOperand = getClassConstantOperand();
                 if ((CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom".equals(
                         classConstantOperand))
+                        && !isStreamMethod(getNameConstantOperand())
                         && (freshRandomOnTos || freshRandomOneBelowTos)) {
                     accumulator.accumulateBug(new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
                             .addClassAndMethod(DumbMethods.this).addCalledMethod(DumbMethods.this), DumbMethods.this);
@@ -513,9 +514,11 @@ public class DumbMethods extends OpcodeStackDetector {
                 freshRandomOnTos = (CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom"
                         .equals(classConstantOperand)) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
             }
+        }
 
-
-
+        private boolean isStreamMethod(String nameConstantOperand) {
+            return "doubles".equals(nameConstantOperand) || "ints".equals(nameConstantOperand)
+                    || "longs".equals(nameConstantOperand);
         }
     }
 

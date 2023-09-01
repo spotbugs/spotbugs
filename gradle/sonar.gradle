@@ -2,7 +2,6 @@ apply plugin: 'org.sonarqube'
 
 sonarqube {
     properties {
-        property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.destination
         property 'sonar.host.url', 'https://sonarcloud.io'
         property 'sonar.organization', 'spotbugs'
         property 'sonar.projectKey', 'com.github.spotbugs.spotbugs'

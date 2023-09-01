@@ -2,4 +2,3 @@
 *.pyc
 generated/*.inc
 locale/ja/LC_MESSAGES/generated/*.po
-node_modules

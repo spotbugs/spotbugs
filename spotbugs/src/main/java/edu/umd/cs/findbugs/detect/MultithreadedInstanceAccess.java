@@ -46,6 +46,8 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
 
     private static final String SERVLET_NAME = "javax.servlet.Servlet";
 
+    private static final String JAKARTA_SERVLET_NAME = "jakarta.servlet.Servlet";
+
     private final BugReporter bugReporter;
 
     private Set<JavaClass> mtClasses;
@@ -78,6 +80,11 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
         } catch (ClassNotFoundException cnfe) {
             // probably would be annoying to report
         }
+        try {
+            mtClasses.add(Repository.lookupClass(JAKARTA_SERVLET_NAME));
+        } catch (ClassNotFoundException cnfe) {
+            // probably would be annoying to report
+        }
 
         return mtClasses;
     }
@@ -96,6 +103,9 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
                 super.visitClassContext(classContext);
             } else if (SERVLET_NAME.equals(superClsName)) {
                 mtClassName = SERVLET_NAME;
+                super.visitClassContext(classContext);
+            } else if (JAKARTA_SERVLET_NAME.equals(superClsName)) {
+                mtClassName = JAKARTA_SERVLET_NAME;
                 super.visitClassContext(classContext);
             } else {
                 for (JavaClass mtClass : getMtClasses()) {

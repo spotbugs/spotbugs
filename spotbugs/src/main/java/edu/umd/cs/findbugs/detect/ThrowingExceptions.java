@@ -20,15 +20,21 @@ public class ThrowingExceptions extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
+        if (obj.isSynthetic()) {
+            return;
+        }
+
         ExceptionTable exceptionTable = obj.getExceptionTable();
-        if (exceptionTable != null) {
-            String[] exceptionNames = exceptionTable.getExceptionNames();
-            for (String exception : exceptionNames) {
-                if ("java.lang.Exception".equals(exception)) {
-                    reportBug("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", getXMethod());
-                } else if ("java.lang.Throwable".equals(exception)) {
-                    reportBug("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", getXMethod());
-                }
+        if (exceptionTable == null) {
+            return;
+        }
+
+        String[] exceptionNames = exceptionTable.getExceptionNames();
+        for (String exception : exceptionNames) {
+            if ("java.lang.Exception".equals(exception)) {
+                reportBug("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", getXMethod());
+            } else if ("java.lang.Throwable".equals(exception)) {
+                reportBug("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", getXMethod());
             }
         }
     }
