@@ -8,6 +8,7 @@ import org.junit.Test;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 
 public class FindIncreasedAccessibilityOfMethodsTest extends AbstractIntegrationTest {
 
@@ -18,14 +19,14 @@ public class FindIncreasedAccessibilityOfMethodsTest extends AbstractIntegration
                 "increasedAccessibilityOfMethods/SuperClass.class",
                 "increasedAccessibilityOfMethods/SubClassFromSamePackage.class");
 
-        assertNumberOfIAOMBugs(6);
+        assertContainsCorrectNumberOfIAOMBugs(6);
 
-        assertIAOMBug("SubClassFromSamePackage", "protectedMethodToPublic");
-        assertIAOMBug("SubClassFromSamePackage", "packagePrivateMethodToPublic");
-        assertIAOMBug("SubClassFromSamePackage", "packagePrivateMethodToProtected");
-        assertIAOMBug("SubClassFromSamePackage", "superProtectedMethodToPublic");
-        assertIAOMBug("SubClassFromSamePackage", "superPackagePrivateMethodToPublic");
-        assertIAOMBug("SubClassFromSamePackage", "superPackagePrivateMethodToProtected");
+        assertContainsIAOMBug("SubClassFromSamePackage", "protectedMethodToPublic");
+        assertContainsIAOMBug("SubClassFromSamePackage", "packagePrivateMethodToPublic");
+        assertContainsIAOMBug("SubClassFromSamePackage", "packagePrivateMethodToProtected");
+        assertContainsIAOMBug("SubClassFromSamePackage", "superProtectedMethodToPublic");
+        assertContainsIAOMBug("SubClassFromSamePackage", "superPackagePrivateMethodToPublic");
+        assertContainsIAOMBug("SubClassFromSamePackage", "superPackagePrivateMethodToProtected");
     }
 
     @Test
@@ -35,19 +36,18 @@ public class FindIncreasedAccessibilityOfMethodsTest extends AbstractIntegration
                 "increasedAccessibilityOfMethods/SuperClass.class",
                 "increasedAccessibilityOfMethods/anotherPackage/SubClassFromAnotherPackage.class");
 
-        assertNumberOfIAOMBugs(1);
+        assertContainsCorrectNumberOfIAOMBugs(1);
 
-        assertIAOMBug("SubClassFromAnotherPackage", "protectedMethodToPublic");
+        assertContainsIAOMBug("SubClassFromAnotherPackage", "protectedMethodToPublic");
     }
 
     @Test
-    public void findNoIAOMBugInClass_IncreasedAccessibilityOfMethods_SubClassFromAnotherPackage() {
+    public void findNoIAOMBugInClass_IncreasedAccessibilityOfMethods_CorrectSubClass() {
         performAnalysis(
                 "increasedAccessibilityOfMethods/SuperClassOfSuperClass.class",
-                "increasedAccessibilityOfMethods/SuperClass.class",
                 "increasedAccessibilityOfMethods/anotherPackage/CorrectSubClass.class");
 
-        assertNumberOfIAOMBugs(0);
+        assertContainsCorrectNumberOfIAOMBugs(0);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class FindIncreasedAccessibilityOfMethodsTest extends AbstractIntegration
         performAnalysis(
                 "increasedAccessibilityOfMethods/CloneableImplementation.class");
 
-        assertNumberOfIAOMBugs(0);
+        assertContainsCorrectNumberOfIAOMBugs(0);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class FindIncreasedAccessibilityOfMethodsTest extends AbstractIntegration
                 "increasedAccessibilityOfMethods/Interface.class",
                 "increasedAccessibilityOfMethods/InterfaceImplementation.class");
 
-        assertNumberOfIAOMBugs(0);
+        assertContainsCorrectNumberOfIAOMBugs(0);
     }
 
     @Test
@@ -73,26 +73,50 @@ public class FindIncreasedAccessibilityOfMethodsTest extends AbstractIntegration
                 "increasedAccessibilityOfMethods/GenericSuperClass.class",
                 "increasedAccessibilityOfMethods/GenericSubClass.class");
 
-        assertNumberOfIAOMBugs(3);
+        assertContainsCorrectNumberOfIAOMBugs(3);
 
-        assertIAOMBug("GenericSubClass", "protectedMethodToPublicWithGenericParameter");
-        assertIAOMBug("GenericSubClass", "packagePrivateMethodToPublicWithGenericParameter");
-        assertIAOMBug("GenericSubClass", "packagePrivateMethodToProtectedWithGenericParameter");
+        assertContainsIAOMBug("GenericSubClass", "protectedMethodToPublicWithGenericParameter");
+        assertContainsIAOMBug("GenericSubClass", "packagePrivateMethodToPublicWithGenericParameter");
+        assertContainsIAOMBug("GenericSubClass", "packagePrivateMethodToProtectedWithGenericParameter");
     }
 
-    private void assertNumberOfIAOMBugs(int numberOfBugs) {
+    @Test
+    public void findNoIAOMBugInClass_IncreasedAccessibilityOfMethods_SubClassWithRepeatedOverride() {
+        performAnalysis(
+                "increasedAccessibilityOfMethods/SuperClassOfSuperClass.class",
+                "increasedAccessibilityOfMethods/SuperClassWithOverride.class",
+                "increasedAccessibilityOfMethods/SubClassWithRepeatedOverride.class");
+
+        assertContainsCorrectNumberOfIAOMBugs(3);
+
+        assertContainsIAOMBug("SuperClassWithOverride", "superProtectedMethodToPublicOverriddenInSuperClass");
+        assertContainsIAOMBug("SuperClassWithOverride", "superPackagePrivateMethodToProtectedOverriddenInSuperClass");
+        assertContainsIAOMBug("SubClassWithRepeatedOverride", "superPackagePrivateMethodToProtectedOverriddenInSuperClass");
+        assertNotContainsIAOMBug("SubClassWithRepeatedOverride", "superProtectedMethodToPublicOverriddenInSuperClass");
+    }
+
+    private void assertContainsCorrectNumberOfIAOMBugs(int numberOfBugs) {
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY").build();
         assertThat(getBugCollection(), containsExactly(numberOfBugs, bugTypeMatcher));
     }
 
-    private void assertIAOMBug(String className, String methodName) {
+    private void assertContainsIAOMBug(String className, String methodName) {
         BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType("IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY")
                 .inClass(className)
                 .inMethod(methodName)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+    }
+
+    private void assertNotContainsIAOMBug(String className, String methodName) {
+        BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType("IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY")
+                .inClass(className)
+                .inMethod(methodName)
+                .build();
+        assertThat(getBugCollection(), not(hasItem(bugInstanceMatcher)));
     }
 
 }

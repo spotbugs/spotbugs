@@ -26,4 +26,12 @@ public class SuperClassOfSuperClass {
         return "SuperClassOfSuperClass.superPackagePrivate";
     }
 
+    String superPackagePrivateMethodToProtectedOverriddenInSuperClass() {
+        return "SuperClassOfSuperClass.superPackagePrivateMethodToProtectedOverriddenInSuperClass";
+    }
+
+    protected String superProtectedMethodToPublicOverriddenInSuperClass() {
+        return "SuperClassOfSuperClass.superProtectedMethodToPublicOverriddenInSuperClass";
+    }
+
 }

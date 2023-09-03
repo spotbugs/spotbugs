@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class FindIncreasedAccessibilityOfMethods implements Detector {
 
@@ -48,37 +49,43 @@ public class FindIncreasedAccessibilityOfMethods implements Detector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass subClass = classContext.getJavaClass();
+        for (IAOMBug bug : findIAOMBugs(subClass)) {
+            bugReporter.reportBug(new BugInstance(this, BUG_TYPE, NORMAL_PRIORITY)
+                    .addClassAndMethod(bug.clazz, bug.method)
+                    .addString(bug.oldAccessibility)
+                    .addString(bug.newAccessibility));
+    }}
+
+    @Override
+    public void report() {
+    }
+
+    private List<IAOMBug> findIAOMBugs(JavaClass subClass) {
+        List<IAOMBug> iaomBugs = new ArrayList<>();
         JavaClass[] superClasses;
         try {
             superClasses = subClass.getSuperClasses();
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
-            return;
+            return iaomBugs;
         }
 
         List<Method> subClassMethods = getMethodsExceptConstructors(subClass);
+        List<IAOMBug> superClassBugs = new ArrayList<>();
         for (JavaClass superClass : superClasses) {
+            superClassBugs.addAll(findIAOMBugs(superClass));
             for (Method superClassMethod : getMethodsExceptConstructors(superClass)) {
                 if (isAccessibleFromSubClass(superClassMethod, subClass, superClass)) {
                     for (Method subClassMethod : subClassMethods) {
                         if (isOverridable(superClassMethod, subClassMethod) && !isCloneMethodFromCloneable(subClass, superClassMethod)) {
                             if (superClassMethod.isProtected() && subClassMethod.isPublic()) {
-                                bugReporter.reportBug(new BugInstance(this, BUG_TYPE, NORMAL_PRIORITY)
-                                        .addClassAndMethod(subClass, subClassMethod)
-                                        .addString(PROTECTED)
-                                        .addString(PUBLIC));
+                                iaomBugs.add(new IAOMBug(subClass, subClassMethod, PROTECTED, PUBLIC));
                             }
                             if (isPackagePrivate(superClassMethod)) {
                                 if (subClassMethod.isPublic()) {
-                                    bugReporter.reportBug(new BugInstance(this, BUG_TYPE, NORMAL_PRIORITY)
-                                            .addClassAndMethod(subClass, subClassMethod)
-                                            .addString(PACKAGE_PRIVATE)
-                                            .addString(PUBLIC));
+                                    iaomBugs.add(new IAOMBug(subClass, subClassMethod, PACKAGE_PRIVATE, PUBLIC));
                                 } else if (subClassMethod.isProtected()) {
-                                    bugReporter.reportBug(new BugInstance(this, BUG_TYPE, NORMAL_PRIORITY)
-                                            .addClassAndMethod(subClass, subClassMethod)
-                                            .addString(PACKAGE_PRIVATE)
-                                            .addString(PROTECTED));
+                                    iaomBugs.add(new IAOMBug(subClass, subClassMethod, PACKAGE_PRIVATE, PROTECTED));
                                 }
                             }
                         }
@@ -86,23 +93,8 @@ public class FindIncreasedAccessibilityOfMethods implements Detector {
                 }
             }
         }
-    }
 
-    @Override
-    public void report() {
-    }
-
-    private boolean isPackagePrivate(Method method) {
-        return !(method.isPublic() || method.isProtected() || method.isPrivate());
-    }
-
-    private boolean isAccessibleFromSubClass(Method superClassMethod, JavaClass subClass, JavaClass superClass) {
-        return superClassMethod.isProtected() ||
-                (subClass.getPackageName().equals(superClass.getPackageName()) && isPackagePrivate(superClassMethod));
-    }
-
-    private boolean isOverridable(Method original, Method overrider) {
-        return Objects.equals(original, overrider) && !original.isFinal();
+        return iaomBugs.stream().filter(bug -> !containsBug(superClassBugs, bug)).collect(Collectors.toList());
     }
 
     private List<Method> getMethodsExceptConstructors(JavaClass javaClass) {
@@ -115,12 +107,54 @@ public class FindIncreasedAccessibilityOfMethods implements Detector {
         return methods;
     }
 
+    private boolean isAccessibleFromSubClass(Method superClassMethod, JavaClass subClass, JavaClass superClass) {
+        return superClassMethod.isProtected() ||
+                (subClass.getPackageName().equals(superClass.getPackageName()) && isPackagePrivate(superClassMethod));
+    }
+
+    private boolean isOverridable(Method original, Method overrider) {
+        return Objects.equals(original, overrider) && !original.isFinal();
+    }
+
+    private boolean isPackagePrivate(Method method) {
+        return !(method.isPublic() || method.isProtected() || method.isPrivate());
+    }
+
     private boolean isCloneMethodFromCloneable(JavaClass javaClass, Method method) {
         try {
             return javaClass.implementationOf(Repository.lookupClass(Cloneable.class)) && "clone".equals(method.getName());
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
             return false;
+        }
+    }
+
+    private boolean containsBug(List<IAOMBug> bugs, IAOMBug bug) {
+        for (IAOMBug other : bugs) {
+            if (bug.isSameMethodAndAccessibility(other)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static class IAOMBug {
+        final JavaClass clazz;
+        final Method method;
+        final String oldAccessibility;
+        final String newAccessibility;
+
+        IAOMBug(JavaClass clazz, Method method, String oldAccessibility, String newAccessibility) {
+            this.clazz = clazz;
+            this.method = method;
+            this.oldAccessibility = oldAccessibility;
+            this.newAccessibility = newAccessibility;
+        }
+
+        boolean isSameMethodAndAccessibility(IAOMBug other) {
+            return Objects.equals(method.getSignature(), other.method.getSignature())
+                    && Objects.equals(oldAccessibility, other.oldAccessibility)
+                    && Objects.equals(newAccessibility, other.newAccessibility);
         }
     }
 
