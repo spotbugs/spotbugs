@@ -56,9 +56,10 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotationDatabase {
     private static final boolean DEBUG = SystemProperties.getBoolean("mrc.debug");
 
-    private static final int SCAN = 0;
-
-    private static final int SAW_INVOKE = 1;
+    private static enum State {
+        SCAN,
+        SAW_INVOKE;
+    }
 
     private static final BitSet INVOKE_OPCODE_SET = new BitSet();
     static {
@@ -76,7 +77,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
     private XMethod callSeen;
 
-    private int state;
+    private State state;
 
     private int callPC;
 
@@ -191,24 +192,24 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 callSeen = XFactory.createReferencedXMethod(this);
                 callPC = getPC();
                 sawMethodCallWithIgnoredReturnValue();
-                state = SCAN;
+                state = State.SCAN;
                 previousOpcodeWasNEW = false;
                 return;
 
             }
         }
 
-        if (state == SAW_INVOKE && isPop(seen)) {
+        if (state == State.SAW_INVOKE && isPop(seen)) {
             sawMethodCallWithIgnoredReturnValue();
         } else if (INVOKE_OPCODE_SET.get(seen)) {
             callPC = getPC();
             callSeen = XFactory.createReferencedXMethod(this);
-            state = SAW_INVOKE;
+            state = State.SAW_INVOKE;
             if (DEBUG) {
                 System.out.println("  invoking " + callSeen);
             }
         } else {
-            state = SCAN;
+            state = State.SCAN;
         }
 
         if (seen == Const.NEW) {
@@ -305,7 +306,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                         .describe(MethodAnnotation.METHOD_CALLED);
                 bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
             }
-            state = SCAN;
+            state = State.SCAN;
         }
     }
 
