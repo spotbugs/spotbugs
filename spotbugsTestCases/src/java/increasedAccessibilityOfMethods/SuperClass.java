@@ -3,7 +3,6 @@ package increasedAccessibilityOfMethods;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class SuperClass extends SuperClassOfSuperClass {
-
     protected SuperClass() {
         super();
     }
@@ -36,5 +35,4 @@ public class SuperClass extends SuperClassOfSuperClass {
     private String privateMethod() {
         return "SuperClass.privateMethod";
     }
-
 }

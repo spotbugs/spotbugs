@@ -1,7 +1,6 @@
 package increasedAccessibilityOfMethods;
 
 public class SuperClassOfSuperClass {
-
     public String superPublicMethod() {
         return "SuperClassOfSuperClass.superPublicMethod";
     }
@@ -26,4 +25,11 @@ public class SuperClassOfSuperClass {
         return "SuperClassOfSuperClass.superPackagePrivate";
     }
 
+    String superPackagePrivateMethodToProtectedOverriddenInSuperClass() {
+        return "SuperClassOfSuperClass.superPackagePrivateMethodToProtectedOverriddenInSuperClass";
+    }
+
+    protected String superProtectedMethodToPublicOverriddenInSuperClass() {
+        return "SuperClassOfSuperClass.superProtectedMethodToPublicOverriddenInSuperClass";
+    }
 }

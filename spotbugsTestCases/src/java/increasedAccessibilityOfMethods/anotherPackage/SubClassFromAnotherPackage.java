@@ -3,7 +3,6 @@ package increasedAccessibilityOfMethods.anotherPackage;
 import increasedAccessibilityOfMethods.SuperClass;
 
 public class SubClassFromAnotherPackage extends SuperClass {
-
     public SubClassFromAnotherPackage() {
         super();
     }
@@ -12,5 +11,4 @@ public class SubClassFromAnotherPackage extends SuperClass {
     public String protectedMethodToPublic() {
         return "SubClassFromAnotherPackage.protectedMethodToPublic";
     }
-
 }

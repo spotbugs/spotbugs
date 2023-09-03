@@ -1,8 +1,8 @@
 package increasedAccessibilityOfMethods.anotherPackage;
 
-import increasedAccessibilityOfMethods.SuperClass;
+import increasedAccessibilityOfMethods.SuperClassOfSuperClass;
 
-public class CorrectSubClass extends SuperClass {
+public class CorrectSubClass extends SuperClassOfSuperClass {
 
     public String packagePrivate() {
         return "CorrectSubClass.packagePrivate";

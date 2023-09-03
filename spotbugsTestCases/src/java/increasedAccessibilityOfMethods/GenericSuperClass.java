@@ -3,7 +3,6 @@ package increasedAccessibilityOfMethods;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class GenericSuperClass<T> {
-
     public String publicMethodWithGenericParameter(T parameter) {
         return "GenericSuperClass.publicMethodWithGenericParameter";
     }
@@ -32,5 +31,4 @@ public class GenericSuperClass<T> {
     private String privateMethodWithGenericParameter(T parameter) {
         return "GenericSuperClass.privateMethodWithGenericParameter";
     }
-
 }

@@ -1,7 +1,6 @@
 package increasedAccessibilityOfMethods;
 
 public class CloneableImplementation implements Cloneable {
-
     @Override
     public CloneableImplementation clone() {
         try {
@@ -10,5 +9,4 @@ public class CloneableImplementation implements Cloneable {
             throw new AssertionError();
         }
     }
-
 }

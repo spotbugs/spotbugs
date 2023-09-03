@@ -1,7 +1,6 @@
 package increasedAccessibilityOfMethods;
 
 public class GenericSubClass<K> extends GenericSuperClass<K> {
-
     @Override
     public String publicMethodWithGenericParameter(K parameter) {
         return "GenericSubClass.publicMethodWithGenericParameter";
@@ -31,5 +30,4 @@ public class GenericSubClass<K> extends GenericSuperClass<K> {
     String packagePrivateWithGenericParameter(K parameter) {
         return "GenericSubClass.packagePrivateWithGenericParameter";
     }
-
 }

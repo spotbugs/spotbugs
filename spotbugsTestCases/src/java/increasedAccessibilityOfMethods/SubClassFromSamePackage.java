@@ -1,7 +1,6 @@
 package increasedAccessibilityOfMethods;
 
 public class SubClassFromSamePackage extends SuperClass {
-
     public SubClassFromSamePackage() {
         super();
     }
@@ -35,5 +34,4 @@ public class SubClassFromSamePackage extends SuperClass {
     protected String superPackagePrivateMethodToProtected() {
         return "SubClassFromSamePackage.superPackagePrivateMethodToProtected";
     }
-
 }
