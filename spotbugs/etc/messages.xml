@@ -4175,7 +4175,7 @@ defined in an interface references a mutable
     <Details>
 <![CDATA[
    <p>
-This static field public but not final, and
+This <code>public static</code> or <code>protected static</code> field is not final, and
 could be changed by malicious code or
 by accident from another package.
 The field could be made final to avoid
@@ -4191,7 +4191,7 @@ to the field, so doing so will require some refactoring.
     <Details>
 <![CDATA[
    <p>
-This static field public but not final, and
+This <code>public static</code> or <code>protected static</code> field is not final, and
 could be changed by malicious code or
         by accident from another package.
         The field could be made final to avoid
