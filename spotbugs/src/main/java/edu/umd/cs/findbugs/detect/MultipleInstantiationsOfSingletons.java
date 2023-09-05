@@ -50,20 +50,20 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     private JavaClass cloneableInterface;
     private JavaClass serializableInterface;
 
-    boolean isSingleton;
-    boolean isGetterMethodSynchronized;
+    private boolean isSingleton;
+    private boolean isGetterMethodSynchronized;
 
-    boolean isCloneable;
-    boolean implementsCloneableDirectly;
-    boolean hasCloneMethod;
-    boolean cloneOnlyThrowsException;
-    boolean cloneOnlyThrowsCloneNotSupportedException;
+    private boolean isCloneable;
+    private boolean implementsCloneableDirectly;
+    private boolean hasCloneMethod;
+    private boolean cloneOnlyThrowsException;
+    private boolean cloneOnlyThrowsCloneNotSupportedException;
 
-    boolean isSerializable;
+    private boolean isSerializable;
 
-    EnumMap<Methods, XMethod> methods;
-    List<XMethod> methodsUsingMonitor;
-    Set<XMethod> constructors;
+    private EnumMap<Methods, XMethod> methods;
+    private List<XMethod> methodsUsingMonitor;
+    private Set<XMethod> constructors;
 
     public MultipleInstantiationsOfSingletons(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
