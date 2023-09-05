@@ -679,8 +679,11 @@
                     reports="VSC_VULNERABLE_SECURITY_CHECK_METHODS"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions" speed="fast"
                     reports="AA_ASSERTION_OF_ARGUMENTS"/>
-    <!-- Bug Categories -->
-           <BugCategory category="NOISE" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindIncreasedAccessibilityOfMethods" speed="fast"
+                    reports="IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY"/>
+
+          <!-- Bug Categories -->
+          <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
           <BugCode abbrev="USELESS_STRING"/>
@@ -1312,4 +1315,5 @@
           <BugPattern abbrev="PA" type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="VSC" type="VSC_VULNERABLE_SECURITY_CHECK_METHODS"
                     category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="IAOM" type="IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY" category="CORRECTNESS" />
 </FindbugsPlugin>
