@@ -85,6 +85,8 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
     private boolean sawExcludedNSECall;
 
+    private boolean sawMockitoInvoke;
+
     public MethodReturnCheck(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
         this.noSideEffectMethods = Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class);
@@ -200,11 +202,15 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         }
 
         if (state == State.SAW_INVOKE && isPop(seen)) {
-            sawMethodCallWithIgnoredReturnValue();
+            if (!sawMockitoInvoke) {
+                sawMethodCallWithIgnoredReturnValue();
+            }
+            sawMockitoInvoke = false;
         } else if (INVOKE_OPCODE_SET.get(seen)) {
             callPC = getPC();
             callSeen = XFactory.createReferencedXMethod(this);
             state = State.SAW_INVOKE;
+            sawMockitoInvoke |= isCallMockitoVerifyInvocation(callSeen);
             if (DEBUG) {
                 System.out.println("  invoking " + callSeen);
             }
@@ -215,7 +221,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         if (seen == Const.NEW) {
             previousOpcodeWasNEW = true;
         } else {
-            if (seen == Const.INVOKESPECIAL && previousOpcodeWasNEW) {
+            if (seen == Const.INVOKESPECIAL && previousOpcodeWasNEW && !sawMockitoInvoke) {
                 CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase.getResolvedAnnotation(callSeen, false);
                 if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
                     int priority = annotation.getPriority();
@@ -231,6 +237,10 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             previousOpcodeWasNEW = false;
         }
 
+    }
+
+    private boolean isCallMockitoVerifyInvocation(XMethod method) {
+        return method.isStatic() && "verify".equals(method.getName()) && "org.mockito.Mockito".equals(method.getClassName());
     }
 
     /**
