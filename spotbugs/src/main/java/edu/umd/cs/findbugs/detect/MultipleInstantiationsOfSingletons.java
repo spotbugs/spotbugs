@@ -178,27 +178,27 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         boolean isGetterMethodUsingMonitor = methodsUsingMonitor.contains(methods.get(Methods.INSTANCE_GETTER));
 
         if (hasNonPrivateConstructor) {
-            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", NORMAL_PRIORITY).addClass(this).addMethod(
-                    methods.get(Methods.CONSTRUCTOR)));
+            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", NORMAL_PRIORITY).addClass(this)
+                    .addMethod(methods.get(Methods.CONSTRUCTOR)));
         }
 
         if (methods.containsKey(Methods.INSTANCE_GETTER) && !isGetterMethodSynchronized && !isGetterMethodUsingMonitor) {
-            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", NORMAL_PRIORITY).addClass(this).addMethod(
-                    methods.get(Methods.INSTANCE_GETTER)));
+            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", NORMAL_PRIORITY).addClass(this)
+                    .addMethod(methods.get(Methods.INSTANCE_GETTER)));
         }
 
         if (isCloneable) {
             if (implementsCloneableDirectly) { // directly
-                bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_CLONEABLE", NORMAL_PRIORITY).addClass(this).addMethod(methods
-                        .get(Methods.CLONE)));
+                bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_CLONEABLE", NORMAL_PRIORITY).addClass(this)
+                        .addMethod(methods.get(Methods.CLONE)));
             } else { // indirectly
                 if (!cloneOnlyThrowsCloneNotSupportedException) { // no or not only CloneNotSupportedException
                     bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", NORMAL_PRIORITY).addClass(this));
                 }
             }
         } else if (hasCloneMethod && !cloneOnlyThrowsCloneNotSupportedException) {
-            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", NORMAL_PRIORITY).addClass(this).addMethod(methods
-                    .get(Methods.CLONE)));
+            bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", NORMAL_PRIORITY).addClass(this)
+                    .addMethod(methods.get(Methods.CLONE)));
         }
 
         if (isSerializable) {
