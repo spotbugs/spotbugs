@@ -30,12 +30,13 @@ jobs:
           echo "eclipseRoot.dir=$(pwd)/eclipse" > eclipsePlugin/local.properties
       - name: Build
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
+          if [$GPG_SECRET_PASSPHRASE != ""]
+            gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
+          fi
           echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
               ./gradlew assemble createReleaseBody --no-daemon
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
       - name: Deploy eclipse-latest
