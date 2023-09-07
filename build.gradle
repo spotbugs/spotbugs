@@ -84,6 +84,24 @@ createChecksums.configure {
   if (publishTask != null) {
     dependsOn publishTask
   }
+  subprojects.each {
+    dependsOn("${it.name}:jar")
+  }
+
+  dependsOn(":spotbugs:javadocJar")
+  dependsOn(":spotbugs:sourcesJar")
+  dependsOn(":spotbugs-annotations:javadocJar")
+  dependsOn(":spotbugs-annotations:sourcesJar")
+  dependsOn(":spotbugs-ant:javadocJar")
+  dependsOn(":spotbugs-ant:sourcesJar")
+  dependsOn(":test-harness:javadocJar")
+  dependsOn(":test-harness:sourcesJar")
+  dependsOn(":test-harness-core:javadocJar")
+  dependsOn(":test-harness-core:sourcesJar")
+  dependsOn(":test-harness-jupiter:javadocJar")
+  dependsOn(":test-harness-jupiter:sourcesJar")
+  dependsOn(":spotbugs:distZip")
+  dependsOn(":spotbugs:distTar")
 }
 createReleaseBody.configure {
   inputs.files fileTree("$buildDir/checksums").matching {
