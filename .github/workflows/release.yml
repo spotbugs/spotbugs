@@ -30,8 +30,8 @@ jobs:
           echo "eclipseRoot.dir=$(pwd)/eclipse" > eclipsePlugin/local.properties
       - name: Build
         run: |
-          if [$GPG_SECRET_PASSPHRASE != ""]
-            gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
+          if [ "$GPG_SECRET_PASSPHRASE" != ""]; then
+            gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
           fi
           echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
               ./gradlew assemble createReleaseBody --no-daemon
