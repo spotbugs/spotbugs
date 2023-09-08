@@ -215,14 +215,19 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         super.visitAfter(javaClass);
     }
 
-    private static int getNumberOfEnumValues(JavaClass javaClass) {
+    private int getNumberOfEnumValues(JavaClass javaClass) {
         try {
-            java.lang.reflect.Method valuesMethod = javaClass.getClass().getDeclaredMethod("values");
+            Class<?> clazz = Class.forName(javaClass.getClassName());
+            java.lang.reflect.Method valuesMethod = clazz.getDeclaredMethod("values");
             Object[] result = (Object[]) valuesMethod.invoke(null);
             return result.length;
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            e.printStackTrace();
-            return 0;
+            String msg = "Detector " + this.getClass().getName() + " caught an exception while determining the number of enum values of " +
+                    javaClass.getClassName();
+            bugReporter.logError(msg, e);
         }
+        return 0;
     }
 }
