@@ -424,30 +424,30 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     }
 
-    private boolean isFieldOf(XField field, ClassDescriptor klass) {
+    private boolean isFieldOf(XField field, ClassDescriptor clazz) {
         do {
-            ClassDescriptor klass2 = klass;
+            ClassDescriptor clazz2 = clazz;
             do {
-                if (field.getClassDescriptor().equals(klass2)) {
+                if (field.getClassDescriptor().equals(clazz2)) {
                     return true;
                 }
                 try {
-                    klass2 = klass2.getXClass().getSuperclassDescriptor();
+                    clazz2 = clazz2.getXClass().getSuperclassDescriptor();
                 } catch (CheckedAnalysisException e) {
-                    AnalysisContext.logError("Error checking for class " + klass2, e);
+                    AnalysisContext.logError("Error checking for class " + clazz2, e);
                     return false;
                 }
-            } while (klass2 != null);
+            } while (clazz2 != null);
             try {
-                klass = klass.getXClass().getImmediateEnclosingClass();
-                if (klass != null && !klass.getXClass().isPublic()) {
+                clazz = clazz.getXClass().getImmediateEnclosingClass();
+                if (clazz != null && !clazz.getXClass().isPublic()) {
                     return false;
                 }
             } catch (CheckedAnalysisException e) {
-                AnalysisContext.logError("Error checking for class " + klass, e);
+                AnalysisContext.logError("Error checking for class " + clazz, e);
                 return false;
             }
-        } while (klass != null);
+        } while (clazz != null);
         return false;
     }
 }
