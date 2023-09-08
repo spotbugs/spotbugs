@@ -9122,7 +9122,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
         </Details>
   </BugPattern>
-    <!--
+  <!--
   **********************************************************************
    BugCodes
   **********************************************************************
