@@ -141,7 +141,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     public void sawOpcode(int seen) {
         if (seen == Const.ATHROW && stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            if (item != null && item.getSignature().equals("Ljava/lang/CloneNotSupportedException;") && cloneOnlyThrowsException) {
+            if (item != null && "Ljava/lang/CloneNotSupportedException;".equals(item.getSignature()) && cloneOnlyThrowsException) {
                 cloneOnlyThrowsCloneNotSupportedException = true;
             }
         } else if (seen == Const.ARETURN && stack.getStackDepth() > 0) {
