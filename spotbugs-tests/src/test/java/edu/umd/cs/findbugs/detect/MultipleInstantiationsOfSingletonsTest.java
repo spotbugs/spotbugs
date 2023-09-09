@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class FindMultipleInstantiationsOfSingletons extends AbstractIntegrationTest {
+public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
     public void cloneableSingletonTest() {
         performAnalysis("singletons/CloneableSingleton.class");
