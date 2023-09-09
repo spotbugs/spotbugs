@@ -65,17 +65,14 @@ public class FindReturnRefNegativeTest {
 
     // Correct solutions to return private fields:
 
-    @NoWarning("EI")
     public Date getDate() {
         return (Date) date.clone();
     }
 
-    @NoWarning("MS")
     public static Date getStaticDate() {
         return (Date) sDate.clone();
     }
 
-    @NoWarning("EI")
     public Date[] getDateArray() {
         Date[] dateCopy = new Date[dateArray.length];
         for (int i = 0; i < dateArray.length; i++) {
@@ -84,7 +81,6 @@ public class FindReturnRefNegativeTest {
         return dateCopy;
     }
 
-    @NoWarning("MS")
     public static Date[] getStaticDateArray() {
         Date[] dateCopy = new Date[sDateArray.length];
         for (int i = 0; i < sDateArray.length; i++) {
@@ -93,83 +89,68 @@ public class FindReturnRefNegativeTest {
         return dateCopy;
     }
 
-    @NoWarning("EI")
     public HashMap<Integer, String> getValues() {
         return (HashMap<Integer, String>) hm.clone();
     }
 
-    @NoWarning("MS")
     public static HashMap<Integer, String> getStaticValues() {
         return (HashMap<Integer, String>) shm.clone();
     }
 
     // Returning public case should be OK.
 
-    @NoWarning("EI")
     public Date getPublicDate() {
         return pubDate;
     }
 
-    @NoWarning("MS")
     public static Date getPublicStaticDate() {
         return pubSDate;
     }
 
-    @NoWarning("EI")
     public Date[] getPublicDateArray() {
         return pubDateArray;
     }
 
-    @NoWarning("MS")
     public static Date[] getPublicStaticDateArray() {
         return pubSDateArray;
     }
 
-    @NoWarning("EI")
     public HashMap<Integer, String> getPublicValues() {
         return puhm;
     }
 
-    @NoWarning("MS")
     public static HashMap<Integer, String> getPublicStaticValues() {
         return pushm;
     }
 
     // Returning a private immutable should be OK.
 
-    @NoWarning("EI")
     public String getString() {
         return string;
     }
 
-    @NoWarning("MS")
     public static String getStaticString() {
         return sString;
     }
 
-    @NoWarning("EI")
     public String[] getStringArray() {
         return stringArray.clone();
     }
 
-    @NoWarning("MS")
     public static String[] getStaticStringArray() {
         return sStringArray.clone();
     }
 
     // Correct solutions to store mutable objects in fields:
 
-    @NoWarning("EI2")
     public void setDate(Date d) {
         date = (Date) d.clone();
     }
 
-    @NoWarning("MS")
     public static void setStaticDate(Date d) {
         sDate = (Date) d.clone();
     }
 
-    @NoWarning("EI2")
     public void setDateArray(Date[] da) {
         dateArray = new Date[da.length];
         for (int i = 0; i < da.length; i++) {
@@ -177,7 +158,6 @@ public class FindReturnRefNegativeTest {
         }
     }
 
-    @NoWarning("MS")
     public static void setStaticDateArray(Date[] da) {
         sDateArray = new Date[da.length];
         for (int i = 0; i < da.length; i++) {
@@ -185,19 +165,16 @@ public class FindReturnRefNegativeTest {
         }
     }
 
-    @NoWarning("EI2")
     public void setValues(HashMap<Integer, String> values) {
         hm = (HashMap<Integer, String>) values.clone();
     }
 
-    @NoWarning("MS")
     public static void getStaticValues(HashMap<Integer, String>  values) {
         shm = (HashMap<Integer, String>) values.clone();
     }
 
     // Do not warn for synthetic methods.
 
-    @NoWarning("EI")
     private class Inner {
         private void accessParent() {
             Date d1 = date;
@@ -212,36 +189,30 @@ public class FindReturnRefNegativeTest {
     private static CharBuffer sCharBuf;
     private static char[] sCharArray;
 
-    @NoWarning("EI")
     public CharBuffer getBufferReadOnly() {
         return charBuf.asReadOnlyBuffer();
     }
 
-    @NoWarning("MS")
     public static CharBuffer getStaticBufferReadOnly() {
         return sCharBuf.asReadOnlyBuffer();
     }
 
-    @NoWarning("EI")
     public CharBuffer getBufferCopy() {
         CharBuffer cb = CharBuffer.allocate(charArray.length);
         cb.put(charArray);
         return cb;
     }
 
-    @NoWarning("MS")
     public static CharBuffer getStaticBufferCopy() {
         CharBuffer cb = CharBuffer.allocate(sCharArray.length);
         cb.put(sCharArray);
         return cb;
     }
 
-    @NoWarning("EI")
     public CharBuffer getBuferWrap() {
         return CharBuffer.wrap(charArray).asReadOnlyBuffer();        
     }
 
-    @NoWarning("MS")
     public static CharBuffer getStaticBuferWrap() {
         return CharBuffer.wrap(sCharArray).asReadOnlyBuffer();        
     }
