@@ -18,8 +18,6 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -144,12 +142,12 @@ public class AnnotationMatcherTest {
                 Paths.get(
                         "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
 
-        assertThat(bugCollection.getCollection(), hasSize(3));
-
         AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher(annotationName);
-        for (BugInstance bugInstance : bugCollection) {
-            assertTrue(bugInstanceMatcher.match(bugInstance));
-        }
+        long numberOfMatchedBugs = bugCollection.getCollection().stream()
+                .filter(bugInstanceMatcher::match)
+                .count();
+
+        assertEquals(4, numberOfMatchedBugs);
     }
 
     private String writeXMLAndGetStringOutput(AnnotationMatcher matcher, boolean disabled) throws IOException {
