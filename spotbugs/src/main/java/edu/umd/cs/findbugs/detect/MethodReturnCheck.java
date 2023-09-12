@@ -18,10 +18,14 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.BitSet;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -308,16 +312,34 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                     priority++;
                 }
                 String pattern = annotation.getPattern();
-                if (Const.CONSTRUCTOR_NAME.equals(callSeen.getName())
-                        && (callSeen.getClassName().endsWith("Exception") || callSeen.getClassName().endsWith("Error"))) {
+                if (Const.CONSTRUCTOR_NAME.equals(callSeen.getName()) && isThrowableChild(callSeen.getClassName())) {
                     pattern = "RV_EXCEPTION_NOT_THROWN";
                 }
                 BugInstance warning = new BugInstance(this, pattern, priority).addClassAndMethod(this).addMethod(callSeen)
                         .describe(MethodAnnotation.METHOD_CALLED);
                 bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
+            } else {
+                String methodSig = callSeen.getMethodDescriptor().getSignature();
+                String returnTypeSig = methodSig.substring(methodSig.indexOf(')') + 1);
+                String returnType = ClassName.fromFieldSignature(returnTypeSig);
+                if (returnType != null && isThrowableChild(ClassName.toDottedClassName(returnType))) {
+                    BugInstance warning = new BugInstance(this, "RV_EXCEPTION_NOT_THROWN", 1).addClassAndMethod(this).addMethod(callSeen)
+                            .describe(MethodAnnotation.METHOD_CALLED);
+                    bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
+                }
             }
             state = State.SCAN;
         }
+    }
+
+    private boolean isThrowableChild(@DottedClassName String className) {
+        try {
+            JavaClass[] superClasses = Repository.getSuperClasses(className);
+            return Arrays.stream(superClasses).anyMatch(clazz -> "java.lang.Throwable".equals(clazz.getClassName()));
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
+        return false;
     }
 
     private boolean isPop(int seen) {
