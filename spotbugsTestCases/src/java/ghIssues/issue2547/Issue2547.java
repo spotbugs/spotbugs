@@ -1,5 +1,9 @@
 package ghIssues.issue2547;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Issue2547 {
     // compliant
     public void throwingExCtor() throws MyEx {
@@ -37,5 +41,26 @@ public class Issue2547 {
     public void createAndThrowExCtorCallerOutside() throws MyEx {
         MyEx e = ExceptionFactory.createMyException(5);
         throw e;
+    }
+
+    // compliant
+    public void createAndThrowExCtorCallerOutside23(File f) throws IOException {
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(f);
+            fw.write("string");
+        } catch (IOException e) {
+            IOException ioe = new IOException("IOException caught");
+            ioe.initCause(e);
+            throw ioe;
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException e) {
+                    System.err.println("Exception caught, no error");
+                }
+            }
+        }
     }
 }
