@@ -18,14 +18,13 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.BitSet;
 
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.Values;
 import org.apache.bcel.Const;
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -37,12 +36,6 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -312,17 +305,23 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                     priority++;
                 }
                 String pattern = annotation.getPattern();
-                if (Const.CONSTRUCTOR_NAME.equals(callSeen.getName()) && isThrowableChild(callSeen.getClassName())) {
+                if (Const.CONSTRUCTOR_NAME.equals(callSeen.getName())
+                        && Subtypes2.instanceOf(callSeen.getClassName(), Values.DOTTED_JAVA_LANG_THROWABLE)) {
                     pattern = "RV_EXCEPTION_NOT_THROWN";
                 }
                 BugInstance warning = new BugInstance(this, pattern, priority).addClassAndMethod(this).addMethod(callSeen)
                         .describe(MethodAnnotation.METHOD_CALLED);
                 bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
             } else {
-                String methodSig = callSeen.getMethodDescriptor().getSignature();
-                String returnTypeSig = methodSig.substring(methodSig.indexOf(')') + 1);
+                MethodDescriptor methodDescriptor = callSeen.getMethodDescriptor();
+                SignatureParser methodSigParser = new SignatureParser(methodDescriptor.getSignature());
+                String returnTypeSig = methodSigParser.getReturnTypeSignature();
                 String returnType = ClassName.fromFieldSignature(returnTypeSig);
-                if (returnType != null && isThrowableChild(ClassName.toDottedClassName(returnType))) {
+                if (returnType != null
+                        && Subtypes2.instanceOf(ClassName.toDottedClassName(returnType), Values.DOTTED_JAVA_LANG_THROWABLE)
+                        && !("initCause".equals(methodDescriptor.getName()) && methodSigParser.getArguments().length == 1
+                                && "Ljava/lang/Throwable;".equals(methodSigParser.getArguments()[0]))
+                        && !("getCause".equals(methodDescriptor.getName()) && methodSigParser.getArguments().length == 0)) {
                     BugInstance warning = new BugInstance(this, "RV_EXCEPTION_NOT_THROWN", 1).addClassAndMethod(this).addMethod(callSeen)
                             .describe(MethodAnnotation.METHOD_CALLED);
                     bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
@@ -330,16 +329,6 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             }
             state = State.SCAN;
         }
-    }
-
-    private boolean isThrowableChild(@DottedClassName String className) {
-        try {
-            JavaClass[] superClasses = Repository.getSuperClasses(className);
-            return Arrays.stream(superClasses).anyMatch(clazz -> "java.lang.Throwable".equals(clazz.getClassName()));
-        } catch (ClassNotFoundException e) {
-            AnalysisContext.reportMissingClass(e);
-        }
-        return false;
     }
 
     private boolean isPop(int seen) {
