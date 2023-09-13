@@ -125,9 +125,13 @@ public class FindHidingSubClass implements Detector {
      * As we know main method always have the signature "public static void main(String[] args)".
      * It is static but usually public class have its own main method as its entry point.
      * Therefore, it is not an error caused by Programming but a utility to provide UI to user.
+     *
+     * Frist part of conditional is to abide with the  @see <a href="https://openjdk.org/jeps/445">JEP 445</a>
+     *
      */
     private boolean isMainMethod(Method method) {
-        return method.isPublic() && method.isStatic() && method.getReturnType().equals(BasicType.VOID)
+        return method.getReturnType().equals(BasicType.VOID) && "main".equals(method.getName()) ||
+                method.isPublic() && method.isStatic() && method.getReturnType().equals(BasicType.VOID)
                 && "main".equals(method.getName())
                 && isStringArray(method.getArgumentTypes());
     }
