@@ -6,5 +6,5 @@ repositories {
     gradlePluginPortal()
 }
 dependencies {
-    implementation("com.diffplug.gradle:goomph:3.42.2")
+    implementation("com.diffplug.gradle:goomph:3.43.0")
 }
