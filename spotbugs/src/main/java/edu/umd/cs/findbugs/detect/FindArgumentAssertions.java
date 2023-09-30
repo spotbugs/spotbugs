@@ -121,7 +121,7 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
     }
 
     /**
-     * Finds MET01 rule violating assertions. 
+     * Finds MET01 rule violating assertions.
      */
     @Override
     protected void detect(int seen) {

@@ -219,7 +219,7 @@ public class UnreadFields extends OpcodeStackDetector {
             data.innerClassCannotBeStatic.add(getDottedSuperclassName());
         }
         if (getXClass().getAnnotation(junitNestedAnnotation) != null) {
-            // This class is a JUnit nested test, it can't be static 
+            // This class is a JUnit nested test, it can't be static
             data.innerClassCannotBeStatic.add(getDottedClassName());
         }
         // Does this class directly implement Serializable?
