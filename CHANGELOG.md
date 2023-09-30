@@ -62,6 +62,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Prefer log4j2 2.20.0 ([#2480](https://github.com/spotbugs/spotbugs/pull/2480))
 - Prefer logback 1.4.8 ([#2480](https://github.com/spotbugs/spotbugs/pull/2480))
 - Switch junit 4 for junit 5 vintage engine ([#2483](https://github.com/spotbugs/spotbugs/pull/2483))
+- Cleanup gitattributes switching text to auto.  For developers using windows, run 'git add . --renormalize' and see https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings if needed.
+- Rework spotless setup from plugin to build file plugin matching that of gradle plugin and thus allowing spotless to be updated to 6.22.0
+- Remove customized line endings for spotless so it uses git attributes as suggested by spotless
+- Add trimTrailingWhitespace for spotless
+- Fix deprecated usage of eclipse version from 4.13.0 to 4.13 per spotless requirements
+
 
 ## 4.7.3 - 2022-10-15
 ### Fixed
