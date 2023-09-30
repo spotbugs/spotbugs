@@ -11,7 +11,7 @@ import edu.umd.cs.findbugs.BugCollection;
  * A class to execute integration test for SpotBugs. This is basically designed to help SpotBugs plugin developer to
  * test their product.
  * </p>
- * 
+ *
  * @since 3.1
  */
 public class SpotBugsRunner {
