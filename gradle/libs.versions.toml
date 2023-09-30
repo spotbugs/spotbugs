@@ -1,5 +1,5 @@
 [versions]
-asm = "9.5"
+asm = "9.6"
 guice = "5.1.0"
 log4j = "2.20.0"
 
