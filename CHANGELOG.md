@@ -70,7 +70,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
     - Remove customized line endings for spotless so it uses git attributes as suggested by spotless
     - Add trimTrailingWhitespace for spotless
     - Fix deprecated usage of eclipse version from 4.13.0 to 4.13 per spotless requirements
-
+- Bump spotbugs gradle plugin to 6.0.0-beta.3 demonstrating breaking changes for 6.0.0 in gradle/java.gradle build file
 
 ## 4.7.3 - 2022-10-15
 ### Fixed
