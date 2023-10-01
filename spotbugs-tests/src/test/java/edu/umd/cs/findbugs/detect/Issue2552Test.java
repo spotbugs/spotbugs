@@ -13,7 +13,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 public class Issue2552Test extends AbstractIntegrationTest {
     @Test
     public void test() {
-        performAnalysis("../java14/ghIssues/Issue2552.class");
+        performAnalysis("../java17/ghIssues/Issue2552.class");
 
         assertBugCount("EI_EXPOSE_REP", 1);
 

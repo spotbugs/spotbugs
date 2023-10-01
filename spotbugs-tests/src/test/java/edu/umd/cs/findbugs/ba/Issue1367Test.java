@@ -21,7 +21,7 @@ public class Issue1367Test {
 
     @Test
     public void test() {
-        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/java14/Issue1367.class"));
+        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/java17/Issue1367.class"));
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("EQ_UNUSUAL").build();
         assertThat(bugCollection, containsExactly(0, bugTypeMatcher));
     }

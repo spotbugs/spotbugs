@@ -24,7 +24,7 @@ public class Issue2184Test extends AbstractIntegrationTest {
 
     @Test
     public void test() {
-        performAnalysis("../java14/ghIssues/Issue2184.class");
+        performAnalysis("../java17/ghIssues/Issue2184.class");
         BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType("PT_RELATIVE_PATH_TRAVERSAL")
                 .inClass("Issue2184")
