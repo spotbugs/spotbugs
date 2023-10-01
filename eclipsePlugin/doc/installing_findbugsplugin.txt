@@ -1,12 +1,12 @@
 Here is how to install and use the Find Bugs Eclipse Plug-in:
 
-NOTE: Since FindBugs requires a JDK 1.5.x to run on, you MUST ENSURE that you
-start Eclipse using a JRE/JDK 1.5.x (or later) as well.
+NOTE: Since FindBugs requires a JDK 1.8.x to run on, you MUST ENSURE that you
+start Eclipse using a JRE/JDK 1.8.x (or later) as well.
 
 Install the plug-in
 ===================================================
 1) Extract the contents of the file
-   - edu.umd.cs.findbugs.plugin.eclipse_1.1.0.v20060908.zip
+   - edu.umd.cs.findbugs.plugin.eclipse_4.8.0.202310010614-b78d23d.zip
    into the [plugins] folder of your Eclipse installation. This should result in
    the following directory structure:
    <eclipse-dir>
@@ -20,14 +20,30 @@ Install the plug-in
             +- lib
             |  |
             |  +- annotations.jar
-            |     asm-3.3.jar
-            |     asm-commons-3.3.jar
-            |     asm-tree-3.3.jar
-            |     bcel.jar
-            |     commons-lang-2.6.jar
-            |     dom4j-2.1.3.jar
-            |     jaxen-1.1.6.jar
-            |     jsr305.jar
+            |     asm-9.6.jar
+            |     asm-analysis-9.6.jar
+            |     asm-commons-9.6.jar
+            |     asm-tree-9.6.jar
+            |     asm-util-9.6.jar
+            |     bcel-6.6.1.jar
+            |     commons-codec-1.15.jar
+            |     commons-lang3-3.13.0.jar
+            |     commons-text-1.1.10.jar
+            |     dom4j-2.1.4.jar
+            |     gson-2.10.1.jar
+            |     httpclient5-5.1.3.jar
+            |     httpcore5-5.1.3.jar
+            |     httpcore5-h2-5.1.3.jar
+            |     jaxen-2.0.0.jar
+            |     jcip-annotations-1.0-1.jar
+            |     jsr305-3.0.2.jar
+            |     log4j-api-2.20.0.jar
+            |     log4j-core-2.20.0.jar
+            |     slf4j-api-2.0.9.jar
+            |     spotbugs.jar
+            |     spotbugs-annotations.jar
+            |     xmlresolver-5.2.0.jar
+            |     xmlresolver-5.2.0-data.jar
             |
             +- META-INF
             |  |
