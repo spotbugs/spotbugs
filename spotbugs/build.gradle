@@ -209,7 +209,6 @@ def scripts = tasks.register('scripts', Copy) {
         'WRAP_JAVA': props.getProperty('script.wrap.java'),
         'WRAP_JAR': props.getProperty('script.wrap.jar'),
         'DEFINE_ESCAPE_ARG': props.getProperty('script.define.escape_arg')])
-      fileMode 0755
     }
   }
 
@@ -224,6 +223,7 @@ def scripts = tasks.register('scripts', Copy) {
 
   destinationDir file("$buildDir/bin")
   duplicatesStrategy DuplicatesStrategy.FAIL
+  fileMode 0755
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
