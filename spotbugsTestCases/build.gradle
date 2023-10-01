@@ -79,9 +79,9 @@ def classesJava11 = tasks.register('classesJava11', JavaCompile) {
 }
 
 def classesJava17 = tasks.register('classesJava17', JavaCompile) {
-  destinationDirectory.set(file("$buildDir/classes/java/java14"))
+  destinationDirectory.set(file("$buildDir/classes/java/java17"))
   classpath = sourceSets.main.compileClasspath
-  source = file('src/java14')
+  source = file('src/java17')
 }
 
 tasks.named('classes').configure {
