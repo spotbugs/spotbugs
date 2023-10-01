@@ -72,6 +72,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
     - Fix deprecated usage of eclipse version from 4.13.0 to 4.13 per spotless requirements
 - Bump spotbugs gradle plugin to 6.0.0-beta.3 demonstrating breaking changes for 6.0.0 in gradle/java.gradle build file ([#2582](https://github.com/spotbugs/spotbugs/pull/2582))
 - Delete checked in j2ee jar and instead use servlet/ejb apis from jakarta (javax standard) ([#2585](https://github.com/spotbugs/spotbugs/pull/2585))
+- Bump Eclipse from 4.14 to 4.29 (latest) ([#2589](https://github.com/spotbugs/spotbugs/pull/2589))
 
 ## 4.7.3 - 2022-10-15
 ### Fixed
