@@ -89,13 +89,19 @@ def classesJava21 = tasks.register('classesJava21', JavaCompile) {
   source = file('src/java21')
 }
 
+def jvmVersion = JavaVersion.current()
 tasks.named('classes').configure {
   dependsOn classesJava8
   dependsOn classesJava11
-  dependsOn classesJava17
-  
-  if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_21)) {
+  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
+    dependsOn classesJava17
+  } else {
+    println "skip tests for Java 17 features"
+  }
+  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_21)) {
     dependsOn classesJava21
+  } else {
+    println "skip tests for Java 21 features"
   }
 }
 
