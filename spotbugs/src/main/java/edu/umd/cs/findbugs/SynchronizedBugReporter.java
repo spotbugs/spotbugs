@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * An implementation of {@link BugReporter} that synchronize all method invocations.
- * 
+ *
  * @since 4.0
  */
 class SynchronizedBugReporter implements BugReporter {
