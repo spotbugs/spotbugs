@@ -21,9 +21,11 @@ tasks.withType(AbstractArchiveTask).configureEach {
 
 def classLoader = plugins['com.github.spotbugs'].class.classLoader
 def SpotBugsTask = classLoader.findLoadedClass( 'com.github.spotbugs.snom.SpotBugsTask' )
+def SpotBugsEffort = classLoader.findLoadedClass( 'com.github.spotbugs.snom.Effort' )
+def SpotBugsConfidence = classLoader.findLoadedClass( 'com.github.spotbugs.snom.Confidence' )
 spotbugs {
-    effort = 'max'
-    reportLevel = 'high'
+    effort = SpotBugsEffort.MAX
+    reportLevel = SpotBugsConfidence.HIGH
     maxHeapSize = '1g'
 }
 tasks.withType(SpotBugsTask).configureEach {

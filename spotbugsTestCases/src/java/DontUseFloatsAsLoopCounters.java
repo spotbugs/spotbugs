@@ -100,7 +100,7 @@ class DontUseFloatsAsLoopCounters {
         }
         return k;
     }
-    
+
     //compliant
     //false positive sample provided in issue #2071
     public static int ilog10(double x) {

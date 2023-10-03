@@ -5,7 +5,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2023-??-??
+## Unreleased 4.8.0 - 2023-??-??
 
 ### Changed
 - Bump up Apache Commons BCEL to the version 6.6.1 ([#2223](https://github.com/spotbugs/spotbugs/pull/2223))
@@ -36,6 +36,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Added execute file permission to files in the distribution zip  ([#2540](https://github.com/spotbugs/spotbugs/issues/2540))
 - Do not report RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT when part of a Mockito.verify() call check ([#872](https://github.com/spotbugs/spotbugs/issues/872))
 - Do not report SIC_INNER_SHOULD_BE_STATIC for classes annotated with JUnit Nested ([#560](https://github.com/spotbugs/spotbugs/issues/560))
+- Detect created, but not-thrown exceptions, which are created by not the constructor ([#2547](https://github.com/spotbugs/spotbugs/issues/2547))
+- Fixed eclipse plugin Effort.values pass to effortViewer as required cast to varargs ([#2579](https://github.com/spotbugs/spotbugs/pull/2579))
 - Fixed detector `FindReturnRef` not finding references exposed from nested and inner classes ([#2042](https://github.com/spotbugs/spotbugs/issues/2042))
 
 ### Added
@@ -61,7 +63,17 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Only run release action on 'spotbugs' and use Eclipse 4.14 ([#2317](https://github.com/spotbugs/spotbugs/pull/2317))
 - Prefer log4j2 2.20.0 ([#2480](https://github.com/spotbugs/spotbugs/pull/2480))
 - Prefer logback 1.4.8 ([#2480](https://github.com/spotbugs/spotbugs/pull/2480))
+- Prefer logback 1.4.11 ([#2580](https://github.com/spotbugs/spotbugs/pull/2580))
 - Switch junit 4 for junit 5 vintage engine ([#2483](https://github.com/spotbugs/spotbugs/pull/2483))
+- LineEndings and Spotless ([#2343](https://github.com/spotbugs/spotbugs/pull/2343))
+    - Cleanup gitattributes switching text to auto.  For developers using windows, run 'git add . --renormalize' and see https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings if needed.
+    - Rework spotless setup from plugin to build file plugin matching that of gradle plugin and thus allowing spotless to be updated to 6.22.0
+    - Remove customized line endings for spotless so it uses git attributes as suggested by spotless
+    - Add trimTrailingWhitespace for spotless
+    - Fix deprecated usage of eclipse version from 4.13.0 to 4.13 per spotless requirements
+- Bump spotbugs gradle plugin to 6.0.0-beta.3 demonstrating breaking changes for 6.0.0 in gradle/java.gradle build file ([#2582](https://github.com/spotbugs/spotbugs/pull/2582))
+- Delete checked in j2ee jar and instead use servlet/ejb apis from jakarta (javax standard) ([#2585](https://github.com/spotbugs/spotbugs/pull/2585))
+- Bump Eclipse from 4.14 to 4.29 (latest) ([#2589](https://github.com/spotbugs/spotbugs/pull/2589))
 
 ## 4.7.3 - 2022-10-15
 ### Fixed
