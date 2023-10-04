@@ -18,16 +18,16 @@
  */
 package de.tobject.findbugs.actions.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IActionDelegate;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.actions.ClearMarkersAction;
@@ -41,12 +41,12 @@ import de.tobject.findbugs.test.TestScenario;
  * @author Tomás Pollak
  */
 public class ContextMenuActionsTest extends AbstractFindBugsTest {
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }

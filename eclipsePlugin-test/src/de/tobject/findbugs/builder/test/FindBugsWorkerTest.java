@@ -18,15 +18,15 @@
  */
 package de.tobject.findbugs.builder.test;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.JavaModelException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
@@ -38,12 +38,12 @@ import de.tobject.findbugs.test.TestScenario;
  * @author Tomás Pollak
  */
 public class FindBugsWorkerTest extends AbstractFindBugsTest {
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }

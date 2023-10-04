@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
@@ -9,9 +9,10 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class Issue2114Test extends AbstractIntegrationTest {
+class Issue2114Test extends AbstractIntegrationTest {
+
     @Test
-    public void test() {
+    void testIssue() {
         performAnalysis("../java11/Issue2114.class");
 
         assertFoundDefaultEncodingRelianceInMethod("filesReadString");
@@ -21,7 +22,7 @@ public class Issue2114Test extends AbstractIntegrationTest {
         assertFoundDefaultEncodingRelianceInMethod("filesNewBufferedWriter");
     }
 
-    public void assertFoundDefaultEncodingRelianceInMethod(String methodName) {
+    private void assertFoundDefaultEncodingRelianceInMethod(String methodName) {
         BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType("DM_DEFAULT_ENCODING")
                 .inMethod(methodName)

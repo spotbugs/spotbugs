@@ -3,16 +3,19 @@ package edu.umd.cs.findbugs.detect;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
+class Issue2552Test extends AbstractIntegrationTest {
 
-public class Issue2552Test extends AbstractIntegrationTest {
     @Test
-    public void test() {
+    @DisabledOnJre(JRE.JAVA_11)
+    public void testIssue() {
         performAnalysis("../java17/ghIssues/Issue2552.class");
 
         assertBugCount("EI_EXPOSE_REP", 1);
@@ -20,7 +23,7 @@ public class Issue2552Test extends AbstractIntegrationTest {
         assertBugAtLine("EI_EXPOSE_REP", 12);
     }
 
-    public void assertBugCount(String type, int expectedCount) {
+    private void assertBugCount(String type, int expectedCount) {
         BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder()
                 .bugType(type)
                 .build();
@@ -28,7 +31,7 @@ public class Issue2552Test extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(expectedCount, bugMatcher));
     }
 
-    public void assertBugAtLine(String type, int line) {
+    private void assertBugAtLine(String type, int line) {
         BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder()
                 .bugType(type)
                 .atLine(line)

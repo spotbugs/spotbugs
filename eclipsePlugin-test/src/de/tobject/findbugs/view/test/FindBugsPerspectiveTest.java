@@ -18,8 +18,8 @@
  */
 package de.tobject.findbugs.view.test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IViewPart;
@@ -27,9 +27,9 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 import de.tobject.findbugs.test.AbstractPluginTest;
@@ -41,12 +41,12 @@ import de.tobject.findbugs.test.TestScenario;
  * @author Tomás Pollak
  */
 public class FindBugsPerspectiveTest extends AbstractFindBugsTest {
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }

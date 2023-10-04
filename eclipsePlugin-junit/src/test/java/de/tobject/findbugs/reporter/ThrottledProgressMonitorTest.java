@@ -5,7 +5,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ThrottledProgressMonitorTest {
     @Test

@@ -21,9 +21,9 @@ package de.tobject.findbugs.quickfix.test;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.test.AbstractQuickfixTest;
 import de.tobject.findbugs.test.TestScenario;
@@ -34,12 +34,12 @@ import de.tobject.findbugs.test.TestScenario;
  * @author Tomás Pollak
  */
 public class QuickfixWithJUnitTest extends AbstractQuickfixTest {
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.QUICKFIX_WITH_JUNIT);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }

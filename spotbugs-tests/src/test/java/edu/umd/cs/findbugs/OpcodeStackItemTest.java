@@ -19,16 +19,16 @@
 
 package edu.umd.cs.findbugs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class OpcodeStackItemTest {
+class OpcodeStackItemTest {
 
     @Test
-    public void testMergeIntAndZero() {
+    void testMergeIntAndZero() {
         OpcodeStack.Item intItem = new OpcodeStack.Item("I");
         OpcodeStack.Item zeroItem = new OpcodeStack.Item("I", 0);
         OpcodeStack.Item m1 = OpcodeStack.Item.merge(intItem, zeroItem);
@@ -38,7 +38,7 @@ public class OpcodeStackItemTest {
     }
 
     @Test
-    public void testMergeTypeOnly() {
+    void testMergeTypeOnly() {
         OpcodeStack.Item intOnly = OpcodeStack.Item.typeOnly("I");
         OpcodeStack.Item zeroItem = new OpcodeStack.Item("I", 0);
 
@@ -51,19 +51,19 @@ public class OpcodeStackItemTest {
     private static final String NEW_ITEM_KIND_NAME = "newItemKindName";
 
     @Test
-    public void testDefineNewItemKind() {
+    void testDefineNewItemKind() {
         int defined = OpcodeStack.Item.defineSpecialKind(NEW_ITEM_KIND_NAME);
         assertEquals(NEW_ITEM_KIND_NAME,
                 OpcodeStack.Item.getSpecialKindName(defined).get());
     }
 
     @Test
-    public void testDefinedItemKindIsUsedInToStringMethod() {
+    void testDefinedItemKindIsUsedInToStringMethod() {
         int defined = OpcodeStack.Item.defineSpecialKind(NEW_ITEM_KIND_NAME);
         OpcodeStack.Item intItem = new OpcodeStack.Item("I");
         intItem.setSpecialKind(defined);
         String result = intItem.toString();
-        assertTrue("Item.toString() does not use proper name of special kind:" + result,
-                result.contains(NEW_ITEM_KIND_NAME));
+        assertTrue(result.contains(NEW_ITEM_KIND_NAME),
+                "Item.toString() does not use proper name of special kind:" + result);
     }
 }

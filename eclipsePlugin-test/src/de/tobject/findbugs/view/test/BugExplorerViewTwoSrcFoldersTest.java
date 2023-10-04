@@ -18,13 +18,13 @@
  */
 package de.tobject.findbugs.view.test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.test.TestScenario;
 import de.tobject.findbugs.view.explorer.GroupType;
@@ -36,12 +36,12 @@ import de.tobject.findbugs.view.explorer.GroupType;
  * @author Tomás Pollak
  */
 public class BugExplorerViewTwoSrcFoldersTest extends AbstractBugExplorerViewTest {
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.TWO_SRC_FOLDERS);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }

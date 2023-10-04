@@ -1,17 +1,21 @@
-import junit.framework.TestCase;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public abstract class AbstractCreateSuperCallResolutionExample extends TestCase {
-    @Override
+@Test
+public abstract class AbstractCreateSuperCallResolutionExample {
+    @AfterAll
     protected void finalize() throws Throwable {
         this.toString();
     }
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
         this.toString();
     }
 
-    @Override
+    @AfterEach
     protected void tearDown() throws Exception {
         this.toString();
     }

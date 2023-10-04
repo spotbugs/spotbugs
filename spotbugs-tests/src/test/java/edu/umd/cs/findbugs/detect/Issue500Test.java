@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.detect;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
@@ -30,10 +30,10 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 /**
  * @author William R. Price
  */
-public class Issue500Test extends AbstractIntegrationTest {
+class Issue500Test extends AbstractIntegrationTest {
 
     @Test
-    public void test() {
+    void testIssue() {
         performAnalysis("lambdas/Issue500.class");
         BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder().build();
         assertThat(getBugCollection(), containsExactly(0, bugMatcher));

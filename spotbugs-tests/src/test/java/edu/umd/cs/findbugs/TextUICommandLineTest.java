@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,11 +10,11 @@ import java.nio.file.Path;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TextUICommandLineTest {
+class TextUICommandLineTest {
     @Test
-    public void handleOutputFileReturnsRemainingPart() throws IOException {
+    void handleOutputFileReturnsRemainingPart() throws IOException {
         Path file = Files.createTempFile("spotbugs", ".xml");
         TextUICommandLine commandLine = new TextUICommandLine();
         SortingBugReporter reporter = new SortingBugReporter();
@@ -24,7 +24,7 @@ public class TextUICommandLineTest {
     }
 
     @Test
-    public void handleOutputFilePathUsesGzip() throws IOException {
+    void handleOutputFilePathUsesGzip() throws IOException {
         Path file = Files.createTempFile("spotbugs", ".xml.gz");
         TextUICommandLine commandLine = new TextUICommandLine();
         SortingBugReporter reporter = new SortingBugReporter();
@@ -37,7 +37,7 @@ public class TextUICommandLineTest {
     }
 
     @Test
-    public void handleOutputFileTruncatesExisting() throws IOException {
+    void handleOutputFileTruncatesExisting() throws IOException {
         Path file = Files.createTempFile("spotbugs", ".html");
         Files.writeString(file, "content");
         TextUICommandLine commandLine = new TextUICommandLine();
@@ -50,7 +50,7 @@ public class TextUICommandLineTest {
     }
 
     @Test
-    public void htmlReportWithOption() throws IOException {
+    void htmlReportWithOption() throws IOException {
         Path xmlFile = Files.createTempFile("spotbugs", ".xml");
         Path htmlFile = Files.createTempFile("spotbugs", ".html");
         Path sarifFile = Files.createTempFile("spotbugs", ".sarif");

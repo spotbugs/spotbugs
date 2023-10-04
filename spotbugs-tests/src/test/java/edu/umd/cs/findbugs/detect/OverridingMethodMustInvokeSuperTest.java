@@ -3,15 +3,15 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class OverridingMethodMustInvokeSuperTest extends AbstractIntegrationTest {
+class OverridingMethodMustInvokeSuperTest extends AbstractIntegrationTest {
 
     @Test
-    public void test() {
+    void testInvokeSuper() {
         performAnalysis(
                 "NeedsCallOfSuper.class",
                 "NeedsCallOfSuper$DerivedClass.class",

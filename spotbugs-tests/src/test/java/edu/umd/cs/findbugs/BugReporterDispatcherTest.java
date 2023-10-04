@@ -2,12 +2,14 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -15,14 +17,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class BugReporterDispatcherTest {
-    @Test(expected = IllegalArgumentException.class)
-    public void createWithNoReportToDelegate() {
-        new BugReportDispatcher(new ArrayList<>());
+class BugReporterDispatcherTest {
+
+    @Test
+    void createWithNoReportToDelegate() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            new BugReportDispatcher(new ArrayList<>());
+        });
     }
 
     @Test
-    public void dispatchingMethod() {
+    void dispatchingMethod() {
         SortingBugReporter bugReporter = new SortingBugReporter();
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         bugReporter.setOutputStream(new PrintStream(outStream, false, StandardCharsets.UTF_8));
@@ -52,7 +57,7 @@ public class BugReporterDispatcherTest {
     }
 
     @Test
-    public void exceptionsAreSuppressed() {
+    void exceptionsAreSuppressed() {
         BugReportDispatcher dispatcher = new BugReportDispatcher(Arrays.asList(new BrokenBugReporter(), new BrokenBugReporter()));
         try {
             dispatcher.logError("try to throw an error");

@@ -28,7 +28,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -36,10 +36,10 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 /**
  * @since 4.0
  */
-public class ProfileSummaryTest {
+class ProfileSummaryTest {
 
     @Test
-    public void testGetProfile() {
+    void testGetProfile() {
         Profiler profiler = new Profiler();
         profiler.start(String.class);
         profiler.end(String.class);
@@ -53,7 +53,7 @@ public class ProfileSummaryTest {
     }
 
     @Test
-    public void testReport() throws UnsupportedEncodingException {
+    void testReport() throws UnsupportedEncodingException {
         Profiler profiler = new Profiler();
         profiler.start(String.class);
         profiler.end(String.class);
@@ -71,7 +71,7 @@ public class ProfileSummaryTest {
     }
 
     @Test
-    public void testWriteXML() throws IOException {
+    void testWriteXML() throws IOException {
         Profiler profiler = new Profiler();
         Profiler another = new Profiler();
 

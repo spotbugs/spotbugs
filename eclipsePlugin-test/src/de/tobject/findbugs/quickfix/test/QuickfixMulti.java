@@ -18,8 +18,8 @@
  */
 package de.tobject.findbugs.quickfix.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,8 +36,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.views.markers.WorkbenchMarkerResolution;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.test.AbstractQuickfixTest;
@@ -58,7 +58,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         return TestScenario.MULTIQUICKFIX;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.MULTIQUICKFIX);
     }
@@ -103,7 +103,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         markers = filterMarkers(markers, packages);
         sortMarkers(markers);
 
-        assertEquals("Too many or too few markers", packages.size(), markers.length);
+        assertEquals(packages.size(), markers.length, "Too many or too few markers");
 
         assertPresentBugPatterns(packages, markers);
         assertPresentLabels(packages, markers);
