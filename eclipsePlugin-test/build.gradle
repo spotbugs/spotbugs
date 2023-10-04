@@ -26,7 +26,6 @@ dependencies {
   }
 
   implementation project(':test-harness')
-  implementation 'org.hamcrest:hamcrest-core:2.2'
   implementation 'org.apache.ant:ant:1.10.14'
 }
 
