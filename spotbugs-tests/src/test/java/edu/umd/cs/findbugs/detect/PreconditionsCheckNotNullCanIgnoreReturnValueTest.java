@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import java.nio.file.Paths;
 
-import static org.hamcrest.collection.IsEmptyIterable.emptyIterable;
+import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 

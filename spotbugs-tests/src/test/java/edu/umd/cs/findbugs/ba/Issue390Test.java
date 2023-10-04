@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class Issue390Test extends AbstractIntegrationTest {
