@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs.ba;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.Matchers.is;
 
 import org.junit.Assert;
 import org.junit.Test;

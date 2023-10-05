@@ -36,7 +36,7 @@ public class IncorrectSelfComparisonInstanceOfPatternMatchingTest {
                 .bugType("SA_LOCAL_SELF_COMPARISON").build();
 
         BugCollection bugCollection = spotbugs.performAnalysis(Paths.get(
-                "../spotbugsTestCases/build/classes/java/java14/IncorrectSelfComparisonInstanceOfPatternMatching.class"));
+                "../spotbugsTestCases/build/classes/java/java17/IncorrectSelfComparisonInstanceOfPatternMatching.class"));
         assertThat(bugCollection, containsExactly(0, selfComparisonMatcher));
     }
 }

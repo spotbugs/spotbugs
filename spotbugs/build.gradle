@@ -1,3 +1,4 @@
+apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
@@ -20,11 +21,6 @@ configurations {
   logBinding
   // used to make sure Eclipse config can see apple library during compilation
   appleExtensions
-}
-
-ext {
-  asmVersion = '9.3'
-  log4jVersion = '2.17.2'
 }
 
 sourceSets {
@@ -50,6 +46,7 @@ sourceSets {
       exclude 'script.properties'
       include '*.xsl'
       include '**/*.db'
+      include 'CWE_4.10.json'
     }
   }
   gui {
@@ -65,14 +62,14 @@ sourceSets {
 }
 
 dependencies {
-  api "org.ow2.asm:asm:${asmVersion}"
-  api "org.ow2.asm:asm-analysis:${asmVersion}"
-  api "org.ow2.asm:asm-commons:${asmVersion}"
-  api "org.ow2.asm:asm-tree:${asmVersion}"
-  api "org.ow2.asm:asm-util:${asmVersion}"
-  api 'org.apache.bcel:bcel:6.5.0'
-  api 'net.jcip:jcip-annotations:1.0'
-  api('org.dom4j:dom4j:2.1.3') {
+  api libs.asm
+  api libs.asm.analysis
+  api libs.asm.commons
+  api libs.asm.tree
+  api libs.asm.util
+  api 'org.apache.bcel:bcel:6.6.1'
+  api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
+  api('org.dom4j:dom4j:2.1.4') {
     // exclude transitive dependencies to keep compatible with dom4j 2.1.1
     // https://github.com/dom4j/dom4j/issues/85
     // https://docs.gradle.org/current/userguide/dependency_downgrade_and_exclude.html#sec:excluding-transitive-deps
@@ -83,12 +80,13 @@ dependencies {
     exclude group: 'pull-parser',      module: 'pull-parser'
     exclude group: 'xpp3',             module: 'xpp3'
   }
-  implementation 'jaxen:jaxen:1.2.0' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
-  api 'org.apache.commons:commons-lang3:3.12.0'
-  api 'org.apache.commons:commons-text:1.9'
-  api 'org.slf4j:slf4j-api:1.8.0-beta4'
-  implementation 'net.sf.saxon:Saxon-HE:11.3'
-  logBinding ("org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion") {
+  implementation 'jaxen:jaxen:2.0.0' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
+  api 'org.apache.commons:commons-lang3:3.13.0'
+  api 'org.apache.commons:commons-text:1.10.0'
+  api 'org.slf4j:slf4j-api:2.0.9'
+  implementation 'net.sf.saxon:Saxon-HE:12.3'
+  implementation libs.log4j.core
+  logBinding (libs.log4j.slf4j2.impl) {
     exclude group: 'org.slf4j'
   }
 
@@ -96,7 +94,7 @@ dependencies {
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   api project(':spotbugs-annotations')
 
-  api "com.google.code.gson:gson:2.9.0"
+  api "com.google.code.gson:gson:2.10.1"
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
@@ -192,6 +190,8 @@ def jar = tasks.named('jar', Jar) {
                'Class-Path': project.providers.provider { jarInClasspath.collect{it.getName()}.join(' ') + ' config/' }
   }
 }
+tasks.spotbugsMain.dependsOn(jar)
+tasks.spotbugsGui.dependsOn(jar)
 
 // Populate bin folder with scripts
 def scripts = tasks.register('scripts', Copy) {
@@ -209,7 +209,6 @@ def scripts = tasks.register('scripts', Copy) {
         'WRAP_JAVA': props.getProperty('script.wrap.java'),
         'WRAP_JAR': props.getProperty('script.wrap.jar'),
         'DEFINE_ESCAPE_ARG': props.getProperty('script.define.escape_arg')])
-      fileMode 0755
     }
   }
 
@@ -224,6 +223,7 @@ def scripts = tasks.register('scripts', Copy) {
 
   destinationDir file("$buildDir/bin")
   duplicatesStrategy DuplicatesStrategy.FAIL
+  fileMode 0755
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
@@ -283,6 +283,7 @@ tasks.named('distTar', Tar) {
 }
 def distZip = tasks.named('distZip', Zip) {
   duplicatesStrategy = DuplicatesStrategy.FAIL
+  fileMode 0755
 }
 tasks.named('jar') {
   dependsOn tasks.named('updateManifest')
@@ -357,14 +358,14 @@ dependencies {
     logBinding("org.apache.logging.log4j:log4j-core") {
       version {
         strictly("[2.17.1, 3[")
-        prefer("2.17.1")
+        prefer("2.20.0")
       }
       because("CVE-2021-44228, CVE-2021-45046, CVE-2021-45105, CVE-2021-44832: Log4j vulnerable to remote code execution and other critical security vulnerabilities")
     }
     logBinding("ch.qos.logback:logback-core") {
       version {
         strictly("[1.2.9, 2[")
-        prefer("1.2.10")
+        prefer("1.4.11")
       }
       because("CVE-2021-42550: Logback vulnerable to remote code execution vulnerabilities")
     }

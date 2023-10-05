@@ -20,6 +20,9 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 
+import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.Values;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
@@ -33,12 +36,6 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -56,9 +53,10 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotationDatabase {
     private static final boolean DEBUG = SystemProperties.getBoolean("mrc.debug");
 
-    private static final int SCAN = 0;
-
-    private static final int SAW_INVOKE = 1;
+    private static enum State {
+        SCAN,
+        SAW_INVOKE;
+    }
 
     private static final BitSet INVOKE_OPCODE_SET = new BitSet();
     static {
@@ -76,13 +74,15 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
     private XMethod callSeen;
 
-    private int state;
+    private State state;
 
     private int callPC;
 
     private final NoSideEffectMethodsDatabase noSideEffectMethods;
 
     private boolean sawExcludedNSECall;
+
+    private boolean sawMockitoInvoke;
 
     public MethodReturnCheck(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -191,30 +191,34 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 callSeen = XFactory.createReferencedXMethod(this);
                 callPC = getPC();
                 sawMethodCallWithIgnoredReturnValue();
-                state = SCAN;
+                state = State.SCAN;
                 previousOpcodeWasNEW = false;
                 return;
 
             }
         }
 
-        if (state == SAW_INVOKE && isPop(seen)) {
-            sawMethodCallWithIgnoredReturnValue();
+        if (state == State.SAW_INVOKE && isPop(seen)) {
+            if (!sawMockitoInvoke) {
+                sawMethodCallWithIgnoredReturnValue();
+            }
+            sawMockitoInvoke = false;
         } else if (INVOKE_OPCODE_SET.get(seen)) {
             callPC = getPC();
             callSeen = XFactory.createReferencedXMethod(this);
-            state = SAW_INVOKE;
+            state = State.SAW_INVOKE;
+            sawMockitoInvoke |= isCallMockitoVerifyInvocation(callSeen);
             if (DEBUG) {
                 System.out.println("  invoking " + callSeen);
             }
         } else {
-            state = SCAN;
+            state = State.SCAN;
         }
 
         if (seen == Const.NEW) {
             previousOpcodeWasNEW = true;
         } else {
-            if (seen == Const.INVOKESPECIAL && previousOpcodeWasNEW) {
+            if (seen == Const.INVOKESPECIAL && previousOpcodeWasNEW && !sawMockitoInvoke) {
                 CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase.getResolvedAnnotation(callSeen, false);
                 if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
                     int priority = annotation.getPriority();
@@ -230,6 +234,10 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             previousOpcodeWasNEW = false;
         }
 
+    }
+
+    private boolean isCallMockitoVerifyInvocation(XMethod method) {
+        return method.isStatic() && "verify".equals(method.getName()) && "org.mockito.Mockito".equals(method.getClassName());
     }
 
     /**
@@ -298,14 +306,28 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 }
                 String pattern = annotation.getPattern();
                 if (Const.CONSTRUCTOR_NAME.equals(callSeen.getName())
-                        && (callSeen.getClassName().endsWith("Exception") || callSeen.getClassName().endsWith("Error"))) {
+                        && Subtypes2.instanceOf(callSeen.getClassName(), Values.DOTTED_JAVA_LANG_THROWABLE)) {
                     pattern = "RV_EXCEPTION_NOT_THROWN";
                 }
                 BugInstance warning = new BugInstance(this, pattern, priority).addClassAndMethod(this).addMethod(callSeen)
                         .describe(MethodAnnotation.METHOD_CALLED);
                 bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
+            } else {
+                MethodDescriptor methodDescriptor = callSeen.getMethodDescriptor();
+                SignatureParser methodSigParser = new SignatureParser(methodDescriptor.getSignature());
+                String returnTypeSig = methodSigParser.getReturnTypeSignature();
+                String returnType = ClassName.fromFieldSignature(returnTypeSig);
+                if (returnType != null
+                        && Subtypes2.instanceOf(ClassName.toDottedClassName(returnType), Values.DOTTED_JAVA_LANG_THROWABLE)
+                        && !("initCause".equals(methodDescriptor.getName()) && methodSigParser.getArguments().length == 1
+                                && "Ljava/lang/Throwable;".equals(methodSigParser.getArguments()[0]))
+                        && !("getCause".equals(methodDescriptor.getName()) && methodSigParser.getArguments().length == 0)) {
+                    BugInstance warning = new BugInstance(this, "RV_EXCEPTION_NOT_THROWN", 1).addClassAndMethod(this).addMethod(callSeen)
+                            .describe(MethodAnnotation.METHOD_CALLED);
+                    bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
+                }
             }
-            state = SCAN;
+            state = State.SCAN;
         }
     }
 

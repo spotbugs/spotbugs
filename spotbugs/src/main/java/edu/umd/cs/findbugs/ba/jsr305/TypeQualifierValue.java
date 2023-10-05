@@ -140,9 +140,9 @@ public class TypeQualifierValue<A extends Annotation> {
             if (!SystemProperties.RUNNING_AS_IDE_PLUGIN) {
                 /* don't do this if running in Eclipse; check below is the quick
                    fix for bug 3599258 (Random obscure Eclipse failures during analysis)
-                   
+                
                    Also don't do this if running in IntelliJ IDEA. This causes weird issues
-                   either (see IDEA-230268) 
+                   either (see IDEA-230268)
                  */
 
                 try {
@@ -198,7 +198,7 @@ public class TypeQualifierValue<A extends Annotation> {
         if (DEBUG_CLASSLOADING) {
             System.out.println("Getting qualifier class for " + className);
         }
-        if (className.startsWith("javax.annotation")) {
+        if (className.startsWith("javax.annotation") || className.startsWith("jakarta.annotation")) {
             return (Class<A>) Class.forName(className);
         }
         try {

@@ -238,7 +238,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         updateCount(0, numClasses);
     }
 
-    private class AnalysisThread extends Thread {
+    private final class AnalysisThread extends Thread {
         {
             // Give the analysis thread its (possibly user-defined) priority.
             // The default is a slightly lower priority than the UI.

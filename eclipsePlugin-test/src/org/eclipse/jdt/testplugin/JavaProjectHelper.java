@@ -683,13 +683,13 @@ public class JavaProjectHelper {
         }
     }
 
-    private static class ImportOverwriteQuery implements IOverwriteQuery {
+    private static final class ImportOverwriteQuery implements IOverwriteQuery {
         @Override
         public String queryOverwrite(String file) {
             return ALL;
         }
     }
 
-    private static class Requestor extends TypeNameRequestor {
+    private static final class Requestor extends TypeNameRequestor {
     }
 }

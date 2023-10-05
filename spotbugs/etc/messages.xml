@@ -164,6 +164,14 @@ This plugin contains all of the standard SpotBugs detectors.
   Detectors
   **********************************************************************
    -->
+  <Detector class="edu.umd.cs.findbugs.detect.ConstructorThrow">
+    <Details>
+<![CDATA[
+<p> Finds constructors that throw exceptions.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector">
     <Details>
 <![CDATA[
@@ -1772,6 +1780,45 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindAssertionsWithSideEffects">
+    <Details>
+      <![CDATA[
+            <p>Finds assertions with side effects.</p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindPublicAttributes">
+    <Details>
+      <![CDATA[
+            <p>This detector looks for public attributes that are also written by the methods of the class.</p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindVulnerableSecurityCheckMethods">
+    <Details>
+      <![CDATA[
+        <p>
+        Methods that perform security checks should be prevented from being overridden, so they must be declared as
+        private or final. Otherwise, these methods can be compromised when a malicious subclass overrides them
+        and omits the checks.
+        </p>]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions">
+    <Details>
+      <![CDATA[
+            <p>Finds assertions that validate public method arguments.</p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DontReusePublicIdentifiers">
+    <Details>
+      <![CDATA[
+            <p>Checks for reuse of public identifiers, public utility classes, interfaces, or
+             packages in the Java Standard Library.</p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryEnvUsage">
     <Details>
       <![CDATA[
@@ -1786,6 +1833,21 @@ factory pattern to create these objects.</p>
   BugPatterns
   **********************************************************************
    -->
+  <BugPattern type="CT_CONSTRUCTOR_THROW">
+    <ShortDescription>Be wary of letting constructors throw exceptions.</ShortDescription>
+    <LongDescription>Exception thrown in class {0} at {1} will leave the constructor. The object under construction remains partially initialized and may be vulnerable to Finalizer attacks.</LongDescription>
+    <Details>
+      <![CDATA[
+            <p>Classes that throw exceptions in their constructors are vulnerable to Finalizer attacks</p>
+
+            <p>A finalizer attack can be prevented, by declaring the class final, using an empty finalizer declared as final, or by a clever use of a private constructor.</p>
+
+            <p>See <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ11-J.+Be+wary+of+letting+constructors+throw+exceptions"><code>SEI CERT Rule OBJ-11</code></a>
+            for more information.
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS">
     <ShortDescription> Asserting value of instanceof in tests is not recommended. </ShortDescription>
@@ -3261,7 +3323,7 @@ that classfile. See <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id
     <LongDescription>{1} negates the return value of {2}</LongDescription>
     <Details>
 <![CDATA[
-  <p> This code negatives the return value of a compareTo or compare method.
+  <p> This code negates the return value of a compareTo or compare method.
 This is a questionable or bad programming practice, since if the return
 value is Integer.MIN_VALUE, negating the return value won't
 negate the sign of the result. You can achieve the same intended result
@@ -3570,11 +3632,11 @@ Thus, having a mutable instance field generally creates race conditions.
     </Details>
   </BugPattern>
   <BugPattern type="MS_EXPOSE_REP">
-    <ShortDescription>Public static method may expose internal representation by returning array</ShortDescription>
+    <ShortDescription>Public static method may expose internal representation by returning a mutable object or array</ShortDescription>
     <LongDescription>Public static {1} may expose internal representation by returning {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
-  <p> A public static method returns a reference to
+  <p> A public static method returns a reference to a mutable object or
    an array that is part of the static state of the class.
    Any code that calls this method can freely modify
    the underlying array.
@@ -3902,11 +3964,11 @@ For example, in the following code, <code>foo</code> will be null.</p>
     </Details>
   </BugPattern>
   <BugPattern type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT">
-    <ShortDescription>Synchronization on interned String</ShortDescription>
-    <LongDescription>Synchronization on interned String in {1}</LongDescription>
+    <ShortDescription>Synchronization on String literal</ShortDescription>
+    <LongDescription>Synchronization on String literal in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The code synchronizes on interned String.</p>
+  <p> The code synchronizes on String literal.</p>
 <pre><code>private static String LOCK = "LOCK";
 ...
 synchronized(LOCK) {
@@ -3918,7 +3980,28 @@ synchronized(LOCK) {
 is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
 blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
 </p>
-<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DL_SYNCHRONIZATION_ON_INTERNED_STRING">
+    <ShortDescription>Synchronization on interned String</ShortDescription>
+    <LongDescription>Synchronization on interned String in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The code synchronizes on interned String.</p>
+<pre><code>private static String LOCK = new String("LOCK").intern();
+...
+synchronized(LOCK) {
+    ...
+}
+...
+</code></pre>
+<p>Constant Strings are interned and shared across all other classes loaded by the JVM. Thus, this code
+is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
+blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
+</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3940,7 +4023,7 @@ synchronized(inited) {
 </code></pre>
 <p>Since there normally exist only two Boolean objects, this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock.</p>
-<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3986,7 +4069,7 @@ synchronized(count) {
 <p>Since Integer objects can be cached and shared,
 this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock.</p>
-<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4109,7 +4192,7 @@ defined in an interface references a mutable
     <Details>
 <![CDATA[
    <p>
-This static field public but not final, and
+This <code>public static</code> or <code>protected static</code> field is not final, and
 could be changed by malicious code or
 by accident from another package.
 The field could be made final to avoid
@@ -4125,7 +4208,7 @@ to the field, so doing so will require some refactoring.
     <Details>
 <![CDATA[
    <p>
-This static field public but not final, and
+This <code>public static</code> or <code>protected static</code> field is not final, and
 could be changed by malicious code or
         by accident from another package.
         The field could be made final to avoid
@@ -4304,12 +4387,13 @@ Methods should be verbs, in mixed case with the first letter lowercase, with the
     </Details>
   </BugPattern>
   <BugPattern type="NM_FIELD_NAMING_CONVENTION">
-    <ShortDescription>Field names should start with a lower case letter</ShortDescription>
-    <LongDescription>The field name {1} doesn't start with a lower case letter</LongDescription>
+    <ShortDescription>Non-final field names should start with a lower case letter, final fields should be uppercase with words separated by underscores</ShortDescription>
+    <LongDescription>The field name {1} is not conform to the naming convention. If final, it should be ALL_CAPS, otherwise lowerCamelCase.</LongDescription>
     <Details>
 <![CDATA[
   <p>
 Names of fields that are not final should be in mixed case with a lowercase first letter and the first letters of subsequent words capitalized.
+Names of final fields should be all uppercase with words separated by underscores ('_').
 </p>
 ]]>
     </Details>
@@ -4551,6 +4635,17 @@ it may indicate a misunderstanding of how serialization works.
 <![CDATA[
   <p> This class contains a field that is updated at multiple places in the class, thus it seems to be part of the state of the class. However, since the field is marked as transient and not set in readObject or readResolve, it will contain the default value in any
 deserialized instance of the class.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SE_PREVENT_EXT_OBJ_OVERWRITE">
+    <ShortDescription>Prevent overwriting of externalizable objects</ShortDescription>
+    <LongDescription>Any caller can reset the value of the object by using the readExternal() method.</LongDescription>
+    <Details>
+      <![CDATA[
+  <p>The <code>readExternal()</code> method must be declared as public and is not protected from malicious callers, so the code permits any caller to reset the value of the object at any time.</p>
+  <p>To prevent overwriting of externalizable objects, you can use a Boolean flag that is set after the instance fields have been populated. You can also protect against race conditions by synchronizing on a private lock object.
 </p>
 ]]>
     </Details>
@@ -5773,7 +5868,13 @@ with the equals() method.
 It is possible to create distinct instances that are equal but do not compare as == since
 they are different objects.
 Examples of classes which should generally
-not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
+not be compared by reference are java.lang.Integer, java.lang.Float, etc. RC_REF_COMPARISON covers
+only wrapper types for primitives. Suspicious types list can be extended by adding frc.suspicious
+system property with comma-separated classes:</p>
+<pre><code>&lt;systemPropertyVariables&gt;
+              &lt;frc.suspicious&gt;java.time.LocalDate,java.util.List&lt;/frc.suspicious&gt;
+           &lt;/systemPropertyVariables&gt;
+</code></pre>
 ]]>
     </Details>
   </BugPattern>
@@ -8681,11 +8782,10 @@ object explicitly.</p>
 
   <BugPattern type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA">
     <ShortDescription>Instance level lock was used on a shared static data</ShortDescription>
-    <LongDescription>Static field "{1}" is modified by an instance level {2}.</LongDescription>
+    <LongDescription>Static field "{2}" is modified by an instance level {3}.</LongDescription>
     <Details>
       <![CDATA[<p>
-        Instance level synchronization, that modifies a static shared object could cause security leaks.
-        If the lock or the method is not static, that modifies the static field, and is synchronized,
+        If the lock or the synchronized method is not static, that modifies the static field,
         that could leave the shared static data unprotected against concurrent access.
         This could occur in two ways, if a synchronization method uses a non-static lock object,
         or a synchronized method is declared as non-static. Both ways are ineffective.
@@ -8794,6 +8894,248 @@ Using floating-point variables should not be used as loop counters, as they are 
       See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources">SEC02-J. Do not base security checks on untrusted sources</a>.
       </p>]]>
     </Details>
+  </BugPattern>
+
+  <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT">
+    <ShortDescription>Expression in assertion may produce a side effect</ShortDescription>
+    <LongDescription>The expression used in assertion at {1} may produce a side effect. If assertions are disabled, the expression won't get executed and the result of the method might change.</LongDescription>
+    <Details>
+      <![CDATA[
+            <p>Expressions used in assertions must not produce side effects.</p>
+
+            <p>See <https://wiki.sei.cmu.edu/confluence/display/java/EXP06-J.+Expressions+used+in+assertions+must+not+produce+side+effects><code>SEI CERT Rule EXP06</code></a>
+            for more information.
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD">
+    <ShortDescription>Method invoked in assertion may produce a side effect</ShortDescription>
+    <LongDescription>The method called in assertion at {1} may produce a side effect. If assertions are disabled, the method invocation won't get executed and the result of the method might change.</LongDescription>
+    <Details>
+      <![CDATA[
+            <p>Expressions used in assertions must not produce side effects.</p>
+
+            <p>See <https://wiki.sei.cmu.edu/confluence/display/java/EXP06-J.+Expressions+used+in+assertions+must+not+produce+side+effects><code>SEI CERT Rule EXP06</code></a>
+            for more information.
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE">
+    <ShortDescription>Primitive field is public</ShortDescription>
+    <LongDescription>Primitive field {1} is public and set from inside the class, which makes it too exposed. Consider making it private to limit external accessibility.</LongDescription>
+    <Details>
+      <![CDATA[
+    <p>
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility to fields must be limited.
+    Otherwise, the values of the fields may be manipulated from outside the class, which may be unexpected or
+    undesired behaviour.
+    In general, requiring that no fields are allowed to be public is overkill and unrealistic. Even
+    the rule mentions that final fields may be public. Besides final fields, there may be other
+    usages for public fields: some public fields may serve as "flags" that affect the behavior of
+    the class. Such flag fields are expected to be read by the current instance (or the current
+    class, in case of static fields), but written by others. If a field is both written by the
+    methods of the current instance (or the current class, in case of static fields) and from the
+    outside, the code is suspicious. Consider making these fields private and provide appropriate
+    setters, if necessary. Please note that constructors, initializers and finalizers are
+    exceptions, if only they write the field inside the class, the field is not considered as
+    written by the class itself.</p>
+    ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PA_PUBLIC_ARRAY_ATTRIBUTE">
+    <ShortDescription>Array-type field is public</ShortDescription>
+    <LongDescription>Array-type field {1} is public, which makes it too exposed. Consider making it private to limit external accessibility.</LongDescription>
+    <Details>
+      <![CDATA[
+    <p>
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
+    Making an array-type field final does not prevent other classes from modifying the contents of
+    the array. However, in general, requiring that no fields are allowed to be public is overkill
+    and unrealistic. There may be usages for public fields: some public fields may serve as "flags"
+    that affect the behavior of the class. Such flag fields are expected to be read by the current
+    instance (or the current class, in case of static fields), but written by others. If a field is
+    both written by the methods of the current instance (or the current class, in case of static
+    fields) and from the outside, the code is suspicious. Consider making these fields private and
+    provide appropriate setters, if necessary. Please note that constructors, initializers and
+    finalizers are exceptions, if only they write the field inside the class, the field is not
+    considered as written by the class itself.</p>
+    ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE">
+    <ShortDescription>Mutable object-type field is public</ShortDescription>
+    <LongDescription>Mutable object-type field {1} is public, which makes it too exposed. Consider making it private to limit external accessibility.</LongDescription>
+    <Details>
+      <![CDATA[
+    <p>
+    <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields">SEI CERT rule OBJ01-J</a> requires that accessibility of fields must be limited.
+    Making a mutable object-type field final does not prevent other classes from modifying the
+    contents of the object. However, in general, requiring that no fields are allowed to be public
+    is overkill and unrealistic. There may be usages for public fields: some public fields may
+    serve as "flags" that affect the behavior of the class. Such flag fields are expected to be
+    read by the current instance (or the current class, in case of static fields), but written by
+    others. If a field is both written by the methods of the current instance (or the current
+    class, in case of static fields) and from the outside, the code is suspicious. Consider making
+    these fields private and provide appropriate setters, if necessary. Please note that
+    constructors, initializers and finalizers are exceptions, if only they write the field inside
+    the class, the field is not considered as written by the class itself. In case of object-type
+    fields "writing" means calling methods whose name suggest modification.</p>
+    ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="VSC_VULNERABLE_SECURITY_CHECK_METHODS">
+    <ShortDescription>Non-Private and non-final security check methods are vulnerable</ShortDescription>
+    <LongDescription>The method '{1}' performs security check by using '{2}' method of Security Manager Class, but is overrideable. Declare the method final or private in order to resolve the issue. </LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Methods that perform security checks should be prevented from being overridden, so they must be declared as
+        private or final. Otherwise, these methods can be compromised when a malicious subclass overrides them
+        and omits the checks.
+        <p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET03-J.+Methods+that+perform+a+security+check+must+be+declared+private+or+final">MET03-J. Methods that perform a security check must be declared private or final</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="AA_ASSERTION_OF_ARGUMENTS">
+    <ShortDescription>Assertion is used to validate an argument of a public method</ShortDescription>
+    <LongDescription>Assertion validates method argument at {1}. If assertions are disabled, there won't be any argument validation.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>Asssertions must not be used to validate arguments of public methods because the validations are
+        not performed if assertions are disabled.</p>
+
+        <p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET01-J.+Never+use+assertions+to+validate+method+arguments">MET01-J. Never use assertions to validate method arguments</a>
+        for more information.
+        </p>
+        ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES">
+        <ShortDescription>Do not reuse public identifiers from JSL as class name</ShortDescription>
+        <LongDescription>Class name {1} in source file {2} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+      It's essential to avoid reusing public identifiers from the Java Standard Library as class names.
+      This is because the Java Standard Library is a part of the Java platform and is expected to be available in all Java environments.
+      Doing so can lead to naming conflicts and confusion, making it harder to understand and maintain the code.
+      It's best practice to choose unique and descriptive class names that accurately represent the purpose and functionality of your own code.
+      To provide an example, let's say you want to create a class for handling dates in your application. Instead of using a common name like "Date",
+      which conflicts with the existing java.util.Date class, you could choose a more specific and unique name like or "AppDate" or "DisplayDate".
+
+      A few key points to keep in mind when choosing names as identifier:
+      <ul>
+        <li>Use meaningful prefixes or namespaces: Prepend a project-specific prefix or namespace to your class names to make them distinct. For example, if your project is named "MyApp", you could use "MyAppDate" as your class name.</li>
+        <li>Use descriptive names: Opt for descriptive class names that clearly indicate their purpose and functionality. This helps avoid shadowing existing Java Standard Library identifiers. For instance, instead of "List", consider using "CustomAppList".</li>
+        <li>Follow naming conventions: Adhere to Java's naming conventions, such as using camel case (e.g., MyClass) for class names. This promotes code readability and reduces the chances of conflicts.</li>
+      </ul>
+
+      </p>
+      <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
+      ]]>
+        </Details>
+  </BugPattern>
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES">
+        <ShortDescription>Do not reuse public identifiers from JSL as field name</ShortDescription>
+        <LongDescription>The used identifier {2} as field name in class {1} in source file {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+      It is a good practice to avoid reusing public identifiers from the Java Standard Library as field names in your code.
+      Doing so can lead to confusion and potential conflicts, making it harder to understand and maintain your codebase.
+      Instead, it is recommended to choose unique and descriptive names for your fields that accurately represent their purpose and differentiate them from Standard Library identifiers.
+
+      To provide an example, let's say you want to create a class for handling dates in your application. Instead of using a common name like "Date",
+      which conflicts with the existing java.util.Date class, you could choose a more specific and unique name like or "AppDate" or "DisplayDate".
+
+      For example, let's say you're creating a class to represent a car in your application. Instead of using a common name like "Component" as a field,
+      which conflicts with the existing java.awt.Component class, you should opt for a more specific and distinct name, such as "VehiclePart" or "CarComponent".
+
+      A few key points to keep in mind when choosing names as identifier:
+      <ul>
+        <li>Use descriptive names: Opt for descriptive field names that clearly indicate their purpose and functionality. This helps avoid shadowing existing Java Standard Library identifiers. For instance, instead of "list", consider using "myFancyList"</li>
+        <li>Follow naming conventions: Adhere to Java's naming conventions, such as using mixed case for field names. Start with a lowercase first letter and the internal words should start with capital letters (e.g., myFieldUsesMixedCase). This promotes code readability and reduces the chances of conflicts.</li>
+      </ul>
+
+      </p>
+      <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
+      ]]>
+        </Details>
+  </BugPattern>
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES">
+        <ShortDescription>Do not reuse public identifiers from JSL as method name</ShortDescription>
+        <LongDescription>The used identifier {2} as method name in class {1} at line {3} as a method name shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+
+      It is a good practice to avoid reusing public identifiers from the Java Standard Library as method names in your code.
+      Doing so can lead to confusion, potential conflicts, and unexpected behavior. To maintain code clarity and ensure proper functionality,
+      it is recommended to choose unique and descriptive names for your methods that accurately represent their purpose
+      and differentiate them from standard library identifiers.
+
+      To provide an example, let's say you want to create a method that handles creation of a custom file in your application. Instead of using a common name like "File" for the method,
+      which conflicts with the existing java.io.File class, you could choose a more specific and unique name like or "generateFile" or "createOutPutFile".
+
+      A few key points to keep in mind when choosing names as identifier:
+      <ul>
+        <li>Use descriptive names: Opt for descriptive method names that clearly indicate their purpose and functionality. This helps avoid shadowing existing Java Standard Library identifiers. For instance, instead of "abs()",  consider using "calculateAbsoluteValue()".</li>
+        <li>Follow naming conventions: Adhere to Java's naming conventions, such as using mixed case for method names. Method names should be verbs, with the first letter lowercase and the first letter of each internal word capitalized (e.g. runFast()). This promotes code readability and reduces the chances of conflicts.</li>
+      </ul>
+
+      </p>
+      <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
+      ]]>
+        </Details>
+  </BugPattern>
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES">
+        <ShortDescription>Do not reuse public identifiers from JSL as method name</ShortDescription>
+        <LongDescription>The used identifier {4} as variable name in the class {1} inside {2} method at line {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+      When declaring local variables in Java, it is crucial to refrain from reusing public identifiers from the Java Standard Library.
+      Reusing these identifiers as local variable names can lead to confusion, hinder code comprehension, and potentially cause conflicts
+      with existing publicly available identifier names from the Java Standard Library.
+      To maintain code clarity and avoid such issues, it is best practice to select unique and descriptive names for your local variables.
+
+      To provide an example, let's say you want to store a custom font value in a variable. Instead of using a common name like "Font" for the variable name,
+      which conflicts with the existing java.awt.Font class, you could choose a more specific and unique name like or "customFont" or "loadedFontName".
+
+      A few key points to keep in mind when choosing names as identifier:
+      <ul>
+        <li>Use descriptive names: Opt for descriptive variable names that clearly indicate their purpose and functionality. This helps avoid shadowing existing Java Standard Library identifiers. For instance, instead of "variable", consider using "myVariableName".</li>
+        <li>Follow naming conventions: Adhere to Java's naming conventions, such as using mixed case for variable names. Start with a lowercase first letter and the internal words should start with capital letters (e.g. myVariableName). This promotes code readability and reduces the chances of conflicts.</li>
+      </ul>
+
+      </p>
+      <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
+      ]]>
+        </Details>
+  </BugPattern>
+  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES">
+        <ShortDescription>Do not reuse public identifiers from JSL as inner name</ShortDescription>
+        <LongDescription>Inner class name {2} of class {1} in source file {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+      It's essential to avoid reusing public identifiers from the Java Standard Library as class names.
+      This is because the Java Standard Library is a part of the Java platform and is expected to be available in all Java environments.
+      Doing so can lead to naming conflicts and confusion, making it harder to understand and maintain the code.
+      It's best practice to choose unique and descriptive class names that accurately represent the purpose and functionality of your own code.
+      To provide an example, let's say you want to create an inner class for handling dates inside a specific Calendar class. Instead of using a common name like "Date",
+      which conflicts with the existing java.util.Date class, you could choose a more specific and unique name like or "CalendarDate" or "CalendarDisplayDate".
+
+      A few key points to keep in mind when choosing names as identifier:
+      <ul>
+        <li>Use meaningful prefixes or namespaces: Prepend a project-specific prefix or namespace to your class names to make them distinct. For example, if your project is named "MyApp", you could use "MyAppDate" as your class name.</li>
+        <li>Use descriptive names: Opt for descriptive class names that clearly indicate their purpose and functionality. This helps avoid shadowing existing Java Standard Library identifiers. For instance, instead of "List", consider using "CustomAppList".</li>
+        <li>Follow naming conventions: Adhere to Java's naming conventions, such as using camel case (e.g., MyClass) for class names. This promotes code readability and reduces the chances of conflicts.</li>
+      </ul>
+
+      </p>
+      <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
+      ]]>
+        </Details>
   </BugPattern>
 
   <BugPattern type="ENV_USE_PROPERTY_INSTEAD_OF_ENV">
@@ -8981,9 +9323,15 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="REFLC">Reflection increasing accessibility of classes</BugCode>
   <BugCode abbrev="REFLF">Reflection increasing accessibility of fields</BugCode>
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
+  <BugCode abbrev="CT">Constructor throws</BugCode>
   <BugCode abbrev="SSD">Do not use an instance lock to protect shared static data</BugCode>
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
+  <BugCode abbrev="ASE">Assertion with side effect</BugCode>
+  <BugCode abbrev="PA">Public Attribute</BugCode>
+  <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
+  <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
+  <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding java property</BugCode>
 </MessageCollection>

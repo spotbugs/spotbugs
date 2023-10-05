@@ -1,5 +1,30 @@
 package edu.umd.cs.findbugs.sarif;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Optional;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -19,30 +44,6 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class SarifBugReporterTest {
     private SarifBugReporter reporter;
@@ -60,6 +61,7 @@ public class SarifBugReporterTest {
         Global.setAnalysisCacheForCurrentThread(analysisCache);
         FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
         AnalysisContext analysisContext = new AnalysisContext(project) {
+            @Override
             public boolean isApplicationClass(@DottedClassName String className) {
                 // treat all classes as application class, to report bugs in it
                 return true;
@@ -319,6 +321,59 @@ public class SarifBugReporterTest {
         assertThat("relative URI that can be resolved by the uriBase",
                 relativeUri, is("SampleClass.java"));
         assertThat(artifactLocation.get("uriBaseId").getAsString(), is(uriBaseId));
+    }
+
+    @Test
+    public void testCweTaxonomy() throws IOException {
+        String type = "TYPE_WITH_CWE";
+        int cweid = 502;
+
+        Path tmpDir = Files.createTempDirectory("spotbugs");
+        new File(tmpDir.toFile(), "SampleClass.java").createNewFile();
+        SourceFinder sourceFinder = reporter.getProject().getSourceFinder();
+        sourceFinder.setSourceBaseList(Collections.singleton(tmpDir.toString()));
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", "detailText", "https://example.com/help.html", cweid);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10)
+                .addClass("SampleClass"));
+        reporter.finish();
+
+        String json = writer.toString();
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
+
+        /* test rules part */
+        JsonObject tool = run.getAsJsonObject("tool");
+        JsonObject driver = tool.getAsJsonObject("driver");
+        JsonObject rule = driver.getAsJsonArray("rules").get(0).getAsJsonObject();
+        JsonObject relationship = rule.getAsJsonArray("relationships").get(0).getAsJsonObject();
+
+        assertThat(rule.get("id").getAsString(), is(type));
+        assertThat(relationship.getAsJsonObject("target").get("id").getAsInt(), is(cweid));
+        assertThat(relationship.getAsJsonArray("kinds").get(0).getAsString(), is("superset"));
+
+        /* test supported taxonomies part */
+        assertThat(driver.getAsJsonArray("supportedTaxonomies").get(0).getAsJsonObject().get("name").getAsString(),
+                is("CWE"));
+
+        /* test taxonomies */
+        JsonArray taxonomies = run.getAsJsonArray("taxonomies");
+        assertThat(taxonomies.size(), is(1));
+
+        JsonObject cweTaxonomy = taxonomies.get(0).getAsJsonObject();
+        assertThat(cweTaxonomy.get("organization").getAsString(), is("MITRE"));
+        assertThat(cweTaxonomy.get("name").getAsString(), is("CWE"));
+
+        JsonArray taxa = cweTaxonomy.getAsJsonArray("taxa");
+        assertThat(taxonomies.size(), is(1));
+
+        JsonObject cwe502taxon = taxa.get(0).getAsJsonObject();
+        assertThat(cwe502taxon.get("id").getAsInt(), is(cweid));
+        assertThat(cwe502taxon.get("shortDescription").getAsJsonObject().get("text").getAsString(),
+                is("Deserialization of Untrusted Data"));
     }
 
     Optional<String> takeFirstKey(JsonObject object) {

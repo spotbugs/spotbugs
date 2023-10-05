@@ -632,7 +632,9 @@ public class FilterBugsDialog extends SelectionDialog {
             txt = getPatternTypeDescription(code);
         }
         Rectangle size = htmlControl.getClientArea();
-        txt = presenter.updatePresentation(getShell().getDisplay(), txt, presentation, size.width, size.height);
+        if (size.width > 0 && size.height > 0) {
+            txt = presenter.updatePresentation(getShell().getDisplay(), txt, presentation, size.width, size.height);
+        }
         htmlControl.setText(txt);
     }
 

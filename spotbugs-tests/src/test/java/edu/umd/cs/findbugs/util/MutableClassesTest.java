@@ -122,6 +122,20 @@ public class MutableClassesTest {
     }
 
     @Test
+    public void TestEnumsAreImmutable() {
+        Assert.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$ImmutableTestEnum;"));
+    }
+
+    public enum ImmutableTestEnum {
+        ONE,
+        TWO;
+
+        public void write() {
+            // Does not matter
+        }
+    }
+
+    @Test
     public void TestErrorProneImmutable() {
         Assert.assertFalse(MutableClasses.mutableSignature(
                 "Ledu/umd/cs/findbugs/util/MutableClassesTest$ErrorProneImmutable;"));

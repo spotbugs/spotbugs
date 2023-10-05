@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeFalse;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import java.io.File;
@@ -108,5 +109,16 @@ public class ClassFactoryTest {
     private void assertHasCodeBase(IScannableCodeBase codeBase) throws Exception {
         assertNotNull(codeBase);
         assertTrue(codeBase.iterator().hasNext());
+    }
+
+    @Test
+    public void acceptConstantDynamic() throws Exception {
+        String fileName = "../spotbugsTestCases/src/classSamples/recordCompileWithBazel6.2/Foo.clazz";
+
+        try (SingleFileCodeBase codeBase = new SingleFileCodeBase(null, fileName)) {
+            ClassDescriptor classDescriptor = codeBase.getClassDescriptor();
+
+            assertNotNull(classDescriptor);
+        }
     }
 }

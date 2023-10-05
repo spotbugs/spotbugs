@@ -1512,11 +1512,11 @@ public int hashCode() {
   </Details>
  </BugPattern>
  <BugPattern type="MS_EXPOSE_REP">
-  <ShortDescription>Une méthode statique publique risque d'exposer une représentation interne en renvoyant un tableau</ShortDescription>
+  <ShortDescription>Une méthode statique publique risque d'exposer une représentation interne en renvoyant un objet modifiable ou un tableau</ShortDescription>
   <LongDescription>La méthode statique publique {1} peut exposer une représentation interne en renvoyant {2}</LongDescription>
   <Details>
 <![CDATA[
-<p>Une méthode statique publique renvoit une référence à un tableau faisant partie de l'état statique de la classe. Tout code appelant cette méthode peut librement modifier le tableau sous-jacent. Une correction possible serait de renvoyer une copie du tableau.</p>
+<p>Une méthode statique publique renvoit une référence à un objet modifiable ou à un tableau faisant partie de l'état statique de la classe. Tout code appelant cette méthode peut librement modifier le tableau sous-jacent. Une correction possible serait de renvoyer une copie du tableau.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1710,12 +1710,23 @@ synchronized() {}
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL">
+  <ShortDescription>Un champ n'est pas final alors qu'il devrait refactorisé pour l'être</ShortDescription>
+  <LongDescription>{1} n'est pas final mais devrait être refactorisé pour l'être</LongDescription>
+  <Details>
+<![CDATA[
+<p>Un champ <code>public static</code> ou <code>protected static</code> peut-être changé par accident ou par du code malveillant d'un autre paquetage. Le champ devrait être final pour éviter cette vulnérabilité.
+Cependant l'initialisation du champ comporte plusieurs écriture, ce qui requiererait donc un refactor.</p>
+]]>
+  </Details>
+ </BugPattern>
+ </BugPattern>
  <BugPattern type="MS_SHOULD_BE_FINAL">
   <ShortDescription>Un champ n'est pas final alors qu'il devrait l'être</ShortDescription>
   <LongDescription>{1} n'est pas final mais devrait l'être</LongDescription>
   <Details>
 <![CDATA[
-<p>Un champ statique modifiable peut-être changé par accident ou par du code malveillant d'un autre paquetage. Le champ devrait être final pour éviter cette vulnérabilité.</p>
+<p>Un champ <code>public static</code> ou <code>protected static</code> peut-être changé par accident ou par du code malveillant d'un autre paquetage. Le champ devrait être final pour éviter cette vulnérabilité.</p>
 ]]>
   </Details>
  </BugPattern>
