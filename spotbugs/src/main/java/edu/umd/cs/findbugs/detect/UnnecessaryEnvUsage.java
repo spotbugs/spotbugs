@@ -1,6 +1,5 @@
 /*
- * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004-2006 University of Maryland
+ * SpotBugs - Find bugs in Java programs
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +18,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -36,14 +36,14 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class UnnecessaryEnvUsage extends OpcodeStackDetector {
 
-    final Set<String> replaceableEnvvars;
-    final Map<String, String> envvarPropertyMap;
+    private static final Set<String> replaceableEnvvars;
+    private static final Map<String, String> envvarPropertyMap;
 
-    final BugAccumulator bugAccumulator;
+    private final BugAccumulator bugAccumulator;
 
-    public UnnecessaryEnvUsage(BugReporter bugReporter) {
-        this.bugAccumulator = new BugAccumulator(bugReporter);
-        this.envvarPropertyMap = new HashMap<String, String>() {
+    static {
+
+        envvarPropertyMap = Collections.unmodifiableMap(new HashMap<String, String>() {
             {
                 put("OS", "os.name");
                 put("PROCESSOR_ARCHITECTURE", "os.arch");
@@ -57,8 +57,12 @@ public class UnnecessaryEnvUsage extends OpcodeStackDetector {
                 put("TEMP", "java.io.tmpdir");
                 put("TMP", "java.io.tmpdir");
             }
-        };
-        this.replaceableEnvvars = this.envvarPropertyMap.keySet();
+        });
+        replaceableEnvvars = envvarPropertyMap.keySet();
+    }
+
+    public UnnecessaryEnvUsage(BugReporter bugReporter) {
+        this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
     @Override
@@ -80,7 +84,6 @@ public class UnnecessaryEnvUsage extends OpcodeStackDetector {
                 if (top.getConstant() instanceof String) {
                     String constant = (String) top.getConstant();
                     if (replaceableEnvvars.contains(constant)) {
-                        //System.out.println("Bad getenv found: " + constant);
                         BugInstance pendingBug = new BugInstance(this, "ENV_USE_PROPERTY_INSTEAD_OF_ENV", NORMAL_PRIORITY)
                                 .addClassAndMethod(this)
                                 .addString(constant)
