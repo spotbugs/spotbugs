@@ -46,19 +46,19 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class ResourceUtilsTest extends AbstractFindBugsTest {
+class ResourceUtilsTest extends AbstractFindBugsTest {
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testGetResourcesPerProject_selectedClasses() throws JavaModelException {
+    void testGetResourcesPerProject_selectedClasses() throws JavaModelException {
         // Select classes A and B
         List<ICompilationUnit> classes = Arrays.asList(getClassA(), getClassB());
         Map<IProject, List<WorkItem>> resourcesPerProject = ResourceUtils
@@ -73,7 +73,7 @@ public class ResourceUtilsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testGetResourcesPerProject_selectedProject() {
+    void testGetResourcesPerProject_selectedProject() {
         // Select the project
         Map<IProject, List<WorkItem>> resourcesPerProject = ResourceUtils.getResourcesPerProject(new StructuredSelection(
                 getProject()));
@@ -86,7 +86,7 @@ public class ResourceUtilsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testGetResourcesPerProject_selectedProjectAndClasses() throws JavaModelException {
+    void testGetResourcesPerProject_selectedProjectAndClasses() throws JavaModelException {
         // Select project and classes A and B
         List<?> classes = Arrays.asList(getProject(), getClassA(), getClassB());
         Map<IProject, List<WorkItem>> resourcesPerProject = ResourceUtils

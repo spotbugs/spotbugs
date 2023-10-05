@@ -35,19 +35,20 @@ import de.tobject.findbugs.view.explorer.GroupType;
  *
  * @author Tomás Pollak
  */
-public class BugExplorerViewTwoSrcFoldersTest extends AbstractBugExplorerViewTest {
+class BugExplorerViewTwoSrcFoldersTest extends AbstractBugExplorerViewTest {
+
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.TWO_SRC_FOLDERS);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testViewContents_runTwice_onceOnSrcFolder() throws CoreException {
+    void testViewContents_runTwice_onceOnSrcFolder() throws CoreException {
         // Run Findbugs on the entire project
         work(createFindBugsWorker());
 

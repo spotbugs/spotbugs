@@ -33,19 +33,20 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class QuickfixWithJUnitTest extends AbstractQuickfixTest {
+class QuickfixWithJUnitTest extends AbstractQuickfixTest {
+
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.QUICKFIX_WITH_JUNIT);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testCreateSuperCallResolution() throws CoreException, IOException {
+    void testCreateSuperCallResolution() throws CoreException, IOException {
         doTestQuickfixResolution("CreateSuperCallResolutionExample.java", "FI_MISSING_SUPER_CALL", "IJU_SETUP_NO_SUPER",
                 "IJU_TEARDOWN_NO_SUPER");
     }

@@ -50,8 +50,7 @@ import edu.umd.cs.findbugs.config.ProjectFilterSettings;
  * @author Kevin Lubick
  *
  */
-public class QuickfixMulti extends AbstractQuickfixTest {
-
+class QuickfixMulti extends AbstractQuickfixTest {
 
     @Override
     protected TestScenario getTestScenario() {
@@ -59,7 +58,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
     }
 
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.MULTIQUICKFIX);
     }
 
@@ -74,7 +73,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
 
 
     @Test
-    public void testMultiUseValueOf() throws Exception {
+    void testMultiUseValueOf() throws Exception {
         QuickFixTestPackager packager = new QuickFixTestPackager();
         packager.addBugPatterns("DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR",
                 "DM_FP_NUMBER_CTOR");

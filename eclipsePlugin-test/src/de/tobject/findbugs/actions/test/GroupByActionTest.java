@@ -41,14 +41,14 @@ import de.tobject.findbugs.view.explorer.GroupType;
  *
  * @author Tomás Pollak
  */
-public class GroupByActionTest extends AbstractFindBugsTest {
+class GroupByActionTest extends AbstractFindBugsTest {
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
@@ -85,7 +85,7 @@ public class GroupByActionTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAction_Priority_Category_Project_Package_Class_PatternType_Pattern_Marker() throws PartInitException {
+    void testAction_Priority_Category_Project_Package_Class_PatternType_Pattern_Marker() throws PartInitException {
         runAction(PRIORITY_CATEGORY_PROJECT_PACKAGE_CLASS_PATTERN_TYPE_PATTERN_MARKER_ID);
 
         assertExpectedGroupTypes(GroupType.Confidence, GroupType.Category, GroupType.Project, GroupType.Package, GroupType.Class,
@@ -93,7 +93,7 @@ public class GroupByActionTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAction_Priority_Category_Project_PatternType_Pattern_Marker() throws PartInitException {
+    void testAction_Priority_Category_Project_PatternType_Pattern_Marker() throws PartInitException {
         runAction(PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID);
 
         assertExpectedGroupTypes(GroupType.Confidence, GroupType.Category, GroupType.Project, GroupType.PatternType,
@@ -101,21 +101,21 @@ public class GroupByActionTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAction_Priority_Project_Pattern_Marker() throws PartInitException {
+    void testAction_Priority_Project_Pattern_Marker() throws PartInitException {
         runAction(PRIORITY_PROJECT_PATTERN_MARKER_ID);
 
         assertExpectedGroupTypes(GroupType.Confidence, GroupType.Project, GroupType.Pattern, GroupType.Marker);
     }
 
     @Test
-    public void testAction_Project_Pattern_Marker() throws PartInitException {
+    void testAction_Project_Pattern_Marker() throws PartInitException {
         runAction(PROJECT_PATTERN_MARKER_ID);
 
         assertExpectedGroupTypes(GroupType.Project, GroupType.Pattern, GroupType.Marker);
     }
 
     @Test
-    public void testAction_Project_Priority_Category_PatternType_Pattern_Marker() throws PartInitException {
+    void testAction_Project_Priority_Category_PatternType_Pattern_Marker() throws PartInitException {
         runAction(PROJECT_PRIORITY_CATEGORY_PATTERN_TYPE_PATTERN_MARKER_ID);
 
         assertExpectedGroupTypes(GroupType.Project, GroupType.Confidence, GroupType.Category, GroupType.PatternType,
@@ -123,7 +123,7 @@ public class GroupByActionTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAction_Project_Priority_Pattern_Marker() throws PartInitException {
+    void testAction_Project_Priority_Pattern_Marker() throws PartInitException {
         runAction(PROJECT_PRIORITY_PATTERN_MARKER_ID);
 
         assertExpectedGroupTypes(GroupType.Project, GroupType.Confidence, GroupType.Pattern, GroupType.Marker);

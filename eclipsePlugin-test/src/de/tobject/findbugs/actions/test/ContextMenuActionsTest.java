@@ -40,14 +40,14 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class ContextMenuActionsTest extends AbstractFindBugsTest {
+class ContextMenuActionsTest extends AbstractFindBugsTest {
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
@@ -67,7 +67,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testClearFindBugs() throws CoreException {
+    void testClearFindBugs() throws CoreException {
         assertNoBugs();
 
         StructuredSelection selection = new StructuredSelection(getProject());
@@ -89,7 +89,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testLoadXML() throws CoreException {
+    void testLoadXML() throws CoreException {
         assertNoBugs();
 
         StructuredSelection selection = new StructuredSelection(getProject());
@@ -103,7 +103,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testRunFindBugs() throws CoreException {
+    void testRunFindBugs() throws CoreException {
         assertNoBugs();
 
         StructuredSelection selection = new StructuredSelection(getProject());
@@ -117,7 +117,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testSaveXML() throws CoreException {
+    void testSaveXML() throws CoreException {
         assertNoBugs();
         work(createFindBugsWorker());
         assertExpectedBugs();

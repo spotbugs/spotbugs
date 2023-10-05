@@ -10,11 +10,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 
-public class FindBugsTaskTest {
+class FindBugsTaskTest {
+
     private FindBugsTask task;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         task = new FindBugsTask();
         task.createFindbugsEngine();
     }
@@ -23,7 +24,7 @@ public class FindBugsTaskTest {
      * @see <a href="https://github.com/spotbugs/spotbugs/issues/1827"GitHub issue</a>
      */
     @Test
-    public void disableSortByClassWhenXmlIsUsed() {
+    void disableSortByClassWhenXmlIsUsed() {
         task.setSort(true);
         task.setOutput("xml");
 
@@ -35,7 +36,7 @@ public class FindBugsTaskTest {
     }
 
     @Test
-    public void enableSortByClassForNullOutput() {
+    void enableSortByClassForNullOutput() {
         task.setSort(true);
         task.setOutput(null);
 
@@ -47,7 +48,7 @@ public class FindBugsTaskTest {
     }
 
     @Test
-    public void enableSortByClassWhenTextIsUsed() {
+    void enableSortByClassWhenTextIsUsed() {
         task.setSort(true);
         task.setOutput("text");
 

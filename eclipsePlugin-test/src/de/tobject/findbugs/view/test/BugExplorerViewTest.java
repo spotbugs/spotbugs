@@ -38,26 +38,27 @@ import de.tobject.findbugs.view.explorer.GroupType;
  *
  * @author Tomás Pollak
  */
-public class BugExplorerViewTest extends AbstractBugExplorerViewTest {
+class BugExplorerViewTest extends AbstractBugExplorerViewTest {
+
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testShowView() throws PartInitException {
+    void testShowView() throws PartInitException {
         // Show the view
         IViewPart view = showBugExplorerView();
         assertNotNull(view);
     }
 
     @Test
-    public void testViewContents_Empty() throws PartInitException {
+    void testViewContents_Empty() throws PartInitException {
         // Get the content provider
         ITreeContentProvider contentProvider = getNavigatorContentProvider();
         assertNotNull(contentProvider);
@@ -69,7 +70,7 @@ public class BugExplorerViewTest extends AbstractBugExplorerViewTest {
     }
 
     @Test
-    public void testViewContents_Project_Pattern_Marker() throws CoreException {
+    void testViewContents_Project_Pattern_Marker() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -85,7 +86,7 @@ public class BugExplorerViewTest extends AbstractBugExplorerViewTest {
     }
 
     @Test
-    public void testViewContents_Project_Pattern_Package_Marker() throws CoreException {
+    void testViewContents_Project_Pattern_Package_Marker() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 

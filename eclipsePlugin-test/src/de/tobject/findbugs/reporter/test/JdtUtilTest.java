@@ -40,19 +40,20 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class JdtUtilTest extends AbstractPluginTest {
+class JdtUtilTest extends AbstractPluginTest {
+
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.JDT);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testFindAnonymous() throws JavaModelException {
+    void testFindAnonymous() throws JavaModelException {
         IType typeC = getTypeC();
         IType typeE = getTypeE();
 

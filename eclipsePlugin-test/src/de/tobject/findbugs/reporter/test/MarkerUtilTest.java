@@ -40,19 +40,20 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class MarkerUtilTest extends AbstractFindBugsTest {
+class MarkerUtilTest extends AbstractFindBugsTest {
+
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testGetAllMarkers() throws CoreException {
+    void testGetAllMarkers() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -62,14 +63,14 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testGetAllMarkers_Empty() {
+    void testGetAllMarkers_Empty() {
         // Get the markers for an empty project
         IMarker[] markers = MarkerUtil.getAllMarkers(getProject());
         assertNoMarkers(markers);
     }
 
     @Test
-    public void testGetMarkersFromSelection() throws CoreException {
+    void testGetMarkersFromSelection() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -79,7 +80,7 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testIsFiltered() throws CoreException {
+    void testIsFiltered() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -89,7 +90,7 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testIsFiltered_EmptyFilters() throws CoreException {
+    void testIsFiltered_EmptyFilters() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -98,7 +99,7 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testIsFiltered_NullFilters() throws CoreException {
+    void testIsFiltered_NullFilters() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -107,12 +108,12 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testIsFiltered_NullMarker() {
+    void testIsFiltered_NullMarker() {
         assertTrue(MarkerUtil.isFiltered(null, Collections.<String>emptySet()));
     }
 
     @Test
-    public void testRemoveCreateMarkers() throws CoreException {
+    void testRemoveCreateMarkers() throws CoreException {
         // Setup the initial state, load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
         assertExpectedMarkers(MarkerUtil.getAllMarkers(getProject()));

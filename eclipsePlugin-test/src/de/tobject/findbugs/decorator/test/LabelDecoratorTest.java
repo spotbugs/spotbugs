@@ -35,21 +35,21 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class LabelDecoratorTest extends AbstractFindBugsTest {
+class LabelDecoratorTest extends AbstractFindBugsTest {
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     private static final String SOME_LABEL = "label";
 
     @Test
-    public void testDecorateResourcesWithBugs() throws CoreException {
+    void testDecorateResourcesWithBugs() throws CoreException {
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
         // Class 'A' has no visible bugs
@@ -66,7 +66,7 @@ public class LabelDecoratorTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testDecorateResourcesWithoutBugs() throws JavaModelException {
+    void testDecorateResourcesWithoutBugs() throws JavaModelException {
         // Class 'A'
         doTestDecoratorWithoutBugs(getClassA());
 

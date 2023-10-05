@@ -35,7 +35,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
  *
  * @author Tomás Pollak
  */
-public class ExpectedViewBugGroup implements ExpectedViewElement {
+class ExpectedViewBugGroup implements ExpectedViewElement {
 
     private final GroupType groupType;
 

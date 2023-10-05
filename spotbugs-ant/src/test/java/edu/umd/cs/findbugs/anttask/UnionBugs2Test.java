@@ -14,9 +14,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class UnionBugs2Test {
+class UnionBugs2Test {
+
     @Test
-    public void testWriteXmlFilePathArgsToTextFile() {
+    void testWriteXmlFilePathArgsToTextFile() {
         //Prepare
         UnionBugs2 unionBugs2 = new UnionBugs2();
         unionBugs2.setProject(new Project());

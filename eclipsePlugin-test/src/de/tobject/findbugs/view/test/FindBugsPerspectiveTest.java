@@ -40,21 +40,22 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class FindBugsPerspectiveTest extends AbstractFindBugsTest {
+class FindBugsPerspectiveTest extends AbstractFindBugsTest {
+
+    private static final String FINDBUGS_PERSPECTIVE_ID = "de.tobject.findbugs.FindBugsPerspective";
+
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
-    private static final String FINDBUGS_PERSPECTIVE_ID = "de.tobject.findbugs.FindBugsPerspective";
-
     @Test
-    public void testShowPerspective() throws WorkbenchException {
+    void testShowPerspective() throws WorkbenchException {
         // Show the perspective
         IWorkbenchPage page = showFindBugsPerspective();
 

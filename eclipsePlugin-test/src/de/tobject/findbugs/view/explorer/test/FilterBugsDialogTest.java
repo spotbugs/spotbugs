@@ -45,14 +45,15 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
  *
  * @author Tomás Pollak
  */
-public class FilterBugsDialogTest extends AbstractFindBugsTest {
+class FilterBugsDialogTest extends AbstractFindBugsTest {
+
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
     @AfterAll
-    public static void tearDownClass() throws CoreException {
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
@@ -74,7 +75,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testEmptyFilter() {
+    void testEmptyFilter() {
         // Open the dialog
         FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections.<BugPattern>emptySet(),
                 Collections.<BugCode>emptySet());
@@ -88,7 +89,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testFullFilter() {
+    void testFullFilter() {
         // Open the dialog
         FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(FindbugsPlugin.getKnownPatterns(),
                 FindbugsPlugin.getKnownPatternTypes());
@@ -102,7 +103,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testOnePatternSelectsPattern() {
+    void testOnePatternSelectsPattern() {
         // Open the dialog
         FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections.<BugPattern>emptySet(),
                 Collections.<BugCode>emptySet());
@@ -121,7 +122,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testOnePatternSelectsType() {
+    void testOnePatternSelectsType() {
         // Open the dialog
         FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections.<BugPattern>emptySet(),
                 Collections.<BugCode>emptySet());
@@ -141,7 +142,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testOneType() {
+    void testOneType() {
         // Open the dialog
         FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections.<BugPattern>emptySet(),
                 Collections.<BugCode>emptySet());
