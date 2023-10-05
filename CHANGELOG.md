@@ -74,7 +74,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Delete checked in j2ee jar and instead use servlet/ejb apis from jakarta (javax standard) ([#2585](https://github.com/spotbugs/spotbugs/pull/2585))
 - Bump Eclipse from 4.14 to 4.29 (latest) ([#2589](https://github.com/spotbugs/spotbugs/pull/2589))
 - Cleanup hamcrest imports / used library ([#2600](https://github.com/spotbugs/spotbugs/pull/2600))
-- Migrate entirely to junit 5
+- Migrate entirely to junit 5 ([#2605](https://github.com/spotbugs/spotbugs/pull/2605))
     - Some parts of codebase were junit 3
     - Delete the SpotbugsRule
     - Replace custom java determination on build with Junit 5 usage
