@@ -1822,8 +1822,8 @@ factory pattern to create these objects.</p>
   <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryEnvUsage">
     <Details>
       <![CDATA[
-            <p>Check for calls of System.getenv, where the variable has an equvivalent
-              java property too.
+            <p>Checks for calls of System.getenv(), where the variable has an equivalent
+              Java property too.
             </p>
       ]]>
     </Details>
@@ -9139,19 +9139,19 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
 
   <BugPattern type="ENV_USE_PROPERTY_INSTEAD_OF_ENV">
-    <ShortDescription>It is better to use the validated java property instead of the insecure environment variable.</ShortDescription>
-    <LongDescription>It is better to use the validated java property '{3}' instead of the insecure environment variable '{2}' in class {4} (method {1}).</LongDescription>
+    <ShortDescription>It is safer to use validated Java property instead of insecure environment variable.</ShortDescription>
+    <LongDescription>It is safer to use validated Java property '{3}' instead of insecure environment variable '{2}' in class {4} (method {1}).</LongDescription>
     <Details>
       <![CDATA[<p>
-        Environment variables can be altered by an attacker, so trusting those which contain important information is not a good idea.
-        However, environment variables are also taken by the JVM and it is preprocessing and checking the standard and important ones,
-        making them available as system properties.
+        Environment variables may be accidently or maliciously altered suring process execution. This makes them unsafe to be relied
+        upon important system-level information. Some environment variables are understood, validated and secured by the JVM.
+        These values are available as system properties, which should be used instead.
       </p>
       <p>
         Any standard value which can also be accessed through System.getProperty() should be accessed so instead of using System.getenv().
       </p>
       <p>
-        Mapping of identical or similar java properties:
+        Mapping of identical or similar Java properties:
         <table>
           <tr>
              <th>Environment variable</th> <th>Property</th>
@@ -9333,5 +9333,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
-  <BugCode abbrev="ENV">Environment variable is used instead of the corresponding java property</BugCode>
+  <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
 </MessageCollection>
