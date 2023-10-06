@@ -375,7 +375,7 @@ def siteCandidateHtml = tasks.register('siteCandidateHtml', Copy) {
     'URL': 'https://spotbugs.github.io/eclipse-candidate/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDirectory = layout.buildDirectory.dir("site/eclipse-candidate")
+  into layout.buildDirectory.dir("site/eclipse-candidate")
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -388,7 +388,7 @@ def siteDailyHtml = tasks.register('siteDailyHtml', Copy) {
     'URL': 'https://spotbugs.github.io/eclipse-latest/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDirectory = layout.buildDirectory.dir("site/eclipse-daily")
+  into layout.buildDirectory.dir("site/eclipse-daily")
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -401,7 +401,7 @@ def siteStableLatestHtml = tasks.register('siteStableLatestHtml', Copy) {
     'URL': 'https://spotbugs.github.io/eclipse-stable-latest/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDirectory = layout.buildDirectory.dir("site/eclipse-stable-latest")
+  into layout.buildDirectory.dir("site/eclipse-stable-latest")
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -412,7 +412,7 @@ def siteStableLatestHtml = tasks.register('siteStableLatestHtml', Copy) {
 def siteXml = tasks.register('siteXml', Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.xml'
-  destinationDirectory = layout.buildDirectory.dir("site/eclipse")
+  into layout.buildDirectory.dir("site/eclipse")
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -425,7 +425,7 @@ def siteXml = tasks.register('siteXml', Copy) {
 def siteCandidateXml = tasks.register('siteCandidateXml', Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site-candidate.xml'
-  destinationDirectory = layout.buildDirectory.dir("site/eclipse-candidate")
+  into layout.buildDirectory.dir("site/eclipse-candidate")
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -436,7 +436,7 @@ def siteCandidateXml = tasks.register('siteCandidateXml', Copy) {
 def siteDailyXml = tasks.register('siteDailyXml', Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site-daily.xml'
-  destinationDirectory = layout.buildDirectory.dir("site/eclipse-daily")
+  into layout.buildDirectory.dir("site/eclipse-daily")
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -447,7 +447,7 @@ def siteDailyXml = tasks.register('siteDailyXml', Copy) {
 def siteStableLatestXml = tasks.register('siteStableLatestXml', Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site-stable_latest.xml'
-  destinationDirectory = layout.buildDirectory.dir("site/eclipse-stable-latest")
+  into layout.buildDirectory.dir("site/eclipse-stable-latest")
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
