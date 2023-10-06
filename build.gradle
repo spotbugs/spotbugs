@@ -71,7 +71,7 @@ def publishTask = tasks.findByName("publish")
 if (publishTask == null) {
   publishTask = tasks.findByName("publishToMavenLocal")
 }
-def outputFile = file("$buildDir/release.md")
+def outputFile = layout.buildDirectory.file("release.md")
 def inputFile =  subprojects.collect {
   it.hasProperty('publishing') ? it.publishing.publications.maven.artifacts : []
 }.flatten().collect {
@@ -103,14 +103,14 @@ createChecksums.configure {
   dependsOn(":spotbugs:distTar")
 }
 createReleaseBody.configure {
-  inputs.files fileTree("$buildDir/checksums").matching {
+  inputs.files fileTree(layout.buildDirectory.dir("checksums")).matching {
     include "*.sha256"
   }
   outputs.file outputFile
   dependsOn createChecksums
 
   doLast {
-    outputFile.delete()
+    outputFile.get().asFile.delete()
     outputFile << """SpotBugs ${project.version}
 
 ### CHANGELOG
@@ -120,7 +120,7 @@ createReleaseBody.configure {
 | file | checksum (sha256) |
 | ---- | ----------------- |
 """
-    fileTree("$buildDir/checksums").matching {
+    fileTree(layout.buildDirectory.dir("checksums")).matching {
       include "*.sha256"
     }.sort {
       it.name

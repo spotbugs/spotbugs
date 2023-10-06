@@ -164,7 +164,7 @@ def updateManifest = tasks.register('updateManifest') {
   outputs.file "$projectDir/META-INF/MANIFEST.MF"
   dependsOn configurations.runtimeClasspath, copyLibsForEclipse
   doLast {
-    def manifestSpec = manifest {
+    def manifestSpec = java.manifest {
       from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version.replace('-', '.'),
@@ -221,7 +221,7 @@ def scripts = tasks.register('scripts', Copy) {
     into 'experimental'
   }
 
-  destinationDir file("$buildDir/bin")
+  into(layout.buildDirectory.dir("bin"))
   duplicatesStrategy DuplicatesStrategy.FAIL
   fileMode 0755
 }
@@ -329,7 +329,7 @@ def smokeTest = tasks.register('smokeTest') {
               timeout:'1800000',
               outputFile:"${buildDir}/smoketest/findbugscheckAll.xml") {
       sourcePath(path:'src/main/java:src/gui/main:src/tools')
-      'class'(location:project.tasks['compileJava'].destinationDir)
+      'class'(location:project.tasks['compileJava'].destinationDirectory.get().asFile)
       configurations.compileClasspath.each { File file -> auxClasspath(path:file.path) }
     }
   }
