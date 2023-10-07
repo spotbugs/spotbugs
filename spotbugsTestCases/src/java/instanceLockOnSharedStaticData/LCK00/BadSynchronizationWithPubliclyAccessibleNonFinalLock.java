@@ -4,7 +4,7 @@ public class BadSynchronizationWithPubliclyAccessibleNonFinalLock {
     private volatile Object lock = new Object();
 
     public void changeValue() {
-        synchronized (lock) {
+        synchronized (lock) { // synchronizing on accessible lock object, bug should be detected here
             doSomeStuff();
         }
     }

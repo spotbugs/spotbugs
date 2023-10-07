@@ -4,7 +4,7 @@ public class BadSynchronizationWithPublicFinalLock {
     public final Object lock = new Object();
 
     public void changeValue() {
-        synchronized (lock) {
+        synchronized (lock) { // synchronizing on the public lock object, bug should be detected here
             doSomeStuff();
         }
     }

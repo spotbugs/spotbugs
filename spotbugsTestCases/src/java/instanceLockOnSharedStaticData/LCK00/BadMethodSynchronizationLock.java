@@ -14,6 +14,9 @@ public class BadMethodSynchronizationLock {
         synchronized (someObject) {
             while (true) {
                 // Indefinitely lock someObject
+                // In some time somObject. change value will be called that tries to lock on 'itself'
+                // but because of the above synchronized block it won't acquire the lock
+                // resulting in a dead lock
                 Thread.sleep(Integer.MAX_VALUE);
             }
         }
@@ -24,10 +27,10 @@ public class BadMethodSynchronizationLock {
 class SomeClass {
     // Locks on the object's monitor
     public synchronized void changeValue() {
-        // ...
+        System.out.println("Change some value");
     }
 
-    public static SomeClass lookup(String name) {
+    public static SomeClass lookup(String name) { // exposing the lock object, bug should be detected here
         // ...
         return null;
     }

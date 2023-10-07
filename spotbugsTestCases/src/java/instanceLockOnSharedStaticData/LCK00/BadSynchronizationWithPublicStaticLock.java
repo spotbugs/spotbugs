@@ -7,7 +7,7 @@ public class BadSynchronizationWithPublicStaticLock {
 
     public static void unTrustedCode() throws InterruptedException {
         // Untrusted code
-        synchronized (SomeOtherClass.class) {
+        synchronized (SomeOtherClass.class) { // locking on the class, preventing the synchronized changeValue to acquire the lock, bug should be detected here
             while (true) {
                 Thread.sleep(Integer.MAX_VALUE); // Indefinitely delay someObject
             }
@@ -19,7 +19,7 @@ public class BadSynchronizationWithPublicStaticLock {
 class SomeOtherClass {
     //changeValue locks on the class object's monitor
     public static synchronized void changeValue() {
-        // ...
+        System.out.println("Change some value");
     }
 
 

@@ -680,8 +680,9 @@
           <Detector class="edu.umd.cs.findbugs.detect.FindArgumentAssertions" speed="fast"
                     reports="AA_ASSERTION_OF_ARGUMENTS"/>
           <Detector class="edu.umd.cs.findbugs.detect.DontReusePublicIdentifiers" speed="fast"
-                    reports="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES"
-                    disabled="true"/>
+                  reports="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindSynchronizationLock" speed="fast"
+                  reports="PFL_SYNCHRONIZE_WITH_PRIVATE_FINAL_LOCK_OBJECTS"/>
           <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
 
@@ -1319,5 +1320,6 @@
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="PFL" type="PFL_SYNCHRONIZE_WITH_PRIVATE_FINAL_LOCK_OBJECTS" category="BAD_PRACTICE"/>
 
 </FindbugsPlugin>
