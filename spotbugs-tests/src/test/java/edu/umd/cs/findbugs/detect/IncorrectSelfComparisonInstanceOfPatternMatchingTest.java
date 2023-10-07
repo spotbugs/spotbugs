@@ -25,7 +25,7 @@ class IncorrectSelfComparisonInstanceOfPatternMatchingTest {
      *      issue</a>
      */
     @Test
-    @DisabledOnJre({JRE.JAVA_8, JRE.JAVA_11})
+    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
     void testIssue1136(SpotBugsRunner spotbugs) {
         final BugInstanceMatcher selfComparisonMatcher = new BugInstanceMatcherBuilder()
                 .bugType("SA_LOCAL_SELF_COMPARISON").build();
