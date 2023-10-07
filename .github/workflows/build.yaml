@@ -84,3 +84,8 @@ jobs:
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
           ORG_GRADLE_PROJECT_keystorepass: ${{ secrets.KEYSTORE_PASS }}
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: my-artifact
+          path: spotbugsTestCases/build/classes/java/java17/PatternMatchingForSwitch.class
