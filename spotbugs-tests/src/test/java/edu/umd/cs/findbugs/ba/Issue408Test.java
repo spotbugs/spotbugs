@@ -9,6 +9,8 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
@@ -21,6 +23,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 class Issue408Test extends AbstractIntegrationTest {
 
     @Test
+    @DisabledOnJre(JRE.JAVA_8)
     void testSingleClass() {
         Throwable throwable = Assertions.assertThrows(AssertionError.class, () -> {
             performAnalysis("../java11/module-info.class");
@@ -30,6 +33,7 @@ class Issue408Test extends AbstractIntegrationTest {
     }
 
     @Test
+    @DisabledOnJre(JRE.JAVA_8)
     void testFewClasses() {
         performAnalysis("../java11/module-info.class", "../java11/Issue408.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().build();

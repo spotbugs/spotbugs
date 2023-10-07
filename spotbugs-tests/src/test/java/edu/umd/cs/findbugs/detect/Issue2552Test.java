@@ -14,7 +14,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 class Issue2552Test extends AbstractIntegrationTest {
 
     @Test
-    @DisabledOnJre(JRE.JAVA_11)
+    @DisabledOnJre({JRE.JAVA_8, JRE.JAVA_11})
     public void testIssue() {
         performAnalysis("../java17/ghIssues/Issue2552.class");
 

@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.hasItem;
 class Issue2184Test extends AbstractIntegrationTest {
 
     @Test
-    @DisabledOnJre(JRE.JAVA_11)
+    @DisabledOnJre({JRE.JAVA_8, JRE.JAVA_11})
     void testIssue() {
         performAnalysis("../java17/ghIssues/Issue2184.class");
         BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()

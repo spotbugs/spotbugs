@@ -23,7 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class Issue1367Test {
 
     @Test
-    @DisabledOnJre(JRE.JAVA_11)
+    @DisabledOnJre({JRE.JAVA_8, JRE.JAVA_11})
     void testIssue(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/java17/Issue1367.class"));
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("EQ_UNUSUAL").build();

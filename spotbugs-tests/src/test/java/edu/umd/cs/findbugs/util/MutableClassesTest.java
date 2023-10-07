@@ -105,9 +105,9 @@ class MutableClassesTest {
         Assertions.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Immutable;"));
     }
 
-    // This tests fails on java 11, so disable it and only run on java 17+ unless its determined how to fix
+    // This tests fails on java 8/11, so disable it and only run on java 17+ unless its determined how to fix
     @Test
-    @DisabledOnJre(JRE.JAVA_11)
+    @DisabledOnJre({JRE.JAVA_8, JRE.JAVA_11})
     void testImmutableValuedBased() {
         // Annotated with @jdk.internal.ValueBased and has "setValue", which should normally trip detection
         System.out.println("starting.....");

@@ -4,6 +4,8 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.BugCollection;
@@ -15,6 +17,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  */
 class Issue1254Test extends AbstractIntegrationTest {
 
+    // These tests require java 11 or better to run
     private static final String[] CLASS_LIST = { "../java11/module-info.class", "../java11/Issue1254.class",
         "../java11/Issue1254$Inner.class", "../java11/Issue1254$1.class", };
 
@@ -33,6 +36,7 @@ class Issue1254Test extends AbstractIntegrationTest {
      * Test that accessing private members of a nested class doesn't result in uncalled method problems.
      */
     @Test
+    @DisabledOnJre(JRE.JAVA_8)
     void testUncalledPrivateMethod() {
         performAnalysis(CLASS_LIST);
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("UPM_UNCALLED_PRIVATE_METHOD")

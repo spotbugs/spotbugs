@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class Issue2120Test extends AbstractIntegrationTest {
 
     @Test
-    @DisabledOnJre(JRE.JAVA_11)
+    @DisabledOnJre({JRE.JAVA_8, JRE.JAVA_11})
     void testIssue() {
         performAnalysis("../java17/Issue2120.class",
                 "../java17/Issue2120$1MyEnum.class",
