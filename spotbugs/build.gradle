@@ -63,8 +63,8 @@ repositories {
   mavenLocal();
 }
 dependencies {
-  spotbugs 'com.github.spotbugs:spotbugs:4.0.7-SNAPSHOT'
-  spotbugsPlugins ('com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1') {
+  spotbugs 'com.github.spotbugs:spotbugs:4.8.0-SNAPSHOT'
+  spotbugsPlugins ('com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0') {
     exclude group: 'com.github.spotbugs', module: 'spotbugs'
   }
   api libs.asm
