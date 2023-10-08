@@ -360,7 +360,7 @@ def siteHtml = tasks.register('siteHtml', Copy) {
     'URL': 'https://spotbugs.github.io/eclipse/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDirectory = layout.buildDirectory.dir("site/eclipse")
+  into layout.buildDirectory.dir("site/eclipse")
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
