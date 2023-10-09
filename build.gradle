@@ -110,8 +110,9 @@ createReleaseBody.configure {
   dependsOn createChecksums
 
   doLast {
-    outputFile.get().asFile.delete()
-    outputFile << """SpotBugs ${project.version}
+    File outputAsFile = outputFile.get().asFile
+    outputAsFile.delete()
+    outputAsFile << """SpotBugs ${project.version}
 
 ### CHANGELOG
 - https://github.com/spotbugs/spotbugs/blob/${project.version}/CHANGELOG.md
@@ -127,7 +128,7 @@ createReleaseBody.configure {
     }.forEach {
       def name = it.name.replace(".sha256", "")
       def hash = it as String[]
-      outputFile << "| ${ name } | ${hash[0]} |\n"
+      outputFile.get().asFile << "| ${ name } | ${hash[0]} |\n"
     }
   }
 }
