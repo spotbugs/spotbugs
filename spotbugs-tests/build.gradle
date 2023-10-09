@@ -37,7 +37,7 @@ tasks.named('jacocoTestReport', JacocoReport).configure {
   dependsOn('unstableTest')
   additionalSourceDirs.setFrom files(project(':spotbugs').sourceSets.main.java.srcDirs)
   additionalClassDirs.setFrom files(project(':spotbugs').sourceSets.main.output.classesDirs)
-  executionData.setFrom files("$buildDir/jacoco/unstableTest.exec", "$buildDir/jacoco/test.exec")
+  executionData.setFrom files(layout.buildDirectory.file("jacoco/unstableTest.exec"), layout.buildDirectory.file("jacoco/test.exec"))
 }
 
 // Tests below fail if executed with other tests

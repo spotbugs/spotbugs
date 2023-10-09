@@ -34,13 +34,14 @@ eclipseMavenCentral {
 /**
  * Unzip "org.eclipse.pde.build" package into the outputDir.
  */
+val pdeToolDir = layout.buildDirectory.dir("pdeTool")
 val unzipPdeTool = tasks.register<Copy>("unzipPdeTool") {
   from(zipTree(pdeTool.singleFile))
-  into("$buildDir/pdeTool")
+  into(pdeToolDir)
 }
 
 dependencies {
-  compileOnly(files("$buildDir/pdeTool/pdebuild.jar"){
+  compileOnly(files(pdeToolDir.map { it.file("pdebuild.jar") }){
     builtBy(unzipPdeTool)
   })
 }
