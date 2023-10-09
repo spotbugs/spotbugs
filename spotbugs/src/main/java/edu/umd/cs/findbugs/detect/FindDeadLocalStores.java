@@ -427,7 +427,7 @@ public class FindDeadLocalStores implements Detector {
                         }
                         BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_STORE_OF_CLASS_LITERAL",
                                 Priorities.NORMAL_PRIORITY).addClassAndMethod(methodGen, sourceFileName).add(lvAnnotation)
-                                        .addType(initializationOf);
+                                .addType(initializationOf);
                         accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
                         continue;
                     }

@@ -213,7 +213,7 @@ public class FindUseOfNonSerializableValue implements Detector {
 
                     bugAccumulator.accumulateBug(new BugInstance(this, pattern,
                             isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
-                                    .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
+                            .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
                             sourceLineAnnotation);
 
                 }
