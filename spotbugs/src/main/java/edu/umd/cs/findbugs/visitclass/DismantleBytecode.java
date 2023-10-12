@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantDynamic;
 import org.apache.bcel.classfile.ConstantFieldref;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantInteger;
@@ -709,6 +710,12 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                                 stringConstantOperand = getStringFromIndex(s);
                             } else if (constantRefOperand instanceof ConstantInvokeDynamic) {
                                 ConstantInvokeDynamic id = (ConstantInvokeDynamic) constantRefOperand;
+                                ConstantNameAndType sig = (ConstantNameAndType) getConstantPool().getConstant(
+                                        id.getNameAndTypeIndex());
+                                nameConstantOperand = getStringFromIndex(sig.getNameIndex());
+                                sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
+                            } else if (constantRefOperand instanceof ConstantDynamic) {
+                                ConstantDynamic id = (ConstantDynamic) constantRefOperand;
                                 ConstantNameAndType sig = (ConstantNameAndType) getConstantPool().getConstant(
                                         id.getNameAndTypeIndex());
                                 nameConstantOperand = getStringFromIndex(sig.getNameIndex());
