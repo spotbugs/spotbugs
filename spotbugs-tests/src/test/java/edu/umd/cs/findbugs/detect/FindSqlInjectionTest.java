@@ -19,18 +19,18 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author pugh
  */
-public class FindSqlInjectionTest {
+class FindSqlInjectionTest {
 
     @Test
-    public void testOpenQuote() {
+    void testOpenQuote() {
         assertTrue(FindSqlInjection.isOpenQuote("'"));
         assertTrue(FindSqlInjection.isOpenQuote(" '"));
         assertTrue(FindSqlInjection.isOpenQuote("='"));
@@ -42,7 +42,7 @@ public class FindSqlInjectionTest {
     }
 
     @Test
-    public void testCloseQuote() {
+    void testCloseQuote() {
         assertTrue(FindSqlInjection.isCloseQuote("'"));
         assertTrue(FindSqlInjection.isCloseQuote("' "));
 

@@ -2,7 +2,8 @@ package bugIdeas;
 
 import javax.annotation.Nonnull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class Ideas_2010_01_22 {
 
@@ -14,14 +15,18 @@ public class Ideas_2010_01_22 {
         return 17;
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNeedsNonnull() {
-        needsNonnull(null);
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            needsNonnull(null);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNeedsNonnull2() {
-        needsNonnull2(null);
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            needsNonnull2(null);
+        });
     }
 
     @Test

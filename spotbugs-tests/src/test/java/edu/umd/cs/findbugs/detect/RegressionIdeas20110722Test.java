@@ -3,15 +3,16 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class RegressionIdeas20110722Test extends AbstractIntegrationTest {
+class RegressionIdeas20110722Test extends AbstractIntegrationTest {
+
     @Test
-    public void testArgumentAssertions() {
+    void testArgumentAssertions() {
         performAnalysis("bugIdeas/Ideas_2011_07_22.class");
 
         assertNumOfBugs("NP_NULL_ON_SOME_PATH", 0);

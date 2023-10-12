@@ -102,7 +102,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             // it's likely that UC_USELESS_VOID_METHOD is just the consequence of the previous report
             bugAccumulator.accumulateBug(new BugInstance(this, "UC_USELESS_VOID_METHOD",
                     code.getCode().length > 40 ? HIGH_PRIORITY : code.getCode().length > 15 ? NORMAL_PRIORITY : LOW_PRIORITY)
-                            .addClassAndMethod(getMethodDescriptor()), this);
+                    .addClassAndMethod(getMethodDescriptor()), this);
         }
         sawExcludedNSECall = false;
         bugAccumulator.reportAccumulatedBugs();

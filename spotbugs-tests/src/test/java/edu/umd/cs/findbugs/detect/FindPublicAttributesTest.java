@@ -3,19 +3,20 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class FindPublicAttributesTest extends AbstractIntegrationTest {
+class FindPublicAttributesTest extends AbstractIntegrationTest {
+
     private static final String PRIMITIVE_PUBLIC = "PA_PUBLIC_PRIMITIVE_ATTRIBUTE";
     private static final String MUTABLE_PUBLIC = "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE";
     private static final String ARRAY_PUBLIC = "PA_PUBLIC_ARRAY_ATTRIBUTE";
 
     @Test
-    public void testPublicAttributesChecks() {
+    void testPublicAttributesChecks() {
         performAnalysis("PublicAttributesTest.class");
 
         assertNumOfBugs(PRIMITIVE_PUBLIC, 3);
@@ -33,7 +34,7 @@ public class FindPublicAttributesTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGoodPublicAttributesChecks() {
+    void testGoodPublicAttributesChecks() {
         performAnalysis("PublicAttributesNegativeTest.class");
         assertNumOfBugs(PRIMITIVE_PUBLIC, 0);
         assertNumOfBugs(ARRAY_PUBLIC, 0);

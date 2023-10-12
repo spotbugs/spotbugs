@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
@@ -138,7 +138,7 @@ public class Ideas_2010_04_29 {
                     throw new IOException();
             }
         } catch (IOException e) {
-            Assert.assertEquals("Hello", v.toString());
+            Assertions.assertEquals("Hello", v.toString());
         }
     }
 

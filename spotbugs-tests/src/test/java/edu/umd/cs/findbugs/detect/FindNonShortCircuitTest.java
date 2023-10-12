@@ -5,18 +5,19 @@ import edu.umd.cs.findbugs.PrintingBugReporter;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class FindNonShortCircuitTest {
+class FindNonShortCircuitTest {
+
     private AnalysisContext ctx;
     private FindNonShortCircuit check;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         PrintingBugReporter bugReporter = new PrintingBugReporter();
         ctx = AnalysisContext.currentAnalysisContext();
         if (ctx == null) {
@@ -25,20 +26,20 @@ public class FindNonShortCircuitTest {
         check = new FindNonShortCircuit(bugReporter);
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         AnalysisContext.setCurrentAnalysisContext(ctx);
     }
 
     @Test
-    public void testDefaultBugTypeAndPriority() {
+    void testDefaultBugTypeAndPriority() {
         BugInstance bug = check.createBugInstance();
         assertEquals(FindNonShortCircuit.NS_NON_SHORT_CIRCUIT, bug.getType());
         assertEquals(Priorities.LOW_PRIORITY, bug.getPriority());
     }
 
     @Test
-    public void testBugTypeAndPriorityDangerOld() {
+    void testBugTypeAndPriorityDangerOld() {
         check.sawDangerOld = true;
         BugInstance bug = check.createBugInstance();
         assertEquals(FindNonShortCircuit.NS_NON_SHORT_CIRCUIT, bug.getType());
@@ -46,7 +47,7 @@ public class FindNonShortCircuitTest {
     }
 
     @Test
-    public void testBugTypeAndPriorityNullTestOld() {
+    void testBugTypeAndPriorityNullTestOld() {
         check.sawDangerOld = true;
         check.sawNullTestVeryOld = true;
         BugInstance bug = check.createBugInstance();
@@ -55,7 +56,7 @@ public class FindNonShortCircuitTest {
     }
 
     @Test
-    public void testBugTypeAndPriorityMethodCallOld() {
+    void testBugTypeAndPriorityMethodCallOld() {
         check.sawDangerOld = true;
         check.sawMethodCallOld = true;
         BugInstance bug = check.createBugInstance();

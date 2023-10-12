@@ -4,58 +4,58 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class UserPreferencesTest {
+class UserPreferencesTest {
 
     @Test
-    public void testClone() {
+    void testClone() {
         UserPreferences sut = UserPreferences.createDefaultUserPreferences();
 
         UserPreferences clone = sut.clone();
 
-        Assert.assertEquals(sut, clone);
-        Assert.assertEquals(sut.getClass(), clone.getClass());
+        Assertions.assertEquals(sut, clone);
+        Assertions.assertEquals(sut.getClass(), clone.getClass());
     }
 
     @Test
-    public void testReadEffortNoPrefix() throws IOException {
+    void testReadEffortNoPrefix() throws IOException {
         String testPrefsString = "effort=max";
 
         UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
 
         userPrefs.read(new ByteArrayInputStream(testPrefsString.getBytes(StandardCharsets.ISO_8859_1)));
-        Assert.assertEquals(UserPreferences.EFFORT_MAX, userPrefs.getEffort());
+        Assertions.assertEquals(UserPreferences.EFFORT_MAX, userPrefs.getEffort());
     }
 
     @Test
-    public void testReadEffortSpotBugsPrefix() throws IOException {
+    void testReadEffortSpotBugsPrefix() throws IOException {
         String testPrefsString = "/instance/com.github.spotbugs.plugin.eclipse/effort=max";
 
         UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
 
         userPrefs.read(new ByteArrayInputStream(testPrefsString.getBytes(StandardCharsets.ISO_8859_1)));
-        Assert.assertEquals(UserPreferences.EFFORT_MAX, userPrefs.getEffort());
+        Assertions.assertEquals(UserPreferences.EFFORT_MAX, userPrefs.getEffort());
     }
 
     @Test
-    public void testReadEffortFindBugsPrefix() throws IOException {
+    void testReadEffortFindBugsPrefix() throws IOException {
         String testPrefsString = "/instance/edu.umd.cs.findbugs.plugin.eclipse/effort=max";
 
         UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
 
         userPrefs.read(new ByteArrayInputStream(testPrefsString.getBytes(StandardCharsets.ISO_8859_1)));
-        Assert.assertEquals(UserPreferences.EFFORT_MAX, userPrefs.getEffort());
+        Assertions.assertEquals(UserPreferences.EFFORT_MAX, userPrefs.getEffort());
     }
 
     @Test
-    public void testReadEffortUnknownPrefix() throws IOException {
+    void testReadEffortUnknownPrefix() throws IOException {
         String testPrefsString = "/instance/test.test.test.test.plugin.eclipse/effort=max";
 
         UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
 
         userPrefs.read(new ByteArrayInputStream(testPrefsString.getBytes(StandardCharsets.ISO_8859_1)));
-        Assert.assertEquals(UserPreferences.EFFORT_DEFAULT, userPrefs.getEffort());
+        Assertions.assertEquals(UserPreferences.EFFORT_DEFAULT, userPrefs.getEffort());
     }
 }

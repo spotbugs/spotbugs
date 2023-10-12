@@ -1,25 +1,25 @@
 package edu.umd.cs.findbugs.detect;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
 import java.util.Optional;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Priorities;
-import edu.umd.cs.findbugs.test.SpotBugsRule;
+import edu.umd.cs.findbugs.test.SpotBugsExtension;
+import edu.umd.cs.findbugs.test.SpotBugsRunner;
 
-public class UnreadFieldsTest {
-    @Rule
-    public SpotBugsRule spotbugs = new SpotBugsRule();
+@ExtendWith(SpotBugsExtension.class)
+class UnreadFieldsTest {
 
     /**
      * {@code UWF_NULL_FIELD} should report the line number of the target field.
@@ -27,7 +27,7 @@ public class UnreadFieldsTest {
      * @see <a href="https://github.com/spotbugs/spotbugs/issues/1368">GitHub Issue</a>
      */
     @Test
-    public void bugInstanceShouldContainLineNumber() {
+    void bugInstanceShouldContainLineNumber(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue1368.class"));
         Optional<BugInstance> reportedBug = bugCollection.getCollection().stream()
                 .filter(bug -> "UWF_NULL_FIELD".equals(bug.getBugPattern().getType()))
@@ -42,19 +42,19 @@ public class UnreadFieldsTest {
      * @see <a href="https://github.com/spotbugs/spotbugs/issues/2325">GitHub Issue</a>
      */
     @Test
-    public void unreadFieldInReflectiveClass() {
+    void unreadFieldInReflectiveClass(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue2325.class"));
 
         Optional<BugInstance> reportedBug = bugCollection.getCollection().stream()
                 .filter(bug -> "UUF_UNUSED_FIELD".equals(bug.getBugPattern().getType())).findAny();
-        assertTrue("Expected unused field bug, but got: " + bugCollection.getCollection(), reportedBug.isPresent());
-        assertEquals("Expected low priority unused field bug", Priorities.LOW_PRIORITY,
-                reportedBug.get().getPriority());
+        assertTrue(reportedBug.isPresent(), "Expected unused field bug, but got: " + bugCollection.getCollection());
+        assertEquals(Priorities.LOW_PRIORITY, reportedBug.get().getPriority(),
+                "Expected low priority unused field bug");
 
         reportedBug = bugCollection.getCollection().stream()
                 .filter(bug -> "URF_UNREAD_FIELD".equals(bug.getBugPattern().getType())).findAny();
-        assertTrue("Expected unread field bug, but got: " + bugCollection.getCollection(), reportedBug.isPresent());
-        assertEquals("Expected low priority unread field bug", Priorities.LOW_PRIORITY,
-                reportedBug.get().getPriority());
+        assertTrue(reportedBug.isPresent(), "Expected unread field bug, but got: " + bugCollection.getCollection());
+        assertEquals(Priorities.LOW_PRIORITY, reportedBug.get().getPriority(),
+                "Expected low priority unread field bug");
     }
 }

@@ -1,10 +1,10 @@
 package edu.umd.cs.findbugs.sarif;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -16,9 +16,10 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 
-public class BugCollectionAnalyserTest {
+class BugCollectionAnalyserTest {
+
     @Test
-    public void testGetRulesGetResultsGetCweTaxonomyNoBug() {
+    void testGetRulesGetResultsGetCweTaxonomyNoBug() {
         BugCollection bugCollection = new SortedBugCollection();
 
         BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
@@ -34,7 +35,7 @@ public class BugCollectionAnalyserTest {
     }
 
     @Test
-    public void testGetRulesGetResultsGetCweTaxonomyOneBugWithCwe() {
+    void testGetRulesGetResultsGetCweTaxonomyOneBugWithCwe() {
         int cweid = 78;
         String type = "TYPE";
 
@@ -81,7 +82,7 @@ public class BugCollectionAnalyserTest {
     }
 
     @Test
-    public void testGetRulesGetResultsGetCweTaxonomyOneBugNoCweId() {
+    void testGetRulesGetResultsGetCweTaxonomyOneBugNoCweId() {
         String type = "TYPE";
 
         BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
@@ -117,7 +118,7 @@ public class BugCollectionAnalyserTest {
     }
 
     @Test
-    public void testGetRulesGetResultsGetCweTaxonomyMultipleBugsWithAndWithoutCweId() {
+    void testGetRulesGetResultsGetCweTaxonomyMultipleBugsWithAndWithoutCweId() {
 
         BugPattern bugPattern = new BugPattern("TYPE_NO_CWE", "abbrev", "category", false, "shortDescription",
                 "longDescription", "detailText", "https://example.com/help.html", 0);

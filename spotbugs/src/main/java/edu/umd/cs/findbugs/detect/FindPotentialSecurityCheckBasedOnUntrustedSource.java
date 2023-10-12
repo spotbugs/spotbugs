@@ -334,29 +334,29 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
     private void reportBug(CallPair callPair) {
         bugAccumulator.accumulateBug(new BugInstance(this, "USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE",
                 NORMAL_PRIORITY)
-                        .addClassAndMethod(this)
-                        .addSourceLine(this)
-                        .addClass(callPair.outside.calledClass.getClassName())
-                        .addCalledMethod(callPair.outside.calledClass.getClassName(),
-                                callPair.outside.calledMethod.getName(), callPair.outside.calledMethod.getSignature(),
-                                callPair.outside.calledMethod.isStatic())
-                        .addSourceLine(callPair.outside.srcLine)
-                        .addSourceLine(callPair.inside.srcLine), this);
+                .addClassAndMethod(this)
+                .addSourceLine(this)
+                .addClass(callPair.outside.calledClass.getClassName())
+                .addCalledMethod(callPair.outside.calledClass.getClassName(),
+                        callPair.outside.calledMethod.getName(), callPair.outside.calledMethod.getSignature(),
+                        callPair.outside.calledMethod.isStatic())
+                .addSourceLine(callPair.outside.srcLine)
+                .addSourceLine(callPair.inside.srcLine), this);
     }
 
     private void reportBug(JavaClass cls, XMethod method, SourceLineAnnotation srcLine,
             CalleeInfo calleInfo, SourceLineAnnotation insideSrcLine) {
         bugAccumulator.accumulateBug(new BugInstance(this, "USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE",
                 NORMAL_PRIORITY)
-                        .addClass(cls)
-                        .addMethod(method)
-                        .addSourceLine(srcLine)
-                        .addClass(calleInfo.calledClass.getClassName())
-                        .addCalledMethod(calleInfo.calledClass.getClassName(),
-                                calleInfo.calledMethod.getName(), calleInfo.calledMethod.getSignature(),
-                                calleInfo.calledMethod.isStatic())
-                        .addSourceLine(calleInfo.srcLine)
-                        .addSourceLine(insideSrcLine), this);
+                .addClass(cls)
+                .addMethod(method)
+                .addSourceLine(srcLine)
+                .addClass(calleInfo.calledClass.getClassName())
+                .addCalledMethod(calleInfo.calledClass.getClassName(),
+                        calleInfo.calledMethod.getName(), calleInfo.calledMethod.getSignature(),
+                        calleInfo.calledMethod.isStatic())
+                .addSourceLine(calleInfo.srcLine)
+                .addSourceLine(insideSrcLine), this);
     }
 
     @Override
