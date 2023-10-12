@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs.detect;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.annotations.Confidence;
@@ -12,9 +12,9 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 
-public class RuntimeExceptionCapture2Test extends AbstractIntegrationTest {
+class RuntimeExceptionCapture2Test extends AbstractIntegrationTest {
     @Test
-    public void test() {
+    void test() {
         performAnalysis("REC2Test.class",
                 "REC2Test$Resource.class",
                 "REC2Test$TestPass5.class",
