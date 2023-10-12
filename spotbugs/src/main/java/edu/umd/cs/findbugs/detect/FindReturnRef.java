@@ -309,11 +309,11 @@ public class FindReturnRef extends OpcodeStackDetector {
                     bugAccumulator.accumulateBug(
                             new BugInstance(this, "EI_EXPOSE_" + (staticMethod ? "STATIC_" : "") + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
                                     capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                            .addClassAndMethod(this)
-                                            .addReferencedField(this)
-                                            .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
-                                                    top.getRegisterNumber(),
-                                                    getPC(), getPC() - 1)), this);
+                                    .addClassAndMethod(this)
+                                    .addReferencedField(this)
+                                    .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
+                                            top.getRegisterNumber(),
+                                            getPC(), getPC() - 1)), this);
                 }
             }
         }
