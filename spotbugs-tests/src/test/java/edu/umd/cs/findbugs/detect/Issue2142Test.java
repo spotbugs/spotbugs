@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
@@ -10,9 +10,10 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class Issue2142Test extends AbstractIntegrationTest {
+class Issue2142Test extends AbstractIntegrationTest {
+
     @Test
-    public void test() {
+    void testIssue() {
         performAnalysis("ghIssues/Issue2142.class",
                 "ghIssues/Issue2142$Inner.class");
         BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()

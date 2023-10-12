@@ -1,7 +1,7 @@
 package edu.umd.cs.findbugs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
@@ -12,26 +12,26 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class SAXBugCollectionHandlerTest {
+class SAXBugCollectionHandlerTest {
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());;
         Global.setAnalysisCacheForCurrentThread(analysisCache);
         FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
     }
 
-    @After
-    public void teardown() {
+    @AfterEach
+    void teardown() {
         Global.removeAnalysisCacheForCurrentThread();
     }
 
     @Test
-    public void testBugInstanceXmlPropsNoReviews() throws Exception {
+    void testBugInstanceXmlPropsNoReviews() throws Exception {
         SortedBugCollection bc = new SortedBugCollection();
         bc.readXML(new StringReader(
                 "<BugCollection version='1.3.10-dev-20100728' sequence='0' timestamp='1280333223462' analysisTimestamp='1280333224881' release=''>"
@@ -64,7 +64,7 @@ public class SAXBugCollectionHandlerTest {
     }
 
     @Test
-    public void testBugInstanceXmlPropsWithReviews() throws Exception {
+    void testBugInstanceXmlPropsWithReviews() throws Exception {
         SortedBugCollection bc = new SortedBugCollection();
         bc.readXML(new StringReader(
                 "<BugCollection version='1.3.10-dev-20100728' sequence='0' timestamp='1280333223462' analysisTimestamp='1280333224881' release=''>"
@@ -96,7 +96,7 @@ public class SAXBugCollectionHandlerTest {
     }
 
     @Test
-    public void testBugInstanceXmlPropsWithReviewsShouldFix() throws Exception {
+    void testBugInstanceXmlPropsWithReviewsShouldFix() throws Exception {
         SortedBugCollection bc = new SortedBugCollection();
         bc.readXML(new StringReader(
                 "<BugCollection version='1.3.10-dev-20100728' sequence='0' timestamp='1280333223462' analysisTimestamp='1280333224881' release=''>"
@@ -128,7 +128,7 @@ public class SAXBugCollectionHandlerTest {
     }
 
     @Test
-    public void testReadAndThenStoreXmlProps() throws Exception {
+    void testReadAndThenStoreXmlProps() throws Exception {
         SortedBugCollection origBC = new SortedBugCollection();
         // read it in
         origBC.readXML(new StringReader(
@@ -170,7 +170,7 @@ public class SAXBugCollectionHandlerTest {
     }
 
     @Test
-    public void testReadAndThenStoreJasAttribute() throws Exception {
+    void testReadAndThenStoreJasAttribute() throws Exception {
         SortedBugCollection origBC = new SortedBugCollection();
         // read it in
         origBC.readXML(new StringReader(

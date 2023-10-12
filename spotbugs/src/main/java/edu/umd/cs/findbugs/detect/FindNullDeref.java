@@ -246,6 +246,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         XMethod xMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 
+        // For junit 4 only (does not apply to junit 5)
         ClassDescriptor junitTestAnnotation = DescriptorFactory.createClassDescriptor("org/junit/Test");
         AnnotationValue av = xMethod.getAnnotation(junitTestAnnotation);
         if (av != null) {

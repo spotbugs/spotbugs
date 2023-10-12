@@ -19,14 +19,14 @@
 
 package edu.umd.cs.findbugs.config;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Priorities;
 
-public class ProjectFilterSettingsTest {
+class ProjectFilterSettingsTest {
 
     ProjectFilterSettings plain;
 
@@ -40,8 +40,8 @@ public class ProjectFilterSettingsTest {
 
     ProjectFilterSettings changed4;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         plain = ProjectFilterSettings.createDefault();
 
         otherPlain = ProjectFilterSettings.createDefault();
@@ -63,98 +63,98 @@ public class ProjectFilterSettingsTest {
     }
 
     @Test
-    public void testPlainPrio() {
-        Assert.assertTrue(plain.getMinPriority().equals(ProjectFilterSettings.DEFAULT_PRIORITY));
+    void testPlainPrio() {
+        Assertions.assertTrue(plain.getMinPriority().equals(ProjectFilterSettings.DEFAULT_PRIORITY));
     }
 
     @Test
-    public void testPlainCategories() {
+    void testPlainCategories() {
         int count = 0;
         for (String category : DetectorFactoryCollection.instance().getBugCategories()) {
             if (!category.equals("NOISE")) {
-                Assert.assertTrue(plain.containsCategory(category));
+                Assertions.assertTrue(plain.containsCategory(category));
                 ++count;
             }
         }
-        Assert.assertEquals(count, plain.getActiveCategorySet().size());
+        Assertions.assertEquals(count, plain.getActiveCategorySet().size());
     }
 
     @Test
-    public void testAddCategory() {
-        Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY")); // unknown
+    void testAddCategory() {
+        Assertions.assertTrue(plain.containsCategory("FAKE_CATEGORY")); // unknown
         // categories
         // should be
         // unhidden
         // by
         // default
         plain.addCategory("FAKE_CATEGORY");
-        Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY"));
+        Assertions.assertTrue(plain.containsCategory("FAKE_CATEGORY"));
     }
 
     @Test
-    public void testRemoveCategory() {
-        Assert.assertTrue(plain.containsCategory("MALICIOUS_CODE"));
+    void testRemoveCategory() {
+        Assertions.assertTrue(plain.containsCategory("MALICIOUS_CODE"));
         plain.removeCategory("MALICIOUS_CODE");
-        Assert.assertFalse(plain.containsCategory("MALICIOUS_CODE"));
+        Assertions.assertFalse(plain.containsCategory("MALICIOUS_CODE"));
     }
 
     @Test
-    public void testSetMinPriority() {
+    void testSetMinPriority() {
         plain.setMinPriority("High");
-        Assert.assertTrue(plain.getMinPriority().equals("High"));
-        Assert.assertTrue(plain.getMinPriorityAsInt() == Priorities.HIGH_PRIORITY);
+        Assertions.assertTrue(plain.getMinPriority().equals("High"));
+        Assertions.assertTrue(plain.getMinPriorityAsInt() == Priorities.HIGH_PRIORITY);
         plain.setMinPriority("Medium");
-        Assert.assertTrue(plain.getMinPriority().equals("Medium"));
-        Assert.assertTrue(plain.getMinPriorityAsInt() == Priorities.NORMAL_PRIORITY);
+        Assertions.assertTrue(plain.getMinPriority().equals("Medium"));
+        Assertions.assertTrue(plain.getMinPriorityAsInt() == Priorities.NORMAL_PRIORITY);
         plain.setMinPriority("Low");
-        Assert.assertTrue(plain.getMinPriority().equals("Low"));
-        Assert.assertTrue(plain.getMinPriorityAsInt() == Priorities.LOW_PRIORITY);
+        Assertions.assertTrue(plain.getMinPriority().equals("Low"));
+        Assertions.assertTrue(plain.getMinPriorityAsInt() == Priorities.LOW_PRIORITY);
     }
 
     @Test
-    public void testEquals() {
-        Assert.assertEquals(plain, otherPlain);
+    void testEquals() {
+        Assertions.assertEquals(plain, otherPlain);
 
-        Assert.assertFalse(plain.equals(changed));
-        Assert.assertFalse(changed.equals(plain));
+        Assertions.assertFalse(plain.equals(changed));
+        Assertions.assertFalse(changed.equals(plain));
 
-        Assert.assertFalse(plain.equals(changed2));
-        Assert.assertFalse(changed2.equals(plain));
+        Assertions.assertFalse(plain.equals(changed2));
+        Assertions.assertFalse(changed2.equals(plain));
 
         // The activeBugCategorySet doesn't matter for equals(), only
         // the hiddenBugCategorySet does (along with minPriority and
         // displayFalseWarnings) so 'plain' and 'changed3' should test equal.
-        Assert.assertTrue(plain.equals(changed3));
-        Assert.assertTrue(changed3.equals(plain));
+        Assertions.assertTrue(plain.equals(changed3));
+        Assertions.assertTrue(changed3.equals(plain));
 
-        Assert.assertFalse(plain.equals(changed4));
-        Assert.assertFalse(changed4.equals(plain));
+        Assertions.assertFalse(plain.equals(changed4));
+        Assertions.assertFalse(changed4.equals(plain));
     }
 
     @Test
-    public void testEncodeDecode() {
+    void testEncodeDecode() {
         ProjectFilterSettings copyOfPlain = ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
         ProjectFilterSettings.hiddenFromEncodedString(copyOfPlain, plain.hiddenToEncodedString());
-        Assert.assertEquals(plain, copyOfPlain);
+        Assertions.assertEquals(plain, copyOfPlain);
 
         ProjectFilterSettings copyOfChanged4 = ProjectFilterSettings.fromEncodedString(changed4.toEncodedString());
         ProjectFilterSettings.hiddenFromEncodedString(copyOfChanged4, changed4.hiddenToEncodedString());
-        Assert.assertEquals(changed4, copyOfChanged4);
+        Assertions.assertEquals(changed4, copyOfChanged4);
     }
 
     @Test
-    public void testDisplayFalseWarnings() {
-        Assert.assertEquals(plain, otherPlain);
+    void testDisplayFalseWarnings() {
+        Assertions.assertEquals(plain, otherPlain);
 
-        Assert.assertFalse(plain.displayFalseWarnings());
+        Assertions.assertFalse(plain.displayFalseWarnings());
         plain.setDisplayFalseWarnings(true);
 
-        Assert.assertFalse(plain.equals(otherPlain));
+        Assertions.assertFalse(plain.equals(otherPlain));
 
         ProjectFilterSettings copyOfPlain = ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
 
-        Assert.assertTrue(copyOfPlain.displayFalseWarnings());
-        Assert.assertEquals(copyOfPlain, plain);
-        Assert.assertEquals(plain, copyOfPlain);
+        Assertions.assertTrue(copyOfPlain.displayFalseWarnings());
+        Assertions.assertEquals(copyOfPlain, plain);
+        Assertions.assertEquals(plain, copyOfPlain);
     }
 }

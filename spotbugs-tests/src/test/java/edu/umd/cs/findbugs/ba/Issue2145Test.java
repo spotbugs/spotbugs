@@ -5,12 +5,12 @@ import static org.hamcrest.Matchers.hasSize;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class Issue2145Test extends AbstractIntegrationTest {
+class Issue2145Test extends AbstractIntegrationTest {
 
     @Test
-    public void test() {
+    void testIssue() {
         performAnalysis("ghIssues/Issue2145.class");
         SortedBugCollection bugCollection = (SortedBugCollection) getBugCollection();
         assertThat(bugCollection.getErrors(), hasSize(0));

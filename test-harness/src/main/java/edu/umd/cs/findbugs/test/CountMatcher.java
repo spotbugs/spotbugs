@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.test;
 
 import org.hamcrest.Description;
-import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -33,7 +32,6 @@ public final class CountMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
      *            How many times the {@code matcher} must match.
      * @return new matcher instance
      */
-    @Factory
     public static <T> Matcher<Iterable<T>> containsExactly(final int count, final Matcher<T> matcher) {
         return new CountMatcher<>(count, matcher);
     }

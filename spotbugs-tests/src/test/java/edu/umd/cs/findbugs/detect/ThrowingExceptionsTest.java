@@ -4,15 +4,16 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class ThrowingExceptionsTest extends AbstractIntegrationTest {
+class ThrowingExceptionsTest extends AbstractIntegrationTest {
+
     @Test
-    public void throwingExceptionsTests() {
+    void throwingExceptionsTests() {
         performAnalysis("MethodsThrowingExceptions.class");
 
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 1);
@@ -29,7 +30,7 @@ public class ThrowingExceptionsTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testNestedInterface() {
+    void testNestedInterface() {
         performAnalysis("MethodsThrowingExceptions$ThrowThrowable.class");
 
         assertNumOfTHROWSBugs("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 1);

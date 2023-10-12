@@ -10,8 +10,10 @@ dependencies {
   api project(':spotbugs-annotations')
   implementation project(':spotbugsTestCases')
   implementation project(':test-harness')
+  implementation project(':test-harness-jupiter')
 
-  implementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+  implementation 'org.junit.jupiter:junit-jupiter-params:5.10.0'
   implementation 'org.hamcrest:hamcrest:2.2'
   implementation 'org.apache.ant:ant:1.10.14'
   implementation libs.log4j.core
@@ -43,6 +45,7 @@ tasks.named('jacocoTestReport', JacocoReport).configure {
 // Tests below fail if executed with other tests
 // So we run them before all other tests are executed
 task unstableTest(type: Test) {
+  useJUnitPlatform()
   filter {
     includeTestsMatching "PlaceholderTest"
     includeTestsMatching "MutableClassesTest"
@@ -54,6 +57,7 @@ task unstableTest(type: Test) {
 
 test {
   dependsOn ':spotbugsTestCases:build', 'unstableTest'
+  useJUnitPlatform()
   filter {
     excludeTestsMatching "PlaceholderTest"
     excludeTestsMatching "MutableClassesTest"

@@ -4,16 +4,17 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class FindArgumentAssertionsTest extends AbstractIntegrationTest {
+class FindArgumentAssertionsTest extends AbstractIntegrationTest {
+
     @Test
-    public void testArgumentAssertions() {
+    void testArgumentAssertions() {
         performAnalysis("ArgumentAssertions.class");
 
         assertNumOfDABugs(23);

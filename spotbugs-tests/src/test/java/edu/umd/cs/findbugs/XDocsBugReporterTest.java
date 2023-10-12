@@ -2,14 +2,14 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class XDocsBugReporterTest {
+class XDocsBugReporterTest {
     @Test
-    public void reportMissingClassByClassNotFoundException() {
+    void reportMissingClassByClassNotFoundException() {
         Project project = new Project();
         XDocsBugReporter bugReporter = new XDocsBugReporter(project);
         ClassNotFoundException ex = new ClassNotFoundException("Class org.example.Foo cannot be resolved.");
@@ -19,7 +19,7 @@ public class XDocsBugReporterTest {
     }
 
     @Test
-    public void reportMissingClassByClassDescriptor() {
+    void reportMissingClassByClassDescriptor() {
         Project project = new Project();
         XDocsBugReporter bugReporter = new XDocsBugReporter(project);
         ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName("org.example.Bar");
