@@ -17,13 +17,13 @@ class RuntimeExceptionCaptureTest extends AbstractIntegrationTest {
     void test() {
         performAnalysis("RECTest.class");
 
-        fail("testFail", 46, Confidence.MEDIUM);
-        fail("testFail2", 58, Confidence.MEDIUM);
-        fail("testFail3", 71, Confidence.MEDIUM);
-        fail("testFail4", 83, Confidence.MEDIUM);
-        fail("testFail5", 95, Confidence.MEDIUM);
-        fail("testFail6", 108, Confidence.MEDIUM);
-        fail("testFail7", 123, Confidence.LOW);
+        fail("testFail", 50, Confidence.MEDIUM);
+        fail("testFail2", 64, Confidence.MEDIUM);
+        fail("testFail3", 79, Confidence.MEDIUM);
+        fail("testFail4", 93, Confidence.MEDIUM);
+        fail("testFail5", 107, Confidence.MEDIUM);
+        fail("testFail6", 122, Confidence.MEDIUM);
+        fail("testFail7", 141, Confidence.LOW);
 
         pass("testPass");
         pass("testPass2");
