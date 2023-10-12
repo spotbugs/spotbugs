@@ -3972,7 +3972,7 @@ Web サーバは，一般的にサーブレットや JSP クラスのインス�
   </BugPattern>
 
   <BugPattern type="MS_EXPOSE_REP">
-    <ShortDescription>配列を返すことによって内部表現を暴露するかもしれない public static メソッド</ShortDescription>
+    <ShortDescription>配列または可変オブジェクトを返すことによって内部表現を暴露するかもしれない public static メソッド</ShortDescription>
     <LongDescription>{1} は，{2.givenClass} を返すことによって，内部表現を暴露するかもしれません。</LongDescription>
     <Details>
 <![CDATA[
@@ -4474,7 +4474,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-<code>final</code> ではない <code>public static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
+<code>final</code> ではない <code>public static</code> または <code>protected static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドを <code>final</code> にします。
 しかしながら，スタティックイニシャライザには複数のフィールドへの書き込みがあるので，何らかのリファクタリングを必要とするでしょう。
 </p>
@@ -4488,7 +4488,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-<code>final</code> ではない <code>public static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
+<code>final</code> ではない <code>public static</code> または <code>protected static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドを <code>final</code> にします。
 </p>
 ]]>

@@ -338,7 +338,7 @@ public abstract class ClassName {
      * edits (insertions, deletions or substitutions). This limit also speeds up the computation.
      * <p>
      * For more information on the Levenshtein distance see
-     * <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Wikipedia</a> and the 
+     * <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Wikipedia</a> and the
      * <a href="https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/similarity/LevenshteinDistance.html">Apache Commons Text JavaDoc</a>.
      *
      * @param className    the full class name

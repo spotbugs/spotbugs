@@ -53,7 +53,7 @@ import org.eclipse.ui.wizards.datatransfer.ZipFileStructureProvider;
 import org.osgi.framework.Bundle;
 
 import de.tobject.findbugs.FindbugsTestPlugin;
-import junit.framework.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Helper methods to set up a IJavaProject.
@@ -615,8 +615,8 @@ public class JavaProjectHelper {
      */
     public static IPath[] findRtJar(IPath rtStubsPath) throws CoreException {
         File rtStubs = FindbugsTestPlugin.getDefault().getFileInPlugin(rtStubsPath);
-        Assert.assertNotNull(rtStubs);
-        Assert.assertTrue(rtStubs.exists());
+        Assertions.assertNotNull(rtStubs);
+        Assertions.assertTrue(rtStubs.exists());
         return new IPath[] { Path.fromOSString(rtStubs.getPath()), null, null };
     }
 

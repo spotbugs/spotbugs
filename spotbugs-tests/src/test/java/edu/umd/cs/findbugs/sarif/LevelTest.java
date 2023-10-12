@@ -1,16 +1,19 @@
 package edu.umd.cs.findbugs.sarif;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.junit.jupiter.api.Test;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import org.junit.Test;
+import edu.umd.cs.findbugs.cwe.WeaknessSeverity;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+class LevelTest {
 
-public class LevelTest {
     @Test
-    public void testToJsonString() {
+    void testToJsonString() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("level", Level.WARNING.toJsonString());
@@ -18,22 +21,42 @@ public class LevelTest {
     }
 
     @Test
-    public void testMapHighestRankToError() {
+    void testMapHighestRankToError() {
         assertThat(Level.fromBugRank(1), is(Level.ERROR));
     }
 
     @Test
-    public void testMapHighRankToError() {
+    void testMapHighRankToError() {
         assertThat(Level.fromBugRank(9), is(Level.ERROR));
     }
 
     @Test
-    public void testMapLowRankToWarning() {
+    void testMapLowRankToWarning() {
         assertThat(Level.fromBugRank(14), is(Level.WARNING));
     }
 
     @Test
-    public void testMapLowestRankToNote() {
+    void testMapLowestRankToNote() {
         assertThat(Level.fromBugRank(20), is(Level.NOTE));
+    }
+
+    @Test
+    void testMapWeaknessSeverityLevelHighToError() {
+        assertThat(Level.fromWeaknessSeverity(WeaknessSeverity.HIGH), is(Level.ERROR));
+    }
+
+    @Test
+    void testMapWeaknessSeverityLevelMediumToWarning() {
+        assertThat(Level.fromWeaknessSeverity(WeaknessSeverity.MEDIUM), is(Level.WARNING));
+    }
+
+    @Test
+    void testMapWeaknessSeverityLevelLowToNote() {
+        assertThat(Level.fromWeaknessSeverity(WeaknessSeverity.LOW), is(Level.NOTE));
+    }
+
+    @Test
+    void testMapWeaknessSeverityLevelNoneToNone() {
+        assertThat(Level.fromWeaknessSeverity(WeaknessSeverity.NONE), is(Level.NONE));
     }
 }

@@ -391,9 +391,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
                                 valueOfConstantArgumentToShift < 0 ? LOW_PRIORITY
                                         : (valueOfConstantArgumentToShift == 32
                                                 && "hashCode".equals(getMethodName()) ? NORMAL_PRIORITY : HIGH_PRIORITY))
-                                                        .addClassAndMethod(this).addInt(valueOfConstantArgumentToShift).describe(
-                                                                IntAnnotation.INT_SHIFT)
-                                                        .addValueSource(stack.getStackItem(1), this), this);
+                                .addClassAndMethod(this).addInt(valueOfConstantArgumentToShift).describe(
+                                        IntAnnotation.INT_SHIFT)
+                                .addValueSource(stack.getStackItem(1), this), this);
                     }
                 }
                 if (leftHandSide instanceof Integer && ((Integer) leftHandSide) > 0) {

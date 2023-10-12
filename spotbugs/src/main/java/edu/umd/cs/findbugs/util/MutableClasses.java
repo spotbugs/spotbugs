@@ -1,9 +1,6 @@
 package edu.umd.cs.findbugs.util;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.apache.bcel.Repository;
@@ -62,6 +59,10 @@ public class MutableClasses {
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
             "java.math", "java.time"));
 
+    private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
+            "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
+            "enqueue", "dequeue", "write", "append", "replace");
+
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
             return true;
@@ -99,14 +100,18 @@ public class MutableClasses {
         }
     }
 
+    public static boolean looksLikeASetter(String methodName, String classSig, String retSig) {
+        if (Objects.equals(classSig, retSig)) {
+            return false;
+        }
+
+        return SETTER_LIKE_PREFIXES.stream().anyMatch(name -> methodName.startsWith(name));
+    }
+
     /**
      * Analytic information about a {@link JavaClass} relevant to determining its mutability properties.
      */
     private static final class ClassAnalysis {
-        private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
-                "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
-                "enqueue", "dequeue", "write", "append", "replace");
-
         /**
          * Class under analysis.
          */
@@ -155,15 +160,7 @@ public class MutableClasses {
         }
 
         private boolean looksLikeASetter(Method method) {
-            final String methodName = method.getName();
-            for (String name : SETTER_LIKE_PREFIXES) {
-                if (methodName.startsWith(name)) {
-                    // If setter-like methods returns an object of the same type then we suppose that it
-                    // is not a setter but creates a new instance instead.
-                    return !getSig().equals(method.getReturnType().getSignature());
-                }
-            }
-            return false;
+            return MutableClasses.looksLikeASetter(method.getName(), getSig(), method.getReturnType().getSignature());
         }
 
         private String getSig() {
@@ -183,6 +180,14 @@ public class MutableClasses {
         }
 
         private boolean computeByImmutableContract() {
+            if ("java.lang.Enum".equals(cls.getClassName())) {
+                return true;
+            }
+
+            if ("java.lang.Record".equals(cls.getClassName())) {
+                return true;
+            }
+
             for (AnnotationEntry entry : cls.getAnnotationEntries()) {
                 // Error-Prone's @Immutable annotation is @Inherited, hence it applies to subclasses as well
                 if (entry.getAnnotationType().equals("Lcom/google/errorprone/annotations/Immutable;")) {
