@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.util.MutableClasses;
 
 public class FindReturnRef extends OpcodeStackDetector {
     boolean check = false;
-    boolean record = false;
+    boolean isRecord = false;
 
     boolean publicClass = false;
 
@@ -105,10 +105,10 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
-        record = publicClass && ACCESS_METHOD_MATCHER.reset(obj.getName()).matches();
+        isRecord = publicClass && ACCESS_METHOD_MATCHER.reset(obj.getName()).matches();
         check = publicClass && (obj.getAccessFlags() & (Const.ACC_PUBLIC)) != 0;
 
-        if (!check && !record) {
+        if (!check && !isRecord) {
             return;
         }
         staticMethod = (obj.getAccessFlags() & (Const.ACC_STATIC)) != 0;
@@ -124,7 +124,7 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     @Override
     public void visit(Code obj) {
-        if (check || record) {
+        if (check || isRecord) {
             super.visit(obj);
         }
     }
@@ -132,7 +132,7 @@ public class FindReturnRef extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (!check) {
-            if (record) {
+            if (isRecord) {
                 if ((seen == Const.PUTSTATIC || seen == Const.PUTFIELD) && nonPublicFieldOperand()
                         && MutableClasses.mutableSignature(getSigConstantOperand())) {
                     XField field = getXFieldOperand();
