@@ -5,27 +5,33 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.Test;
 
+import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class FindSynchronizationLockTest extends AbstractIntegrationTest {
     private static final String BUG_TYPE = "PFL_SYNCHRONIZE_WITH_PRIVATE_FINAL_LOCK_OBJECTS";
+
     @Test
     public void testBadMethodSynchronizationLock() {
         performAnalysis("instanceLockOnSharedStaticData/LCK00/BadMethodSynchronizationLock.class",
-                "instanceLockOnSharedStaticData/LCK00/SomeClass.class");
+                "instanceLockOnSharedStaticData/LCK00/ClassExposingItSelf.class",
+                "instanceLockOnSharedStaticData/LCK00/ClassExposingACollectionOfItself.class");
 
-        assertNumOfBugs(0);
+        assertNumOfBugs(2);
 
-        assertBug(BUG_TYPE);
+        assertBugsExactly(2, BUG_TYPE);
+    }
+
+    private void assertBugsExactly(int count, String bugType) {
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder().bugType(bugType).build();
+
+        assertThat(getBugCollection(), containsExactly(count, bugInstanceMatcher));
     }
 
     private void assertBug(String bugType) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder().bugType(bugType).build();
-
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+        assertBugsExactly(1, bugType);
     }
 
     @Test
@@ -51,8 +57,7 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
     @Test
     public void testBadSynchronizationWithPublicStaticLockObject() {
-        performAnalysis("instanceLockOnSharedStaticData/LCK00/BadSynchronizationWithPublicStaticLock.class",
-                "instanceLockOnSharedStaticData/LCK00/SomeOtherClass.class");
+        performAnalysis("instanceLockOnSharedStaticData/LCK00/BadSynchronizationWithPublicStaticLock.class", "instanceLockOnSharedStaticData/LCK00/SomeOtherClass.class");
 
         assertNumOfBugs(0);
     }

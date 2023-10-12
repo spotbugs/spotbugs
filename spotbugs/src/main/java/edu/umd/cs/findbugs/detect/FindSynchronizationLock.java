@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -24,36 +25,27 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         this.bugReporter = bugReporter;
     }
 
-
     @Override
     public void sawOpcode(int seen) {
 
     }
 
     @Override
-    public void visitClassContext(ClassContext classContext) {
-        JavaClass javaClass = classContext.getJavaClass();
-        String javaClassName = javaClass.getClassName();
+    public void visit(JavaClass obj) {
+        String currentClassName = obj.getClassName();
 
-        Method[] methods = javaClass.getMethods();
+        Method[] methods = obj.getMethods();
         for (Method method : methods) {
             Type returnType = method.getReturnType();
 
-            if (javaClassName.equals(returnType.toString())) {
+            if (returnType.toString().contains(currentClassName)) {
                 bugReporter.reportBug(new BugInstance(this, "PFL_SYNCHRONIZE_WITH_PRIVATE_FINAL_LOCK_OBJECTS", NORMAL_PRIORITY)
-                        .addClass(this)
-                        .addMethod(javaClass, method));
+                        .addClass(this));
+//                                .addMethod(obj, method); // method cannot be added here because not visiting a method
             } else {
                 System.out.println("Bug not found");
             }
         }
     }
 
-//    @Override
-//    public void visit(JavaClass obj) {
-//        boolean isThereSycnhronizedMethod = Stream.of(obj.getMethods()).anyMatch(AccessFlags::isSynchronized);
-//        if (isThereSycnhronizedMethod) {
-//            super.visit(obj);
-//        }
-//    }
 }
