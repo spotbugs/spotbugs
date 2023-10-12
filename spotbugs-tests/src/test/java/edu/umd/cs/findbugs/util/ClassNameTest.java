@@ -19,20 +19,21 @@
 
 package edu.umd.cs.findbugs.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author pugh
  */
-public class ClassNameTest {
+class ClassNameTest {
 
     @Test
-    public void testExtractPackagePrefix() {
+    void testExtractPackagePrefix() {
         assertEquals("", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 0));
         assertEquals("org", ClassName.extractPackagePrefix("org", 1));
         assertEquals("org.apache.ant", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 3));
@@ -41,7 +42,7 @@ public class ClassNameTest {
     }
 
     @Test
-    public void testExtractClassName() {
+    void testExtractClassName() {
         assertEquals("java/lang/Integer", ClassName.extractClassName("Ljava/lang/Integer;"));
         assertEquals("java/lang/Integer", ClassName.extractClassName("[Ljava/lang/Integer;"));
         assertEquals("java/lang/Integer", ClassName.extractClassName("[[Ljava/lang/Integer;"));
@@ -50,7 +51,7 @@ public class ClassNameTest {
     }
 
     @Test
-    public void testGetPrimitiveType() {
+    void testGetPrimitiveType() {
         assertEquals("I", ClassName.getPrimitiveType("java/lang/Integer"));
         assertEquals("F", ClassName.getPrimitiveType("java/lang/Float"));
         assertEquals("D", ClassName.getPrimitiveType("java/lang/Double"));
@@ -63,21 +64,23 @@ public class ClassNameTest {
         assertNull(ClassName.getPrimitiveType("java/util/HashMap"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testExtractClassNameBad() {
-        ClassName.extractClassName("L[Ljava/lang/Integer;");
+    @Test
+    void testExtractClassNameBad() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            ClassName.extractClassName("L[Ljava/lang/Integer;");
+        });
     }
 
     @Test
-    public void testMatchedPrefix() {
+    void testMatchedPrefix() {
         List<String[]> negativeCases = Arrays.asList(
                 new String[] { "foobar" },
                 new String[] { "" },
                 new String[] { "testObject" });
 
         for (String[] searchString : negativeCases) {
-            assertFalse("com.text.TestClass should not be matched by " + Arrays.toString(searchString),
-                    ClassName.matchedPrefixes(searchString, "com.test.TestClass"));
+            Assertions.assertFalse(ClassName.matchedPrefixes(searchString, "com.test.TestClass"),
+                    "com.text.TestClass should not be matched by " + Arrays.toString(searchString));
         }
 
         List<String[]> positiveCases = Arrays.asList(
@@ -91,105 +94,105 @@ public class ClassNameTest {
                 new String[] { "bastClass" });
 
         for (String[] searchString : positiveCases) {
-            assertTrue("com.text.TestClass should be matched by " + Arrays.toString(searchString),
-                    ClassName.matchedPrefixes(searchString, "com.test.TestClass"));
+            assertTrue(ClassName.matchedPrefixes(searchString, "com.test.TestClass"),
+                    "com.text.TestClass should be matched by " + Arrays.toString(searchString));
         }
     }
 
     @Test
-    public void testSimpleBinaryClassNameIsValidClassName() {
+    void testSimpleBinaryClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("com/bla/Parent"));
     }
 
     @Test
-    public void testSimpleDottedClassNameIsValidClassName() {
+    void testSimpleDottedClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("com.bla.Parent"));
     }
 
     @Test
-    public void testInnerClassBinaryClassNameIsValidClassName() {
+    void testInnerClassBinaryClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("com/bla/Parent$Child"));
     }
 
     @Test
-    public void testInnerClassDottedClassNameIsValidClassName() {
+    void testInnerClassDottedClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("com.bla.Parent$Child"));
     }
 
     @Test
-    public void testJavaStyleAnonymousInnerClassBinaryClassNameIsValidClassName() {
+    void testJavaStyleAnonymousInnerClassBinaryClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("com/bla/Parent$Child$1"));
     }
 
     @Test
-    public void testJavaStyleAnonymousInnerClassDottedClassNameIsValidClassName() {
+    void testJavaStyleAnonymousInnerClassDottedClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("com.bla.Parent$Child$1"));
     }
 
     @Test
-    public void testKotlinStyleAnonymousInnerClassBinaryClassNameIsValidClassName() {
+    void testKotlinStyleAnonymousInnerClassBinaryClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("com/bla/Parent$function$variable$1"));
     }
 
     @Test
-    public void testKotlinStyleAnonymousInnerClassDottedClassNameIsValidClassName() {
+    void testKotlinStyleAnonymousInnerClassDottedClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("com.bla.Parent$function$variable$1"));
     }
 
     @Test
-    public void testBinaryClassNameContainingAllowedSpecialCharactersIsValidClassName() {
+    void testBinaryClassNameContainingAllowedSpecialCharactersIsValidClassName() {
         assertTrue(ClassName.isValidClassName("com/bla/Parent$function!@#%^&*,?{}]()$variable$1"));
     }
 
     @Test
-    public void testDottedClassNameContainingAllowedSpecialCharactersIsValidClassName() {
+    void testDottedClassNameContainingAllowedSpecialCharactersIsValidClassName() {
         assertTrue(ClassName.isValidClassName("com.bla.Parent$function!@#%^&*,?{}]()$variable$1"));
     }
 
     @Test
-    public void testFieldDescriptorClassNameIsValidClassName() {
+    void testFieldDescriptorClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("Lcom/bla/Parent;"));
     }
 
     @Test
-    public void testFieldDescriptorOneDimensionalArrayClassNameIsValidClassName() {
+    void testFieldDescriptorOneDimensionalArrayClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("[Lcom/bla/Parent;"));
     }
 
     @Test
-    public void testFieldDescriptorOneDimensionalPrimitiveArrayClassNameIsValidClassName() {
+    void testFieldDescriptorOneDimensionalPrimitiveArrayClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("[I"));
     }
 
     @Test
-    public void testFieldDescriptorTwoDimensionalArrayClassNameIsValidClassName() {
+    void testFieldDescriptorTwoDimensionalArrayClassNameIsValidClassName() {
         assertTrue(ClassName.isValidClassName("[[Lcom/bla/Parent;"));
     }
 
     @Test
-    public void testFieldDescriptorClassNameContainingAllowedSpecialCharactersIsValidClassName() {
+    void testFieldDescriptorClassNameContainingAllowedSpecialCharactersIsValidClassName() {
         assertTrue(ClassName.isValidClassName("[[Lcom/bla/Parent$function!@#%^&*,?{}]()$variable$1;"));
     }
 
     @Test
-    public void testFieldDescriptorClassNameContainingDotsIsInvalidClassName() {
+    void testFieldDescriptorClassNameContainingDotsIsInvalidClassName() {
         assertFalse(ClassName.isValidClassName("Lcom.bla.Parent;"));
     }
 
     @Test
-    public void testClassNameContainingBothSlashesAndDotsIsInvalidClassName() {
+    void testClassNameContainingBothSlashesAndDotsIsInvalidClassName() {
         assertFalse(ClassName.isValidClassName("com.bla/Parent"));
     }
 
     @Test
-    public void testBinaryClassNameContainingDisallowedSpecialCharactersIsInvalidClassName() {
+    void testBinaryClassNameContainingDisallowedSpecialCharactersIsInvalidClassName() {
         assertFalse(ClassName.isValidClassName("com/bla/Parent$function$variable$1;"));
         assertFalse(ClassName.isValidClassName("com/bla/Parent$function;$variable$1"));
         assertFalse(ClassName.isValidClassName("com/bla/Parent$function[$variable$1"));
     }
 
     @Test
-    public void testEmptyStringIsInvalidClassName() {
+    void testEmptyStringIsInvalidClassName() {
         assertFalse(ClassName.isValidClassName(("")));
     }
 }

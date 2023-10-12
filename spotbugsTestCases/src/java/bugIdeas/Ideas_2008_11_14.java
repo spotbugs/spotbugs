@@ -5,18 +5,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class Ideas_2008_11_14 extends TestCase {
+public class Ideas_2008_11_14 {
 
+    @Test
     public void testOne() {
         HashMap<String, String> m = new HashMap<String, String>();
         m.put("a", "a");
-        assertFalse(m.containsKey(1));
-        assertFalse(m.containsValue(1));
-        assertFalse(m.entrySet().contains(1));
-        assertFalse(m.keySet().contains(1));
-        assertFalse(m.values().contains(1));
+        Assertions.assertFalse(m.containsKey(1));
+        Assertions.assertFalse(m.containsValue(1));
+        Assertions.assertFalse(m.entrySet().contains(1));
+        Assertions.assertFalse(m.keySet().contains(1));
+        Assertions.assertFalse(m.values().contains(1));
     }
 
     HashMap<String, String> m = new HashMap<String, String>();

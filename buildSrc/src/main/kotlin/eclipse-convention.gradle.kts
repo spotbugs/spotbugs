@@ -7,7 +7,7 @@ val pdeTool by configurations.creating {
 }
 
 eclipseMavenCentral {
-  release("4.14.0") {
+  release("4.29.0") {
     compileOnly("org.eclipse.ant.core")
     compileOnly("org.eclipse.core.resources")
     compileOnly("org.eclipse.core.runtime")
@@ -34,13 +34,14 @@ eclipseMavenCentral {
 /**
  * Unzip "org.eclipse.pde.build" package into the outputDir.
  */
+val pdeToolDir = layout.buildDirectory.dir("pdeTool")
 val unzipPdeTool = tasks.register<Copy>("unzipPdeTool") {
   from(zipTree(pdeTool.singleFile))
-  into("$buildDir/pdeTool")
+  into(pdeToolDir)
 }
 
 dependencies {
-  compileOnly(files("$buildDir/pdeTool/pdebuild.jar"){
+  compileOnly(files(pdeToolDir.map { it.file("pdebuild.jar") }){
     builtBy(unzipPdeTool)
   })
 }

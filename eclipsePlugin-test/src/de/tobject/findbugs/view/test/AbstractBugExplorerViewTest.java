@@ -18,8 +18,8 @@
  */
 package de.tobject.findbugs.view.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,8 +30,8 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.ui.PartInitException;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 import de.tobject.findbugs.view.BugExplorerView;
@@ -51,14 +51,14 @@ public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         resetBugContentProviderInput();
         super.setUp();
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws CoreException {
         super.tearDown();
         resetBugContentProviderInput();
