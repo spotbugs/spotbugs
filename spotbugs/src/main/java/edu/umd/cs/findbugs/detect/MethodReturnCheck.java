@@ -317,11 +317,10 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 SignatureParser methodSigParser = new SignatureParser(methodDescriptor.getSignature());
                 String returnTypeSig = methodSigParser.getReturnTypeSignature();
                 String returnType = ClassName.fromFieldSignature(returnTypeSig);
+                String mContainerClass = methodDescriptor.getClassDescriptor().getClassName();
                 if (returnType != null
                         && Subtypes2.instanceOf(ClassName.toDottedClassName(returnType), Values.DOTTED_JAVA_LANG_THROWABLE)
-                        && !("initCause".equals(methodDescriptor.getName()) && methodSigParser.getArguments().length == 1
-                                && "Ljava/lang/Throwable;".equals(methodSigParser.getArguments()[0]))
-                        && !("getCause".equals(methodDescriptor.getName()) && methodSigParser.getArguments().length == 0)) {
+                        && methodDescriptor.isStatic() && (returnType.equals(mContainerClass))) {
                     BugInstance warning = new BugInstance(this, "RV_EXCEPTION_NOT_THROWN", 1).addClassAndMethod(this).addMethod(callSeen)
                             .describe(MethodAnnotation.METHOD_CALLED);
                     bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
