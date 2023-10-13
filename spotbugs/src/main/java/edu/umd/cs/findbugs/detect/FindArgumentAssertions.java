@@ -56,12 +56,14 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
      */
     private boolean isInitialArg() {
         XMethod m = getXMethodOperand();
-        int numPar = m.getNumParams();
-        // Get values from the stack
-        for (int i = 0; i < numPar; i++) {
-            Item item = stack.getStackItem(i);
-            if (item.isInitialParameter())
-                return true;
+        if (m != null) {
+            int numPar = m.getNumParams();
+            // Get values from the stack
+            for (int i = 0; i < numPar; i++) {
+                Item item = stack.getStackItem(i);
+                if (item.isInitialParameter())
+                    return true;
+            }
         }
         return false;
     }
