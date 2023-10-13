@@ -35,7 +35,7 @@ class RuntimeExceptionCapture2Test extends AbstractIntegrationTest {
     }
 
     private void fail(String methodName, int line, String exceptionName, Confidence confidence) {
-        countBugs(methodName, exceptionName, 1);
+        countBugs("REC2Test", methodName, exceptionName, 1);
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType(exceptionName)
                 .inClass("REC2Test")
@@ -47,13 +47,13 @@ class RuntimeExceptionCapture2Test extends AbstractIntegrationTest {
     }
 
     private void pass(String className, String methodName, String exceptionName) {
-        countBugs(methodName, exceptionName, 0);
+        countBugs(className, methodName, exceptionName, 0);
     }
 
-    private void countBugs(String methodName, String exceptionName, int count) {
+    private void countBugs(String className, String methodName, String exceptionName, int count) {
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(exceptionName)
-                .inClass("REC2Test")
+                .inClass(className)
                 .inMethod(methodName)
                 .build();
         assertThat(getBugCollection(), containsExactly(count, bugTypeMatcher));
