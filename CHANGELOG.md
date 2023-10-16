@@ -11,6 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed schema location for findbugsfilter.xsd ([[#1416](https://github.com/spotbugs/spotbugs/issues/1416)])
 - Fixed missing null checks ([[#2629](https://github.com/spotbugs/spotbugs/issues/2629)])
 - Disabled DontReusePublicIdentifiers due to the high false positives rate ([[#2627](https://github.com/spotbugs/spotbugs/issues/2627)])
+- Removed signature of methods using UTF-8 in DefaultEncodingDetector ([[#2634](https://github.com/spotbugs/spotbugs/issues/2634)])
 
 ## 4.8.0 - 2023-10-11
 
