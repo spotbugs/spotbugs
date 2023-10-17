@@ -4,15 +4,15 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class UnnecessaryEnvUsageTest extends AbstractIntegrationTest {
+class UnnecessaryEnvUsageTest extends AbstractIntegrationTest {
     @Test
-    public void testingVariuosEnvUsages() {
+    void testingVariuosEnvUsages() {
         performAnalysis("UnnecessaryEnvUsage.class");
         assertBug(2);
         assertBug("replaceableEnvUsage", 3);
