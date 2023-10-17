@@ -14,6 +14,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Removed signature of methods using UTF-8 in DefaultEncodingDetector ([[#2634](https://github.com/spotbugs/spotbugs/issues/2634)])
 - Fix exception escapes when calling functions of JUnit Assert or Assertions ([[#2640](https://github.com/spotbugs/spotbugs/issues/2640)])
 
+### Build
+- Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([[#2651](https://github.com/spotbugs/spotbugs/pull/2651)])
+
 ## 4.8.0 - 2023-10-11
 
 ### Changed
