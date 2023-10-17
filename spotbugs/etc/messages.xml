@@ -9143,15 +9143,15 @@ Using floating-point variables should not be used as loop counters, as they are 
     <LongDescription>It is safer to use validated Java property '{3}' instead of insecure environment variable '{2}' in class {4} (method {1}).</LongDescription>
     <Details>
       <![CDATA[<p>
-        Environment variables may be accidently or maliciously altered suring process execution. This makes them unsafe to be relied
+        Environment variables may be accidentally or maliciously altered during process execution. This makes them unsafe to be relied
         upon important system-level information. Some environment variables are understood, validated and secured by the JVM.
         These values are available as system properties, which should be used instead.
       </p>
       <p>
-        Any standard value which can also be accessed through System.getProperty() should be accessed so instead of using System.getenv().
+        Any value which can be accessed through both System.getProperty() and System.getenv(), should be accessed using the latter.
       </p>
       <p>
-        Mapping of identical or similar Java properties:
+        Mapping of corresponding Java properties:
         <table>
           <tr>
              <th>Environment variable</th> <th>Property</th>
