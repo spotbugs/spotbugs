@@ -159,7 +159,7 @@ class SarifBugReporterTest {
         JsonArray arguments = message.getAsJsonArray("arguments");
         assertThat(arguments.get(0).getAsInt(), is(10));
     }
-    
+
 
 
     @Test
