@@ -1,8 +1,8 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.config.CommandLine;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,17 +11,17 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class CommandLineTest {
+class CommandLineTest {
     private EmptyCommandLine commandLine;
 
-    @Before
+    @BeforeEach
     public void createCommandLine() {
         commandLine = new EmptyCommandLine();
         commandLine.addSwitchWithOptionalExtraPart("-xml", "withMessages", "");
     }
 
     @Test
-    public void parseOpt() throws CommandLine.HelpRequestedException, IOException {
+    void parseOpt() throws CommandLine.HelpRequestedException, IOException {
         commandLine.parse(new String[] { "-xml" });
 
         assertThat(commandLine.options.get(0), is("-xml"));
@@ -29,7 +29,7 @@ public class CommandLineTest {
     }
 
     @Test
-    public void parseOptWithExtraPart() throws CommandLine.HelpRequestedException, IOException {
+    void parseOptWithExtraPart() throws CommandLine.HelpRequestedException, IOException {
         commandLine.parse(new String[] { "-xml:withMessages" });
 
         assertThat(commandLine.options.get(0), is("-xml"));
@@ -37,7 +37,7 @@ public class CommandLineTest {
     }
 
     @Test
-    public void parseOptWithFilePath() throws CommandLine.HelpRequestedException, IOException {
+    void parseOptWithFilePath() throws CommandLine.HelpRequestedException, IOException {
         commandLine.parse(new String[] { "-xml=spotbugs.xml" });
 
         assertThat(commandLine.options.get(0), is("-xml"));
@@ -45,7 +45,7 @@ public class CommandLineTest {
     }
 
     @Test
-    public void parseOptWithExtraPartAndFilePath() throws CommandLine.HelpRequestedException, IOException {
+    void parseOptWithExtraPartAndFilePath() throws CommandLine.HelpRequestedException, IOException {
         commandLine.parse(new String[] { "-xml:withMessages=spotbugs.xml" });
 
         assertThat(commandLine.options.get(0), is("-xml"));

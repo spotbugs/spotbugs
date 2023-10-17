@@ -4,15 +4,16 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class TestASMTest extends AbstractIntegrationTest {
+class TestASMTest extends AbstractIntegrationTest {
+
     @Test
-    public void test() {
+    void testASM() {
         performAnalysis("TestASM.class");
 
         assertNumOfBugs(1, "NM_METHOD_NAMING_CONVENTION");

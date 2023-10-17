@@ -4,16 +4,16 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class FindPotentialSecurityCheckBasedOnUntrustedSourceTest extends AbstractIntegrationTest {
+class FindPotentialSecurityCheckBasedOnUntrustedSourceTest extends AbstractIntegrationTest {
 
     @Test
-    public void test() throws Exception {
+    void testUntrustedSources() throws Exception {
         performAnalysis("PotentialSecurityCheckBasedOnUntrustedSource.class",
                 "PotentialSecurityCheckBasedOnUntrustedSource$1.class",
                 "PotentialSecurityCheckBasedOnUntrustedSource$2.class");

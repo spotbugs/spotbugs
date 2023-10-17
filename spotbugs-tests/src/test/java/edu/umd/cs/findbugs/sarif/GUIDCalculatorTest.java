@@ -5,11 +5,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class GUIDCalculatorTest {
+class GUIDCalculatorTest {
+
     @Test
-    public void testGuidFromNamespaceUsingAsciiChars() {
+    void testGuidFromNamespaceUsingAsciiChars() {
         // output of: uuid -v 5 '6ba7b811-9dad-11d1-80b4-00c04fd430c8' '22'
         UUID expectedUUID = UUID.fromString("51e4ac9a-92ed-5ca5-95ab-f9260e15f813");
 
@@ -20,7 +21,7 @@ public class GUIDCalculatorTest {
     }
 
     @Test
-    public void testGuidFromNamespaceUsingSmiley() {
+    void testGuidFromNamespaceUsingSmiley() {
         // output of: uuid -v 5 '6ba7b811-9dad-11d1-80b4-00c04fd430c8' '😀'
         UUID expectedUUID = UUID.fromString("f0793165-4aab-598c-9164-4efc598481b2");
 
@@ -31,7 +32,7 @@ public class GUIDCalculatorTest {
     }
 
     @Test
-    public void testGuidFromStringUsingAsciiChars() {
+    void testGuidFromStringUsingAsciiChars() {
         UUID expectedUUID = UUID.fromString("12c6fc06-c99a-5623-b5ee-b3f43dfd832b");
 
         UUID actualGUID = GUIDCalculator.fromString("22");
@@ -41,7 +42,7 @@ public class GUIDCalculatorTest {
 
 
     @Test
-    public void testGuidFromStringUsingSmiley() {
+    void testGuidFromStringUsingSmiley() {
         UUID expectedUUID = UUID.fromString("9c533688-a979-5858-8bd6-a43c9f91aba6");
 
         UUID actualGUID = GUIDCalculator.fromString("😀");

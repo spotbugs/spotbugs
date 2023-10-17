@@ -196,7 +196,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
                 if (superCode != null && superCode.getCode().length > 3) {
                     bugReporter.reportBug(new BugInstance(this, getMethodName().equals("setUp") ? "IJU_SETUP_NO_SUPER"
                             : "IJU_TEARDOWN_NO_SUPER", NORMAL_PRIORITY).addClassAndMethod(this).addMethod(we, superMethod)
-                                    .describe(MethodAnnotation.METHOD_OVERRIDDEN).addSourceLine(this, offset));
+                            .describe(MethodAnnotation.METHOD_OVERRIDDEN).addSourceLine(this, offset));
                 }
             }
         }

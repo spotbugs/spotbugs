@@ -20,11 +20,11 @@
 package edu.umd.cs.findbugs.gui2;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -33,28 +33,28 @@ import edu.umd.cs.findbugs.filter.NotMatcher;
 /**
  * @author Graham Allan (grundlefleck@gmail.com)
  */
-public class FilterFactoryTest {
+class FilterFactoryTest {
 
     @Test
-    public void invertMatcherShouldNegateTheOriginalMatchingResult() {
+    void invertMatcherShouldNegateTheOriginalMatchingResult() {
         BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
         Matcher originalMatcher = FilterFactory.makeMatcher(asList(Sortables.BUGCODE), bug);
 
-        assertTrue("Original matcher should match bug.", originalMatcher.match(bug));
+        assertTrue(originalMatcher.match(bug), "Original matcher should match bug.");
 
         Matcher notMatcher = FilterFactory.invertMatcher(originalMatcher);
-        assertTrue("Should return an instance of NotMatcher.", notMatcher instanceof NotMatcher);
-        assertFalse("Inverted matcher should now not match.", notMatcher.match(bug));
+        assertTrue(notMatcher instanceof NotMatcher, "Should return an instance of NotMatcher.");
+        assertFalse(notMatcher.match(bug), "Inverted matcher should now not match.");
     }
 
     @Test
-    public void shouldReturnTheOriginalMatcherWhenAskedToInvertANotMatcher() {
+    void shouldReturnTheOriginalMatcherWhenAskedToInvertANotMatcher() {
         BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
         Matcher originalMatcher = FilterFactory.makeMatcher(asList(Sortables.BUGCODE), bug);
         Matcher notMatcher = FilterFactory.invertMatcher(originalMatcher);
         Matcher notNotMatcher = FilterFactory.invertMatcher(notMatcher);
 
-        assertSame("Should return the originally wrapped matcher.", originalMatcher, notNotMatcher);
-        assertTrue("Original matcher should now not match.", notNotMatcher.match(bug));
+        assertSame(originalMatcher, notNotMatcher, "Should return the originally wrapped matcher.");
+        assertTrue(notNotMatcher.match(bug), "Original matcher should now not match.");
     }
 }

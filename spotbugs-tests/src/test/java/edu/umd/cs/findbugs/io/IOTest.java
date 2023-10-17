@@ -23,13 +23,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Random;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author pugh
  */
-public class IOTest {
+class IOTest {
 
     Random r = new Random();
 
@@ -40,42 +40,42 @@ public class IOTest {
     }
 
     @Test
-    public void testReadAllWithCorrectSize() throws IOException {
+    void testReadAllWithCorrectSize() throws IOException {
 
         for (int i = 10; i <= 10000; i *= 10) {
             byte[] input = randomBytes(i);
             byte[] output = IO.readAll(new ByteArrayInputStream(input), i);
-            Assert.assertArrayEquals(input, output);
+            Assertions.assertArrayEquals(input, output);
         }
     }
 
     @Test
-    public void testReadAllWithSmallSize() throws IOException {
+    void testReadAllWithSmallSize() throws IOException {
 
         for (int i = 10; i <= 10000; i *= 10) {
             byte[] input = randomBytes(i);
             byte[] output = IO.readAll(new ByteArrayInputStream(input), i - 9);
-            Assert.assertArrayEquals(input, output);
+            Assertions.assertArrayEquals(input, output);
         }
     }
 
     @Test
-    public void testReadAllWithLargeSize() throws IOException {
+    void testReadAllWithLargeSize() throws IOException {
 
         for (int i = 10; i <= 10000; i *= 10) {
             byte[] input = randomBytes(i);
             byte[] output = IO.readAll(new ByteArrayInputStream(input), i + 29);
-            Assert.assertArrayEquals(input, output);
+            Assertions.assertArrayEquals(input, output);
         }
     }
 
     @Test
-    public void testReadAllWithoutSize() throws IOException {
+    void testReadAllWithoutSize() throws IOException {
 
         for (int i = 10; i <= 10000; i *= 10) {
             byte[] input = randomBytes(i);
             byte[] output = IO.readAll(new ByteArrayInputStream(input));
-            Assert.assertArrayEquals(input, output);
+            Assertions.assertArrayEquals(input, output);
         }
     }
 }

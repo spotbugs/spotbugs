@@ -19,34 +19,34 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author pugh
  */
 
-public class GetNumberArgumentsTest {
+class GetNumberArgumentsTest {
 
     static String[] simpleTypes = "I J B C D F I S Z".split(" ");
 
     @Test
-    public void testSimpleWithVoidReturnType() {
+    void testSimpleWithVoidReturnType() {
         for (String s : simpleTypes) {
             assertEquals(1, PreorderVisitor.getNumberArguments("(" + s + ")V"));
         }
     }
 
     @Test
-    public void testSimpleWithVoidIntegerType() {
+    void testSimpleWithVoidIntegerType() {
         for (String s : simpleTypes) {
             assertEquals(1, PreorderVisitor.getNumberArguments("(" + s + ")I"));
         }
     }
 
     @Test
-    public void testArrays() {
+    void testArrays() {
         for (String s : simpleTypes) {
             assertEquals(1, PreorderVisitor.getNumberArguments("([" + s + ")V"));
             assertEquals(1, PreorderVisitor.getNumberArguments("([[" + s + ")I"));
@@ -54,7 +54,7 @@ public class GetNumberArgumentsTest {
     }
 
     @Test
-    public void testStringArguments() {
+    void testStringArguments() {
         for (String s : simpleTypes) {
             assertEquals(2, PreorderVisitor.getNumberArguments("([Ljava/lang/String;" + s + ")V"));
             assertEquals(2, PreorderVisitor.getNumberArguments("([[" + s + "Ljava/lang/String;)I"));
@@ -62,7 +62,7 @@ public class GetNumberArgumentsTest {
     }
 
     @Test
-    public void testSimpleObjectArgument() {
+    void testSimpleObjectArgument() {
         assertEquals(1, PreorderVisitor.getNumberArguments("(Ledu/umd/cs/findbugs/ba/ClassContext;)V"));
     }
 }

@@ -18,9 +18,9 @@ import org.apache.bcel.classfile.Method;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -29,12 +29,13 @@ import java.util.Arrays;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class PlaceholderTest {
+class PlaceholderTest {
+
     private SarifBugReporter reporter;
     private StringWriter writer;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         Project project = new Project();
         reporter = new SarifBugReporter(project);
         writer = new StringWriter();
@@ -53,14 +54,14 @@ public class PlaceholderTest {
         AnalysisContext.setCurrentAnalysisContext(analysisContext);
     }
 
-    @After
-    public void teardown() {
+    @AfterEach
+    void teardown() {
         AnalysisContext.removeCurrentAnalysisContext();
         Global.removeAnalysisCacheForCurrentThread();
     }
 
     @Test
-    public void testFormatWithKey() throws ClassNotFoundException {
+    void testFormatWithKey() throws ClassNotFoundException {
         BugPattern bugPattern = new BugPattern("BUG_TYPE", "abbrev", "category", false, "describing about this bug type...",
                 "describing about this bug type with value {0.givenClass} and {1.name}", "detailText", null, 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);

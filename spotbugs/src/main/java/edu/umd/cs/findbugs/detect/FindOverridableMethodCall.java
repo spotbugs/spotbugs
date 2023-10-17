@@ -227,7 +227,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         if (overridable != null) {
             bugAccumulator.accumulateBug(new BugInstance(this,
                     "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", LOW_PRIORITY)
-                            .addClass(this).addMethod(constructor).addString(overridable.getName()), sourceLine);
+                    .addClass(this).addMethod(constructor).addString(overridable.getName()), sourceLine);
             return false;
         }
         callerConstructors.put(callee, new CallerInfo(constructor, sourceLine));
@@ -240,7 +240,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         if (overridable != null) {
             bugAccumulator.accumulateBug(new BugInstance(this,
                     "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE", NORMAL_PRIORITY)
-                            .addClass(this).addMethod(clone).addString(overridable.getName()), sourceLine);
+                    .addClass(this).addMethod(clone).addString(overridable.getName()), sourceLine);
             return false;
         }
         callerClones.put(callee, new CallerInfo(clone, sourceLine));
@@ -252,7 +252,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         if (constructor != null) {
             bugAccumulator.accumulateBug(new BugInstance(this,
                     "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", LOW_PRIORITY)
-                            .addClassAndMethod(constructor.method).addString(overridable.getName()),
+                    .addClassAndMethod(constructor.method).addString(overridable.getName()),
                     constructor.sourceLine);
         }
 
@@ -260,7 +260,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         if (clone != null) {
             bugAccumulator.accumulateBug(new BugInstance(this,
                     "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE", NORMAL_PRIORITY)
-                            .addClassAndMethod(clone.method).addString(overridable.getName()), clone.sourceLine);
+                    .addClassAndMethod(clone.method).addString(overridable.getName()), clone.sourceLine);
         }
 
         if (constructor != null || clone != null) {
@@ -281,7 +281,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                 if (constructor != null) {
                     bugAccumulator.accumulateBug(new BugInstance(this,
                             "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", LOW_PRIORITY)
-                                    .addClassAndMethod(constructor.method).addString(overridable.getName()),
+                            .addClassAndMethod(constructor.method).addString(overridable.getName()),
                             constructor.sourceLine);
 
                 }
@@ -289,7 +289,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                 if (clone != null) {
                     bugAccumulator.accumulateBug(new BugInstance(this,
                             "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE", NORMAL_PRIORITY)
-                                    .addClassAndMethod(clone.method).addString(overridable.getName()),
+                            .addClassAndMethod(clone.method).addString(overridable.getName()),
                             clone.sourceLine);
                 }
 

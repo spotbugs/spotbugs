@@ -130,7 +130,7 @@ def updateManifest = tasks.register('updateManifest') {
 
   dependsOn ':spotbugs:updateManifest', copyLibsForEclipse
   doLast {
-    def manifestSpec = manifest {
+    def manifestSpec = java.manifest {
       from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
                  'Bundle-Version': project.version,
@@ -138,7 +138,7 @@ def updateManifest = tasks.register('updateManifest') {
                       projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
     }
 
-    def distManifestSpec = manifest {
+    def distManifestSpec = java.manifest {
       from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
                  'Bundle-Version': project.version,
@@ -266,20 +266,20 @@ def pluginJar = tasks.register('pluginJar', Zip) { // use Zip task, we already p
   with distSpec
   dependsOn jar
   archiveFileName = "${eclipsePluginId}_${project.version}.jar"
-  destinationDirectory = file("${buildDir}/site/eclipse/plugins/")
+  destinationDirectory.set(layout.buildDirectory.dir("site/eclipse/plugins/"))
   finalizedBy testPluginJar
 }
 
 def pluginCandidateJar = tasks.register('pluginCandidateJar', Copy) {
   dependsOn pluginJar
   from pluginJar.map { it.outputs.files }
-  into "${buildDir}/site/eclipse-candidate/plugins/"
+  into layout.buildDirectory.dir("site/eclipse-candidate/plugins/")
 }
 
 def pluginDailyJar = tasks.register('pluginDailyJar', Copy) {
   dependsOn pluginJar
   from pluginJar.map { it.outputs.files }
-  into "${buildDir}/site/eclipse-daily/plugins/"
+  into layout.buildDirectory.dir("site/eclipse-daily/plugins/")
   mustRunAfter(siteHtml)
   mustRunAfter(siteXml)
 }
@@ -287,7 +287,7 @@ def pluginDailyJar = tasks.register('pluginDailyJar', Copy) {
 def pluginStableLatestJar = tasks.register('pluginStableLatestJar', Copy) {
   dependsOn pluginJar
   from pluginJar.map { it.outputs.files }
-  into "${buildDir}/site/eclipse-stable-latest/plugins/"
+  into layout.buildDirectory.dir("site/eclipse-stable-latest/plugins/")
   mustRunAfter(siteHtml)
   mustRunAfter(siteXml)
 }
@@ -310,7 +310,7 @@ def featureJar = tasks.register('featureJar', Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDirectory = file("${buildDir}/site/eclipse/features/")
+  destinationDirectory = layout.buildDirectory.dir("site/eclipse/features/")
 }
 
 def featureCandidateJar = tasks.register('featureCandidateJar', Zip) {
@@ -324,7 +324,7 @@ def featureCandidateJar = tasks.register('featureCandidateJar', Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDirectory = file("${buildDir}/site/eclipse-candidate/features/")
+  destinationDirectory = layout.buildDirectory.dir("site/eclipse-candidate/features/")
 }
 
 def featureDailyJar = tasks.register('featureDailyJar', Zip) {
@@ -338,7 +338,7 @@ def featureDailyJar = tasks.register('featureDailyJar', Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDirectory = file("${buildDir}/site/eclipse-daily/features/")
+  destinationDirectory = layout.buildDirectory.dir("site/eclipse-daily/features/")
 }
 
 def featureStableLatestJar = tasks.register('featureStableLatestJar', Zip) {
@@ -352,7 +352,7 @@ def featureStableLatestJar = tasks.register('featureStableLatestJar', Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDirectory = file("${buildDir}/site/eclipse-stable-latest/features/")
+  destinationDirectory = layout.buildDirectory.dir("site/eclipse-stable-latest/features/")
 }
 
 def siteHtml = tasks.register('siteHtml', Copy) {
@@ -360,7 +360,7 @@ def siteHtml = tasks.register('siteHtml', Copy) {
     'URL': 'https://spotbugs.github.io/eclipse/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDir = file("${buildDir}/site/eclipse")
+  into layout.buildDirectory.dir("site/eclipse")
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -375,7 +375,7 @@ def siteCandidateHtml = tasks.register('siteCandidateHtml', Copy) {
     'URL': 'https://spotbugs.github.io/eclipse-candidate/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDir = file("${buildDir}/site/eclipse-candidate")
+  into layout.buildDirectory.dir("site/eclipse-candidate")
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -388,7 +388,7 @@ def siteDailyHtml = tasks.register('siteDailyHtml', Copy) {
     'URL': 'https://spotbugs.github.io/eclipse-latest/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDir = file("${buildDir}/site/eclipse-daily")
+  into layout.buildDirectory.dir("site/eclipse-daily")
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -401,7 +401,7 @@ def siteStableLatestHtml = tasks.register('siteStableLatestHtml', Copy) {
     'URL': 'https://spotbugs.github.io/eclipse-stable-latest/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDir = file("${buildDir}/site/eclipse-stable-latest")
+  into layout.buildDirectory.dir("site/eclipse-stable-latest")
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -412,7 +412,7 @@ def siteStableLatestHtml = tasks.register('siteStableLatestHtml', Copy) {
 def siteXml = tasks.register('siteXml', Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.xml'
-  destinationDir = file("${buildDir}/site/eclipse")
+  into layout.buildDirectory.dir("site/eclipse")
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -425,7 +425,7 @@ def siteXml = tasks.register('siteXml', Copy) {
 def siteCandidateXml = tasks.register('siteCandidateXml', Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site-candidate.xml'
-  destinationDir = file("${buildDir}/site/eclipse-candidate")
+  into layout.buildDirectory.dir("site/eclipse-candidate")
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -436,7 +436,7 @@ def siteCandidateXml = tasks.register('siteCandidateXml', Copy) {
 def siteDailyXml = tasks.register('siteDailyXml', Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site-daily.xml'
-  destinationDir = file("${buildDir}/site/eclipse-daily")
+  into layout.buildDirectory.dir("site/eclipse-daily")
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -447,7 +447,7 @@ def siteDailyXml = tasks.register('siteDailyXml', Copy) {
 def siteStableLatestXml = tasks.register('siteStableLatestXml', Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site-stable_latest.xml'
-  destinationDir = file("${buildDir}/site/eclipse-stable-latest")
+  into layout.buildDirectory.dir("site/eclipse-stable-latest")
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -489,9 +489,10 @@ def confirmEclipse = tasks.register('confirmEclipse') {
 
 def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
   doFirst {
-    project.delete "${buildDir}/site/eclipse/artifacts.xml"
-    project.delete "${buildDir}/site/eclipse/content.xml"
-    signJar(file("${buildDir}/site/eclipse"))
+    def eclipseSiteDir = layout.buildDirectory.dir("site/eclipse")
+    project.delete eclipseSiteDir.map { it.file("artifacts.xml") }
+    project.delete eclipseSiteDir.map { it.file("content.xml") }
+    signJar(eclipseSiteDir.get().asFile)
   }
   inputs.file 'local.properties'
   dependsOn confirmEclipse, pluginJar, featureJar, siteXml, siteHtml
@@ -504,9 +505,10 @@ def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
 
 def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', Exec) {
   doFirst {
-    project.delete "${buildDir}/site/eclipse-candidate/artifacts.xml"
-    project.delete "${buildDir}/site/eclipse-candidate/content.xml"
-    signJar(file("${buildDir}/site/eclipse-candidate"))
+    def eclipseSiteDir = layout.buildDirectory.dir("site/eclipse-candidate")
+    project.delete eclipseSiteDir.map { it.file("artifacts.xml") }
+    project.delete eclipseSiteDir.map { it.file("content.xml") }
+    signJar(file(eclipseSiteDir.get().asFile))
   }
   inputs.file 'local.properties'
   dependsOn confirmEclipse, pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
@@ -519,9 +521,10 @@ def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', 
 
 def generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
   doFirst {
-    project.delete "${buildDir}/site/eclipse-daily/artifacts.xml"
-    project.delete "${buildDir}/site/eclipse-daily/content.xml"
-    signJar(file("${buildDir}/site/eclipse-daily"))
+    def eclipseSiteDir = layout.buildDirectory.dir("site/eclipse-daily")
+    project.delete eclipseSiteDir.map { it.file("artifacts.xml") }
+    project.delete eclipseSiteDir.map { it.file("content.xml") }
+    signJar(eclipseSiteDir.get().asFile)
   }
   inputs.file 'local.properties'
   dependsOn confirmEclipse, pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
@@ -534,9 +537,10 @@ def generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
 
 def generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLatest', Exec) {
   doFirst {
-    project.delete "${buildDir}/site/eclipse-stable-latest/artifacts.xml"
-    project.delete "${buildDir}/site/eclipse-stable-latest/content.xml"
-    signJar(file("${buildDir}/site/eclipse-stable-latest"))
+    def eclipseSiteDir = layout.buildDirectory.dir("site/eclipse-stable-latest")
+    project.delete eclipseSiteDir.map { it.file("artifacts.xml") }
+    project.delete eclipseSiteDir.map { it.file("content.xml") }
+    signJar(eclipseSiteDir.get().asFile)
   }
   inputs.file 'local.properties'
   dependsOn confirmEclipse, pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
@@ -554,7 +558,7 @@ def eclipseSite = tasks.register('eclipseSite') {
 // create zip file to upload to GitHub release page
 def eclipseSiteZip = tasks.register('eclipseSiteZip', Zip) {
   dependsOn eclipseSite
-  from("${buildDir}/site/eclipse")
+  from layout.buildDirectory.dir("site/eclipse")
   archiveFileName = "eclipsePlugin.zip"
 }
 

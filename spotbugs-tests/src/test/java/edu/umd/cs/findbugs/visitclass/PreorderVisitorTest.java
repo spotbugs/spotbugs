@@ -19,17 +19,17 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author bill.pugh
  */
-public class PreorderVisitorTest {
+class PreorderVisitorTest {
 
     @Test
-    public void testGetNumberArguments() {
+    void testGetNumberArguments() {
         assertEquals(0, PreorderVisitor.getNumberArguments("()V"));
         assertEquals(0, PreorderVisitor.getNumberArguments("()I"));
         assertEquals(0, PreorderVisitor.getNumberArguments("()J"));

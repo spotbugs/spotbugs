@@ -5,7 +5,15 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased 4.8.0 - 2023-??-??
+## Unreleased - 2022-??-??
+
+### Fixed
+- Fixed schema location for findbugsfilter.xsd ([[#1416](https://github.com/spotbugs/spotbugs/issues/1416)])
+- Fixed missing null checks ([[#2629](https://github.com/spotbugs/spotbugs/issues/2629)])
+- Disabled DontReusePublicIdentifiers due to the high false positives rate ([[#2627](https://github.com/spotbugs/spotbugs/issues/2627)])
+- Removed signature of methods using UTF-8 in DefaultEncodingDetector ([[#2634](https://github.com/spotbugs/spotbugs/issues/2634)])
+
+## 4.8.0 - 2023-10-11
 
 ### Changed
 - Bump up Apache Commons BCEL to the version 6.6.1 ([#2223](https://github.com/spotbugs/spotbugs/pull/2223))
@@ -74,6 +82,13 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Delete checked in j2ee jar and instead use servlet/ejb apis from jakarta (javax standard) ([#2585](https://github.com/spotbugs/spotbugs/pull/2585))
 - Bump Eclipse from 4.14 to 4.29 (latest) ([#2589](https://github.com/spotbugs/spotbugs/pull/2589))
 - Cleanup hamcrest imports / used library ([#2600](https://github.com/spotbugs/spotbugs/pull/2600))
+- Migrate entirely to junit 5 ([#2605](https://github.com/spotbugs/spotbugs/pull/2605))
+    - Some parts of codebase were junit 3
+    - Delete the SpotbugsRule
+    - Replace custom java determination on build with Junit 5 usage
+    - Various 'public' methods in tests fixed to 'private'
+    - Junit 5 styling applied throughout
+    - Add missing code to the SpotBugsRunner and now use the Extension as replacement of SpotbugsRule
 
 ## 4.7.3 - 2022-10-15
 ### Fixed

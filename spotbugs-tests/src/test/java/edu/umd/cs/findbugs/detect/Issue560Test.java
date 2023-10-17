@@ -5,15 +5,15 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class Issue560Test extends AbstractIntegrationTest {
+class Issue560Test extends AbstractIntegrationTest {
 
     @Test
-    public void test() {
+    void testIssue() {
         performAnalysis("ghIssues/Issue560.class",
                 "ghIssues/Issue560$NotANestedTest.class",
                 "ghIssues/Issue560$NestedTest.class");
@@ -22,7 +22,7 @@ public class Issue560Test extends AbstractIntegrationTest {
         assertBugInClass("SIC_INNER_SHOULD_BE_STATIC", "ghIssues.Issue560$NotANestedTest");
     }
 
-    public void assertBugCount(String type, int expectedCount) {
+    private void assertBugCount(String type, int expectedCount) {
         BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder()
                 .bugType(type)
                 .build();
@@ -30,7 +30,7 @@ public class Issue560Test extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(expectedCount, bugMatcher));
     }
 
-    public void assertBugInClass(String type, String className) {
+    private void assertBugInClass(String type, String className) {
         BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder()
                 .bugType(type)
                 .inClass(className)
