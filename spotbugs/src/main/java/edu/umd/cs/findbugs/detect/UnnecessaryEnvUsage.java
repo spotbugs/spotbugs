@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
@@ -35,31 +34,23 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class UnnecessaryEnvUsage extends OpcodeStackDetector {
-
-    private static final Set<String> replaceableEnvvars;
-    private static final Map<String, String> envvarPropertyMap;
+    private static final Map<String, String> envvarPropertyMap = Collections.unmodifiableMap(new HashMap<String, String>() {
+        {
+            put("OS", "os.name");
+            put("PROCESSOR_ARCHITECTURE", "os.arch");
+            put("USERNAME", "user.name");
+            put("USER", "user.name");
+            put("HOMEPATH", "user.home");
+            put("HOME", "user.home");
+            put("PWD", "user.dir");
+            put("JAVA_HOME", "java.home");
+            put("JAVA_VERSION", "java.version");
+            put("TEMP", "java.io.tmpdir");
+            put("TMP", "java.io.tmpdir");
+        }
+    });
 
     private final BugAccumulator bugAccumulator;
-
-    static {
-
-        envvarPropertyMap = Collections.unmodifiableMap(new HashMap<String, String>() {
-            {
-                put("OS", "os.name");
-                put("PROCESSOR_ARCHITECTURE", "os.arch");
-                put("USERNAME", "user.name");
-                put("USER", "user.name");
-                put("HOMEPATH", "user.home");
-                put("HOME", "user.home");
-                put("PWD", "user.dir");
-                put("JAVA_HOME", "java.home");
-                put("JAVA_VERSION", "java.version");
-                put("TEMP", "java.io.tmpdir");
-                put("TMP", "java.io.tmpdir");
-            }
-        });
-        replaceableEnvvars = envvarPropertyMap.keySet();
-    }
 
     public UnnecessaryEnvUsage(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -83,7 +74,7 @@ public class UnnecessaryEnvUsage extends OpcodeStackDetector {
                 OpcodeStack.Item top = stack.getStackItem(0);
                 if (top.getConstant() instanceof String) {
                     String constant = (String) top.getConstant();
-                    if (replaceableEnvvars.contains(constant)) {
+                    if (envvarPropertyMap.containsKey(constant)) {
                         BugInstance pendingBug = new BugInstance(this, "ENV_USE_PROPERTY_INSTEAD_OF_ENV", NORMAL_PRIORITY)
                                 .addClassAndMethod(this)
                                 .addString(constant)
