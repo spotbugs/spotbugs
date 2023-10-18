@@ -169,8 +169,8 @@ public class DumbMethods extends OpcodeStackDetector {
             }
 
             if (seen == Const.INVOKESTATIC && ("junit/framework/Assert".equals(getClassConstantOperand()) || "org/junit/Assert".equals(
-                    getClassConstantOperand()) || "org/junit/jupiter/api/Assertion".equals(getClassConstantOperand())
-                            && "assertNotNull".equals(getNameConstantOperand()))) {
+                    getClassConstantOperand()) || "org/junit/jupiter/api/Assertion".equals(getClassConstantOperand()))
+                    && "assertNotNull".equals(getNameConstantOperand())) {
 
                 OpcodeStack.Item item = stack.getStackItem(0);
                 Object o = item.getConstant();
