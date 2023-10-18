@@ -12,6 +12,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed missing null checks ([[#2629](https://github.com/spotbugs/spotbugs/issues/2629)])
 - Disabled DontReusePublicIdentifiers due to the high false positives rate ([[#2627](https://github.com/spotbugs/spotbugs/issues/2627)])
 - Removed signature of methods using UTF-8 in DefaultEncodingDetector ([[#2634](https://github.com/spotbugs/spotbugs/issues/2634)])
+- Fix exception escapes when calling functions of JUnit Assert or Assertions ([[#2640](https://github.com/spotbugs/spotbugs/issues/2640)])
+- Fixed an error in the SARIF export when a bug annotation is missing ([[#2632](https://github.com/spotbugs/spotbugs/issues/2632)])
 
 ## 4.8.0 - 2023-10-11
 
