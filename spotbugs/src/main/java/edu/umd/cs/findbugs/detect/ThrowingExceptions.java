@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ExceptionTable;
@@ -57,7 +58,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             if (exceptions != null) {
                 exceptionStream = Arrays.stream(exceptions)
                         .filter(s -> s.charAt(0) == 'L')
-                        .map(s -> s.substring(1).replace('/', '.'));
+                        .map(s -> ClassName.toDottedClassName(s.substring(1)));
             }
         }
 
@@ -102,7 +103,11 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             OpcodeStack.Item item = stack.getStackItem(0);
             if (item != null) {
                 if ("Ljava/lang/RuntimeException;".equals(item.getSignature())) {
-                    reportBug("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", getXMethod());
+                    bugReporter.reportBug(
+                            new BugInstance(this, "THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", LOW_PRIORITY)
+                                    .addClass(this)
+                                    .addMethod(getXMethod())
+                                    .addSourceLine(this));
                 }
             }
         } else if (exceptionThrown != null &&
@@ -119,7 +124,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
 
             String[] thrownExceptions = calledMethod.getThrownExceptions();
             if (thrownExceptions != null && Arrays.stream(thrownExceptions)
-                    .map(s -> s.replace('/', '.'))
+                    .map(ClassName::toDottedClassName)
                     .anyMatch(exceptionThrown::equals)) {
                 exceptionThrown = null;
             }

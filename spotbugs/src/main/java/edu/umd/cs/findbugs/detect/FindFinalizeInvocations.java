@@ -91,7 +91,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "FI_EXPLICIT_INVOCATION", "finalize".equals(getMethodName())
                             && "()V".equals(getMethodSig()) ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this)
-                                    .addCalledMethod(this), this);
+                            .addCalledMethod(this), this);
 
         }
         if (seen == Const.INVOKESPECIAL && "finalize".equals(getNameConstantOperand())) {

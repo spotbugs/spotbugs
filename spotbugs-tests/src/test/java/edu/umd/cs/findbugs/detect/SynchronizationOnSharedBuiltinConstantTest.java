@@ -3,16 +3,16 @@ package edu.umd.cs.findbugs.detect;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class SynchronizationOnSharedBuiltinConstantTest extends AbstractIntegrationTest {
+class SynchronizationOnSharedBuiltinConstantTest extends AbstractIntegrationTest {
 
     @Test
-    public void lockOn_noncompliantBooleanLockObject() {
+    void lockOn_noncompliantBooleanLockObject() {
         performAnalysis("synchronizationOnSharedBuiltinConstant/SynchronizationOnSharedBuiltinConstantBad.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("DL_SYNCHRONIZATION_ON_BOOLEAN")
@@ -22,7 +22,7 @@ public class SynchronizationOnSharedBuiltinConstantTest extends AbstractIntegrat
     }
 
     @Test
-    public void lockOn_noncompliantBoxedPrimitive() {
+    void lockOn_noncompliantBoxedPrimitive() {
         performAnalysis("synchronizationOnSharedBuiltinConstant/SynchronizationOnSharedBuiltinConstantBad.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE")
@@ -32,7 +32,7 @@ public class SynchronizationOnSharedBuiltinConstantTest extends AbstractIntegrat
     }
 
     @Test
-    public void lockOn_compliantInteger() {
+    void lockOn_compliantInteger() {
         performAnalysis("synchronizationOnSharedBuiltinConstant/SynchronizationOnSharedBuiltinConstantGood.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE")
@@ -42,7 +42,7 @@ public class SynchronizationOnSharedBuiltinConstantTest extends AbstractIntegrat
     }
 
     @Test
-    public void lockOn_noncompliantInternedStringObject() {
+    void lockOn_noncompliantInternedStringObject() {
         performAnalysis("synchronizationOnSharedBuiltinConstant/SynchronizationOnSharedBuiltinConstantBad.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("DL_SYNCHRONIZATION_ON_INTERNED_STRING")
@@ -52,7 +52,7 @@ public class SynchronizationOnSharedBuiltinConstantTest extends AbstractIntegrat
     }
 
     @Test
-    public void lockOn_noncompliantStringLiteral() {
+    void lockOn_noncompliantStringLiteral() {
         performAnalysis("synchronizationOnSharedBuiltinConstant/SynchronizationOnSharedBuiltinConstantBad.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("DL_SYNCHRONIZATION_ON_SHARED_CONSTANT")
@@ -62,7 +62,7 @@ public class SynchronizationOnSharedBuiltinConstantTest extends AbstractIntegrat
     }
 
     @Test
-    public void lockOn_compliantStringInstance() {
+    void lockOn_compliantStringInstance() {
         performAnalysis("synchronizationOnSharedBuiltinConstant/SynchronizationOnSharedBuiltinConstantGood.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("DL_SYNCHRONIZATION_ON_SHARED_CONSTANT")
@@ -72,7 +72,7 @@ public class SynchronizationOnSharedBuiltinConstantTest extends AbstractIntegrat
     }
 
     @Test
-    public void lockOn_compliantPrivateFinalLockObject() {
+    void lockOn_compliantPrivateFinalLockObject() {
         performAnalysis("synchronizationOnSharedBuiltinConstant/SynchronizationOnSharedBuiltinConstantGood.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE")

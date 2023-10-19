@@ -7,121 +7,122 @@ import org.apache.bcel.Const;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class FindOverridableMethodCallTest extends AbstractIntegrationTest {
+class FindOverridableMethodCallTest extends AbstractIntegrationTest {
+
     @Test
-    public void testDirectCase() {
+    void testDirectCase() {
         testCase("DirectCase", 5, 18);
     }
 
     @Test
-    public void testDirectCaseObject() {
+    void testDirectCaseObject() {
         testCase("DirectCaseObject", 5, 13);
     }
 
     @Test
-    public void testIndirectCase1() {
+    void testIndirectCase1() {
         testCase("IndirectCase1", 9, 22);
     }
 
     @Test
-    public void testIndirectCase2() {
+    void testIndirectCase2() {
         testCase("IndirectCase2", 5, 18);
     }
 
     @Test
-    public void testDoubleIndirectCase1() {
+    void testDoubleIndirectCase1() {
         testCase("DoubleIndirectCase1", 16, 29);
     }
 
     @Test
-    public void testDoubleIndirectCase2() {
+    void testDoubleIndirectCase2() {
         testCase("DoubleIndirectCase2", 16, 29);
     }
 
     @Test
-    public void testDoubleIndirectCase3() {
+    void testDoubleIndirectCase3() {
         testCase("DoubleIndirectCase3", 11, 24);
     }
 
     @Test
-    public void testDoubleIndirectCase4() {
+    void testDoubleIndirectCase4() {
         testCase("DoubleIndirectCase4", 10, 23);
     }
 
     @Test
-    public void testDoubleIndirectCase5() {
+    void testDoubleIndirectCase5() {
         testCase("DoubleIndirectCase5", 5, 18);
     }
 
     @Test
-    public void testDoubleIndirectCase6() {
+    void testDoubleIndirectCase6() {
         testCase("DoubleIndirectCase6", 5, 18);
     }
 
     @Test
-    public void testMethodReference() {
+    void testMethodReference() {
         testCase("MethodReference", 11, 20);
     }
 
     @Test
-    public void testMethodReferenceIndirect1() {
+    void testMethodReferenceIndirect1() {
         testCase("MethodReferenceIndirect1", 15, 24);
     }
 
     @Test
-    public void testMethodReferenceIndirect2() {
+    void testMethodReferenceIndirect2() {
         testCase("MethodReferenceIndirect2", 23, 32);
     }
 
     @Test
-    public void testMethodReferenceIndirect3() {
+    void testMethodReferenceIndirect3() {
         testCase("MethodReferenceIndirect3", 23, 32);
     }
 
     @Test
-    public void testFinalClassDirect() {
+    void testFinalClassDirect() {
         testPass("FinalClassDirect");
     }
 
     @Test
-    public void testFinalClassIndirect() {
+    void testFinalClassIndirect() {
         testPass("FinalClassIndirect");
     }
 
     @Test
-    public void testFinalClassDoubleIndirect() {
+    void testFinalClassDoubleIndirect() {
         testPass("FinalClassDoubleIndirect");
     }
 
     @Test
-    public void testFinalClassMethodReference() {
+    void testFinalClassMethodReference() {
         testPass("FinalClassMethodReference");
     }
 
     @Test
-    public void testFinalClassInheritedDirect() {
+    void testFinalClassInheritedDirect() {
         testPass("FinalClassInheritedDirect");
     }
 
     @Test
-    public void testFinalClassInheritedIndirect() {
+    void testFinalClassInheritedIndirect() {
         testPass("FinalClassInheritedIndirect");
     }
 
     @Test
-    public void testFinalClassInheritedDoubleIndirect() {
+    void testFinalClassInheritedDoubleIndirect() {
         testPass("FinalClassInheritedDoubleIndirect");
     }
 
     @Test
-    public void testFinalClassInheritedMethodReference() {
+    void testFinalClassInheritedMethodReference() {
         testPass("FinalClassInheritedMethodReference");
     }
 

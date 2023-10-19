@@ -3,21 +3,22 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
+class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
+
     private static final String PI_CLASS_BUG = "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES";
     private static final String PI_FIELD_BUG = "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES";
     private static final String PI_METHOD_BUG = "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES";
     private static final String PI_VARIABLE_BUG = "PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES";
 
     @Test
-    public void testShadowedPublicIdentifiersClassNames() {
+    void testShadowedPublicIdentifiersClassNames() {
         // check shadowed public identifiers as standalone classes
         performAnalysis("publicIdentifiers/standalone/InputStream.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_CLASS_BUG, 1);
@@ -45,7 +46,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGoodPublicIdentifiersClassNames() {
+    void testGoodPublicIdentifiersClassNames() {
         // check good public identifiers as standalone classes
         performAnalysis("publicIdentifiers/standalone/GoodPublicIdentifiersStandaloneClassNames.class");
         assertZeroPublicIdentifierBug();
@@ -68,7 +69,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testShadowedPublicIdentifiersFieldNames() {
+    void testShadowedPublicIdentifiersFieldNames() {
         performAnalysis("publicIdentifiers/ShadowedPublicIdentifiersFieldNames.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_FIELD_BUG, 2);
         assertShadowedPublicIdentifierFieldBug("String");
@@ -76,13 +77,13 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGoodPublicIdentifiersFieldNames() {
+    void testGoodPublicIdentifiersFieldNames() {
         performAnalysis("publicIdentifiers/GoodPublicIdentifiersFieldNames.class");
         assertZeroPublicIdentifierBug();
     }
 
     @Test
-    public void testShadowedPublicIdentifiersMethodNames() {
+    void testShadowedPublicIdentifiersMethodNames() {
         performAnalysis("publicIdentifiers/ShadowedPublicIdentifiersMethodNames.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_METHOD_BUG, 3);
 
@@ -92,7 +93,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGoodPublicIdentifiersMethodNames() {
+    void testGoodPublicIdentifiersMethodNames() {
         performAnalysis("publicIdentifiers/GoodPublicIdentifiersMethodNames.class");
         assertZeroPublicIdentifierBug();
 
@@ -105,7 +106,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testShadowedPublicIdentifiersVariableNames() {
+    void testShadowedPublicIdentifiersVariableNames() {
         performAnalysis("publicIdentifiers/ShadowedPublicIdentifiersVariableNames.class");
         assertNumOfShadowedPublicIdentifierBugs(PI_VARIABLE_BUG, 3);
 
@@ -115,7 +116,7 @@ public class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGoodPublicIdentifiersVariableNames() {
+    void testGoodPublicIdentifiersVariableNames() {
         performAnalysis("publicIdentifiers/GoodPublicIdentifiersVariableNames.class");
         assertZeroPublicIdentifierBug();
     }
