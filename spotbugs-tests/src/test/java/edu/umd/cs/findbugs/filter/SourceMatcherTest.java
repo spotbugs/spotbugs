@@ -21,9 +21,9 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
@@ -32,9 +32,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.tools.ant.filters.StringInputStream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -44,26 +44,26 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
-public class SourceMatcherTest {
+class SourceMatcherTest {
 
     private BugInstance bug;
     private String fileName;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         bug = new BugInstance("UUF_UNUSED_FIELD", 0);
         fileName = "bla.groovy";
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         // Some other test cases fail in case the context is not correctly
         // cleaned up here.
         AnalysisContext.removeCurrentAnalysisContext();
     }
 
     @Test
-    public void writeXML() throws Exception {
+    void writeXML() throws Exception {
         SourceMatcher sm = new SourceMatcher(fileName);
 
         String xmlOutput = writeXMLAndGetStringOutput(sm, false);
@@ -75,7 +75,7 @@ public class SourceMatcherTest {
     }
 
     @Test
-    public void readXML() throws Exception {
+    void readXML() throws Exception {
         SourceMatcher sm = new SourceMatcher(fileName);
 
         String xml = writeXMLAndGetStringOutput(sm, false);
@@ -96,7 +96,7 @@ public class SourceMatcherTest {
 
 
     @Test
-    public void match() throws Exception {
+    void match() throws Exception {
         SourceMatcher sm = new SourceMatcher(fileName);
 
         // no source set: test incomplete data
@@ -131,7 +131,7 @@ public class SourceMatcherTest {
     }
 
     @Test
-    public void testRealPathMatchWithRegexpAndProject() throws Exception {
+    void testRealPathMatchWithRegexpAndProject() throws Exception {
         // add this test class as the bug target
         bug.addClass("SourceMatcherTest", null);
         ClassAnnotation primaryClass = bug.getPrimaryClass();
@@ -149,13 +149,13 @@ public class SourceMatcherTest {
 
         // regexp match source folder with project
         SourceMatcher sm = new SourceMatcher("~.*findbugs.*.java");
-        assertTrue("The regex matches the source directory of the given java file", sm.match(bug));
+        assertTrue(sm.match(bug), "The regex matches the source directory of the given java file");
         sm = new SourceMatcher("~.*notfound.*.java");
-        assertFalse("The regex does not match the source directory of the given java file", sm.match(bug));
+        assertFalse(sm.match(bug), "The regex does not match the source directory of the given java file");
     }
 
     @Test
-    public void testRealPathMatchWithRegexpAndAnalysisContext() throws Exception {
+    void testRealPathMatchWithRegexpAndAnalysisContext() throws Exception {
         // add this test class as the bug target
         bug.addClass("SourceMatcherTest", null);
         ClassAnnotation primaryClass = bug.getPrimaryClass();
@@ -173,9 +173,9 @@ public class SourceMatcherTest {
 
         // regexp match source folder with analysis context
         SourceMatcher sm = new SourceMatcher("~.*findbugs.*.java");
-        assertTrue("The regex matches the source directory of the given java file", sm.match(bug));
+        assertTrue(sm.match(bug), "The regex matches the source directory of the given java file");
         sm = new SourceMatcher("~.*notfound.*.java");
-        assertFalse("The regex does not match the source directory of the given java file", sm.match(bug));
+        assertFalse(sm.match(bug), "The regex does not match the source directory of the given java file");
     }
 
     private String writeXMLAndGetStringOutput(SourceMatcher matcher, boolean disabled) throws IOException {

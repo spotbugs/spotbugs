@@ -4,16 +4,17 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/1764">GitHub issue</a>
  */
-public class Issue1764Test extends AbstractIntegrationTest {
+class Issue1764Test extends AbstractIntegrationTest {
+
     @Test
-    public void test() {
+    void testIssue() {
         System.setProperty("frc.debug", "true");
         performAnalysis("ghIssues/Issue1764.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()

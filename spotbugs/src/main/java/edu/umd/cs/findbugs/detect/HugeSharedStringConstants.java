@@ -110,7 +110,7 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
             BugInstance bug = new BugInstance(this, "HSC_HUGE_SHARED_STRING_CONSTANT",
                     overhead > 20 * SIZE_OF_HUGE_CONSTANT ? HIGH_PRIORITY
                             : (overhead > 8 * SIZE_OF_HUGE_CONSTANT ? NORMAL_PRIORITY : LOW_PRIORITY)).addClass(className)
-                                    .addField(field).addInt(length).addInt(occursIn.size()).describe(IntAnnotation.INT_OCCURRENCES);
+                    .addField(field).addInt(length).addInt(occursIn.size()).describe(IntAnnotation.INT_OCCURRENCES);
             for (String c : occursIn) {
                 if (!c.equals(className)) {
                     bug.addClass(c);

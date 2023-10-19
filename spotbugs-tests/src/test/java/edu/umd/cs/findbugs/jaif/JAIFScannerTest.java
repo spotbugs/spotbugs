@@ -19,13 +19,13 @@
 
 package edu.umd.cs.findbugs.jaif;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.StringReader;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class JAIFScannerTest {
+class JAIFScannerTest {
 
     private JAIFScanner getScanner(String text) {
         return new JAIFScanner(new StringReader(text));
@@ -39,14 +39,14 @@ public class JAIFScannerTest {
     }
 
     @Test
-    public void testScanColon() throws Exception {
+    void testScanColon() throws Exception {
         JAIFScanner scanner = getScanner(":");
         checkToken(scanner, ":", JAIFTokenKind.COLON);
         checkToken(scanner, "\n", JAIFTokenKind.NEWLINE);
     }
 
     @Test
-    public void testScanParens() throws Exception {
+    void testScanParens() throws Exception {
         JAIFScanner scanner = getScanner("()");
 
         checkToken(scanner, "(", JAIFTokenKind.LPAREN);
@@ -55,7 +55,7 @@ public class JAIFScannerTest {
     }
 
     @Test
-    public void testScanComma() throws Exception {
+    void testScanComma() throws Exception {
         JAIFScanner scanner = getScanner(",");
 
         checkToken(scanner, ",", JAIFTokenKind.COMMA);
@@ -63,7 +63,7 @@ public class JAIFScannerTest {
     }
 
     @Test
-    public void testScanEquals() throws Exception {
+    void testScanEquals() throws Exception {
         JAIFScanner scanner = getScanner("=");
 
         checkToken(scanner, "=", JAIFTokenKind.EQUALS);
@@ -71,7 +71,7 @@ public class JAIFScannerTest {
     }
 
     @Test
-    public void testScanIdentifier() throws Exception {
+    void testScanIdentifier() throws Exception {
         JAIFScanner scanner = getScanner("  \t  \t\t@foobar Baz123   ( Boing Boing) @Yum@Yum __123  $plotz");
 
         checkToken(scanner, "@foobar", JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
@@ -88,7 +88,7 @@ public class JAIFScannerTest {
     }
 
     @Test
-    public void testScanFloatingPointLiteral() throws Exception {
+    void testScanFloatingPointLiteral() throws Exception {
         JAIFScanner scanner = getScanner("1e1f    2.f     .3f     0f      3.14f   6.022137e+23f");
 
         checkToken(scanner, "1e1f", JAIFTokenKind.FLOATING_POINT_LITERAL);
@@ -101,7 +101,7 @@ public class JAIFScannerTest {
     }
 
     @Test
-    public void testScanFloatingPointLiteral2() throws Exception {
+    void testScanFloatingPointLiteral2() throws Exception {
         JAIFScanner scanner = getScanner("1e1     2.      .3      0.0     3.14    1e-9d   1e137");
 
         checkToken(scanner, "1e1", JAIFTokenKind.FLOATING_POINT_LITERAL);
@@ -115,7 +115,7 @@ public class JAIFScannerTest {
     }
 
     @Test
-    public void testScanOctalLiteral() throws Exception {
+    void testScanOctalLiteral() throws Exception {
         JAIFScanner scanner = getScanner("0237   01575L  027365l");
 
         checkToken(scanner, "0237", JAIFTokenKind.OCTAL_LITERAL);
@@ -125,7 +125,7 @@ public class JAIFScannerTest {
     }
 
     @Test
-    public void testScanHexLiteral() throws Exception {
+    void testScanHexLiteral() throws Exception {
         JAIFScanner scanner = getScanner("0xDEADbeef   0xcafeBabeL   0X123EEfl");
 
         checkToken(scanner, "0xDEADbeef", JAIFTokenKind.HEX_LITERAL);
@@ -135,7 +135,7 @@ public class JAIFScannerTest {
     }
 
     @Test
-    public void testScanDecimalLiteral() throws Exception {
+    void testScanDecimalLiteral() throws Exception {
         JAIFScanner scanner = getScanner("1234     5678L    91919191l");
 
         checkToken(scanner, "1234", JAIFTokenKind.DECIMAL_LITERAL);
@@ -145,7 +145,7 @@ public class JAIFScannerTest {
     }
 
     @Test
-    public void testScanStringLiteral() throws Exception {
+    void testScanStringLiteral() throws Exception {
         JAIFScanner scanner = getScanner("\"hello\"    \"foobie bletch\"  \"\\\"\"  \"\\\\\\6\\45\\037\"  \"\\b\\t\\f\\n\"  ");
 
         checkToken(scanner, "\"hello\"", JAIFTokenKind.STRING_LITERAL);

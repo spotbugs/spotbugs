@@ -3,15 +3,15 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class FindReturnRefTest extends AbstractIntegrationTest {
+class FindReturnRefTest extends AbstractIntegrationTest {
     @Test
-    public void testFindReturnRefTestChecks() {
+    void testFindReturnRefTestChecks() {
         performAnalysis("FindReturnRefTest.class");
 
         assertNumOfBugs("EI_EXPOSE_BUF", 2);
@@ -66,7 +66,7 @@ public class FindReturnRefTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testFindReturnRefTest2Checks() {
+    void testFindReturnRefTest2Checks() {
         performAnalysis("FindReturnRefTest2.class",
                 "FindReturnRefTest2$Nested.class",
                 "FindReturnRefTest2$Inner.class");
@@ -123,7 +123,7 @@ public class FindReturnRefTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testFindReturnRefTest3Checks() {
+    void testFindReturnRefTest3Checks() {
         performAnalysis("FindReturnRefTest3.class",
                 "FindReturnRefTest3$Nested.class");
 
@@ -178,7 +178,7 @@ public class FindReturnRefTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testFindReturnRefTestNegativeChecks() {
+    void testFindReturnRefTestNegativeChecks() {
         performAnalysis("FindReturnRefNegativeTest.class",
                 "FindReturnRefNegativeTest$Inner.class");
 

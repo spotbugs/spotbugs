@@ -19,17 +19,17 @@
 
 package edu.umd.cs.findbugs;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author pugh
  */
-public class IntAnnotationTest {
+class IntAnnotationTest {
 
     @Test
-    public void test() {
+    void testIntAnnotation() {
         assertEquals("0xffff", IntAnnotation.getShortInteger(0xffff));
         assertEquals("0x1ffff", IntAnnotation.getShortInteger(0x1ffff));
         assertEquals("0x1fffffff", IntAnnotation.getShortInteger(0x1fffffff));

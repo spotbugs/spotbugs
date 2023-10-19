@@ -33,8 +33,10 @@ public class DontAssertInstanceofInTests extends OpcodeStackDetector {
         isTest = false;
         for (AnnotationEntry entry : obj.getAnnotationEntries()) {
             String entryType = entry.getAnnotationType();
-            // Visit the method only if it's a JUnit test.
+            // Visit the method only if it's a JUnit4 test.
             isTest |= "Lorg/junit/Test;".equals(entryType);
+            // Visit the method only if it's a JUnit5 test.
+            isTest |= "Lorg/junit/jupiter/api/Test;".equals(entryType);
         }
     }
 
@@ -60,7 +62,7 @@ public class DontAssertInstanceofInTests extends OpcodeStackDetector {
                 String ciOp = getClassConstantOperand();
                 String ncOp = getNameConstantOperand();
 
-                if ("org/junit/Assert".equals(ciOp) &&
+                if (("org/junit/Assert".equals(ciOp) || "org/junit/jupiter/api/Assertion".equals(ciOp)) &&
                         "assertTrue".equals(ncOp)) {
                     // This condition only triggers if the previous opcode was instanceof,
                     // so currBug is guaranteed to be a new BugInstance.

@@ -74,7 +74,7 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
                     "()Ljava/lang/Object;".equals(met.getSignature())) {
                 bugAccumulator.accumulateBug(new BugInstance(this,
                         "REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS", NORMAL_PRIORITY)
-                                .addClassAndMethod(this), this);
+                        .addClassAndMethod(this), this);
             } else if ("java.lang.Class".equals(cls.getClassName()) &&
                     "getDeclaredField".equals(met.getName()) &&
                     "(Ljava/lang/String;)Ljava/lang/reflect/Field;".equals(met.getSignature())) {
@@ -86,7 +86,7 @@ public class ReflectionIncreaseAccessibility extends OpcodeStackDetector {
                 if (fieldIsFromParam != null && fieldIsFromParam.booleanValue()) {
                     bugAccumulator.accumulateBug(new BugInstance(this,
                             "REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD", NORMAL_PRIORITY)
-                                    .addClassAndMethod(this), this);
+                            .addClassAndMethod(this), this);
                 }
             } else if ("java.lang.SecurityManager".equals(cls.getClassName()) &&
                     "checkPackageAccess".equals(met.getName()) &&

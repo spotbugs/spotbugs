@@ -1,12 +1,12 @@
 package edu.umd.cs.findbugs.ba.npe;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 
-public class NonNullParamPropertyTest {
+class NonNullParamPropertyTest {
 
     ParameterProperty empty;
 
@@ -14,8 +14,8 @@ public class NonNullParamPropertyTest {
 
     ParameterProperty extremes;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         empty = new ParameterProperty();
 
         nonEmpty = new ParameterProperty();
@@ -28,36 +28,36 @@ public class NonNullParamPropertyTest {
     }
 
     @Test
-    public void testEmpty() {
+    void testEmpty() {
         for (int i = 0; i < 32; ++i) {
-            Assert.assertFalse(empty.hasProperty(i));
+            Assertions.assertFalse(empty.hasProperty(i));
         }
     }
 
     @Test
-    public void testIsEmpty() {
-        Assert.assertTrue(empty.isEmpty());
-        Assert.assertFalse(nonEmpty.isEmpty());
-        Assert.assertFalse(extremes.isEmpty());
+    void testIsEmpty() {
+        Assertions.assertTrue(empty.isEmpty());
+        Assertions.assertFalse(nonEmpty.isEmpty());
+        Assertions.assertFalse(extremes.isEmpty());
     }
 
     @Test
-    public void testNonEmpty() {
-        Assert.assertTrue(nonEmpty.hasProperty(11));
-        Assert.assertTrue(nonEmpty.hasProperty(25));
-        Assert.assertFalse(nonEmpty.hasProperty(5));
+    void testNonEmpty() {
+        Assertions.assertTrue(nonEmpty.hasProperty(11));
+        Assertions.assertTrue(nonEmpty.hasProperty(25));
+        Assertions.assertFalse(nonEmpty.hasProperty(5));
     }
 
     @Test
-    public void testExtremes() {
-        Assert.assertTrue(extremes.hasProperty(0));
-        Assert.assertTrue(extremes.hasProperty(31));
-        Assert.assertFalse(extremes.hasProperty(10));
+    void testExtremes() {
+        Assertions.assertTrue(extremes.hasProperty(0));
+        Assertions.assertTrue(extremes.hasProperty(31));
+        Assertions.assertFalse(extremes.hasProperty(10));
     }
 
     @Test
-    public void testOutOfBounds() {
-        Assert.assertFalse(nonEmpty.hasProperty(-1));
-        Assert.assertFalse(nonEmpty.hasProperty(32));
+    void testOutOfBounds() {
+        Assertions.assertFalse(nonEmpty.hasProperty(-1));
+        Assertions.assertFalse(nonEmpty.hasProperty(32));
     }
 }
