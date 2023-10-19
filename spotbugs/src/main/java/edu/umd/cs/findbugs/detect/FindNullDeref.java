@@ -246,6 +246,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         XMethod xMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 
+        // For junit 4 only (does not apply to junit 5)
         ClassDescriptor junitTestAnnotation = DescriptorFactory.createClassDescriptor("org/junit/Test");
         AnnotationValue av = xMethod.getAnnotation(junitTestAnnotation);
         if (av != null) {
@@ -513,7 +514,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
                 BugInstance warning = new BugInstance(this, "NP_STORE_INTO_NONNULL_FIELD", tos.isDefinitelyNull() ? HIGH_PRIORITY
                         : NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method).addField(field)
-                                .addOptionalAnnotation(variableAnnotation).addSourceLine(classContext, method, location);
+                        .addOptionalAnnotation(variableAnnotation).addSourceLine(classContext, method, location);
 
                 bugReporter.reportBug(warning);
             }

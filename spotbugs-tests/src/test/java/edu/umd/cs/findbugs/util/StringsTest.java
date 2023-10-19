@@ -19,14 +19,14 @@
 
 package edu.umd.cs.findbugs.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class StringsTest {
+class StringsTest {
 
-    public static String[] escapedStrings = {
+    private static String[] escapedStrings = {
         // mixed entities/unicode escape sequences
         "a b c 1 2 3 &amp; &lt; &gt; &quot; &apos; \\u0005 \\u0013 λ \\\\u0007",
         // *even* series of prefixed slashes + \\u -> do escape
@@ -45,24 +45,24 @@ public class StringsTest {
         // an empty string should be safe too
         "", };
 
-    public static String[] unescapedStrings = { "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007", "a b c \\\\\u0005",
+    private static String[] unescapedStrings = { "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007", "a b c \\\\\u0005",
         "a b c \\\\\\\\u0005", "a b c \\\\\u0005 \\\\\\\\u0013", "\\\\\\",
         "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007 a b c 1 2 3", null, "", };
 
     @Test
-    public void testEscapeXml() {
+    void testEscapeXml() {
         assert (escapedStrings.length == unescapedStrings.length);
         for (int i = 0; i < unescapedStrings.length; i++) {
             if (unescapedStrings[i] == null) {
                 assert (Strings.escapeXml(unescapedStrings[i]) == null);
             } else {
-                Assert.assertEquals(escapedStrings[i], Strings.escapeXml(unescapedStrings[i]));
+                Assertions.assertEquals(escapedStrings[i], Strings.escapeXml(unescapedStrings[i]));
             }
         }
     }
 
     @Test
-    public void testUnescapeXml() {
+    void testUnescapeXml() {
         assert (escapedStrings.length == unescapedStrings.length);
         for (int i = 0; i < escapedStrings.length; i++) {
             if (escapedStrings[i] == null) {
@@ -73,12 +73,12 @@ public class StringsTest {
         }
     }
 
-    public void checkEscapeLFCRBackSlash(String expected, String argument) {
-        assertEquals(argument, expected, Strings.escapeLFCRBackSlash(argument));
+    private void checkEscapeLFCRBackSlash(String expected, String argument) {
+        assertEquals(expected, Strings.escapeLFCRBackSlash(argument), argument);
     }
 
     @Test
-    public void testEscapeLFCRBackSlash() {
+    void testEscapeLFCRBackSlash() {
         checkEscapeLFCRBackSlash("abc", "abc");
         checkEscapeLFCRBackSlash("\\n", "\n");
         checkEscapeLFCRBackSlash("\\r", "\r");

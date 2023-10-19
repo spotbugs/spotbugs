@@ -1,5 +1,30 @@
 package edu.umd.cs.findbugs.sarif;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Optional;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -19,37 +44,14 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+class SarifBugReporterTest {
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public class SarifBugReporterTest {
     private SarifBugReporter reporter;
     private StringWriter writer;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         Project project = new Project();
         reporter = new SarifBugReporter(project);
         writer = new StringWriter();
@@ -60,6 +62,7 @@ public class SarifBugReporterTest {
         Global.setAnalysisCacheForCurrentThread(analysisCache);
         FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
         AnalysisContext analysisContext = new AnalysisContext(project) {
+            @Override
             public boolean isApplicationClass(@DottedClassName String className) {
                 // treat all classes as application class, to report bugs in it
                 return true;
@@ -68,8 +71,8 @@ public class SarifBugReporterTest {
         AnalysisContext.setCurrentAnalysisContext(analysisContext);
     }
 
-    @After
-    public void teardown() {
+    @AfterEach
+    void teardown() {
         AnalysisContext.removeCurrentAnalysisContext();
         Global.removeAnalysisCacheForCurrentThread();
     }
@@ -79,7 +82,7 @@ public class SarifBugReporterTest {
      * Root object also should have {@code "$schema"} field that points the JSON schema provided by SARIF community.
      */
     @Test
-    public void testVersionAndSchema() {
+    void testVersionAndSchema() {
         reporter.finish();
 
         String json = writer.toString();
@@ -97,7 +100,7 @@ public class SarifBugReporterTest {
      * A toolComponent object MAY contain a {@code "language"} property (§3.19.21).
      */
     @Test
-    public void testDriver() {
+    void testDriver() {
         final String EXPECTED_VERSION = Version.VERSION_STRING;
         final String EXPECTED_LANGUAGE = "ja";
 
@@ -121,7 +124,7 @@ public class SarifBugReporterTest {
     }
 
     @Test
-    public void testRuleWithArguments() {
+    void testRuleWithArguments() {
         // given
         final String EXPECTED_BUG_TYPE = "BUG_TYPE";
         final int EXPECTED_PRIORITY = Priorities.NORMAL_PRIORITY;
@@ -158,7 +161,7 @@ public class SarifBugReporterTest {
     }
 
     @Test
-    public void testMissingClassNotification() {
+    void testMissingClassNotification() {
         ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor("com/github/spotbugs/MissingClass");
         reporter.reportMissingClass(classDescriptor);
         reporter.finish();
@@ -179,7 +182,7 @@ public class SarifBugReporterTest {
     }
 
     @Test
-    public void testErrorNotification() {
+    void testErrorNotification() {
         reporter.logError("Unexpected Error");
         reporter.finish();
 
@@ -198,7 +201,7 @@ public class SarifBugReporterTest {
     }
 
     @Test
-    public void testExceptionNotification() {
+    void testExceptionNotification() {
         reporter.getProject().getSourceFinder().setSourceBaseList(Collections.singletonList(new File("src/test/java").getAbsolutePath()));
         reporter.logError("Unexpected Error", new Exception("Unexpected Problem"));
         reporter.finish();
@@ -222,7 +225,7 @@ public class SarifBugReporterTest {
     }
 
     @Test
-    public void testExceptionNotificationWithoutMessage() {
+    void testExceptionNotificationWithoutMessage() {
         reporter.logError("Unexpected Error", new Exception());
         reporter.finish();
 
@@ -241,7 +244,7 @@ public class SarifBugReporterTest {
     }
 
     @Test
-    public void testHelpUriAndTags() {
+    void testHelpUriAndTags() {
         BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
@@ -264,7 +267,7 @@ public class SarifBugReporterTest {
     }
 
     @Test
-    public void testExtensions() throws PluginException {
+    void testExtensions() throws PluginException {
         PluginLoader pluginLoader = DetectorFactoryCollection.instance().getCorePlugin().getPluginLoader();
         Plugin plugin = new Plugin("pluginId", "version", null, pluginLoader, true, false);
         DetectorFactoryCollection dfc = new DetectorFactoryCollection(plugin);
@@ -289,7 +292,7 @@ public class SarifBugReporterTest {
     }
 
     @Test
-    public void testSourceLocation() throws IOException {
+    void testSourceLocation() throws IOException {
         Path tmpDir = Files.createTempDirectory("spotbugs");
         new File(tmpDir.toFile(), "SampleClass.java").createNewFile();
         SourceFinder sourceFinder = reporter.getProject().getSourceFinder();
@@ -319,6 +322,59 @@ public class SarifBugReporterTest {
         assertThat("relative URI that can be resolved by the uriBase",
                 relativeUri, is("SampleClass.java"));
         assertThat(artifactLocation.get("uriBaseId").getAsString(), is(uriBaseId));
+    }
+
+    @Test
+    void testCweTaxonomy() throws IOException {
+        String type = "TYPE_WITH_CWE";
+        int cweid = 502;
+
+        Path tmpDir = Files.createTempDirectory("spotbugs");
+        new File(tmpDir.toFile(), "SampleClass.java").createNewFile();
+        SourceFinder sourceFinder = reporter.getProject().getSourceFinder();
+        sourceFinder.setSourceBaseList(Collections.singleton(tmpDir.toString()));
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", "detailText", "https://example.com/help.html", cweid);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10)
+                .addClass("SampleClass"));
+        reporter.finish();
+
+        String json = writer.toString();
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
+
+        /* test rules part */
+        JsonObject tool = run.getAsJsonObject("tool");
+        JsonObject driver = tool.getAsJsonObject("driver");
+        JsonObject rule = driver.getAsJsonArray("rules").get(0).getAsJsonObject();
+        JsonObject relationship = rule.getAsJsonArray("relationships").get(0).getAsJsonObject();
+
+        assertThat(rule.get("id").getAsString(), is(type));
+        assertThat(relationship.getAsJsonObject("target").get("id").getAsInt(), is(cweid));
+        assertThat(relationship.getAsJsonArray("kinds").get(0).getAsString(), is("superset"));
+
+        /* test supported taxonomies part */
+        assertThat(driver.getAsJsonArray("supportedTaxonomies").get(0).getAsJsonObject().get("name").getAsString(),
+                is("CWE"));
+
+        /* test taxonomies */
+        JsonArray taxonomies = run.getAsJsonArray("taxonomies");
+        assertThat(taxonomies.size(), is(1));
+
+        JsonObject cweTaxonomy = taxonomies.get(0).getAsJsonObject();
+        assertThat(cweTaxonomy.get("organization").getAsString(), is("MITRE"));
+        assertThat(cweTaxonomy.get("name").getAsString(), is("CWE"));
+
+        JsonArray taxa = cweTaxonomy.getAsJsonArray("taxa");
+        assertThat(taxonomies.size(), is(1));
+
+        JsonObject cwe502taxon = taxa.get(0).getAsJsonObject();
+        assertThat(cwe502taxon.get("id").getAsInt(), is(cweid));
+        assertThat(cwe502taxon.get("shortDescription").getAsJsonObject().get("text").getAsString(),
+                is("Deserialization of Untrusted Data"));
     }
 
     Optional<String> takeFirstKey(JsonObject object) {

@@ -26,8 +26,8 @@ dependencies {
   }
 
   implementation project(':test-harness')
-  implementation 'org.hamcrest:hamcrest-core:2.2'
-  implementation 'org.apache.ant:ant:1.10.13'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+  implementation 'org.apache.ant:ant:1.10.14'
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340

@@ -14,27 +14,27 @@ sourceSets {
 }
 
 dependencies {
-  // TODO : Some of these can be extracted to actual dependencies
-  implementation fileTree(dir: 'lib', include: '*.jar')
-
+  implementation 'jakarta.servlet:jakarta.servlet-api:4.0.4'
+  implementation 'jakarta.ejb:jakarta.ejb-api:3.2.6'
   implementation 'com.google.code.gson:gson:2.10.1'
-  implementation 'com.google.guava:guava:30.1.1-jre'
+  implementation 'com.google.guava:guava:32.1.3-jre'
   implementation libs.guice
   implementation libs.guice.assistedinject
   implementation libs.guice.servlet
-  implementation 'com.google.truth:truth:1.1.3'
+  implementation 'com.google.truth:truth:1.1.5'
   implementation 'joda-time:joda-time:2.12.5'
-  api 'net.jcip:jcip-annotations:1.0'
-  implementation 'org.springframework:spring-core:6.0.8'
+  api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
+  implementation 'org.springframework:spring-core:6.0.13'
   compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5'
-  implementation 'org.checkerframework:checker-qual:3.33.0'
+  implementation 'org.checkerframework:checker-qual:3.39.0'
 
-  implementation 'junit:junit:4.13.2'
-  implementation 'org.testng:testng:7.7.1'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+  implementation 'org.testng:testng:7.8.0'
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
-  implementation 'org.apache.groovy:groovy-all:4.0.11'
+  implementation 'org.apache.groovy:groovy-all:4.0.15'
+  implementation 'org.mockito:mockito-core:5.6.0'
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -66,21 +66,21 @@ tasks.named('javadoc', Javadoc).configure {
 }
 
 def classesJava8 = tasks.register('classesJava8', JavaCompile) {
-  destinationDirectory.set(file("$buildDir/classes/java/java8"))
+  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java8"))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java8')
 }
 
 def classesJava11 = tasks.register('classesJava11', JavaCompile) {
-  destinationDirectory.set(file("$buildDir/classes/java/java11"))
+  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java11"))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java11')
 }
 
 def classesJava17 = tasks.register('classesJava17', JavaCompile) {
-  destinationDirectory.set(file("$buildDir/classes/java/java14"))
+  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java17"))
   classpath = sourceSets.main.compileClasspath
-  source = file('src/java14')
+  source = file('src/java17')
 }
 
 tasks.named('classes').configure {

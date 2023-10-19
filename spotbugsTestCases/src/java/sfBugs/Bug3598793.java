@@ -126,6 +126,12 @@ public class Bug3598793 implements ServletResponse {
     }
 
     @Override
+    public void setContentLengthLong(long arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
     public void setContentType(String arg0) {
         // TODO Auto-generated method stub
 

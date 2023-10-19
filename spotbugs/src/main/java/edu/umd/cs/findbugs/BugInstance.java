@@ -2125,9 +2125,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     public BugInstance add(@Nonnull BugAnnotation annotation) {
         requireNonNull(annotation, "Missing BugAnnotation!");
 
-        // The java annotations for the class were not stored before, 
+        // The java annotations for the class were not stored before,
         // thus we add a post-hook to lookup the java annotations for
-        // bug annotation types that have a class descriptor. Then 
+        // bug annotation types that have a class descriptor. Then
         // post-analysis matcher can easily filter based on the java
         // annotations (without having to look at the bytecode again).
         if (annotation instanceof PackageMemberAnnotation) {

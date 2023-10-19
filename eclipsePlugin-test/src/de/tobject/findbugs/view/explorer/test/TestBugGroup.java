@@ -18,18 +18,18 @@
  */
 package de.tobject.findbugs.view.explorer.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.view.explorer.BugGroup;
 import de.tobject.findbugs.view.explorer.GroupType;
 
-public class TestBugGroup {
+class TestBugGroup {
 
     @Test
-    public void testEquals() {
+    void testEquals() {
         BugGroup bg1 = new BugGroup(null, null, GroupType.Marker);
         BugGroup bg2 = new BugGroup(null, null, GroupType.Marker);
         assertEquals(bg1, bg2);

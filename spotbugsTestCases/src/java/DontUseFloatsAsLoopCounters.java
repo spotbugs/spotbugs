@@ -100,4 +100,22 @@ class DontUseFloatsAsLoopCounters {
         }
         return k;
     }
+
+    //compliant
+    //false positive sample provided in issue #2071
+    public static int ilog10(double x) {
+        if (x >= 1.0) {
+            int i = 0;
+            while ((x /= 10.0) >= 1.0) { // <-- HERE
+                i++;
+            }
+            return i;
+        } else {
+            int i = -1;
+            while ((x *= 10.0) < 1.0) { // <-- HERE
+                i--;
+            }
+            return i;
+        }
+    }
 }

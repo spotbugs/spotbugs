@@ -19,11 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.generic;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
 import edu.umd.cs.findbugs.util.Values;
@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.util.Values;
 /**
  * @author Nat Ayewah
  */
-public class TestGenericObjectType {
+class TestGenericObjectType {
 
     GenericObjectType obj;
 
@@ -58,7 +58,7 @@ public class TestGenericObjectType {
 
     List<ReferenceType> parameters;
 
-    public void initTest(String bytecodeSignature, String javaSignature, String underlyingClass,
+    private void initTest(String bytecodeSignature, String javaSignature, String underlyingClass,
             GenericUtilities.TypeCategory typeCategory,
             @Nullable String variable, @Nullable Type extension, @Nullable List<ReferenceType> parameters) {
         this.obj = (GenericObjectType) GenericUtilities.getType(bytecodeSignature);
@@ -70,7 +70,7 @@ public class TestGenericObjectType {
         this.parameters = parameters;
     }
 
-    public void processTest() {
+    private void processTest() {
         assertEquals(obj.toString(true), javaSignature);
         assertEquals(obj.getClassName(), underlyingClass);
         assertEquals(obj.getTypeCategory(), typeCategory);
@@ -111,14 +111,15 @@ public class TestGenericObjectType {
     }
 
     @Test
-    public void testParameterizedList() {
+    void testParameterizedList() {
         initTest("Ljava/util/List<Ljava/lang/Comparable;>;", "java.util.List<java.lang.Comparable>", "java.util.List",
                 GenericUtilities.TypeCategory.PARAMETERIZED, null, null,
                 GenericUtilities.getTypeParameters("Ljava/lang/Comparable;"));
         processTest();
     }
 
-    public void notestCreateTypes() {
+    @Test
+    void testCreateTypes() {
         initTest("LDummyClass<Ljava/lang/Comparable;TE;>;", "DummyClass<java.lang.Comparable,E>", "DummyClass",
                 GenericUtilities.TypeCategory.PARAMETERIZED, null, null, Arrays.asList(
                         (ReferenceType) GenericUtilities.getType("Ljava/lang/Comparable;"),
@@ -126,7 +127,8 @@ public class TestGenericObjectType {
         processTest();
     }
 
-    public void notestTypeVariables() {
+    @Test
+    void testTypeVariables() {
         initTest("TE;", "E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.TYPE_VARIABLE, "E", null, null);
         processTest();
 
