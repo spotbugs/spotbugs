@@ -1720,7 +1720,6 @@ Cependant l'initialisation du champ comporte plusieurs écriture, ce qui requier
 ]]>
   </Details>
  </BugPattern>
- </BugPattern>
  <BugPattern type="MS_SHOULD_BE_FINAL">
   <ShortDescription>Un champ n'est pas final alors qu'il devrait l'être</ShortDescription>
   <LongDescription>{1} n'est pas final mais devrait l'être</LongDescription>
