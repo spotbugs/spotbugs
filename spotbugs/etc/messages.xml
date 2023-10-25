@@ -9156,17 +9156,18 @@ Using floating-point variables should not be used as loop counters, as they are 
           <tr>
              <th>Environment variable</th> <th>Property</th>
           </tr>
-          <tr><td>OS</td> <td>os.name</td></tr>
-          <tr><td>PROCESSOR_ARCHITECTURE</td> <td>os.arch</td></tr>
-          <tr><td>USERNAME</td> <td>user.name</td></tr>
-          <tr><td>USER</td> <td>user.name</td></tr>
-          <tr><td>HOMEPATH</td> <td>user.home</td></tr>
-          <tr><td>HOME</td> <td>user.home</td></tr>
-          <tr><td>PWD</td> <td>user.dir</td></tr>
           <tr><td>JAVA_HOME</td> <td>java.home</td></tr>
           <tr><td>JAVA_VERSION</td> <td>java.version</td></tr>
           <tr><td>TEMP</td> <td>java.io.tmpdir</td></tr>
           <tr><td>TMP</td> <td>java.io.tmpdir</td></tr>
+          <tr><td>PROCESSOR_ARCHITECTURE</td> <td>os.arch</td></tr>
+          <tr><td>OS</td> <td>os.name</td></tr>
+          <tr><td>USER</td> <td>user.name</td></tr>
+          <tr><td>USERNAME</td> <td>user.name</td></tr>
+          <tr><td>HOME</td> <td>user.home</td></tr>
+          <tr><td>HOMEPATH</td> <td>user.home</td></tr>
+          <tr><td>CD</td> <td>user.dir</td></tr>
+          <tr><td>PWD</td> <td>user.dir</td></tr>
         </table>
       </p>
       <p>

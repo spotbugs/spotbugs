@@ -36,17 +36,18 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 public class UnnecessaryEnvUsage extends OpcodeStackDetector {
     private static final Map<String, String> envvarPropertyMap = Collections.unmodifiableMap(new HashMap<String, String>() {
         {
-            put("OS", "os.name");
-            put("PROCESSOR_ARCHITECTURE", "os.arch");
-            put("USERNAME", "user.name");
-            put("USER", "user.name");
-            put("HOMEPATH", "user.home");
-            put("HOME", "user.home");
-            put("PWD", "user.dir");
             put("JAVA_HOME", "java.home");
             put("JAVA_VERSION", "java.version");
             put("TEMP", "java.io.tmpdir");
             put("TMP", "java.io.tmpdir");
+            put("PROCESSOR_ARCHITECTURE", "os.arch");
+            put("OS", "os.name");
+            put("USER", "user.name");
+            put("USERNAME", "user.name");
+            put("HOME", "user.home");
+            put("HOMEPATH", "user.home");
+            put("CD", "user.dir");
+            put("PWD", "user.dir");
         }
     });
 
