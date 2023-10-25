@@ -9139,11 +9139,12 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
 
   <BugPattern type="ENV_USE_PROPERTY_INSTEAD_OF_ENV">
-    <ShortDescription>It is safer to use validated Java property instead of insecure environment variable.</ShortDescription>
-    <LongDescription>It is safer to use validated Java property '{3}' instead of insecure environment variable '{2}' in class {4} (method {1}).</LongDescription>
+    <ShortDescription>It is safer to use validated and portable Java property instead of insecure environment variable.</ShortDescription>
+    <LongDescription>It is safer to use validated and portable Java property '{3}' instead of insecure environment variable '{2}' in method {1}.</LongDescription>
     <Details>
       <![CDATA[<p>
-        Environment variables may be accidentally or maliciously altered during process execution. This makes them unsafe to be relied
+        Environment variables are not portable, the variable itself (not only the value) may be different depending on the running OS.
+        Also, environment variables may be accidentally or maliciously altered during process execution. This makes them unsafe to be relied
         upon important system-level information. Some environment variables are understood, validated and secured by the JVM.
         These values are available as system properties, which should be used instead.
       </p>
