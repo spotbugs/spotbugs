@@ -12,11 +12,21 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 class UnnecessaryEnvUsageTest extends AbstractIntegrationTest {
     @Test
-    void testingVariuosEnvUsages() {
+    void testingEnvUsages() {
         performAnalysis("UnnecessaryEnvUsage.class");
-        assertBug(2);
+        assertBug(12);
         assertBug("replaceableEnvUsage", 3);
         assertBug("replaceableEnvUsage", 4);
+        assertBug("replaceableEnvUsage", 5);
+        assertBug("replaceableEnvUsage", 6);
+        assertBug("replaceableEnvUsage", 7);
+        assertBug("replaceableEnvUsage", 8);
+        assertBug("replaceableEnvUsage", 9);
+        assertBug("replaceableEnvUsage", 10);
+        assertBug("replaceableEnvUsage", 11);
+        assertBug("replaceableEnvUsage", 12);
+        assertBug("replaceableEnvUsage", 13);
+        assertBug("replaceableEnvUsage", 14);
     }
 
     private void assertBug(int num) {
