@@ -199,7 +199,7 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
     @Test
     void testGoodConstructorThrowCheck13() {
         performAnalysis("constructorthrow/ConstructorThrowNegativeTest12.class",
-                 "constructorthrow/ConstructorThrowNegativeTest13.class");
+                "constructorthrow/ConstructorThrowNegativeTest13.class");
         assertNumOfCTBugs(0);
     }
 
