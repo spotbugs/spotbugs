@@ -190,6 +190,19 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
         assertNumOfCTBugs(0);
     }
 
+    @Test
+    void testGoodConstructorThrowCheck12() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest12.class");
+        assertNumOfCTBugs(0);
+    }
+
+    @Test
+    void testGoodConstructorThrowCheck13() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest12.class",
+                "constructorthrow/ConstructorThrowNegativeTest13.class");
+        assertNumOfCTBugs(0);
+    }
+
     private void assertNumOfCTBugs(int num) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("CT_CONSTRUCTOR_THROW").build();
