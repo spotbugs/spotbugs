@@ -15,6 +15,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix exception escapes when calling functions of JUnit Assert or Assertions ([[#2640](https://github.com/spotbugs/spotbugs/issues/2640)])
 - Fixed an error in the SARIF export when a bug annotation is missing ([[#2632](https://github.com/spotbugs/spotbugs/issues/2632)])
 - Fixed false positive RV_EXCEPTION_NOT_THROWN when asserting to exception throws ([[#2628](https://github.com/spotbugs/spotbugs/issues/2628)])
+- Lowered the priority of `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` bug ([[#2652](https://github.com/spotbugs/spotbugs/issues/2652)])
 
 ### Build
 - Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([[#2651](https://github.com/spotbugs/spotbugs/pull/2651)])
