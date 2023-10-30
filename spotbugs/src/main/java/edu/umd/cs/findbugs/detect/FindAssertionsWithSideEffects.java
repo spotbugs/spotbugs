@@ -61,7 +61,7 @@ public class FindAssertionsWithSideEffects extends AbstractAssertDetector {
      */
     @Override
     protected void detect(int seen) {
-        if (isMethodCall(seen)) {
+        if (isMethodCall(seen) && getXClassOperand() != null && getXMethodOperand() != null) {
             String retSig = new SignatureParser(getXMethodOperand().getSignature()).getReturnTypeSignature();
             String classSig = getXClassOperand().getSourceSignature();
             if (MutableClasses.mutableSignature("L" + getClassConstantOperand() + ";") &&

@@ -32,7 +32,8 @@ public class Issue2547 {
         throw e;
     }
 
-    // non-compliant
+    // This could be non-compliant, but it's a false negative currently.
+    // It needs a good heuristic to not cause too many FPs.
     public void notThrowingExCtorCallerOutside() {
         ExceptionFactory.createMyException(5);
     }
