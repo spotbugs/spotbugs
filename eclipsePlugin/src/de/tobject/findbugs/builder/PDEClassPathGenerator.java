@@ -18,9 +18,13 @@
  */
 package de.tobject.findbugs.builder;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
@@ -32,6 +36,11 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.launching.JREContainer;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.osgi.service.resolver.BundleDescription;
+import org.eclipse.pde.core.plugin.IPluginModelBase;
+import org.eclipse.pde.core.plugin.PluginRegistry;
+import org.eclipse.pde.internal.build.site.PDEState;
+import org.eclipse.pde.internal.core.ClasspathUtilCore;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
@@ -50,10 +59,17 @@ public class PDEClassPathGenerator {
      */
     public static String[] computeClassPath(IJavaProject javaProject) {
         Collection<String> classPath = Collections.EMPTY_SET;
-
-        // try to get default java classpath
-        classPath = createJavaClasspath(javaProject);
-
+        try {
+            // first try to check and resolve plugin project. It can fail if
+            // there is no
+            // PDE plugins installed in the current Eclipse instance (PDE is
+            // optional)
+            classPath = createPluginClassPath(javaProject);
+        } catch (NoClassDefFoundError ce) {
+            // ok, we do not have PDE installed, now try to get default java
+            // classpath
+            classPath = createJavaClasspath(javaProject);
+        }
         return classPath.toArray(new String[classPath.size()]);
     }
 
@@ -105,6 +121,87 @@ public class PDEClassPathGenerator {
         // segmentCount() > 1 is workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=281189
         // classpath contains unlikely one of root directories like /lib/ "as is"
         return path != null && path.segmentCount() > 1 && path.toFile().exists();
+    }
+
+    private static Collection<String> createPluginClassPath(IJavaProject javaProject) {
+        Set<String> javaClassPath = createJavaClasspath(javaProject);
+        IPluginModelBase model = PluginRegistry.findModel(javaProject.getProject());
+        if (model == null || model.getPluginBase().getId() == null) {
+            return javaClassPath;
+        }
+        BundleDescription target = model.getBundleDescription();
+
+        // target is null if plugin uses non OSGI format
+        if (target == null) {
+            return javaClassPath;
+        }
+        List<String> pdeClassPath = new ArrayList<>(javaClassPath);
+        Set<BundleDescription> bundles = new HashSet<>();
+        addDependentBundles(target, bundles);
+        for (BundleDescription bd : bundles) {
+            appendBundleToClasspath(bd, pdeClassPath);
+        }
+        return pdeClassPath;
+    }
+
+    private static void appendBundleToClasspath(BundleDescription bd, List<String> pdeClassPath) {
+        IPluginModelBase model = PluginRegistry.findModel(bd);
+        if (model == null) {
+            return;
+        }
+        ArrayList<IClasspathEntry> classpathEntries = new ArrayList<>();
+        ClasspathUtilCore.addLibraries(model, classpathEntries);
+
+        for (IClasspathEntry cpe : classpathEntries) {
+            IPath location = null;
+            if (cpe.getEntryKind() != IClasspathEntry.CPE_SOURCE) {
+                location = cpe.getPath();
+            }
+            if (location == null) {
+                continue;
+            }
+            String locationStr = location.toOSString();
+            if (pdeClassPath.contains(locationStr)) {
+                continue;
+            }
+            // extra cleanup for some directories on classpath
+            String bundleLocation = bd.getLocation();
+            if (bundleLocation != null && !"jar".equals(location.getFileExtension()) &&
+                    new File(bundleLocation).isDirectory()) {
+                if (bd.getSymbolicName().equals(location.lastSegment())) {
+                    // ignore badly resolved plugin directories inside workspace
+                    // ("." as classpath is resolved as plugin root directory)
+                    // which is, if under workspace, NOT a part of the classpath
+                    continue;
+                }
+            }
+            if (!location.isAbsolute()) {
+                location = ResourceUtils.relativeToAbsolute(location);
+            }
+            if (!isValidPath(location)) {
+                continue;
+            }
+            locationStr = location.toOSString();
+            if (!pdeClassPath.contains(locationStr)) {
+                pdeClassPath.add(locationStr);
+            }
+        }
+    }
+
+    private static void addDependentBundles(BundleDescription bd, Set<BundleDescription> bundles) {
+        // TODO for some reasons, this does not add "native" fragments for the
+        // platform. See also: ContributedClasspathEntriesEntry, RequiredPluginsClasspathContainer
+        // BundleDescription[] requires = PDEState.getDependentBundles(target);
+        BundleDescription[] bundles2 = PDEState.getDependentBundlesWithFragments(bd);
+        for (BundleDescription bundleDescription : bundles2) {
+            if (bundleDescription == null) {
+                continue;
+            }
+            if (!bundles.contains(bundleDescription)) {
+                bundles.add(bundleDescription);
+                addDependentBundles(bundleDescription, bundles);
+            }
+        }
     }
 
 }
