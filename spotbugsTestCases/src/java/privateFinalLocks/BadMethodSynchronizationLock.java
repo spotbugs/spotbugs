@@ -1,4 +1,4 @@
-package instanceLockOnSharedStaticData.LCK00;
+package privateFinalLocks;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -46,8 +46,8 @@ public class BadMethodSynchronizationLock {
 
 
 class ClassExposingItSelf {
-    public synchronized void changeValue() {
-        System.out.println("Change some value");
+    public synchronized void doStuff() {
+        System.out.println("Do some stuff");
     } // Locks on the object's monitor(intrinsic lock)
 
     public static ClassExposingItSelf lookup(String name) { // exposing the lock object, bug should be detected here

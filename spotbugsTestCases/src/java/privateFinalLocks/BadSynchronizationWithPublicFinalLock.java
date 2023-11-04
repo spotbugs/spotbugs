@@ -1,4 +1,4 @@
-package instanceLockOnSharedStaticData.LCK00;
+package privateFinalLocks;
 
 public class BadSynchronizationWithPublicFinalLock {
     public final Object lock = new Object();

@@ -1,4 +1,4 @@
-package instanceLockOnSharedStaticData.LCK00;
+package privateFinalLocks;
 
 public class GoodMethodSynchronizationLock {
     public static void untrustedCode() {
