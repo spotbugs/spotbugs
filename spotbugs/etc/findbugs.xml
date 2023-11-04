@@ -682,8 +682,8 @@
           <Detector class="edu.umd.cs.findbugs.detect.DontReusePublicIdentifiers" speed="fast"
                   reports="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindSynchronizationLock" speed="fast"
-                  reports="PFL_SYNCHRONIZE_WITH_PRIVATE_FINAL_LOCK_OBJECTS"/>
-          <!-- Bug Categories -->
+              reports="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"/>
+    <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
@@ -1320,6 +1320,9 @@
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="PFL" type="PFL_SYNCHRONIZE_WITH_PRIVATE_FINAL_LOCK_OBJECTS" category="BAD_PRACTICE"/>
+    <BugPattern abbrev="PFL" type="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"
+                category="BAD_PRACTICE"/>
+    <BugPattern abbrev="PFL" type="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"
+                category="BAD_PRACTICE"/>
 
 </FindbugsPlugin>

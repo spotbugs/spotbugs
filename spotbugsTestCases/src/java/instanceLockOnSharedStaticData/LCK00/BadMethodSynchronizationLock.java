@@ -2,10 +2,7 @@ package instanceLockOnSharedStaticData.LCK00;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @SuppressFBWarnings("SWL_SLEEP_WITH_LOCK_HELD")
 public class BadMethodSynchronizationLock {
@@ -34,14 +31,24 @@ public class BadMethodSynchronizationLock {
             }
         }
     }
+
+    public static void unTrustedCode3() throws InterruptedException {
+        // Similar case to the above one, but using a Map
+        Map<Object, ClassExposingAMapOfItself> aMapOfItself = ClassExposingAMapOfItself.getMap();
+
+        synchronized (aMapOfItself.values().iterator().next()) {
+            while (true) {
+                Thread.sleep(Integer.MAX_VALUE);
+            }
+        }
+    }
 }
 
 
 class ClassExposingItSelf {
-    // Locks on the object's monitor
     public synchronized void changeValue() {
         System.out.println("Change some value");
-    }
+    } // Locks on the object's monitor(intrinsic lock)
 
     public static ClassExposingItSelf lookup(String name) { // exposing the lock object, bug should be detected here
         return null;
@@ -51,10 +58,21 @@ class ClassExposingItSelf {
 class ClassExposingACollectionOfItself {
     public synchronized void doStuff() {
         System.out.println("Do some stuff");
-    }
+    } // Locks on the object's monitor(intrinsic lock)
 
     public static Collection<ClassExposingACollectionOfItself> getCollection() {
         return Collections.singletonList(new ClassExposingACollectionOfItself());
     }
 }
+
+class ClassExposingAMapOfItself {
+    public synchronized void doStuff() {
+        System.out.println("Do some stuff");
+    } // Locks on the object's monitor(intrinsic lock)
+
+    public static Map<Object, ClassExposingAMapOfItself> getMap() {
+        return Collections.singletonMap(new Object(), new ClassExposingAMapOfItself());
+    }
+}
+
 

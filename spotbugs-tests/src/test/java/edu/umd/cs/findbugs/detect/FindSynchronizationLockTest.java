@@ -13,14 +13,27 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
     private static final String BUG_TYPE = "PFL_SYNCHRONIZE_WITH_PRIVATE_FINAL_LOCK_OBJECTS";
 
     @Test
-    public void testBadMethodSynchronizationLock() {
+    void testBadMethodSynchronizationLock() {
         performAnalysis("instanceLockOnSharedStaticData/LCK00/BadMethodSynchronizationLock.class",
                 "instanceLockOnSharedStaticData/LCK00/ClassExposingItSelf.class",
-                "instanceLockOnSharedStaticData/LCK00/ClassExposingACollectionOfItself.class");
+                "instanceLockOnSharedStaticData/LCK00/ClassExposingACollectionOfItself.class",
+                "instanceLockOnSharedStaticData/LCK00/ClassExposingAMapOfItself.class"
+        );
 
-        assertNumOfBugs(2);
+        assertNumOfBugs(3);
 
-        assertBugsExactly(2, BUG_TYPE);
+        assertBugsExactly(3, BUG_TYPE);
+    }
+
+    @Test
+    void goodMethodSynchronizationLock() {
+        performAnalysis("instanceLockOnSharedStaticData/LCK00/GoodMethodSynchronizationLock.class",
+                "instanceLockOnSharedStaticData/LCK00/GoodMethodSynchronizationLock.class",
+                "instanceLockOnSharedStaticData/LCK00/GoodMethodSynchronizationLock.class",
+                "instanceLockOnSharedStaticData/LCK00/GoodMethodSynchronizationLock.class"
+        );
+
+        assertNumOfBugs(0);
     }
 
     private void assertBugsExactly(int count, String bugType) {
@@ -51,7 +64,8 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
     public void testBadSynchronizationWithPublicNonFinalLockObject() {
         performAnalysis("instanceLockOnSharedStaticData/LCK00/BadSynchronizationWithPublicNonFinalLock.class");
 
-        assertNumOfBugs(0);
+        assertNumOfBugs(1);
+        assertBugsExactly(1, BUG_TYPE);
     }
 
     @Test

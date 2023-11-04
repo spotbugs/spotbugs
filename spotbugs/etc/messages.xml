@@ -9134,19 +9134,42 @@ Using floating-point variables should not be used as loop counters, as they are 
       <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
       ]]>
         </Details>
-  </BugPattern>
-  <BugPattern type="PFL_SYNCHRONIZE_WITH_PRIVATE_FINAL_LOCK_OBJECTS">
-    <ShortDescription>Use private final lock objects to synchronize classes</ShortDescription>
-    <LongDescription>Class {1} exposes its lock object {2} to untrusted code.</LongDescription>
-    <Details>
-      <![CDATA[<p>
-        Both synchronization techniques that locks on the <b>this</b> reference uses the <b>object</b> as monitor(that is, it's intrinsic lock). An attacker
-        can manipulate the system to trigger a contention or deadlock by obtaining and indefinitely holding the intrinsic lock of an accessible class, resulting in a Denial of Service(DoS).
+    </BugPattern>
+    <BugPattern type="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+        <ShortDescription>Use private final lock objects to synchronize methods</ShortDescription>
+        <LongDescription>Field {2} used as lock object in {1} is exposed to untrusted code.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+        There are two ways to synchronize access to shared mutable variables: method synchronization and block synchronization. Synchronized methods and block that synchronize on the <b>this</b> reference,
+        use the <b>object</b> as monitor(that is, it's intrinsic lock). An attacker can manipulate the system to trigger a contention or deadlock
+        by obtaining and indefinitely holding the intrinsic lock of an accessible class, resulting in a Denial of Service(DoS).
 
-      <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+        There is s technique, called <b>private lock object idiom</b>, that prevents this vulnerability[<a href=https://www.oracle.com/java/technologies/effectivejava.html>Bloch 2001, Effective Java</a>]. This technique relies on the use of an intrinsic lock associated with the instance of a private final
+        java.lang.Object, declared within the class instead of the object itself. The idiom uses synchronized blocks, locked on this object, in the methods of the class instead of synchronized methods.
+        Lock contention between the class's methods and those of a hostile class becomes impossible because the hostile class cannot access the private final lock object.
+
+        <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+        ]]>
+        </Details>
+    </BugPattern>
+    <BugPattern type="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+        <ShortDescription>Use private final lock objects in synchronize blocks</ShortDescription>
+        <LongDescription>Method {1} uses intrinsic lock, exposed to untrusted code, in {0}.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+        There are two ways to synchronize access to shared mutable variables: method synchronization and block synchronization. Synchronized methods and block that synchronize on the <b>this</b> reference,
+        use the <b>object</b> as monitor(that is, it's intrinsic lock). An attacker can manipulate the system to trigger a contention or deadlock
+        by obtaining and indefinitely holding the intrinsic lock of an accessible class, resulting in a Denial of Service(DoS).
+
+        There is s technique, called <b>private lock object idiom</b>, that prevents this vulnerability[<a href=https://www.oracle.com/java/technologies/effectivejava.html>Bloch 2001, Effective Java</a>]. This technique relies on the use of an intrinsic lock associated with the instance of a private final
+        java.lang.Object, declared within the class instead of the object itself. The idiom uses synchronized blocks, locked on this object, in the methods of the class instead of synchronized methods.
+        Lock contention between the class's methods and those of a hostile class becomes impossible because the hostile class cannot access the private final lock object.
+
+        <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+        <p>See Bloch, </p>
       ]]>
-    </Details>
-  </BugPattern>
+        </Details>
+    </BugPattern>
   <!--
   **********************************************************************
    BugCodes
