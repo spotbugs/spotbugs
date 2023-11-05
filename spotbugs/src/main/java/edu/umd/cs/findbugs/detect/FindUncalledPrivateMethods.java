@@ -24,16 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.classfile.AnnotationEntry;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantCP;
-import org.apache.bcel.classfile.ConstantMethodHandle;
-import org.apache.bcel.classfile.ConstantMethodref;
-import org.apache.bcel.classfile.ConstantNameAndType;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.*;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -56,6 +47,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
     private HashSet<MethodAnnotation> definedPrivateMethods, calledMethods;
 
     private HashSet<String> calledMethodNames;
+    private HashSet<String> jUnitSourceMethodNames;
 
     public FindUncalledPrivateMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -63,6 +55,22 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 
     @Override
     public void visitMethod(Method obj) {
+        for (AnnotationEntry a : obj.getAnnotationEntries()) {
+            String typeName = a.getAnnotationType();
+            if ("Lorg/junit/jupiter/params/provider/MethodSource;".equals(typeName)) {
+                for (ElementValuePair pair : a.getElementValuePairs()) {
+                    if ("value".equals(pair.getNameString())) {
+                        String sourceMethodName = pair.getValue().stringifyValue();
+                        if (sourceMethodName.length() > 2) {
+                            // Remove the leading '{' and trailing '}'
+                            sourceMethodName = sourceMethodName.substring(1, sourceMethodName.length() - 1);
+                            jUnitSourceMethodNames.add(sourceMethodName);
+                        }
+                    }
+                }
+            }
+        }
+
         if (!obj.isPrivate() || obj.isSynthetic()) {
             return;
         }
@@ -109,6 +117,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         definedPrivateMethods = new HashSet<>();
         calledMethods = new HashSet<>();
         calledMethodNames = new HashSet<>();
+        jUnitSourceMethodNames = new HashSet<>();
         JavaClass javaClass = classContext.getJavaClass();
         className = javaClass.getClassName();
         String[] parts = className.split("[$+.]");
@@ -148,6 +157,9 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
             int priority = LOW_PRIORITY;
             String methodName = m.getMethodName();
             if (methodName.equals(simpleClassName) && "()V".equals(m.getMethodSignature())) {
+                continue;
+            }
+            if (m.isStatic() && m.toXMethod().getNumParams() == 0 && jUnitSourceMethodNames.contains(methodName)) {
                 continue;
             }
             if (methodName.length() > 1 && calledMethodNames.contains(methodName.toLowerCase())) {

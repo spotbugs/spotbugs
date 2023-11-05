@@ -18,6 +18,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix false positive CT_CONSTRUCTOR_THROW when supertype has final finalize ([[#2665](https://github.com/spotbugs/spotbugs/issues/2665)])
 - Lowered the priority of `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` bug ([[#2652](https://github.com/spotbugs/spotbugs/issues/2652)])
 - Eclipse: fixed startup overhead (on computing classpath) for PDE projects ([[#2671](https://github.com/spotbugs/spotbugs/pull/2671)])
+- Fixed false positive UPM_UNCALLED_PRIVATE_METHOD for method used in JUnit's MethodSource ([[#2379](https://github.com/spotbugs/spotbugs/issues/2379)])
 
 ### Build
 - Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([[#2651](https://github.com/spotbugs/spotbugs/pull/2651)])
