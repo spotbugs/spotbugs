@@ -27,9 +27,10 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
                 "privateFinalLocks/ClassExposingAMapOfItself.class"
         );
 
-        assertNumOfBugs(3, METHOD_BUG);
+        assertNumOfBugs(4, METHOD_BUG);
 
         assertBugExactly(METHOD_BUG, "privateFinalLocks.ClassExposingItSelf", "doStuff", Optional.empty());
+        assertBugExactly(METHOD_BUG, "privateFinalLocks.ClassExposingItSelf", "changeValue", Optional.empty());
         assertBugExactly(METHOD_BUG, "privateFinalLocks.ClassExposingACollectionOfItself", "doStuff", Optional.empty());
         assertBugExactly(METHOD_BUG, "privateFinalLocks.ClassExposingAMapOfItself", "doStuff", Optional.empty());
     }
@@ -42,6 +43,18 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertNumOfBugs(1, METHOD_BUG);
 
         assertBugExactly(METHOD_BUG, "privateFinalLocks.SomeOtherClass", "changeValue", Optional.empty());
+    }
+
+    @Test
+    public void testBadSynchronizationLockAcquiredFromParent() {
+        performAnalysis("privateFinalLocks/BadSynchronizationLockBase.class",
+                "privateFinalLocks/BadSynchronizationWithLockFromBase.class");
+
+        assertNumOfBugs(3, OBJECT_BUG);
+
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationLockBase", "doStuff", Optional.of("baseLock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithLockFromBase", "doStuff", Optional.of("baseLock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithLockFromBase", "changeValue", Optional.of("lock"));
     }
 
     @Test

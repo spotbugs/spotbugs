@@ -4,7 +4,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.*;
 
-@SuppressFBWarnings("SWL_SLEEP_WITH_LOCK_HELD")
 public class BadMethodSynchronizationLock {
     public static void unTrustedCode() throws InterruptedException {
         // Untrusted code
@@ -48,6 +47,10 @@ public class BadMethodSynchronizationLock {
 class ClassExposingItSelf {
     public synchronized void doStuff() {
         System.out.println("Do some stuff");
+    } // Locks on the object's monitor(intrinsic lock)
+
+    public static synchronized void changeValue() {
+        System.out.println("Change some values");
     } // Locks on the object's monitor(intrinsic lock)
 
     public static ClassExposingItSelf lookup(String name) { // exposing the lock object, bug should be detected here

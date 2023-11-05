@@ -21,6 +21,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     /**
      * @note: - Change the place where the bug should be detected.
      * - Think through what happens when multiple synchronized methods are in the same class
+     * - It should check if a lock is coming from the parent, report this
+     * - If lock is used incorrectly in parent it should be reported there as well
      * - Method synchronizations reports the function that exposes the class instead of the synchronized methods
      */
     private static final String METHOD_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";

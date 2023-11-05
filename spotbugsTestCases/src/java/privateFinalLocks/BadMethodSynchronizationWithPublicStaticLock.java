@@ -2,7 +2,6 @@ package privateFinalLocks;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-@SuppressFBWarnings("SWL_SLEEP_WITH_LOCK_HELD")
 public class BadMethodSynchronizationWithPublicStaticLock {
 
     public static void unTrustedCode() throws InterruptedException {
