@@ -9149,7 +9149,7 @@ Using floating-point variables should not be used as loop counters, as they are 
         These values are available as system properties, which should be used instead.
       </p>
       <p>
-        If a value can be accessed through both System.getProperty() and System.getenv(), should be accessed using the former.
+        If a value can be accessed through both System.getProperty() and System.getenv(), it should be accessed using the former.
       </p>
       <p>
         Mapping of corresponding Java properties:
