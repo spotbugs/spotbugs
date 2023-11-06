@@ -19,6 +19,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Lowered the priority of `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` bug ([[#2652](https://github.com/spotbugs/spotbugs/issues/2652)])
 - Eclipse: fixed startup overhead (on computing classpath) for PDE projects ([[#2671](https://github.com/spotbugs/spotbugs/pull/2671)])
 
+### Added
+- New detector finding `System.getenv()` calls, where the corresponding Java property could be used (See [ENV02-J](https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables)).
+
 ### Build
 - Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([[#2651](https://github.com/spotbugs/spotbugs/pull/2651)])
 
