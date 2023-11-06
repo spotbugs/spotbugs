@@ -1,6 +1,6 @@
 /*
- * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003-2005 University of Maryland
+ * Contributions to SpotBugs
+ * Copyright (C) 2019, The SpotBugs authors
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
