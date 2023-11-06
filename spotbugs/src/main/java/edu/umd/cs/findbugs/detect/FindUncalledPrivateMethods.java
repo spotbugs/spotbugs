@@ -22,9 +22,20 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantCP;
+import org.apache.bcel.classfile.ConstantMethodHandle;
+import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.ElementValuePair;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -47,7 +58,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
     private HashSet<MethodAnnotation> definedPrivateMethods, calledMethods;
 
     private HashSet<String> calledMethodNames;
-    private HashSet<String> jUnitSourceMethodNames;
+    private Set<String> jUnitSourceMethodNames;
 
     public FindUncalledPrivateMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
