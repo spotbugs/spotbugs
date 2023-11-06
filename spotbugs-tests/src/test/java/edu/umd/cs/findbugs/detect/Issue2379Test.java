@@ -16,8 +16,14 @@ public class Issue2379Test extends AbstractIntegrationTest {
         performAnalysis("ghIssues/Issue2379.class");
 
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType("UPM_UNCALLED_PRIVATE_METHOD")
+                .inMethod("unusedValues")
                 .build();
 
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        // Check that we've found the uncalled private method
+        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+
+        // Check that it was the only bug we've found
+        assertThat(getBugCollection(), containsExactly(1, new BugInstanceMatcherBuilder().build()));
     }
 }
