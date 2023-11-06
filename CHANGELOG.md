@@ -16,6 +16,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed an error in the SARIF export when a bug annotation is missing ([[#2632](https://github.com/spotbugs/spotbugs/issues/2632)])
 - Fixed false positive RV_EXCEPTION_NOT_THROWN when asserting to exception throws ([[#2628](https://github.com/spotbugs/spotbugs/issues/2628)])
 - Fix false positive CT_CONSTRUCTOR_THROW when supertype has final finalize ([[#2665](https://github.com/spotbugs/spotbugs/issues/2665)])
+- Lowered the priority of `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` bug ([[#2652](https://github.com/spotbugs/spotbugs/issues/2652)])
+- Eclipse: fixed startup overhead (on computing classpath) for PDE projects ([[#2671](https://github.com/spotbugs/spotbugs/pull/2671)])
 
 ### Build
 - Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([[#2651](https://github.com/spotbugs/spotbugs/pull/2651)])
