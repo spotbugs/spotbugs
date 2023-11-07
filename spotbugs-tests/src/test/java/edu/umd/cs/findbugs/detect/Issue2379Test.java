@@ -15,15 +15,19 @@ public class Issue2379Test extends AbstractIntegrationTest {
     public void test() {
         performAnalysis("ghIssues/Issue2379.class");
 
+        // Check that we've found the uncalled `unusedValues` private method
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("UPM_UNCALLED_PRIVATE_METHOD")
                 .inMethod("unusedValues")
                 .build();
 
-        // Check that we've found the uncalled private method
         assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
 
-        // Check that it was the only bug we've found
-        assertThat(getBugCollection(), containsExactly(1, new BugInstanceMatcherBuilder().build()));
+        // Check that it was the one and only bug we've found
+        bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType("UPM_UNCALLED_PRIVATE_METHOD")
+                .build();
+
+        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
     }
 }
