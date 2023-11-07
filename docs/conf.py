@@ -17,7 +17,7 @@ import os
 
 html_context = {
   'version' : '4.8',
-  'full_version' : '4.8.0',
+  'full_version' : '4.8.1',
   'maven_plugin_version' : '4.8.0.0',
   'gradle_plugin_version' : '6.0.0-beta.5',
   'archetype_version' : '0.2.3'
