@@ -9007,10 +9007,10 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as class name</ShortDescription>
-        <LongDescription>Class name {0} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>The name of the class {0} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
-      It's essential to avoid reusing public identifiers from the Java Standard Library as class names.
+      It's a good practice to avoid reusing public identifiers from the Java Standard Library as class names.
       This is because the Java Standard Library is a part of the Java platform and is expected to be available in all Java environments.
       Doing so can lead to naming conflicts and confusion, making it harder to understand and maintain the code.
       It's best practice to choose unique and descriptive class names that accurately represent the purpose and functionality of your own code.
@@ -9031,7 +9031,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as field name</ShortDescription>
-        <LongDescription>Field name {1} in class {0} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>Name of the field {1.name} in class {0} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
       It is a good practice to avoid reusing public identifiers from the Java Standard Library as field names in your code.
@@ -9057,7 +9057,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as method name</ShortDescription>
-        <LongDescription>Method name {1} in class {0} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>The name of the method {1} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
 
@@ -9082,10 +9082,10 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as method name</ShortDescription>
-        <LongDescription>Variable name {2} in method {1} at line {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>Variable name {2} in method {1} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
-      When declaring local variables in Java, it is crucial to refrain from reusing public identifiers from the Java Standard Library.
+      When declaring local variables in Java, it is a good practice to refrain from reusing public identifiers from the Java Standard Library.
       Reusing these identifiers as local variable names can lead to confusion, hinder code comprehension, and potentially cause conflicts
       with existing publicly available identifier names from the Java Standard Library.
       To maintain code clarity and avoid such issues, it is best practice to select unique and descriptive names for your local variables.
