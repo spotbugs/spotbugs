@@ -1321,5 +1321,5 @@
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="ENV" type="ENV_USE_PROPERTY_INSTEAD_OF_ENV" category="SECURITY" />
+          <BugPattern abbrev="ENV" type="ENV_USE_PROPERTY_INSTEAD_OF_ENV" category="BAD_PRACTICE" />
 </FindbugsPlugin>

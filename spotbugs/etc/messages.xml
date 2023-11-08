@@ -9139,20 +9139,26 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
 
   <BugPattern type="ENV_USE_PROPERTY_INSTEAD_OF_ENV">
-    <ShortDescription>It is safer to use validated and portable Java property instead of insecure environment variable.</ShortDescription>
-    <LongDescription>It is safer to use validated and portable Java property '{3}' instead of insecure environment variable '{2}' in method {1}.</LongDescription>
+    <ShortDescription>It is preferable to use portable Java property instead of environment variable.</ShortDescription>
+    <LongDescription>It is preferable to use portable Java property '{3}' instead of environment variable '{2}' in method {1}.</LongDescription>
     <Details>
       <![CDATA[<p>
         Environment variables are not portable, the variable itself (not only the value) may be different depending on the running OS.
-        Also, environment variables may be accidentally or maliciously altered during process execution. This makes them unsafe to be relied
-        upon important system-level information. Some environment variables are understood, validated and secured by the JVM.
-        These values are available as system properties, which should be used instead.
+        Not only the names of the specific environment variables can differ (e.g. `USERNAME` in Windows and `USER` in Unix systems),
+        but even the semantics differ, e.g. the case sensitivity (Windows being case-insensitive and Unix case-sensitive).
+        Thus, the environment variables may not obey the general contract of the <code>Object.equals(java.lang.Object)</code> and <code>Object.hashCode()</code> methods.
+        Consequently, environment variables may have unintended side effects.
+        Also, The visibility of environment variables are also less restricted compared to Java Properties: they are visible to all descendants
+        of the defining process, not just the immediate Java subprocess. Environment variables may be accidentally or maliciously altered during
+        process execution using the <code>java.lang.ProcessBuilder</code> class.
+        For these reasons, even the Java API of <code>java.lang.System</code> advises to use Java properties (<code>java.lang.System.getProperty(java.lang.String)</code>)
+        instead of environment variables (<code>java.lang.System.getenv(java.lang.String)</code>) where possible.
       </p>
       <p>
         If a value can be accessed through both System.getProperty() and System.getenv(), it should be accessed using the former.
       </p>
       <p>
-        Mapping of corresponding Java properties:
+        Mapping of corresponding Java System properties:
         <table>
           <tr>
              <th>Environment variable</th> <th>Property</th>
