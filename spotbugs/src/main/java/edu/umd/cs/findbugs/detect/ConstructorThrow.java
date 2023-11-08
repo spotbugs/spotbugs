@@ -78,15 +78,27 @@ public class ConstructorThrow extends OpcodeStackDetector {
             isFinalClass = true;
             return;
         }
+
+        isFinalFinalizer = hasFinalFinalizer(obj);
+        try {
+            for (JavaClass cl : obj.getSuperClasses()) {
+                isFinalFinalizer |= hasFinalFinalizer(cl);
+            }
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
+
         for (Method m : obj.getMethods()) {
             doVisitMethod(m);
-            // Check for final finalizer.
-            // Signature of the finalizer is also needed to be checked
-            if ("finalize".equals(m.getName()) && "()V".equals(m.getSignature()) && m.isFinal()) {
-                isFinalFinalizer = true;
-            }
         }
         isFirstPass = false;
+    }
+
+    private static boolean hasFinalFinalizer(JavaClass jc) {
+        // Check for final finalizer.
+        // Signature of the finalizer is also needed to be checked
+        return Arrays.stream(jc.getMethods())
+                .anyMatch(m -> "finalize".equals(m.getName()) && "()V".equals(m.getSignature()) && m.isFinal());
     }
 
     @Override
@@ -135,7 +147,6 @@ public class ConstructorThrow extends OpcodeStackDetector {
     /**
      * Reports ContructorThrow bug if there is an unhandled unchecked exception thrown directly or indirectly
      * from the currently visited method.
-     *
      * If the exception is thrown directly, the bug is reported at the throw.
      * If the exception is thrown indirectly (through a method call), the bug is reported at the call of the method
      * which throws the exception.

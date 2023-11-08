@@ -187,7 +187,7 @@ public class FindPublicAttributes extends OpcodeStackDetector {
 
             bugReporter.reportBug(new BugInstance(this,
                     "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE",
-                    NORMAL_PRIORITY)
+                    LOW_PRIORITY)
                     .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         }

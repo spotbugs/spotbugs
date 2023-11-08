@@ -5,7 +5,14 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2022-??-??
+## Unreleased - 2023-??-??
+
+### Fixed
+- Fixed false positive UPM_UNCALLED_PRIVATE_METHOD for method used in JUnit's MethodSource ([[#2379](https://github.com/spotbugs/spotbugs/issues/2379)])
+
+- tbd
+
+## 4.8.1 - 2023-11-06
 
 ### Fixed
 - Fixed schema location for findbugsfilter.xsd ([[#1416](https://github.com/spotbugs/spotbugs/issues/1416)])
@@ -15,6 +22,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix exception escapes when calling functions of JUnit Assert or Assertions ([[#2640](https://github.com/spotbugs/spotbugs/issues/2640)])
 - Fixed an error in the SARIF export when a bug annotation is missing ([[#2632](https://github.com/spotbugs/spotbugs/issues/2632)])
 - Fixed false positive RV_EXCEPTION_NOT_THROWN when asserting to exception throws ([[#2628](https://github.com/spotbugs/spotbugs/issues/2628)])
+- Fix false positive CT_CONSTRUCTOR_THROW when supertype has final finalize ([[#2665](https://github.com/spotbugs/spotbugs/issues/2665)])
+- Lowered the priority of `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` bug ([[#2652](https://github.com/spotbugs/spotbugs/issues/2652)])
+- Eclipse: fixed startup overhead (on computing classpath) for PDE projects ([[#2671](https://github.com/spotbugs/spotbugs/pull/2671)])
 
 ### Build
 - Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([[#2651](https://github.com/spotbugs/spotbugs/pull/2651)])
