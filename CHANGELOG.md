@@ -9,7 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Fixed false positive UPM_UNCALLED_PRIVATE_METHOD for method used in JUnit's MethodSource ([[#2379](https://github.com/spotbugs/spotbugs/issues/2379)])
-
+- Fix the weird messages of PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS bugs. ([[#2646]((https://github.com/spotbugs/spotbugs/issues/2646)])])
 - tbd
 
 ## 4.8.1 - 2023-11-06
