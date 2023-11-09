@@ -7,9 +7,9 @@ public class GoodMethodSynchronizationLock {
 }
 
 class GoodSampleClass {
-    public synchronized void changeValue() {
+    public synchronized void changeValue() { // Locks on the object's monitor(intrinsic lock), bug should be detected here
         System.out.println("Change some value");
-    } // Locks on the object's monitor(intrinsic lock)
+    }
 
     private static GoodSampleClass lookup(String name) { // exposing the lock object, bug should be detected here
         return null;
@@ -17,9 +17,9 @@ class GoodSampleClass {
 }
 
 class SomeOtherGoodSampleClass {
-    public synchronized void changeValue() {
+    public synchronized void changeValue() { // Locks on the object's monitor(intrinsic lock), bug should be detected here
         System.out.println("Change some value");
-    } // Locks on the object's monitor(intrinsic lock)
+    }
 
     private static SomeOtherGoodSampleClass lookup(String name) { // exposing the lock object, bug should be detected here
         return null;

@@ -1,7 +1,5 @@
 package privateFinalLocks;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 public class BadMethodSynchronizationWithPublicStaticLock {
 
     public static void unTrustedCode() throws InterruptedException {
@@ -15,7 +13,6 @@ public class BadMethodSynchronizationWithPublicStaticLock {
 }
 
 class SomeOtherClass {
-    //changeValue locks on the class object's monitor
     public static synchronized void changeValue() { // locking on the class, bug should be detected here
         System.out.println("Change some value");
     }

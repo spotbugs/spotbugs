@@ -45,9 +45,9 @@ public class BadMethodSynchronizationLock {
 
 
 class ClassExposingItSelf {
-    public synchronized void doStuff() {
+    public synchronized void doStuff() { // Locks on the object's monitor(intrinsic lock), bug should be detected here
         System.out.println("Do some stuff");
-    } // Locks on the object's monitor(intrinsic lock)
+    }
 
     public static synchronized void changeValue() {
         System.out.println("Change some values");
@@ -59,9 +59,9 @@ class ClassExposingItSelf {
 }
 
 class ClassExposingACollectionOfItself {
-    public synchronized void doStuff() {
+    public synchronized void doStuff() {  // Locks on the object's monitor(intrinsic lock), bug should be detected here
         System.out.println("Do some stuff");
-    } // Locks on the object's monitor(intrinsic lock)
+    }
 
     public static Collection<ClassExposingACollectionOfItself> getCollection() {
         return Collections.singletonList(new ClassExposingACollectionOfItself());
@@ -69,9 +69,9 @@ class ClassExposingACollectionOfItself {
 }
 
 class ClassExposingAMapOfItself {
-    public synchronized void doStuff() {
+    public synchronized void doStuff() { // Locks on the object's monitor(intrinsic lock), bug should be detected here
         System.out.println("Do some stuff");
-    } // Locks on the object's monitor(intrinsic lock)
+    }
 
     public static Map<Object, ClassExposingAMapOfItself> getMap() {
         return Collections.singletonMap(new Object(), new ClassExposingAMapOfItself());

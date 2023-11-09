@@ -5,7 +5,7 @@ public class BadSynchronizationLockBase {
     protected final Object lock = new Object();
 
     public void doStuff() {
-        synchronized (baseLock) {
+        synchronized (baseLock) { // synchronizing on the public lock object, bug should be detected here
             System.out.println("Do some stuff");
         }
     }
@@ -13,13 +13,13 @@ public class BadSynchronizationLockBase {
 
 class BadSynchronizationWithLockFromBase extends BadSynchronizationLockBase {
     public void doOtherStuff() {
-        synchronized (baseLock) {
+        synchronized (baseLock) { // synchronizing on the public lock object inherited from parent, bug should be detected here
             System.out.println("Do some other stuff");
         }
     }
 
     public void changeValue() {
-        synchronized (lock) {
+        synchronized (lock) { // synchronizing on the lock object inherited from parent, bug should be detected here
             System.out.println("Change some values");
         }
     }
