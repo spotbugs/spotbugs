@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.github.spotbugs'
-version = '4.8.1-SNAPSHOT'
+version = '4.8.2-SNAPSHOT'
 
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
@@ -36,7 +36,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    def junitVersion = '5.10.0'
+    def junitVersion = '5.10.1'
     compileOnly platform("org.junit:junit-bom:$junitVersion")
     testImplementation platform("org.junit:junit-bom:$junitVersion")
   }
