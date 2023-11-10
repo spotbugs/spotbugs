@@ -9143,7 +9143,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     <LongDescription>It is preferable to use portable Java property '{3}' instead of environment variable '{2}' in method {1}.</LongDescription>
     <Details>
       <![CDATA[<p>
-        Environment variables are not portable, the variable itself (not only the value) may be different depending on the running OS.
+        Environment variables are not portable, the variable name itself (not only the value) may be different depending on the running OS.
         Not only the names of the specific environment variables can differ (e.g. `USERNAME` in Windows and `USER` in Unix systems),
         but even the semantics differ, e.g. the case sensitivity (Windows being case-insensitive and Unix case-sensitive).
         Thus, the environment variables may not obey the general contract of the <code>Object.equals(java.lang.Object)</code> and <code>Object.hashCode()</code> methods.
