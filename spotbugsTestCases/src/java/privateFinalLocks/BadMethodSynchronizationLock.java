@@ -1,7 +1,5 @@
 package privateFinalLocks;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import java.util.*;
 
 public class BadMethodSynchronizationLock {
@@ -49,9 +47,9 @@ class ClassExposingItSelf {
         System.out.println("Do some stuff");
     }
 
-    public static synchronized void changeValue() {
+    public static synchronized void changeValue() { // Locks on the object's monitor(intrinsic lock), bug should be detected here
         System.out.println("Change some values");
-    } // Locks on the object's monitor(intrinsic lock)
+    }
 
     public static ClassExposingItSelf lookup(String name) { // exposing the lock object, bug should be detected here
         return null;

@@ -11,7 +11,24 @@ public class BadSynchronizationLockBase {
     }
 }
 
-class BadSynchronizationWithLockFromBase extends BadSynchronizationLockBase {
+class BadSynchronizationLockBaseWithMultipleMethods {
+    public final Object baseLock = new Object();
+
+    public void doStuff() {
+        synchronized (baseLock) { // synchronizing on the public lock object, bug should be detected here
+            System.out.println("Do some stuff");
+        }
+    }
+
+    public void doOtherStuff() {
+        synchronized (baseLock) { // synchronizing on the public lock object, bug should be detected here
+            System.out.println("Do some other stuff too");
+        }
+    }
+}
+
+
+class BadSynchronizationWithLocksFromBase extends BadSynchronizationLockBase {
     public void doOtherStuff() {
         synchronized (baseLock) { // synchronizing on the public lock object inherited from parent, bug should be detected here
             System.out.println("Do some other stuff");

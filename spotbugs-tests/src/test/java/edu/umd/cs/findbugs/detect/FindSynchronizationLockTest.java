@@ -48,13 +48,16 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
     @Test
     public void testBadSynchronizationLockAcquiredFromParent() {
         performAnalysis("privateFinalLocks/BadSynchronizationLockBase.class",
-                "privateFinalLocks/BadSynchronizationWithLockFromBase.class");
+                "privateFinalLocks/BadSynchronizationWithLocksFromBase.class",
+                "privateFinalLocks/BadSynchronizationLockBaseWithMultipleMethods.class");
 
-        assertNumOfBugs(3, OBJECT_BUG);
+        assertNumOfBugs(5, OBJECT_BUG);
 
         assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationLockBase", "doStuff", Optional.of("baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithLockFromBase", "doStuff", Optional.of("baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithLockFromBase", "changeValue", Optional.of("lock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithLocksFromBase", "doOtherStuff", Optional.of("baseLock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithLocksFromBase", "changeValue", Optional.of("lock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationLockBaseWithMultipleMethods", "doStuff", Optional.of("baseLock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationLockBaseWithMultipleMethods", "doOtherStuff", Optional.of("baseLock"));
     }
 
     @Test
@@ -65,51 +68,69 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
                 "privateFinalLocks/GoodMethodSynchronizationLock.class"
         );
 
-        assertNoBugs();
+        assertNoBadLockBugs();
     }
 
     @Test
-    public void testBadSynchronizationWithPublicFinalLockObject() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithPublicFinalLock.class");
+    public void testBadSynchronizationWithAccessibleFinalLockObject() {
+        performAnalysis("privateFinalLocks/BadSynchronizationWithPublicFinalLock.class",
+                "privateFinalLocks/BadSynchronizationWithPublicFinalLockFromParent.class");
 
-        assertNumOfBugs(1, OBJECT_BUG);
+        assertNumOfBugs(3, OBJECT_BUG);
 
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPublicFinalLock", "changeValue", Optional.of("lock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPublicFinalLock", "doSomeStuff", Optional.of("baseLock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPublicFinalLockFromParent", "doSomeStuff2", Optional.of("baseLock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPublicFinalLockFromParent", "doSomeStuff3", Optional.of("lock"));
     }
 
     @Test
     public void testBadSynchronizationWithPubliclyAccessibleNonFinalLockObject() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithPubliclyAccessibleNonFinalLock.class");
+        performAnalysis("privateFinalLocks/BadSynchronizationWithPubliclyAccessibleNonFinalLock.class",
+                "privateFinalLocks/BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent.class"
+        );
 
-        assertNumOfBugs(1, OBJECT_BUG);
+        assertNumOfBugs(2, OBJECT_BUG);
 
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLock", "changeValue", Optional.of("lock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLock", "doSomeStuff", Optional.of("baseLock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent", "doSomeStuff2", Optional.of("lock"));
     }
 
     @Test
     public void testBadSynchronizationWithPublicNonFinalLockObject() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithPublicNonFinalLock.class");
+        performAnalysis("privateFinalLocks/BadSynchronizationWithPublicNonFinalLock.class",
+                "privateFinalLocks/BadSynchronizationWithNonFinalLockFromParent.class"
+        );
 
-        assertNumOfBugs(1, OBJECT_BUG);
+        assertNumOfBugs(3, OBJECT_BUG);
 
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPublicNonFinalLock", "changeValue", Optional.of("lock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPublicNonFinalLock", "doSomeStuff", Optional.of("baseLock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithNonFinalLockFromParent", "doSomeStuff2", Optional.of("baseLock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithNonFinalLockFromParent", "doSomeStuff3", Optional.of("lock"));
     }
 
     @Test
     public void testGoodSynchronizationWithPrivateFinalLockObject() {
         performAnalysis("privateFinalLocks/GoodSynchronizationWithPrivateFinalLock.class");
 
-        assertNoBugs();
+        assertNoBadLockBugs();
     }
 
     @Test
     public void testGoodSynchronizationWithPrivateStaticLockObject() {
         performAnalysis("privateFinalLocks/GoodSynchronizationWithPrivateStaticLock.class");
 
-        assertNoBugs();
+        assertNoBadLockBugs();
     }
 
-    private void assertNoBugs() {
+    @Test
+    public void testGoodSynchronizationWithInheritance() {
+        performAnalysis("privateFinalLocks/GoodSynchronizationWithInheritance.class",
+                "privateFinalLocks/GoodSynchronizationInheritedFromParent.class");
+
+        assertNoBadLockBugs();
+    }
+
+    private void assertNoBadLockBugs() {
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
     }
