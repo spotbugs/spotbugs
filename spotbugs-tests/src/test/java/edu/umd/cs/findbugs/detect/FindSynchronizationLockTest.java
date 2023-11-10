@@ -24,8 +24,7 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
         performAnalysis("privateFinalLocks/BadMethodSynchronizationLock.class",
                 "privateFinalLocks/ClassExposingItSelf.class",
                 "privateFinalLocks/ClassExposingACollectionOfItself.class",
-                "privateFinalLocks/ClassExposingAMapOfItself.class"
-        );
+                "privateFinalLocks/ClassExposingAMapOfItself.class");
 
         assertNumOfBugs(4, METHOD_BUG);
 
@@ -65,8 +64,7 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
         performAnalysis("privateFinalLocks/GoodMethodSynchronizationLock.class",
                 "privateFinalLocks/GoodMethodSynchronizationLock.class",
                 "privateFinalLocks/GoodMethodSynchronizationLock.class",
-                "privateFinalLocks/GoodMethodSynchronizationLock.class"
-        );
+                "privateFinalLocks/GoodMethodSynchronizationLock.class");
 
         assertNoBadLockBugs();
     }
@@ -86,20 +84,20 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
     @Test
     public void testBadSynchronizationWithPubliclyAccessibleNonFinalLockObject() {
         performAnalysis("privateFinalLocks/BadSynchronizationWithPubliclyAccessibleNonFinalLock.class",
-                "privateFinalLocks/BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent.class"
-        );
+                "privateFinalLocks/BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent.class");
 
         assertNumOfBugs(2, OBJECT_BUG);
 
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLock", "doSomeStuff", Optional.of("baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent", "doSomeStuff2", Optional.of("lock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLock", "doSomeStuff", Optional.of(
+                "baseLock"));
+        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent", "doSomeStuff2", Optional.of(
+                "lock"));
     }
 
     @Test
     public void testBadSynchronizationWithPublicNonFinalLockObject() {
         performAnalysis("privateFinalLocks/BadSynchronizationWithPublicNonFinalLock.class",
-                "privateFinalLocks/BadSynchronizationWithNonFinalLockFromParent.class"
-        );
+                "privateFinalLocks/BadSynchronizationWithNonFinalLockFromParent.class");
 
         assertNumOfBugs(3, OBJECT_BUG);
 
@@ -142,9 +140,9 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
     }
 
     private void assertBugExactly(String bugType,
-                                  String clazz,
-                                  String method,
-                                  Optional<String> fieldOpt) {
+            String clazz,
+            String method,
+            Optional<String> fieldOpt) {
         BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
                 .inClass(clazz)
