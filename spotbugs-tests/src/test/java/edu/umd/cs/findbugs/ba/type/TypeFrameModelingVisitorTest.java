@@ -19,17 +19,17 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author pugh
  */
-public class TypeFrameModelingVisitorTest {
+class TypeFrameModelingVisitorTest {
 
-    @Ignore
+    @Disabled
     @Test
-    public void testMapSignaturePattern() {
+    void testMapSignaturePattern() {
         //        assertTrue(TypeFrameModelingVisitor.mapSignaturePattern.matcher("<") && !sourceSignature.contains("Map<TK;TV;>"))
     }
 }

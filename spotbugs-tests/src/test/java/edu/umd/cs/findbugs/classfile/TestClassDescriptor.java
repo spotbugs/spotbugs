@@ -19,17 +19,17 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author andrei
  */
-public class TestClassDescriptor {
+class TestClassDescriptor {
 
     @Test
-    public void testSimpleName() {
+    void testSimpleName() {
         ClassDescriptor p = DescriptorFactory.createClassDescriptor("com/bla/Parent");
         assertEquals("com/bla/Parent", p.getClassName());
         assertEquals("com.bla.Parent", p.getDottedClassName());

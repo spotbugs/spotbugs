@@ -117,6 +117,8 @@ public class UnreadFields extends OpcodeStackDetector {
 
     private final Map<String, List<BugAnnotation>> anonymousClassAnnotation = new HashMap<>();
 
+    private final ClassDescriptor junitNestedAnnotation = DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/Nested");
+
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#getReadFields()} instead
      */
@@ -215,6 +217,10 @@ public class UnreadFields extends OpcodeStackDetector {
             data.innerClassCannotBeStatic.add(getDottedClassName());
             // System.out.println("hicfsc: " + betterSuperclassName);
             data.innerClassCannotBeStatic.add(getDottedSuperclassName());
+        }
+        if (getXClass().getAnnotation(junitNestedAnnotation) != null) {
+            // This class is a JUnit nested test, it can't be static
+            data.innerClassCannotBeStatic.add(getDottedClassName());
         }
         // Does this class directly implement Serializable?
         String[] interface_names = obj.getInterfaceNames();

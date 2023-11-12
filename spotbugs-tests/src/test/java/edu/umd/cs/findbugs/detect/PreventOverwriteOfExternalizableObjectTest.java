@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
@@ -9,10 +9,10 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrationTest {
+class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrationTest {
 
     @Test
-    public void testBadReadExternal() {
+    void testBadReadExternal() {
         performAnalysis("externalizable/BadExternalizableTest.class");
 
         assertNumOfBugs(2);
@@ -21,7 +21,7 @@ public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrat
     }
 
     @Test
-    public void testBadReadExternal2() {
+    void testBadReadExternal2() {
         performAnalysis("externalizable/BadExternalizableTest2.class");
 
         assertNumOfBugs(1);
@@ -29,7 +29,7 @@ public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrat
     }
 
     @Test
-    public void testBadReadExternal3() {
+    void testBadReadExternal3() {
         performAnalysis("externalizable/BadExternalizableTest3.class");
 
         assertNumOfBugs(1);
@@ -37,7 +37,7 @@ public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrat
     }
 
     @Test
-    public void testBadReadExternal4() {
+    void testBadReadExternal4() {
         performAnalysis("externalizable/BadExternalizableTest4.class");
 
         assertNumOfBugs(1);
@@ -45,7 +45,7 @@ public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrat
     }
 
     @Test
-    public void testBadReadExternal5() {
+    void testBadReadExternal5() {
         performAnalysis("externalizable/BadExternalizableTest5.class");
 
         assertNumOfBugs(2);
@@ -54,14 +54,14 @@ public class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrat
     }
 
     @Test
-    public void testGoodReadExternal() {
+    void testGoodReadExternal() {
         performAnalysis("externalizable/GoodExternalizableTest.class");
 
         assertNumOfBugs(0);
     }
 
     @Test
-    public void testGoodReadExternal2() {
+    void testGoodReadExternal2() {
         performAnalysis("externalizable/GoodExternalizableTest2.class");
 
         assertNumOfBugs(0);

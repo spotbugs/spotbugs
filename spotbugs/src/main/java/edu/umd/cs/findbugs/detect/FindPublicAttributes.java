@@ -116,7 +116,7 @@ public class FindPublicAttributes extends OpcodeStackDetector {
             bugReporter.reportBug(new BugInstance(this,
                     "PA_PUBLIC_PRIMITIVE_ATTRIBUTE",
                     NORMAL_PRIORITY)
-                            .addClass(this).addField(field).addSourceLine(sla));
+                    .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         } else if (seen == Const.AASTORE) {
             XField field = stack.getStackItem(2).getXField();
@@ -141,7 +141,7 @@ public class FindPublicAttributes extends OpcodeStackDetector {
             bugReporter.reportBug(new BugInstance(this,
                     "PA_PUBLIC_ARRAY_ATTRIBUTE",
                     NORMAL_PRIORITY)
-                            .addClass(this).addField(field).addSourceLine(sla));
+                    .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         } else if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             XMethod xmo = getXMethodOperand();
@@ -187,8 +187,8 @@ public class FindPublicAttributes extends OpcodeStackDetector {
 
             bugReporter.reportBug(new BugInstance(this,
                     "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE",
-                    NORMAL_PRIORITY)
-                            .addClass(this).addField(field).addSourceLine(sla));
+                    LOW_PRIORITY)
+                    .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         }
     }

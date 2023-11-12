@@ -5,20 +5,20 @@ import javax.annotation.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test the logic in the reportBug method in all its permutations.
  */
-public class AbstractBugReporterTest {
+class AbstractBugReporterTest {
     private BugInstance bugInstance;
     private ObservableBugReporter reporter;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         // BugRank = 8, Priority = 2
         bugInstance = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
         reporter = new ObservableBugReporter();
@@ -33,8 +33,8 @@ public class AbstractBugReporterTest {
         AnalysisContext.setCurrentAnalysisContext(analysisContext);
     }
 
-    @After
-    public void teardown() {
+    @AfterEach
+    void teardown() {
         AnalysisContext.removeCurrentAnalysisContext();
     }
 
@@ -52,11 +52,11 @@ public class AbstractBugReporterTest {
         reporter.setRankThreshold(rankThreshold);
 
         reporter.reportBug(bugInstance);
-        Assert.assertEquals(message, expectedReport, reporter.isReportCalled());
+        Assertions.assertEquals(expectedReport, reporter.isReportCalled(), message);
     }
 
     @Test
-    public void verifyPriorityThresholdWorks() {
+    void verifyPriorityThresholdWorks() {
         assertReported(false, "Normal bug report blocked on high",
                 BugRanker.VISIBLE_RANK_MAX, Priorities.HIGH_PRIORITY);
 
@@ -68,7 +68,7 @@ public class AbstractBugReporterTest {
     }
 
     @Test
-    public void verifyRankThresholdWorks() {
+    void verifyRankThresholdWorks() {
         int bugRank = bugInstance.getBugRank();
 
         assertReported(false, "Rank " + bugRank + " bug report blocked on min visible",
@@ -82,7 +82,7 @@ public class AbstractBugReporterTest {
     }
 
     @Test
-    public void verifyRelaxedOperationWorks() {
+    void verifyRelaxedOperationWorks() {
         reporter.setIsRelaxed(true);
         assertReported(true, "Relaxed bug reported even when it would not",
                 BugRanker.VISIBLE_RANK_MIN, Priorities.HIGH_PRIORITY);

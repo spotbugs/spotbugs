@@ -372,7 +372,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
         String sourceFile = javaClass.getSourceFileName();
         bugReporter.reportBug(new BugInstance(this, sawGetStaticAfterPutStatic ? "LI_LAZY_INIT_UPDATE_STATIC"
                 : "LI_LAZY_INIT_STATIC", priority).addClassAndMethod(methodGen, sourceFile).addField(xfield)
-                        .describe("FIELD_ON").addSourceLine(classContext, methodGen, sourceFile, start, end));
+                .describe("FIELD_ON").addSourceLine(classContext, methodGen, sourceFile, start, end));
         reported.set(testInstructionHandle.getPosition());
 
     }
