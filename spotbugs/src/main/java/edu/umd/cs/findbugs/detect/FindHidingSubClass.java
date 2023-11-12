@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.Const;
+import org.apache.bcel.generic.Type;
 
 import java.util.Arrays;
 
@@ -128,6 +129,15 @@ public class FindHidingSubClass implements Detector {
      * This condition is to abide with the latest main method criteria.  @see <a href="https://openjdk.org/jeps/445">JEP 445</a>
      */
     private boolean isMainMethod(Method method) {
-        return !method.isPrivate() && method.getReturnType().equals(BasicType.VOID) && "main".equals(method.getName());
+        return !method.isPrivate() && method.getReturnType().equals(BasicType.VOID) && "main".equals(method.getName())
+                && (isStringArray(method.getArgumentTypes()) || method.getArgumentTypes().length==0);
+    }
+
+    /**
+     * This method checks either the argument is String array
+     */
+    private boolean isStringArray(Type[] methodArguments) {
+        return methodArguments.length == 1 &&
+                "java.lang.String[]".equals(methodArguments[0].toString());
     }
 }
