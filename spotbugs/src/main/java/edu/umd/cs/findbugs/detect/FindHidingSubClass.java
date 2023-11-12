@@ -27,7 +27,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 import org.apache.bcel.Const;
 
 import java.util.Arrays;
@@ -126,21 +125,9 @@ public class FindHidingSubClass implements Detector {
      * It is static but usually public class have its own main method as its entry point.
      * Therefore, it is not an error caused by Programming but a utility to provide UI to user.
      *
-     * Frist part of conditional is to abide with the  @see <a href="https://openjdk.org/jeps/445">JEP 445</a>
-     *
+     * This condition is to abide with the latest main method criteria.  @see <a href="https://openjdk.org/jeps/445">JEP 445</a>
      */
     private boolean isMainMethod(Method method) {
-        return (method.getReturnType().equals(BasicType.VOID) && "main".equals(method.getName())) ||
-                (method.isPublic() && method.isStatic() && method.getReturnType().equals(BasicType.VOID)
-                && "main".equals(method.getName())
-                && isStringArray(method.getArgumentTypes()));
-    }
-
-    /**
-     * This method checks either the argument is Sting array
-     */
-    private boolean isStringArray(Type[] methodArguments) {
-        return methodArguments.length == 1 &&
-                "java.lang.String[]".equals(methodArguments[0].toString());
+        return !method.isPrivate() && method.getReturnType().equals(BasicType.VOID) && "main".equals(method.getName());
     }
 }
