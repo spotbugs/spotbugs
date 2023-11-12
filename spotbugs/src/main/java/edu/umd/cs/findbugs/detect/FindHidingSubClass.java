@@ -70,7 +70,6 @@ public class FindHidingSubClass implements Detector {
         //For each super class, I go through each method of the subclass
         //and filter the non-private and static methods, as private methods can't be overridden.
         for (JavaClass superClass : superClasses) {
-            Method[] superMethods = superClass.getMethods();
             for (Method method : methods) {
                 // Careful!!! regarding the order of the conditions applied here
                 // Taking advantage of short circuit evaluation here by placing !isMainMethod(method)
@@ -80,6 +79,7 @@ public class FindHidingSubClass implements Detector {
                         continue;
                     }
                     //I check either the subclass method is hiding the superclass method. If yes I report the bug.
+                    Method[] superMethods = superClass.getMethods();
                     if (Arrays.asList(superMethods).contains(method)) {
                         bugReporter.reportBug(new BugInstance(this, "HSBC_HIDING_SUB_CLASS", NORMAL_PRIORITY)
                                 .addClass(subClass.getClassName())
