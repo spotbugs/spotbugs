@@ -60,11 +60,12 @@ public class FindHidingSubClass implements Detector {
         //This is the current class. Named it subClass to better depict the idea of sub and super class.
         JavaClass subClass = classContext.getJavaClass();
         //No need for null check as every class has at least `Object` as its super class.
-        JavaClass[] superClasses = null;
+        JavaClass[] superClasses;
         try {
             superClasses = subClass.getSuperClasses();
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
+            return;
         }
         //I store all the methods of subclass in an array
         Method[] methods = subClass.getMethods();
@@ -130,7 +131,7 @@ public class FindHidingSubClass implements Detector {
      */
     private boolean isMainMethod(Method method) {
         return !method.isPrivate() && method.getReturnType().equals(BasicType.VOID) && "main".equals(method.getName())
-                && (isStringArray(method.getArgumentTypes()) || method.getArgumentTypes().length==0);
+                && (isStringArray(method.getArgumentTypes()) || method.getArgumentTypes().length == 0);
     }
 
     /**
