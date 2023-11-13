@@ -682,8 +682,6 @@
           <Detector class="edu.umd.cs.findbugs.detect.DontReusePublicIdentifiers" speed="fast"
                     reports="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES"
                     disabled="true"/>
-          <!-- Bug Categories -->
-          <BugCategory category="NOISE" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindHidingSubClass" speed="fast"
                     reports="HSBC_HIDING_SUB_CLASS"/>
 
