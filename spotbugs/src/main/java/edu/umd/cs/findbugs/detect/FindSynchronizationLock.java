@@ -161,7 +161,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                 bugReporter.reportBug(new BugInstance(this, METHOD_BUG, NORMAL_PRIORITY)
                         .addClassAndMethod(this));
             } else {
-                // collect xMethods that possible can be reported later
+                // collect xMethods that possibly can be reported later
                 synchronizedMethods.add(xMethod);
             }
         }
