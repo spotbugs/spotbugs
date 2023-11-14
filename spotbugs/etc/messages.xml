@@ -2027,7 +2027,7 @@ While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the
     <LongDescription>HTTP cookie formed from untrusted input in {1}</LongDescription>
     <Details>
       <![CDATA[
-    <p>This code constructs an HTTP Cookie using an untrusted HTTP parameter. If this cookie is added to an HTTP response, it will allow a HTTP response splitting
+    <p>This code constructs an HTTP Cookie using an untrusted HTTP parameter. If this cookie is added to an HTTP response, it will allow an HTTP response splitting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
 for more information.</p>
 <p>SpotBugs looks only for the most blatant, obvious cases of HTTP response splitting.
@@ -2044,7 +2044,7 @@ consider using a commercial static analysis or pen-testing tool.
     <LongDescription>HTTP parameter directly written to HTTP header output in {1}</LongDescription>
     <Details>
             <![CDATA[
-    <p>This code directly writes an HTTP parameter to an HTTP header, which allows for a HTTP response splitting
+    <p>This code directly writes an HTTP parameter to an HTTP header, which allows for an HTTP response splitting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
 for more information.</p>
 <p>SpotBugs looks only for the most blatant, obvious cases of HTTP response splitting.
@@ -3770,7 +3770,7 @@ Thus, having a mutable instance field generally creates race conditions.
   <p> This code seems to be using non-short-circuit logic (e.g., &amp;
 or |)
 rather than short-circuit logic (&amp;&amp; or ||). In addition,
-it seem possible that, depending on the value of the left hand side, you might not
+it seems possible that, depending on the value of the left hand side, you might not
 want to evaluate the right hand side (because it would have side effects, could cause an exception
 or could be expensive.</p>
 <p>
@@ -3831,7 +3831,7 @@ Language Specification</a> for details.
   will only give up one lock and the notify will be unable to get both locks,
   and thus the notify will not succeed.
    &nbsp; If there is also a warning about a two lock wait, the
-   probably of a bug is quite high.
+   probability of a bug is quite high.
 </p>
 ]]>
     </Details>
@@ -4309,7 +4309,7 @@ could be changed by malicious code or
     <Details>
 <![CDATA[
   <p>
-An inner class is invoking a method that could be resolved to either a inherited method or a method defined in an outer class.
+An inner class is invoking a method that could be resolved to either an inherited method or a method defined in an outer class.
 For example, you invoke <code>foo(17)</code>, which is defined in both a superclass and in an outer method.
 By the Java semantics,
 it will be resolved to invoke the inherited method, but this may not be what
@@ -5090,7 +5090,7 @@ dereferencing this value will generate a null pointer exception.
 <![CDATA[
   <p> This field is never initialized within any constructor, and is therefore could be null after
 the object is constructed. Elsewhere, it is loaded and dereferenced without a null check.
-This could be a either an error or a questionable design, since
+This could be either an error or a questionable design, since
 it means a null pointer exception will be generated if that field is dereferenced
 before being initialized.
 </p>
@@ -5315,9 +5315,9 @@ is important or acceptable.
     <LongDescription>Return value of {2.givenClass} ignored, but method has no side effect</LongDescription>
     <Details>
 <![CDATA[
-<p>This code calls a method and ignores the return value. However our analysis shows that
+<p>This code calls a method and ignores the return value. However, our analysis shows that
 the method (including its implementations in subclasses if any) does not produce any effect
-other than return value. Thus this call can be removed.
+other than return value. Thus, this call can be removed.
 </p>
 <p>We are trying to reduce the false positives as much as possible, but in some cases this warning might be wrong.
 Common false-positive cases include:</p>
@@ -5918,7 +5918,7 @@ different types. The result of this comparison will always be false at runtime.
 <p> This method calls equals(Object) on two references of different
 class types and analysis suggests they will be to objects of different classes
 at runtime. Further, examination of the equals methods that would be invoked suggest that either
-this call will always return false, or else the equals method is not be symmetric (which is
+this call will always return false, or else the equals method is not symmetric (which is
 a property required by the contract
 for equals in class Object).
 </p>
@@ -6881,7 +6881,7 @@ less confusing to explicitly check pointer equality using <code>==</code>.
     <Details>
 <![CDATA[
 <p>
-This method invokes the .equals(Object o) to compare two arrays, but the arrays of
+This method invokes the .equals(Object o) to compare two arrays, but the arrays
 of incompatible types (e.g., String[] and StringBuffer[], or String[] and int[]).
 They will never be equal. In addition, when equals(...) is used to compare arrays it
 only checks to see if they are the same array, and ignores the contents of the arrays.
@@ -7317,7 +7317,7 @@ just use the constant. Methods detected are:
     reference). Client classes that use this class, may, in addition, use an instance of this class
     as a synchronizing object. Because two classes are using the same object for synchronization,
     Multithread correctness is suspect. You should not synchronize nor call semaphore methods on
-    a public reference. Consider using a internal private member variable to control synchronization.
+    a public reference. Consider using an internal private member variable to control synchronization.
     </p>
     ]]>
       </Details>
@@ -7645,7 +7645,7 @@ better to do a null test rather than an instanceof test.
     <Details>
 <![CDATA[
 <p>
-This cast is unchecked, and not all instances of the type casted from can be cast to
+This cast is unchecked, and not all instances of the type cast from can be cast to
 the type it is being cast to. Check that your program logic ensures that this
 cast will not fail.
 </p>
@@ -8995,7 +8995,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     <LongDescription>Assertion validates method argument at {1}. If assertions are disabled, there won't be any argument validation.</LongDescription>
     <Details>
       <![CDATA[
-        <p>Asssertions must not be used to validate arguments of public methods because the validations are
+        <p>Assertions must not be used to validate arguments of public methods because the validations are
         not performed if assertions are disabled.</p>
 
         <p>
