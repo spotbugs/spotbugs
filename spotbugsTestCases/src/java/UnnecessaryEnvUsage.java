@@ -1,3 +1,5 @@
+import java.util.Map;
+
 public class UnnecessaryEnvUsage {
     public void replaceableEnvUsage() {
         System.getenv("JAVA_HOME");
@@ -14,8 +16,27 @@ public class UnnecessaryEnvUsage {
         System.getenv("PWD");
     }
 
+    public void replaceableEnvUsageFromMap() {
+        System.getenv().get("JAVA_HOME");
+    }
+
+    public void replaceableEnvUsageFromMapWithVar() {
+        Map<String,String> envVars = System.getenv();
+        envVars.get("JAVA_VERSION");
+        envVars.get("TEMP");
+    }
+
     public void necessaryEnvUsage() {
         System.getenv("CUSTOM_ENV_FIELD");
+    }
+
+    public void necessaryEnvUsageFromMap() {
+        System.getenv().get("CUSTOM_ENV_FIELD");
+    }
+
+    public void necessaryEnvUsageFromMapWithVar() {
+        Map<String,String> envVars = System.getenv();
+        envVars.get("PATH");
     }
 
     public void compliantPropertyUsage() {

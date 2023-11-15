@@ -63,25 +63,41 @@ public class UnnecessaryEnvUsage extends OpcodeStackDetector {
         bugAccumulator.reportAccumulatedBugs();
     }
 
+    private void reportBugIfParamIsProblematic() {
+        OpcodeStack.Item top = stack.getStackItem(0);
+        if (top.getConstant() instanceof String) {
+            String constant = (String) top.getConstant();
+            if (envvarPropertyMap.containsKey(constant)) {
+                BugInstance pendingBug = new BugInstance(this, "ENV_USE_PROPERTY_INSTEAD_OF_ENV", NORMAL_PRIORITY)
+                        .addClassAndMethod(this)
+                        .addString(constant)
+                        .addString(envvarPropertyMap.get(constant));
+                bugAccumulator.accumulateBug(pendingBug, SourceLineAnnotation.fromVisitedInstruction(this, this.getPC()));
+            }
+        }
+    }
+
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.INVOKESTATIC) {
+        if (seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE) {
             XMethod xMethod = this.getXMethodOperand();
             if (xMethod == null) {
                 return;
             }
 
-            if ("java.lang.System".equals(xMethod.getClassName()) && "getenv".equals(xMethod.getName())) {
-                OpcodeStack.Item top = stack.getStackItem(0);
-                if (top.getConstant() instanceof String) {
-                    String constant = (String) top.getConstant();
-                    if (envvarPropertyMap.containsKey(constant)) {
-                        BugInstance pendingBug = new BugInstance(this, "ENV_USE_PROPERTY_INSTEAD_OF_ENV", NORMAL_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addString(constant)
-                                .addString(envvarPropertyMap.get(constant));
-                        bugAccumulator.accumulateBug(pendingBug, SourceLineAnnotation.fromVisitedInstruction(this, this.getPC()));
-                    }
+            // Directly call System.lang.getenv(String) with problematic parameter
+            if ("java.lang.System".equals(xMethod.getClassName()) && "getenv".equals(xMethod.getName())
+                    && "(Ljava/lang/String;)Ljava/lang/String;".equals(xMethod.getSignature())) {
+                reportBugIfParamIsProblematic();
+
+                // Get the map of environment variables with System.lang.getenv(), and then call java.util.Map.get() on it with problematic parameter
+            } else if ("java.util.Map".equals(xMethod.getClassName()) && "get".equals(xMethod.getName())
+                    && "(Ljava/lang/Object;)Ljava/lang/Object;".equals(xMethod.getSignature()) && stack.getStackDepth() >= 2) {
+
+                XMethod rvo = stack.getStackItem(1).getReturnValueOf();
+                if (rvo != null && "java.lang.System".equals(rvo.getClassName()) && "getenv".equals(rvo.getName())
+                        && "()Ljava/util/Map;".equals(rvo.getSignature())) {
+                    reportBugIfParamIsProblematic();
                 }
             }
         }
