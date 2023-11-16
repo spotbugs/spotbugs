@@ -1,3 +1,21 @@
+/*
+ * SpotBugs - Find bugs in Java programs
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -5,7 +23,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
@@ -16,20 +33,12 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import java.util.HashSet;
-import java.util.Optional;
 
 public class FindSynchronizationLock extends OpcodeStackDetector {
 
-    /**
-     * @note: - Think through what happens when multiple synchronized methods are in the same class
-     * - It should check if a lock is coming from the parent, report this
-     * - If lock is used incorrectly in parent it should be reported there as well
-     * - Method synchronizations reports the function that exposes the class instead of the synchronized methods
-     */
     private static final String METHOD_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private final BugReporter bugReporter;
-    private String currentClassName;
     private final HashSet<XMethod> synchronizedMethods;
     private boolean hasExposingMethod;
     private JavaClass currentClass;
@@ -40,66 +49,28 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         this.hasExposingMethod = false;
     }
 
-    // To recognize a bad synchronization lock, we need to check that:
-    //  - there is a publicly available synchronized method
-    //      - that is declared inside the current class
     @Override
     public void sawOpcode(int seen) {
         if (seen == Const.MONITORENTER) {
             OpcodeStack.Item lock = stack.getStackItem(0);
-            Optional<XField> maybeLock = Optional.ofNullable(lock.getXField());
+            XField lockObject = lock.getXField();
 
-            if (maybeLock.isPresent()) {
-                XField lockObject = maybeLock.get();
-                XClass current = getXClass();
-
-                // only interested in if it is inside the current class
-                // or the lock is inherited
-                String declaringClass = lockObject.getClassName();
+            if (lockObject != null) {
+                // only interested in it if the lock is inside the current class
+                // or it was inherited
+                String declaringClass = ClassName.toSlashedClassName(lockObject.getClassName());
                 try {
-                    if (currentClassName.equals(declaringClass) || inheritsFromHierarchy(lockObject, current)) {
+                    if (getClassName().equals(declaringClass) || inheritsFromHierarchy(lockObject)) {
                         XMethod xMethod = getXMethod();
 
-                        // To recognize a bad public non-final lock, we need to check that:
-                        //  - is this field public
-                        //  - is this field non-final
-                        if (lockObject.isPublic() && !lockObject.isFinal()) {
-                            bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
-                                    .addClassAndMethod(xMethod)
-                                    .addField(lockObject));
+                        if (lockObject.isPublic() || lockObject.isProtected()) {
+                            if (lockObject.isFinal() || !lockObject.isFinal()) {
+                                bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
+                                        .addClassAndMethod(xMethod)
+                                        .addField(lockObject));
+                            }
                         }
 
-                        // To recognize a bad protected non-final lock(shared with parent), we need to check that:
-                        //  - is this field protected
-                        //  - is this field non-final
-                        if (lockObject.isProtected() && !lockObject.isFinal()) {
-                            bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
-                                    .addClassAndMethod(xMethod)
-                                    .addField(lockObject));
-                        }
-
-                        // To recognize a bad public final lock, we need to check that:
-                        //  - is this field public
-                        //  - is this field final
-                        if (lockObject.isPublic() && lockObject.isFinal()) {
-                            bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
-                                    .addClassAndMethod(xMethod)
-                                    .addField(lockObject));
-                        }
-
-                        // To recognize a bad final lock that is accessible in subclasses, we need to check that:
-                        //  - is this field protected
-                        //  - is this field final
-                        if (lockObject.isProtected() && lockObject.isFinal()) {
-                            bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
-                                    .addClassAndMethod(xMethod)
-                                    .addField(lockObject));
-                        }
-
-                        // To recognize a bad publicly accessible and non-final lock, we need to check that:
-                        //  - is this field publicly accessible(volatile)
-                        //  - is this field non-final
-                        //  - @todo do we have to check if there is an accessor(such as setLock)?
                         if (lockObject.isVolatile() && !lockObject.isFinal()) {
                             bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
                                     .addClassAndMethod(xMethod)
@@ -114,22 +85,12 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
     }
 
-    private Boolean inheritsFromHierarchy(XField lockObject, XClass current) throws ClassNotFoundException {
-        //        Field[] declaredFields = currentClass.getFields();
-
-        // the lock object is defined in the current class current.getXFields()
+    private Boolean inheritsFromHierarchy(XField lockObject) throws ClassNotFoundException {
+        String currentClassName = ClassName.toDottedClassName(getClassName());
         String lockObjectDeclaringClassName = lockObject.getClassName();
         if (currentClassName.equals(lockObjectDeclaringClassName)) {
             return false;
         }
-        //        List<? extends XField> fields = current.getXFields();
-        //        java.lang.reflect.Field[] declaredFields = currentClass.getClass().getDeclaredFields();
-        //        for (java.lang.reflect.Field field : declaredFields) {
-        //            String declaringClassName = field.getDeclaringClass().getName();
-        //            if (lockObject.getClassName().equals(declaringClassName)) {
-        //                return false;
-        //            }
-        //        }
 
         // the lock object was defined at some point in the hierarchy
         JavaClass[] allInterfaces = currentClass.getAllInterfaces();
@@ -157,40 +118,29 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
         XMethod xMethod = getXMethod();
         if (xMethod.isPublic() && xMethod.isSynchronized()) {
-            // @note: to recognize a bad method synchronization, we need to check:
-            //  - the class has a synchronized method that is public and accessible from outside
-            //  - the method is public
-            //  - the method is static
-            //  - the method is synchronized
             if (xMethod.isStatic()) {
                 bugReporter.reportBug(new BugInstance(this, METHOD_BUG, NORMAL_PRIORITY)
                         .addClassAndMethod(this));
             } else {
-                // collect xMethods that possibly can be reported later
                 synchronizedMethods.add(xMethod);
             }
         }
 
-        // method is not accessible from outside
         if (!(xMethod.isStatic() || xMethod.isPublic())) {
             return;
         }
 
-        // @note: to recognize a bad method synchronization lock, we need to check:
-        //  - the class has a synchronized method that is public and accessible from outside
-        //  - there is a method that returns the class type
-        //      - this method is accessible from outside
         String sourceSig = xMethod.getSourceSignature();
         if (sourceSig != null) {
             GenericSignatureParser signature = new GenericSignatureParser(sourceSig);
             String genericReturnValue = signature.getReturnTypeSignature();
-            if (genericReturnValue.contains(ClassName.toSlashedClassName(currentClassName))) {
+            if (genericReturnValue.contains(getClassName())) {
                 hasExposingMethod = true;
             }
         } else {
             SignatureParser signature = new SignatureParser(obj.getSignature());
             String returnType = signature.getReturnTypeSignature();
-            if (returnType.contains(ClassName.toSlashedClassName(currentClassName))) {
+            if (returnType.contains(getClassName())) {
                 hasExposingMethod = true;
             }
         }
@@ -200,7 +150,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     @Override
     public void visit(JavaClass obj) {
         currentClass = obj;
-        currentClassName = obj.getClassName();
     }
 
     @Override
