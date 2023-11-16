@@ -9,6 +9,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Fixed false positive UPM_UNCALLED_PRIVATE_METHOD for method used in JUnit's MethodSource ([[#2379](https://github.com/spotbugs/spotbugs/issues/2379)])
+- Use java.nio to load filter files ([[#2684](https://github.com/spotbugs/spotbugs/pull/2684)])
+- Eclipse: Do not export javax.annotation packages ([[#2699](https://github.com/spotbugs/spotbugs/pull/2699)])
+- Fixed not thread safe FindOverridableMethodCall detector ([[#2701](https://github.com/spotbugs/spotbugs/issues/2701)])
 
 ### Added
 - New detector finding `System.getenv()` calls, where the corresponding Java property could be used (See [ENV02-J](https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables)).
