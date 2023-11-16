@@ -5,123 +5,112 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
+import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class FindSynchronizationLockTest extends AbstractIntegrationTest {
-    /**
-     * @note: Add tests
-     * - include inheritance in some cases
-     * - create multiple bad method synchronizations inside the same class to check if there is no overlap
-     */
+class FindSynchronizationLockTest extends AbstractIntegrationTest {
+
     private static final String METHOD_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
 
     @Test
     void testBadMethodSynchronizationLock() {
-        performAnalysis("privateFinalLocks/BadMethodSynchronizationLock.class",
-                "privateFinalLocks/ClassExposingItSelf.class",
+        performAnalysis("privateFinalLocks/ClassExposingItSelf.class",
                 "privateFinalLocks/ClassExposingACollectionOfItself.class",
                 "privateFinalLocks/ClassExposingAMapOfItself.class");
 
         assertNumOfBugs(4, METHOD_BUG);
 
-        assertBugExactly(METHOD_BUG, "privateFinalLocks.ClassExposingItSelf", "doStuff", Optional.empty());
-        assertBugExactly(METHOD_BUG, "privateFinalLocks.ClassExposingItSelf", "changeValue", Optional.empty());
-        assertBugExactly(METHOD_BUG, "privateFinalLocks.ClassExposingACollectionOfItself", "doStuff", Optional.empty());
-        assertBugExactly(METHOD_BUG, "privateFinalLocks.ClassExposingAMapOfItself", "doStuff", Optional.empty());
+        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "changeValue");
+        assertMethodBugExactly("privateFinalLocks.ClassExposingACollectionOfItself", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.ClassExposingAMapOfItself", "doStuff");
     }
 
     @Test
-    public void testBadMethodSynchronizationWithPublicStaticLockObject() {
+    void testBadMethodSynchronizationWithPublicStaticLockObject() {
         performAnalysis("privateFinalLocks/BadMethodSynchronizationWithPublicStaticLock.class",
                 "privateFinalLocks/SomeOtherClass.class");
 
         assertNumOfBugs(1, METHOD_BUG);
 
-        assertBugExactly(METHOD_BUG, "privateFinalLocks.SomeOtherClass", "changeValue", Optional.empty());
+        assertMethodBugExactly("privateFinalLocks.SomeOtherClass", "changeValue");
     }
 
     @Test
-    public void testBadSynchronizationLockAcquiredFromParent() {
+    void testBadSynchronizationLockAcquiredFromParent() {
         performAnalysis("privateFinalLocks/BadSynchronizationLockBase.class",
                 "privateFinalLocks/BadSynchronizationWithLocksFromBase.class",
                 "privateFinalLocks/BadSynchronizationLockBaseWithMultipleMethods.class");
 
         assertNumOfBugs(5, OBJECT_BUG);
 
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationLockBase", "doStuff", Optional.of("baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithLocksFromBase", "doOtherStuff", Optional.of("baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithLocksFromBase", "changeValue", Optional.of("lock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationLockBaseWithMultipleMethods", "doStuff", Optional.of("baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationLockBaseWithMultipleMethods", "doOtherStuff", Optional.of("baseLock"));
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationLockBase", "doStuff", "baseLock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithLocksFromBase", "doOtherStuff", "baseLock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithLocksFromBase", "changeValue", "lock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationLockBaseWithMultipleMethods", "doStuff", "baseLock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationLockBaseWithMultipleMethods", "doOtherStuff", "baseLock");
     }
 
     @Test
     void goodMethodSynchronizationLock() {
-        performAnalysis("privateFinalLocks/GoodMethodSynchronizationLock.class",
-                "privateFinalLocks/GoodMethodSynchronizationLock.class",
-                "privateFinalLocks/GoodMethodSynchronizationLock.class",
-                "privateFinalLocks/GoodMethodSynchronizationLock.class");
+        performAnalysis("privateFinalLocks/GoodMethodSynchronization.class");
 
         assertNoBadLockBugs();
     }
 
     @Test
-    public void testBadSynchronizationWithAccessibleFinalLockObject() {
+    void testBadSynchronizationWithAccessibleFinalLockObject() {
         performAnalysis("privateFinalLocks/BadSynchronizationWithPublicFinalLock.class",
                 "privateFinalLocks/BadSynchronizationWithPublicFinalLockFromParent.class");
 
         assertNumOfBugs(3, OBJECT_BUG);
 
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPublicFinalLock", "doSomeStuff", Optional.of("baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPublicFinalLockFromParent", "doSomeStuff2", Optional.of("baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPublicFinalLockFromParent", "doSomeStuff3", Optional.of("lock"));
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicFinalLock", "doSomeStuff", "baseLock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicFinalLockFromParent", "doSomeStuff2", "baseLock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicFinalLockFromParent", "doSomeStuff3", "lock");
     }
 
     @Test
-    public void testBadSynchronizationWithPubliclyAccessibleNonFinalLockObject() {
+    void testBadSynchronizationWithPubliclyAccessibleNonFinalLockObject() {
         performAnalysis("privateFinalLocks/BadSynchronizationWithPubliclyAccessibleNonFinalLock.class",
                 "privateFinalLocks/BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent.class");
 
         assertNumOfBugs(2, OBJECT_BUG);
 
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLock", "doSomeStuff", Optional.of(
-                "baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent", "doSomeStuff2", Optional.of(
-                "lock"));
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLock", "doSomeStuff", "baseLock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent", "doSomeStuff2","lock");
     }
 
     @Test
-    public void testBadSynchronizationWithPublicNonFinalLockObject() {
+    void testBadSynchronizationWithPublicNonFinalLockObject() {
         performAnalysis("privateFinalLocks/BadSynchronizationWithPublicNonFinalLock.class",
                 "privateFinalLocks/BadSynchronizationWithNonFinalLockFromParent.class");
 
         assertNumOfBugs(3, OBJECT_BUG);
 
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithPublicNonFinalLock", "doSomeStuff", Optional.of("baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithNonFinalLockFromParent", "doSomeStuff2", Optional.of("baseLock"));
-        assertBugExactly(OBJECT_BUG, "privateFinalLocks.BadSynchronizationWithNonFinalLockFromParent", "doSomeStuff3", Optional.of("lock"));
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicNonFinalLock", "doSomeStuff", "baseLock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithNonFinalLockFromParent", "doSomeStuff2", "baseLock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithNonFinalLockFromParent", "doSomeStuff3", "lock");
     }
 
     @Test
-    public void testGoodSynchronizationWithPrivateFinalLockObject() {
+    void testGoodSynchronizationWithPrivateFinalLockObject() {
         performAnalysis("privateFinalLocks/GoodSynchronizationWithPrivateFinalLock.class");
 
         assertNoBadLockBugs();
     }
 
     @Test
-    public void testGoodSynchronizationWithPrivateStaticLockObject() {
+    void testGoodSynchronizationWithPrivateStaticLockObject() {
         performAnalysis("privateFinalLocks/GoodSynchronizationWithPrivateStaticLock.class");
 
         assertNoBadLockBugs();
     }
 
     @Test
-    public void testGoodSynchronizationWithInheritance() {
+    void testGoodSynchronizationWithInheritance() {
         performAnalysis("privateFinalLocks/GoodSynchronizationWithInheritance.class",
                 "privateFinalLocks/GoodSynchronizationInheritedFromParent.class");
 
@@ -139,15 +128,26 @@ public class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(number, bugTypeMatcher));
     }
 
-    private void assertBugExactly(String bugType,
-            String clazz,
-            String method,
-            Optional<String> fieldOpt) {
+    private void assertObjectBugExactly(String clazz,
+                                        String method,
+                                        String field) {
         BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
+                .bugType(OBJECT_BUG)
+                .inClass(clazz)
+                .inMethod(method)
+                .atField(field);
+        final BugInstanceMatcher bugInstance =
+                bugInstanceMatcherBuilder.build();
+
+        assertThat(getBugCollection(), hasItem(bugInstance));
+    }
+
+    private void assertMethodBugExactly(String clazz,
+                                        String method) {
+        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+                .bugType(METHOD_BUG)
                 .inClass(clazz)
                 .inMethod(method);
-        fieldOpt.ifPresent(bugInstanceMatcherBuilder::atField);
         final BugInstanceMatcher bugInstance =
                 bugInstanceMatcherBuilder.build();
 
