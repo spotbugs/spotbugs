@@ -10,6 +10,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fixed false positive UPM_UNCALLED_PRIVATE_METHOD for method used in JUnit's MethodSource ([[#2379](https://github.com/spotbugs/spotbugs/issues/2379)])
 - Use java.nio to load filter files ([[#2684](https://github.com/spotbugs/spotbugs/pull/2684)])
+- Eclipse: Do not export javax.annotation packages ([[#2699](https://github.com/spotbugs/spotbugs/pull/2699)])
+- Fixed not thread safe FindOverridableMethodCall detector ([[#2701](https://github.com/spotbugs/spotbugs/issues/2701)])
 - Revert commons-text from 1.11.0 to 1.10.0 to resolve a version conflict ([[#2686](https://github.com/spotbugs/spotbugs/issues/2686)])
 
 - tbd
