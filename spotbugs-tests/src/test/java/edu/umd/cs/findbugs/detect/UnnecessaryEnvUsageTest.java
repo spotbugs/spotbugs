@@ -14,7 +14,7 @@ class UnnecessaryEnvUsageTest extends AbstractIntegrationTest {
     @Test
     void testingEnvUsages() {
         performAnalysis("UnnecessaryEnvUsage.class");
-        assertBug(15);
+        assertBug(23);
         assertBug("replaceableEnvUsage", 5);
         assertBug("replaceableEnvUsage", 6);
         assertBug("replaceableEnvUsage", 7);
@@ -31,6 +31,18 @@ class UnnecessaryEnvUsageTest extends AbstractIntegrationTest {
         assertBug("replaceableEnvUsageFromMap", 20);
         assertBug("replaceableEnvUsageFromMapWithVar", 25);
         assertBug("replaceableEnvUsageFromMapWithVar", 26);
+
+        assertBug("replaceableEnvUsageWithVar", 31);
+        assertBug("replaceableEnvUsageWithField", 36);
+
+        assertBug("replaceableEnvUsageWithVarFromMap", 41);
+        assertBug("replaceableEnvUsageWithFieldFromMap", 46);
+
+        assertBug("replaceableEnvUsageWithVarFromMapWithVar", 53);
+        assertBug("replaceableEnvUsageWithVarFromMapWithVar", 54);
+
+        assertBug("replaceableEnvUsageWithFieldFromMapWithVar", 61);
+        assertBug("replaceableEnvUsageWithFieldFromMapWithVar", 62);
     }
 
     private void assertBug(int num) {
