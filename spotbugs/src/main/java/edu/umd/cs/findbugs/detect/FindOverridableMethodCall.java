@@ -59,16 +59,16 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     // For methods called using the standard way
-    private static final Map<XMethod, CallerInfo> callerConstructors = new HashMap<>();
-    private static final Map<XMethod, CallerInfo> callerClones = new HashMap<>();
-    private static final Map<XMethod, XMethod> callsToOverridable = new HashMap<>();
-    private static final MultiMap<XMethod, XMethod> callerToCalleeMap = new MultiMap<>(ArrayList.class);
-    private static final MultiMap<XMethod, XMethod> calleeToCallerMap = new MultiMap<>(ArrayList.class);
+    private final Map<XMethod, CallerInfo> callerConstructors = new HashMap<>();
+    private final Map<XMethod, CallerInfo> callerClones = new HashMap<>();
+    private final Map<XMethod, XMethod> callsToOverridable = new HashMap<>();
+    private final MultiMap<XMethod, XMethod> callerToCalleeMap = new MultiMap<>(ArrayList.class);
+    private final MultiMap<XMethod, XMethod> calleeToCallerMap = new MultiMap<>(ArrayList.class);
 
     // For methods called using method references
-    private static final Map<Integer, CallerInfo> refCallerConstructors = new HashMap<>();
-    private static final Map<Integer, CallerInfo> refCallerClones = new HashMap<>();
-    private static final MultiMap<Integer, XMethod> refCalleeToCallerMap = new MultiMap<>(ArrayList.class);
+    private final Map<Integer, CallerInfo> refCallerConstructors = new HashMap<>();
+    private final Map<Integer, CallerInfo> refCallerClones = new HashMap<>();
+    private final MultiMap<Integer, XMethod> refCalleeToCallerMap = new MultiMap<>(ArrayList.class);
 
 
     private final BugAccumulator bugAccumulator;
@@ -303,7 +303,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     private XMethod getIndirectlyCalledOverridable(XMethod caller) {
-        return getIndirectlyCalledOverridable(caller, new HashSet<XMethod>());
+        return getIndirectlyCalledOverridable(caller, new HashSet<>());
     }
 
     private XMethod getIndirectlyCalledOverridable(XMethod caller, Set<XMethod> visited) {
@@ -334,7 +334,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     private CallerInfo getIndirectCallerSpecial(XMethod callee, Map<XMethod, CallerInfo> map) {
-        return getIndirectCallerSpecial(callee, map, new HashSet<XMethod>());
+        return getIndirectCallerSpecial(callee, map, new HashSet<>());
     }
 
     private CallerInfo getIndirectCallerSpecial(XMethod callee, Map<XMethod, CallerInfo> map, Set<XMethod> visited) {
