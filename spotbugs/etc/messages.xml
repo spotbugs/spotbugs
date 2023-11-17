@@ -9149,7 +9149,7 @@ Using floating-point variables should not be used as loop counters, as they are 
         Moreover, the Map of the environment variables returned by <code>java.lang.System.getenv()</code> and its collection views may not obey
         the general contract of the <code>Object.equals(java.lang.Object)</code> and <code>Object.hashCode()</code> methods.
         Consequently, using environment variables may have unintended side effects.
-        Also, The visibility of environment variables are also less restricted compared to Java Properties: they are visible to all descendants
+        Also, the visibility of environment variables is less restricted compared to Java Properties: they are visible to all descendants
         of the defining process, not just the immediate Java subprocess.
         For these reasons, even the Java API of <code>java.lang.System</code> advises to use Java properties (<code>java.lang.System.getProperty(java.lang.String)</code>)
         instead of environment variables (<code>java.lang.System.getenv(java.lang.String)</code>) where possible.
