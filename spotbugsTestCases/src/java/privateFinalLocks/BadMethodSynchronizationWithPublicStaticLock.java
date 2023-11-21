@@ -3,7 +3,6 @@ package privateFinalLocks;
 public class BadMethodSynchronizationWithPublicStaticLock {
 
     public static void unTrustedCode() throws InterruptedException {
-        // Untrusted code
         synchronized (SomeOtherClass.class) { // preventing the synchronized changeValue to acquire the lock,
             while (true) {
                 Thread.sleep(Integer.MAX_VALUE); // Indefinitely delay someObject

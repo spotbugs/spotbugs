@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class FindSynchronizationLock extends OpcodeStackDetector {
 
@@ -40,13 +41,13 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private final BugReporter bugReporter;
     private final HashSet<XMethod> synchronizedMethods;
-    private boolean hasExposingMethod;
+    private final HashSet<Method> exposingMethods;
     private JavaClass currentClass;
 
     public FindSynchronizationLock(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.synchronizedMethods = new HashSet<>();
-        this.hasExposingMethod = false;
+        this.exposingMethods = new HashSet<>();
     }
 
     @Override
@@ -63,15 +64,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                     if (getClassName().equals(declaringClass) || inheritsFromHierarchy(lockObject)) {
                         XMethod xMethod = getXMethod();
 
-                        if (lockObject.isPublic() || lockObject.isProtected()) {
-                            if (lockObject.isFinal() || !lockObject.isFinal()) {
-                                bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
-                                        .addClassAndMethod(xMethod)
-                                        .addField(lockObject));
-                            }
-                        }
-
-                        if (lockObject.isVolatile() && !lockObject.isFinal()) {
+                        if (lockObject.isPublic() || lockObject.isProtected() || lockObject.isVolatile() && !lockObject.isFinal()) {
                             bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
                                     .addClassAndMethod(xMethod)
                                     .addField(lockObject));
@@ -111,11 +104,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
-        // don't visit constructors
-        if (Const.CONSTRUCTOR_NAME.equals(obj.getName())) {
-            return;
-        }
-
         XMethod xMethod = getXMethod();
         if (xMethod.isPublic() && xMethod.isSynchronized()) {
             if (xMethod.isStatic()) {
@@ -135,13 +123,13 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             GenericSignatureParser signature = new GenericSignatureParser(sourceSig);
             String genericReturnValue = signature.getReturnTypeSignature();
             if (genericReturnValue.contains(getClassName())) {
-                hasExposingMethod = true;
+                exposingMethods.add(obj);
             }
         } else {
             SignatureParser signature = new SignatureParser(obj.getSignature());
             String returnType = signature.getReturnTypeSignature();
             if (returnType.contains(getClassName())) {
-                hasExposingMethod = true;
+                exposingMethods.add(obj);
             }
         }
         super.visit(obj);
@@ -154,10 +142,17 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
     @Override
     public void visitAfter(JavaClass obj) {
-        if (hasExposingMethod) {
-            synchronizedMethods.forEach(method -> bugReporter.reportBug(new BugInstance(this, METHOD_BUG, NORMAL_PRIORITY)
-                    .addClassAndMethod(method)));
-
+        if (!exposingMethods.isEmpty()) {
+            String exposingMethodsMessage = exposingMethods.stream().map(Method::toString).collect(Collectors.joining(",\n"));
+            for (XMethod synchronizedMethod : synchronizedMethods) {
+                BugInstance bugInstance = new BugInstance(this, METHOD_BUG, NORMAL_PRIORITY)
+                        .addClassAndMethod(synchronizedMethod)
+                        .addString(exposingMethodsMessage);
+                bugReporter.reportBug(bugInstance);
+            }
         }
+
+        exposingMethods.clear();
+        synchronizedMethods.clear();
     }
 }

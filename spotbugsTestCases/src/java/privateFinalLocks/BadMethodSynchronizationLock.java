@@ -6,14 +6,18 @@ import java.util.Map;
 
 class ClassExposingItSelf {
     public synchronized void doStuff() { // Locks on the object's monitor(intrinsic lock), bug should be detected here
-        System.out.println("Do some stuff");
+         System.out.println("Do some stuff");
     }
 
-    public static synchronized void changeValue() { // Locks on the object's monitor(intrinsic lock), bug should be detected here
+    public synchronized void changeValue() { // Locks on the object's monitor(intrinsic lock), bug should be detected here
         System.out.println("Change some values");
     }
+    
+    public static ClassExposingItSelf lookup(String name) {
+        return null;
+    }
 
-    public static ClassExposingItSelf lookup(String name) { // exposing the lock object, bug should be detected here
+    public static ClassExposingItSelf lookup2(String name) {
         return null;
     }
 }

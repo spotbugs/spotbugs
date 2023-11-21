@@ -5,6 +5,9 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+import java.util.Set;
+
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -16,32 +19,29 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
     @Test
     void testBadMethodSynchronizationLock() {
-        performAnalysis("privateFinalLocks/ClassExposingItSelf.class",
-                "privateFinalLocks/ClassExposingACollectionOfItself.class",
+        performAnalysis("privateFinalLocks/ClassExposingItSelf.class", "privateFinalLocks/ClassExposingACollectionOfItself.class",
                 "privateFinalLocks/ClassExposingAMapOfItself.class");
 
         assertNumOfBugs(4, METHOD_BUG);
 
-        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "doStuff");
-        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "changeValue");
-        assertMethodBugExactly("privateFinalLocks.ClassExposingACollectionOfItself", "doStuff");
-        assertMethodBugExactly("privateFinalLocks.ClassExposingAMapOfItself", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "doStuff", Set.of("lookup", "lookup2"));
+        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "changeValue", Set.of("lookup", "lookup2"));
+        assertMethodBugExactly("privateFinalLocks.ClassExposingACollectionOfItself", "doStuff", Set.of("getCollection"));
+        assertMethodBugExactly("privateFinalLocks.ClassExposingAMapOfItself", "doStuff", Set.of("getMap"));
     }
 
     @Test
     void testBadMethodSynchronizationWithPublicStaticLockObject() {
-        performAnalysis("privateFinalLocks/BadMethodSynchronizationWithPublicStaticLock.class",
-                "privateFinalLocks/SomeOtherClass.class");
+        performAnalysis("privateFinalLocks/BadMethodSynchronizationWithPublicStaticLock.class", "privateFinalLocks/SomeOtherClass.class");
 
         assertNumOfBugs(1, METHOD_BUG);
 
-        assertMethodBugExactly("privateFinalLocks.SomeOtherClass", "changeValue");
+        assertMethodBugExactly("privateFinalLocks.SomeOtherClass", "changeValue", Collections.emptySet());
     }
 
     @Test
     void testBadSynchronizationLockAcquiredFromParent() {
-        performAnalysis("privateFinalLocks/BadSynchronizationLockBase.class",
-                "privateFinalLocks/BadSynchronizationWithLocksFromBase.class",
+        performAnalysis("privateFinalLocks/BadSynchronizationLockBase.class", "privateFinalLocks/BadSynchronizationWithLocksFromBase.class",
                 "privateFinalLocks/BadSynchronizationLockBaseWithMultipleMethods.class");
 
         assertNumOfBugs(5, OBJECT_BUG);
@@ -80,7 +80,7 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertNumOfBugs(2, OBJECT_BUG);
 
         assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLock", "doSomeStuff", "baseLock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent", "doSomeStuff2","lock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPubliclyAccessibleNonFinalLockFromParent", "doSomeStuff2", "lock");
     }
 
     @Test
@@ -123,33 +123,23 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     }
 
     private void assertNumOfBugs(int number, String bugType) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType).build();
+        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType(bugType).build();
         assertThat(getBugCollection(), containsExactly(number, bugTypeMatcher));
     }
 
-    private void assertObjectBugExactly(String clazz,
-                                        String method,
-                                        String field) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
-                .bugType(OBJECT_BUG)
-                .inClass(clazz)
-                .inMethod(method)
+    private void assertObjectBugExactly(String clazz, String method, String field) {
+        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder().bugType(OBJECT_BUG).inClass(clazz).inMethod(method)
                 .atField(field);
-        final BugInstanceMatcher bugInstance =
-                bugInstanceMatcherBuilder.build();
+        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
-    private void assertMethodBugExactly(String clazz,
-                                        String method) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
-                .bugType(METHOD_BUG)
-                .inClass(clazz)
-                .inMethod(method);
-        final BugInstanceMatcher bugInstance =
-                bugInstanceMatcherBuilder.build();
+    private void assertMethodBugExactly(String clazz, String method, Set<String> exposingMethods) {
+        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder().bugType(METHOD_BUG).inClass(clazz).inMethod(method);
+        //        exposingMethods.forEach(bugInstanceMatcherBuilder::inMethod);
+
+        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
