@@ -13,6 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Eclipse: Do not export javax.annotation packages ([[#2699](https://github.com/spotbugs/spotbugs/pull/2699)])
 - Fixed not thread safe FindOverridableMethodCall detector ([[#2701](https://github.com/spotbugs/spotbugs/issues/2701)])
 - Fix the weird messages of PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS bugs. ([#2646]((https://github.com/spotbugs/spotbugs/issues/2646)]))
+- Fix false positive NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE even if Objects.requireNonNull is used. ([[#651](https://github.com/spotbugs/spotbugs/issues/651)], [[#456](https://github.com/spotbugs/spotbugs/issues/456)])
 
 - tbd
 

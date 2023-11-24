@@ -1386,7 +1386,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             if (i instanceof InvokeInstruction) {
                 InvokeInstruction ii = (InvokeInstruction) i;
                 String name = ii.getMethodName(classContext.getConstantPoolGen());
-                if (name.startsWith("check") || name.startsWith("assert")) {
+                if (name.equals("requireNonNull") || name.startsWith("check") || name.startsWith("assert")) {
                     return true;
                 }
             }
