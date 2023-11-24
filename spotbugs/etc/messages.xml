@@ -9333,4 +9333,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
+  <BugCode abbrev="PFL">Use private final lock objects for synchronization</BugCode>
 </MessageCollection>

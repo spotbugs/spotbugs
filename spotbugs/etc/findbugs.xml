@@ -717,7 +717,6 @@ reporting detectors have completed.
     <BugCode abbrev="ASE"/>
     <BugCode abbrev="VSC"/>
     <BugCode abbrev="DA"/>
-    <BugCode abbrev="PFL"/>
     <!-- Bug patterns -->
     <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true"/>
     <BugPattern abbrev="AA" type="AA_ASSERTION_OF_ARGUMENTS" category="BAD_PRACTICE"/>
