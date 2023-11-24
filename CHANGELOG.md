@@ -41,6 +41,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bump up gson to 2.10 ([#2235](https://github.com/spotbugs/spotbugs/pull/2235))
 - Allowed for large command line through writing arguments to file (UnionResults/UnionBugs2)
 - Use com.github.stephenc.jcip for jcip-annotations fixing #887
+- Rewrite some member in `ResourceValueFrame.java` to Enum([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
 
 ### Fixed
 - Fixed missing classes not in report if using IErrorLogger.reportMissingClass(ClassDescriptor) ([#219](https://github.com/spotbugs/spotbugs/issues/219))
@@ -138,6 +139,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed CFGBuilderException thrown when `dup_x2` is used to swap the reference and wide-value (double, long) in the stack ([#2146](https://github.com/spotbugs/spotbugs/pull/2146))
 
 ## 4.7.1 - 2022-06-26
+
 ### Fixed
 - Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
 - Fixed NullPointerException thrown by detector `FindPotentialSecurityCheckBasedOnUntrustedSource` on Kotlin files. ([#2041](https://github.com/spotbugs/spotbugs/issues/2041))
