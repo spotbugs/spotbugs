@@ -9007,10 +9007,10 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as class name</ShortDescription>
-        <LongDescription>Class name {1} in source file {2} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>The name of the class {0} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
-      It's essential to avoid reusing public identifiers from the Java Standard Library as class names.
+      It's a good practice to avoid reusing public identifiers from the Java Standard Library as class names.
       This is because the Java Standard Library is a part of the Java platform and is expected to be available in all Java environments.
       Doing so can lead to naming conflicts and confusion, making it harder to understand and maintain the code.
       It's best practice to choose unique and descriptive class names that accurately represent the purpose and functionality of your own code.
@@ -9031,7 +9031,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as field name</ShortDescription>
-        <LongDescription>The used identifier {2} as field name in class {1} in source file {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>Name of the field {1.name} in class {0} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
       It is a good practice to avoid reusing public identifiers from the Java Standard Library as field names in your code.
@@ -9057,7 +9057,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as method name</ShortDescription>
-        <LongDescription>The used identifier {2} as method name in class {1} at line {3} as a method name shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>The name of the method {1} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
 
@@ -9082,10 +9082,10 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as method name</ShortDescription>
-        <LongDescription>The used identifier {4} as variable name in the class {1} inside {2} method at line {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>Variable name {2} in method {1} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
-      When declaring local variables in Java, it is crucial to refrain from reusing public identifiers from the Java Standard Library.
+      When declaring local variables in Java, it is a good practice to refrain from reusing public identifiers from the Java Standard Library.
       Reusing these identifiers as local variable names can lead to confusion, hinder code comprehension, and potentially cause conflicts
       with existing publicly available identifier names from the Java Standard Library.
       To maintain code clarity and avoid such issues, it is best practice to select unique and descriptive names for your local variables.
@@ -9097,30 +9097,6 @@ Using floating-point variables should not be used as loop counters, as they are 
       <ul>
         <li>Use descriptive names: Opt for descriptive variable names that clearly indicate their purpose and functionality. This helps avoid shadowing existing Java Standard Library identifiers. For instance, instead of "variable", consider using "myVariableName".</li>
         <li>Follow naming conventions: Adhere to Java's naming conventions, such as using mixed case for variable names. Start with a lowercase first letter and the internal words should start with capital letters (e.g. myVariableName). This promotes code readability and reduces the chances of conflicts.</li>
-      </ul>
-
-      </p>
-      <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
-      ]]>
-        </Details>
-  </BugPattern>
-  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES">
-        <ShortDescription>Do not reuse public identifiers from JSL as inner name</ShortDescription>
-        <LongDescription>Inner class name {2} of class {1} in source file {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
-        <Details>
-            <![CDATA[<p>
-      It's essential to avoid reusing public identifiers from the Java Standard Library as class names.
-      This is because the Java Standard Library is a part of the Java platform and is expected to be available in all Java environments.
-      Doing so can lead to naming conflicts and confusion, making it harder to understand and maintain the code.
-      It's best practice to choose unique and descriptive class names that accurately represent the purpose and functionality of your own code.
-      To provide an example, let's say you want to create an inner class for handling dates inside a specific Calendar class. Instead of using a common name like "Date",
-      which conflicts with the existing java.util.Date class, you could choose a more specific and unique name like or "CalendarDate" or "CalendarDisplayDate".
-
-      A few key points to keep in mind when choosing names as identifier:
-      <ul>
-        <li>Use meaningful prefixes or namespaces: Prepend a project-specific prefix or namespace to your class names to make them distinct. For example, if your project is named "MyApp", you could use "MyAppDate" as your class name.</li>
-        <li>Use descriptive names: Opt for descriptive class names that clearly indicate their purpose and functionality. This helps avoid shadowing existing Java Standard Library identifiers. For instance, instead of "List", consider using "CustomAppList".</li>
-        <li>Follow naming conventions: Adhere to Java's naming conventions, such as using camel case (e.g., MyClass) for class names. This promotes code readability and reduces the chances of conflicts.</li>
       </ul>
 
       </p>
