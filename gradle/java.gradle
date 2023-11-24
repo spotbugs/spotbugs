@@ -8,7 +8,7 @@ tasks.withType(Javadoc).configureEach {
     options.encoding = 'UTF-8'
 }
 tasks.named('compileJava', JavaCompile).configure {
-    options.release = 8
+    options.release = 11
 }
 
 // make the build reproducible https://reproducible-builds.org/
