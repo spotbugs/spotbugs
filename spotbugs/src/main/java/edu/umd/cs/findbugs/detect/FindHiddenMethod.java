@@ -85,7 +85,7 @@ public class FindHiddenMethod implements Detector {
                 Method[] superMethods = superClass.getMethods();
                 //I check either the subclass method is hiding the superclass method. If yes I report the bug.
                 if (Arrays.asList(superMethods).contains(method)) {
-                    bugReporter.reportBug(new BugInstance(this, "HSBC_HIDING_SUB_CLASS", NORMAL_PRIORITY)
+                    bugReporter.reportBug(new BugInstance(this, "HSM_HIDING_METHOD", NORMAL_PRIORITY)
                             .addClass(subClass.getClassName())
                             .addMethod(subClass, method)
                             .addClass(superClass.getClassName())
