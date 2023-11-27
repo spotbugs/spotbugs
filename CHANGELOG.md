@@ -14,7 +14,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed not thread safe FindOverridableMethodCall detector ([[#2701](https://github.com/spotbugs/spotbugs/issues/2701)])
 - Fix the weird messages of PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS bugs. ([#2646]((https://github.com/spotbugs/spotbugs/issues/2646)]))
 
-- tbd
+### Added
+- New detector finding `System.getenv()` calls, where the corresponding Java property could be used (See [ENV02-J](https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables)).
 
 ## 4.8.1 - 2023-11-06
 
