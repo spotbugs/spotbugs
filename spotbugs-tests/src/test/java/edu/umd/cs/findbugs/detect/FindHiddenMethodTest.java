@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-class FindHidingSubClassTest extends AbstractIntegrationTest {
+class FindHiddenMethodTest extends AbstractIntegrationTest {
     private final String BUG_TYPE = "HSBC_HIDING_SUB_CLASS";
 
     @Test

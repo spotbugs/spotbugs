@@ -38,10 +38,10 @@ import java.util.Arrays;
  * Please see @see <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">SEI CERT MET07-J</a>
  * @author Nazir, Muhammad Zafar Iqbal
  */
-public class FindHidingSubClass implements Detector {
+public class FindHiddenMethod implements Detector {
     private final BugReporter bugReporter;
 
-    public FindHidingSubClass(BugReporter bugReporter) {
+    public FindHiddenMethod(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 

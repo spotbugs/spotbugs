@@ -1819,7 +1819,7 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.FindHidingSubClass">
+  <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod">
     <Details>
       <![CDATA[
             <p>
@@ -9022,7 +9022,7 @@ Using floating-point variables should not be used as loop counters, as they are 
         ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="HSBC_HIDING_SUB_CLASS">
+  <BugPattern type="HSM_HIDING_METHOD">
     <ShortDescription>Method hiding must be avoided.</ShortDescription>
     <LongDescription>The method '{1}' in class '{2}' hides a method in class '{3}'. Declare the respective methods non-static or private to eradicate the problem.</LongDescription>
     <Details>
@@ -9299,5 +9299,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
-  <BugCode abbrev="HSBC">Avoid method hiding</BugCode>
+  <BugCode abbrev="HSM">Avoid method hiding</BugCode>
 </MessageCollection>
