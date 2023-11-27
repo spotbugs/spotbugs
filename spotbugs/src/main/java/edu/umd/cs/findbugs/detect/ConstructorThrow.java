@@ -61,6 +61,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
     private boolean isFinalClass = false;
     private boolean isFinalFinalizer = false;
     private boolean isFirstPass = true;
+    private boolean hadObjectConstructor = false;
 
     public ConstructorThrow(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -89,6 +90,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
 
         for (Method m : obj.getMethods()) {
+            hadObjectConstructor = false;
             doVisitMethod(m);
         }
         isFirstPass = false;
@@ -176,9 +178,13 @@ public class ConstructorThrow extends OpcodeStackDetector {
             // checked exceptions are handled when visiting the method
             // if a called method throws a checked exception, and it is not handled, then it must appear in the `throws`
             // here only the explicitly thrown exceptions are examined
+            if (Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
+                hadObjectConstructor = true;
+            }
+
             String calledMethodFQN = getCalledMethodFQN(seen);
             Set<JavaClass> unhandledExes = getUndhandledExThrowsInMethod(calledMethodFQN, new HashSet<>());
-            if (!unhandledExes.isEmpty()) {
+            if (hadObjectConstructor && !unhandledExes.isEmpty()) {
                 Set<String> caughtExes = getSurroundingCaughtExes(getConstantPool());
                 boolean hasNotCaughtExFromBody = unhandledExes.stream()
                         .anyMatch(ex -> isThrownExNotCaught(ex, caughtExes));
