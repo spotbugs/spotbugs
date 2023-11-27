@@ -15,7 +15,7 @@ class SuperBadNonOrderedMultipleStaticMethods {
 
 
 /**
- * This test case is a non-complaint test case with multiple methods declared in both super and sub classes.
+ * This test case is a non-compliant test case with multiple methods declared in both super and sub classes.
  * But the method definition is in different order and number of methods in both classes are different.
  * As the overridden methods are static, and non-private. It is non-compliant.
  */

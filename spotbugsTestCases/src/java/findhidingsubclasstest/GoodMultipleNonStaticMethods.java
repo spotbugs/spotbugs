@@ -11,7 +11,7 @@ class SuperMultipleNonStatic {
 }
 
 /**
- * This test case is a complaint test case with multiple methods declared in both super and sub classes.
+ * This test case is a compliant test case with multiple methods declared in both super and sub classes.
  * As the overridden methods are non-static and non-private.
  * So, this is overriding instead of method hiding.
  */

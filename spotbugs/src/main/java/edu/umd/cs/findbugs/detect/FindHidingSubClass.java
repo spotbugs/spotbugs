@@ -136,7 +136,7 @@ public class FindHidingSubClass implements Detector {
     }
 
     /**
-     * This method checks either the argument is String array
+     * This method checks whether the argument is String array
      */
     private boolean isStringArray(Type[] methodArguments) {
         return methodArguments.length == 1 &&

@@ -15,7 +15,7 @@ class SuperGoodInEqualMultipleMethod {
 }
 
 /**
- * This test case is a complaint test case with multiple methods declared in both super and sub classes.
+ * This test case is a compliant test case with multiple methods declared in both super and sub classes.
  * As the overridden methods are non-static.
  * Number of methods in both classes are different.
  */
