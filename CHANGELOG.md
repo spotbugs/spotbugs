@@ -14,7 +14,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed not thread safe FindOverridableMethodCall detector ([[#2701](https://github.com/spotbugs/spotbugs/issues/2701)])
 - Fix the weird messages of PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS bugs. ([#2646]((https://github.com/spotbugs/spotbugs/issues/2646)]))
 - Revert commons-text from 1.11.0 to 1.10.0 to resolve a version conflict ([[#2686](https://github.com/spotbugs/spotbugs/issues/2686)])
-
+- Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits ([#2710]((https://github.com/spotbugs/spotbugs/issues/2710)]))
 ### Added
 - New detector finding `System.getenv()` calls, where the corresponding Java property could be used (See [ENV02-J](https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables)).
 
