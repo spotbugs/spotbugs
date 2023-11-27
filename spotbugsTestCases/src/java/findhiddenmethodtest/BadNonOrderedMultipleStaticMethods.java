@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 class SuperBadNonOrderedMultipleStaticMethods {
     public static void display3() {

@@ -1,21 +1,25 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
-class SuperMultipleNonStatic {
+class SuperGoodInEqualMultipleMethod {
     void display(String s) {
         System.out.println("first method (Super) " + s);
     }
 
-    void display2(String s) {
+    private void display2(String s) {
         System.out.println("Second method (Super) " + s);
+    }
+
+    void display3() {
+        System.out.println("display3 (SuperBadInEqualMultipleMethod)");
     }
 }
 
 /**
  * This test case is a compliant test case with multiple methods declared in both super and sub classes.
- * As the overridden methods are non-static and non-private.
- * So, this is overriding instead of method hiding.
+ * As the overridden methods are non-static.
+ * Number of methods in both classes are different.
  */
-class GoodMultipleNonStaticMethods extends SuperMultipleNonStatic {
+class GoodInEqualNonStaticMethods extends SuperGoodInEqualMultipleMethod {
     void display(String s) {
         System.out.println("first method (sub) " + s);
     }

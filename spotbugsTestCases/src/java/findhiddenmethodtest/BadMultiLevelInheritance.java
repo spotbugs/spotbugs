@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 class BadGrandClass {
     public static void display(String s) {

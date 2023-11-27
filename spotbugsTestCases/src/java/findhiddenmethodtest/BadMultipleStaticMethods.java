@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 class SuperBadMultipleMethods {
     static void display(String s) {

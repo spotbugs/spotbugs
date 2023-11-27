@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 class SuperBadProtected {
     protected static void display(String s) {

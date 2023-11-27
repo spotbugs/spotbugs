@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 class GoodSuperClassWithMain {
     public static void main(String[] args) {

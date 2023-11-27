@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 class BadSuperClass {
     public static void methodHiding() {

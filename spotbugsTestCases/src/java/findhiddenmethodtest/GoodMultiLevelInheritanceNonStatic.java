@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 class GoodGrandNonStatic {
     public void display(String s, int i) {

@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 class BadSuperClassWithMain {
     public static int main(String[] args) {

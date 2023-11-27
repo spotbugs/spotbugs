@@ -10,152 +10,152 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 class FindHiddenMethodTest extends AbstractIntegrationTest {
-    private final String BUG_TYPE = "HSBC_HIDING_SUB_CLASS";
+    private final String BUG_TYPE = "HSM_HIDING_METHOD";
 
     @Test
     void testBadFindHidingSubClassTest() {
-        performAnalysis("findhidingsubclasstest/GrantAccessStatic.class",
-                "findhidingsubclasstest/BadFindHidingSubClassTest.class");
+        performAnalysis("findhiddenmethodtest/GrantAccessStatic.class",
+                "findhiddenmethodtest/BadFindHidingSubClassTest.class");
         assertHSBCBug("displayAccountStatus", 15);
     }
 
     @Test
     void testBadFindHidingSubClassTest2() {
-        performAnalysis("findhidingsubclasstest/BadSuperClass.class",
-                "findhidingsubclasstest/BadHidingVsOverriding.class");
+        performAnalysis("findhiddenmethodtest/BadSuperClass.class",
+                "findhiddenmethodtest/BadHidingVsOverriding.class");
         assertHSBCBug("methodHiding", 19);
     }
 
 
     @Test
     void testBadFindHidingSubClassTest3() {
-        performAnalysis("findhidingsubclasstest/SuperBadInEqualMultipleMethod.class",
-                "findhidingsubclasstest/BadInEqualMultipleStaticMethod.class");
+        performAnalysis("findhiddenmethodtest/SuperBadInEqualMultipleMethod.class",
+                "findhiddenmethodtest/BadInEqualMultipleStaticMethod.class");
         assertHSBCBug("display", 25);
         assertHSBCBug("display2", 29);
     }
 
     @Test
     void testBadFindHidingSubClassTest4() {
-        performAnalysis("findhidingsubclasstest/BadMainMethodCheck.class",
-                "findhidingsubclasstest/BadSuperClassWithMain.class");
+        performAnalysis("findhiddenmethodtest/BadMainMethodCheck.class",
+                "findhiddenmethodtest/BadSuperClassWithMain.class");
         assertHSBCBug("main", 18);
     }
 
     @Test
     void testBadFindHidingSubClassTest5() {
-        performAnalysis("findhidingsubclasstest/BadGrandClass.class",
-                "findhidingsubclasstest/BadParentClass.class",
-                "findhidingsubclasstest/BadMultiLevelInheritance.class");
+        performAnalysis("findhiddenmethodtest/BadGrandClass.class",
+                "findhiddenmethodtest/BadParentClass.class",
+                "findhiddenmethodtest/BadMultiLevelInheritance.class");
         assertHSBCBug("display", 20);
     }
 
     @Test
     void testBadFindHidingSubClassTest6() {
-        performAnalysis("findhidingsubclasstest/SuperBadMultipleMethods.class",
-                "findhidingsubclasstest/BadMultipleStaticMethods.class");
+        performAnalysis("findhiddenmethodtest/SuperBadMultipleMethods.class",
+                "findhiddenmethodtest/BadMultipleStaticMethods.class");
         assertHSBCBug("display", 19);
         assertHSBCBug("display2", 23);
     }
 
     @Test
     void testBadFindHidingSubClassTest7() {
-        performAnalysis("findhidingsubclasstest/SuperBadNonOrderedMultipleStaticMethods.class",
-                "findhidingsubclasstest/BadNonOrderedMultipleStaticMethods.class");
+        performAnalysis("findhiddenmethodtest/SuperBadNonOrderedMultipleStaticMethods.class",
+                "findhiddenmethodtest/BadNonOrderedMultipleStaticMethods.class");
         assertHSBCBug("display", 24);
         assertHSBCBug("display2", 28);
     }
 
     @Test
     void testBadFindHidingSubClassTest8() {
-        performAnalysis("findhidingsubclasstest/BadOuterInnerClass.class",
-                "findhidingsubclasstest/BadOuterInnerClass$BadInner.class");
+        performAnalysis("findhiddenmethodtest/BadOuterInnerClass.class",
+                "findhiddenmethodtest/BadOuterInnerClass$BadInner.class");
         assertHSBCBug("badMethod", 15);
     }
 
     @Test
     void testBadFindHidingSubClassTest9() {
-        performAnalysis("findhidingsubclasstest/SuperBadProtected.class",
-                "findhidingsubclasstest/BadProtected.class");
+        performAnalysis("findhiddenmethodtest/SuperBadProtected.class",
+                "findhiddenmethodtest/BadProtected.class");
         assertHSBCBug("display", 15);
     }
 
     @Test
     void testGoodFindHidingSubClassTest() {
-        performAnalysis("findhidingsubclasstest/GrantAccess.class",
-                "findhidingsubclasstest/GoodFindHidingSubClassTest.class");
+        performAnalysis("findhiddenmethodtest/GrantAccess.class",
+                "findhiddenmethodtest/GoodFindHidingSubClassTest.class");
         assertNoHSBCBug();
     }
 
     @Test
     void testGoodFindHidingSubClassTest2() {
-        performAnalysis("findhidingsubclasstest/SuperGoodInEqualMultipleMethod.class",
-                "findhidingsubclasstest/GoodInEqualNonStaticMethods.class");
+        performAnalysis("findhiddenmethodtest/SuperGoodInEqualMultipleMethod.class",
+                "findhiddenmethodtest/GoodInEqualNonStaticMethods.class");
         assertNoHSBCBug();
     }
 
     @Test
     void testGoodFindHidingSubClassTest3() {
-        performAnalysis("findhidingsubclasstest/GoodSuperClassWithMain.class",
-                "findhidingsubclasstest/GoodMainMethodCheck.class");
+        performAnalysis("findhiddenmethodtest/GoodSuperClassWithMain.class",
+                "findhiddenmethodtest/GoodMainMethodCheck.class");
         assertNoHSBCBug();
     }
 
     @Test
     void testGoodFindHidingSubClassTest4() {
-        performAnalysis("findhidingsubclasstest/GoodGrandNonStatic.class",
-                "findhidingsubclasstest/GoodParentNonStatic.class",
-                "findhidingsubclasstest/GoodMultiLevelInheritanceNonStatic.class");
+        performAnalysis("findhiddenmethodtest/GoodGrandNonStatic.class",
+                "findhiddenmethodtest/GoodParentNonStatic.class",
+                "findhiddenmethodtest/GoodMultiLevelInheritanceNonStatic.class");
         assertNoHSBCBug();
     }
 
     @Test
     void testGoodFindHidingSubClassTest5() {
-        performAnalysis("findhidingsubclasstest/GoodGrandClassPrivate.class",
-                "findhidingsubclasstest/GoodParentClassPrivate.class",
-                "findhidingsubclasstest/GoodMultiLevelInheritancePrivate.class");
+        performAnalysis("findhiddenmethodtest/GoodGrandClassPrivate.class",
+                "findhiddenmethodtest/GoodParentClassPrivate.class",
+                "findhiddenmethodtest/GoodMultiLevelInheritancePrivate.class");
         assertNoHSBCBug();
     }
 
     @Test
     void testGoodFindHidingSubClassTest6() {
-        performAnalysis("findhidingsubclasstest/SuperMultipleNonStatic.class",
-                "findhidingsubclasstest/GoodMultipleNonStaticMethods.class");
+        performAnalysis("findhiddenmethodtest/SuperMultipleNonStatic.class",
+                "findhiddenmethodtest/GoodMultipleNonStaticMethods.class");
         assertNoHSBCBug();
     }
 
     @Test
     void testGoodFindHidingSubClassTest7() {
-        performAnalysis("findhidingsubclasstest/SuperGoodMultipleStaticMethod.class",
-                "findhidingsubclasstest/GoodMultipleStaticMethod.class");
+        performAnalysis("findhiddenmethodtest/SuperGoodMultipleStaticMethod.class",
+                "findhiddenmethodtest/GoodMultipleStaticMethod.class");
         assertNoHSBCBug();
     }
 
     @Test
     void testGoodFindHidingSubClassTest8() {
-        performAnalysis("findhidingsubclasstest/SuperGoodNonOrderedMultipleStaticMethods.class",
-                "findhidingsubclasstest/GoodNonOrderedMultipleNonStaticMethods.class");
+        performAnalysis("findhiddenmethodtest/SuperGoodNonOrderedMultipleStaticMethods.class",
+                "findhiddenmethodtest/GoodNonOrderedMultipleNonStaticMethods.class");
         assertNoHSBCBug();
     }
 
     @Test
     void testGoodFindHidingSubClassTest9() {
-        performAnalysis("findhidingsubclasstest/GoodOuterInnerClassNonStatic.class",
-                "findhidingsubclasstest/GoodOuterInnerClassNonStatic$GoodInnerNonStaticGood.class");
+        performAnalysis("findhiddenmethodtest/GoodOuterInnerClassNonStatic.class",
+                "findhiddenmethodtest/GoodOuterInnerClassNonStatic$GoodInnerNonStaticGood.class");
         assertNoHSBCBug();
     }
 
     @Test
     void testGoodFindHidingSubClassTest10() {
-        performAnalysis("findhidingsubclasstest/GoodOuterInnerClassPrivate.class",
-                "findhidingsubclasstest/GoodOuterInnerClassPrivate$GoodInnerClassPrivate.class");
+        performAnalysis("findhiddenmethodtest/GoodOuterInnerClassPrivate.class",
+                "findhiddenmethodtest/GoodOuterInnerClassPrivate$GoodInnerClassPrivate.class");
         assertNoHSBCBug();
     }
 
     @Test
     void testGoodFindHidingSubClassTest11() {
-        performAnalysis("findhidingsubclasstest/SuperGoodProtected.class",
-                "findhidingsubclasstest/GoodProtected.class");
+        performAnalysis("findhiddenmethodtest/SuperGoodProtected.class",
+                "findhiddenmethodtest/GoodProtected.class");
         assertNoHSBCBug();
     }
 

@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 class SuperGoodMultipleStaticMethod {
     private static void display(String s) {

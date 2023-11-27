@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 class GoodGrandClassPrivate {
     private static void display(String s) {

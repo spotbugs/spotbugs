@@ -1,4 +1,4 @@
-package findhidingsubclasstest;
+package findhiddenmethodtest;
 
 /**
  * This is a compliant test case as the methods are declared static but private,
