@@ -17,7 +17,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - tbd
 
 ### Added
-- New detector `FindHidingSubClass` for bug type `HSBC_HIDING_SUB_CLASS`. This bug is reported whenever a subclass method hides the static method of super class. (See [SEI CERT MET07-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface)).
+- New detector `FindHiddenMehtod` for bug type `HSM_HIDING_METHOD`. This bug is reported whenever a subclass method hides the static method of super class. (See [SEI CERT MET07-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface)).
 
 ## 4.8.1 - 2023-11-06
 
