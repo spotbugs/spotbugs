@@ -8,12 +8,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2023-??-??
 
 ### Fixed
-- Fixed false positive UPM_UNCALLED_PRIVATE_METHOD for method used in JUnit's MethodSource ([[#2379](https://github.com/spotbugs/spotbugs/issues/2379)])
-- Use java.nio to load filter files ([[#2684](https://github.com/spotbugs/spotbugs/pull/2684)])
-- Eclipse: Do not export javax.annotation packages ([[#2699](https://github.com/spotbugs/spotbugs/pull/2699)])
-- Fixed not thread safe FindOverridableMethodCall detector ([[#2701](https://github.com/spotbugs/spotbugs/issues/2701)])
+- Fixed false positive UPM_UNCALLED_PRIVATE_METHOD for method used in JUnit's MethodSource ([#2379](https://github.com/spotbugs/spotbugs/issues/2379))
+- Use java.nio to load filter files ([#2684](https://github.com/spotbugs/spotbugs/pull/2684))
+- Eclipse: Do not export javax.annotation packages ([#2699](https://github.com/spotbugs/spotbugs/pull/2699))
+- Fixed not thread safe FindOverridableMethodCall detector ([#2701](https://github.com/spotbugs/spotbugs/issues/2701))
 - Fix the weird messages of PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS bugs. ([#2646](https://github.com/spotbugs/spotbugs/issues/2646))
-- Revert commons-text from 1.11.0 to 1.10.0 to resolve a version conflict ([[#2686](https://github.com/spotbugs/spotbugs/issues/2686)])
+- Revert commons-text from 1.11.0 to 1.10.0 to resolve a version conflict ([#2686](https://github.com/spotbugs/spotbugs/issues/2686))
 - Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
 
 ### Added
@@ -22,19 +22,19 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## 4.8.1 - 2023-11-06
 
 ### Fixed
-- Fixed schema location for findbugsfilter.xsd ([[#1416](https://github.com/spotbugs/spotbugs/issues/1416)])
-- Fixed missing null checks ([[#2629](https://github.com/spotbugs/spotbugs/issues/2629)])
-- Disabled DontReusePublicIdentifiers due to the high false positives rate ([[#2627](https://github.com/spotbugs/spotbugs/issues/2627)])
-- Removed signature of methods using UTF-8 in DefaultEncodingDetector ([[#2634](https://github.com/spotbugs/spotbugs/issues/2634)])
-- Fix exception escapes when calling functions of JUnit Assert or Assertions ([[#2640](https://github.com/spotbugs/spotbugs/issues/2640)])
-- Fixed an error in the SARIF export when a bug annotation is missing ([[#2632](https://github.com/spotbugs/spotbugs/issues/2632)])
-- Fixed false positive RV_EXCEPTION_NOT_THROWN when asserting to exception throws ([[#2628](https://github.com/spotbugs/spotbugs/issues/2628)])
-- Fix false positive CT_CONSTRUCTOR_THROW when supertype has final finalize ([[#2665](https://github.com/spotbugs/spotbugs/issues/2665)])
-- Lowered the priority of `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` bug ([[#2652](https://github.com/spotbugs/spotbugs/issues/2652)])
-- Eclipse: fixed startup overhead (on computing classpath) for PDE projects ([[#2671](https://github.com/spotbugs/spotbugs/pull/2671)])
+- Fixed schema location for findbugsfilter.xsd ([#1416](https://github.com/spotbugs/spotbugs/issues/1416))
+- Fixed missing null checks ([#2629](https://github.com/spotbugs/spotbugs/issues/2629))
+- Disabled DontReusePublicIdentifiers due to the high false positives rate ([#2627](https://github.com/spotbugs/spotbugs/issues/2627))
+- Removed signature of methods using UTF-8 in DefaultEncodingDetector ([#2634](https://github.com/spotbugs/spotbugs/issues/2634))
+- Fix exception escapes when calling functions of JUnit Assert or Assertions ([#2640](https://github.com/spotbugs/spotbugs/issues/2640))
+- Fixed an error in the SARIF export when a bug annotation is missing ([#2632](https://github.com/spotbugs/spotbugs/issues/2632))
+- Fixed false positive RV_EXCEPTION_NOT_THROWN when asserting to exception throws ([#2628](https://github.com/spotbugs/spotbugs/issues/2628))
+- Fix false positive CT_CONSTRUCTOR_THROW when supertype has final finalize ([#2665](https://github.com/spotbugs/spotbugs/issues/2665))
+- Lowered the priority of `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` bug ([#2652](https://github.com/spotbugs/spotbugs/issues/2652))
+- Eclipse: fixed startup overhead (on computing classpath) for PDE projects ([#2671](https://github.com/spotbugs/spotbugs/pull/2671))
 
 ### Build
-- Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([[#2651](https://github.com/spotbugs/spotbugs/pull/2651)])
+- Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([#2651](https://github.com/spotbugs/spotbugs/pull/2651))
 
 ## 4.8.0 - 2023-10-11
 
@@ -43,7 +43,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bump up slf4j-api to 2.0.3 ([#2220](https://github.com/spotbugs/spotbugs/pull/2220))
 - Bump up gson to 2.10 ([#2235](https://github.com/spotbugs/spotbugs/pull/2235))
 - Allowed for large command line through writing arguments to file (UnionResults/UnionBugs2)
-- Use com.github.stephenc.jcip for jcip-annotations fixing #887
+- Use com.github.stephenc.jcip for jcip-annotations fixing ([#887](https://github.com/spotbugs/spotbugs/issues/887))
 
 ### Fixed
 - Fixed missing classes not in report if using IErrorLogger.reportMissingClass(ClassDescriptor) ([#219](https://github.com/spotbugs/spotbugs/issues/219))
@@ -791,7 +791,7 @@ This version contains no change, except for the solution for [a deployment probl
 * SOAPMessage.getSOAPHeader() can and does return null ([Bug#1368](https://sourceforge.net/p/findbugs/bugs/1368/))
 * False positive in UC_USELESS_OBJECT  ([Bug#1373](https://sourceforge.net/p/findbugs/bugs/1373/))
 * False positive in NP_LOAD_OF_KNOWN_NULL_VALUE  ([Bug#1372](https://sourceforge.net/p/findbugs/bugs/1372/))
-* Missing java.nio.file.Files support in  OS_OPEN_STREAM ([Bugs#1399](https://sourceforge.net/p/findbugs/bugs/1399/)])
+* Missing java.nio.file.Files support in  OS_OPEN_STREAM ([Bugs#1399](https://sourceforge.net/p/findbugs/bugs/1399/))
 * False negative in GC_UNRELATED_TYPES  ([Bug#1387](https://sourceforge.net/p/findbugs/bugs/1387/))
 * Not reliable BIT_SIGNED_CHECK ([Bug#1408](https://sourceforge.net/p/findbugs/bugs/1408/))
 * Annotation of SIC_INNER_SHOULD_BE_STATIC_ANON ([Bug#1418](https://sourceforge.net/p/findbugs/bugs/1418/))
