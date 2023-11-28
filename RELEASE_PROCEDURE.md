@@ -30,8 +30,6 @@ Update version in [Eclipse Marketplace page](https://marketplace.eclipse.org/con
 
 No action necessary. When we push tag, the build result on GitHub CI will be deployed to Gradle Plugin Portal.
 
-See `deploy` phase in `.github/workflows/release.yml` for detail.
-
 ## Release to ReadTheDocs
 
 See [docs/README.md](docs/README.md) for detail.
