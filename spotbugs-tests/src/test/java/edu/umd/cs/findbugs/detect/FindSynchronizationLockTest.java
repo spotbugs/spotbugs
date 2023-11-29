@@ -32,11 +32,11 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
     @Test
     void testBadMethodSynchronizationWithPublicStaticLockObject() {
-        performAnalysis("privateFinalLocks/BadMethodSynchronizationWithPublicStaticLock.class", "privateFinalLocks/SomeOtherClass.class");
+        performAnalysis("privateFinalLocks/BadMethodSynchronizationWithPublicStaticLock.class");
 
         assertNumOfBugs(1, METHOD_BUG);
 
-        assertMethodBugExactly("privateFinalLocks.SomeOtherClass", "changeValue", Collections.emptySet());
+        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithPublicStaticLock", "changeValue", Collections.emptySet());
     }
 
     @Test
