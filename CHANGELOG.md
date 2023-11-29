@@ -20,7 +20,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - New detector finding `System.getenv()` calls, where the corresponding Java property could be used (See [ENV02-J](https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables)).
 
 ### Build
-- Run build using jdk 17 and 21 without usage of toolchains so we do not defeat the purpose of building on both.
+- Run build using jdk 17 and 21 without usage of toolchains so we do not defeat the purpose of building on both. ([#2722](https://github.com/spotbugs/spotbugs/pull/2722))
 
 ## 4.8.1 - 2023-11-06
 
