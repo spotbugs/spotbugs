@@ -1819,6 +1819,15 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryEnvUsage">
+    <Details>
+      <![CDATA[
+            <p>Checks for calls of System.getenv(), where the variable has an equivalent
+              Java property too.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -9104,6 +9113,50 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
         </Details>
   </BugPattern>
+  <BugPattern type="ENV_USE_PROPERTY_INSTEAD_OF_ENV">
+    <ShortDescription>It is preferable to use portable Java property instead of environment variable.</ShortDescription>
+    <LongDescription>It is preferable to use portable Java property '{3}' instead of environment variable '{2}' in method {1}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Environment variables are not portable, the variable name itself (not only the value) may be different depending on the running OS.
+        Not only the names of the specific environment variables can differ (e.g. `USERNAME` in Windows and `USER` in Unix systems),
+        but even the semantics differ, e.g. the case sensitivity (Windows being case-insensitive and Unix case-sensitive).
+        Moreover, the Map of the environment variables returned by <code>java.lang.System.getenv()</code> and its collection views may not obey
+        the general contract of the <code>Object.equals(java.lang.Object)</code> and <code>Object.hashCode()</code> methods.
+        Consequently, using environment variables may have unintended side effects.
+        Also, the visibility of environment variables is less restricted compared to Java Properties: they are visible to all descendants
+        of the defining process, not just the immediate Java subprocess.
+        For these reasons, even the Java API of <code>java.lang.System</code> advises to use Java properties (<code>java.lang.System.getProperty(java.lang.String)</code>)
+        instead of environment variables (<code>java.lang.System.getenv(java.lang.String)</code>) where possible.
+      </p>
+      <p>
+        If a value can be accessed through both System.getProperty() and System.getenv(), it should be accessed using the former.
+      </p>
+      <p>
+        Mapping of corresponding Java System properties:
+        <table>
+          <tr>
+             <th>Environment variable</th> <th>Property</th>
+          </tr>
+          <tr><td>JAVA_HOME</td> <td>java.home</td></tr>
+          <tr><td>JAVA_VERSION</td> <td>java.version</td></tr>
+          <tr><td>TEMP</td> <td>java.io.tmpdir</td></tr>
+          <tr><td>TMP</td> <td>java.io.tmpdir</td></tr>
+          <tr><td>PROCESSOR_ARCHITECTURE</td> <td>os.arch</td></tr>
+          <tr><td>OS</td> <td>os.name</td></tr>
+          <tr><td>USER</td> <td>user.name</td></tr>
+          <tr><td>USERNAME</td> <td>user.name</td></tr>
+          <tr><td>HOME</td> <td>user.home</td></tr>
+          <tr><td>HOMEPATH</td> <td>user.home</td></tr>
+          <tr><td>CD</td> <td>user.dir</td></tr>
+          <tr><td>PWD</td> <td>user.dir</td></tr>
+        </table>
+      </p>
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables">ENV02-J. Do not trust the values of environment variables</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -9263,4 +9316,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
+  <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
 </MessageCollection>
