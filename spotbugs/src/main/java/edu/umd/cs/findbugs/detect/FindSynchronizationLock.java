@@ -62,9 +62,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                 String declaringClass = ClassName.toSlashedClassName(lockObject.getClassName());
                 try {
                     if (getClassName().equals(declaringClass) || inheritsFromHierarchy(lockObject)) {
-                        XMethod xMethod = getXMethod();
-
                         if (lockObject.isPublic() || lockObject.isProtected() || lockObject.isVolatile() && !lockObject.isFinal()) {
+                            XMethod xMethod = getXMethod();
                             bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
                                     .addClassAndMethod(xMethod)
                                     .addField(lockObject));
