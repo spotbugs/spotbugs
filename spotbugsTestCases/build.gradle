@@ -39,9 +39,6 @@ dependencies {
 }
 
 tasks.withType(JavaCompile).configureEach {
-  javaCompiler = javaToolchains.compilerFor {
-    languageVersion = JavaLanguageVersion.of(17)
-  }
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
   if (it.name == 'classesJava17') {
