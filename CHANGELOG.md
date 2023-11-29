@@ -50,6 +50,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bump up gson to 2.10 ([#2235](https://github.com/spotbugs/spotbugs/pull/2235))
 - Allowed for large command line through writing arguments to file (UnionResults/UnionBugs2)
 - Use com.github.stephenc.jcip for jcip-annotations fixing ([#887](https://github.com/spotbugs/spotbugs/issues/887))
+- Bump ObjectWeb ASM from 9.4 to 9.6, supporting JDK 21 ([#2578](https://github.com/spotbugs/spotbugs/pull/2578))
 
 ### Fixed
 - Fixed missing classes not in report if using IErrorLogger.reportMissingClass(ClassDescriptor) ([#219](https://github.com/spotbugs/spotbugs/issues/219))
