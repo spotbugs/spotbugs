@@ -1819,6 +1819,15 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryEnvUsage">
+    <Details>
+      <![CDATA[
+            <p>Checks for calls of System.getenv(), where the variable has an equivalent
+              Java property too.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindSynchronizationLock">
     <Details>
       <![CDATA[
@@ -9111,35 +9120,55 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
         </Details>
   </BugPattern>
-  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES">
-        <ShortDescription>Do not reuse public identifiers from JSL as inner name</ShortDescription>
-        <LongDescription>Inner class name {2} of class {1} in source file {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
-        <Details>
-            <![CDATA[<p>
-      It's essential to avoid reusing public identifiers from the Java Standard Library as class names.
-      This is because the Java Standard Library is a part of the Java platform and is expected to be available in all Java environments.
-      Doing so can lead to naming conflicts and confusion, making it harder to understand and maintain the code.
-      It's best practice to choose unique and descriptive class names that accurately represent the purpose and functionality of your own code.
-      To provide an example, let's say you want to create an inner class for handling dates inside a specific Calendar class. Instead of using a common name like "Date",
-      which conflicts with the existing java.util.Date class, you could choose a more specific and unique name like or "CalendarDate" or "CalendarDisplayDate".
-
-      A few key points to keep in mind when choosing names as identifier:
-      <ul>
-        <li>Use meaningful prefixes or namespaces: Prepend a project-specific prefix or namespace to your class names to make them distinct. For example, if your project is named "MyApp", you could use "MyAppDate" as your class name.</li>
-        <li>Use descriptive names: Opt for descriptive class names that clearly indicate their purpose and functionality. This helps avoid shadowing existing Java Standard Library identifiers. For instance, instead of "List", consider using "CustomAppList".</li>
-        <li>Follow naming conventions: Adhere to Java's naming conventions, such as using camel case (e.g., MyClass) for class names. This promotes code readability and reduces the chances of conflicts.</li>
-      </ul>
-
+  <BugPattern type="ENV_USE_PROPERTY_INSTEAD_OF_ENV">
+    <ShortDescription>It is preferable to use portable Java property instead of environment variable.</ShortDescription>
+    <LongDescription>It is preferable to use portable Java property '{3}' instead of environment variable '{2}' in method {1}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Environment variables are not portable, the variable name itself (not only the value) may be different depending on the running OS.
+        Not only the names of the specific environment variables can differ (e.g. `USERNAME` in Windows and `USER` in Unix systems),
+        but even the semantics differ, e.g. the case sensitivity (Windows being case-insensitive and Unix case-sensitive).
+        Moreover, the Map of the environment variables returned by <code>java.lang.System.getenv()</code> and its collection views may not obey
+        the general contract of the <code>Object.equals(java.lang.Object)</code> and <code>Object.hashCode()</code> methods.
+        Consequently, using environment variables may have unintended side effects.
+        Also, the visibility of environment variables is less restricted compared to Java Properties: they are visible to all descendants
+        of the defining process, not just the immediate Java subprocess.
+        For these reasons, even the Java API of <code>java.lang.System</code> advises to use Java properties (<code>java.lang.System.getProperty(java.lang.String)</code>)
+        instead of environment variables (<code>java.lang.System.getenv(java.lang.String)</code>) where possible.
       </p>
-      <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
-      ]]>
-        </Details>
-    </BugPattern>
-    <BugPattern type="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
-        <ShortDescription>Instead of synchronized methods, use private final lock objects with block synchronization</ShortDescription>
-        <LongDescription>Method {1} uses the intrinsic lock of class {0} for synchronization, that is exposed by: {2}.</LongDescription>
-        <Details>
-            <![CDATA[<p>
+      <p>
+        If a value can be accessed through both System.getProperty() and System.getenv(), it should be accessed using the former.
+      </p>
+      <p>
+        Mapping of corresponding Java System properties:
+        <table>
+          <tr>
+             <th>Environment variable</th> <th>Property</th>
+          </tr>
+          <tr><td>JAVA_HOME</td> <td>java.home</td></tr>
+          <tr><td>JAVA_VERSION</td> <td>java.version</td></tr>
+          <tr><td>TEMP</td> <td>java.io.tmpdir</td></tr>
+          <tr><td>TMP</td> <td>java.io.tmpdir</td></tr>
+          <tr><td>PROCESSOR_ARCHITECTURE</td> <td>os.arch</td></tr>
+          <tr><td>OS</td> <td>os.name</td></tr>
+          <tr><td>USER</td> <td>user.name</td></tr>
+          <tr><td>USERNAME</td> <td>user.name</td></tr>
+          <tr><td>HOME</td> <td>user.home</td></tr>
+          <tr><td>HOMEPATH</td> <td>user.home</td></tr>
+          <tr><td>CD</td> <td>user.dir</td></tr>
+          <tr><td>PWD</td> <td>user.dir</td></tr>
+        </table>
+      </p>
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables">ENV02-J. Do not trust the values of environment variables</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+    <ShortDescription>Instead of synchronized methods, use private final lock objects with block synchronization</ShortDescription>
+    <LongDescription>Method {1} uses the intrinsic lock of class {0} for synchronization, that is exposed by: {2}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
         There are two primary methods for synchronizing access to shared mutable variables: <b>method synchronization</b> and <b>block synchronization</b>. In synchronized methods and blocks that lock onto the <b>this</b> reference,
         the object serves as a monitor, utilizing its intrinsic lock. However, a potential vulnerability arises when an attacker manipulates the system to induce contention or deadlock
         by seizing and indefinitely holding the intrinsic lock of an accessible class, leading to a Denial of Service (DoS) scenario.
@@ -9153,14 +9182,14 @@ Using floating-point variables should not be used as loop counters, as they are 
         This restriction involves modifying methods that expose the class by declaring them private. This greatly reduces the likelihood of encountering problems.
 
         <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
-        ]]>
-        </Details>
-    </BugPattern>
-    <BugPattern type="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
-        <ShortDescription>Use private final lock objects in synchronization blocks</ShortDescription>
-        <LongDescription>The lock object {2} used in method {1} is accessible from outside, thus exposing class {0} to untrusted code.</LongDescription>
-        <Details>
-            <![CDATA[<p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+    <ShortDescription>Use private final lock objects in synchronization blocks</ShortDescription>
+    <LongDescription>The lock object {2} used in method {1} is accessible from outside, thus exposing class {0} to untrusted code.</LongDescription>
+    <Details>
+      <![CDATA[<p>
         There are two primary methods for synchronizing access to shared mutable variables: <b>method synchronization</b> and <b>block synchronization</b>. In synchronized methods and blocks that lock onto the <b>this</b> reference,
         the object serves as a monitor, utilizing its intrinsic lock. However, a potential vulnerability arises when an attacker manipulates the system to induce contention or deadlock
         by seizing and indefinitely holding the intrinsic lock of an accessible class, leading to a Denial of Service (DoS) scenario.
@@ -9172,8 +9201,9 @@ Using floating-point variables should not be used as loop counters, as they are 
 
         <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
       ]]>
-        </Details>
-    </BugPattern>
+    </Details>
+  </BugPattern>
+    
   <!--
   **********************************************************************
    BugCodes
@@ -9333,5 +9363,6 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
+  <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
   <BugCode abbrev="PFL">Use private final lock objects for synchronization</BugCode>
 </MessageCollection>
