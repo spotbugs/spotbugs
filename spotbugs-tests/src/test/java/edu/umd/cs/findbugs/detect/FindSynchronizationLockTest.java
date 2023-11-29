@@ -24,10 +24,10 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
         assertNumOfBugs(4, METHOD_BUG);
 
-        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "doStuff", Set.of("lookup", "lookup2"));
-        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "changeValue", Set.of("lookup", "lookup2"));
-        assertMethodBugExactly("privateFinalLocks.ClassExposingACollectionOfItself", "doStuff", Set.of("getCollection"));
-        assertMethodBugExactly("privateFinalLocks.ClassExposingAMapOfItself", "doStuff", Set.of("getMap"));
+        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "changeValue");
+        assertMethodBugExactly("privateFinalLocks.ClassExposingACollectionOfItself", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.ClassExposingAMapOfItself", "doStuff");
     }
 
     @Test
@@ -36,7 +36,7 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
         assertNumOfBugs(1, METHOD_BUG);
 
-        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithPublicStaticLock", "changeValue", Collections.emptySet());
+        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithPublicStaticLock", "changeValue");
     }
 
     @Test
@@ -135,9 +135,8 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
-    private void assertMethodBugExactly(String clazz, String method, Set<String> exposingMethods) {
+    private void assertMethodBugExactly(String clazz, String method) {
         BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder().bugType(METHOD_BUG).inClass(clazz).inMethod(method);
-        //        exposingMethods.forEach(bugInstanceMatcherBuilder::inMethod);
 
         final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
 
