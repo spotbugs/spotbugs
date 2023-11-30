@@ -8,5 +8,5 @@ repositories {
 }
 dependencies {
     implementation("com.diffplug.gradle:goomph:3.43.0")
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.23.0")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.23.2")
 }
