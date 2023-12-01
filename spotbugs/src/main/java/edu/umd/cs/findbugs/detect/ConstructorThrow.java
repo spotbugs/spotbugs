@@ -111,8 +111,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
 
     /**
      * 1. Check for any throw expression in the constructor.
-     * 2. Check for any unchecked exception throw inside constructor,
-     * or any of the called methods.
+     * 2. Check for any exception throw inside constructor, or any of the called methods.
      * If the class is final, we are fine, no finalizer attack can happen.
      * In the first pass the detector shouldn't report, because there could be
      * a final finalizer and a throwing constructor. Reporting in this case
