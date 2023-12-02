@@ -28,7 +28,7 @@ Update version in [Eclipse Marketplace page](https://marketplace.eclipse.org/con
 
 ## Release to Gradle Plugin Portal
 
-No action necessary. When we push tag, the build result on GitHub CI will be deployed to Gradle Plugin Portal.
+This project is not released directly to the Gradle Plugin Portal, that is the role of the [SpotBugs Gradle Plugin](https://github.com/spotbugs/spotbugs-gradle-plugin) project.
 
 ## Release to ReadTheDocs
 
