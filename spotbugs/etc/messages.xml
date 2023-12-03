@@ -9187,12 +9187,35 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
     <ShortDescription>Use private final lock objects in synchronization blocks</ShortDescription>
-    <LongDescription>The lock object {2} used in method {1} is accessible from outside, thus exposing class {0} to untrusted code.</LongDescription>
+    <LongDescription>The lock object {2} used in method {1} is visible outside the class, thus exposing class {0} to untrusted code.</LongDescription>
     <Details>
       <![CDATA[<p>
         There are two primary methods for synchronizing access to shared mutable variables: <b>method synchronization</b> and <b>block synchronization</b>. In synchronized methods and blocks that lock onto the <b>this</b> reference,
         the object serves as a monitor, utilizing its intrinsic lock. However, a potential vulnerability arises when an attacker manipulates the system to induce contention or deadlock
         by seizing and indefinitely holding the intrinsic lock of an accessible class, leading to a Denial of Service (DoS) scenario.
+
+        To address this potential risk, the <b>private lock object idiom</b> can be employed, as outlined in <a href=https://www.oracle.com/java/technologies/effectivejava.html>Bloch 2001, Effective Java</a>.
+        This technique involves utilizing an intrinsic lock associated with a private final java.lang.Object,
+        declared within the class rather than the class' intrinsic lock.
+        This eliminates the risk of lock contention between the class and those of a potential attacker, since the hostile class cannot access the private final lock object.
+
+        <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+    <ShortDescription>Use private final lock objects in synchronization blocks, when lock is accessible</ShortDescription>
+    <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, through updating or returning its value from {4}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        There are two primary methods for synchronizing access to shared mutable variables: <b>method synchronization</b> and <b>block synchronization</b>. In synchronized methods and blocks that lock onto the <b>this</b> reference,
+        the object serves as a monitor, utilizing its intrinsic lock. However, a potential vulnerability arises when an attacker manipulates the system to induce contention or deadlock
+        by seizing and indefinitely holding the intrinsic lock of an accessible class, leading to a Denial of Service (DoS) scenario.
+
+        In the case of volatile lock objects or lock objects with well-managed visibility (private), the presence of an accessor method that updates the lock's value is not a safe locking mechanism.
+        If a thread synchronizes on the lock and enters the critical section, an attacker can potentially update the lock's value through the accessor method (like a setter).
+        This allows another thread to synchronize on the new value and concurrently enter the critical section, enabling potentially unsafe operations to be performed.
+        Similarly, if there is a method that exposes the lock itself, this can also lead to vulnerabilities in the software.
 
         To address this potential risk, the <b>private lock object idiom</b> can be employed, as outlined in <a href=https://www.oracle.com/java/technologies/effectivejava.html>Bloch 2001, Effective Java</a>.
         This technique involves utilizing an intrinsic lock associated with a private final java.lang.Object,
