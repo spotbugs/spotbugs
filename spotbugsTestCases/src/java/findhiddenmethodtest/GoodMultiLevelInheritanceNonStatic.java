@@ -10,7 +10,7 @@ class GoodParentNonStatic extends GoodGrandNonStatic {
 }
 
 /**
- * This test case is a complaint test case with multiple level inheritance.
+ * This test case is a compliant test case with multiple level inheritance.
  * As the overridden methods are non-static.
  */
 class GoodMultiLevelInheritanceNonStatic extends GoodParentNonStatic {

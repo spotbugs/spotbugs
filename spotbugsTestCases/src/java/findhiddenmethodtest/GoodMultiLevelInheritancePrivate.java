@@ -10,7 +10,7 @@ class GoodParentClassPrivate extends GoodGrandClassPrivate {
 }
 
 /**
- * This test case is a complaint test case with multiple level inheritance.
+ * This test case is a compliant test case with multiple level inheritance.
  * As the overridden methods are static but declared private.
  * So actually none of the child classes inherit any method from its super class(es).
  */

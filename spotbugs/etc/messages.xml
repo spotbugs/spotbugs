@@ -1832,14 +1832,8 @@ factory pattern to create these objects.</p>
     <Details>
       <![CDATA[
             <p>
-              Hiding happens when a sub class defines a static method
-              with the same header (signature plus return type) as any of its super classes.
-              In the event of method hiding, the invoked method is determined based on the specific qualified name or
-              method invocation expression used at the calling site.
-              The results are often unexpected, although the Java language provides unambiguous rules for method invocation for method hiding.
-              Moreover, method hiding and method overriding is often confused by programmers.
-              Consequently, programmers should avoid the method hiding.
-              Programmer should declare the respective method non-static or restrict it as private to eradicate the problem.
+              Checks for static and non-private method for method hiding.
+              It has exceptions for main method, constructor, inner classes, and auto generated methods.
             </p>
       ]]>
     </Details>
@@ -9038,12 +9032,12 @@ Using floating-point variables should not be used as loop counters, as they are 
       <![CDATA[
         Hiding happens when a sub class defines a static method
         with same header (signature plus return type) as in any of the super classes.
-        In case of method hiding the invoked method is determined based on the specific qualified name or
+        In the event of method hiding the invoked method is determined based on the specific qualified name or
         method invocation expression used at the calling site.
         The results are often unexpected, although the Java language provides unambiguous rules for method invocation for method hiding.
         Moreover, method hiding and method overriding is often confused by programmers.
-        Consequently, programmers must avoid the method hiding.
-        Programmer should declare the respective methods non-static or restrict it as private to eradicate the problem.
+        Consequently, programmers should avoid the method hiding.
+        Programmer should declare the respective method non-static or restrict it as private to eradicate the problem.
         <p>
         See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">MET07-J. Never declare a class method that hides a method declared in a superclass or superinterface</a>.
         </p>
