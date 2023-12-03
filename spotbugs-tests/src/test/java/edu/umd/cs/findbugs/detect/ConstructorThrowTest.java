@@ -22,7 +22,7 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
     void testConstructorThrowCheck2() {
         performAnalysis("constructorthrow/ConstructorThrowTest2.class");
         assertNumOfCTBugs(1);
-        assertCTBugInLine(10);
+        assertCTBugInLine(11);
     }
 
     @Test
@@ -125,6 +125,34 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void testConstructorThrowCheck17() {
+        performAnalysis("constructorthrow/ConstructorThrowTest17.class");
+        assertNumOfCTBugs(1);
+        assertCTBugInLine(9);
+    }
+
+    @Test
+    void testConstructorThrowCheck18() {
+        performAnalysis("constructorthrow/ConstructorThrowTest18.class");
+        assertNumOfCTBugs(1);
+        assertCTBugInLine(11);
+    }
+
+    @Test
+    void testConstructorThrowCheck19() {
+        performAnalysis("constructorthrow/ConstructorThrowTest19.class");
+        assertNumOfCTBugs(1);
+        assertCTBugInLine(11);
+    }
+
+    @Test
+    void testConstructorThrowCheck20() {
+        performAnalysis("constructorthrow/ConstructorThrowTest20.class");
+        assertNumOfCTBugs(1);
+        assertCTBugInLine(13);
+    }
+
+    @Test
     void testGoodConstructorThrowCheck1() {
         performAnalysis("constructorthrow/ConstructorThrowNegativeTest1.class");
         assertNumOfCTBugs(0);
@@ -200,6 +228,30 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
     void testGoodConstructorThrowCheck13() {
         performAnalysis("constructorthrow/ConstructorThrowNegativeTest12.class",
                 "constructorthrow/ConstructorThrowNegativeTest13.class");
+        assertNumOfCTBugs(0);
+    }
+
+    @Test
+    void testGoodConstructorThrowCheck14() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest14.class");
+        assertNumOfCTBugs(0);
+    }
+
+    @Test
+    void testGoodConstructorThrowCheck15() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest15.class");
+        assertNumOfCTBugs(0);
+    }
+
+    @Test
+    void testGoodConstructorThrowCheck16() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest16.class");
+        assertNumOfCTBugs(0);
+    }
+
+    @Test
+    void testGoodConstructorThrowCheck17() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest17.class");
         assertNumOfCTBugs(0);
     }
 
