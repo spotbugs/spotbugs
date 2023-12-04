@@ -13,8 +13,9 @@ import java.util.Objects;
  */
 class Invocation {
     private final int exitCode;
+
     @NonNull
-    private final String exitSignalName;
+    private final String exitCodeDescription;
     private final boolean executionSuccessful;
     @NonNull
     private final List<Notification> toolExecutionNotifications;
@@ -24,7 +25,7 @@ class Invocation {
     Invocation(int exitCode, @NonNull String exitSignalName, boolean executionSuccessful, @NonNull List<Notification> toolExecutionNotifications,
             @NonNull List<Notification> toolConfigurationNotifications) {
         this.exitCode = exitCode;
-        this.exitSignalName = Objects.requireNonNull(exitSignalName);
+        this.exitCodeDescription = Objects.requireNonNull(exitSignalName);
         this.executionSuccessful = executionSuccessful;
         this.toolExecutionNotifications = Collections.unmodifiableList(toolExecutionNotifications);
         this.toolConfigurationNotifications = Collections.unmodifiableList(toolConfigurationNotifications);
@@ -34,7 +35,7 @@ class Invocation {
     JsonObject toJsonObject() {
         JsonObject result = new JsonObject();
         result.addProperty("exitCode", exitCode);
-        result.addProperty("exitSignalName", exitSignalName);
+        result.addProperty("exitSignalName", exitCodeDescription);
         result.addProperty("executionSuccessful", executionSuccessful);
 
         JsonArray execNotificationArray = new JsonArray();
