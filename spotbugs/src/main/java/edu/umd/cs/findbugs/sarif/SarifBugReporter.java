@@ -87,8 +87,10 @@ public class SarifBugReporter extends BugCollectionBugReporter {
 
         int exitCode = ExitCodes.from(getQueuedErrors().size(), missingClasses.size(), getBugCollection().getCollection().size());
         Invocation invocation = new Invocation(exitCode,
-                getSignalName(exitCode), exitCode == 0,
-                execNotifications, configNotifications);
+                getSignalName(exitCode),
+                (exitCode | ExitCodes.BUGS_FOUND_FLAG) == ExitCodes.BUGS_FOUND_FLAG,
+                execNotifications,
+                configNotifications);
 
         jsonWriter.name("invocations").beginArray();
         gson.toJson(invocation.toJsonObject(), jsonWriter);
