@@ -413,10 +413,6 @@ class SarifBugReporterTest {
 
     @Test
     void testNullInResultsOrTaxa() throws IOException {
-        Path tmpDir = Files.createTempDirectory("spotbugs");
-        new File(tmpDir.toFile(), "SampleClass.java").createNewFile();
-        SourceFinder sourceFinder = reporter.getProject().getSourceFinder();
-        sourceFinder.setSourceBaseList(Collections.singleton(tmpDir.toString()));
         reporter.finish();
 
         String json = writer.toString();
