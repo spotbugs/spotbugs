@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits for checked exceptions ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
+- Fix possible null value in taxonomies of SARIF output ([#2744](https://sarifweb.azurewebsites.net/Validation))
 
 ## 4.8.2 - 2023-11-28
 
