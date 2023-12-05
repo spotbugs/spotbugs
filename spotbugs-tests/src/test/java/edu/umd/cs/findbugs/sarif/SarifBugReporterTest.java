@@ -412,7 +412,7 @@ class SarifBugReporterTest {
     }
 
     @Test
-    void testNullInResultsOrTaxa() throws IOException {
+    void testNullInResultsOrTaxa() {
         reporter.finish();
 
         String json = writer.toString();
