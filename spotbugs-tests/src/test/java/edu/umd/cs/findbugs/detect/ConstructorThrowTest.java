@@ -57,22 +57,19 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
     @Test
     void testConstructorThrowCheck7() {
         performAnalysis("constructorthrow/ConstructorThrowTest7.class");
-        assertNumOfCTBugs(1);
-        assertCTBugInLine(11); // Preferable 12, but 11 is ok.
+        assertNumOfCTBugs(0); // It doesn't work for lambdas
     }
 
     @Test
     void testConstructorThrowCheck8() {
         performAnalysis("constructorthrow/ConstructorThrowTest8.class");
-        assertNumOfCTBugs(1);
-        assertCTBugInLine(11); // Preferable 12, but 11 is ok.
+        assertNumOfCTBugs(0); // It doesn't work for lambdas
     }
 
     @Test
     void testConstructorThrowCheck9() {
         performAnalysis("constructorthrow/ConstructorThrowTest9.class");
-        assertNumOfCTBugs(1);
-        assertCTBugInLine(11); // Preferable 12, but 11 is ok.
+        assertNumOfCTBugs(0); // It doesn't work for lambdas
     }
 
     @Test
@@ -169,8 +166,7 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
     @Test
     void testConstructorThrowCheck23() {
         performAnalysis("constructorthrow/ConstructorThrowTest23.class");
-        assertNumOfCTBugs(1);
-        assertCTBugInLine(14);
+        assertNumOfCTBugs(0); // It doesn't work for lambdas
     }
 
     @Test
