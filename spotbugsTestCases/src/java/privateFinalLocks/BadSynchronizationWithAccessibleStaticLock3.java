@@ -13,7 +13,7 @@ public class BadSynchronizationWithAccessibleStaticLock3 {
 
 class BadSynchronizationWithAccessibleStaticLockFromParent3 extends BadSynchronizationWithAccessibleStaticLock3 {
     public static void doStuff2() {
-        synchronized (lock) {
+        synchronized (lock) { // synchronizing on the package private lock object, bug should be detected here
             System.out.println("Do stuff");
         }
     }
