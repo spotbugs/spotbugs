@@ -50,7 +50,7 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
     public boolean match(BugInstance bugInstance) {
 
         MethodAnnotation methodAnnotation = null;
-        if (role == null || "".equals(role)) {
+        if (role == null || role.isEmpty()) {
             methodAnnotation = bugInstance.getPrimaryMethod();
         } else {
             for (BugAnnotation a : bugInstance.getAnnotations()) {
