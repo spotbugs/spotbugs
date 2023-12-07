@@ -15,7 +15,7 @@ class Issue2552Test extends AbstractIntegrationTest {
 
     @Test
     @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
-    public void testIssue() {
+    void testIssue() {
         performAnalysis("../java17/ghIssues/Issue2552.class");
 
         assertBugCount("EI_EXPOSE_REP", 1);
