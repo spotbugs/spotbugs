@@ -417,7 +417,7 @@ class SarifBugReporterTest {
     }
 
     @Test
-    void testSuccessfulExecution() {
+    void testInvocationSuccessfulOnBugPresence() {
         BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
