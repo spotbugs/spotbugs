@@ -33,7 +33,7 @@ public abstract class AbstractAssertDetector extends OpcodeStackDetector {
 
     protected boolean inAssert = false;
 
-    public AbstractAssertDetector(BugReporter bugReporter) {
+    protected AbstractAssertDetector(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
