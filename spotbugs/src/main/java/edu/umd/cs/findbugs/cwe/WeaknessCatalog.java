@@ -80,7 +80,7 @@ public class WeaknessCatalog {
                 INSTANCE.weaknesses.put(Integer.valueOf(weakness.getCweId()), weakness);
             }
         } catch (UnsupportedEncodingException e) {
-            logger.error("Character encoding '" + characterEncoding + "' is not supported.");
+            logger.error("Character encoding '{}' is not supported.", characterEncoding);
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             logger.error("Unable to read the weakness catalog JSON.");
         }
