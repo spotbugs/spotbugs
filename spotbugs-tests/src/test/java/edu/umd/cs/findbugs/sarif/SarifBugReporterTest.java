@@ -419,7 +419,7 @@ class SarifBugReporterTest {
         JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
         JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
 
-        // "results" may be "null", but not missing,
+        // "results" may be empty or null, but not missing,
         // https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/sarif-v2.1.0-errata01-os-complete.html#_Toc141790757
         JsonElement results = run.get("results");
         assertNotNull(results);
