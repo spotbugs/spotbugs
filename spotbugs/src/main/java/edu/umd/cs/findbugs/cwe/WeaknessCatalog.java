@@ -43,7 +43,7 @@ public class WeaknessCatalog {
     /**
      * @return a weakness catalog instance
      */
-    public synchronized static WeaknessCatalog getInstance() {
+    public static synchronized WeaknessCatalog getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new WeaknessCatalog();
             loadFileAndInitialize();

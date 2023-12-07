@@ -40,7 +40,7 @@ public abstract class AbstractAssertDetector extends OpcodeStackDetector {
     /**
      * Implement this method in a concrete detector
      */
-    abstract protected void detect(int seen);
+    protected abstract void detect(int seen);
 
     /**
      * Searches for assertion opening, and closing points.
