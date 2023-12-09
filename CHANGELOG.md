@@ -9,10 +9,15 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits for checked exceptions ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
+- Applied changes for bcel 6.8.0 with adjustments to constant pool ([#2756](https://github.com/spotbugs/spotbugs/pull/2756))
+    - More information bcel changes can be found on ([#2757](https://github.com/spotbugs/spotbugs/pull/2757))
 - Fix FN in CT_CONSTRUCTOR_THROW when the return value of the called method is not void or primitive type.
 
 ### Changed
 - Improved Matcher checks for empty strings ([#2755](https://github.com/spotbugs/spotbugs/pull/2755))
+- Allow 'onlyAnalyze' option to specify negative matches, such that this facility can be used to prevent a subset of classes to be excluded from analysis ([#2754](https://github.com/spotbugs/spotbugs/pull/2754))
+- Strictly require logback 1.2.13 due to CVE-2023-6481 and CVE-23-6378 ([#2760](https://github.com/spotbugs/spotbugs/pull/2760)
+- Prefer log4j2 at 2.22.0 and logback at 1.4.14 ([#2760](https://github.com/spotbugs/spotbugs/pull/2760)
 
 ## 4.8.2 - 2023-11-28
 

@@ -107,12 +107,62 @@ class ClassScreenerTest {
         testPackageScreener(particularPackageScreener2);
     }
 
-    private void testPackageScreener(IClassScreener screener) {
+    private static void testPackageScreener(IClassScreener screener) {
         Assertions.assertTrue(screener.matches(SOME_CLASS_FILENAME));
         Assertions.assertTrue(screener.matches(SOME_OTHER_CLASS_FILENAME));
         Assertions.assertFalse(screener.matches(UNRELATED_THING_CLASS_FILENAME));
         Assertions.assertTrue(screener.matches(SOME_CLASS_JARFILENAME));
         Assertions.assertTrue(screener.matches(SOME_OTHER_CLASS_JARFILENAME));
         Assertions.assertFalse(screener.matches(UNRELATED_THING_CLASS_JARFILENAME));
+    }
+
+    @Test
+    void testExcludeOneClass() {
+        ClassScreener screener = new ClassScreener();
+        screener.addAllowedClass("!" + SOME_CLASS);
+
+        Assertions.assertFalse(screener.vacuous());
+
+        Assertions.assertFalse(screener.matches(SOME_CLASS_FILENAME));
+        Assertions.assertTrue(screener.matches(SOME_OTHER_CLASS_FILENAME));
+        Assertions.assertTrue(screener.matches(UNRELATED_THING_CLASS_FILENAME));
+
+        Assertions.assertFalse(screener.matches(SOME_CLASS_JARFILENAME));
+        Assertions.assertTrue(screener.matches(SOME_OTHER_CLASS_JARFILENAME));
+        Assertions.assertTrue(screener.matches(UNRELATED_THING_CLASS_JARFILENAME));
+    }
+
+    @Test
+    void testExcludeHasPrecendence() {
+        ClassScreener screener = new ClassScreener();
+        screener.addAllowedClass(SOME_CLASS);
+        screener.addAllowedClass("!" + SOME_CLASS);
+
+        Assertions.assertFalse(screener.matches(SOME_CLASS_FILENAME));
+        Assertions.assertFalse(screener.matches(SOME_CLASS_JARFILENAME));
+    }
+
+    @Test
+    void testPackageClassExclude() {
+        ClassScreener screener = new ClassScreener();
+        screener.addAllowedPackage(FOOBAR_PACKAGE);
+        screener.addAllowedClass("!" + SOME_CLASS);
+
+        Assertions.assertFalse(screener.matches(SOME_CLASS_FILENAME));
+        Assertions.assertFalse(screener.matches(SOME_CLASS_JARFILENAME));
+        Assertions.assertTrue(screener.matches(SOME_OTHER_CLASS_FILENAME));
+        Assertions.assertTrue(screener.matches(SOME_OTHER_CLASS_JARFILENAME));
+    }
+
+    @Test
+    void testPrefixExcludesPackage() {
+        ClassScreener screener = new ClassScreener();
+        screener.addAllowedPackage(FOOBAR_PACKAGE);
+        screener.addAllowedPrefix("!com.");
+
+        Assertions.assertFalse(screener.matches(SOME_CLASS_FILENAME));
+        Assertions.assertFalse(screener.matches(SOME_CLASS_JARFILENAME));
+        Assertions.assertFalse(screener.matches(SOME_OTHER_CLASS_FILENAME));
+        Assertions.assertFalse(screener.matches(SOME_OTHER_CLASS_JARFILENAME));
     }
 }

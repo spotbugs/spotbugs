@@ -15,7 +15,7 @@ import org.junit.jupiter.params.ParameterizedTest;
  *
  * @author kzaikin
  */
-public class NullnessAnnotationTest {
+class NullnessAnnotationTest {
 
     private static Stream<Arguments> parameters() {
         return Stream.of(
