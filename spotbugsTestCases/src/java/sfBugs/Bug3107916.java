@@ -24,7 +24,6 @@ public class Bug3107916 {
         return result;
     }
 
-
     public static int doCompare2(String s1, String s2) {
         int result;
         if (s1 == null && s2 == null) {
