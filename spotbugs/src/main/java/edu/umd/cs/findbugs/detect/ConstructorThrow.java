@@ -375,7 +375,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
             }
         } else {
             return String.format("%s.%s : %s", getDottedClassConstantOperand(), getNameConstantOperand(),
-                    getSigConstantOperand());
+                    toDotted(getSigConstantOperand()));
         }
         return "";
     }
