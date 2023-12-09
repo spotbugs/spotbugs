@@ -15,6 +15,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 - Improved Matcher checks for empty strings ([#2755](https://github.com/spotbugs/spotbugs/pull/2755))
 
+### Changed
+- Allow 'onlyAnalyze' option to specify negative matches, such that this facility can be used to prevent a subset of classes to be excluded from analysis ([#2754](https://github.com/spotbugs/spotbugs/pull/2754))
+
 ## 4.8.2 - 2023-11-28
 
 ### Fixed
