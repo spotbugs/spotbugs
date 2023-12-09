@@ -13,7 +13,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 class Issue2465Test extends AbstractIntegrationTest {
 
     @Test
-    public void testIssue() {
+    void testIssue() {
         performAnalysis("ghIssues/Issue2465.class");
 
         // Due to issue #2465 the analysis should fail and we should not get further
