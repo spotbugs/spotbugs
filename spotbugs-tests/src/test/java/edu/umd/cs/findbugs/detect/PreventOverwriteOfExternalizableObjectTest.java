@@ -56,14 +56,24 @@ class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrationTest
     @Test
     void testGoodReadExternal() {
         performAnalysis("externalizable/GoodExternalizableTest.class");
-
         assertNumOfBugs(0);
     }
 
     @Test
     void testGoodReadExternal2() {
         performAnalysis("externalizable/GoodExternalizableTest2.class");
+        assertNumOfBugs(0);
+    }
 
+    @Test
+    void testGoodReadExternal3() {
+        performAnalysis("externalizable/GoodExternalizableTest3.class");
+        assertNumOfBugs(0);
+    }
+
+    @Test
+    void testGoodReadExternal4() {
+        performAnalysis("externalizable/GoodExternalizableTest4.class");
         assertNumOfBugs(0);
     }
 
