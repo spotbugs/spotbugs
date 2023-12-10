@@ -431,7 +431,7 @@ class SarifBugReporterTest {
         JsonObject invocation = run.getAsJsonArray("invocations").get(0).getAsJsonObject();
 
         assertThat(invocation.get("exitCode").getAsInt(), is(1));
-        assertThat(invocation.get("exitSignalName").getAsString(), is("BUGS FOUND"));
+        assertThat(invocation.get("exitCodeDescription").getAsString(), is("BUGS FOUND"));
         assertThat(invocation.get("executionSuccessful").getAsBoolean(), is(true));
     }
 
