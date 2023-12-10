@@ -33,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class Issue374Test extends AbstractIntegrationTest {
 
     @Test
-    public void testIssue() {
+    void testIssue() {
         performAnalysis(
                 "ghIssues/issue374/package-info.class",
                 "ghIssues/issue374/ClassLevel.class",
