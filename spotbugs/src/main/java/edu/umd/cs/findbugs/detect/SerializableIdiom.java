@@ -551,7 +551,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if ("readExternal".equals(getMethodName())) {
-            if ((seen == Const.IFEQ || seen == Const.IFNE || seen == Const.IFNULL || seen == Const.IFNONNULL) && isBranch(seen)) {
+            if ((seen == Const.IFEQ || seen == Const.IFNE || seen == Const.IFNULL || seen == Const.IFNONNULL)
+                    && initializedCheckerVariable == null && isBranch(seen)) {
                 initializedCheckerVariable = stack.getStackItem(0).getXField();
                 initializeCheckerBranchTarget = getBranchTarget();
             } else if (seen == Const.ATHROW || isReturn(seen)) {
@@ -631,7 +632,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         // Collect the bugs and report them later, if the initializedCheckerVariable's value won't be changed
                         if (initializedCheckerVariable != xField) {
                             optionalBugsInReadExternal.put(xField, bug);
-                        } else {
+                        } else if (getPC() < initializeCheckerBranchTarget) {
                             optionalBugsInReadExternal.clear();
                         }
                         if (initializedCheckerVariable == null || sawReadExternalExit) {

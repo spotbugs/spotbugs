@@ -12,7 +12,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Applied changes for bcel 6.8.0 with adjustments to constant pool ([#2756](https://github.com/spotbugs/spotbugs/pull/2756))
     - More information bcel changes can be found on ([#2757](https://github.com/spotbugs/spotbugs/pull/2757))
 - Fix FN in CT_CONSTRUCTOR_THROW when the return value of the called method is not void or primitive type.
-- Fix FP in SE_PREVENT_EXT_OBJ_OVERWRITE when the if statement logic or the bytecode shape of the function is different from the existing examples. ([#2750](https://github.com/spotbugs/spotbugs/issues/2750))
+- Fix FP in SE_PREVENT_EXT_OBJ_OVERWRITE when the if statement checking for null value or the method exiting in the if branch with an exception. ([#2750](https://github.com/spotbugs/spotbugs/issues/2750))
 
 ### Changed
 - Improved Matcher checks for empty strings ([#2755](https://github.com/spotbugs/spotbugs/pull/2755))

@@ -54,6 +54,24 @@ class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrationTest
     }
 
     @Test
+    void testBadReadExternal6() {
+        performAnalysis("externalizable/BadExternalizableTest6.class");
+
+        assertNumOfBugs(2);
+        assertBug("BadExternalizableTest6", 22);
+        assertBug("BadExternalizableTest6", 23);
+    }
+
+    @Test
+    void testBadReadExternal7() {
+        performAnalysis("externalizable/BadExternalizableTest7.class");
+
+        assertNumOfBugs(2);
+        assertBug("BadExternalizableTest7", 22);
+        assertBug("BadExternalizableTest7", 23);
+    }
+
+    @Test
     void testGoodReadExternal() {
         performAnalysis("externalizable/GoodExternalizableTest.class");
         assertNumOfBugs(0);
@@ -74,6 +92,18 @@ class PreventOverwriteOfExternalizableObjectTest extends AbstractIntegrationTest
     @Test
     void testGoodReadExternal4() {
         performAnalysis("externalizable/GoodExternalizableTest4.class");
+        assertNumOfBugs(0);
+    }
+
+    @Test
+    void testGoodReadExternal5() {
+        performAnalysis("externalizable/GoodExternalizableTest5.class");
+        assertNumOfBugs(0);
+    }
+
+    @Test
+    void testGoodReadExternal6() {
+        performAnalysis("externalizable/GoodExternalizableTest6.class");
         assertNumOfBugs(0);
     }
 
