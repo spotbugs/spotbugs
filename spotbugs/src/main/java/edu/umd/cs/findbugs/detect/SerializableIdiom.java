@@ -101,7 +101,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     private final Map<XField, BugInstance> optionalBugsInReadExternal = new HashMap();
 
-    private XField initializedCheckerVariable;
+    private Set<XField> initializedCheckerVariables = new HashSet<>();
 
     private int initializeCheckerBranchTarget;
 
@@ -425,8 +425,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
             bugReporter.reportBug(new BugInstance(this, "WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
         }
 
-        if (isExternalizable && sawReadExternal && !optionalBugsInReadExternal.isEmpty() && initializedCheckerVariable != null
-                && !optionalBugsInReadExternal.containsKey(initializedCheckerVariable)) {
+        if (isExternalizable && sawReadExternal && !optionalBugsInReadExternal.isEmpty() && !initializedCheckerVariables.isEmpty()
+                && initializedCheckerVariables.stream().noneMatch(optionalBugsInReadExternal::containsKey)) {
             optionalBugsInReadExternal.values().forEach(bugReporter::reportBug);
         }
     }
@@ -551,9 +551,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if ("readExternal".equals(getMethodName())) {
-            if ((seen == Const.IFEQ || seen == Const.IFNE || seen == Const.IFNULL || seen == Const.IFNONNULL)
-                    && initializedCheckerVariable == null && isBranch(seen)) {
-                initializedCheckerVariable = stack.getStackItem(0).getXField();
+            if ((seen == Const.IFEQ || seen == Const.IFNE || seen == Const.IFNULL || seen == Const.IFNONNULL) && isBranch(seen)) {
+                initializedCheckerVariables.add(stack.getStackItem(0).getXField());
                 initializeCheckerBranchTarget = getBranchTarget();
             } else if (seen == Const.ATHROW || isReturn(seen)) {
                 sawReadExternalExit = true;
@@ -630,12 +629,14 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                 .addField(xField)
                                 .addSourceLine(this);
                         // Collect the bugs and report them later, if the initializedCheckerVariable's value won't be changed
-                        if (initializedCheckerVariable != xField) {
+                        if (initializedCheckerVariables.contains(xField)) {
+                            if (getPC() < initializeCheckerBranchTarget) {
+                                optionalBugsInReadExternal.clear();
+                            }
+                        } else {
                             optionalBugsInReadExternal.put(xField, bug);
-                        } else if (getPC() < initializeCheckerBranchTarget) {
-                            optionalBugsInReadExternal.clear();
                         }
-                        if (initializedCheckerVariable == null || sawReadExternalExit) {
+                        if (initializedCheckerVariables.isEmpty() || sawReadExternalExit) {
                             bugReporter.reportBug(bug);
                         }
                     }
