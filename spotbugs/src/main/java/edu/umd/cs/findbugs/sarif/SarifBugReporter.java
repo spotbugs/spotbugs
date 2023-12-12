@@ -87,7 +87,7 @@ public class SarifBugReporter extends BugCollectionBugReporter {
 
         int exitCode = ExitCodes.from(getQueuedErrors().size(), missingClasses.size(), getBugCollection().getCollection().size());
         Invocation invocation = new Invocation(exitCode,
-                getSignalName(exitCode),
+                getExitCodeDescription(exitCode),
                 (exitCode | ExitCodes.BUGS_FOUND_FLAG) == ExitCodes.BUGS_FOUND_FLAG,
                 execNotifications,
                 configNotifications);
@@ -145,7 +145,7 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         jsonWriter.endArray();
     }
 
-    private static String getSignalName(int exitCode) {
+    private static String getExitCodeDescription(int exitCode) {
         if (exitCode == 0) {
             return "SUCCESS";
         }
