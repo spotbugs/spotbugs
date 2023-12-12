@@ -10,7 +10,7 @@ public class BadSynchronizationWithVolatileLock1 {
         }
     }
     public void updateBaseLock() {
-        lock = new Object();
+        baseLock = new Object();
     }
 
     //    final volatile Object baseLock = new Object(); // this would be a problem too, if it wasn't a compilation error

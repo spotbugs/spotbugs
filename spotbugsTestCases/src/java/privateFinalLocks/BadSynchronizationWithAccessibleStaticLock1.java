@@ -9,6 +9,11 @@ public class BadSynchronizationWithAccessibleStaticLock1 {
             System.out.println("Do stuff");
         }
     }
+
+    /**
+     * @todo: Extend test case here:
+     *          by adding an accessor/getter: it should only detect one BUG, probably the public lock
+     */
 }
 
 class BadSynchronizationWithAccessibleStaticLockFromParent1 extends BadSynchronizationWithAccessibleStaticLock1 {

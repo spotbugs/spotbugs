@@ -28,26 +28,100 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.MultiMap;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+/* done: it probably should be a new type of bug because a string message must be added where the lock is EXPOSED or Updated
+    also add multiple little test cases like:
+    - what happens if the new value comes from a function parameter
+    - what happens if the new value comes from a local variable
+    - what happens if the new value is directly assigned to the lock
+    - what happens if the field is declared final
+    - what happens if the field is declared final and there is a setMethod
+    - what happens if the field is declared final and there is a getMethod(this is compilation error, but you should be mentioning it in a comment)
+    - add a bug that contains a accessor/exposing method too(as string)
+*/
+/*
+todo:
+  - check if there is an overlap in the tests - possible there is
+    - refactor them if needed based on their type: volatile tests, accessible static tests, etc. - kind of refactored
+  - refactor detector:
+    - it should detect locks that are accessible from outside
+    - it should detect locks that are accessible from outside in the presence of an accessor/exposing method
+    - it shouldn't report them multiple times; for example if a lock is public and there is an accessor too, it must be reported only once
+ */
+
+/**
+    Detector logic: from the highest priority to lowest<br>
+*      <ol>
+*      <li>if a lock is public:
+*          report it as OBJECT_BUG
+*       </li>
+*      <li>if a lock is protected:
+*          <ul>
+*              <li>
+*                  the class it was declared in has accessor/getter:
+*                      report it as an ACCESSIBLE_OBJECT BUG
+*              </li>
+*              <li> the class it was declared in has NO accessor/getter:
+*                  <ul>
+*                      <li>the class it was declared in isn't final:
+*                          report it as an OBJECT_BUG
+*                      </li>
+*                  </ul>
+*              </li>
+*          </ul>
+*      </li>
+*      <li>if a lock is private(AND not final):
+*          <ul>
+*              <li>if the class it was declared in has an accessor/getter: report it as an ACCESSIBLE_OBJECT_BUG</li>
+*          </ul>
+*      </li>
+*      <li>if a lock is volatile(and none of the above applies, but I think they most probably will; MAYBE package private locks remained):
+*          <ul>
+*              <li>
+*                  if the class it was declared in has an accessor/getter: report it as an ACCESSIBLE_OBJECT_BUG
+*              </li>
+*          </ul>
+*      </li>
+*      <li>if a lock is static(and none of the above applies, but I think they most probably will; MAYBE package private locks remained):
+*          <ul>
+*              <li>
+*                  if the class it was declared in has an accessor/getter: report it as an ACCESSIBLE_OBJECT_BUG
+*              </li>
+*          </ul>
+*      </li>
+*
+*      <li>if a lock is package private:
+*          report it as OBJECT_BUG
+*      </li>
+*      </ol>
+*/
 public class FindSynchronizationLock extends OpcodeStackDetector {
 
     private static final String METHOD_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
+    private static final String ACCESSIBLE_OBJECT_BUG = "PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private final BugReporter bugReporter;
     private final HashSet<XMethod> synchronizedMethods;
     private final HashSet<Method> exposingMethods;
+    private final MultiMap<XField, XMethod> lockAccessors;
+    private final HashMap<XField, XMethod> usedLockObjects;
     private JavaClass currentClass;
 
     public FindSynchronizationLock(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.synchronizedMethods = new HashSet<>();
         this.exposingMethods = new HashSet<>();
+        this.usedLockObjects = new HashMap<>();
+        this.lockAccessors = new MultiMap<>(HashSet.class);
     }
 
     @Override
@@ -61,12 +135,15 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                 // or it was inherited
                 String declaringClass = ClassName.toSlashedClassName(lockObject.getClassName());
                 try {
-                    if (getClassName().equals(declaringClass) || inheritsFromHierarchy(lockObject)) {
-                        if (lockObject.isPublic() || lockObject.isProtected() || lockObject.isVolatile() && !lockObject.isFinal()) {
-                            XMethod xMethod = getXMethod();
+                    if (getClassName().equals(declaringClass) || inheritsFromHierarchy(
+                            lockObject)) { /* @note what if we use the param in a function as a lock? */
+                        XMethod xMethod = getXMethod();
+                        if (lockObject.isPublic()) {
                             bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
                                     .addClassAndMethod(xMethod)
                                     .addField(lockObject));
+                        } else {
+                            usedLockObjects.put(lockObject, xMethod);
                         }
                     }
                 } catch (ClassNotFoundException e) {
@@ -74,6 +151,32 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                 }
             }
 
+        }
+
+        if ((seen == Const.PUTSTATIC || seen == Const.PUTFIELD) && !Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
+            XMethod updateMethod = getXMethod();
+            if (updateMethod.isPublic() || updateMethod.isProtected()) { /* @note:  What happens if this a private or protected method? */
+                XField updatedField = getXFieldOperand();
+                if (updatedField == null || updatedField.isPublic()) {
+                    return;
+                }
+                lockAccessors.add(updatedField, updateMethod);
+
+                System.out.println("Kind of breakpoint");
+            }
+        }
+
+        if (seen == Const.ARETURN) {
+            /* @note: Add method here that returned it */
+            OpcodeStack.Item returnValue = stack.getStackItem(0);
+            XField returnedField = returnValue.getXField();
+            if (returnedField == null || returnedField.isPublic()) {
+                return;
+            }
+            XMethod exposingMethod = getXMethod();
+            lockAccessors.add(returnedField, exposingMethod);
+
+            System.out.println("Stop here");
         }
     }
 
@@ -139,6 +242,33 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         currentClass = obj;
     }
 
+    private boolean isAccessible(XField lock) {
+        return lockAccessors.containsKey(lock);
+    }
+
+    private Collection<XMethod> getAccessorMethods(XField lock) {
+        /** @NOTE
+          *  iterate over the methods that accessed fields or returned them
+          *  if this was accessed or returned by a  method add to the list
+          *  return the list
+          */
+        /**
+         * @todo:
+         *  you got two maps with all the methods that either expose or update the field
+         *  it would be nice if you would collect these inside a map for each field, and only check if the field is present in the map:
+         *  HashMap<XField, HashSet<XMethod>> sketchyMethods;
+         *  sketchyMethods.get(lock)
+         */
+        return lockAccessors.get(lock);
+    }
+
+    private Boolean isFinalDeclaringClass(XField lock) throws ClassNotFoundException {
+        return currentClass.isFinal();
+    }
+
+    private Boolean isPackagePrivate(XField field) {
+        return !(field.isPublic() || field.isProtected() || field.isPrivate());
+    }
     @Override
     public void visitAfter(JavaClass obj) {
         if (!exposingMethods.isEmpty()) {
@@ -150,8 +280,63 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                 bugReporter.reportBug(bugInstance);
             }
         }
-
         exposingMethods.clear();
         synchronizedMethods.clear();
+
+        /*
+        * @todo:
+        *   - Add string with exposed methods
+        *   - Add a final test case maybe?
+        *   - Refactor and optimize the reporting step
+        *   - Check what is the case with package private locks
+        *   - Discuss the hard cases
+        */
+        for (XField lock : usedLockObjects.keySet()) {
+            // don't check public fields, because they were already reported at this point
+            if (lock.isProtected()) {
+                if (isAccessible(lock)) {
+                    bugReporter.reportBug(new BugInstance(this, ACCESSIBLE_OBJECT_BUG, NORMAL_PRIORITY)
+                            .addClass(this)
+                            .addMethod(usedLockObjects.get(lock))
+                            .addField(lock)
+                    //                          .addString(MethodsThatAccessedOrReturnedTheLock)
+                    );
+                } else {
+                    try {
+                        if (!isFinalDeclaringClass(lock)) {
+                            bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
+                                    .addClass(this)
+                                    .addMethod(usedLockObjects.get(lock))
+                                    .addField(lock));
+                        }
+                    } catch (ClassNotFoundException e) {
+                        AnalysisContext.reportMissingClass(e);
+                    }
+                }
+            } else if (lock.isPrivate() && !lock.isFinal()) {
+                if (isAccessible(lock)) {
+                    bugReporter.reportBug(new BugInstance(this, ACCESSIBLE_OBJECT_BUG, NORMAL_PRIORITY)
+                            .addClass(this)
+                            .addMethod(usedLockObjects.get(lock))
+                            .addField(lock));
+                    //                          .addString(MethodsThatAccessedOrReturnedTheLock)
+                }
+            } else if (isPackagePrivate(lock)) {
+                bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
+                        .addClass(this)
+                        .addMethod(usedLockObjects.get(lock))
+                        .addField(lock));
+                //                          .addString(MethodsThatAccessedOrReturnedTheLock)
+            } else if (isAccessible(lock)) {
+                bugReporter.reportBug(new BugInstance(this, ACCESSIBLE_OBJECT_BUG, NORMAL_PRIORITY)
+                        .addClass(this)
+                        .addMethod(usedLockObjects.get(lock))
+                        .addField(lock));
+                //                          .addString(MethodsThatAccessedOrReturnedTheLock)
+            }
+        }
+        usedLockObjects.clear();
+        lockAccessors.clear();
     }
+
 }
