@@ -5,8 +5,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2023-??-??
-
+## 4.8.3 - 2023-12-12
 ### Fixed
 - Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits for checked exceptions ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
 - Applied changes for bcel 6.8.0 with adjustments to constant pool ([#2756](https://github.com/spotbugs/spotbugs/pull/2756))
