@@ -6,7 +6,11 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2023-??-??
+### Fixed
+- Fix FP in SE_PREVENT_EXT_OBJ_OVERWRITE when the if statement checking for null value, checking multiple variables or the method exiting in the if branch with an exception. ([#2750](https://github.com/spotbugs/spotbugs/issues/2750))
+- Fix possible null value in taxonomies of SARIF output ([#2744](https://github.com/spotbugs/spotbugs/issues/2744))
 
+## 4.8.3 - 2023-12-12
 ### Fixed
 - Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits for checked exceptions ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
 - Applied changes for bcel 6.8.0 with adjustments to constant pool ([#2756](https://github.com/spotbugs/spotbugs/pull/2756))
@@ -18,8 +22,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 - Improved Matcher checks for empty strings ([#2755](https://github.com/spotbugs/spotbugs/pull/2755))
 - Allow 'onlyAnalyze' option to specify negative matches, such that this facility can be used to prevent a subset of classes to be excluded from analysis ([#2754](https://github.com/spotbugs/spotbugs/pull/2754))
-- Strictly require logback 1.2.13 due to CVE-2023-6481 and CVE-23-6378 ([#2760](https://github.com/spotbugs/spotbugs/pull/2760)
-- Prefer log4j2 at 2.22.0 and logback at 1.4.14 ([#2760](https://github.com/spotbugs/spotbugs/pull/2760)
+- Strictly require logback 1.2.13 due to CVE-2023-6481 and CVE-23-6378 ([#2760](https://github.com/spotbugs/spotbugs/pull/2760))
+- Prefer log4j2 at 2.22.0 and logback at 1.4.14 ([#2760](https://github.com/spotbugs/spotbugs/pull/2760))
 
 ## 4.8.2 - 2023-11-28
 
