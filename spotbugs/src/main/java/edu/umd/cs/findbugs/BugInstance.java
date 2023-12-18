@@ -115,7 +115,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     private int cachedHashCode;
 
-    private BugProperty propertyListHead, propertyListTail;
+    private BugProperty propertyListHead;
+
+    private BugProperty propertyListTail;
 
     private String oldInstanceHash;
 
@@ -158,6 +160,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
 
     public static class NoSuchBugPattern extends IllegalArgumentException {
+        private static final long serialVersionUID = 1L;
         public final String type;
 
         public NoSuchBugPattern(String type) {
@@ -553,8 +556,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
 
     public String getInstanceKey() {
-        String newValue = getInstanceKeyNew();
-        return newValue;
+        return getInstanceKeyNew();
     }
 
     private String getInstanceKeyNew() {
@@ -626,7 +628,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
 
     private class BugPropertyIterator implements Iterator<BugProperty> {
-        private BugProperty prev, cur;
+        private BugProperty prev;
+        private BugProperty cur;
 
         private boolean removed;
 
@@ -1736,7 +1739,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             return addSourceLine(classContext, method, location);
         } catch (CheckedAnalysisException e) {
             return addSourceLine(SourceLineAnnotation.createReallyUnknown(methodDescriptor.getClassDescriptor()
-                    .toDottedClassName()));
+                    .getDottedClassName()));
         }
     }
 
@@ -2113,8 +2116,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             List<String> javaAnnotationNames = Arrays.asList(annotationEntries).stream().map((AnnotationEntry ae) -> {
                 // map annotation entry type to dotted class name, for example
                 // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
-                String annotationType = ae.getAnnotationType().substring(1).replace("/", ".").replace(";", "");
-                return annotationType;
+                return ae.getAnnotationType().substring(1).replace("/", ".").replace(";", "");
             }).collect(Collectors.toList());
             pma.setJavaAnnotationNames(javaAnnotationNames);
         } catch (Exception e) {
@@ -2173,8 +2175,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         try {
             int pc = location.getHandle().getPosition();
             OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
-            BugAnnotation a0 = getSomeSource(classContext, method, location, stack, depth);
-            return a0;
+            return getSomeSource(classContext, method, location, stack, depth);
         } catch (UnreachableCodeException e) {
             if (SystemProperties.ASSERTIONS_ENABLED) {
                 AnalysisContext.logError(e.getMessage(), e);
