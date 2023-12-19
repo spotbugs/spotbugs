@@ -74,6 +74,6 @@ jobs:
       - name: Build
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         run: |
-          ./gradlew spotlessCheck build smoketest ${SONAR_LOGIN:+sonarqube} --no-daemon "-Dsonar.login=$SONAR_LOGIN" --scan
+          ./gradlew spotlessCheck build smoketest ${SONAR_LOGIN:+sonar} --no-daemon "-Dsonar.token=$SONAR_LOGIN" --scan
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
