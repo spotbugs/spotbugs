@@ -1,6 +1,6 @@
 apply plugin: 'org.sonarqube'
 
-sonarqube {
+sonar {
     properties {
         property 'sonar.host.url', 'https://sonarcloud.io'
         property 'sonar.organization', 'spotbugs'
@@ -9,6 +9,6 @@ sonarqube {
     }
 }
 
-tasks.named('sonarqube').configure {
+tasks.named('sonar').configure {
     dependsOn jacocoRootReport
 }
