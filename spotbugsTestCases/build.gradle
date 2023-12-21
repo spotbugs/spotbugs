@@ -41,7 +41,9 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
-  if (it.name == 'classesJava17') {
+  if (it.name == 'classesJava21') {
+    options.release = 21
+  } else if (it.name == 'classesJava17') {
     options.release = 17
   } else if (it.name == 'classesJava11') {
     options.release = 11
@@ -81,10 +83,17 @@ def classesJava17 = tasks.register('classesJava17', JavaCompile) {
   source = file('src/java17')
 }
 
+def classesJava21 = tasks.register('classesJava21', JavaCompile) {
+  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java21"))
+  classpath = sourceSets.main.compileClasspath
+  source = file('src/java21')
+}
+
 tasks.named('classes').configure {
   dependsOn classesJava8
   dependsOn classesJava11
   dependsOn classesJava17
+  dependsOn classesJava21
 }
 
 sonar {
