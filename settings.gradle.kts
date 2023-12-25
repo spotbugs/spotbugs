@@ -14,6 +14,8 @@ include(":test-harness")
 include(":test-harness-core")
 include(":test-harness-jupiter")
 
+rootProject.name = "spotbugs"
+
 gradleEnterprise {
   buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
