@@ -83,7 +83,7 @@ dependencies {
   implementation 'jaxen:jaxen:2.0.0' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
   api 'org.apache.commons:commons-lang3:3.13.0'
   api 'org.apache.commons:commons-text:1.10.0'
-  api 'org.slf4j:slf4j-api:2.0.9'
+  api 'org.slf4j:slf4j-api:2.0.10'
   implementation 'net.sf.saxon:Saxon-HE:12.4'
   implementation libs.log4j.core
   logBinding (libs.log4j.slf4j2.impl) {
