@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  *
@@ -97,7 +98,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
                     Iterator<Path> modIter = pList.iterator();
                     while (modIter.hasNext()) {
                         Path module = modIter.next();
-                        String packageKey = fileName(p).replace('.', '/');
+                        String packageKey = ClassName.toSlashedClassName(fileName(p));
                         String modulePath = fileName(module);
                         if (!modIter.hasNext() && !packageToModule.containsKey(packageKey)) {
                             packageToModule.put(packageKey, modulePath);

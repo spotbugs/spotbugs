@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -610,7 +611,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                 // sig);
                                 // System.out.println("Class stored: " +
                                 // classStored.getClassName());
-                                String genSig = "L" + classStored.getClassName().replace('.', '/') + ";";
+                                String genSig = "L" + ClassName.toSlashedClassName(classStored.getClassName()) + ";";
                                 if (!sig.equals(genSig)) {
                                     double bias = 0.0;
                                     if (!Const.CONSTRUCTOR_NAME.equals(getMethodName())) {

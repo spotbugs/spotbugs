@@ -223,7 +223,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
                     int priority = annotation.getPriority();
                     if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen)
-                            && !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.', '/') + ";")) {
+                            && !callSeen.getSignature().endsWith(ClassName.toSlashedClassName(callSeen.getClassName()) + ";")) {
                         priority++;
                     }
                     bugAccumulator.accumulateBug(new BugInstance(this, annotation.getPattern(), priority).addClassAndMethod(this)
@@ -295,7 +295,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                     priority += 1;
                 }
                 if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen)
-                        && !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.', '/') + ";")) {
+                        && !callSeen.getSignature().endsWith(ClassName.toSlashedClassName(callSeen.getClassName()) + ";")) {
                     priority++;
                 }
                 if (callSeen.isPrivate()) {

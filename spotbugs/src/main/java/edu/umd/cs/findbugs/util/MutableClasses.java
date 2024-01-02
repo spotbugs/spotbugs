@@ -166,7 +166,7 @@ public class MutableClasses {
         private String getSig() {
             String local = sig;
             if (local == null) {
-                sig = local = "L" + cls.getClassName().replace('.', '/') + ";";
+                sig = local = "L" + ClassName.toSlashedClassName(cls.getClassName()) + ";";
             }
             return local;
         }

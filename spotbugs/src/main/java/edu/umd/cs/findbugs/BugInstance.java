@@ -1110,7 +1110,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     @Nonnull
     public BugInstance addTypeOfNamedClass(@DottedClassName String typeName) {
-        TypeAnnotation typeAnnotation = new TypeAnnotation("L" + typeName.replace('.', '/') + ";");
+        TypeAnnotation typeAnnotation = new TypeAnnotation("L" + ClassName.toSlashedClassName(typeName) + ";");
         add(typeAnnotation);
         return this;
     }

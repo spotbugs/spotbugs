@@ -24,6 +24,7 @@ import java.util.Iterator;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Utility methods for using a ClassNameRewriter.
@@ -76,7 +77,7 @@ public abstract class ClassNameRewriterUtil {
             String className = signature.substring(1, signature.length() - 1).replace('/', '.');
             className = classNameRewriter.rewriteClassName(className);
 
-            signature = "L" + className.replace('.', '/') + ";";
+            signature = "L" + ClassName.toSlashedClassName(className) + ";";
         }
 
         return signature;

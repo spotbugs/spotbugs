@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import edu.umd.cs.findbugs.util.ClassName;
+
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -95,7 +97,7 @@ public class SignatureUtil {
         } else if ("void".equals(type)) {
             return "V";
         } else {
-            return "L" + type.replace('.', '/') + ";";
+            return "L" + ClassName.toSlashedClassName(type) + ";";
         }
     }
 }
