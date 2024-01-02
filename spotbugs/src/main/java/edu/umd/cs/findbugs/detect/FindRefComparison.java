@@ -504,9 +504,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                     return;
                 }
 
-                String slashedClassName = ClassName.fromFieldSignature(type.getSignature());
-                if (slashedClassName != null) {
-                    String dottedClassName = ClassName.toDottedClassName(slashedClassName);
+                String dottedClassName = ClassName.fromFieldSignatureToDottedClassName(type.getSignature());
+                if (dottedClassName != null) {
                     if (DEFAULT_SUSPICIOUS_SET.contains(dottedClassName)) {
                         type = new FinalConstant(dottedClassName, xf);
                         consumeStack(obj);
@@ -539,9 +538,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                         return;
                     }
 
-                    String slashedClassName = ClassName.fromFieldSignature(type.getSignature());
-                    if (slashedClassName != null) {
-                        String dottedClassName = ClassName.toDottedClassName(slashedClassName);
+                    String dottedClassName = ClassName.fromFieldSignatureToDottedClassName(type.getSignature());
+                    if (dottedClassName != null) {
                         if (DEFAULT_SUSPICIOUS_SET.contains(dottedClassName)) {
                             type = new FinalConstant(dottedClassName, xf);
                             consumeStack(obj);

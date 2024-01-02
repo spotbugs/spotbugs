@@ -260,9 +260,9 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                         String callReturnClass = callSeen.getName().equals(Const.CONSTRUCTOR_NAME) ? callSeen.getClassDescriptor().getClassName()
                                 : ClassName.fromFieldSignature(callReturnType.getSignature());
 
-                        String methodReturnClass = ClassName.fromFieldSignature(methodReturnType.getSignature());
+                        String methodReturnClass = ClassName.fromFieldSignatureToDottedClassName(methodReturnType.getSignature());
                         if (callReturnClass != null && methodReturnClass != null &&
-                                Subtypes2.instanceOf(ClassName.toDottedClassName(callReturnClass), ClassName.toDottedClassName(methodReturnClass))) {
+                                Subtypes2.instanceOf(ClassName.toDottedClassName(callReturnClass), methodReturnClass)) {
                             priority = HIGH_PRIORITY;
                         }
                     }

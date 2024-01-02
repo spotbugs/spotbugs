@@ -2116,7 +2116,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             List<String> javaAnnotationNames = Arrays.asList(annotationEntries).stream().map((AnnotationEntry ae) -> {
                 // map annotation entry type to dotted class name, for example
                 // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
-                return ae.getAnnotationType().substring(1).replace("/", ".").replace(";", "");
+                return ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType());
             }).collect(Collectors.toList());
             pma.setJavaAnnotationNames(javaAnnotationNames);
         } catch (Exception e) {
