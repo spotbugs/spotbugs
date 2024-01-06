@@ -11,6 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix possible null value in taxonomies of SARIF output ([#2744](https://github.com/spotbugs/spotbugs/issues/2744))
 - Fix `executionSuccessful` flag in SARIF report being set to false when bugs were found ([#2116](https://github.com/spotbugs/spotbugs/issues/2116))
 - Move information contained in the SARIF property `exitSignalName` to `exitCodeDescription` ([#2739](https://github.com/spotbugs/spotbugs/issues/2739))
+- Do not report SE_NO_SERIALVERSIONID or other serialization issues for records ([#2793](https://github.com/spotbugs/spotbugs/issues/2793))
 
 ## 4.8.3 - 2023-12-12
 ### Fixed
