@@ -1,8 +1,15 @@
 // Setup checkstyle
 apply plugin: 'checkstyle'
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    dependencies {
+        dependency 'com.puppycrawl.tools:checkstyle:10.12.7'
+    }
+}
 
 checkstyle {
-  toolVersion '10.12.5'
+  toolVersion '10.12.7'
   ignoreFailures false
   configFile file("$rootDir/spotbugs/etc/checkstyle.xml") // TODO : This config file is lame and should be moved out...
 }

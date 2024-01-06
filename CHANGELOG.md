@@ -34,6 +34,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 - Minor cleanup in connection with slashed and dotted names ([#2805](https://github.com/spotbugs/spotbugs/pull/2805))
 
+### Build
+- Add 'io.spring.dependency-managagement' to control bug in gradle on exclusions not being excluded properly as seen in checkstyle usage.  See https://github.com/checkstyle/checkstyle/issues/14211 for more information. ([#2798](https://github.com/spotbugs/spotbugs/issues/2798))
+
 ## 4.8.3 - 2023-12-12
 ### Fixed
 - Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits for checked exceptions ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
