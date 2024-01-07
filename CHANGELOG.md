@@ -13,6 +13,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Move information contained in the SARIF property `exitSignalName` to `exitCodeDescription` ([#2739](https://github.com/spotbugs/spotbugs/issues/2739))
 - Do not report SE_NO_SERIALVERSIONID or other serialization issues for records ([#2793](https://github.com/spotbugs/spotbugs/issues/2793))
 
+### Build
+- Fix sonar coverage for project ([#2796](https://github.com/spotbugs/spotbugs/issues/2796))
+
 ## 4.8.3 - 2023-12-12
 ### Fixed
 - Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits for checked exceptions ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
