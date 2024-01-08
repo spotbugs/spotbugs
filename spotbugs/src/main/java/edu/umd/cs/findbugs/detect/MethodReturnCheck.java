@@ -20,6 +20,9 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 
+import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.Values;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
@@ -33,12 +36,6 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -105,7 +102,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             // it's likely that UC_USELESS_VOID_METHOD is just the consequence of the previous report
             bugAccumulator.accumulateBug(new BugInstance(this, "UC_USELESS_VOID_METHOD",
                     code.getCode().length > 40 ? HIGH_PRIORITY : code.getCode().length > 15 ? NORMAL_PRIORITY : LOW_PRIORITY)
-                            .addClassAndMethod(getMethodDescriptor()), this);
+                    .addClassAndMethod(getMethodDescriptor()), this);
         }
         sawExcludedNSECall = false;
         bugAccumulator.reportAccumulatedBugs();
@@ -309,12 +306,25 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 }
                 String pattern = annotation.getPattern();
                 if (Const.CONSTRUCTOR_NAME.equals(callSeen.getName())
-                        && (callSeen.getClassName().endsWith("Exception") || callSeen.getClassName().endsWith("Error"))) {
+                        && Subtypes2.instanceOf(callSeen.getClassName(), Values.DOTTED_JAVA_LANG_THROWABLE)) {
                     pattern = "RV_EXCEPTION_NOT_THROWN";
                 }
                 BugInstance warning = new BugInstance(this, pattern, priority).addClassAndMethod(this).addMethod(callSeen)
                         .describe(MethodAnnotation.METHOD_CALLED);
                 bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
+            } else {
+                MethodDescriptor methodDescriptor = callSeen.getMethodDescriptor();
+                SignatureParser methodSigParser = new SignatureParser(methodDescriptor.getSignature());
+                String returnTypeSig = methodSigParser.getReturnTypeSignature();
+                String returnType = ClassName.fromFieldSignature(returnTypeSig);
+                String mContainerClass = methodDescriptor.getClassDescriptor().getClassName();
+                if (returnType != null
+                        && Subtypes2.instanceOf(ClassName.toDottedClassName(returnType), Values.DOTTED_JAVA_LANG_THROWABLE)
+                        && methodDescriptor.isStatic() && (returnType.equals(mContainerClass))) {
+                    BugInstance warning = new BugInstance(this, "RV_EXCEPTION_NOT_THROWN", 1).addClassAndMethod(this).addMethod(callSeen)
+                            .describe(MethodAnnotation.METHOD_CALLED);
+                    bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
+                }
             }
             state = State.SCAN;
         }

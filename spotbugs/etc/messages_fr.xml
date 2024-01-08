@@ -1539,11 +1539,11 @@ public int hashCode() {
   </Details>
  </BugPattern>
  <BugPattern type="EI_EXPOSE_STATIC_REP2">
-  <ShortDescription>Une méthode peut exposer un état interne statique en stockant un objet modifiable dans un champs statique</ShortDescription>
+  <ShortDescription>Une méthode peut exposer un état interne statique en stockant un objet modifiable dans un champ statique</ShortDescription>
   <LongDescription>La méthode {1} peut exposer un état interne statique en stockant un objet modifiable dans le champs statique {2}</LongDescription>
   <Details>
 <![CDATA[
-<p>Ce code stocke une référence à un objet modifiable externe dans un champs statique. Si des modifications non vérifiées de l'objet modifiable peuvent compromettre la sécurité ou d'autres propriétés importantes, vous devez faire autre chose. Stocker une copie de l'objet est souvent une meilleur approche.</p>
+<p>Ce code stocke une référence à un objet modifiable externe dans un champ statique. Si des modifications non vérifiées de l'objet modifiable peuvent compromettre la sécurité ou d'autres propriétés importantes, vous devez faire autre chose. Stocker une copie de l'objet est souvent une meilleur approche.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1719,7 +1719,6 @@ synchronized() {}
 Cependant l'initialisation du champ comporte plusieurs écriture, ce qui requiererait donc un refactor.</p>
 ]]>
   </Details>
- </BugPattern>
  </BugPattern>
  <BugPattern type="MS_SHOULD_BE_FINAL">
   <ShortDescription>Un champ n'est pas final alors qu'il devrait l'être</ShortDescription>
@@ -2562,8 +2561,8 @@ public vida foo() {
   </Details>
  </BugPattern>
  <BugPattern type="SA_FIELD_SELF_ASSIGNMENT">
-  <ShortDescription>Auto-alimentation d'un champs</ShortDescription>
-  <LongDescription>Auto-alimentation du champs {2} dans {1}</LongDescription>
+  <ShortDescription>Auto-alimentation d'un champ</ShortDescription>
+  <LongDescription>Auto-alimentation du champ {2} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Cette méthode contient un champ s'auto-alimentant; par exemple :</p>

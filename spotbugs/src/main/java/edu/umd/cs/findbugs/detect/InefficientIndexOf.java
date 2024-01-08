@@ -77,7 +77,7 @@ public class InefficientIndexOf extends OpcodeStackDetector {
                     if (o != null && ((String) o).length() == 1) {
                         bugReporter.reportBug(new BugInstance(this, lastIndexOf ? "IIO_INEFFICIENT_LAST_INDEX_OF" : "IIO_INEFFICIENT_INDEX_OF",
                                 LOW_PRIORITY).addClassAndMethod(this)
-                                        .describe(StringAnnotation.STRING_MESSAGE).addCalledMethod(this).addSourceLine(this));
+                                .describe(StringAnnotation.STRING_MESSAGE).addCalledMethod(this).addSourceLine(this));
                     }
                 }
             }

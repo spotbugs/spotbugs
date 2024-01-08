@@ -16,10 +16,10 @@ import sys
 import os
 
 html_context = {
-  'version' : '4.7',
-  'full_version' : '4.7.3',
-  'maven_plugin_version' : '4.7.2.1',
-  'gradle_plugin_version' : '5.0.12',
+  'version' : '4.8',
+  'full_version' : '4.8.3',
+  'maven_plugin_version' : '4.8.2.0',
+  'gradle_plugin_version' : '6.0.4',
   'archetype_version' : '0.2.3'
 }
 

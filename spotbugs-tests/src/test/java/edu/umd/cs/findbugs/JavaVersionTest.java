@@ -19,11 +19,11 @@
 
 package edu.umd.cs.findbugs;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class JavaVersionTest {
+class JavaVersionTest {
 
     private static void testJavaVersionString(String version, int maj, int min, String rest)
             throws JavaVersionException {
@@ -38,7 +38,7 @@ public class JavaVersionTest {
      * @throws JavaVersionException if version string cannot be parsed
      */
     @Test
-    public void testJavaVersionString() throws JavaVersionException {
+    void testJavaVersionString() throws JavaVersionException {
         // Historical versions (up to Java 8)
         testJavaVersionString("1.7", 1, 7, "");
         testJavaVersionString("1.7.0", 1, 7, "0");

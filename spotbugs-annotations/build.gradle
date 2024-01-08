@@ -21,7 +21,7 @@ dependencies {
   api 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
-def manifestSpec = manifest {
+def manifestSpec = java.manifest {
   attributes 'Bundle-Name': 'spotbugs-annotations',
                'Bundle-SymbolicName': 'spotbugs-annotations',
                'Bundle-Version': project.version.replace('-', '.'),

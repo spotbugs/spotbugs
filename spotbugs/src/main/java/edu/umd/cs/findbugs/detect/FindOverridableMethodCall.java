@@ -59,16 +59,16 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     // For methods called using the standard way
-    private static final Map<XMethod, CallerInfo> callerConstructors = new HashMap<>();
-    private static final Map<XMethod, CallerInfo> callerClones = new HashMap<>();
-    private static final Map<XMethod, XMethod> callsToOverridable = new HashMap<>();
-    private static final MultiMap<XMethod, XMethod> callerToCalleeMap = new MultiMap<>(ArrayList.class);
-    private static final MultiMap<XMethod, XMethod> calleeToCallerMap = new MultiMap<>(ArrayList.class);
+    private final Map<XMethod, CallerInfo> callerConstructors = new HashMap<>();
+    private final Map<XMethod, CallerInfo> callerClones = new HashMap<>();
+    private final Map<XMethod, XMethod> callsToOverridable = new HashMap<>();
+    private final MultiMap<XMethod, XMethod> callerToCalleeMap = new MultiMap<>(ArrayList.class);
+    private final MultiMap<XMethod, XMethod> calleeToCallerMap = new MultiMap<>(ArrayList.class);
 
     // For methods called using method references
-    private static final Map<Integer, CallerInfo> refCallerConstructors = new HashMap<>();
-    private static final Map<Integer, CallerInfo> refCallerClones = new HashMap<>();
-    private static final MultiMap<Integer, XMethod> refCalleeToCallerMap = new MultiMap<>(ArrayList.class);
+    private final Map<Integer, CallerInfo> refCallerConstructors = new HashMap<>();
+    private final Map<Integer, CallerInfo> refCallerClones = new HashMap<>();
+    private final MultiMap<Integer, XMethod> refCalleeToCallerMap = new MultiMap<>(ArrayList.class);
 
 
     private final BugAccumulator bugAccumulator;
@@ -227,7 +227,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         if (overridable != null) {
             bugAccumulator.accumulateBug(new BugInstance(this,
                     "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", LOW_PRIORITY)
-                            .addClass(this).addMethod(constructor).addString(overridable.getName()), sourceLine);
+                    .addClass(this).addMethod(constructor).addString(overridable.getName()), sourceLine);
             return false;
         }
         callerConstructors.put(callee, new CallerInfo(constructor, sourceLine));
@@ -240,7 +240,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         if (overridable != null) {
             bugAccumulator.accumulateBug(new BugInstance(this,
                     "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE", NORMAL_PRIORITY)
-                            .addClass(this).addMethod(clone).addString(overridable.getName()), sourceLine);
+                    .addClass(this).addMethod(clone).addString(overridable.getName()), sourceLine);
             return false;
         }
         callerClones.put(callee, new CallerInfo(clone, sourceLine));
@@ -252,7 +252,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         if (constructor != null) {
             bugAccumulator.accumulateBug(new BugInstance(this,
                     "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", LOW_PRIORITY)
-                            .addClassAndMethod(constructor.method).addString(overridable.getName()),
+                    .addClassAndMethod(constructor.method).addString(overridable.getName()),
                     constructor.sourceLine);
         }
 
@@ -260,7 +260,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         if (clone != null) {
             bugAccumulator.accumulateBug(new BugInstance(this,
                     "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE", NORMAL_PRIORITY)
-                            .addClassAndMethod(clone.method).addString(overridable.getName()), clone.sourceLine);
+                    .addClassAndMethod(clone.method).addString(overridable.getName()), clone.sourceLine);
         }
 
         if (constructor != null || clone != null) {
@@ -281,7 +281,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                 if (constructor != null) {
                     bugAccumulator.accumulateBug(new BugInstance(this,
                             "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", LOW_PRIORITY)
-                                    .addClassAndMethod(constructor.method).addString(overridable.getName()),
+                            .addClassAndMethod(constructor.method).addString(overridable.getName()),
                             constructor.sourceLine);
 
                 }
@@ -289,7 +289,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                 if (clone != null) {
                     bugAccumulator.accumulateBug(new BugInstance(this,
                             "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE", NORMAL_PRIORITY)
-                                    .addClassAndMethod(clone.method).addString(overridable.getName()),
+                            .addClassAndMethod(clone.method).addString(overridable.getName()),
                             clone.sourceLine);
                 }
 
@@ -303,7 +303,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     private XMethod getIndirectlyCalledOverridable(XMethod caller) {
-        return getIndirectlyCalledOverridable(caller, new HashSet<XMethod>());
+        return getIndirectlyCalledOverridable(caller, new HashSet<>());
     }
 
     private XMethod getIndirectlyCalledOverridable(XMethod caller, Set<XMethod> visited) {
@@ -334,7 +334,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     private CallerInfo getIndirectCallerSpecial(XMethod callee, Map<XMethod, CallerInfo> map) {
-        return getIndirectCallerSpecial(callee, map, new HashSet<XMethod>());
+        return getIndirectCallerSpecial(callee, map, new HashSet<>());
     }
 
     private CallerInfo getIndirectCallerSpecial(XMethod callee, Map<XMethod, CallerInfo> map, Set<XMethod> visited) {

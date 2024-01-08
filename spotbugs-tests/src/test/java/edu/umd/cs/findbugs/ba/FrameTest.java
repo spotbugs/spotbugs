@@ -1,15 +1,15 @@
 package edu.umd.cs.findbugs.ba;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class FrameTest {
+class FrameTest {
 
     @Test
-    public void testToString() {
+    void testToString() {
         Frame<String> frame = new Frame<String>(1) {
             @Override
             public String getValue(int n) {

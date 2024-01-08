@@ -3,8 +3,8 @@ package edu.umd.cs.findbugs.workflow;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -12,24 +12,22 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnionResultsTest {
+class UnionResultsTest {
+
     @Test
-    public void testMain() throws IOException {
+    void testMain() throws IOException {
         //Prepare
         String fileName = createBugFile();
-        File outputFile = new File("src/test/resources/output.xml");
+        File outputFile = new File("build/tmp/test/unionresults/output.xml");
+        outputFile.getParentFile().mkdirs();
 
         //Act
         UnionResults.main(new String[] { "-withMessages", "-output", outputFile.getAbsolutePath(), fileName });
 
         //Verify
         List<String> output = readOutPut(outputFile.getAbsolutePath());
-        Assert.assertTrue(output.stream().anyMatch(line -> line.contains("(Lorg/test/TestClass;Ljava/util/List;)V")));
-        Assert.assertTrue(output.stream().anyMatch(line -> line.contains("(Lorg/test/TestClass2;Ljava/util/List;)V")));
-
-        //Cleanup
-        Files.deleteIfExists(new File(fileName).toPath());
-        Files.deleteIfExists(outputFile.toPath());
+        Assertions.assertTrue(output.stream().anyMatch(line -> line.contains("(Lorg/test/TestClass;Ljava/util/List;)V")));
+        Assertions.assertTrue(output.stream().anyMatch(line -> line.contains("(Lorg/test/TestClass2;Ljava/util/List;)V")));
     }
 
     private List<String> readOutPut(String absolutePath) throws IOException {
@@ -46,8 +44,8 @@ public class UnionResultsTest {
     private static String createBugFile() throws IOException {
         Path tempFile = Files.createTempFile("spotbugs-test", ".txt");
         String fileName = tempFile.toString();
-        File firstFile = new File("src/test/resources/firstFile.xml");
-        File secondFile = new File("src/test/resources/secondFile.xml");
+        File firstFile = new File("build/tmp/test/unionresults/firstFile.xml");
+        File secondFile = new File("build/tmp/test/unionresults/secondFile.xml");
         Files.deleteIfExists(firstFile.toPath());
         Files.deleteIfExists(secondFile.toPath());
         firstFile.getParentFile().mkdirs();

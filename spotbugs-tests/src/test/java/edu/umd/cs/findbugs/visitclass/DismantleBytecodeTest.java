@@ -19,18 +19,18 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.bcel.Const;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author pugh
  */
-public class DismantleBytecodeTest {
+class DismantleBytecodeTest {
 
     @Test
-    public void testAreOppositeBranches() {
+    void testAreOppositeBranches() {
         assertTrue(DismantleBytecode.areOppositeBranches(Const.IF_ACMPEQ, Const.IF_ACMPNE));
         assertTrue(DismantleBytecode.areOppositeBranches(Const.IF_ICMPEQ, Const.IF_ICMPNE));
         assertTrue(DismantleBytecode.areOppositeBranches(Const.IF_ICMPLT, Const.IF_ICMPGE));

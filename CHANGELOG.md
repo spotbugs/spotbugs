@@ -6,13 +6,73 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2023-??-??
+### Fixed
+- Fix FP in SE_PREVENT_EXT_OBJ_OVERWRITE when the if statement checking for null value, checking multiple variables or the method exiting in the if branch with an exception. ([#2750](https://github.com/spotbugs/spotbugs/issues/2750))
+- Fix possible null value in taxonomies of SARIF output ([#2744](https://github.com/spotbugs/spotbugs/issues/2744))
+- Fix `executionSuccessful` flag in SARIF report being set to false when bugs were found ([#2116](https://github.com/spotbugs/spotbugs/issues/2116))
+- Move information contained in the SARIF property `exitSignalName` to `exitCodeDescription` ([#2739](https://github.com/spotbugs/spotbugs/issues/2739))
+- Do not report SE_NO_SERIALVERSIONID or other serialization issues for records ([#2793](https://github.com/spotbugs/spotbugs/issues/2793))
+
+### Build
+- Fix sonar coverage for project ([#2796](https://github.com/spotbugs/spotbugs/issues/2796))
+
+## 4.8.3 - 2023-12-12
+### Fixed
+- Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits for checked exceptions ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
+- Applied changes for bcel 6.8.0 with adjustments to constant pool ([#2756](https://github.com/spotbugs/spotbugs/pull/2756))
+    - More information bcel changes can be found on ([#2757](https://github.com/spotbugs/spotbugs/pull/2757))
+- Fix FN in CT_CONSTRUCTOR_THROW when the return value of the called method is not void or primitive type.
+- Fix FP in CT_CONSTRUCTOR_THROW when exception throwing lambda is created, but not called in constructor ([#2695](https://github.com/spotbugs/spotbugs/issues/2695)) 
+
+### Changed
+- Improved Matcher checks for empty strings ([#2755](https://github.com/spotbugs/spotbugs/pull/2755))
+- Allow 'onlyAnalyze' option to specify negative matches, such that this facility can be used to prevent a subset of classes to be excluded from analysis ([#2754](https://github.com/spotbugs/spotbugs/pull/2754))
+- Strictly require logback 1.2.13 due to CVE-2023-6481 and CVE-23-6378 ([#2760](https://github.com/spotbugs/spotbugs/pull/2760))
+- Prefer log4j2 at 2.22.0 and logback at 1.4.14 ([#2760](https://github.com/spotbugs/spotbugs/pull/2760))
+
+## 4.8.2 - 2023-11-28
+
+### Fixed
+- Fixed false positive UPM_UNCALLED_PRIVATE_METHOD for method used in JUnit's MethodSource ([#2379](https://github.com/spotbugs/spotbugs/issues/2379))
+- Use java.nio to load filter files ([#2684](https://github.com/spotbugs/spotbugs/pull/2684))
+- Eclipse: Do not export javax.annotation packages ([#2699](https://github.com/spotbugs/spotbugs/pull/2699))
+- Fixed not thread safe FindOverridableMethodCall detector ([#2701](https://github.com/spotbugs/spotbugs/issues/2701))
+- Fix the weird messages of PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS bugs. ([#2646](https://github.com/spotbugs/spotbugs/issues/2646))
+- Revert commons-text from 1.11.0 to 1.10.0 to resolve a version conflict ([#2686](https://github.com/spotbugs/spotbugs/issues/2686))
+- Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
+
+### Added
+- New detector finding `System.getenv()` calls, where the corresponding Java property could be used (See [ENV02-J](https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables)).
+
+### Build
+- Run build using jdk 17 and 21 without usage of toolchains so we do not defeat the purpose of building on both. ([#2722](https://github.com/spotbugs/spotbugs/pull/2722))
+
+## 4.8.1 - 2023-11-06
+
+### Fixed
+- Fixed schema location for findbugsfilter.xsd ([#1416](https://github.com/spotbugs/spotbugs/issues/1416))
+- Fixed missing null checks ([#2629](https://github.com/spotbugs/spotbugs/issues/2629))
+- Disabled DontReusePublicIdentifiers due to the high false positives rate ([#2627](https://github.com/spotbugs/spotbugs/issues/2627))
+- Removed signature of methods using UTF-8 in DefaultEncodingDetector ([#2634](https://github.com/spotbugs/spotbugs/issues/2634))
+- Fix exception escapes when calling functions of JUnit Assert or Assertions ([#2640](https://github.com/spotbugs/spotbugs/issues/2640))
+- Fixed an error in the SARIF export when a bug annotation is missing ([#2632](https://github.com/spotbugs/spotbugs/issues/2632))
+- Fixed false positive RV_EXCEPTION_NOT_THROWN when asserting to exception throws ([#2628](https://github.com/spotbugs/spotbugs/issues/2628))
+- Fix false positive CT_CONSTRUCTOR_THROW when supertype has final finalize ([#2665](https://github.com/spotbugs/spotbugs/issues/2665))
+- Lowered the priority of `PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE` bug ([#2652](https://github.com/spotbugs/spotbugs/issues/2652))
+- Eclipse: fixed startup overhead (on computing classpath) for PDE projects ([#2671](https://github.com/spotbugs/spotbugs/pull/2671))
+
+### Build
+- Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([#2651](https://github.com/spotbugs/spotbugs/pull/2651))
+
+## 4.8.0 - 2023-10-11
 
 ### Changed
 - Bump up Apache Commons BCEL to the version 6.6.1 ([#2223](https://github.com/spotbugs/spotbugs/pull/2223))
 - Bump up slf4j-api to 2.0.3 ([#2220](https://github.com/spotbugs/spotbugs/pull/2220))
 - Bump up gson to 2.10 ([#2235](https://github.com/spotbugs/spotbugs/pull/2235))
 - Allowed for large command line through writing arguments to file (UnionResults/UnionBugs2)
-- Use com.github.stephenc.jcip for jcip-annotations fixing #887
+- Use com.github.stephenc.jcip for jcip-annotations fixing ([#887](https://github.com/spotbugs/spotbugs/issues/887))
+- Bump ObjectWeb ASM from 9.4 to 9.6, supporting JDK 21 ([#2578](https://github.com/spotbugs/spotbugs/pull/2578))
 
 ### Fixed
 - Fixed missing classes not in report if using IErrorLogger.reportMissingClass(ClassDescriptor) ([#219](https://github.com/spotbugs/spotbugs/issues/219))
@@ -35,6 +95,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed FindHEMismatch not reporting HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS for some classes ([#2402](https://github.com/spotbugs/spotbugs/issues/2402))
 - Added execute file permission to files in the distribution zip  ([#2540](https://github.com/spotbugs/spotbugs/issues/2540))
 - Do not report RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT when part of a Mockito.verify() call check ([#872](https://github.com/spotbugs/spotbugs/issues/872))
+- Do not report SIC_INNER_SHOULD_BE_STATIC for classes annotated with JUnit Nested ([#560](https://github.com/spotbugs/spotbugs/issues/560))
+- Detect created, but not-thrown exceptions, which are created by not the constructor ([#2547](https://github.com/spotbugs/spotbugs/issues/2547))
+- Fixed eclipse plugin Effort.values pass to effortViewer as required cast to varargs ([#2579](https://github.com/spotbugs/spotbugs/pull/2579))
 
 ### Added
 - New simple name-based AnnotationMatcher for exclude files (now bug annotations store the class java annotations in an attribute called `classAnnotationNames`). For example, use like <Match><Annotation name="org.immutables.value.Generated" /></Match> in an excludeFilter.xml to ignore classes generated by the Immutable framework. This ignores all class, method or field bugs in classes with that annotation.
@@ -67,7 +130,25 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Only run release action on 'spotbugs' and use Eclipse 4.14 ([#2317](https://github.com/spotbugs/spotbugs/pull/2317))
 - Prefer log4j2 2.20.0 ([#2480](https://github.com/spotbugs/spotbugs/pull/2480))
 - Prefer logback 1.4.8 ([#2480](https://github.com/spotbugs/spotbugs/pull/2480))
+- Prefer logback 1.4.11 ([#2580](https://github.com/spotbugs/spotbugs/pull/2580))
 - Switch junit 4 for junit 5 vintage engine ([#2483](https://github.com/spotbugs/spotbugs/pull/2483))
+- LineEndings and Spotless ([#2343](https://github.com/spotbugs/spotbugs/pull/2343))
+    - Cleanup gitattributes switching text to auto.  For developers using windows, run 'git add . --renormalize' and see https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings if needed.
+    - Rework spotless setup from plugin to build file plugin matching that of gradle plugin and thus allowing spotless to be updated to 6.22.0
+    - Remove customized line endings for spotless so it uses git attributes as suggested by spotless
+    - Add trimTrailingWhitespace for spotless
+    - Fix deprecated usage of eclipse version from 4.13.0 to 4.13 per spotless requirements
+- Bump spotbugs gradle plugin to 6.0.0-beta.3 demonstrating breaking changes for 6.0.0 in gradle/java.gradle build file ([#2582](https://github.com/spotbugs/spotbugs/pull/2582))
+- Delete checked in j2ee jar and instead use servlet/ejb apis from jakarta (javax standard) ([#2585](https://github.com/spotbugs/spotbugs/pull/2585))
+- Bump Eclipse from 4.14 to 4.29 (latest) ([#2589](https://github.com/spotbugs/spotbugs/pull/2589))
+- Cleanup hamcrest imports / used library ([#2600](https://github.com/spotbugs/spotbugs/pull/2600))
+- Migrate entirely to junit 5 ([#2605](https://github.com/spotbugs/spotbugs/pull/2605))
+    - Some parts of codebase were junit 3
+    - Delete the SpotbugsRule
+    - Replace custom java determination on build with Junit 5 usage
+    - Various 'public' methods in tests fixed to 'private'
+    - Junit 5 styling applied throughout
+    - Add missing code to the SpotBugsRunner and now use the Extension as replacement of SpotbugsRule
 
 ## 4.7.3 - 2022-10-15
 ### Fixed
@@ -747,7 +828,7 @@ This version contains no change, except for the solution for [a deployment probl
 * SOAPMessage.getSOAPHeader() can and does return null ([Bug#1368](https://sourceforge.net/p/findbugs/bugs/1368/))
 * False positive in UC_USELESS_OBJECT  ([Bug#1373](https://sourceforge.net/p/findbugs/bugs/1373/))
 * False positive in NP_LOAD_OF_KNOWN_NULL_VALUE  ([Bug#1372](https://sourceforge.net/p/findbugs/bugs/1372/))
-* Missing java.nio.file.Files support in  OS_OPEN_STREAM ([Bugs#1399](https://sourceforge.net/p/findbugs/bugs/1399/)])
+* Missing java.nio.file.Files support in  OS_OPEN_STREAM ([Bugs#1399](https://sourceforge.net/p/findbugs/bugs/1399/))
 * False negative in GC_UNRELATED_TYPES  ([Bug#1387](https://sourceforge.net/p/findbugs/bugs/1387/))
 * Not reliable BIT_SIGNED_CHECK ([Bug#1408](https://sourceforge.net/p/findbugs/bugs/1408/))
 * Annotation of SIC_INNER_SHOULD_BE_STATIC_ANON ([Bug#1418](https://sourceforge.net/p/findbugs/bugs/1418/))

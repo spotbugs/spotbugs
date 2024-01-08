@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -78,6 +77,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     boolean isJSPClass;
 
+    boolean isRecord;
+
     boolean foundSynthetic;
 
     boolean seenTransientField;
@@ -102,9 +103,13 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     private final Map<XField, BugInstance> optionalBugsInReadExternal = new HashMap();
 
-    private Optional<XField> initializedCheckerVariable = Optional.empty();
+    private Set<XField> initializedCheckerVariables = new HashSet<>();
 
-    private boolean sawReadExternalExit = false;
+    private int initializeCheckerBranchTarget;
+
+    private boolean sawReadExternalBranchExit;
+
+    private boolean sawReadExternalExit;
 
     private boolean sawReadExternal;
 
@@ -166,8 +171,10 @@ public class SerializableIdiom extends OpcodeStackDetector {
         String superClassname = obj.getSuperclassName();
         // System.out.println("superclass of " + getClassName() + " is " +
         // superClassname);
-        isEnum = "java.lang.Enum".equals(superClassname);
-        if (isEnum) {
+        isEnum = Subtypes2.isEnum(obj);
+        isRecord = Subtypes2.isRecord(obj);
+
+        if (isEnum || isRecord) {
             return;
         }
         int flags = obj.getAccessFlags();
@@ -188,6 +195,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
         isGUIClass = false;
         isEjbImplClass = false;
         isJSPClass = false;
+        isRecord = false;
         seenTransientField = false;
         // boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
         fieldsThatMightBeAProblem.clear();
@@ -326,7 +334,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void visitAfter(JavaClass obj) {
-        if (isEnum) {
+        if (isEnum || isRecord) {
             return;
         }
         if (DEBUG) {
@@ -422,8 +430,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
             bugReporter.reportBug(new BugInstance(this, "WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
         }
 
-        if (isExternalizable && sawReadExternal && !optionalBugsInReadExternal.isEmpty() && initializedCheckerVariable.isPresent()
-                && !optionalBugsInReadExternal.containsKey(initializedCheckerVariable.get())) {
+        if (isExternalizable && sawReadExternal && !optionalBugsInReadExternal.isEmpty() && !initializedCheckerVariables.isEmpty()
+                && initializedCheckerVariables.stream().noneMatch(optionalBugsInReadExternal::containsKey)) {
             optionalBugsInReadExternal.values().forEach(bugReporter::reportBug);
         }
     }
@@ -548,10 +556,14 @@ public class SerializableIdiom extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if ("readExternal".equals(getMethodName())) {
-            if (seen == Const.IFEQ || seen == Const.IFNE) {
-                initializedCheckerVariable = Optional.ofNullable(stack.getStackItem(0).getXField());
-            } else if (seen == Const.ATHROW || seen == Const.RETURN) {
+            if ((seen == Const.IFEQ || seen == Const.IFNE || seen == Const.IFNULL || seen == Const.IFNONNULL) && isBranch(seen)) {
+                initializedCheckerVariables.add(stack.getStackItem(0).getXField());
+                initializeCheckerBranchTarget = getBranchTarget();
+            } else if (seen == Const.ATHROW || isReturn(seen)) {
                 sawReadExternalExit = true;
+                if (getPC() < initializeCheckerBranchTarget) {
+                    sawReadExternalBranchExit = true;
+                }
             }
         }
 
@@ -616,14 +628,20 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         }
                     }
 
-                    if ("readExternal".equals(getMethodName())) {
+                    if ("readExternal".equals(getMethodName()) && !sawReadExternalBranchExit) {
                         BugInstance bug = new BugInstance(this, "SE_PREVENT_EXT_OBJ_OVERWRITE", LOW_PRIORITY)
                                 .addClassAndMethod(this)
                                 .addField(xField)
                                 .addSourceLine(this);
                         // Collect the bugs and report them later, if the initializedCheckerVariable's value won't be changed
-                        optionalBugsInReadExternal.put(xField, bug);
-                        if (!initializedCheckerVariable.isPresent() || sawReadExternalExit) {
+                        if (initializedCheckerVariables.contains(xField)) {
+                            if (getPC() < initializeCheckerBranchTarget) {
+                                optionalBugsInReadExternal.clear();
+                            }
+                        } else {
+                            optionalBugsInReadExternal.put(xField, bug);
+                        }
+                        if (initializedCheckerVariables.isEmpty() || sawReadExternalExit) {
                             bugReporter.reportBug(bug);
                         }
                     }
