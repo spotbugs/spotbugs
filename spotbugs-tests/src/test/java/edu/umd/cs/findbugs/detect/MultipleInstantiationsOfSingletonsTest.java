@@ -4,15 +4,15 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
+class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
-    public void cloneableSingletonTest() {
+    void cloneableSingletonTest() {
         performAnalysis("singletons/CloneableSingleton.class");
         assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 1);
         assertSINGBug("SING_SINGLETON_IMPLEMENTS_CLONEABLE", "CloneableSingleton", "clone");
@@ -25,7 +25,7 @@ public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationT
     }
 
     @Test
-    public void indirectlyCloneableSingletonTest() {
+    void indirectlyCloneableSingletonTest() {
         performAnalysis("singletons/IndirectlyCloneableSingleton.class", "singletons/CloneableClass.class");
         assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 1);
         assertSINGBug("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", "IndirectlyCloneableSingleton");
@@ -38,7 +38,7 @@ public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationT
     }
 
     @Test
-    public void defaultConstructorTest() {
+    void defaultConstructorTest() {
         performAnalysis("singletons/DefaultConstructor.class");
         assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
         assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "DefaultConstructor");
@@ -51,7 +51,7 @@ public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationT
     }
 
     @Test
-    public void protectedConstructorTest() {
+    void protectedConstructorTest() {
         performAnalysis("singletons/ProtectedConstructor.class");
         assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
         assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "ProtectedConstructor");
@@ -64,7 +64,7 @@ public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationT
     }
 
     @Test
-    public void notCloneableButHasCloneMethodTest() {
+    void notCloneableButHasCloneMethodTest() {
         performAnalysis("singletons/NotCloneableButHasCloneMethod.class");
         assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 1);
         assertSINGBug("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", "NotCloneableButHasCloneMethod", "clone");
@@ -77,7 +77,7 @@ public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationT
     }
 
     @Test
-    public void serializableSingletonTest() {
+    void serializableSingletonTest() {
         performAnalysis("singletons/SerializableSingleton.class");
         assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 1);
         assertSINGBug("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", "SerializableSingleton");
@@ -90,7 +90,7 @@ public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationT
     }
 
     @Test
-    public void notSynchronizedSingletonTest() {
+    void notSynchronizedSingletonTest() {
         performAnalysis("singletons/NotSynchronizedSingleton.class");
         assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 1);
         assertSINGBug("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", "NotSynchronizedSingleton", "getInstance");
@@ -103,9 +103,9 @@ public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationT
     }
 
     @Test
-    public void inappropriateSynchronization() {
+    void inappropriateSynchronization() {
         performAnalysis("singletons/InappropriateSynchronization.class");
-        // now cannot detect synchronization bug 
+        // now cannot detect synchronization bug
         // because of the using of a monitor inside function
         assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
         //assertSINGBug("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", "InappropriateSynchronization", "getInstance");
@@ -118,43 +118,43 @@ public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationT
     }
 
     @Test
-    public void appropriateSingletonTest() {
+    void appropriateSingletonTest() {
         performAnalysis("singletons/AppropriateSingleton.class");
         assertNoBugs();
     }
 
     @Test
-    public void initializeOnDemandHolderIdiomTest() {
+    void initializeOnDemandHolderIdiomTest() {
         performAnalysis("singletons/InitializeOnDemandHolderIdiom.class");
         assertNoBugs();
     }
 
     @Test
-    public void enumSingletonTest() {
+    void enumSingletonTest() {
         performAnalysis("singletons/EnumSingleton.class");
         assertNoBugs();
     }
 
     @Test
-    public void unconditionalThrowerCloneableTest() {
+    void unconditionalThrowerCloneableTest() {
         performAnalysis("singletons/UnconditionalThrowerCloneable.class");
         assertNoBugs();
     }
 
     @Test
-    public void doubleCheckedLockingTest() {
+    void doubleCheckedLockingTest() {
         performAnalysis("singletons/DoubleCheckedLocking.class");
         assertNoBugs();
     }
 
     @Test
-    public void multiplePrivateConstructorsTest() {
+    void multiplePrivateConstructorsTest() {
         performAnalysis("singletons/MultiplePrivateConstructors.class");
         assertNoBugs();
     }
 
     @Test
-    public void multipleNonPrivateConstructorsTest() {
+    void multipleNonPrivateConstructorsTest() {
         performAnalysis("singletons/MultipleNonPrivateConstructors.class");
         assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
         assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "MultipleNonPrivateConstructors");
@@ -167,7 +167,7 @@ public class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationT
     }
 
     @Test
-    public void multipleNonPrivateConstructorsTest2() {
+    void multipleNonPrivateConstructorsTest2() {
         performAnalysis("singletons/MultipleNonPrivateConstructors2.class");
         assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
         assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "MultipleNonPrivateConstructors2");
