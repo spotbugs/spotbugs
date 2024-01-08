@@ -288,7 +288,7 @@ public class ClassFeatureSet implements XMLWriteable {
         }
 
         if (signature.startsWith("L")) {
-            signature = signature.substring(1, signature.length() - 1).replace('/', '.');
+            signature = ClassName.fromFieldSignatureToDottedClassName(signature);
             signature = transformClassName(signature);
             signature = "L" + ClassName.toSlashedClassName(signature) + ";";
         }

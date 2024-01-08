@@ -72,7 +72,7 @@ public class MutableClasses {
             return false;
         }
 
-        String dottedClassName = sig.substring(1, sig.length() - 1).replace('/', '.');
+        String dottedClassName = ClassName.fromFieldSignatureToDottedClassName(sig);
         int lastDot = dottedClassName.lastIndexOf('.');
 
         if (lastDot >= 0) {

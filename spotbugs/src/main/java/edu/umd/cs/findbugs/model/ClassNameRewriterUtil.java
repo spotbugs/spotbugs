@@ -74,7 +74,7 @@ public abstract class ClassNameRewriterUtil {
     public static String rewriteSignature(ClassNameRewriter classNameRewriter, String signature) {
         if (classNameRewriter != IdentityClassNameRewriter.instance() && signature.startsWith("L")) {
 
-            String className = signature.substring(1, signature.length() - 1).replace('/', '.');
+            String className = ClassName.fromFieldSignatureToDottedClassName(signature);
             className = classNameRewriter.rewriteClassName(className);
 
             signature = "L" + ClassName.toSlashedClassName(className) + ";";
