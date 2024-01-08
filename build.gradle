@@ -28,6 +28,9 @@ subprojects {
 allprojects {
   repositories {
     mavenCentral()
+    maven {
+      url "https://repository.apache.org/content/repositories/orgapachecommons-1685"
+    }
   }
   dependencies {
     def junitVersion = '5.10.1'
