@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationDefault;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -416,11 +417,11 @@ public class PreorderVisitor extends BetterVisitor {
         thisClass = obj;
         ConstantClass c = (ConstantClass) constantPool.getConstant(obj.getClassNameIndex());
         className = getStringFromIndex(c.getNameIndex());
-        dottedClassName = className.replace('/', '.');
+        dottedClassName = ClassName.toDottedClassName(className);
         packageName = obj.getPackageName();
         sourceFile = obj.getSourceFileName();
         dottedSuperclassName = obj.getSuperclassName();
-        superclassName = dottedSuperclassName.replace('.', '/');
+        superclassName = ClassName.toSlashedClassName(dottedSuperclassName);
 
         ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
         if (!FindBugs.isNoAnalysis()) {
@@ -694,7 +695,7 @@ public class PreorderVisitor extends BetterVisitor {
             throw new IllegalStateException("getDottedMethodSig called while not visiting method");
         }
         if (dottedMethodSig == null) {
-            dottedMethodSig = getMethodSig().replace('/', '.');
+            dottedMethodSig = ClassName.toDottedClassName(getMethodSig());
         }
         return dottedMethodSig;
     }
@@ -748,7 +749,7 @@ public class PreorderVisitor extends BetterVisitor {
             throw new IllegalStateException("getDottedFieldSig called while not visiting field");
         }
         if (dottedFieldSig == null) {
-            dottedFieldSig = fieldSig.replace('/', '.');
+            dottedFieldSig = ClassName.toDottedClassName(fieldSig);
         }
         return dottedFieldSig;
     }
