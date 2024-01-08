@@ -457,7 +457,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     }
 
     private String getUglyMethod() {
-        return className + "." + methodName + " : " + methodSig.replace('/', '.');
+        return className + "." + methodName + " : " + ClassName.toDottedClassName(methodSig);
     }
 
     @Override

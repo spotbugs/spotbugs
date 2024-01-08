@@ -101,7 +101,7 @@ public class DescriptorFactory {
     public void purge(Collection<ClassDescriptor> unusable) {
         for (ClassDescriptor c : unusable) {
             classDescriptorMap.remove(c.getClassName());
-            dottedClassDescriptorMap.remove(c.getClassName().replace('/', '.'));
+            dottedClassDescriptorMap.remove(ClassName.toDottedClassName(c.getClassName()));
         }
     }
 

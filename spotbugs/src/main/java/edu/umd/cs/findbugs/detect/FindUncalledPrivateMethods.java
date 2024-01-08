@@ -238,6 +238,6 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 
     private static String getClassName(JavaClass c, int classIndex) {
         String name = c.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
-        return ClassName.extractClassName(name).replace('/', '.');
+        return ClassName.toDottedClassName(ClassName.extractClassName(name));
     }
 }

@@ -257,7 +257,7 @@ public class InnerClassAccessMap {
             ConstantFieldref fieldref = (ConstantFieldref) cp.getConstant(cpIndex);
 
             ConstantClass cls = (ConstantClass) cp.getConstant(fieldref.getClassIndex());
-            String className = cls.getBytes(cp).replace('/', '.');
+            String className = ClassName.toDottedClassName(cls.getBytes(cp));
 
             ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(fieldref.getNameAndTypeIndex());
             String fieldName = nameAndType.getName(cp);
