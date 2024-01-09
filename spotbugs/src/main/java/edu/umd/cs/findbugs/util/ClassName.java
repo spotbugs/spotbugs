@@ -147,11 +147,11 @@ public abstract class ClassName {
     @DottedClassName
     public static @CheckForNull String fromFieldSignatureToDottedClassName(String signature) {
         String slashedClassName = ClassName.fromFieldSignature(signature);
-        if (slashedClassName != null) {
-            return toDottedClassName(slashedClassName);
-        } else {
+        if (slashedClassName == null) {
             return null;
         }
+
+        return toDottedClassName(slashedClassName);
     }
 
     /**
