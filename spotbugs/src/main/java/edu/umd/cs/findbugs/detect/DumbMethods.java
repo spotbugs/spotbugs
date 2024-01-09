@@ -1245,7 +1245,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 if (value instanceof String) {
                     String annotationClassName = (String) value;
                     boolean lacksClassfileRetention = AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase()
-                            .lacksRuntimeRetention(annotationClassName.replace('/', '.'));
+                            .lacksRuntimeRetention(ClassName.toDottedClassName(annotationClassName));
                     if (lacksClassfileRetention) {
                         ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptor(annotationClassName);
                         accumulator.accumulateBug(

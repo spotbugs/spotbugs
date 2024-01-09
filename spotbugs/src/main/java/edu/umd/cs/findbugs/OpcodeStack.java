@@ -806,7 +806,7 @@ public class OpcodeStack {
                 return null;
             }
             baseSig = baseSig.substring(1, baseSig.length() - 1);
-            baseSig = baseSig.replace('/', '.');
+            baseSig = ClassName.toDottedClassName(baseSig);
             return Repository.lookupClass(baseSig);
         }
 

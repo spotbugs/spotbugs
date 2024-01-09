@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.objectweb.asm.ClassReader;
 
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
@@ -304,7 +305,7 @@ public class DiscoverSourceDirectories {
             String sourceFile = classInfo.getSource();
 
             if (!"".equals(packageName)) {
-                packageName = packageName.replace('.', '/');
+                packageName = ClassName.toSlashedClassName(packageName);
                 packageName += "/";
             }
 

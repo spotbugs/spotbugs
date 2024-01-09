@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.config.CommandLine;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -139,7 +140,7 @@ public class CountClassVersions {
                     if (!name.endsWith(".class")) {
                         continue;
                     }
-                    if (!name.replace('/', '.').startsWith(commandLine.prefix)) {
+                    if (!ClassName.toDottedClassName(name).startsWith(commandLine.prefix)) {
                         continue;
                     }
 
