@@ -13,6 +13,22 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Move information contained in the SARIF property `exitSignalName` to `exitCodeDescription` ([#2739](https://github.com/spotbugs/spotbugs/issues/2739))
 - Do not report SE_NO_SERIALVERSIONID or other serialization issues for records ([#2793](https://github.com/spotbugs/spotbugs/issues/2793))
 
+### Build
+- Fix sonar coverage for project ([#2796](https://github.com/spotbugs/spotbugs/issues/2796))
+
+### Added
+- New detector `MultipleInstantiationsOfSingletons` and introduced new bug types:
+  - `SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR` is reported in case of a non-private constructor,
+  - `SING_SINGLETON_IMPLEMENTS_CLONEABLE` is reported in case of a class directly implementing the `Cloneable` interface,
+  - `SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE` is reported when a class indirectly implements the `Cloneable` interface,
+  - `SING_SINGLETON_IMPLEMENTS_CLONE_METHOD` is reported when a class does not implement the `Cloneable` interface, but has a `clone()` method,
+  - `SING_SINGLETON_IMPLEMENTS_SERIALIZABLE` is reported when a class directly or indirectly implements the `Serializable` interface and
+  - `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` is reported when the instance-getter method of the singleton class is not synchronized.
+    (See [SEI CERT MSC07-J](https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects))
+
+### Changed
+- Minor cleanup in connection with slashed and dotted names ([#2805](https://github.com/spotbugs/spotbugs/pull/2805))
+
 ## 4.8.3 - 2023-12-12
 ### Fixed
 - Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits for checked exceptions ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))

@@ -914,9 +914,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                         continue;
                     }
                     if (m.isStatic() && getStaticMethods.contains(m) && !m.getSlashedClassName().startsWith("java/")) {
-                        String returnSlashedClassName = ClassName.fromFieldSignature(returnType);
-                        if (returnSlashedClassName != null) {
-                            String returnClass = ClassName.toDottedClassName(returnSlashedClassName);
+                        String returnClass = ClassName.fromFieldSignatureToDottedClassName(returnType);
+                        if (returnClass != null) {
                             if (ClassName.extractPackageName(returnClass).equals(m.getClassDescriptor().getPackageName())) {
                                 /* Skip methods which only retrieve static field from the same package
                                  * As they as often used to trigger class initialization

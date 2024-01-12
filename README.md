@@ -3,7 +3,7 @@
 
 [![Build Status](https://github.com/spotbugs/spotbugs/workflows/build/badge.svg)](https://github.com/spotbugs/spotbugs/actions)
 [![Documentation Status](https://readthedocs.org/projects/spotbugs/badge/?version=latest)](https://spotbugs.readthedocs.io/en/latest/?badge=latest)
-[![Coverage Status](https://sonarcloud.io/api/project_badges/measure?branch=release-3.1&project=com.github.spotbugs.spotbugs&metric=coverage)](https://sonarcloud.io/component_measures?id=com.github.spotbugs.spotbugs&metric=coverage)
+[![Coverage Status](https://sonarcloud.io/api/project_badges/measure?branch=master&project=com.github.spotbugs.spotbugs&metric=coverage)](https://sonarcloud.io/component_measures?id=com.github.spotbugs.spotbugs&metric=coverage)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.spotbugs/spotbugs/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.spotbugs/spotbugs)
 [![Javadocs](https://javadoc.io/badge/com.github.spotbugs/spotbugs.svg)](https://javadoc.io/doc/com.github.spotbugs/spotbugs)
 

@@ -105,7 +105,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
     private String getClassName(JavaClass c, int classIndex) {
         String name = c.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
-        return ClassName.extractClassName(name).replace('/', '.');
+        return ClassName.toDottedClassName(ClassName.extractClassName(name));
     }
 
     private String getMemberName(JavaClass c, String className, int memberNameIndex, int signatureIndex) {
@@ -114,7 +114,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
     }
 
     private String getMemberName(String className, String memberName, String signature) {
-        return className.replace('/', '.') + "." + memberName + " : " + signature;
+        return ClassName.toDottedClassName(className) + "." + memberName + " : " + signature;
     }
 
     private boolean find(JavaClass target, String name, String signature) throws ClassNotFoundException {

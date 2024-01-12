@@ -107,7 +107,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         this.methodName = methodName;
         if (methodSig.indexOf('.') >= 0) {
             assert false : "signatures should not be dotted: " + methodSig;
-            methodSig = methodSig.replace('.', '/');
+            methodSig = ClassName.toSlashedClassName(methodSig);
         }
         this.methodSig = methodSig;
         this.isStatic = isStatic;
@@ -457,7 +457,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     }
 
     private String getUglyMethod() {
-        return className + "." + methodName + " : " + methodSig.replace('/', '.');
+        return className + "." + methodName + " : " + ClassName.toDottedClassName(methodSig);
     }
 
     @Override
