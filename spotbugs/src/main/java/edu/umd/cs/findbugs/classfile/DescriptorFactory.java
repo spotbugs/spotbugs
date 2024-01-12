@@ -101,7 +101,7 @@ public class DescriptorFactory {
     public void purge(Collection<ClassDescriptor> unusable) {
         for (ClassDescriptor c : unusable) {
             classDescriptorMap.remove(c.getClassName());
-            dottedClassDescriptorMap.remove(c.getClassName().replace('/', '.'));
+            dottedClassDescriptorMap.remove(ClassName.toDottedClassName(c.getClassName()));
         }
     }
 
@@ -142,7 +142,7 @@ public class DescriptorFactory {
         assert dottedClassName != null;
         ClassDescriptor classDescriptor = dottedClassDescriptorMap.get(dottedClassName);
         if (classDescriptor == null) {
-            classDescriptor = getClassDescriptor(dottedClassName.replace('.', '/'));
+            classDescriptor = getClassDescriptor(ClassName.toSlashedClassName(dottedClassName));
             dottedClassDescriptorMap.put(dottedClassName, classDescriptor);
         }
         return classDescriptor;
@@ -360,6 +360,6 @@ public class DescriptorFactory {
     }
 
     public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
-        return createClassDescriptor(dottedClassName.replace('.', '/'));
+        return createClassDescriptor(ClassName.toSlashedClassName(dottedClassName));
     }
 }

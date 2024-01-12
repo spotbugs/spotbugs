@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
@@ -97,7 +98,7 @@ public class XMLFactoryBypass extends BytecodeScanningDetector {
                 JavaClass newCls = Repository.lookupClass(getDottedClassConstantOperand());
 
                 JavaClass superCls = curClass.getSuperClass();
-                if (superCls.getClassName().equals(newClsName.replace('/', '.'))) {
+                if (superCls.getClassName().equals(ClassName.toDottedClassName(newClsName))) {
                     return;
                 }
 

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 
 import edu.umd.cs.findbugs.BugCollectionBugReporter;
@@ -63,7 +64,10 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         gson.toJson(analyser.getOriginalUriBaseIds(), jsonWriter);
 
         jsonWriter.name("taxonomies").beginArray();
-        gson.toJson(analyser.getCweTaxonomy(), jsonWriter);
+        JsonObject taxa = analyser.getCweTaxonomy();
+        if (taxa != null && !taxa.isJsonNull()) {
+            gson.toJson(taxa, jsonWriter);
+        }
         jsonWriter.endArray();
 
         jsonWriter.endObject().endArray(); // end "runs", end "runs" array
@@ -87,8 +91,10 @@ public class SarifBugReporter extends BugCollectionBugReporter {
 
         int exitCode = ExitCodes.from(getQueuedErrors().size(), missingClasses.size(), getBugCollection().getCollection().size());
         Invocation invocation = new Invocation(exitCode,
-                getSignalName(exitCode), exitCode == 0,
-                execNotifications, configNotifications);
+                getExitCodeDescription(exitCode),
+                (exitCode | ExitCodes.BUGS_FOUND_FLAG) == ExitCodes.BUGS_FOUND_FLAG,
+                execNotifications,
+                configNotifications);
 
         jsonWriter.name("invocations").beginArray();
         gson.toJson(invocation.toJsonObject(), jsonWriter);
@@ -143,22 +149,22 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         jsonWriter.endArray();
     }
 
-    private static String getSignalName(int exitCode) {
+    private static String getExitCodeDescription(int exitCode) {
         if (exitCode == 0) {
             return "SUCCESS";
         }
 
         List<String> list = new ArrayList<>();
-        if ((exitCode | ExitCodes.ERROR_FLAG) > 0) {
+        if ((exitCode & ExitCodes.ERROR_FLAG) > 0) {
             list.add("ERROR");
         }
-        if ((exitCode | ExitCodes.MISSING_CLASS_FLAG) > 0) {
+        if ((exitCode & ExitCodes.MISSING_CLASS_FLAG) > 0) {
             list.add("MISSING CLASS");
         }
-        if ((exitCode | ExitCodes.BUGS_FOUND_FLAG) > 0) {
+        if ((exitCode & ExitCodes.BUGS_FOUND_FLAG) > 0) {
             list.add("BUGS FOUND");
         }
 
-        return list.isEmpty() ? "UNKNOWN" : list.stream().collect(Collectors.joining(","));
+        return list.isEmpty() ? "UNKNOWN" : String.join(",", list);
     }
 }

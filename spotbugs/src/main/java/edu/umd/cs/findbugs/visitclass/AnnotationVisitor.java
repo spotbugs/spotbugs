@@ -265,11 +265,10 @@ public class AnnotationVisitor extends PreorderVisitor {
             for (AnnotationEntry ae : e.getAnnotationEntries()) {
                 boolean runtimeVisible = ae.isRuntimeVisible();
 
-                String name = ClassName.fromFieldSignature(ae.getAnnotationType());
+                String name = ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType());
                 if (name == null) {
                     continue;
                 }
-                name = ClassName.toDottedClassName(name);
                 Map<String, ElementValue> map = new HashMap<>();
                 for (ElementValuePair ev : ae.getElementValuePairs()) {
                     map.put(ev.getNameString(), ev.getValue());
@@ -291,11 +290,10 @@ public class AnnotationVisitor extends PreorderVisitor {
     public void visitAnnotation(Annotations arg0) {
         for (AnnotationEntry ae : arg0.getAnnotationEntries()) {
             boolean runtimeVisible = ae.isRuntimeVisible();
-            String name = ClassName.fromFieldSignature(ae.getAnnotationType());
+            String name = ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType());
             if (name == null) {
                 continue;
             }
-            name = ClassName.toDottedClassName(name);
             Map<String, ElementValue> map = new HashMap<>();
             for (ElementValuePair ev : ae.getElementValuePairs()) {
                 map.put(ev.getNameString(), ev.getValue());
