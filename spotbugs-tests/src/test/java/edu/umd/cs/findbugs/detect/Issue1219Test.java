@@ -23,13 +23,6 @@ class Issue1219Test extends AbstractIntegrationTest {
         assertBugAtLine("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE", 36);
     }
 
-    private void assertBugCount(int expectedCount) {
-        BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder().build();
-
-        assertThat(getBugCollection(),
-                containsExactly(expectedCount, bugMatcher));
-    }
-
     private void assertBugCount(String type, int expectedCount) {
         BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder()
                 .bugType(type).build();
