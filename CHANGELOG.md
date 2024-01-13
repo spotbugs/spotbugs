@@ -13,6 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Move information contained in the SARIF property `exitSignalName` to `exitCodeDescription` ([#2739](https://github.com/spotbugs/spotbugs/issues/2739))
 - Do not report SE_NO_SERIALVERSIONID or other serialization issues for records ([#2793](https://github.com/spotbugs/spotbugs/issues/2793))
 - Added support for CONSTANT_Dynamic ([#2759](https://github.com/spotbugs/spotbugs/issues/2759))
+- Ignore generic variable types when looking for BC_UNCONFIRMED_CAST_OF_RETURN_VALUE ([#1219](https://github.com/spotbugs/spotbugs/issues/1219))
 
 ### Build
 - Fix sonar coverage for project ([#2796](https://github.com/spotbugs/spotbugs/issues/2796))
