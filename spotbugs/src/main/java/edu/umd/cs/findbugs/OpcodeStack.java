@@ -52,10 +52,12 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantDynamic;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantInteger;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantLong;
+import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.ConstantUtf8;
@@ -3341,6 +3343,12 @@ public class OpcodeStack {
             push(new Item("D", Double.valueOf(((ConstantDouble) c).getBytes())));
         } else if (c instanceof ConstantLong) {
             push(new Item("J", Long.valueOf(((ConstantLong) c).getBytes())));
+        } else if (c instanceof ConstantDynamic) {
+            ConstantPool cp = dbc.getConstantPool();
+            ConstantNameAndType sig = cp.getConstant(((ConstantDynamic) c).getNameAndTypeIndex());
+            String nameConstantOperand = ((ConstantUtf8) cp.getConstant(sig.getNameIndex())).getBytes();
+            String sigConstantOperand = ((ConstantUtf8) cp.getConstant(sig.getSignatureIndex())).getBytes();
+            push(new Item(sigConstantOperand, nameConstantOperand));
         } else {
             throw new UnsupportedOperationException("StaticConstant type not expected");
         }
