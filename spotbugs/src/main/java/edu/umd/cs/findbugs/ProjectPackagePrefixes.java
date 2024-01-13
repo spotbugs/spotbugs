@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * @author pwilliam
@@ -45,7 +46,7 @@ public class ProjectPackagePrefixes {
         final String[] parts;
 
         PrefixFilter(String prefixes) {
-            prefixes = prefixes.replace('/', '.').trim();
+            prefixes = ClassName.toDottedClassName(prefixes).trim();
             if (prefixes.length() == 0) {
                 parts = new String[0];
             } else {

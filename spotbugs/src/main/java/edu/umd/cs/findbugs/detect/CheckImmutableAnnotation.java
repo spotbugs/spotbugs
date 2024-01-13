@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -41,7 +42,7 @@ public class CheckImmutableAnnotation extends PreorderVisitor implements Detecto
     @Override
     public void visitJavaClass(JavaClass obj) {
         JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
-        if (jcipAnotationDatabase.hasClassAnnotation(obj.getClassName().replace('/', '.'), "Immutable")) {
+        if (jcipAnotationDatabase.hasClassAnnotation(ClassName.toDottedClassName(obj.getClassName()), "Immutable")) {
             super.visitJavaClass(obj);
         }
     }

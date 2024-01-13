@@ -369,8 +369,8 @@ public class FindBadCast2 implements Detector {
                 // skip; might be due to JSR inlining
                 continue;
             }*/
-            String castName = castSig2.substring(1, castSig2.length() - 1).replace('/', '.');
-            String refName = refSig2.substring(1, refSig2.length() - 1).replace('/', '.');
+            String castName = ClassName.toDottedClassName(castSig2.substring(1, castSig2.length() - 1));
+            String refName = ClassName.toDottedClassName(refSig2.substring(1, refSig2.length() - 1));
 
             if (vnaDataflow == null) {
                 vnaDataflow = classContext.getValueNumberDataflow(method);

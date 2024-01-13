@@ -18,6 +18,7 @@
  */
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -49,12 +50,12 @@ public abstract class AbstractClassMember implements ClassMember {
         } else if (className.indexOf('/') >= 0) {
             assert false;
             //            slashCountClass++;
-            className = className.replace('/', '.');
+            className = ClassName.toDottedClassName(className);
         }
 
         if (signature.indexOf('.') >= 0) {
             assert false;
-            signature = signature.replace('.', '/');
+            signature = ClassName.toSlashedClassName(signature);
             //            dottedCountSignature++;
         }
         // else if (signature.indexOf('/') >= 0) {

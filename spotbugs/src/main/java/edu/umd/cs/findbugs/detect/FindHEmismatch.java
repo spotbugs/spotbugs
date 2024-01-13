@@ -577,16 +577,16 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
     String findHashedClassInSignature(String sig) {
         Matcher m = mapPattern.matcher(sig);
         if (m.find()) {
-            return m.group(1).replace('/', '.');
+            return ClassName.toDottedClassName(m.group(1));
         }
         m = hashTablePattern.matcher(sig);
         if (m.find()) {
-            return m.group(1).replace('/', '.');
+            return ClassName.toDottedClassName(m.group(1));
         }
 
         m = setPattern.matcher(sig);
         if (m.find()) {
-            return m.group(1).replace('/', '.');
+            return ClassName.toDottedClassName(m.group(1));
         }
         return null;
 

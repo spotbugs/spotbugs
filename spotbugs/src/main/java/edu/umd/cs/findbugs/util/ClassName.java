@@ -137,6 +137,24 @@ public abstract class ClassName {
     }
 
     /**
+     * Converts from signature to dotted class name
+     * (e.g., from Ljava/lang/String; to java.lang.String).
+     * Returns null if it is the signature for an array or primitive type.
+     *
+     * @param signature a class signature
+     * @return the class of the signature in dotted format
+     */
+    @DottedClassName
+    public static @CheckForNull String fromFieldSignatureToDottedClassName(String signature) {
+        String slashedClassName = ClassName.fromFieldSignature(signature);
+        if (slashedClassName == null) {
+            return null;
+        }
+
+        return toDottedClassName(slashedClassName);
+    }
+
+    /**
      * extract the package name from a dotted class name. Package names are
      * always in dotted format.
      *

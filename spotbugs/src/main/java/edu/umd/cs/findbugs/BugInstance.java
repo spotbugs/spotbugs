@@ -1110,7 +1110,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     @Nonnull
     public BugInstance addTypeOfNamedClass(@DottedClassName String typeName) {
-        TypeAnnotation typeAnnotation = new TypeAnnotation("L" + typeName.replace('.', '/') + ";");
+        TypeAnnotation typeAnnotation = new TypeAnnotation("L" + ClassName.toSlashedClassName(typeName) + ";");
         add(typeAnnotation);
         return this;
     }
@@ -2113,11 +2113,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
             JavaClass javaClass = classContext.getJavaClass();
             AnnotationEntry[] annotationEntries = javaClass.getAnnotationEntries();
-            List<String> javaAnnotationNames = Arrays.asList(annotationEntries).stream().map((AnnotationEntry ae) -> {
-                // map annotation entry type to dotted class name, for example
-                // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
-                return ae.getAnnotationType().substring(1).replace("/", ".").replace(";", "");
-            }).collect(Collectors.toList());
+            // map annotation entry type to dotted class name, for example
+            // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
+            List<String> javaAnnotationNames = Arrays.asList(annotationEntries).stream()
+                    .map((AnnotationEntry ae) -> ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType()))
+                    .collect(Collectors.toList());
             pma.setJavaAnnotationNames(javaAnnotationNames);
         } catch (Exception e) {
             LOG.debug(e.getMessage(), e);
