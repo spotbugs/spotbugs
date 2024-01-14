@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -216,6 +217,17 @@ public class FindBadCast2 implements Detector {
                     String sourceSignature = m.getSourceSignature();
                     methodInvocationWasGeneric = sourceSignature != null
                             && (sourceSignature.startsWith("<") || sourceSignature.indexOf("java/lang/Class") >= 0);
+
+                    if (sourceSignature != null) {
+                        GenericSignatureParser signatureParser = new GenericSignatureParser(sourceSignature);
+                        String returnTypeSignature = signatureParser.getReturnTypeSignature();
+
+                        if (returnTypeSignature != null && returnTypeSignature.startsWith("T")) {
+                            // The signature for variable types starts by a T (so <X> would have signature TX)
+                            methodInvocationWasGeneric = true;
+                        }
+                    }
+
                     if (DEBUG && methodInvocationWasGeneric) {
                         System.out.println(m + " has source signature " + sourceSignature);
                     }
@@ -357,8 +369,8 @@ public class FindBadCast2 implements Detector {
                 // skip; might be due to JSR inlining
                 continue;
             }*/
-            String castName = castSig2.substring(1, castSig2.length() - 1).replace('/', '.');
-            String refName = refSig2.substring(1, refSig2.length() - 1).replace('/', '.');
+            String castName = ClassName.toDottedClassName(castSig2.substring(1, castSig2.length() - 1));
+            String refName = ClassName.toDottedClassName(refSig2.substring(1, refSig2.length() - 1));
 
             if (vnaDataflow == null) {
                 vnaDataflow = classContext.getValueNumberDataflow(method);

@@ -6,6 +6,7 @@ sonar {
         property 'sonar.organization', 'spotbugs'
         property 'sonar.projectKey', 'com.github.spotbugs.spotbugs'
         property 'sonar.projectName', 'SpotBugs'
+        property 'sonar.coverage.jacoco.xmlReportPaths', "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
     }
 }
 

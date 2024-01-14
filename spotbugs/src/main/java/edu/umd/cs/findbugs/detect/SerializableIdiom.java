@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -76,6 +77,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
     boolean isEjbImplClass;
 
     boolean isJSPClass;
+
+    boolean isRecord;
 
     boolean foundSynthetic;
 
@@ -169,8 +172,10 @@ public class SerializableIdiom extends OpcodeStackDetector {
         String superClassname = obj.getSuperclassName();
         // System.out.println("superclass of " + getClassName() + " is " +
         // superClassname);
-        isEnum = "java.lang.Enum".equals(superClassname);
-        if (isEnum) {
+        isEnum = Subtypes2.isEnum(obj);
+        isRecord = Subtypes2.isRecord(obj);
+
+        if (isEnum || isRecord) {
             return;
         }
         int flags = obj.getAccessFlags();
@@ -191,6 +196,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
         isGUIClass = false;
         isEjbImplClass = false;
         isJSPClass = false;
+        isRecord = false;
         seenTransientField = false;
         // boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
         fieldsThatMightBeAProblem.clear();
@@ -329,7 +335,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void visitAfter(JavaClass obj) {
-        if (isEnum) {
+        if (isEnum || isRecord) {
             return;
         }
         if (DEBUG) {
@@ -605,7 +611,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                 // sig);
                                 // System.out.println("Class stored: " +
                                 // classStored.getClassName());
-                                String genSig = "L" + classStored.getClassName().replace('.', '/') + ";";
+                                String genSig = "L" + ClassName.toSlashedClassName(classStored.getClassName()) + ";";
                                 if (!sig.equals(genSig)) {
                                     double bias = 0.0;
                                     if (!Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
