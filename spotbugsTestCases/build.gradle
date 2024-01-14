@@ -41,9 +41,7 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
-  if (it.name == 'classesJava21') {
-    options.release = 21
-  } else if (it.name == 'classesJava17') {
+  if (it.name == 'classesJava17') {
     options.release = 17
   } else if (it.name == 'classesJava11') {
     options.release = 11
