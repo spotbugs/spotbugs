@@ -20,7 +20,9 @@
 package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
@@ -32,9 +34,11 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class SwitchHandler {
     private final List<SwitchDetails> switchOffsetStack;
+    private final Set<Integer> typeSwitchPcs;
 
     public SwitchHandler() {
         switchOffsetStack = new ArrayList<>();
+        typeSwitchPcs = new HashSet<>();
     }
 
     public int stackSize() {
@@ -55,11 +59,13 @@ public class SwitchHandler {
     }
 
     public void enterSwitch(DismantleBytecode dbc, @CheckForNull XClass enumType) {
-
-        assert dbc.getOpcode() == Const.TABLESWITCH || dbc.getOpcode() == Const.LOOKUPSWITCH;
         int[] switchOffsets = dbc.getSwitchOffsets();
-        SwitchDetails details = new SwitchDetails(dbc.getPC(), switchOffsets, dbc.getDefaultSwitchOffset(), switchOffsets.length == numEnumValues(
-                enumType));
+        enterSwitch(dbc.getOpcode(), dbc.getPC(), switchOffsets, dbc.getDefaultSwitchOffset(), switchOffsets.length == numEnumValues(enumType));
+    }
+
+    public void enterSwitch(int opCode, int pc, int[] switchOffsets, int defaultSwitchOffset, @CheckForNull boolean exhaustive) {
+        assert opCode == Const.TABLESWITCH || opCode == Const.LOOKUPSWITCH;
+        SwitchDetails details = new SwitchDetails(pc, switchOffsets, defaultSwitchOffset, exhaustive);
 
 
         int size = switchOffsetStack.size();
@@ -118,6 +124,45 @@ public class SwitchHandler {
         SwitchDetails details = switchOffsetStack.get(switchOffsetStack.size() - 1);
         return SourceLineAnnotation.fromVisitedInstructionRange(
                 detector.getClassContext(), detector, details.switchPC, details.switchPC + details.maxOffset - 1);
+    }
+
+    public void sawInvokeDynamic(int pc, String methodName) {
+        if ("typeSwitch".equals(methodName)) {
+            typeSwitchPcs.add(pc + 5);
+        }
+    }
+
+    /**
+     * @param opCode The operation code
+     * @param pc The program counter
+     * @return <code>true</code>If this instruction is a cast for a type switch
+     */
+    public boolean isTypeSwitchCaseCheckCast(int opCode, int pc) {
+        if (opCode != Const.CHECKCAST) {
+            return false;
+        }
+
+        // For a type switch each case starts with an aload_2 followed by a checkcast
+        // Since we're on a checkcast look for a switch with a target on the previous PC
+        SwitchDetails switchDetails = findSwitchDetailsByPc(pc - 1);
+
+        if (switchDetails != null) {
+            return typeSwitchPcs.contains(switchDetails.switchPC);
+        }
+
+        return false;
+    }
+
+    private SwitchDetails findSwitchDetailsByPc(int pc) {
+        for (SwitchDetails switchDetails : switchOffsetStack) {
+            for (int i = 0; i < switchDetails.swOffsets.length; i++) {
+                if (pc == switchDetails.swOffsets[i] + switchDetails.switchPC) {
+                    return switchDetails;
+                }
+            }
+        }
+
+        return null;
     }
 
     public static class SwitchDetails {
