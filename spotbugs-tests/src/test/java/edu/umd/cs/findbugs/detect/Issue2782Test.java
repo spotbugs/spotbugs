@@ -16,15 +16,14 @@ public class Issue2782Test extends AbstractIntegrationTest {
     @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11, JRE.JAVA_17 })
     void testIssue() {
         performAnalysis(
-            "../java21/Issue2782.class",
-            "../java21/Issue2782$MyInterface.class",
-            "../java21/Issue2782$Impl1.class",
-            "../java21/Issue2782$Impl2.class"
-        );
+                "../java21/Issue2782.class",
+                "../java21/Issue2782$MyInterface.class",
+                "../java21/Issue2782$Impl1.class",
+                "../java21/Issue2782$Impl2.class");
 
         BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-            .bugType("BC_UNCONFIRMED_CAST")
-            .build();
+                .bugType("BC_UNCONFIRMED_CAST")
+                .build();
 
         assertThat(getBugCollection(), containsExactly(0, matcher));
     }
