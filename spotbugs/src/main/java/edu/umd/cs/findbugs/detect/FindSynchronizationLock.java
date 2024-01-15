@@ -292,6 +292,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         *   - Discuss the hard cases
         */
         for (XField lock : usedLockObjects.keySet()) {
+            String problematicMethods = lockAccessors.get(lock).stream().map(XMethod::toString).collect(Collectors.joining(",\n"));
             // don't check public fields, because they were already reported at this point
             if (lock.isProtected()) {
                 if (isAccessible(lock)) {
@@ -299,7 +300,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                             .addClass(this)
                             .addMethod(usedLockObjects.get(lock))
                             .addField(lock)
-                    //                          .addString(MethodsThatAccessedOrReturnedTheLock)
+                            .addString(problematicMethods)
                     );
                 } else {
                     try {
@@ -318,21 +319,21 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                     bugReporter.reportBug(new BugInstance(this, ACCESSIBLE_OBJECT_BUG, NORMAL_PRIORITY)
                             .addClass(this)
                             .addMethod(usedLockObjects.get(lock))
-                            .addField(lock));
-                    //                          .addString(MethodsThatAccessedOrReturnedTheLock)
+                            .addField(lock)
+                            .addString(problematicMethods));
                 }
             } else if (isPackagePrivate(lock)) {
                 bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
                         .addClass(this)
                         .addMethod(usedLockObjects.get(lock))
-                        .addField(lock));
-                //                          .addString(MethodsThatAccessedOrReturnedTheLock)
+                        .addField(lock)
+                        .addString(problematicMethods));
             } else if (isAccessible(lock)) {
                 bugReporter.reportBug(new BugInstance(this, ACCESSIBLE_OBJECT_BUG, NORMAL_PRIORITY)
                         .addClass(this)
                         .addMethod(usedLockObjects.get(lock))
-                        .addField(lock));
-                //                          .addString(MethodsThatAccessedOrReturnedTheLock)
+                        .addField(lock)
+                        .addString(problematicMethods));
             }
         }
         usedLockObjects.clear();
