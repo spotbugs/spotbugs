@@ -34,11 +34,14 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class SwitchHandler {
     private final List<SwitchDetails> switchOffsetStack;
-    private final Set<Integer> typeSwitchPcs;
+    /**
+     * The set of program counters for the 'switch' instruction of each of the type switches
+     */
+    private final Set<Integer> typeSwitchPC;
 
     public SwitchHandler() {
         switchOffsetStack = new ArrayList<>();
-        typeSwitchPcs = new HashSet<>();
+        typeSwitchPC = new HashSet<>();
     }
 
     public int stackSize() {
@@ -126,9 +129,15 @@ public class SwitchHandler {
                 detector.getClassContext(), detector, details.switchPC, details.switchPC + details.maxOffset - 1);
     }
 
+    /**
+     * For type switches introduced in Java 21 we are using the invocation of a bootstrap 'typeswitch()' method to
+     * detect that the switch operates on the class of the object.
+     * @param pc
+     * @param methodName
+     */
     public void sawInvokeDynamic(int pc, String methodName) {
         if ("typeSwitch".equals(methodName)) {
-            typeSwitchPcs.add(pc + 5);
+            typeSwitchPC.add(pc + 5);
         }
     }
 
@@ -146,17 +155,13 @@ public class SwitchHandler {
         // Since we're on a checkcast look for a switch with a target on the previous PC
         SwitchDetails switchDetails = findSwitchDetailsByPc(pc - 1);
 
-        if (switchDetails != null) {
-            return typeSwitchPcs.contains(switchDetails.switchPC);
-        }
-
-        return false;
+        return switchDetails != null && typeSwitchPC.contains(switchDetails.switchPC);
     }
 
     private SwitchDetails findSwitchDetailsByPc(int pc) {
         for (SwitchDetails switchDetails : switchOffsetStack) {
-            for (int i = 0; i < switchDetails.swOffsets.length; i++) {
-                if (pc == switchDetails.swOffsets[i] + switchDetails.switchPC) {
+            for (int offset : switchDetails.swOffsets) {
+                if (pc == offset + switchDetails.switchPC) {
                     return switchDetails;
                 }
             }
