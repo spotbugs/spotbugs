@@ -110,8 +110,8 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
         assertNumOfBugs(2, OBJECT_BUG);
 
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithAccessibleStaticLock2", "doStuff", "baseLock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithAccessibleStaticLockFromParent2", "doStuff2", "lock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithAccessibleStaticLock3", "doStuff", "baseLock");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithAccessibleStaticLockFromParent3", "doStuff2", "lock");
     }
 
     @Test
@@ -226,6 +226,13 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     @Test
     void testGoodSynchronizationWithPrivateStaticLockObject() {
         performAnalysis("privateFinalLocks/GoodSynchronizationWithPrivateStaticLock.class");
+
+        assertNoBadLockBugs();
+    }
+
+    @Test
+    void testGoodSynchronizationWithProtectedLockInFinalClass() {
+        performAnalysis("privateFinalLocks/GoodSynchronizationWithProtectedLockInFinalClass.class");
 
         assertNoBadLockBugs();
     }
