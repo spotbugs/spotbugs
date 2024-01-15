@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        java: [17, 21]
+        java: [21]
       max-parallel: 6
     runs-on: ${{ matrix.os }}
     continue-on-error: true
