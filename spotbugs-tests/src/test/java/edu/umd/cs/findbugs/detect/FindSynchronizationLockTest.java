@@ -14,6 +14,7 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     private static final String METHOD_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String ACCESSIBLE_OBJECT_BUG = "PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
+    private static final String INHERITED_OBJECT_BUG = "PFL_BAD_EXPOSED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
 
     @Test
     void testBadMethodSynchronizationLock() {
@@ -119,10 +120,7 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         performAnalysis("privateFinalLocks/BadSynchronizationWithAccessibleStaticLock4.class");
 
         assertNumOfBugs(1, ACCESSIBLE_OBJECT_BUG);
-
-        /*
-            @note: exposed or accessed through method, should be another bug
-         */
+        
         assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithAccessibleStaticLock4", "doStuff", "baseLock");
     }
 
@@ -193,15 +191,13 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
     @Test
     void testBadSynchronizationWithVolatileLockObject6() {
-        // @note: this is tough one
-        performAnalysis("privateFinalLocks/BadSynchronizationWithVolatileLock6.class",
-                "privateFinalLocks/BadSynchronizationWithVolatileLockFromParent6.class");
+  
+        performAnalysis("privateFinalLocks/BadSynchronizationWithExposedLockToUntrustedCode.class",
+                "privateFinalLocks/BadSynchronizationWithExposedLockToUntrustedCodeFromParent.class");
 
-        assertNumOfBugs(1, ACCESSIBLE_OBJECT_BUG);
-        /*
-            @note: exposed or accessed through method, should be another bug
-         */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithVolatileLockFromParent6", "doSomeStuff", "baseLock"); // accessor: updateBaseLock
+        assertNumOfBugs(1, OBJECT_BUG);
+
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockToUntrustedCode", "doSomeStuff", "baseLock"); // accessor in descendant: updateBaseLock
     }
 
     @Test
@@ -249,6 +245,7 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
     }
 
     private void assertNumOfBugs(int number, String bugType) {
@@ -281,6 +278,17 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     private void assertAccessibleObjectBugExactly(String clazz, String method, String field) {
         BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
                 .bugType(ACCESSIBLE_OBJECT_BUG)
+                .inClass(clazz)
+                .inMethod(method)
+                .atField(field);
+        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+
+        assertThat(getBugCollection(), hasItem(bugInstance));
+    }
+
+    private void assertExposedLocksThroughInheritance(String clazz, String method, String field) {
+        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+                .bugType(INHERITED_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
                 .atField(field);

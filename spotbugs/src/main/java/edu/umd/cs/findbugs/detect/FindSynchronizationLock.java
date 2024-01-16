@@ -269,6 +269,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     private Boolean isPackagePrivate(XField field) {
         return !(field.isPublic() || field.isProtected() || field.isPrivate());
     }
+
     @Override
     public void visitAfter(JavaClass obj) {
         if (!exposingMethods.isEmpty()) {
@@ -300,8 +301,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                             .addClass(this)
                             .addMethod(usedLockObjects.get(lock))
                             .addField(lock)
-                            .addString(problematicMethods)
-                    );
+                            .addString(problematicMethods));
                 } else {
                     try {
                         if (!isFinalDeclaringClass(lock)) {

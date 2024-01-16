@@ -686,8 +686,8 @@ reporting detectors have completed.
                     disabled="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryEnvUsage" speed="fast"
                     reports="ENV_USE_PROPERTY_INSTEAD_OF_ENV"/>
-            <Detector class="edu.umd.cs.findbugs.detect.FindSynchronizationLock" speed="fast"
-                    reports="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindSynchronizationLock" speed="fast"
+                    reports="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_EXPOSED_BY_INHERITANCE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"/>
           <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
 
@@ -1329,4 +1329,5 @@ reporting detectors have completed.
           <BugPattern abbrev="PFL" type="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PFL" type="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PFL" type="PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="PFL" type="PFL_BAD_EXPOSED_BY_INHERITANCE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS" category="BAD_PRACTICE"/>
 </FindbugsPlugin>

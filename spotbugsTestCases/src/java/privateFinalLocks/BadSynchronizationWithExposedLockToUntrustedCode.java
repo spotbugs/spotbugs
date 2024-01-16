@@ -1,8 +1,7 @@
 package privateFinalLocks;
 
-public class BadSynchronizationWithVolatileLock6 { // @note: this is hard, I don't know how to solve this
-    protected volatile Object baseLock = new Object();
-
+public class BadSynchronizationWithExposedLockToUntrustedCode {
+    protected Object baseLock = new Object();
     public void doSomeStuff() {
         synchronized (baseLock) { // synchronizing on a lock in the presence of an accessor in a descendant, bug should be detected here
             System.out.println("Do stuff");
@@ -10,7 +9,7 @@ public class BadSynchronizationWithVolatileLock6 { // @note: this is hard, I don
     }
 }
 
-class BadSynchronizationWithVolatileLockFromParent6 extends BadSynchronizationWithVolatileLock6 {
+class BadSynchronizationWithExposedLockToUntrustedCodeFromParent extends BadSynchronizationWithExposedLockToUntrustedCode { // this is the untrusted code part
     public void updateBaseLock() {
         baseLock = new Object();
     }
