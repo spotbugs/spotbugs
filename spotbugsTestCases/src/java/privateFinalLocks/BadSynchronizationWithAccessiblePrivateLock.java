@@ -1,8 +1,8 @@
 package privateFinalLocks;
 
 /**
- * @note There are other test cases with private accessible lock left out from here,
-*        because they are already present in static or volatile test cases.
+ * NOTE There are other test cases with private accessible lock left out from here,
+ *       because they are already present in static or volatile test cases.
  */
 public class BadSynchronizationWithAccessiblePrivateLock {
     private Object baseLock = new Object();

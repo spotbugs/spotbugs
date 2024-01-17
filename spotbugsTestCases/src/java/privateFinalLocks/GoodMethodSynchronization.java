@@ -1,8 +1,6 @@
 package privateFinalLocks;
 
 public class GoodMethodSynchronization {
-
-//    private GoodMethodSynchronization() {}
     public synchronized void doStuff() {
         System.out.println("Do some stuff");
     }

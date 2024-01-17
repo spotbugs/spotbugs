@@ -5,7 +5,7 @@ public class BadSynchronizationWithAccessibleStaticLock3 {
     static Object lock = new Object();
 
     public static void doStuff() {
-        synchronized (baseLock) {
+        synchronized (baseLock) { // synchronizing on the package private lock object, bug should be detected here
             System.out.println("Do stuff");
         }
     }

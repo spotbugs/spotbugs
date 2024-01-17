@@ -5,7 +5,7 @@ public class BadSynchronizationWithAccessibleStaticLock2 {
     protected static Object lock = new Object();
 
     public static void doStuff() {
-        synchronized (baseLock) {
+        synchronized (baseLock) { // synchronizing on the protected lock object, bug should be detected here
             System.out.println("Do stuff");
         }
     }
