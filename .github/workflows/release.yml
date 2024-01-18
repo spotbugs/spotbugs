@@ -69,7 +69,7 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
       - name: Build otherwise
-        if: (!(github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master'))
+        if: !((github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master'))
         run: |
           gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
           echo sonatypeUsername=eller86 >> gradle.properties
