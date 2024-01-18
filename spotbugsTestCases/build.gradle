@@ -93,7 +93,10 @@ tasks.named('classes').configure {
   dependsOn classesJava8
   dependsOn classesJava11
   dependsOn classesJava17
-  dependsOn classesJava21
+  
+  if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_21)) {
+    dependsOn classesJava21
+  }
 }
 
 sonar {
