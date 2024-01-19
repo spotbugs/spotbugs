@@ -18,7 +18,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Build
 - Fix sonar coverage for project ([#2796](https://github.com/spotbugs/spotbugs/issues/2796))
-- Upgraded the build to run on JDK 21 now that we have bug samples using Java 21 language features ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
+- Upgraded the build to compile bug samples using Java 21 language features ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
 
 ### Added
 - New detector `MultipleInstantiationsOfSingletons` and introduced new bug types:
