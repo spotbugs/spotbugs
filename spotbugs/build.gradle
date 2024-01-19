@@ -19,8 +19,6 @@ eclipse {
 configurations {
   // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
   logBinding
-  // used to make sure Eclipse config can see apple library during compilation
-  appleExtensions
 }
 
 sourceSets {
@@ -97,11 +95,7 @@ dependencies {
   api "com.google.code.gson:gson:2.10.1"
 
   guiImplementation sourceSets.main.runtimeClasspath
-  guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
   guiCompileOnly project(':spotbugs-annotations')
-
-  // for Eclipse compilation only
-  appleExtensions 'com.apple:AppleJavaExtensions:1.4'
 }
 
 clean {
