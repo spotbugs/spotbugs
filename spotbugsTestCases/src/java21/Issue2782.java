@@ -1,3 +1,5 @@
+import java.util.Map;
+import java.util.Set;
 
 public class Issue2782 {
 
@@ -39,6 +41,14 @@ public class Issue2782 {
             };
             case Impl2 impl2 -> impl2.helloFromImpl2();
             default -> throw new IllegalArgumentException("Blah");
+        };
+    }
+
+    public static int badCast(Object value) {
+        return switch (value) {
+            case Map map -> ((Set) map.values()).size(); // BC_UNCONFIRMED_CAST_OF_RETURN_VALUE
+            case Number n -> ((Integer) n).intValue(); // BC_UNCONFIRMED_CAST
+            default -> 42;
         };
     }
 }
