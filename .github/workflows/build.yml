@@ -9,6 +9,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+         - os: flyci-macos-large-latest-m1
+           java: 21
         java: [17, 21]
       max-parallel: 6
     runs-on: ${{ matrix.os }}
