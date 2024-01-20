@@ -17,10 +17,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
 - Remove AppleExtension library (note: menus slightly changed) ([#2823](https://github.com/spotbugs/spotbugs/pull/2823))
 
-### Build
-- Fix sonar coverage for project ([#2796](https://github.com/spotbugs/spotbugs/issues/2796))
-- Upgraded the build to compile bug samples using Java 21 language features ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
-
 ### Added
 - New detector `MultipleInstantiationsOfSingletons` and introduced new bug types:
   - `SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR` is reported in case of a non-private constructor,
@@ -35,7 +31,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Minor cleanup in connection with slashed and dotted names ([#2805](https://github.com/spotbugs/spotbugs/pull/2805))
 
 ### Build
-- Fix sonar coverage for project ([#2793](https://github.com/spotbugs/spotbugs/issues/2793))
+- Fix sonar coverage for project ([#2796](https://github.com/spotbugs/spotbugs/issues/2796))
+- Upgraded the build to compile bug samples using Java 21 language features ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
 - Add 'configurations.checkstyle resolution starategy' to control bug in gradle on exclusions not being excluded properly as seen in checkstyle usage.  See https://github.com/checkstyle/checkstyle/issues/14211 for more information. ([#2798](https://github.com/spotbugs/spotbugs/issues/2798))
 
 ## 4.8.3 - 2023-12-12
