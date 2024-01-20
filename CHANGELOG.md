@@ -36,7 +36,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Build
 - Fix sonar coverage for project ([#2793](https://github.com/spotbugs/spotbugs/issues/2793))
-- Add 'io.spring.dependency-managagement' to control bug in gradle on exclusions not being excluded properly as seen in checkstyle usage.  See https://github.com/checkstyle/checkstyle/issues/14211 for more information. ([#2798](https://github.com/spotbugs/spotbugs/issues/2798))
+- Add 'configuratinos.checkstyle resolution starategy' to control bug in gradle on exclusions not being excluded properly as seen in checkstyle usage.  See https://github.com/checkstyle/checkstyle/issues/14211 for more information. ([#2798](https://github.com/spotbugs/spotbugs/issues/2798))
 
 ## 4.8.3 - 2023-12-12
 ### Fixed

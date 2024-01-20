@@ -1,11 +1,10 @@
 // Setup checkstyle
 apply plugin: 'checkstyle'
-apply plugin: 'io.spring.dependency-management'
 
-dependencyManagement {
-    dependencies {
-        dependency 'com.puppycrawl.tools:checkstyle:10.12.7'
-    }
+configurations.checkstyle {
+  resolutionStrategy.capabilitiesResolution.withCapability("com.google.collections:google-collections") {
+    select("com.google.guava:guava:0")
+  }
 }
 
 checkstyle {
