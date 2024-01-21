@@ -29,34 +29,8 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ACONST_NULL;
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ANEWARRAY;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.BasicType;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.ConstantPushInstruction;
-import org.apache.bcel.generic.DUP;
-import org.apache.bcel.generic.DUP2;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.IINC;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.IRETURN;
-import org.apache.bcel.generic.IndexedInstruction;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.LDC;
-import org.apache.bcel.generic.LRETURN;
-import org.apache.bcel.generic.LSTORE;
-import org.apache.bcel.generic.LoadInstruction;
-import org.apache.bcel.generic.MULTIANEWARRAY;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.NEWARRAY;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.StoreInstruction;
-import org.apache.bcel.generic.Type;
+import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.LOOKUPSWITCH;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -67,6 +41,7 @@ import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SwitchHandler;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -219,6 +194,7 @@ public class FindDeadLocalStores implements Detector {
         int[] localLoadCount = new int[numLocals];
         int[] localIncrementCount = new int[numLocals];
         MethodGen methodGen = classContext.getMethodGen(method);
+        ConstantPoolGen cpg = classContext.getConstantPoolGen();
         CFG cfg = classContext.getCFG(method);
         if (cfg.isFlagSet(CFG.FOUND_INEXACT_UNCONDITIONAL_THROWERS)) {
             return;
@@ -245,6 +221,9 @@ public class FindDeadLocalStores implements Detector {
         // due to inlining of finally blocks.
         BitSet liveStoreSourceLineSet = new BitSet();
 
+        // Keep track of the switches so we can ignore the dead stores corresponding to type switches
+        SwitchHandler switchHandler = new SwitchHandler();
+
         // Scan method for
         // - dead stores
         // - stores to parameters that are dead upon entry to the method
@@ -254,8 +233,33 @@ public class FindDeadLocalStores implements Detector {
             BugInstance pendingBugReportAboutOverwrittenParameter = null;
             try {
                 WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
+
+                InstructionHandle handle = location.getHandle();
+                int pc = handle.getPosition();
+
+                if (handle.getInstruction() instanceof INVOKEDYNAMIC) {
+                    INVOKEDYNAMIC invokeDynamicInstruction = (INVOKEDYNAMIC) handle.getInstruction();
+                    String invokeMethodName = invokeDynamicInstruction.getMethodName(cpg);
+                    switchHandler.sawInvokeDynamic(pc, invokeMethodName);
+
+                    continue;
+                } else if (handle.getInstruction() instanceof LOOKUPSWITCH) {
+                    LOOKUPSWITCH switchInstruction = (LOOKUPSWITCH) handle.getInstruction();
+                    int[] indices = switchInstruction.getIndices();
+
+                    switchHandler.enterSwitch(switchInstruction.getOpcode(),
+                            pc,
+                            indices,
+                            0, // Not sure how to get the default offset from BCEL but it doesn't matter here
+                            false); // It shouldn't matter here if the switch was exhaustive or not
+                }
+
                 // Skip any instruction which is not a store
                 if (!isStore(location)) {
+                    continue;
+                }
+
+                if (switchHandler.isTypeSwitchCaseLoad(location)) {
                     continue;
                 }
 
@@ -264,8 +268,6 @@ public class FindDeadLocalStores implements Detector {
                 if (location.getBasicBlock().isExceptionHandler()) {
                     propertySet.addProperty(DeadLocalStoreProperty.EXCEPTION_HANDLER);
                 }
-                InstructionHandle handle = location.getHandle();
-                int pc = handle.getPosition();
                 IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
 
                 int local = ins.getIndex();
@@ -369,7 +371,6 @@ public class FindDeadLocalStores implements Detector {
                         continue; // not an interesting dead store
                     } else if (prevIns instanceof GETSTATIC) {
                         GETSTATIC getStatic = (GETSTATIC) prevIns;
-                        ConstantPoolGen cpg = methodGen.getConstantPool();
                         foundDeadClassInitialization = getStatic.getFieldName(cpg).startsWith("class$")
                                 && "Ljava/lang/Class;".equals(getStatic.getSignature(cpg));
                         for (Iterator<Location> j = cfg.locationIterator(); j.hasNext();) {
