@@ -21,19 +21,26 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.commons.lang3.StringUtils;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -46,6 +53,7 @@ import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreDataflow;
 import edu.umd.cs.findbugs.ba.Location;
@@ -60,6 +68,8 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+
+import static edu.umd.cs.findbugs.util.Util.isGeneratedCodeInCatchBlockViaLineNumber;
 
 /**
  * RuntimeExceptionCapture
@@ -77,6 +87,8 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
 
     private final List<ExceptionThrown> throwList = new ArrayList<>();
 
+    private boolean invokesMethodOfGenericParameter = false;
+
     private final BugAccumulator accumulator;
 
     private static class ExceptionCaught {
@@ -87,6 +99,8 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         public boolean seen = false;
 
         public boolean dead = false;
+
+        public boolean rethrown = false;
 
         public ExceptionCaught(String exceptionClass, int startOffset, int endOffset, int sourcePC) {
             this.exceptionClass = exceptionClass;
@@ -121,6 +135,10 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
     @Override
     public void visitAfter(Code obj) {
         for (ExceptionCaught caughtException : catchList) {
+            if (caughtException.rethrown) {
+                continue;
+            }
+
             Set<String> thrownSet = new HashSet<>();
             for (ExceptionThrown thrownException : throwList) {
                 if (thrownException.offset >= caughtException.startOffset && thrownException.offset < caughtException.endOffset) {
@@ -130,43 +148,49 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                     }
                 }
             }
-            int catchClauses = 0;
+
+            int priority = caughtException.dead ? NORMAL_PRIORITY : LOW_PRIORITY;
             if ("java.lang.Exception".equals(caughtException.exceptionClass) && !caughtException.seen) {
                 // Now we have a case where Exception is caught, but not thrown
                 boolean rteCaught = false;
                 for (ExceptionCaught otherException : catchList) {
                     if (otherException.startOffset == caughtException.startOffset
                             && otherException.endOffset == caughtException.endOffset) {
-                        catchClauses++;
                         if ("java.lang.RuntimeException".equals(otherException.exceptionClass)) {
                             rteCaught = true;
                         }
                     }
                 }
-                int range = caughtException.endOffset - caughtException.startOffset;
+
                 if (!rteCaught) {
-                    int priority = LOW_PRIORITY + 1;
-                    if (range > 300) {
-                        priority--;
-                    } else if (range < 30) {
-                        priority++;
-                    }
-                    if (catchClauses > 1) {
-                        priority++;
-                    }
-                    if (thrownSet.size() > 1) {
-                        priority--;
-                    }
-                    if (caughtException.dead) {
-                        priority--;
-                    }
                     accumulator.accumulateBug(new BugInstance(this, "REC_CATCH_EXCEPTION", priority).addClassAndMethod(this),
+                            SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, caughtException.sourcePC));
+                } else {
+                    accumulator.accumulateBug(new BugInstance(this, "REC2_CATCH_EXCEPTION", LOW_PRIORITY).addClassAndMethod(this),
+                            SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, caughtException.sourcePC));
+                }
+            } else if (!invokesMethodOfGenericParameter && "java.lang.RuntimeException".equals(caughtException.exceptionClass) &&
+                    !caughtException.seen) {
+                accumulator.accumulateBug(new BugInstance(this, "REC2_CATCH_RUNTIME_EXCEPTION", LOW_PRIORITY).addClassAndMethod(this),
+                        SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, caughtException.sourcePC));
+            } else if ("java.lang.Throwable".equals(caughtException.exceptionClass) &&
+                    !caughtException.seen) {
+                Method method = getMethod();
+                ConstantPool cp = method.getConstantPool();
+                LineNumberTable lineNumberTable = method.getLineNumberTable();
+                int line = lineNumberTable.getSourceLine(caughtException.sourcePC);
+                InstructionList list = new InstructionList(method.getCode().getCode());
+
+                if (!method.isSynthetic() &&
+                        !isGeneratedCodeInCatchBlockViaLineNumber(cp, lineNumberTable, line, list, Arrays.asList(obj.getExceptionTable()))) {
+                    accumulator.accumulateBug(new BugInstance(this, "REC2_CATCH_THROWABLE", LOW_PRIORITY).addClassAndMethod(this),
                             SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, caughtException.sourcePC));
                 }
             }
         }
         catchList.clear();
         throwList.clear();
+        invokesMethodOfGenericParameter = false;
     }
 
     @Override
@@ -200,8 +224,18 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                             System.out.println("Dead exception store at " + first);
                         }
                         caughtException.dead = true;
-                        break;
                     }
+
+                    // See if the exception is rethrown at the end of the handler.
+                    while (block != null) {
+                        InstructionHandle last = block.getLastInstruction();
+                        if (last != null && last.getInstruction().getOpcode() == Const.ATHROW) {
+                            caughtException.rethrown = true;
+                            break;
+                        }
+                        block = cfg.getSuccessorWithEdgeType(block, EdgeTypes.FALL_THROUGH_EDGE);
+                    }
+                    break;
                 }
             }
         } catch (MethodUnprofitableException e) {
@@ -236,7 +270,18 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         case Const.INVOKEVIRTUAL:
         case Const.INVOKESPECIAL:
         case Const.INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
             String className = getClassConstantOperand();
+            if (seen == Const.INVOKEINTERFACE) {
+                OpcodeStack.Item object = getStack().getStackItem(getStack().getStackDepth() - 1);
+                Optional<Signature> classSig = Arrays.stream(getThisClass().getAttributes())
+                        .filter(attr -> attr instanceof Signature)
+                        .map(attr -> (Signature) attr)
+                        .findAny();
+                if (maybeGenericParameter(object.getSignature(), getMethod().getGenericSignature(), classSig)) {
+                    invokesMethodOfGenericParameter = true;
+                }
+            }
             if (!className.startsWith("[")) {
                 try {
                     XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class,
@@ -263,6 +308,41 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             break;
         }
 
+    }
+
+    private boolean maybeGenericParameter(String signature, String genericSignature, Optional<Signature> classSig) {
+        List<String> genericParameters = extractGenericParameters(genericSignature);
+        if (classSig.isPresent()) {
+            genericParameters.addAll(extractGenericParameters(classSig.get().getSignature()));
+        }
+
+        for (String genParam : genericParameters) {
+            int doubleColonIdx = genParam.indexOf("::");
+            if (doubleColonIdx == -1) {
+                continue;
+            }
+            if (signature.equals(genParam.substring(doubleColonIdx + 2))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<String> extractGenericParameters(String genericSignature) {
+        List<String> result = new ArrayList<>();
+        String params = StringUtils.substringBetween(genericSignature, "<", ">");
+        if (params != null) {
+            int last = 0;
+            while (true) {
+                int newLast = params.indexOf(';', last) + 1;
+                if (newLast == 0) {
+                    break;
+                }
+                result.add(params.substring(last, newLast));
+                last = newLast;
+            }
+        }
+        return result;
     }
 
 }

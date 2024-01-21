@@ -37,12 +37,16 @@ public class RECTest {
     // should fail -- catches E, but E not thrown
     public void testFail() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+                }
+            }
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
         }
@@ -51,9 +55,11 @@ public class RECTest {
     // should fail -- catches E, but E not thrown
     public void testFail2() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
             throw new IOException();
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
@@ -63,9 +69,11 @@ public class RECTest {
     // should fail -- catches E, but E not thrown
     public void testFail3() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
             IOException e = new IOException();
             throw e;
         } catch (Exception e) {
@@ -76,9 +84,11 @@ public class RECTest {
     // should fail -- catches E, but E not thrown
     public void testFail4() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
             throwsIOException();
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
@@ -88,9 +98,11 @@ public class RECTest {
     // should fail -- catches E, but E not thrown
     public void testFail5() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
             staticThrowsIOException();
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
@@ -101,21 +113,44 @@ public class RECTest {
     // but E not thrown
     public void testFail6() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
             throwsTwoExceptions();
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
         }
     }
 
+    // should fail with LOW priority -- catches E, but E not thrown, however e
+    // is used in the handler
+    public void testFail7() {
+        try {
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
+                    throwsNothing();
+                }
+            }
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
+                    throwsNothing();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     // should pass -- catches E, but E thrown
     public void testPass() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
             throw new Exception();
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
@@ -125,9 +160,11 @@ public class RECTest {
     // should pass -- catches E, but E thrown indirectly
     public void testPass2() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
             throw anException;
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
@@ -137,9 +174,11 @@ public class RECTest {
     // should pass -- catches E, but E thrown by method
     public void testPass3() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
             throwsException();
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
@@ -149,9 +188,11 @@ public class RECTest {
     // should pass -- catches E, but E thrown by static method
     public void testPass4() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
             staticThrowsException();
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
@@ -161,14 +202,52 @@ public class RECTest {
     // should pass -- catches E, but RuntimeException caught first
     public void testPass5() {
         try {
-            for (int i = 0; i < 1000; i++)
-                for (int j = i; j < 1000; j++)
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
                     throwsNothing();
+                }
+            }
             throwsIOException();
         } catch (RuntimeException e) {
             dontTriggerEmptyExceptionHandler();
         } catch (Exception e) {
             dontTriggerEmptyExceptionHandler();
+        }
+    }
+
+    // should pass -- catches E, but rethrows it
+    public void testPass6() {
+        try {
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
+                    throwsNothing();
+                }
+            }
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
+                    throwsNothing();
+                }
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    // should pass -- catches E, but rethrows it nested into a RuntimeException
+    public void testPass7() {
+        try {
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
+                    throwsNothing();
+                }
+            }
+            for (int i = 0; i < 1000; i++) {
+                for (int j = i; j < 1000; j++) {
+                    throwsNothing();
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

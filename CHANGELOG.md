@@ -83,6 +83,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Build
 - Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([#2651](https://github.com/spotbugs/spotbugs/pull/2651))
 
+### Added
+- Detector `RuntimeExceptionCapture` extended to detect catching of `RuntimeException`, `Exception` and `Throwable` according to [SEI CERT rule ERR08-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors)
+
 ## 4.8.0 - 2023-10-11
 
 ### Changed
