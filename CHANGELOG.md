@@ -16,6 +16,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Ignore generic variable types when looking for BC_UNCONFIRMED_CAST_OF_RETURN_VALUE ([#1219](https://github.com/spotbugs/spotbugs/issues/1219))
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
 - Remove AppleExtension library (note: menus slightly changed) ([#2823](https://github.com/spotbugs/spotbugs/pull/2823))
+- Fix false positive NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE even if Objects.requireNonNull is used. ([[#651](https://github.com/spotbugs/spotbugs/issues/651)], [[#456](https://github.com/spotbugs/spotbugs/issues/456)])
 
 ### Added
 - New detector `MultipleInstantiationsOfSingletons` and introduced new bug types:
@@ -59,7 +60,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix the weird messages of PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS bugs. ([#2646](https://github.com/spotbugs/spotbugs/issues/2646))
 - Revert commons-text from 1.11.0 to 1.10.0 to resolve a version conflict ([#2686](https://github.com/spotbugs/spotbugs/issues/2686))
 - Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
-- Fix false positive NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE even if Objects.requireNonNull is used. ([[#651](https://github.com/spotbugs/spotbugs/issues/651)], [[#456](https://github.com/spotbugs/spotbugs/issues/456)])
 
 ### Added
 - New detector finding `System.getenv()` calls, where the corresponding Java property could be used (See [ENV02-J](https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables)).
