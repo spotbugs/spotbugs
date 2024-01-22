@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 
 /**
- * Unit test to reproduce <a href="https://github.com/spotbugs/spotbugs/issues/456">#259</a>.
+ * Unit test to reproduce <a href="https://github.com/spotbugs/spotbugs/issues/456">#456</a>.
  */
 @ExtendWith(SpotBugsExtension.class)
 class IssueRequireNotNullTest {
