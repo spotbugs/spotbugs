@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.FindBugs;
@@ -58,7 +59,7 @@ public class ObjectTypeFactory {
             throw new IllegalArgumentException(s);
         }
         if (s.indexOf('/') >= 0) {
-            s = s.replace('/', '.');
+            s = ClassName.toDottedClassName(s);
         }
 
         Map<String, ObjectType> map = instance.get();

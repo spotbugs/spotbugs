@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.JavaClass;
@@ -131,7 +132,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
         String className = getDottedClassName();
         ClassAnnotation clazz = new ClassAnnotation(className);
         if (className.endsWith(".package-info")) {
-            suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, getPackageName().replace('/', '.')));
+            suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, ClassName.toDottedClassName(getPackageName())));
         } else if (visitingMethod()) {
             suppressionMatcher
                     .addSuppressor(new MethodWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this)));

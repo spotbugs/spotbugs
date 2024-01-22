@@ -615,7 +615,7 @@ public class SortedBugCollection implements BugCollection {
         // Summary HTML
         if (REPORT_SUMMARY_HTML) {
             String html = getSummaryHTML();
-            if (html != null && !"".equals(html)) {
+            if (html != null && !html.isEmpty()) {
                 xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
                 xmlOutput.writeCDATA(html);
                 xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);

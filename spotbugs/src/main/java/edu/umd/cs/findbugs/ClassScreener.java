@@ -61,16 +61,19 @@ public class ClassScreener implements IClassScreener {
      */
     private static final String JAVA_IDENTIFIER_PART = "[^./\\\\]";
 
-    private final LinkedList<Matcher> patternList;
+    private final LinkedList<Matcher> includePatternList;
+
+    private final LinkedList<Matcher> excludePatternList;
 
     /**
      * Constructor. By default, the ClassScreener will match <em>all</em> class
      * files. Once addAllowedClass() and addAllowedPackage() are called, the
-     * ClassScreener will only match the explicitly specified classes and
-     * packages.
+     * ClassScreener will only match the explicitly included classes and
+     * packages unless explicitly excluded.
      */
     public ClassScreener() {
-        this.patternList = new LinkedList<>();
+        includePatternList = new LinkedList<>();
+        excludePatternList = new LinkedList<>();
     }
 
     /**
@@ -104,9 +107,18 @@ public class ClassScreener implements IClassScreener {
      *            name of a class to be matched
      */
     public void addAllowedClass(String className) {
+        LOG.debug("Allowed class: {}", className);
+        if (className.startsWith("!")) {
+            excludePatternList.add(classMatcher(className.substring(1)));
+        } else {
+            includePatternList.add(classMatcher(className));
+        }
+    }
+
+    private static Matcher classMatcher(String className) {
         String classRegex = START + dotsToRegex(className) + ".class$";
         LOG.debug("Class regex: {}", classRegex);
-        patternList.add(Pattern.compile(classRegex).matcher(""));
+        return Pattern.compile(classRegex).matcher("");
     }
 
     /**
@@ -120,10 +132,18 @@ public class ClassScreener implements IClassScreener {
         if (packageName.endsWith(".")) {
             packageName = packageName.substring(0, packageName.length() - 1);
         }
+        LOG.debug("Allowed package: {}", packageName);
+        if (packageName.startsWith("!")) {
+            excludePatternList.add(packageMatcher(packageName.substring(1)));
+        } else {
+            includePatternList.add(packageMatcher(packageName));
+        }
+    }
 
+    private static Matcher packageMatcher(String packageName) {
         String packageRegex = START + dotsToRegex(packageName) + SEP + JAVA_IDENTIFIER_PART + "+.class$";
         LOG.debug("Package regex: {}", packageRegex);
-        patternList.add(Pattern.compile(packageRegex).matcher(""));
+        return Pattern.compile(packageRegex).matcher("");
     }
 
     /**
@@ -139,9 +159,17 @@ public class ClassScreener implements IClassScreener {
             prefix = prefix.substring(0, prefix.length() - 1);
         }
         LOG.debug("Allowed prefix: {}", prefix);
+        if (prefix.startsWith("!")) {
+            excludePatternList.add(prefixMatcher(prefix.substring(1)));
+        } else {
+            includePatternList.add(prefixMatcher(prefix));
+        }
+    }
+
+    private static Matcher prefixMatcher(String prefix) {
         String packageRegex = START + dotsToRegex(prefix) + SEP;
         LOG.debug("Prefix regex: {}", packageRegex);
-        patternList.add(Pattern.compile(packageRegex).matcher(""));
+        return Pattern.compile(packageRegex).matcher("");
     }
 
     /*
@@ -151,16 +179,29 @@ public class ClassScreener implements IClassScreener {
      */
     @Override
     public boolean matches(String fileName) {
+        // First go through exclusions if any
+        if (!excludePatternList.isEmpty()) {
+            LOG.debug("Matching negative: {}", fileName);
+
+            for (Matcher matcher : excludePatternList) {
+                matcher.reset(fileName);
+                if (matcher.find()) {
+                    LOG.debug("\\tTrying not [{}]: yes!", matcher.pattern());
+                    return false;
+                }
+                LOG.debug("\\tTrying not [{}]: no", matcher.pattern());
+            }
+        }
+
         // Special case: if no classes or packages have been defined,
         // then the screener matches all class files.
-        if (patternList.isEmpty()) {
+        if (includePatternList.isEmpty()) {
             return true;
         }
 
         LOG.debug("Matching: {}", fileName);
 
-        // Scan through list of regexes
-        for (Matcher matcher : patternList) {
+        for (Matcher matcher : includePatternList) {
             matcher.reset(fileName);
             if (matcher.find()) {
                 LOG.debug("\\tTrying [{}]: yes!", matcher.pattern());
@@ -178,6 +219,6 @@ public class ClassScreener implements IClassScreener {
      */
     @Override
     public boolean vacuous() {
-        return patternList.isEmpty();
+        return includePatternList.isEmpty() && excludePatternList.isEmpty();
     }
 }

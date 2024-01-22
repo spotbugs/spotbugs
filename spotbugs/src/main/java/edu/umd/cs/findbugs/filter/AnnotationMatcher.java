@@ -56,7 +56,7 @@ public class AnnotationMatcher implements Matcher {
         boolean matchesAny = false;
         for (String javaAnnotationName : javaAnnotationNames) {
             boolean result = annotationName.match(javaAnnotationName);
-            LOG.debug("Matching {} in {} with {}, result = {}", bugClassName, annotationName, result);
+            LOG.debug("Matching {} in {} with {}, result = {}", javaAnnotationName, bugClassName, annotationName, result);
             matchesAny = matchesAny || result;
         }
         return matchesAny;

@@ -515,12 +515,12 @@ public class BugInfoView extends AbstractFindbugsView {
                         return;
                     } else if (theAnnotation instanceof TypeAnnotation) {
                         TypeAnnotation fa = (TypeAnnotation) theAnnotation;
-                        String className = ClassName.fromFieldSignature(fa.getTypeDescriptor());
+                        String className = ClassName.fromFieldSignatureToDottedClassName(fa.getTypeDescriptor());
                         if (className == null) {
                             break findLocation;
                         }
                         IJavaProject project = getIProject();
-                        IType type = project.findType(ClassName.toDottedClassName(className));
+                        IType type = project.findType(className);
                         if (type == null) {
                             break findLocation;
                         }

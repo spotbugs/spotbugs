@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -156,7 +157,7 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
         if (c instanceof ConstantFieldref) {
             fieldRef = (ConstantFieldref) c;
 
-            String className = fieldRef.getClass(getConstantPool()).replace('.', '/');
+            String className = ClassName.toSlashedClassName(fieldRef.getClass(getConstantPool()));
             if (className.equals(this.getClassName())) {
                 ConstantPool cp = getConstantPool();
                 int nameAndTypeIdx = fieldRef.getNameAndTypeIndex();
