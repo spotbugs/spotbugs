@@ -17,6 +17,16 @@ public class TestNonNull7 {
         }
     }
 
+    public void objectsrequireNonNullFalse(File rootFile) {
+        for (File subFile : requireNonNull(rootFile.listFiles())) {
+            System.out.println(subFile.getName());
+        }
+    }
+
+    private <T> T requireNonNull(T obj) {
+        return obj;
+    }
+
     public void objectsNonNull(File rootFile) {
         File[] files = rootFile.listFiles();
         if (Objects.nonNull(files)) {
