@@ -18,6 +18,11 @@
  */
 package edu.umd.cs.findbugs.ba.ca;
 
+import java.util.Collections;
+import java.util.List;
+
+import edu.umd.cs.findbugs.ba.XField;
+
 public class Call {
     private final String className;
 
@@ -25,10 +30,13 @@ public class Call {
 
     private final String methodSig;
 
-    public Call(String className, String methodName, String methodSig) {
+    private final List<XField> attributes;
+
+    public Call(String className, String methodName, String methodSig, List<XField> attributes) {
         this.className = className;
         this.methodName = methodName;
         this.methodSig = methodSig;
+        this.attributes = attributes;
     }
 
     public String getClassName() {
@@ -41,6 +49,10 @@ public class Call {
 
     public String getMethodSig() {
         return methodSig;
+    }
+
+    public List<XField> getAttributes() {
+        return Collections.unmodifiableList(attributes);
     }
 
     @Override
