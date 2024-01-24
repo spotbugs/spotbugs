@@ -125,7 +125,8 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
 
     @Test
     void initializeOnDemandHolderIdiomTest() {
-        performAnalysis("singletons/InitializeOnDemandHolderIdiom.class");
+        performAnalysis("singletons/InitializeOnDemandHolderIdiom.class",
+                "singletons/InitializeOnDemandHolderIdiom$SingletonHolder.class");
         assertNoBugs();
     }
 
