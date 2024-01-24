@@ -284,6 +284,74 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         exposingMethods.clear();
         synchronizedMethods.clear();
 
+        /**
+         * How to refactor the detector logic:
+         * Accessible lock:
+         *  Declared in the CURRENT class
+         *      Used as lock in the CURRENT class -- report as a bug in the CURRENT class
+         *          - it is exposed by method(accessor or getter) in the current class:     ACCESSIBLE_OBJECT_BUG   -- mark: field/lock, method, usage of the lock, exposing methods
+         *          - it is public:                                                         OBJECT_BUG              -- mark: field/lock, method, usage of the lock and the class where it was used
+         *          - it is protected and the class is not final:                           INHERITED_OBJECT_BUG    -- mark: field/lock, method, usage of the lock -- lower priority
+         *          - it is protected and the class is final:                               NOT a bug
+         *          - it is private and NOT final:                                          maybe object bug        -- mark: field/lock, method, usage of the lock
+         *      NOT used as a lock in the CURRENT class: Should we report this? We cannot know if it is used as a lock in a descendant(looking from the perspective of the current class)
+         *          - it is public:                                                         OBJECT_BUG
+         *          - it is protected and the class is not final:                           INHERITED_OBJECT_BUG
+         *          - it is protected and the class is final:                               NOT a bug
+         *          - it is private and NOT final:                                          INHERITED_OBJECT_BUG
+         *  Declared in the CURRENT but used as lock in a DESCENDANT class -- report as a bug in the DESCENDANT class
+         *      - it is exposed by a method(accessor or getter) in the DESCENDANT class:    ACCESSIBLE_OBJECT_BUG   -- mark: field/lock, method, usage of the lock, exposing methods
+         *      - it is NOT exposed here(comes from a parent), but exposed in PARENT:       ACCESSIBLE_OBJECT_BUG   -- mark: field/lock, method, usage of the lock -- maybe lower priority, other bugs already created
+         *      - it is NOT exposed here(comes from a parent):                              DO not report!          -- mark: field/lock, method, usage of the lock
+         *      - it is public:                                                             OBJECT_BUG              -- mark: field/lock, method, usage of the lock
+         *  It is exposed in the CURRENT class:
+         *      - check if it was used as lock in hierarchy                                 EXPOSING_LOCK_OBJECT_BUG -- mark: field/lock, method that exposed the lock
+         *      - exposed by PARENT do not use as lock here
+         *  Declared elsewhere, comes as a method parameter and used as a lock in the CURRENT class:
+         *      - report it:                                                                OBJECT_BUG              -- mark: field/lock, method, usage of the lock
+         *
+         * package private
+         *
+         *  NOTE:
+         *      - INHERITED_OBJECT_BUGs are reported BOTH in the declaring class and (if present) in the class that uses as a lock
+         *        as two different bugs, but I think this is fine
+         *      - messages should be stated in the bug description so that they are clear in BOTH reported on the CURRENT class and DESCENDANT class
+         *
+         *      Summarizing the logic:
+         *
+         * x - means the column applies
+         * ^ - means that another value from the column is applied/the column does not apply
+         * _ - means we don't care about the column because other columns already apply
+         *
+         * |     Declared      |     Used as Lock    |               Visibility                |   Made Accessible   |  Description/Notes                        |
+         * | Here  |     Up    | Up  | Here  | Down  |  Public | Protected | Package | Private | Up  | Here  | Down  |                                           |
+         * |-------|-----------|---------------------|---------|-----------|---------|---------|-----|-------|-------|-------------------------------------------|
+         * |   x   |     ^     |  _  |   x   |   _   |    x    |     ^     |    ^    |    ^    |  _  |   _   |   _   | OBJECT_BUG - It is public so report it, in other scenarios we are not interested
+         * |   x   |     ^     |  _  |   x   |   _   |    _    |     _     |    _    |    _    |  ^  |   x   |   ^   | ACCESSIBLE_OBJECT_BUG - Don't care about hierarchy now, it is a problem here
+         * |   x   |     ^     |  _  |   x   |   _   |    ^    |     x     |    ^    |    ^    |  _  |   _   |   _   | INHERITED_OBJECT_BUG - Lower priority - ONLY if class is NOT final
+         * |   x   |     ^     |  _  |   x   |   _   |    ^    |     x     |    ^    |    ^    |  _  |   _   |   _   | Not a bug - if class IS final
+         * |   x   |     ^     |  _  |   x   |   _   |    ^    |     ^     |    x    |    ^    |  _  |   _   |   _   | INHERITED_OBJECT_BUG - Lower priority - class is final: classes in the package can access it, it can be a problem if not used with care
+         * |   x   |     ^     |  _  |   x   |   _   |    ^    |     ^     |    x    |    ^    |  _  |   _   |   _   | INHERITED_OBJECT_BUG - Lower priority - class is NOT final: similar to protected
+         * |   x   |     ^     |  _  |   x   |   _   |    ^    |     ^     |    ^    |    x    |  _  |   _   |   _   | Not a bug
+         * |   ^   |     ^     |  _  |   x   |   _   |    _    |     _     |    _    |    _    |  _  |   _   |   _   | OBJECT_BUG - it comes as a method parameter; not safe
+         * |   ^   |     x     |  _  |   x   |   _   |    ^    |     x     |    ^    |    ^    |  ^  |   x   |   ^   | ACCESSIBLE_OBJECT_BUG - comes from a parent, but exposed here
+         * |   ^   |     x     |  _  |   x   |   _   |    ^    |     ^     |    x    |    ^    |  ^  |   x   |   ^   | ACCESSIBLE_OBJECT_BUG - comes from a parent or from the package, but exposed here
+         * |   ^   |     x     |  _  |   x   |   _   |    _    |     _     |    _    |    ^    |  x  |   ^   |   _   | ACCESSIBLE_OBJECT_BUG - check the method exposing the lock from parents
+         * |   ^   |     x     |  _  |   x   |   _   |    _    |     _     |    _    |    _    |  _  |   _   |   x   | Not a bug, because we cannot detect it here
+         * |   ^   |     x     |  x  |   ^   |   _   |    ^    |     x     |    ^    |    ^    |  ^  |   x   |   ^   | EXPOSING_LOCK_OBJECT_BUG - check lock usage in parents, this lock was already reported with a lower priority bug
+         * |   ^   |     x     |  x  |   ^   |   _   |    ^    |     ^     |    x    |    ^    |  ^  |   x   |   ^   | EXPOSING_LOCK_OBJECT_BUG - check lock usage in parents, this lock was already reported with a lower priority bug
+         * |   ^   |     x     |  ^  |   ^   |   x   |    _    |     _     |    _    |    _    |  _  |   _   |   _   | Not a bug, because we cannot(detect here at least) say anything about it, since it is not used as a lock
+         *
+         * Granny cases from the view of the current(PARENT) class:
+         * Granny case: declared in GRANNY, used as lock in PARENT, exposed in CHILD(or lower)
+         * |   ^   |     x     |  _  |   x   |   _   |    _    |     _     |    _    |    _    |  _  |   _   |   x   | Shift the roles one to the right(parent -> child), that is already in the table
+         * Granny case 2: declared in GRANNY, used as lock in CHILD, exposed in PARENT(or upper, doesn't matter)
+         * |   ^   |     x     |  _  |   _   |   x   |    _    |     _     |    _    |    _    |  _  |   x   |   _   | Already in the table
+         * Granny case 3: declared in GRANNY, used as lock in GRANNY, exposed in CHILD - PARENT only passes down
+         * |   ^   |     x     |  x  |   _   |   _   |    _    |     _     |    _    |    _    |  _  |   x   |   _   | Already in the table
+         * Granny case 3: declared in GRANNY, used as lock in GRANNY, exposed in CHILD - PARENT only passes down
+         * |   ^   |     x     |  x  |   _   |   _   |    _    |     _     |    _    |    _    |  _  |   x   |   _   | Already in the table
+         */
         /*
         * @todo:
         *   - Add string with exposed methods
