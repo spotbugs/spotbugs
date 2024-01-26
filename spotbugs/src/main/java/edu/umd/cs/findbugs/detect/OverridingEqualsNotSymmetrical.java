@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
@@ -158,7 +159,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
             }
 
-            String superClassName = getSuperclassName().replace('/', '.');
+            String superClassName = ClassName.toDottedClassName(getSuperclassName());
             if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(superClassName)) {
                 parentMap.put(classAnnotation, new ClassAnnotation(superClassName));
             }

@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs;
 import java.util.List;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ArrayType;
@@ -179,7 +180,7 @@ public class DeepSubtypeAnalysis {
 
         // TODO: This method now returns primitive type signatures, is this ok?
         if (refSig.charAt(0) == 'L') {
-            return refSig.substring(1, refSig.length() - 1).replace('/', '.');
+            return ClassName.fromFieldSignatureToDottedClassName(refSig);
         }
         return refSig;
     }

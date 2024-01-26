@@ -570,4 +570,5 @@ if (eclipseExecutable == null) {
 
 spotbugs {
   ignoreFailures = true
+  release = rootProject.version
 }

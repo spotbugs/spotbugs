@@ -780,7 +780,7 @@ These options are only accepted by the Text User Interface.
   </varlistentry>
 
   <varlistentry>
-    <term><command>-onlyAnalyze</command> <replaceable>com.foobar.MyClass,com.foobar.mypkg.*</replaceable></term>
+    <term><command>-onlyAnalyze</command> <replaceable>com.foobar.MyClass,com.foobar.mypkg.*,!com.foobar.mypkg.ExcludedClass</replaceable></term>
     <listitem>
       <para>
       Restrict analysis to find bugs to given comma-separated list of
@@ -797,6 +797,9 @@ These options are only accepted by the Text User Interface.
       to the full name of the package).
       Replace <literal>.*</literal> with <literal>.-</literal> to also
       analyze all subpackages.
+      Items starting with <literal>!<literal> are treated as exclusions,
+      removing otherwise-included classes from analysis.
+
       </para>
     </listitem>
   </varlistentry>

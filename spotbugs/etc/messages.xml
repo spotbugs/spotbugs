@@ -719,6 +719,14 @@ cloneable classes. </p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.MultipleInstantiationsOfSingletons">
+    <Details>
+<![CDATA[
+<p> This detector looks for violations of the idioms for writing
+classes using singleton design pattern. </p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.ThrowingExceptions">
     <Details>
 <![CDATA[
@@ -8790,7 +8798,85 @@ object explicitly.</p>
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SING_SINGLETON_IMPLEMENTS_CLONEABLE">
+    <ShortDescription>Class using singleton design pattern directly implements Cloneable interface.</ShortDescription>
+    <LongDescription>Class ({0}) using singleton design pattern directly implements Cloneable interface.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        If a class using singleton design pattern directly implements the Cloneable interface, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
+        Therefore, implementing the Cloneable interface should be avoided.<br><br>
 
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE">
+    <ShortDescription>Class using singleton design pattern indirectly implements Cloneable interface.</ShortDescription>
+    <LongDescription>Class ({0}) using singleton design pattern indirectly implements Cloneable interface.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        If a class using singleton design pattern indirectly implements the Cloneable interface, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
+        Therefore, implementing the Cloneable interface should be avoided. If that's not possible because of an extended super-class, the solution would be overriding the clone method to unconditionally throw CloneNotSupportedException.<br><br>
+
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_IMPLEMENTS_CLONE_METHOD">
+    <ShortDescription>Class using singleton design pattern implements clone() method without being an unconditional CloneNotSupportedException-thrower.</ShortDescription>
+    <LongDescription>Class ({0}) using singleton design pattern implements clone() method without being an unconditional CloneNotSupportedException-thrower.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        This class is using singleton design pattern and does not implement the Cloneable interface, but implements the clone() method without being an unconditional CloneNotSupportedException-thrower. 
+        With that, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
+        Therefore, implementing the clone method should be avoided, otherwise the solution would be overriding the clone method to unconditionally throw CloneNotSupportedException.<br><br>
+
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR">
+    <ShortDescription>Class using singleton design pattern has non-private constructor.</ShortDescription>
+    <LongDescription>Class ({0}) using singleton design pattern has non-private constructor.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        This class is using singleton design pattern and has non-private constructor (please note that a default constructor might exist which is not private). Given that, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
+        The easier solution would be making the constructor private.<br><br>
+
+        <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE">
+    <ShortDescription>Class using singleton design pattern directly or indirectly implements Serializable interface.</ShortDescription>
+    <LongDescription>Class ({0}) using singleton design pattern directly or indirectly implements Serializable interface.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        This class (using singleton design pattern) directly or indirectly implements the Serializable interface, which allows the class to be serialized.<br>
+        Deserialization makes multiple instantiation of a singleton class possible, and therefore should be avoided.<br><br>
+
+        <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED">
+    <ShortDescription>Instance-getter method of class using singleton design pattern is not synchronized.</ShortDescription>
+    <LongDescription>Instance-getter method of class using singleton design pattern ({0}) is not synchronized.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        Instance-getter method of class using singleton design pattern is not synchronized. When this method is invoked by two or more threads simultaneously, 
+        multiple instantiation of a singleton class becomes possible.<br><br>
+        
+        <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
+        </p>]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA">
     <ShortDescription>Instance level lock was used on a shared static data</ShortDescription>
     <LongDescription>Static field "{2}" is modified by an instance level {3}.</LongDescription>
@@ -9338,6 +9424,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
   <BugCode abbrev="CT">Constructor throws</BugCode>
   <BugCode abbrev="SSD">Do not use an instance lock to protect shared static data</BugCode>
+  <BugCode abbrev="SING">Singleton problems</BugCode>
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>

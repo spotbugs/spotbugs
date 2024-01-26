@@ -17,31 +17,33 @@ dependencies {
   implementation 'jakarta.servlet:jakarta.servlet-api:4.0.4'
   implementation 'jakarta.ejb:jakarta.ejb-api:3.2.6'
   implementation 'com.google.code.gson:gson:2.10.1'
-  implementation 'com.google.guava:guava:32.1.3-jre'
+  implementation 'com.google.guava:guava:33.0.0-jre'
   implementation libs.guice
   implementation libs.guice.assistedinject
   implementation libs.guice.servlet
-  implementation 'com.google.truth:truth:1.1.5'
-  implementation 'joda-time:joda-time:2.12.5'
+  implementation 'com.google.truth:truth:1.3.0'
+  implementation 'joda-time:joda-time:2.12.6'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
-  implementation 'org.springframework:spring-core:6.1.1'
+  implementation 'org.springframework:spring-core:6.1.3'
   compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5'
-  implementation 'org.checkerframework:checker-qual:3.40.0'
+  implementation 'org.checkerframework:checker-qual:3.42.0'
 
   implementation 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
   implementation 'org.junit.jupiter:junit-jupiter-params:5.10.1'
-  implementation 'org.testng:testng:7.8.0'
+  implementation 'org.testng:testng:7.9.0'
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
-  implementation 'org.apache.groovy:groovy-all:4.0.16'
-  implementation 'org.mockito:mockito-core:5.8.0'
+  implementation 'org.apache.groovy:groovy-all:4.0.18'
+  implementation 'org.mockito:mockito-core:5.10.0'
 }
 
 tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
-  if (it.name == 'classesJava17') {
+  if (it.name == 'classesJava21') {
+    options.release = 21
+  } else if (it.name == 'classesJava17') {
     options.release = 17
   } else if (it.name == 'classesJava11') {
     options.release = 11
@@ -81,13 +83,23 @@ def classesJava17 = tasks.register('classesJava17', JavaCompile) {
   source = file('src/java17')
 }
 
+def classesJava21 = tasks.register('classesJava21', JavaCompile) {
+  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java21"))
+  classpath = sourceSets.main.compileClasspath
+  source = file('src/java21')
+}
+
 tasks.named('classes').configure {
   dependsOn classesJava8
   dependsOn classesJava11
   dependsOn classesJava17
+  
+  if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_21)) {
+    dependsOn classesJava21
+  }
 }
 
-sonarqube {
+sonar {
   // this project should not be analyzed with sonarqube
   // as it is test data, not real code
   skipProject true
