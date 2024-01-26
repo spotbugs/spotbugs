@@ -1840,7 +1840,7 @@ factory pattern to create these objects.</p>
     <Details>
       <![CDATA[
             <p>
-              Checks for static and non-private method for method hiding.
+              Looks for hiding of static, non-private methods by the subclass.
               It has exceptions for main method, constructor, inner classes, and auto generated methods.
             </p>
       ]]>
@@ -9112,7 +9112,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="HSM_HIDING_METHOD">
-    <ShortDescription>Method hiding must be avoided.</ShortDescription>
+    <ShortDescription>Method hiding should be avoided.</ShortDescription>
     <LongDescription>The method '{1}' in class '{2}' hides a method in class '{3}'. Declare the respective methods non-static or private to eradicate the problem.</LongDescription>
     <Details>
       <![CDATA[

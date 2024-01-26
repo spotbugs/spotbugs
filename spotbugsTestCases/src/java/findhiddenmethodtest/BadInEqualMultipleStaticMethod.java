@@ -16,7 +16,7 @@ class SuperBadInEqualMultipleMethod {
 
 
 /**
- * This test case is a non-complaint test case with multiple methods declared in both super and sub classes.
+ * This test case is a non-compliant test case with multiple methods declared in both super and sub classes.
  * As the overridden methods are static, and non-private.
  * Number of methods in both classes are different.
  */
