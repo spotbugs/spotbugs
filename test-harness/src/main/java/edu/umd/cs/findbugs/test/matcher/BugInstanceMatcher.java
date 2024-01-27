@@ -216,4 +216,38 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
             description.appendText("lineNumber=").appendValue(lineNumber);
         }
     }
+
+    @Override
+    public void describeMismatch(Object item, Description description) {
+        description.appendText("was ");
+
+        if (item instanceof BugInstance) {
+            BugInstance bugInstance = (BugInstance) item;
+            if (bugType != null) {
+                description.appendText("bugType=").appendValue(bugInstance.getType()).appendText(",");
+            }
+            if (className != null) {
+                ClassAnnotation classAnn = extractBugAnnotation(bugInstance, ClassAnnotation.class);
+                description.appendText("className=").appendValue(classAnn).appendText(",");
+            }
+            if (methodName != null) {
+                MethodAnnotation methodAnn = extractBugAnnotation(bugInstance, MethodAnnotation.class);
+                description.appendText("methodName=").appendValue(methodAnn).appendText(",");
+            }
+            if (fieldName != null) {
+                FieldAnnotation fieldAnn = extractBugAnnotation(bugInstance, FieldAnnotation.class);
+                description.appendText("fieldName=").appendValue(fieldAnn).appendText(",");
+            }
+            if (variableName != null) {
+                LocalVariableAnnotation localVarAnn = extractBugAnnotation(bugInstance, LocalVariableAnnotation.class);
+                description.appendText("variableName=").appendValue(localVarAnn).appendText(",");
+            }
+            if (lineNumber != null) {
+                SourceLineAnnotation srcAnn = extractBugAnnotation(bugInstance, SourceLineAnnotation.class);
+                description.appendText("lineNumber=").appendValue(srcAnn);
+            }
+        } else {
+            description.appendValue(item);
+        }
+    }
 }
