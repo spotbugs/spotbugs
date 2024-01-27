@@ -223,26 +223,33 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
 
         if (item instanceof BugInstance) {
             BugInstance bugInstance = (BugInstance) item;
-            if (bugType != null) {
+            boolean hasCriteria = bugType != null
+                    && className != null
+                    && methodName != null
+                    && fieldName != null
+                    && variableName != null
+                    && lineNumber != null;
+
+            if (bugType != null || !hasCriteria) {
                 description.appendText("bugType=").appendValue(bugInstance.getType()).appendText(",");
             }
-            if (className != null) {
+            if (className != null || !hasCriteria) {
                 ClassAnnotation classAnn = extractBugAnnotation(bugInstance, ClassAnnotation.class);
                 description.appendText("className=").appendValue(classAnn).appendText(",");
             }
-            if (methodName != null) {
+            if (methodName != null || !hasCriteria) {
                 MethodAnnotation methodAnn = extractBugAnnotation(bugInstance, MethodAnnotation.class);
                 description.appendText("methodName=").appendValue(methodAnn).appendText(",");
             }
-            if (fieldName != null) {
+            if (fieldName != null || !hasCriteria) {
                 FieldAnnotation fieldAnn = extractBugAnnotation(bugInstance, FieldAnnotation.class);
                 description.appendText("fieldName=").appendValue(fieldAnn).appendText(",");
             }
-            if (variableName != null) {
+            if (variableName != null || !hasCriteria) {
                 LocalVariableAnnotation localVarAnn = extractBugAnnotation(bugInstance, LocalVariableAnnotation.class);
                 description.appendText("variableName=").appendValue(localVarAnn).appendText(",");
             }
-            if (lineNumber != null) {
+            if (lineNumber != null || !hasCriteria) {
                 SourceLineAnnotation srcAnn = extractBugAnnotation(bugInstance, SourceLineAnnotation.class);
                 description.appendText("lineNumber=").appendValue(srcAnn);
             }
