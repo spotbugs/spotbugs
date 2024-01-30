@@ -27,11 +27,10 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.Instruction;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.Location;
@@ -80,7 +79,7 @@ public class SwitchHandler {
      * @param defaultSwitchOffset The PC of the default case
      * @param exhaustive <code>true</code> if the switch is exhaustive
      */
-    public void enterSwitch(int opCode, int pc, int[] switchOffsets, int defaultSwitchOffset, @CheckForNull boolean exhaustive) {
+    public void enterSwitch(int opCode, int pc, int[] switchOffsets, int defaultSwitchOffset, boolean exhaustive) {
         assert opCode == Const.TABLESWITCH || opCode == Const.LOOKUPSWITCH;
         SwitchDetails details = new SwitchDetails(pc, switchOffsets, defaultSwitchOffset, exhaustive);
 
