@@ -60,7 +60,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 
     private static final IMethodAnalysisEngine<?>[] methodAnalysisEngineList = { new MethodFactory(), new MethodGenFactory(),
         new CFGFactory(), new UsagesRequiringNonNullValuesFactory(), new ValueNumberDataflowFactory(),
-        new IsNullValueDataflowFactory(), new TypeDataflowFactory(), new DepthFirstSearchFactory(),
+        new ValueRangeDataflowFactory(), new IsNullValueDataflowFactory(), new TypeDataflowFactory(), new DepthFirstSearchFactory(),
         new ReverseDepthFirstSearchFactory(), new UnpackedCodeFactory(), new LockDataflowFactory(), new LockCheckerFactory(),
         new ReturnPathDataflowFactory(), new NonExceptionDominatorsAnalysisFactory(), new NonExceptionPostDominatorsAnalysisFactory(),
         new NonImplicitExceptionDominatorsAnalysisFactory(), new NonImplicitExceptionPostDominatorsAnalysisFactory(),
@@ -71,7 +71,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
         new CompactLocationNumberingFactory(), new ReturnPathTypeDataflowFactory(),
         new ForwardTypeQualifierDataflowFactoryFactory(), new BackwardTypeQualifierDataflowFactoryFactory(),
         new OpcodeStack.JumpInfoFactory(), new StackMapAnalysisFactory(), new ObligationDataflowFactory(),
-        new ValueRangeAnalysisFactory(), new FinallyDuplicatesInfoFactory() };
+        new FinallyDuplicatesInfoFactory() };
 
     private static final IDatabaseFactory<?>[] databaseFactoryList = {
         // new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),
