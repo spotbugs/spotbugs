@@ -27,7 +27,13 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.CHECKCAST;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -73,7 +79,7 @@ public class SwitchHandler {
      * @param defaultSwitchOffset The PC of the default case
      * @param exhaustive <code>true</code> if the switch is exhaustive
      */
-    public void enterSwitch(int opCode, int pc, int[] switchOffsets, int defaultSwitchOffset, @CheckForNull boolean exhaustive) {
+    public void enterSwitch(int opCode, int pc, int[] switchOffsets, int defaultSwitchOffset, boolean exhaustive) {
         assert opCode == Const.TABLESWITCH || opCode == Const.LOOKUPSWITCH;
         SwitchDetails details = new SwitchDetails(pc, switchOffsets, defaultSwitchOffset, exhaustive);
 
@@ -167,6 +173,36 @@ public class SwitchHandler {
         // aload takes and index operand so we're trying pc - 2
         // Since we're on a checkcast look for a switch with a target on the previous PC
         SwitchDetails switchDetails = findSwitchDetailsByPc(pc - 1, pc - 2);
+
+        return switchDetails != null && typeSwitchPC.contains(switchDetails.switchPC);
+    }
+
+    /**
+     * In type switches an <code>ASTORE</code> is inserted by the compiler for each case. This method checks if the
+     * instruction is one of these loads and then checks if the corresponding switch is a type switch.
+     * We're looking for: an ASTORE preceded by a CHECKCAST preceded by an instruction at the offset of a switch case
+     *
+     * @param location The Location
+     * @return <code>true</code>If this instruction is a load for a type switch
+     */
+    public boolean isTypeSwitchCaseLoad(Location location) {
+        Instruction ins = location.getHandle().getInstruction();
+        if (!(ins instanceof ASTORE)) {
+            return false;
+        }
+
+        BasicBlock block = location.getBasicBlock();
+        InstructionHandle prev = block.getPredecessorOf(location.getHandle());
+
+        if (prev == null) {
+            return false;
+        }
+
+        if (!(prev.getInstruction() instanceof CHECKCAST)) {
+            return false;
+        }
+
+        SwitchDetails switchDetails = findSwitchDetailsByPc(prev.getPosition() - 1, prev.getPosition() - 2);
 
         return switchDetails != null && typeSwitchPC.contains(switchDetails.switchPC);
     }

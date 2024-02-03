@@ -53,4 +53,21 @@ public final class CountMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
     public void describeTo(final Description desc) {
         desc.appendText("Iterable containing exactly ").appendValue(count).appendText(" ").appendDescriptionOf(matcher);
     }
+
+    @Override
+    protected void describeMismatchSafely(Iterable<T> items, Description mismatchDescription) {
+        if (!items.iterator().hasNext()) {
+            mismatchDescription.appendText("The collection was empty");
+        } else {
+            for (final Object item : items) {
+                mismatchDescription.appendText("\n");
+                if (matcher.matches(item)) {
+                    mismatchDescription.appendText("Match:   ");
+                } else {
+                    mismatchDescription.appendText("Mismatch:");
+                }
+                matcher.describeMismatch(item, mismatchDescription);
+            }
+        }
+    }
 }
