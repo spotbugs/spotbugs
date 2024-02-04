@@ -3,7 +3,7 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
-  compileOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+  compileOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
   compileOnly 'org.hamcrest:hamcrest:2.2'
   testImplementation project(':spotbugs')
   api project(':test-harness-core')

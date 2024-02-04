@@ -54,3 +54,4 @@ spotbugs-tests/src/test/resources/
 
 # This folder contains compiled class files used as samples for unit tests
 !spotbugsTestCases/src/classSamples/**
+.pydevproject
