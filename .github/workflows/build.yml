@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest, macos-14]
-        java: [17, 21]
+        java: [11, 17, 21]
       max-parallel: 6
     runs-on: ${{ matrix.os }}
     continue-on-error: true
@@ -28,22 +28,22 @@ jobs:
       - name: Download Eclipse on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: |
-          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.29-202309031000/eclipse-SDK-4.29-linux-gtk-x86_64.tar.gz&r=1' --output eclipse-SDK-4.29-linux-gtk-x86_64.tar.gz
-          tar xzf eclipse-SDK-4.29-linux-gtk-x86_64.tar.gz eclipse
+          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz&r=1' --output eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz
+          tar xzf eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Download Eclipse on Windows
         if: matrix.os == 'windows-latest'
         run: |
-          curl 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.29-202309031000/eclipse-SDK-4.29-win32-x86_64.zip&r=1' -o eclipse-SDK-4.29-win32-x86_64.zip
-          Expand-Archive "eclipse-SDK-4.29-win32-x86_64.zip" -DestinationPath "." -Force
+          curl 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-win32-x86_64.zip&r=1' -o eclipse-SDK-4.24-win32-x86_64.zip
+          Expand-Archive "eclipse-SDK-4.24-win32-x86_64.zip" -DestinationPath "." -Force
           $escapedPwd = $pwd.Path -replace '\\', '\\'
           [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
         shell: powershell
       - name: Download Eclipse on Mac
         if: matrix.os == 'macos-latest'
         run: |
-          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.29-202309031000/eclipse-SDK-4.29-macosx-cocoa-x86_64.dmg&r=1' --output eclipse-SDK-4.29-macosx-cocoa-x86_64.dmg
-          hdiutil attach eclipse-SDK-4.29-macosx-cocoa-x86_64.dmg
+          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-macosx-cocoa-x86_64.dmg&r=1' --output eclipse-SDK-4.24-macosx-cocoa-x86_64.dmg
+          hdiutil attach eclipse-SDK-4.24-macosx-cocoa-x86_64.dmg
           cp -r /Volumes/Eclipse/Eclipse.app /Applications/
           hdiutil detach /Volumes/Eclipse
           echo "eclipseRoot.dir=/Applications/Eclipse.app" | tee eclipsePlugin/local.properties

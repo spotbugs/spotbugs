@@ -37,6 +37,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix sonar coverage for project ([#2796](https://github.com/spotbugs/spotbugs/issues/2796))
 - Upgraded the build to compile bug samples using Java 21 language features ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
 - Add 'configurations.checkstyle resolution starategy' to control bug in gradle on exclusions not being excluded properly as seen in checkstyle usage.  See https://github.com/checkstyle/checkstyle/issues/14211 for more information. ([#2798](https://github.com/spotbugs/spotbugs/issues/2798))
+- Allow our builds to work with jdk 11 with drop back on Eclipse to 4.24 and spring to 5.3.31.  ([#2604](https://github.com/spotbugs/spotbugs/pull/2604/))
 
 ## 4.8.3 - 2023-12-12
 ### Fixed
