@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set up JDK
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java }}
@@ -71,9 +71,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
-      - name: Build
+      - name: Build with Sonar JDK ${{ matrix.java }}, ${{ matrix.os }}
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
+        if: matrix.java == '21'
         run: |
           ./gradlew spotlessCheck build smoketest ${SONAR_LOGIN:+sonar} --no-daemon "-Dsonar.token=$SONAR_LOGIN" --scan
+        env:
+          SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
+      - name: Build JDK ${{ matrix.java }}, ${{ matrix.os }}
+        # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
+        if: matrix.java != '21'
+        run: |
+          ./gradlew spotlessCheck build smoketest --no-daemon --scan
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
