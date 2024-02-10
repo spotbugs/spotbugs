@@ -209,6 +209,10 @@ public class FindDeadLocalStores implements Detector {
             return;
         }
 
+        if (method.getName().startsWith("$$_hibernate_")) {
+            return;
+        }
+
         if (DEBUG) {
             System.out.println("    Analyzing method " + classContext.getJavaClass().getClassName() + "." + method.getName());
         }
