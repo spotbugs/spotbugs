@@ -211,6 +211,32 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithNonFinalLockFromParent", "doSomeStuff2", "baseLock");
         assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithNonFinalLockFromParent", "doSomeStuff3", "lock");
     }
+    @Test
+    void testBadSynchronizationExposedLockInDescendant() {
+        performAnalysis("privateFinalLocks/BadSynchronizationWithExposedLock.class",
+                "privateFinalLocks/BadSynchronizationWithExposedLockDescendant.class");
+
+        assertNumOfBugs(5, EXPOSING_LOCK_OBJECT_BUG);
+
+        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockDescendant", "doSomeStuff1"/*in base*/, "lock1"); /* Exposed by getLock1*/
+        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockDescendant", "doSomeStuff2"/*in base*/, "lock2"); /* Exposed by getLock2 */
+        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockDescendant", "doSomeStuff3"/*in base*/, "lock3"); /* Exposed by updateLock3 */
+        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockDescendant", "doSomeStuff4"/*in base*/, "lock4"); /* Exposed by updateLock4 */
+        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockDescendant", "doSomeStuff5"/*in base*/, "lock5"); /* Exposed by updateLock5 */
+    }
+    @Test
+    void testBadSynchronizationExposedLockParent() {
+        performAnalysis("privateFinalLocks/BadSynchronizationWithExposedLockInParent.class",
+                "privateFinalLocks/BadSynchronizationWithExposedLockFromParent.class");
+
+        assertNumOfBugs(5, ACCESSIBLE_OBJECT_BUG);
+
+        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockFromParent", "doSomeStuff1", "lock1"); /* Exposed by getLock1 in base*/
+        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockFromParent", "doSomeStuff2", "lock2"); /* Exposed by getLock2 in base */
+        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockFromParent", "doSomeStuff3", "lock3"); /* Exposed by updateLock3 in base */
+        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockFromParent", "doSomeStuff4", "lock4"); /* Exposed by updateLock4 in base */
+        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockFromParent", "doSomeStuff5", "lock5"); /* Exposed by updateLock5 in base */
+    }
 
     @Test
     void testGoodSynchronizationWithPrivateFinalLockObject() {
