@@ -9254,7 +9254,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
     <ShortDescription>Use private final lock objects in synchronization blocks, when class can be extended</ShortDescription>
-    <LongDescription>The lock object {2} - used in method {1} from super clas - is exposed to untrusted in class {0}, through updating or returning it in {4}.</LongDescription>
+    <LongDescription>The lock object {2} - used in method {1} from super clas - is exposed to untrusted in class {0}, through updating or returning it in {3}.</LongDescription>
     <Details>
       <![CDATA[<p>
         There are two primary methods for synchronizing access to shared mutable variables: <b>method synchronization</b> and <b>block synchronization</b>. In synchronized methods and blocks that lock onto the <b>this</b> reference,
