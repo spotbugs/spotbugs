@@ -21,7 +21,7 @@ dependencies {
   implementation libs.guice
   implementation libs.guice.assistedinject
   implementation libs.guice.servlet
-  implementation 'com.google.truth:truth:1.4.0'
+  implementation 'com.google.truth:truth:1.4.1'
   implementation 'joda-time:joda-time:2.12.7'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
   implementation 'org.springframework:spring-core:5.3.31'
