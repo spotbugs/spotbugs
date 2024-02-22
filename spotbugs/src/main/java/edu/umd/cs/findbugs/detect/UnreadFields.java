@@ -819,7 +819,7 @@ public class UnreadFields extends OpcodeStackDetector {
 
     /**
      *
-     * @return true if the method is considered to be an initializer method. Fields migth be initialized outside of a constructor,
+     * @return true if the method is considered to be an initializer method. Fields might be initialized outside of a constructor,
      * for instance through JUnit's BeforeEach
      */
     private boolean isInitializerMethod() {
