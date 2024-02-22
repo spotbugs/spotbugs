@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantValue;
@@ -793,7 +794,7 @@ public class UnreadFields extends OpcodeStackDetector {
             boolean isConstructor = Const.CONSTRUCTOR_NAME.equals(getMethodName()) || Const.STATIC_INITIALIZER_NAME.equals(getMethodName());
             if (getMethod().isStatic() == f.isStatic()
                     && (isConstructor || data.calledFromConstructors.contains(getMethodName() + ":" + getMethodSig())
-                            || "init".equals(getMethodName()) || "initialize".equals(getMethodName())
+                            || isInitializerMethod()
                             || getMethod().isPrivate())) {
 
                 if (isConstructor) {
@@ -814,6 +815,32 @@ public class UnreadFields extends OpcodeStackDetector {
         }
         previousPreviousOpcode = previousOpcode;
         previousOpcode = seen;
+    }
+
+    /**
+     *
+     * @return true if the method is considered to be an initializer method. Fields migth be initialized outside of a constructor,
+     * for instance through JUnit's BeforeEach
+     */
+    private boolean isInitializerMethod() {
+        if ("init".equals(getMethodName()) || "initialize".equals(getMethodName())) {
+            return true;
+        }
+
+        for (AnnotationEntry a : getMethod().getAnnotationEntries()) {
+            String typeName = a.getAnnotationType();
+
+            if ("Ljakarta/annotation/PostConstruct;".equals(typeName)
+                    || "Ljavax/annotation/PostConstruct;".equals(typeName)
+                    || "Lorg/junit/jupiter/api/BeforeAll;".equals(typeName)
+                    || "Lorg/junit/jupiter/api/BeforeEach;".equals(typeName)
+                    || "Lorg/junit/Before;".equals(typeName)
+                    || "Lorg/junit/BeforeClass;".equals(typeName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
