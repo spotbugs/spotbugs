@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,6 +94,14 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class UnreadFields extends OpcodeStackDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
+
+    private static final List<String> INITIALIZER_ANNOTATIONS = Arrays.asList(
+            "Ljakarta/annotation/PostConstruct;",
+            "Ljavax/annotation/PostConstruct;",
+            "Lorg/junit/jupiter/api/BeforeAll;",
+            "Lorg/junit/jupiter/api/BeforeEach;",
+            "Lorg/junit/Before;",
+            "Lorg/junit/BeforeClass;");
 
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isContainerField(XField)} instead
@@ -830,12 +839,7 @@ public class UnreadFields extends OpcodeStackDetector {
         for (AnnotationEntry a : getMethod().getAnnotationEntries()) {
             String typeName = a.getAnnotationType();
 
-            if ("Ljakarta/annotation/PostConstruct;".equals(typeName)
-                    || "Ljavax/annotation/PostConstruct;".equals(typeName)
-                    || "Lorg/junit/jupiter/api/BeforeAll;".equals(typeName)
-                    || "Lorg/junit/jupiter/api/BeforeEach;".equals(typeName)
-                    || "Lorg/junit/Before;".equals(typeName)
-                    || "Lorg/junit/BeforeClass;".equals(typeName)) {
+            if (INITIALIZER_ANNOTATIONS.contains(typeName)) {
                 return true;
             }
         }
