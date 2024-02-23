@@ -51,14 +51,16 @@ public class TypeQualifierResolver {
     static final ClassDescriptor elementTypeDescriptor = DescriptorFactory
             .createClassDescriptor(ElementType.class);
 
+    // javax.annotations.ParametersAreNonnullByDefault ?
+    static final ClassDescriptor eclipseNonNullByDefault = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNullByDefault");
+
     private static final ClassDescriptor[] NON_NULL_CLASS_DESCRIPTORS = new ClassDescriptor[] {
         DescriptorFactory.createClassDescriptor("edu/umd/cs/findbugs/annotations/NonNull"),
         DescriptorFactory.createClassDescriptor("android/support/annotation/NonNull"),
         DescriptorFactory.createClassDescriptor("androidx/annotation/NonNull"),
         DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/NotNull"),
         DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNull"),
-        // javax.annotations.ParametersAreNonnullByDefault ?
-        DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNullByDefault"),
+        eclipseNonNullByDefault,
         DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/qual/NonNull"),
         DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NonNullDecl"),
         DescriptorFactory.createClassDescriptor("org/netbeans/api/annotations/common/NonNull"),
