@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,6 +79,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -86,13 +88,25 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.UnreadFieldsAnnotationChecker;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class UnreadFields extends OpcodeStackDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
+
+    /**
+     * A list of annotations for fields that might be read by frameworks, even though they are private
+     */
+    private static final List<ClassDescriptor> READ_BY_FRAMEWORK_ANNOTATIONS = Arrays.asList(
+            DescriptorFactory.createClassDescriptor("com/google/gson/annotations/SerializedName"),
+            DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlElement"),
+            DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlAttribute"),
+            DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlValue"),
+            DescriptorFactory.createClassDescriptor("jakarta/xml/bind/annotation/XmlElement"),
+            DescriptorFactory.createClassDescriptor("jakarta/xml/bind/annotation/XmlAttribute"),
+            DescriptorFactory.createClassDescriptor("jakarta/xml/bind/annotation/XmlValue"),
+            DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/extension/RegisterExtension"));
 
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isContainerField(XField)} instead
@@ -1223,7 +1237,7 @@ public class UnreadFields extends OpcodeStackDetector {
                     bugReporter.reportBug(new BugInstance(this,
                             (f.isPublic() || f.isProtected()) ? "UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" : "UUF_UNUSED_FIELD",
                             priority).addClass(className).addField(f).lowerPriorityIfDeprecated());
-                } else if (UnreadFieldsAnnotationChecker.containsSpecialAnnotation(f.getAnnotations())) {
+                } else if (containsSpecialAnnotation(f.getAnnotations())) {
                     continue;
                 } else if (f.getName().toLowerCase().indexOf("guardian") < 0) {
                     int priority = NORMAL_PRIORITY;
@@ -1258,4 +1272,19 @@ public class UnreadFields extends OpcodeStackDetector {
         return instance;
     }
 
+    /**
+     * Checks whether the collection of annotations associated with a given element include annotations that indicate
+     * the "URF_UNREAD_FIELD" detector should be skipped.
+     * @param annotationsToCheck Collections of annotations associated with given element.
+     * @return If true, "URF_UNREAD_FIELD" detector should be ignored for given field.
+     * @see <a href="https://github.com/spotbugs/spotbugs/issues/574">GitHub issue</a>
+     */
+    public static boolean containsSpecialAnnotation(Collection<AnnotationValue> annotationsToCheck) {
+        for (AnnotationValue annotationValue : annotationsToCheck) {
+            if (READ_BY_FRAMEWORK_ANNOTATIONS.contains(annotationValue.getAnnotationClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
