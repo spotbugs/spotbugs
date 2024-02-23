@@ -57,6 +57,8 @@ public class TypeQualifierResolver {
         DescriptorFactory.createClassDescriptor("androidx/annotation/NonNull"),
         DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/NotNull"),
         DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNull"),
+        // javax.annotations.ParametersAreNonnullByDefault ?
+        DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNullByDefault"),
         DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/qual/NonNull"),
         DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NonNullDecl"),
         DescriptorFactory.createClassDescriptor("org/netbeans/api/annotations/common/NonNull"),
@@ -75,9 +77,6 @@ public class TypeQualifierResolver {
         DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NullableDecl"),
         DescriptorFactory.createClassDescriptor("org/netbeans/api/annotations/common/NullAllowed"),
     };
-
-    // javax.annotations.ParametersAreNonnullByDefault ?
-    static final ClassDescriptor eclipseNonNullByDefault = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNullByDefault");
 
     /**
      * Resolve an AnnotationValue into a list of AnnotationValues representing
