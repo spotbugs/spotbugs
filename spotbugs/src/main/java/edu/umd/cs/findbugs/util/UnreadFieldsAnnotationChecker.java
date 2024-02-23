@@ -25,12 +25,15 @@ public final class UnreadFieldsAnnotationChecker {
     /**
      * Array of annotations which, if present, signal that "URF_UNREAD_FIELD" detector should be skipped.
      */
-    private static final Class[] IGNORE_RULE_FOR_THESE_ANNOTATIONS = {
-        com.google.gson.annotations.SerializedName.class,
-        javax.xml.bind.annotation.XmlElement.class,
-        javax.xml.bind.annotation.XmlAttribute.class,
-        javax.xml.bind.annotation.XmlValue.class,
-        org.junit.jupiter.api.extension.RegisterExtension.class
+    private static final String[] IGNORE_RULE_FOR_THESE_ANNOTATIONS = {
+        "com/google/gson/annotations/SerializedName",
+        "javax/xml/bind/annotation/XmlElement",
+        "javax/xml/bind/annotation/XmlAttribute",
+        "javax/xml/bind/annotation/XmlValue",
+        "jakarta/xml/bind/annotation/XmlElement",
+        "jakarta/xml/bind/annotation/XmlAttribute",
+        "jakarta/xml/bind/annotation/XmlValue",
+        "org/junit/jupiter/api/extension/RegisterExtension"
     };
 
     private static final Set<ClassDescriptor> IGNORE_RULE_FOR_THESE_CLASS_DESCRIPTORS =
@@ -52,9 +55,9 @@ public final class UnreadFieldsAnnotationChecker {
         return false;
     }
 
-    private static Set<ClassDescriptor> annotationToClassDescriptorBuilder(Class[] annotationsToCheck) {
+    private static Set<ClassDescriptor> annotationToClassDescriptorBuilder(String[] annotationsToCheck) {
         Set<ClassDescriptor> tempSet = new HashSet<ClassDescriptor>();
-        for (Class annotation : annotationsToCheck) {
+        for (String annotation : annotationsToCheck) {
             tempSet.add(DescriptorFactory.createClassDescriptor(annotation));
         }
         return tempSet;
