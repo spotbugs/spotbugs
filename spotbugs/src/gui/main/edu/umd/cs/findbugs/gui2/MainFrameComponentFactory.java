@@ -405,30 +405,7 @@ public class MainFrameComponentFactory implements Serializable {
 
         private void setupOSX() {
             if (MainFrame.MAC_OS_X) {
-                try {
-                    mainFrame.mainFrameMenu.initOSX();
-                    mainFrame.mainFrameMenu.enablePreferencesMenuItem(true);
-                } catch (NoClassDefFoundError e) {
-                    // This will be thrown first if the OSXAdapter is loaded on
-                    // a system without the EAWT
-                    // because OSXAdapter extends ApplicationAdapter in its def
-                    System.err
-                            .println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled ("
-                                    + e + ")");
-                } catch (ClassNotFoundException e) {
-                    // This shouldn't be reached; if there's a problem with the
-                    // OSXAdapter we should get the
-                    // above NoClassDefFoundError first.
-                    System.err
-                            .println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled ("
-                                    + e + ")");
-                } catch (Exception e) {
-                    System.err.println("Exception while loading the OSXAdapter: " + e);
-                    e.printStackTrace();
-                    if (MainFrame.GUI2_DEBUG) {
-                        e.printStackTrace();
-                    }
-                }
+                mainFrame.mainFrameMenu.enablePreferencesMenuItem(true);
             }
         }
     }

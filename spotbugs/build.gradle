@@ -19,8 +19,6 @@ eclipse {
 configurations {
   // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
   logBinding
-  // used to make sure Eclipse config can see apple library during compilation
-  appleExtensions
 }
 
 sourceSets {
@@ -83,7 +81,7 @@ dependencies {
   implementation 'jaxen:jaxen:2.0.0' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
   api 'org.apache.commons:commons-lang3:3.13.0'
   api 'org.apache.commons:commons-text:1.10.0'
-  api 'org.slf4j:slf4j-api:2.0.11'
+  api 'org.slf4j:slf4j-api:2.0.12'
   implementation 'net.sf.saxon:Saxon-HE:12.4'
   implementation libs.log4j.core
   logBinding (libs.log4j.slf4j2.impl) {
@@ -97,11 +95,7 @@ dependencies {
   api "com.google.code.gson:gson:2.10.1"
 
   guiImplementation sourceSets.main.runtimeClasspath
-  guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
   guiCompileOnly project(':spotbugs-annotations')
-
-  // for Eclipse compilation only
-  appleExtensions 'com.apple:AppleJavaExtensions:1.4'
 }
 
 clean {

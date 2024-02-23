@@ -12,9 +12,13 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `executionSuccessful` flag in SARIF report being set to false when bugs were found ([#2116](https://github.com/spotbugs/spotbugs/issues/2116))
 - Move information contained in the SARIF property `exitSignalName` to `exitCodeDescription` ([#2739](https://github.com/spotbugs/spotbugs/issues/2739))
 - Do not report SE_NO_SERIALVERSIONID or other serialization issues for records ([#2793](https://github.com/spotbugs/spotbugs/issues/2793))
-
-### Build
-- Fix sonar coverage for project ([#2796](https://github.com/spotbugs/spotbugs/issues/2796))
+- Added support for CONSTANT_Dynamic ([#2759](https://github.com/spotbugs/spotbugs/issues/2759))
+- Ignore generic variable types when looking for BC_UNCONFIRMED_CAST_OF_RETURN_VALUE ([#1219](https://github.com/spotbugs/spotbugs/issues/1219))
+- Do not report BC_UNCONFIRMED_CAST for Java 21's type switches ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
+- Remove AppleExtension library (note: menus slightly changed) ([#2823](https://github.com/spotbugs/spotbugs/pull/2823))
+- Fixed error preventing SpotBugs from reporting FE_FLOATING_POINT_EQUALITY ([#2843](https://github.com/spotbugs/spotbugs/pull/2843))
+- Fixed NP_LOAD_OF_KNOWN_NULL_VALUE and RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE false positives in try-with-resources generated finally blocks ([#2844](https://github.com/spotbugs/spotbugs/pull/2844))
+- Do not report DLS_DEAD_LOCAL_STORE for Java 21's type switches ([#2828](https://github.com/spotbugs/spotbugs/pull/2828))
 
 ### Added
 - New detector `MultipleInstantiationsOfSingletons` and introduced new bug types:
@@ -28,6 +32,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Changed
 - Minor cleanup in connection with slashed and dotted names ([#2805](https://github.com/spotbugs/spotbugs/pull/2805))
+
+### Build
+- Fix sonar coverage for project ([#2796](https://github.com/spotbugs/spotbugs/issues/2796))
+- Upgraded the build to compile bug samples using Java 21 language features ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
+- Add 'configurations.checkstyle resolution starategy' to control bug in gradle on exclusions not being excluded properly as seen in checkstyle usage.  See https://github.com/checkstyle/checkstyle/issues/14211 for more information. ([#2798](https://github.com/spotbugs/spotbugs/issues/2798))
+- Allow our builds to work with jdk 11 with drop back on Eclipse to 4.24 and spring to 5.3.31.  ([#2604](https://github.com/spotbugs/spotbugs/pull/2604/))
 
 ## 4.8.3 - 2023-12-12
 ### Fixed
