@@ -11,7 +11,22 @@ import static org.hamcrest.Matchers.hasItem;
 
 class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
+    /**
+     * @todo Which of these should have priority in case of overlapping bugs? Or should we report both of them?
+     */
+    /**
+     * Report:<br>
+     *      0) the class where the bug is detected <br>
+     *      1) the method used for synchronization<br>
+     *      2) the exposing methods<br>
+     */
     private static final String METHOD_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
+    /**
+     * Report:<br>
+     *      0) the class where the bug is detected <br>
+     *      1) the static method used for synchronization<br>
+     */
+    private static final String STATIC_METHOD_BUG = "PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     /**
      * Report:<br>
      *      0) the class where the bug is detected <br>
@@ -45,27 +60,46 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     private static final String EXPOSING_LOCK_OBJECT_BUG = "PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
 
 
+    /**
+     * The following tests are for object synchronization bugs
+     */
+
     @Test
     void testBadMethodSynchronizationLock() {
-        performAnalysis("privateFinalLocks/ClassExposingItSelf.class",
-                "privateFinalLocks/ClassExposingACollectionOfItself.class",
-                "privateFinalLocks/ClassExposingAMapOfItself.class");
+        performAnalysis("privateFinalLocks/BadMethodSynchronizationWithClassExposingItSelf.class",
+                "privateFinalLocks/BadMethodSynchronizationWithClassExposingACollectionOfItself.class",
+                "privateFinalLocks/BadMethodSynchronizationWithClassExposingAMapOfItself.class");
 
         assertNumOfBugs(4, METHOD_BUG);
 
-        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "doStuff");
-        assertMethodBugExactly("privateFinalLocks.ClassExposingItSelf", "changeValue");
-        assertMethodBugExactly("privateFinalLocks.ClassExposingACollectionOfItself", "doStuff");
-        assertMethodBugExactly("privateFinalLocks.ClassExposingAMapOfItself", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingItSelf", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingItSelf", "doStuff2");
+        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingACollectionOfItself", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingAMapOfItself", "doStuff");
     }
 
     @Test
     void testBadMethodSynchronizationWithPublicStaticLockObject() {
-        performAnalysis("privateFinalLocks/BadMethodSynchronizationWithPublicStaticLock.class");
+        performAnalysis("privateFinalLocks/BadMethodSynchronizationWithPublicStaticSynchronization.class");
 
+        assertNumOfBugs(1, STATIC_METHOD_BUG);
+
+        assertStaticMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithPublicStaticSynchronization", "doStuff");
+    }
+
+    @Test
+
+    void testBadMethodSynchronizationWithMixedBugs() {
+        performAnalysis("privateFinalLocks/BadMixedMethodSynchronization.class");
+
+        /**
+         * @todo Which one? METHOD_BUG or STATIC_METHOD_BUG? Or both?
+         */
         assertNumOfBugs(1, METHOD_BUG);
+        assertNumOfBugs(1, STATIC_METHOD_BUG);
 
-        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithPublicStaticLock", "changeValue");
+        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingItSelf", "doStuff");
+        assertStaticMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithPublicStaticSynchronization", "doStuff");
     }
 
     @Test
@@ -115,13 +149,6 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedPackagePrivateLocks", "doStuff2", "lock2");
         assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedPackagePrivateLocks", "doStuff3", "lock3");
         assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedPackagePrivateLocks", "doStuff4", "lock4");
-    }
-
-    @Test
-    void testGoodSynchronizationWithProtectedLockInFinalClass() {
-        performAnalysis("privateFinalLocks/GoodSynchronizationWithProtectedLockInFinalClass.class");
-
-        assertNoBadLockBugs();
     }
 
     @Test
@@ -228,10 +255,11 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
 
 
+
+
     /**
      * End of work in progress
      */
-
 
     @Test
     void testGoodSynchronizationWithPrivateFinalLockObject() {
@@ -241,8 +269,8 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void testGoodSynchronizationWithPrivateStaticLockObject() {
-        performAnalysis("privateFinalLocks/GoodSynchronizationWithPrivateStaticLock.class");
+    void testGoodSynchronizationWithProtectedLockInFinalClass() {
+        performAnalysis("privateFinalLocks/GoodSynchronizationWithProtectedLockInFinalClass.class");
 
         assertNoBadLockBugs();
     }
@@ -257,6 +285,7 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
     private void assertNoBadLockBugs() {
         assertNumOfBugs(0, METHOD_BUG);
+        assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
         assertNumOfBugs(0, INHERITED_OBJECT_BUG);
@@ -271,6 +300,17 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     private void assertMethodBugExactly(String clazz, String method) {
         BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
                 .bugType(METHOD_BUG)
+                .inClass(clazz)
+                .inMethod(method);
+
+        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+
+        assertThat(getBugCollection(), hasItem(bugInstance));
+    }
+
+    private void assertStaticMethodBugExactly(String clazz, String method) {
+        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+                .bugType(STATIC_METHOD_BUG)
                 .inClass(clazz)
                 .inMethod(method);
 

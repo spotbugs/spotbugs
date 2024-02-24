@@ -9185,6 +9185,29 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+    <ShortDescription>Instead of static synchronized methods, use private final lock objects with block synchronization</ShortDescription>
+    <LongDescription>Static synchronized method {1} uses the intrinsic lock of class {0} for synchronization, exposing the class to untrusted code.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        There are two primary methods for synchronizing access to shared mutable variables: <b>method synchronization</b> and <b>block synchronization</b>. In synchronized methods and blocks that lock onto the <b>this</b> reference,
+        the object serves as a monitor, utilizing its intrinsic lock. However, a potential vulnerability arises when an attacker manipulates the system to induce contention or deadlock
+        by seizing and indefinitely holding the intrinsic lock of an accessible class, leading to a Denial of Service (DoS) scenario.
+
+        Static methods also share this vulnerability. When a static method is used for synchronization, by declaring it synchronized, it acquires the intrinsic lock of the class before entering the critical section.
+
+        Untrusted code that has access to an instance of the class or the subclass can gain access to the class object using getClass(). By doing so, it can exploit the class's intrinsic lock for synchronization, potentially causing problems.
+        To address this vulnerability, one effective solution is the private lock object idiom, as outlined in <a href=https://www.oracle.com/java/technologies/effectivejava.html>Bloch 2001, Effective Java</a>.
+        This technique involves utilizing an intrinsic lock associated with a private final java.lang.Object,
+        declared within the class rather than the class' intrinsic lock. Synchronized blocks, locked on this private object, replace synchronized methods in the class's methods.
+        This eliminates the risk of lock contention between the class's methods and those of a potential attacker, since the hostile class cannot access the private final lock object.
+
+        Reducing the accessibility of the class can also reduce the likelihood of encountering problems. You can restrict the accessibility of the class to package-private, providing further protection against untrusted callers.
+
+        <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
     <ShortDescription>Use private final lock objects in synchronization blocks</ShortDescription>
     <LongDescription>The lock object {2} used in method {1} is visible outside the class, thus exposing class {0} to untrusted code.</LongDescription>
