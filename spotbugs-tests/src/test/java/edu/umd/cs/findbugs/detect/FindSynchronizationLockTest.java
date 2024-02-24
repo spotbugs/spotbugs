@@ -12,7 +12,13 @@ import static org.hamcrest.Matchers.hasItem;
 class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
     private static final String METHOD_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    private static final String OBJECT_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
+    /**
+     * Report:<br>
+     *      0) the class where the bug is detected <br>
+     *      1) the method where it was used as lock (here)<br>
+     *      2) the lock object itself<br>
+     */
+    private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     /**
      * Report:<br>
      *      @note The class reported should be the class where the lock was declared or where the lock was used?<br>
@@ -171,6 +177,48 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationByExposingLockFromHierarchy", "doStuff5", "lock5"); /* Exposed by updateLock5 */
     }
 
+    @Test
+    void testBadSynchronizationWithPublicLocksInPlace() {
+        performAnalysis("privateFinalLocks/BadSynchronizationWithPublicLocksInPlace.class");
+
+        assertNumOfBugs(6, OBJECT_BUG);
+
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff1", "lock1");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff1Again", "lock1");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff2", "lock2");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff3", "lock3");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff4", "lock4");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff5", "lock5");
+    }
+
+    @Test
+    void testBadSynchronizationWithVisibleLocksExposedWithPolymorphism() {
+        performAnalysis("privateFinalLocks/BadSynchronizationWithVisibleLocksExposedWithPolymorphism.class",
+                "privateFinalLocks/BadSynchronizationWithVisibleLocksFromHierarchy.class");
+
+        assertNumOfBugs(14, OBJECT_BUG);
+
+        // Public locks - Do we want to report them in descendant if we have already reported in parent? Do we want to try optimizing it?
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff1", "lock1");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff1Again", "lock1");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff2", "lock2");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff3", "lock3");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff4", "lock4");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff5", "lock5");
+
+        // Protected locks - it is important that the declaring class is NOT final
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff6", "lock6");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff7", "lock7");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff8", "lock8");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff9", "lock9");
+
+        // Package private locks
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff10", "lock10");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff11", "lock11");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff12", "lock12");
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff13", "lock13");
+    }
+
 
     /**
      * The following tests are work in progress
@@ -179,81 +227,10 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
 
 
+
     /**
      * End of work in progress
      */
-
-
-
-    @Test
-    void testBadSynchronizationLockAcquiredFromParent() {
-        performAnalysis("privateFinalLocks/BadSynchronizationLockBase.class",
-                "privateFinalLocks/BadSynchronizationWithLocksFromBase.class",
-                "privateFinalLocks/BadSynchronizationLockBaseWithMultipleMethods.class");
-
-        assertNumOfBugs(5, OBJECT_BUG);
-
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationLockBase", "doStuff", "baseLock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithLocksFromBase", "doOtherStuff", "baseLock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithLocksFromBase", "changeValue", "lock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationLockBaseWithMultipleMethods", "doStuff", "baseLock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationLockBaseWithMultipleMethods", "doOtherStuff", "baseLock");
-    }
-
-    @Test
-    void testBadSynchronizationWithAccessibleFinalLockObject() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithPublicFinalLock.class",
-                "privateFinalLocks/BadSynchronizationWithPublicFinalLockFromParent.class");
-
-        assertNumOfBugs(3, OBJECT_BUG);
-
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicFinalLock", "doSomeStuff", "baseLock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicFinalLockFromParent", "doSomeStuff2", "baseLock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicFinalLockFromParent", "doSomeStuff3", "lock");
-    }
-
-    @Test
-    void testBadSynchronizationWithAccessibleStaticLockObject1() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithAccessibleStaticLock1.class",
-                "privateFinalLocks/BadSynchronizationWithAccessibleStaticLockFromParent1.class");
-
-        assertNumOfBugs(2, OBJECT_BUG);
-
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithAccessibleStaticLock1", "doStuff", "baseLock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithAccessibleStaticLockFromParent1", "doStuff2", "lock");
-    }
-
-
-//    @Test
-//    void testBadSynchronizationWithVolatileLockObject6() {
-//
-//        performAnalysis("privateFinalLocks/BadSynchronizationWithExposedLockToUntrustedCode.class",
-//                "privateFinalLocks/BadSynchronizationWithLockFromParent.class");
-//
-////        assertNumOfBugs(1, INHERITED_OBJECT_BUG);
-////
-////        assertExposedLocksThroughInheritance("privateFinalLocks.BadSynchronizationWithExposedLockToUntrustedCode", "doSomeStuff", "baseLock"); // accessor in descendant
-////
-//        assertNumOfBugs(2, OBJECT_BUG);
-//
-//        //INHERITED_OBJECT_BUG
-//        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockToUntrustedCode", "doSomeStuff", "baseLock"); // accessor in descendant
-//        //OBJECT_BUG
-//        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithLockFromParent", "doSomeStuff2", "lock"); // accessor in descendant
-//    }
-
-    @Test
-    void testBadSynchronizationWithPublicNonFinalLockObject() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithPublicNonFinalLock.class",
-                "privateFinalLocks/BadSynchronizationWithNonFinalLockFromParent.class");
-
-        assertNumOfBugs(3, OBJECT_BUG);
-
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicNonFinalLock", "doSomeStuff", "baseLock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithNonFinalLockFromParent", "doSomeStuff2", "baseLock");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithNonFinalLockFromParent", "doSomeStuff3", "lock");
-    }
-
 
 
     @Test
