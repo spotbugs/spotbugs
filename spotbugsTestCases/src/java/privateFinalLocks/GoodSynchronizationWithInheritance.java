@@ -5,21 +5,18 @@ public class GoodSynchronizationWithInheritance {
 
     public void doSomeStuff() {
         synchronized (lock) {
-            stuff();
+            System.out.println("Do some real stuff");
         }
     }
 
-    protected void stuff() {
-        System.out.println("Do some real stuff here..");
-    }
 }
 
 class GoodSynchronizationInheritedFromParent extends GoodSynchronizationWithInheritance {
     private final Object lock = new Object();
 
-    public void doSomeStuff2() {
+    public void doStuff2() {
         synchronized (lock) {
-            stuff();
+            System.out.println("Do some real stuff");
         }
     }
 }
