@@ -16,9 +16,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Ignore generic variable types when looking for BC_UNCONFIRMED_CAST_OF_RETURN_VALUE ([#1219](https://github.com/spotbugs/spotbugs/issues/1219))
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
 - Remove AppleExtension library (note: menus slightly changed) ([#2823](https://github.com/spotbugs/spotbugs/pull/2823))
+- Fix false positive NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE even if Objects.requireNonNull is used. ([#651](https://github.com/spotbugs/spotbugs/issues/651), [#456](https://github.com/spotbugs/spotbugs/issues/456))
 - Fixed error preventing SpotBugs from reporting FE_FLOATING_POINT_EQUALITY ([#2843](https://github.com/spotbugs/spotbugs/pull/2843))
 - Fixed NP_LOAD_OF_KNOWN_NULL_VALUE and RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE false positives in try-with-resources generated finally blocks ([#2844](https://github.com/spotbugs/spotbugs/pull/2844))
 - Do not report DLS_DEAD_LOCAL_STORE for Java 21's type switches ([#2828](https://github.com/spotbugs/spotbugs/pull/2828))
+- Do not report UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR for fields initialized in method annotated with @PostConstruct, @BeforeEach, etc. ([#2872](https://github.com/spotbugs/spotbugs/pull/2872) [#2870](https://github.com/spotbugs/spotbugs/issues/2870) [#453](https://github.com/spotbugs/spotbugs/issues/453))
 - Added more nullability annotations in TypeQualifierResolver ([#2558](https://github.com/spotbugs/spotbugs/issues/2558) [#2694](https://github.com/spotbugs/spotbugs/pull/2694))
 
 ### Added
