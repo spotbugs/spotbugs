@@ -49,7 +49,8 @@ class Issue574Test extends AbstractIntegrationTest {
      */
     @Test
     void testRegisterExtensionAnnotation() {
-        performAnalysis("ghIssues/Issue574RegisterExtension.class");
+        performAnalysis("ghIssues/Issue574RegisterExtension.class",
+        		"ghIssues/BypassFileNotFoundExceptionExtension.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(DESIRED_BUG_TYPE)
                 .build();
