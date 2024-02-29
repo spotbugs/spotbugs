@@ -24,6 +24,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not report UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR for fields initialized in method annotated with @PostConstruct, @BeforeEach, etc. ([#2872](https://github.com/spotbugs/spotbugs/pull/2872) [#2870](https://github.com/spotbugs/spotbugs/issues/2870) [#453](https://github.com/spotbugs/spotbugs/issues/453))
 - Do not report DLS_DEAD_LOCAL_STORE for Hibernate bytecode enhancements ([#2865](https://github.com/spotbugs/spotbugs/pull/2865))
 - Fixed NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE false positives due to source code formatting ([#2874](https://github.com/spotbugs/spotbugs/pull/2874))
+- Improved the bug description for VA_FORMAT_STRING_USES_NEWLINE when using text blocks, check the usage of String.formatted() ([#2881](https://github.com/spotbugs/spotbugs/pull/2881))
 
 ### Added
 - New detector `MultipleInstantiationsOfSingletons` and introduced new bug types:

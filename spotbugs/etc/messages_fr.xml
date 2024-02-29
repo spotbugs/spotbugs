@@ -3401,6 +3401,25 @@ double value2 =  x / (double) y;
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="VA_FORMAT_STRING_USES_NEWLINE">
+    <ShortDescription>Format string should use %n rather than \n</ShortDescription>
+    <LongDescription>Format string should use %n rather than \n in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+Ce string utilisé dans un format contient le caractère newline (\n). Il est généralement préférable
+ d'utiliser %n qui produira un séparateur de ligne spécifique à la plateforme.
+ 
+ Pour les blocs de texte introduits avec Java 15, utiliser <code>\</code> pour échapper les fins de ligne:
+	 
+<code>String valeur = """
+                premiere ligne%n\
+                seconde ligne%n\
+                """;</code>
+</p>
+]]>
+    </Details>
+ </BugPattern>
  <BugCode abbrev="IL">Boucle infinie</BugCode>
  <BugCode abbrev="VO">Utilisation de volatile</BugCode>
  <BugCode abbrev="UI">Héritage non sûr</BugCode>
