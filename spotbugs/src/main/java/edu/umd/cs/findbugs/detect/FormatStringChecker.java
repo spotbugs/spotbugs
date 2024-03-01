@@ -105,37 +105,20 @@ public class FormatStringChecker extends OpcodeStackDetector {
             String sig = getSigConstantOperand();
             XMethod m = getXMethodOperand();
             if ((m == null || m.isVarArgs())
-                    && sig.indexOf("Ljava/lang/String;[Ljava/lang/Object;)") >= 0
+                    && sig.contains("Ljava/lang/String;[Ljava/lang/Object;)")
                     && ("java/util/Formatter".equals(cl) && "format".equals(nm)
                             || "java/lang/String".equals(cl) && "format".equals(nm)
                             || "java/io/PrintStream".equals(cl) && "format".equals(nm)
                             || "java/io/PrintStream".equals(cl) && "printf".equals(nm)
                             || cl.endsWith("Writer") && "format".equals(nm)
                             || cl.endsWith("Writer") && "printf".equals(nm))
-                    || cl.endsWith("Logger") && nm.endsWith("fmt")) {
+                    || cl.endsWith("Logger") && nm.endsWith("fmt")
+                    || "([Ljava/lang/Object;)Ljava/lang/String;".equals(sig) && "java/lang/String".equals(cl) && "formatted".equals(nm)) {
 
                 if (formatString.indexOf('\n') >= 0) {
                     bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_USES_NEWLINE", NORMAL_PRIORITY)
                             .addClassAndMethod(this).addCalledMethod(this).addString(formatString)
                             .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
-                }
-            }
-        }
-
-        // Check for calls to java.lang.String.formatted(), for instance: "xyz".formatted("abc");
-        if (seen == Const.INVOKEVIRTUAL) {
-            String cl = getClassConstantOperand();
-            String nm = getNameConstantOperand();
-
-            if ("java/lang/String".equals(cl) && "formatted".equals(nm)) {
-                Object stackItem = stack.getStackItem(1).getConstant();
-                if (stackItem instanceof String) {
-                    String string = (String) stackItem;
-                    if (string.indexOf('\n') >= 0) {
-                        bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_USES_NEWLINE", NORMAL_PRIORITY)
-                                .addClassAndMethod(this).addCalledMethod(this).addString(string)
-                                .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
-                    }
                 }
             }
         }
