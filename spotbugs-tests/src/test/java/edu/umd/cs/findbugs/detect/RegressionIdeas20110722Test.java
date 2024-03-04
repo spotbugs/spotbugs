@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.hasItem;
 
 class RegressionIdeas20110722Test extends AbstractIntegrationTest {
 
-    // This test, or rather the detector needs to be fixed
+    // Problems in null checks, see https://github.com/spotbugs/spotbugs/issues/2890
     @Disabled
     @Test
     void testArgumentAssertions() {
