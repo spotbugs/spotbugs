@@ -16,15 +16,11 @@ class Issue2793Test extends AbstractIntegrationTest {
     @Test
     @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
     void testRecordSerialVersionUid() {
-        performAnalysis("../java17/ghIssues/Issue2793$RecordWithoutSerialVersionUid.class");
+        performAnalysis("../java17/ghIssues/Issue2793.class",
+                "../java17/ghIssues/Issue2793$RecordWithoutSerialVersionUid.class",
+                "../java17/ghIssues/Issue2793$ExternalizableRecord.class");
 
         assertBugCount("SE_NO_SERIALVERSIONID", 0);
-    }
-
-    @Test
-    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
-    void testExternalizableRecord() {
-        performAnalysis("../java17/ghIssues/Issue2793$ExternalizableRecord.class");
 
         assertBugCount("SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION", 0);
     }
