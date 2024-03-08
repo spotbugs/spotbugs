@@ -8794,6 +8794,22 @@ object explicitly.</p>
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT">
+    <ShortDescription>An overridable method is called from the readObject method.</ShortDescription>
+    <LongDescription>Overridable method {1} is called from readObject.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      The readObject() method must not call any overridable methods. Invoking overridable methods from the readObject()
+      method can provide the overriding method with access to the object's state before it is fully initialized. This
+      premature access is possible because, in deserialization, readObject plays the role of object constructor and
+      therefore object initialization is not complete until readObject exits.</p>
+      <p>
+      <br/>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">
+      MET06-J. Do not invoke overridable methods in clone()</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SING_SINGLETON_IMPLEMENTS_CLONEABLE">
     <ShortDescription>Class using singleton design pattern directly implements Cloneable interface.</ShortDescription>
     <LongDescription>Class ({0}) using singleton design pattern directly implements Cloneable interface.</LongDescription>
