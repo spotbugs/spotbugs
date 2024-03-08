@@ -88,18 +88,14 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     }
 
     @Test
-
     void testBadMethodSynchronizationWithMixedBugs() {
         performAnalysis("privateFinalLocks/BadMixedMethodSynchronization.class");
 
-        /**
-         * @todo Which one? METHOD_BUG or STATIC_METHOD_BUG? Or both?
-         */
         assertNumOfBugs(1, METHOD_BUG);
         assertNumOfBugs(1, STATIC_METHOD_BUG);
 
-        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingItSelf", "doStuff");
-        assertStaticMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithPublicStaticSynchronization", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.BadMixedMethodSynchronization", "doStuff");
+        assertStaticMethodBugExactly("privateFinalLocks.BadMixedMethodSynchronization", "doStuff");
     }
 
     @Test
