@@ -196,7 +196,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                             SourceLineAnnotation.fromVisitedInstruction(this));
                 }
             } else if ("readObject".equals(getMethodName())) {
-                if(checkCallInReadObject(getXMethod(), method,
+                if (checkCallInReadObject(getXMethod(), method,
                         SourceLineAnnotation.fromVisitedInstruction(this))) {
                     checkAndRecordCallFromReadObject(getXMethod(), method,
                             SourceLineAnnotation.fromVisitedInstruction(this));
@@ -252,6 +252,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         String methodName = method.getName();
         return inOis && methodName.equals("defaultReadObject") || methodName.equals("readFields");
     }
+
     boolean checkCallInReadObject(XMethod caller, XMethod method, SourceLineAnnotation sourceLine) {
         if (!shouldIgnoreCallInReadObject(method) && !method.isPrivate() && !method.isFinal()) {
             bugAccumulator.accumulateBug(
@@ -291,7 +292,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     private boolean checkAndRecordCallFromReadObject(XMethod readObject, XMethod callee,
-                                                SourceLineAnnotation sourceLine) {
+            SourceLineAnnotation sourceLine) {
         XMethod overridable = getIndirectlyCalledOverridable(callee);
         if (overridable != null && !shouldIgnoreCallInReadObject(overridable)) {
             bugAccumulator.accumulateBug(new BugInstance(this,
