@@ -137,8 +137,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        // FIXME: defaultRead should still be analysed...
-        if (getXClass().isFinal()) {
+        if (getXClass().isFinal() && !isReadObjectCall(seen)) {
             return;
         }
         if (seen == Const.INVOKEDYNAMIC) {
@@ -215,6 +214,13 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
             AnalysisContext.logError("Could not find XClass object for " + superD + ".");
             return null;
         }
+    }
+
+    final boolean isReadObjectCall(int opcode) {
+        if (opcode != Const.INVOKEINTERFACE && opcode != Const.INVOKEVIRTUAL) {
+            return false;
+        }
+        return getMethodName().equals("readObject");
     }
 
     boolean checkDirectCase(XMethod caller, XMethod method, String message, int priority,
@@ -319,8 +325,9 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     private boolean checkAndRecordCallBetweenNonOverridableMethods(XMethod caller, XMethod callee) {
         CallerInfo constructor = getIndirectCallerConstructor(caller);
         CallerInfo clone = getIndirectCallerClone(caller);
+        CallerInfo readObject = getIndirectCallerReadObject(caller);
 
-        if (constructor != null || clone != null) {
+        if (constructor != null || clone != null || readObject != null) {
             XMethod overridable = getIndirectlyCalledOverridable(callee);
             if (overridable != null) {
                 if (constructor != null) {
@@ -336,6 +343,13 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                             "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE", NORMAL_PRIORITY)
                             .addClassAndMethod(clone.method).addString(overridable.getName()),
                             clone.sourceLine);
+                }
+
+                if (readObject != null) {
+                    bugAccumulator.accumulateBug(new BugInstance(this,
+                            "MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT", NORMAL_PRIORITY)
+                            .addClassAndMethod(readObject.method).addString(overridable.getName()),
+                            readObject.sourceLine);
                 }
 
                 return false;
