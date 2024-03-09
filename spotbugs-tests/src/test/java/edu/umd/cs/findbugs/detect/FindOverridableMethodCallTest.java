@@ -146,6 +146,66 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
         testReadObject("IndirectReadObject2", 7);
     }
 
+    @Test
+    void DoubleIndirectReadObjectCase1() {
+        testReadObject("DoubleIndirectReadObjectCase1", 18);
+    }
+
+    @Test
+    void DoubleIndirectReadObjectCase2() {
+        testReadObject("DoubleIndirectReadObjectCase2", 18);
+    }
+
+    @Test
+    void DoubleIndirectReadObjectCase3() {
+        testReadObject("DoubleIndirectReadObjectCase3", 13);
+    }
+
+    @Test
+    void DoubleIndirectReadObjectCase4() {
+        testReadObject("DoubleIndirectReadObjectCase4", 12);
+    }
+
+    @Test
+    void DoubleIndirectReadObjectCase5() {
+        testReadObject("DoubleIndirectReadObjectCase5", 7);
+    }
+
+    @Test
+    void DoubleIndirectReadObjectCase6() {
+        testReadObject("DoubleIndirectReadObjectCase6", 7);
+    }
+
+    @Test
+    void MethodReferenceReadObject() {
+        testReadObject("MethodReferenceReadObject", 12);
+    }
+
+    @Test
+    void MethodReferenceReadObjectIndirect1() {
+        testReadObject("MethodReferenceReadObjectIndirect1", 16);
+    }
+
+    @Test
+    void MethodReferenceReadObjectIndirect2() {
+        testReadObject("MethodReferenceReadObjectIndirect2", 24);
+    }
+
+    @Test
+    void MethodReferenceReadObjectIndirect3() {
+        testReadObject("MethodReferenceReadObjectIndirect3", 24);
+    }
+
+    @Test
+    void testFinalClassDirectReadObject() {
+        testPass("FinalClassDirectReadObject");
+    }
+
+    @Test
+    void testFinalClassIndirectReadObject() {
+        testPass("FinalClassIndirectReadObject");
+    }
+
     void testCase(String className, int constructorLine, int cloneLine) {
         performAnalysis("overridableMethodCall/" + className + ".class");
 
