@@ -8796,7 +8796,7 @@ object explicitly.</p>
   </BugPattern>
   <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT">
     <ShortDescription>An overridable method is called from the readObject method.</ShortDescription>
-    <LongDescription>Overridable method {1} is called from readObject.</LongDescription>
+    <LongDescription>Overridable method {2} is called from readObject.</LongDescription>
     <Details>
       <![CDATA[<p>
       The readObject() method must not call any overridable methods. Invoking overridable methods from the readObject()
@@ -8805,8 +8805,8 @@ object explicitly.</p>
       therefore object initialization is not complete until readObject exits.</p>
       <p>
       <br/>
-      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">
-      MET06-J. Do not invoke overridable methods in clone()</a>.
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SER09-J.+Do+not+invoke+overridable+methods+from+the+readObject%28%29+method">
+      SER09-J. Do not invoke overridable methods from the readObject() method</a>.
       </p>]]>
     </Details>
   </BugPattern>

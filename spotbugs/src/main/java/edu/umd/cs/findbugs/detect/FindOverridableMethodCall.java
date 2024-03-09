@@ -185,7 +185,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                             SourceLineAnnotation.fromVisitedInstruction(this));
                 }
             } else if ("readObject".equals(getMethodName())) {
-                checkCallInReadObject(method);
+                checkCallInReadObject(getXMethod(), method);
             } else if (item.getRegisterNumber() == 0
                     && (getXMethod().isPrivate() || getXMethod().isFinal())) {
                 if (method.isPrivate() || method.isFinal()) {
@@ -223,20 +223,19 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         return true;
     }
 
-    void checkCallInReadObject(XMethod method) {
+    void checkCallInReadObject(XMethod caller, XMethod method) {
         // SER09-J-EX0: The readObject() method may invoke the overridable methods defaultReadObject() and readFields()
         // in class java.io.ObjectInputStream
         boolean inOis = method.getClassName().equals("java.io.ObjectInputStream");
         String methodName = method.getName();
-        if (inOis && methodName.equals("defaultReadObject") || method.getName().equals("readFields"))
-        {
+        if (inOis && methodName.equals("defaultReadObject") || method.getName().equals("readFields")) {
             return;
         }
 
         if (!method.isPrivate() && !method.isFinal()) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT", NORMAL_PRIORITY)
-                            .addClass(this).addString(method.getName()),
+                            .addClass(this).addMethod(caller).addString(method.getName()),
                     SourceLineAnnotation.fromVisitedInstruction(this));
         }
     }

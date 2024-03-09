@@ -126,12 +126,38 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
         testPass("FinalClassInheritedMethodReference");
     }
 
+    @Test
+    void testDirectReadObject() {
+        testReadObject("DirectReadObject", 8);
+    }
+
+    @Test
+    void testDirectReadObjectStreamMethods() {
+        testPass("DirectReadObjectStreamMethods");
+    }
+
     void testCase(String className, int constructorLine, int cloneLine) {
         performAnalysis("overridableMethodCall/" + className + ".class");
 
         checkOneBug();
         checkOverridableMethodCallInConstructor(className, constructorLine);
         checkOverridableMethodCallInClone(className, cloneLine);
+    }
+
+    void testReadObject(String className, int warningLine) {
+        performAnalysis("overridableMethodCall/" + className + ".class");
+
+        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType("MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT").build();
+        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+
+        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                .bugType("MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT")
+                .inClass(className)
+                .inMethod("readObject")
+                .atLine(warningLine)
+                .build();
+        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
     void testPass(String className) {
@@ -157,6 +183,10 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
 
         bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("MC_OVERRIDABLE_METHOD_CALL_IN_CLONE").build();
+        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+
+        bugTypeMatcher = new BugInstanceMatcherBuilder()
+                .bugType("MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT").build();
         assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
     }
 
