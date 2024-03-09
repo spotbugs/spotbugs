@@ -70,7 +70,6 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     private final Map<Integer, CallerInfo> refCallerConstructors = new HashMap<>();
     private final Map<Integer, CallerInfo> refCallerClones = new HashMap<>();
     private final Map<Integer, CallerInfo> refCallerReadObjects = new HashMap<>();
-
     private final MultiMap<Integer, XMethod> refCalleeToCallerMap = new MultiMap<>(ArrayList.class);
 
 
