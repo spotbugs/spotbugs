@@ -136,6 +136,16 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
         testPass("DirectReadObjectStreamMethods");
     }
 
+    @Test
+    void testIndirectReadObject1() {
+        testReadObject("IndirectReadObject1", 11);
+    }
+
+    @Test
+    void testIndirectReadObject2() {
+        testReadObject("IndirectReadObject2", 7);
+    }
+
     void testCase(String className, int constructorLine, int cloneLine) {
         performAnalysis("overridableMethodCall/" + className + ".class");
 
