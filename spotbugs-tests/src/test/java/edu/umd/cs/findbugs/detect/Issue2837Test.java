@@ -18,6 +18,24 @@ class Issue2837Test extends AbstractIntegrationTest {
                 .bugType("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR")
                 .build();
 
-        assertThat(getBugCollection(), containsExactly(0, matcher));
+        assertBugCount("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", 1);
+        assertBugAtLine("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", 15);
+    }
+
+    private void assertBugCount(String type, int expectedCount) {
+        BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder()
+                .bugType(type)
+                .build();
+
+        assertThat(getBugCollection(), containsExactly(expectedCount, bugMatcher));
+    }
+
+    private void assertBugAtLine(String type, int line) {
+        BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder()
+                .bugType(type)
+                .atLine(line)
+                .build();
+
+        assertThat(getBugCollection(), containsExactly(1, bugMatcher));
     }
 }
