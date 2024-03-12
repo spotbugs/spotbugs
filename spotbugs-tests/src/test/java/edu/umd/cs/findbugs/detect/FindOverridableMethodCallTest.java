@@ -108,22 +108,34 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
 
     @Test
     void testFinalClassInheritedDirect() {
-        testPass("FinalClassInheritedDirect");
+        performAnalysis("overridableMethodCall/FinalClassInheritedDirect.class",
+                "overridableMethodCall/InterfaceWithDefaultMethod.class");
+
+        checkNoBug();
     }
 
     @Test
     void testFinalClassInheritedIndirect() {
-        testPass("FinalClassInheritedIndirect");
+        performAnalysis("overridableMethodCall/FinalClassInheritedIndirect.class",
+                "overridableMethodCall/InterfaceWithDefaultMethod.class");
+
+        checkNoBug();
     }
 
     @Test
     void testFinalClassInheritedDoubleIndirect() {
-        testPass("FinalClassInheritedDoubleIndirect");
+        performAnalysis("overridableMethodCall/FinalClassInheritedDoubleIndirect.class",
+                "overridableMethodCall/InterfaceWithDefaultMethod.class");
+
+        checkNoBug();
     }
 
     @Test
     void testFinalClassInheritedMethodReference() {
-        testPass("FinalClassInheritedMethodReference");
+        performAnalysis("overridableMethodCall/FinalClassInheritedMethodReference.class",
+                "overridableMethodCall/InterfaceWithDefaultMethod.class");
+
+        checkNoBug();
     }
 
     void testCase(String className, int constructorLine, int cloneLine) {

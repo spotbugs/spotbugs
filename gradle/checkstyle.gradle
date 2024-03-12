@@ -8,7 +8,7 @@ configurations.checkstyle {
 }
 
 checkstyle {
-  toolVersion '10.14.0'
+  toolVersion '10.14.1'
   ignoreFailures false
   configFile file("$rootDir/spotbugs/etc/checkstyle.xml") // TODO : This config file is lame and should be moved out...
 }
