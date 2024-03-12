@@ -16,9 +16,17 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Ignore generic variable types when looking for BC_UNCONFIRMED_CAST_OF_RETURN_VALUE ([#1219](https://github.com/spotbugs/spotbugs/issues/1219))
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches ([#2813](https://github.com/spotbugs/spotbugs/pull/2813))
 - Remove AppleExtension library (note: menus slightly changed) ([#2823](https://github.com/spotbugs/spotbugs/pull/2823))
+- Fix false positive NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE even if Objects.requireNonNull is used. ([#651](https://github.com/spotbugs/spotbugs/issues/651), [#456](https://github.com/spotbugs/spotbugs/issues/456))
 - Fixed error preventing SpotBugs from reporting FE_FLOATING_POINT_EQUALITY ([#2843](https://github.com/spotbugs/spotbugs/pull/2843))
 - Fixed NP_LOAD_OF_KNOWN_NULL_VALUE and RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE false positives in try-with-resources generated finally blocks ([#2844](https://github.com/spotbugs/spotbugs/pull/2844))
 - Do not report DLS_DEAD_LOCAL_STORE for Java 21's type switches ([#2828](https://github.com/spotbugs/spotbugs/pull/2828))
+- Update UnreadFields detector to ignore warnings for fields with certain annotations ([#574](https://github.com/spotbugs/spotbugs/issues/574))
+- Do not report UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR for fields initialized in method annotated with @PostConstruct, @BeforeEach, etc. ([#2872](https://github.com/spotbugs/spotbugs/pull/2872) [#2870](https://github.com/spotbugs/spotbugs/issues/2870) [#453](https://github.com/spotbugs/spotbugs/issues/453))
+- Do not report DLS_DEAD_LOCAL_STORE for Hibernate bytecode enhancements ([#2865](https://github.com/spotbugs/spotbugs/pull/2865))
+- Fixed NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE false positives due to source code formatting ([#2874](https://github.com/spotbugs/spotbugs/pull/2874))
+- Added more nullability annotations in TypeQualifierResolver ([#2558](https://github.com/spotbugs/spotbugs/issues/2558) [#2694](https://github.com/spotbugs/spotbugs/pull/2694))
+- Improved the bug description for VA_FORMAT_STRING_USES_NEWLINE when using text blocks, check the usage of String.formatted() ([#2881](https://github.com/spotbugs/spotbugs/pull/2881))
+- Fixed crash in ValueRangeAnalysisFactory when looking for redundant conditions used in assertions [#2887](https://github.com/spotbugs/spotbugs/pull/2887))
 
 ### Added
 - New detector `MultipleInstantiationsOfSingletons` and introduced new bug types:
