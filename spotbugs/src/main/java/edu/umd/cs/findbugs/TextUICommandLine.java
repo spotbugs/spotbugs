@@ -270,7 +270,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     private List<TextUIBugReporter> reporters = new ArrayList<>();
 
     /**
-     * Parse {@code optionExtraPart} create a path-associated {@Link TextUIBugReporter} if it contains the
+     * Parse {@code optionExtraPart} and create a path-associated {@Link TextUIBugReporter} if it contains the
      * output file path such as {@code ":withMessages=path/to/file.extension"} and {@code "=/absolute/path/to/file.extension"}.
      * Finally configure the created BugReporter with the {@code optionExtraPart}'s configuration information.
      *
@@ -279,7 +279,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
      * @param handleOptions   A function that can configure the created {@code BugReporter} instance.
      * @param <T>             The implementation type of the {@Link TextUIBugReporter} to propagate type
      *                        information between {@link ctor} and {@link handleOptions}.
-     * @return The fully configured reporter
+     * @return The fully configured reporter, or {@code null}, if the reporter would output to a file that is already used as a reporter output file.
      */
     /* visible for testing */ <T extends TextUIBugReporter> TextUIBugReporter initializeReporter(String optionExtraPart,
             Supplier<T> ctor, BiConsumer<T, String> handleOptions) {
