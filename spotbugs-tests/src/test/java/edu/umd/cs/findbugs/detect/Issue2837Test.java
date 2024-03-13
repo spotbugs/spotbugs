@@ -14,9 +14,6 @@ class Issue2837Test extends AbstractIntegrationTest {
     @Test
     void testIssue() {
         performAnalysis("ghIssues/Issue2837.class");
-        BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR")
-                .build();
 
         assertBugCount("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", 1);
         assertBugAtLine("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", 15);
