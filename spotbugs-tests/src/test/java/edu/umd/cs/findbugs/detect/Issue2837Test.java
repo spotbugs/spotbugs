@@ -16,7 +16,7 @@ class Issue2837Test extends AbstractIntegrationTest {
         performAnalysis("ghIssues/Issue2837.class");
 
         assertBugCount("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", 1);
-        assertBugAtLine("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", 15);
+        assertBugAtLine("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", 19);
     }
 
     private void assertBugCount(String type, int expectedCount) {
