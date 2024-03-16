@@ -21,10 +21,10 @@ class TextUICommandLineTest {
         TextUICommandLine commandLine = new TextUICommandLine();
 
         TextUIBugReporter call1 = commandLine.initializeReporter("withMessages=" + file.toFile().getAbsolutePath(),
-                () -> new SortingBugReporter(), (r, rOpts) -> {
+                () -> new SortingBugReporter(), (reporter, reporterOptions) -> {
                 });
         TextUIBugReporter call2 = commandLine.initializeReporter("withMessages=" + file.toFile().getAbsolutePath(),
-                () -> new SortingBugReporter(), (r, rOpts) -> {
+                () -> new SortingBugReporter(), (reporter, reporterOptions) -> {
                 });
 
         assertNotNull(call1);
@@ -37,7 +37,7 @@ class TextUICommandLineTest {
         TextUICommandLine commandLine = new TextUICommandLine();
         TextUIBugReporter reporter = commandLine.initializeReporter("withMessages=" + file.toFile().getAbsolutePath(),
                 () -> new SortingBugReporter(),
-                (r, rOpt) -> {
+                (constructed, reporterOptions) -> {
                 });
 
         reporter.finish();
@@ -53,7 +53,7 @@ class TextUICommandLineTest {
         TextUICommandLine commandLine = new TextUICommandLine();
         TextUIBugReporter reporter = commandLine.initializeReporter("withMessages=" + file.toFile().getAbsolutePath(),
                 () -> new SortingBugReporter(),
-                (r, rOpt) -> {
+                (constructed, reporterOptions) -> {
                 });
 
         reporter.finish();

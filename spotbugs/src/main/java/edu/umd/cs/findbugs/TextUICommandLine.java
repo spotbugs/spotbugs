@@ -361,8 +361,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     () -> new SortingBugReporter(),
                     (r, rOpts) -> {
                     });
-            if (reporter != null)
+            if (reporter != null) {
                 reporters.add(reporter);
+            }
         } else if ("-xml".equals(option)) {
             bugReporterType = XML_REPORTER;
             TextUIBugReporter reporter = initializeReporter(
@@ -382,16 +383,18 @@ public class TextUICommandLine extends FindBugsCommandLine {
                             }
                         }
                     });
-            if (reporter != null)
+            if (reporter != null) {
                 reporters.add(reporter);
+            }
         } else if ("-emacs".equals(option)) {
             bugReporterType = EMACS_REPORTER;
             TextUIBugReporter reporter = initializeReporter(optionExtraPart,
                     () -> new EmacsBugReporter(),
                     (r, rOpts) -> {
                     });
-            if (reporter != null)
+            if (reporter != null) {
                 reporters.add(reporter);
+            }
         } else if ("-relaxed".equals(option)) {
             relaxedReportingMode = true;
         } else if ("-train".equals(option)) {
@@ -406,24 +409,27 @@ public class TextUICommandLine extends FindBugsCommandLine {
                         if (!"".equals(rOpt))
                             r.setStylesheet(rOpt);
                     });
-            if (reporter != null)
+            if (reporter != null) {
                 reporters.add(reporter);
+            }
         } else if ("-xdocs".equals(option)) {
             bugReporterType = XDOCS_REPORTER;
             TextUIBugReporter reporter = initializeReporter(optionExtraPart,
                     () -> new XDocsBugReporter(project),
                     (r, rOpts) -> {
                     });
-            if (reporter != null)
+            if (reporter != null) {
                 reporters.add(reporter);
+            }
         } else if ("-sarif".equals(option)) {
             bugReporterType = SARIF_REPORTER;
             TextUIBugReporter reporter = initializeReporter(optionExtraPart,
                     () -> new SarifBugReporter(project),
                     (r, rOpts) -> {
                     });
-            if (reporter != null)
+            if (reporter != null) {
                 reporters.add(reporter);
+            }
         } else if ("-applySuppression".equals(option)) {
             applySuppression = true;
         } else if ("-quiet".equals(option)) {
