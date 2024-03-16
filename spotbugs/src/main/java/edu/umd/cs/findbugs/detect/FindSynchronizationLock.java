@@ -21,10 +21,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -32,177 +29,49 @@ import edu.umd.cs.findbugs.util.MultiMap;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
-/* done: it probably should be a new type of bug because a string message must be added where the lock is EXPOSED or Updated
-    also add multiple little test cases like:
-    - what happens if the new value comes from a function parameter
-    - what happens if the new value comes from a local variable
-    - what happens if the new value is directly assigned to the lock
-    - what happens if the field is declared final
-    - what happens if the field is declared final and there is a setMethod
-    - what happens if the field is declared final and there is a getMethod(this is compilation error, but you should be mentioning it in a comment)
-    - add a bug that contains a accessor/exposing method too(as string)
-*/
-/*
-todo:
-  - check if there is an overlap in the tests - possible there is
-    - refactor them if needed based on their type: volatile tests, accessible static tests, etc. - kind of refactored
-  - refactor detector:
-    - it should detect locks that are accessible from outside
-    - it should detect locks that are accessible from outside in the presence of an accessor/exposing method
-    - it shouldn't report them multiple times; for example if a lock is public and there is an accessor too, it must be reported only once
- */
-
-/**
-    Detector logic: from the highest priority to lowest<br>
-*      <ol>
-*      <li>if a lock is public:
-*          report it as OBJECT_BUG
-*       </li>
-*      <li>if a lock is protected:
-*          <ul>
-*              <li>
-*                  the class it was declared in has accessor/getter:
-*                      report it as an ACCESSIBLE_OBJECT BUG
-*              </li>
-*              <li> the class it was declared in has NO accessor/getter:
-*                  <ul>
-*                      <li>the class it was declared in isn't final:
-*                          report it as an OBJECT_BUG
-*                      </li>
-*                  </ul>
-*              </li>
-*          </ul>
-*      </li>
-*      <li>if a lock is private(AND not final):
-*          <ul>
-*              <li>if the class it was declared in has an accessor/getter: report it as an ACCESSIBLE_OBJECT_BUG</li>
-*          </ul>
-*      </li>
-*      <li>if a lock is volatile(and none of the above applies, but I think they most probably will; MAYBE package private locks remained):
-*          <ul>
-*              <li>
-*                  if the class it was declared in has an accessor/getter: report it as an ACCESSIBLE_OBJECT_BUG
-*              </li>
-*          </ul>
-*      </li>
-*      <li>if a lock is static(and none of the above applies, but I think they most probably will; MAYBE package private locks remained):
-*          <ul>
-*              <li>
-*                  if the class it was declared in has an accessor/getter: report it as an ACCESSIBLE_OBJECT_BUG
-*              </li>
-*          </ul>
-*      </li>
-*
-*      <li>if a lock is package private:
-*          report it as OBJECT_BUG
-*      </li>
-*      </ol>
-*/
 public class FindSynchronizationLock extends OpcodeStackDetector {
 
     private static final String METHOD_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String STATIC_METHOD_BUG = "PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String ACCESSIBLE_OBJECT_BUG = "PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
+    private static final String INHERITED_OBJECT_BUG = "PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
+    private static final String EXPOSING_LOCK_OBJECT_BUG = "PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private final BugReporter bugReporter;
-    private final HashSet<XMethod> synchronizedMethods;
     private final HashSet<Method> exposingMethods;
-    private final MultiMap<XField, XMethod> lockAccessors;
-    private final HashMap<XField, XMethod> usedLockObjects;
+    private final HashSet<XMethod> synchronizedMethods;
+    private final HashMap<XField, XMethod> declaredLockObjects;
+    private final HashMap<XField, XMethod> inheritedLockObjects;
+    private final MultiMap<XField, XMethod> declaredLockAccessors;
+    private final MultiMap<XField, XMethod> lockAccessorsInHierarchy;
+    private final MultiMap<XField, XMethod> lockUsingMethodsInHierarchy;
+    private final MultiMap<XField, XMethod> declaredFieldReturningMethods;
+    private final MultiMap<XField, XMethod> potentialObjectBugContainingMethods;
+    private final MultiMap<XField, XMethod> potentialInheritedBugContainingMethods;
     private JavaClass currentClass;
 
     public FindSynchronizationLock(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        this.synchronizedMethods = new HashSet<>();
         this.exposingMethods = new HashSet<>();
-        this.usedLockObjects = new HashMap<>();
-        this.lockAccessors = new MultiMap<>(HashSet.class);
+        this.synchronizedMethods = new HashSet<>();
+        this.declaredLockObjects = new HashMap<>();
+        this.inheritedLockObjects = new HashMap<>();
+        this.declaredLockAccessors = new MultiMap<>(HashSet.class);
+        this.lockAccessorsInHierarchy = new MultiMap<>(HashSet.class);
+        this.lockUsingMethodsInHierarchy = new MultiMap<>(HashSet.class);
+        this.declaredFieldReturningMethods = new MultiMap<>(HashSet.class);
+        this.potentialObjectBugContainingMethods = new MultiMap<>(HashSet.class);
+        this.potentialInheritedBugContainingMethods = new MultiMap<>(HashSet.class);
     }
 
     @Override
-    public void sawOpcode(int seen) {
-        if (seen == Const.MONITORENTER) {
-            OpcodeStack.Item lock = stack.getStackItem(0);
-            XField lockObject = lock.getXField();
-
-            if (lockObject != null) {
-                // only interested in it if the lock is inside the current class
-                // or it was inherited
-                String declaringClass = ClassName.toSlashedClassName(lockObject.getClassName());
-                try {
-                    if (getClassName().equals(declaringClass) || inheritsFromHierarchy(
-                            lockObject)) { /* @note what if we use the param in a function as a lock? */
-                        XMethod xMethod = getXMethod();
-                        if (lockObject.isPublic()) {
-                            bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
-                                    .addClassAndMethod(xMethod)
-                                    .addField(lockObject));
-                        } else {
-                            usedLockObjects.put(lockObject, xMethod);
-                        }
-                    }
-                } catch (ClassNotFoundException e) {
-                    AnalysisContext.reportMissingClass(e);
-                }
-            }
-
-        }
-
-        if ((seen == Const.PUTSTATIC || seen == Const.PUTFIELD) && !Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
-            XMethod updateMethod = getXMethod();
-            if (updateMethod.isPublic() || updateMethod.isProtected()) { /* @note:  What happens if this a private or protected method? */
-                XField updatedField = getXFieldOperand();
-                if (updatedField == null || updatedField.isPublic()) {
-                    return;
-                }
-                lockAccessors.add(updatedField, updateMethod);
-
-                System.out.println("Kind of breakpoint");
-            }
-        }
-
-        if (seen == Const.ARETURN) {
-            /* @note: Add method here that returned it */
-            OpcodeStack.Item returnValue = stack.getStackItem(0);
-            XField returnedField = returnValue.getXField();
-            if (returnedField == null || returnedField.isPublic()) {
-                return;
-            }
-            XMethod exposingMethod = getXMethod();
-            lockAccessors.add(returnedField, exposingMethod);
-
-            System.out.println("Stop here");
-        }
-    }
-
-    private Boolean inheritsFromHierarchy(XField lockObject) throws ClassNotFoundException {
-        String currentClassName = ClassName.toDottedClassName(getClassName());
-        String lockObjectDeclaringClassName = lockObject.getClassName();
-        if (currentClassName.equals(lockObjectDeclaringClassName)) {
-            return false;
-        }
-
-        // the lock object was defined at some point in the hierarchy
-        JavaClass[] allInterfaces = currentClass.getAllInterfaces();
-        for (JavaClass next : allInterfaces) {
-            if (lockObjectDeclaringClassName.equals(next.getClassName())) {
-                return true;
-            }
-        }
-
-        JavaClass[] superClasses = currentClass.getSuperClasses();
-        for (JavaClass next : superClasses) {
-            if (lockObjectDeclaringClassName.equals(next.getClassName())) {
-                return true;
-            }
-        }
-        return false;
+    public void visit(JavaClass obj) {
+        currentClass = obj;
     }
 
     @Override
@@ -210,11 +79,9 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         XMethod xMethod = getXMethod();
         if (xMethod.isPublic() && xMethod.isSynchronized()) {
             if (xMethod.isStatic()) {
-                bugReporter.reportBug(new BugInstance(this, METHOD_BUG, NORMAL_PRIORITY)
-                        .addClassAndMethod(this));
-            } else {
-                synchronizedMethods.add(xMethod);
+                bugReporter.reportBug(new BugInstance(this, STATIC_METHOD_BUG, NORMAL_PRIORITY).addClassAndMethod(this));
             }
+            synchronizedMethods.add(xMethod);
         }
 
         if (!(xMethod.isStatic() || xMethod.isPublic())) {
@@ -235,40 +102,82 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                 exposingMethods.add(obj);
             }
         }
-        super.visit(obj);
+
     }
 
     @Override
-    public void visit(JavaClass obj) {
-        currentClass = obj;
-    }
+    public void sawOpcode(int seen) {
+        if (seen == Const.MONITORENTER) {
+            OpcodeStack.Item lock = stack.getStackItem(0);
+            XField lockObject = lock.getXField();
 
-    private boolean isAccessible(XField lock) {
-        return lockAccessors.containsKey(lock);
-    }
+            if (lockObject != null) {
+                XMethod xMethod = getXMethod();
+                try {
+                    boolean inheritedFromHierarchy = inheritsFromHierarchy(lockObject);
+                    if (inheritedFromHierarchy) {
+                        inheritedLockObjects.put(lockObject, xMethod);
+                        findExposureInHierarchy(lockObject).forEach(method -> lockAccessorsInHierarchy.add(lockObject, method));
 
-    private Collection<XMethod> getAccessorMethods(XField lock) {
-        /** @NOTE
-          *  iterate over the methods that accessed fields or returned them
-          *  if this was accessed or returned by a  method add to the list
-          *  return the list
-          */
-        /**
-         * @todo:
-         *  you got two maps with all the methods that either expose or update the field
-         *  it would be nice if you would collect these inside a map for each field, and only check if the field is present in the map:
-         *  HashMap<XField, HashSet<XMethod>> sketchyMethods;
-         *  sketchyMethods.get(lock)
-         */
-        return lockAccessors.get(lock);
-    }
+                        if (isPossiblyPublicObjectBug(lockObject)) {
+                            potentialObjectBugContainingMethods.add(lockObject, xMethod);
+                        } else if (isPossiblyNonPublicObjectBug(lockObject)) {
+                            potentialObjectBugContainingMethods.add(lockObject, xMethod);
+                        }
+                    } else {
+                        declaredLockObjects.put(lockObject, xMethod);
+                        if (isPossiblyPublicObjectBug(lockObject)) {
+                            potentialObjectBugContainingMethods.add(lockObject, xMethod);
+                        }
 
-    private Boolean isFinalDeclaringClass(XField lock) throws ClassNotFoundException {
-        return currentClass.isFinal();
-    }
+                        if (isPossiblyProtectedInheritedBug(lockObject)) {
+                            potentialInheritedBugContainingMethods.add(lockObject, xMethod);
+                        } else if (isPossiblyPackagePrivateInheritedBug(lockObject)) {
+                            potentialInheritedBugContainingMethods.add(lockObject, xMethod);
+                        }
+                    }
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
+                }
+            }
 
-    private Boolean isPackagePrivate(XField field) {
-        return !(field.isPublic() || field.isProtected() || field.isPrivate());
+        }
+
+        if ((seen == Const.PUTSTATIC || seen == Const.PUTFIELD) && !isInitializerMethod(getMethodName())) {
+            XMethod updateMethod = getXMethod();
+            XField updatedField = getXFieldOperand();
+
+            if (updatedField == null) {
+                return;
+            }
+
+            checkLockUsageInHierarchy(updatedField, updateMethod);
+
+            if (updateMethod.isPublic() || updateMethod.isProtected()) { /* @note:  What happens if this a private or protected method? */
+                if (updatedField.isPublic()) {
+                    return;
+                }
+                declaredLockAccessors.add(updatedField, updateMethod);
+            }
+        }
+
+        if (seen == Const.ARETURN) {
+            OpcodeStack.Item returnValue = stack.getStackItem(0);
+            XField returnedField = returnValue.getXField();
+
+            if (returnedField == null) {
+                return;
+            }
+
+            XMethod exposingMethod = getXMethod();
+            checkLockUsageInHierarchy(returnedField, exposingMethod);
+
+            if (returnedField.isPublic()) {
+                return;
+            }
+
+            declaredLockAccessors.add(returnedField, exposingMethod);
+        }
     }
 
     @Override
@@ -276,14 +185,11 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         if (!exposingMethods.isEmpty()) {
             String exposingMethodsMessage = exposingMethods.stream().map(Method::toString).collect(Collectors.joining(",\n"));
             for (XMethod synchronizedMethod : synchronizedMethods) {
-                BugInstance bugInstance = new BugInstance(this, METHOD_BUG, NORMAL_PRIORITY)
-                        .addClassAndMethod(synchronizedMethod)
-                        .addString(exposingMethodsMessage);
+                BugInstance bugInstance = new BugInstance(this, METHOD_BUG, NORMAL_PRIORITY).addClassAndMethod(synchronizedMethod).addString(
+                        exposingMethodsMessage);
                 bugReporter.reportBug(bugInstance);
             }
         }
-        exposingMethods.clear();
-        synchronizedMethods.clear();
 
         /**
          * How to refactor the detector logic:
@@ -354,59 +260,292 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
          * |   ^   |     x     |  x  |   _   |   _   |    _    |     _     |    _    |    _    |  _  |   x   |   _   | Already in the table
          */
         /*
-        * @todo:
-        *   - Add string with exposed methods
-        *   - Add a final test case maybe?
-        *   - Refactor and optimize the reporting step
-        *   - Check what is the case with package private locks
-        *   - Discuss the hard cases
-        */
-        for (XField lock : usedLockObjects.keySet()) {
-            String problematicMethods = lockAccessors.get(lock).stream().map(XMethod::toString).collect(Collectors.joining(",\n"));
-            // don't check public fields, because they were already reported at this point
-            if (lock.isProtected()) {
-                if (isAccessible(lock)) {
-                    bugReporter.reportBug(new BugInstance(this, ACCESSIBLE_OBJECT_BUG, NORMAL_PRIORITY)
-                            .addClass(this)
-                            .addMethod(usedLockObjects.get(lock))
-                            .addField(lock)
-                            .addString(problematicMethods));
-                } else {
-                    try {
-                        if (!isFinalDeclaringClass(lock)) {
-                            bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
-                                    .addClass(this)
-                                    .addMethod(usedLockObjects.get(lock))
-                                    .addField(lock));
-                        }
-                    } catch (ClassNotFoundException e) {
-                        AnalysisContext.reportMissingClass(e);
-                    }
-                }
-            } else if (lock.isPrivate() && !lock.isFinal()) {
-                if (isAccessible(lock)) {
-                    bugReporter.reportBug(new BugInstance(this, ACCESSIBLE_OBJECT_BUG, NORMAL_PRIORITY)
-                            .addClass(this)
-                            .addMethod(usedLockObjects.get(lock))
-                            .addField(lock)
-                            .addString(problematicMethods));
-                }
-            } else if (isPackagePrivate(lock)) {
-                bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY)
-                        .addClass(this)
-                        .addMethod(usedLockObjects.get(lock))
-                        .addField(lock)
-                        .addString(problematicMethods));
-            } else if (isAccessible(lock)) {
-                bugReporter.reportBug(new BugInstance(this, ACCESSIBLE_OBJECT_BUG, NORMAL_PRIORITY)
-                        .addClass(this)
-                        .addMethod(usedLockObjects.get(lock))
-                        .addField(lock)
-                        .addString(problematicMethods));
+         * @todo:
+         *   - Add string with exposed methods
+         *   - Add a final test case maybe?
+         *   - Refactor and optimize the reporting step
+         *   - Check what is the case with package private locks
+         *   - Discuss the hard cases
+         */
+
+        for (XField lock : declaredLockObjects.keySet()) {
+            if (!declaredLockAccessors.get(lock).isEmpty()) {
+                reportAccessibleObjectBug(lock, declaredLockAccessors, declaredLockObjects);
+            } else if (!potentialInheritedBugContainingMethods.get(lock).isEmpty()) {
+                reportInheritedObjectBugs(lock, potentialInheritedBugContainingMethods.get(lock));
+            } else if (!potentialObjectBugContainingMethods.get(lock).isEmpty()) {
+                reportObjectBugs(lock, potentialObjectBugContainingMethods.get(lock));
             }
         }
-        usedLockObjects.clear();
-        lockAccessors.clear();
+
+        for (XField lock : inheritedLockObjects.keySet()) {
+            if (!declaredLockAccessors.get(lock).isEmpty()) {
+                reportAccessibleObjectBug(lock, declaredLockAccessors, inheritedLockObjects);
+            } else if (!lockAccessorsInHierarchy.get(lock).isEmpty()) {
+                reportAccessibleObjectBug(lock, lockAccessorsInHierarchy, inheritedLockObjects);
+            } else if (!potentialObjectBugContainingMethods.get(lock).isEmpty()) {
+                reportObjectBugs(lock, potentialObjectBugContainingMethods.get(lock));
+            }
+        }
+
+        for (XField lock : lockUsingMethodsInHierarchy.keySet()) {
+            if (!declaredFieldReturningMethods.get(lock).isEmpty()) {
+                reportExposingLockObjectBugs(lock, lockUsingMethodsInHierarchy.get(lock), declaredFieldReturningMethods.get(lock));
+            }
+        }
+
+        clearState();
     }
 
+    private boolean isPackagePrivate(XField field) {
+        return !(field.isPublic() || field.isProtected() || field.isPrivate());
+    }
+
+    private boolean isPossiblyNonPublicObjectBug(XField lockObject) {
+        return lockObject.isProtected() || isPackagePrivate(lockObject);
+    }
+
+    private boolean isPossiblyPublicObjectBug(XField lockObject) {
+        return lockObject.isPublic();
+    }
+
+    private boolean isPossiblyPackagePrivateInheritedBug(XField lockObject) {
+        return isPackagePrivate(lockObject);
+    }
+
+    private boolean isPossiblyProtectedInheritedBug(XField lockObject) {
+        return lockObject.isProtected() && !currentClass.isFinal();
+    }
+
+    private boolean isInitializerMethod(String methodName) {
+        return Const.CONSTRUCTOR_NAME.equals(methodName) || Const.STATIC_INITIALIZER_NAME.equals(methodName);
+    }
+
+    private boolean isMethodNotInteresting(Method method, Optional<HashSet<Method>> ownMethods) {
+        if (ownMethods.isPresent() && ownMethods.get().contains(method)) {
+            return true;
+        }
+
+        if (isInitializerMethod(method.getName())) {
+            return true;
+        }
+
+        return method.getCode() == null;
+    }
+
+    private boolean isSameAsLockObject(XField maybeLockObject, XField lockObject) {
+        if (maybeLockObject == null || lockObject == null) {
+            return false;
+        }
+        return lockObject.equals(maybeLockObject);
+    }
+
+    private boolean inheritsFromHierarchy(XField lockObject) throws ClassNotFoundException {
+        String currentClassName = ClassName.toDottedClassName(getClassName());
+        String lockObjectDeclaringClassName = lockObject.getClassName();
+        if (currentClassName.equals(lockObjectDeclaringClassName)) {
+            return false;
+        }
+
+        // the lock object was defined at some point in the hierarchy
+        JavaClass[] allInterfaces = currentClass.getAllInterfaces();
+        for (JavaClass next : allInterfaces) {
+            if (lockObjectDeclaringClassName.equals(next.getClassName())) {
+                return true;
+            }
+        }
+
+        JavaClass[] superClasses = currentClass.getSuperClasses();
+        for (JavaClass next : superClasses) {
+            if (lockObjectDeclaringClassName.equals(next.getClassName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private HashSet<Map.Entry<Method, JavaClass>> getAllSuperMethods() throws ClassNotFoundException {
+        return Arrays.stream(currentClass.getSuperClasses()).flatMap(cls -> Arrays.stream(cls.getMethods()).map(m -> new AbstractMap.SimpleEntry<>(m,
+                cls))).collect(Collectors.toCollection(HashSet::new));
+    }
+
+    private HashSet<XMethod> findExposureInHierarchy(XField lockObject) throws ClassNotFoundException {
+        /**
+         * @NOTE: Probably this will come in handy:
+         *       XMethod xmethod = XFactory.createXMethod(jclass, method);
+         *       ---------------------------------------------------------------
+         *        locationLoop: for (Iterator<Location> iter = cfg.locationIterator(); iter.hasNext();) {
+         *             Location location = iter.next();
+         *             InstructionHandle handle = location.getHandle();
+         *             Instruction ins = handle.getInstruction();
+         *
+         *             // Only consider invoke instructions
+         *             if (!(ins instanceof InvokeInstruction)) {
+         *                 continue;
+         *             }
+         *             if (ins instanceof INVOKEINTERFACE) {
+         *                 continue;
+         *             }
+         *
+         *  final ConstantPool cp = cpg.getConstantPool();
+         *  final ConstantCP cmr = (ConstantCP) cp.getConstant(super.getIndex());
+         *  final ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex());
+         *  String fieldName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex())).getBytes();
+         *                          *
+         *  ConstantMethodref cmr = (ConstantMethodref) c;
+         *  ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex(),
+         *      Const.CONSTANT_NameAndType);
+         *  String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), Const.CONSTANT_Utf8)).getBytes();
+         *  String className = cp.getConstantString(cmr.getClassIndex(), Const.CONSTANT_Class).replace('/', '.');
+         *  String methodSig = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex(), Const.CONSTANT_Utf8)).getBytes();
+         */
+
+        HashSet<XMethod> unsafeMethods = new HashSet<>();
+        HashSet<Method> ownMethods = new HashSet<>(Arrays.asList(currentClass.getMethods()));
+
+        for (Map.Entry<Method, JavaClass> entry : getAllSuperMethods()) {
+            Method possibleAccessorMethod = entry.getKey();
+            JavaClass declaringClass = entry.getValue();
+
+            if (isMethodNotInteresting(possibleAccessorMethod, Optional.of(ownMethods))) {
+                continue;
+            }
+
+            try {
+                ClassContext classContext = new ClassContext(declaringClass, AnalysisContext.currentAnalysisContext());
+                ConstantPoolGen cpg = classContext.getConstantPoolGen();
+
+                for (Location location : classContext.getCFG(possibleAccessorMethod).orderedLocations()) {
+                    InstructionHandle handle = location.getHandle();
+                    Instruction instruction = handle.getInstruction();
+
+                    // this can be changed to
+                    // short opcode = instruction.getOpcode();
+                    // opcode == Const.PUTFIELD
+                    if (instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) {
+                        FieldInstruction fieldInstruction = (FieldInstruction) instruction;
+                        XField xfield = Hierarchy.findXField(fieldInstruction, cpg);
+
+                        if (isSameAsLockObject(xfield, lockObject) && !xfield.isPublic()) {
+                            XMethod unsafeXMethod = XFactory.createXMethod(declaringClass, possibleAccessorMethod);
+                            unsafeMethods.add(unsafeXMethod);
+                        }
+                    }
+
+                    if (instruction instanceof ARETURN) {
+                        OpcodeStack currentStack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), possibleAccessorMethod, handle
+                                .getPosition());
+                        XField xField = currentStack.getStackItem(0).getXField();
+
+                        if (isSameAsLockObject(xField, lockObject) && !xField.isPublic()) {
+                            XMethod unsafeXMethod = XFactory.createXMethod(declaringClass, possibleAccessorMethod);
+                            unsafeMethods.add(unsafeXMethod);
+                        }
+                    }
+
+                }
+            } catch (CFGBuilderException e) {
+                AnalysisContext.logError("Error analyzing method", e);
+            }
+        }
+
+        return unsafeMethods;
+    }
+
+    private HashSet<XMethod> findLockUsageInHierarchy(XField field) throws ClassNotFoundException {
+        HashSet<XMethod> methodsUsingFieldAsLock = new HashSet<>();
+        for (Map.Entry<Method, JavaClass> entry : getAllSuperMethods()) {
+            Method possibleAccessorMethod = entry.getKey();
+            JavaClass declaringClass = entry.getValue();
+
+            if (isMethodNotInteresting(possibleAccessorMethod, Optional.empty())) {
+                continue;
+            }
+
+            // analyze the current method
+            // check if it uses the field as a lock
+            try {
+                ClassContext classContext = new ClassContext(declaringClass, AnalysisContext.currentAnalysisContext());
+                CFG cfg = classContext.getCFG(possibleAccessorMethod);
+
+                for (Location location : cfg.orderedLocations()) {
+                    InstructionHandle handle = location.getHandle();
+                    Instruction instruction = handle.getInstruction();
+
+                    if (instruction.getOpcode() == Const.MONITORENTER) {
+                        OpcodeStack currentStack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), possibleAccessorMethod, handle
+                                .getPosition());
+                        OpcodeStack.Item lock = currentStack.getStackItem(0);
+                        XField lockObject = lock.getXField();
+
+                        if (isSameAsLockObject(field, lockObject)) {
+                            methodsUsingFieldAsLock.add(XFactory.createXMethod(declaringClass, possibleAccessorMethod));
+                        }
+                    }
+                }
+
+            } catch (CFGBuilderException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return methodsUsingFieldAsLock;
+    }
+
+    private void checkLockUsageInHierarchy(XField field, XMethod exposingMethod) {
+        try {
+            if (inheritsFromHierarchy(field)) {
+                if (declaredFieldReturningMethods.get(field).isEmpty()) {
+                    findLockUsageInHierarchy(field).forEach(m -> lockUsingMethodsInHierarchy.add(field, m));
+                }
+                declaredFieldReturningMethods.add(field, exposingMethod);
+            }
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
+    }
+
+    private void reportExposingLockObjectBugs(XField lock, Collection<XMethod> lockUsingMethods, Collection<XMethod> exposingMethods) {
+        String exposingMethodsMessage = exposingMethods.stream().map(XMethod::toString).collect(Collectors.joining(",\n"));
+        for (XMethod lockUsingMethod : lockUsingMethods) {
+            bugReporter.reportBug(new BugInstance(this, EXPOSING_LOCK_OBJECT_BUG, NORMAL_PRIORITY).addClass(this).addMethod(lockUsingMethod).addField(
+                    lock).addString(exposingMethodsMessage));
+        }
+    }
+
+    private void reportAccessibleObjectBug(XField lock, MultiMap<XField, XMethod> lockAccessors, HashMap<XField, XMethod> synchronizedMethods) {
+        Collection<XMethod> definedLockAccessors = lockAccessors.get(lock);
+        if (!definedLockAccessors.isEmpty()) {
+            String problematicMethods = definedLockAccessors.stream().map(XMethod::toString).collect(Collectors.joining(",\n"));
+            bugReporter.reportBug(new BugInstance(this, ACCESSIBLE_OBJECT_BUG, NORMAL_PRIORITY).addClass(this).addMethod(synchronizedMethods.get(
+                    lock)).addField(lock).addString(problematicMethods));
+        }
+    }
+
+    private void reportInheritedObjectBugs(XField lock, Collection<XMethod> synchronizedMethods) {
+        for (XMethod synchronizedMethod : synchronizedMethods) {
+            bugReporter.reportBug(new BugInstance(this, INHERITED_OBJECT_BUG, LOW_PRIORITY).addClass(this).addMethod(synchronizedMethod).addField(
+                    lock));
+        }
+    }
+
+    private void reportObjectBugs(XField lock, Collection<XMethod> synchronizedMethods) {
+        for (XMethod synchronizedMethod : synchronizedMethods) {
+            bugReporter.reportBug(new BugInstance(this, OBJECT_BUG, NORMAL_PRIORITY).addClass(this).addMethod(synchronizedMethod).addField(lock));
+        }
+    }
+
+    private void clearState() {
+        exposingMethods.clear();
+        synchronizedMethods.clear();
+        declaredLockObjects.clear();
+        inheritedLockObjects.clear();
+        declaredLockAccessors.clear();
+        lockAccessorsInHierarchy.clear();
+        lockUsingMethodsInHierarchy.clear();
+        declaredFieldReturningMethods.clear();
+        potentialObjectBugContainingMethods.clear();
+        potentialInheritedBugContainingMethods.clear();
+    }
 }

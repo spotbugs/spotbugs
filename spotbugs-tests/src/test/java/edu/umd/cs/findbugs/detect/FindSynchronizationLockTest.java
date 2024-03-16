@@ -12,9 +12,6 @@ import static org.hamcrest.Matchers.hasItem;
 class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
     /**
-     * @todo Which of these should have priority in case of overlapping bugs? Or should we report both of them?
-     */
-    /**
      * Report:<br>
      *      0) the class where the bug is detected <br>
      *      1) the method used for synchronization<br>
@@ -36,7 +33,6 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     /**
      * Report:<br>
-     *      @note The class reported should be the class where the lock was declared or where the lock was used?<br>
      *      0) the class where the bug is detected <br>
      *      1) the method where it was used as lock (here)<br>
      *      2) the lock object itself<br>
@@ -108,7 +104,6 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     /**
      * The following tests are for object synchronization bugs
      */
-
     @Test
     void testBadSynchronizationExposedLockInDescendant() {
         performAnalysis("privateFinalLocks/BadSynchronizationWithExposedLockInDescendant.class",
@@ -188,7 +183,6 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
                 "privateFinalLocks/BadSynchronizationUsingExposedLockFromHierarchy.class",
                 "privateFinalLocks/BadSynchronizationUsingExposedLockFromHierarchy2.class");
 
-
         assertNumOfBugs(6, ACCESSIBLE_OBJECT_BUG);
 
         assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationUsingExposedLockFromHierarchy", "doStuff1",
@@ -267,18 +261,6 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff12", "lock12");
         assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff13", "lock13");
     }
-
-
-    /**
-     * The following tests are work in progress
-    *                  OBJECT_BUG
-     */
-
-
-
-    /**
-     * End of work in progress
-     */
 
     @Test
     void testGoodSynchronizationWithPrivateFinalLockObject() {
