@@ -540,9 +540,9 @@ The second invokes the Command Line Interface (Text UI):
   </varlistentry>
 
   <varlistentry>
-    <term><command>-onlyAnalyze</command> <replaceable>com.foobar.MyClass,com.foobar.mypkg.*</replaceable></term>
+    <term><command>-onlyAnalyze</command> <replaceable>com.foobar.MyClass,com.foobar.mypkg.*,!com.foobar.mypkg.ExcludedClass</replaceable></term>
     <listitem>
-      <para>コンマ区切りで指定したクラスおよびパッケージのみに限定して、バグ検出の解析を行うようにします。フィルターと違って、このオプションを使うと一致しないクラスおよびパッケージに対する解析の実行を回避することができます。大きなプロジェクトにおいて、このオプションを活用すると解析にかかる時間を大きく削減することができる可能性があります。(しかしながら、アプリケーションの全体で実行していないために不正確な結果を出してしまうディテクタがある可能性もあります。) クラスはパッケージも含んだ完全な名前を指定する必要があります。また、パッケージは、 Java の <literal>import</literal> 文でパッケージ下のすべてのクラスをインポートするときと同じ方法で指定します。 (すなわち、パッケージの完全な名前に <literal>.*</literal> を付け加えた形です。)<literal>.*</literal> の代わりに <literal>.-</literal> を指定すると、サブパッケージも含めてすべてが解析されます。</para>
+        <para>コンマ区切りで指定したクラスおよびパッケージのみに限定して、バグ検出の解析を行うようにします。フィルターと違って、このオプションを使うと一致しないクラスおよびパッケージに対する解析の実行を回避することができます。大きなプロジェクトにおいて、このオプションを活用すると解析にかかる時間を大きく削減することができる可能性があります。(しかしながら、アプリケーションの全体で実行していないために不正確な結果を出してしまうディテクタがある可能性もあります。) クラスはパッケージも含んだ完全な名前を指定する必要があります。また、パッケージは、 Java の <literal>import</literal> 文でパッケージ下のすべてのクラスをインポートするときと同じ方法で指定します。 (すなわち、パッケージの完全な名前に <literal>.*</literal> を付け加えた形です。)<literal>.*</literal> の代わりに <literal>.-</literal> を指定すると、サブパッケージも含めてすべてが解析されます。<literal>!</literal> で始まる項目 は否定的な意味を持っているため、含まれるのではなく除外されます。 除外は、指定された順序に関係なく、包含よりも優先されます。</para>
     </listitem>
   </varlistentry>
 

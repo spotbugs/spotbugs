@@ -223,7 +223,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
                     int priority = annotation.getPriority();
                     if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen)
-                            && !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.', '/') + ";")) {
+                            && !callSeen.getSignature().endsWith(ClassName.toSlashedClassName(callSeen.getClassName()) + ";")) {
                         priority++;
                     }
                     bugAccumulator.accumulateBug(new BugInstance(this, annotation.getPattern(), priority).addClassAndMethod(this)
@@ -260,9 +260,9 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                         String callReturnClass = callSeen.getName().equals(Const.CONSTRUCTOR_NAME) ? callSeen.getClassDescriptor().getClassName()
                                 : ClassName.fromFieldSignature(callReturnType.getSignature());
 
-                        String methodReturnClass = ClassName.fromFieldSignature(methodReturnType.getSignature());
+                        String methodReturnClass = ClassName.fromFieldSignatureToDottedClassName(methodReturnType.getSignature());
                         if (callReturnClass != null && methodReturnClass != null &&
-                                Subtypes2.instanceOf(ClassName.toDottedClassName(callReturnClass), ClassName.toDottedClassName(methodReturnClass))) {
+                                Subtypes2.instanceOf(ClassName.toDottedClassName(callReturnClass), methodReturnClass)) {
                             priority = HIGH_PRIORITY;
                         }
                     }
@@ -295,7 +295,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                     priority += 1;
                 }
                 if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen)
-                        && !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.', '/') + ";")) {
+                        && !callSeen.getSignature().endsWith(ClassName.toSlashedClassName(callSeen.getClassName()) + ";")) {
                     priority++;
                 }
                 if (callSeen.isPrivate()) {

@@ -68,7 +68,7 @@ class BugCollectionAnalyser {
     JsonObject getCweTaxonomy() {
         JsonObject cweTaxonomy = null;
 
-        if (taxa.size() > 0) {
+        if (!taxa.isEmpty()) {
             cweTaxonomy = createCweTaxonomyJson();
         }
 

@@ -10,9 +10,9 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 
-public class Issue2379Test extends AbstractIntegrationTest {
+class Issue2379Test extends AbstractIntegrationTest {
     @Test
-    public void test() {
+    void test() {
         performAnalysis("ghIssues/Issue2379.class");
 
         // Check that we've found the uncalled `unusedValues` private method

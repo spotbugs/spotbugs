@@ -8,6 +8,8 @@ When you release fixed version of SpotBugs, please follow these procedures.
 * version number in `CHANGELOG.md`
 * `version`, `full_version`, `maven_plugin_version` and `gradle_plugin_version` in `docs/conf.py`
 
+The PR containing these changes needs to be rebased and merged to master. Since the rebase changes the commit ids, a tag needs to be created on master and pushed there. The push of this tag starts the release CI job.
+
 ## Release to Maven Central
 
 When we push a tag, the build result on GitHub Actions will be deployed to the [SonaType Nexus](https://oss.sonatype.org/), and published to the Maven Central automatically by [Gradle Nexus Publish Plugin](https://github.com/gradle-nexus/publish-plugin). Then we can find [artifacts in the Maven Central](https://repo1.maven.org/maven2/com/github/spotbugs/) after several hours.
@@ -28,7 +30,7 @@ Update version in [Eclipse Marketplace page](https://marketplace.eclipse.org/con
 
 ## Release to Gradle Plugin Portal
 
-No action necessary. When we push tag, the build result on GitHub CI will be deployed to Gradle Plugin Portal.
+This project is not released directly to the Gradle Plugin Portal, that is the role of the [SpotBugs Gradle Plugin](https://github.com/spotbugs/spotbugs-gradle-plugin) project.
 
 ## Release to ReadTheDocs
 

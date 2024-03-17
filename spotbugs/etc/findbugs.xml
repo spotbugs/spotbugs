@@ -1,641 +1,639 @@
 <FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
-                pluginid="edu.umd.cs.findbugs.plugins.core"
-                version="USE_FINDBUGS_VERSION"
-                provider="SpotBugs project" website="https://github.com/spotbugs"
-                update-url="http://update.findbugs.org/update-check">
+          xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
+          pluginid="edu.umd.cs.findbugs.plugins.core"
+          version="USE_FINDBUGS_VERSION"
+          provider="SpotBugs project" website="https://github.com/spotbugs"
+          update-url="http://update.findbugs.org/update-check">
 
-    <!--
-Plugin descriptor for SpotBugs "core" plugin.
-This plugin is enabled by default.
+          <!--
+  Plugin descriptor for SpotBugs "core" plugin.
+  This plugin is enabled by default.
 -->
-    <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud"
-           cloudClass="edu.umd.cs.findbugs.cloud.DoNothingCloud"
-           usernameClass="edu.umd.cs.findbugs.cloud.username.NoNameLookup"/>
+          <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud"
+                    cloudClass="edu.umd.cs.findbugs.cloud.DoNothingCloud"
+                    usernameClass="edu.umd.cs.findbugs.cloud.username.NoNameLookup"/>
 
-    <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressI18N"
-                     componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
-                     componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
-                     disabled="true">
-        <Property key="category">I18N</Property>
-    </PluginComponent>
-    <PluginComponent id="edu.umd.cs.findbugs.bugReporter.MaxRank14"
-                     componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
-                     componentClass="edu.umd.cs.findbugs.bugReporter.MaxRankDecorator"
-                     disabled="true">
-        <Property key="maxRank">14</Property>
-    </PluginComponent>
-    <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N"
-                     componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
-                     componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
-                     disabled="true">
-        <Property key="category">I18N</Property>
-        <Property key="packageSource">i18n.properties</Property>
-    </PluginComponent>
-    <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded"
-                     componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
-                     componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
-                     disabled="true">
-        <Property key="category">MT_CORRECTNESS</Property>
-    </PluginComponent>
-    <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious"
-                     componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
-                     componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
-                     disabled="true">
-        <Property key="category">MALICIOUS_CODE</Property>
-    </PluginComponent>
+          <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressI18N"
+                    componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
+                    componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
+                    disabled="true">
+                    <Property key="category">I18N</Property>
+          </PluginComponent>
+          <PluginComponent id="edu.umd.cs.findbugs.bugReporter.MaxRank14"
+                    componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
+                    componentClass="edu.umd.cs.findbugs.bugReporter.MaxRankDecorator"
+                    disabled="true">
+                    <Property key="maxRank">14</Property>
+          </PluginComponent>
+          <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N"
+                    componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
+                    componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
+                    disabled="true">
+                    <Property key="category">I18N</Property>
+                    <Property key="packageSource">i18n.properties</Property>
+          </PluginComponent>
+          <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded"
+                    componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
+                    componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
+                    disabled="true">
+                    <Property key="category">MT_CORRECTNESS</Property>
+          </PluginComponent>
+          <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious"
+                    componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
+                    componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
+                    disabled="true">
+                    <Property key="category">MALICIOUS_CODE</Property>
+          </PluginComponent>
 
 
-    <FindBugsMain cmd="addMessages" kind="poweruser" class="edu.umd.cs.findbugs.AddMessages"/>
-    <FindBugsMain cmd="analyze" analysis="true" class="edu.umd.cs.findbugs.FindBugs2"/>
-    <FindBugsMain cmd="gui" analysis="true" class="edu.umd.cs.findbugs.gui2.Driver"/>
-    <FindBugsMain cmd="list" class="edu.umd.cs.findbugs.PrintingBugReporter"/>
-    <FindBugsMain cmd="help" class="edu.umd.cs.findbugs.ShowHelp"/>
-    <FindBugsMain cmd="version" class="edu.umd.cs.findbugs.Version"/>
-    <FindBugsMain cmd="filter" class="edu.umd.cs.findbugs.workflow.Filter"/>
-    <FindBugsMain cmd="set" class="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo"/>
+          <FindBugsMain cmd="addMessages" kind="poweruser" class="edu.umd.cs.findbugs.AddMessages"/>
+          <FindBugsMain cmd="analyze" analysis="true" class="edu.umd.cs.findbugs.FindBugs2"/>
+          <FindBugsMain cmd="gui" analysis="true" class="edu.umd.cs.findbugs.gui2.Driver"/>
+          <FindBugsMain cmd="list" class="edu.umd.cs.findbugs.PrintingBugReporter"/>
+          <FindBugsMain cmd="help" class="edu.umd.cs.findbugs.ShowHelp"/>
+          <FindBugsMain cmd="version" class="edu.umd.cs.findbugs.Version"/>
+          <FindBugsMain cmd="filter" class="edu.umd.cs.findbugs.workflow.Filter"/>
+          <FindBugsMain cmd="set" class="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo"/>
 
-    <FindBugsMain cmd="history" kind="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory"/>
-    <FindBugsMain cmd="union" kind="history" class="edu.umd.cs.findbugs.workflow.UnionResults"/>
-    <FindBugsMain cmd="merge" kind="history" class="edu.umd.cs.findbugs.workflow.Update"/>
+          <FindBugsMain cmd="history" kind="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory"/>
+          <FindBugsMain cmd="union" kind="history" class="edu.umd.cs.findbugs.workflow.UnionResults"/>
+          <FindBugsMain cmd="merge" kind="history" class="edu.umd.cs.findbugs.workflow.Update"/>
 
-    <FindBugsMain cmd="dis" kind="utility" class="edu.umd.cs.findbugs.visitclass.PrintClass"/>
-    <FindBugsMain cmd="errors" class="edu.umd.cs.findbugs.workflow.ListErrors"/>
+          <FindBugsMain cmd="dis" kind="utility" class="edu.umd.cs.findbugs.visitclass.PrintClass"/>
+          <FindBugsMain cmd="errors" class="edu.umd.cs.findbugs.workflow.ListErrors"/>
 
-    <OrderingConstraints>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
-            <LaterCategory name="reporting" spanplugins="true"/>
-        </SplitPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
-            <Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"
-            />
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.BuildUnconditionalParamDerefDatabase"
-            />
-        </WithinPass>
-        <!--
-NoteSuppressedWarnings should be run in
-an earlier pass than all reporting detectors, including those in
-other plugins.
--->
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
-            <LaterCategory name="reporting" spanplugins="true"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindHEmismatch"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures"/>
-            <Later class="edu.umd.cs.findbugs.detect.MethodReturnCheck"/>
-        </SplitPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats"/>
-            <Later
+          <OrderingConstraints>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
+                              <LaterCategory name="reporting" spanplugins="true"/>
+                    </SplitPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
+                              <Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"
+                              />
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.BuildUnconditionalParamDerefDatabase"
+                              />
+                    </WithinPass>
+                    <!--
+        NoteSuppressedWarnings should be run in
+        an earlier pass than all reporting detectors, including those in
+        other plugins.
+    -->
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
+                              <LaterCategory name="reporting" spanplugins="true"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindHEmismatch"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures"/>
+                              <Later class="edu.umd.cs.findbugs.detect.MethodReturnCheck"/>
+                    </SplitPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"
+                              />
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats"/>
+                              <Later class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" />
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"
+                              />
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"
+                              />
+                    </WithinPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer"
+                              />
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier
+                                        class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindRefComparison"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier
+                                        class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer"
+                              />
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindRefComparison"/>
+                    </SplitPass>
+
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention"/>
+                              <Later class="edu.umd.cs.findbugs.detect.DumbMethods"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier
+                                        class="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers"/>
+                              <Later class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier
+                                        class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation"/>
+                    </SplitPass>
+
+
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.ReflectiveClasses"/>
+                              <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.ExplicitSerialization"/>
+                              <Later class="edu.umd.cs.findbugs.detect.SerializationIdiom"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass"
+                              />
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
+                              />
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.FindUselessObjects"
+                              />
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.FindDoubleCheck"
+                              />
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.RepeatedConditionals"
+                              />
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
+                              <Later class="edu.umd.cs.findbugs.detect.DumbMethodInvocations"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
+                              <Later class="edu.umd.cs.findbugs.detect.CrossSiteScripting"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindSqlInjection"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindReturnRef"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod"
+                              />
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier
+                                        class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations"/>
+                              <Later class="edu.umd.cs.findbugs.detect.MethodReturnCheck"/>
+                    </SplitPass>
+
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindInconsistentSync2"/>
+                    </SplitPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues"/>
+                              <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+                              <Later class="edu.umd.cs.findbugs.detect.DontIgnoreResultOfPutIfAbsent"/>
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
+                              <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindMaskedFields"/>
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindUninitializedGet"/>
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession" />
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject" />
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+                              <Later class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass" />
+                    </WithinPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
+                              <Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs" />
+                    </SplitPass>
+
+
+                    <!--
+        Make CheckExpectedWarnings run in a separate pass, after all
+        reporting detectors have completed.
+    -->
+                    <SplitPass>
+                              <EarlierCategory name="reporting" spanplugins="true"/>
+                              <Later class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings"/>
+                    </SplitPass>
+          </OrderingConstraints>
+
+          <Detector class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector"
+                    reports="OVERRIDING_METHODS_MUST_INVOKE_SUPER" speed="fast" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindRoughConstants"
+                    reports="CNT_ROUGH_CONSTANT_VALUE" speed="fast" hidden="false"/>
+
+          <Detector class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" speed="fast"
+                    reports="" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" speed="fast"
+                    reports="" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" speed="fast"
+                    reports="" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers"
+                    speed="fast" reports="" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BuildInterproceduralCallGraph" speed="fast"
+                    reports="" disabled="true" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" speed="fast"
+                    reports="" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField" speed="moderate"
+                    reports="NP_SYNC_AND_NULL_CHECK_FIELD" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InitializeNonnullFieldsInConstructor" speed="moderate"
+                    reports="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BooleanReturnNull"
+                    reports="NP_BOOLEAN_RETURN_NULL" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.OptionalReturnNull"
+                    reports="NP_OPTIONAL_RETURN_NULL" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation" speed="fast" reports=""
+                    hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.Methods" speed="fast" reports=""
+                    disabled="false" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ReflectiveClasses" speed="fast" reports=""
+                    disabled="false" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.CalledMethods" speed="fast" reports=""
+                    disabled="false" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" speed="moderate" reports=""
+                    disabled="false" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" speed="fast" reports=""
+                    disabled="false" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod"
+                    speed="moderate" reports="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"
+                    disabled="false" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant"
+                    speed="fast"
+                    reports="DL_SYNCHRONIZATION_ON_BOOLEAN,DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_SHARED_CONSTANT,DL_SYNCHRONIZATION_ON_INTERNED_STRING"
+                    hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations" speed="fast"
+                    reports="" requirejre="1.5" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FieldItemSummary" speed="fast" reports=""
+                    hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations" speed="fast"
+                    reports="" hidden="true" disabled="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs" speed="slow"
+                    reports="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT,NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues" speed="slow"
+                    reports="" hidden="true" disabled="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.SynchronizeOnClassLiteralNotGetClass"
+                    speed="fast" reports="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL"
+                    hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" speed="fast"
+                    reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InfiniteLoop" speed="fast"
+                    reports="IL_INFINITE_LOOP"/>
+          <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage" speed="fast"
+                    reports="VO_VOLATILE_REFERENCE_TO_ARRAY,VO_VOLATILE_INCREMENT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource" speed="fast"
+                    reports="UI_INHERITANCE_UNSAFE_GETRESOURCE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry" speed="moderate" disabled="true"
+                    reports="AM_CREATES_EMPTY_ZIP_FILE_ENTRY,AM_CREATES_EMPTY_JAR_FILE_ENTRY"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged" speed="fast"
+                    reports="DP_DO_INSIDE_DO_PRIVILEGED,DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
+          <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants" speed="fast"
+                    reports="HSC_HUGE_SHARED_STRING_CONSTANT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FinalizerNullsFields" speed="fast"
+                    reports="FI_FINALIZER_NULLS_FIELDS,FI_FINALIZER_ONLY_NULLS_FIELDS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.MutableEnum" speed="fast"
+                    reports="ME_MUTABLE_ENUM_FIELD,ME_ENUM_FIELD_SETTER"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations" speed="fast"
+                    reports="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.RepeatedConditionals" speed="fast"
+                    reports="RpC_REPEATED_CONDITIONAL_TEST"/>
+          <Detector class="edu.umd.cs.findbugs.detect.RedundantConditions" speed="fast"
+                    reports="UC_USELESS_CONDITION,UC_USELESS_CONDITION_TYPE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod" speed="fast"
+                    disabled="true" reports="DMI_UNSUPPORTED_METHOD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker" speed="fast"
+                    reports="VA_FORMAT_STRING_USES_NEWLINE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference" speed="fast"
+                    reports="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.TestingGround" speed="fast" reports="TESTING"
+                    disabled="true" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.TestingGround2" speed="fast" reports="TESTING"
+                    disabled="true" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.NoiseNullDeref" speed="fast"
+                    reports="NOISE_NULL_DEREFERENCE" disabled="true" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.Noise" speed="fast"
+                    reports="NOISE_METHOD_CALL,NOISE_FIELD_REFERENCE,NOISE_OPERATION"
+                    disabled="true" hidden="true"/>
+          <Detector
                     class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"
-            />
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats"/>
-            <Later class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"
-            />
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"
-            />
-        </WithinPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer"
-            />
-        </SplitPass>
-        <SplitPass>
-            <Earlier
-                    class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindRefComparison"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier
-                    class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer"
-            />
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindRefComparison"/>
-        </SplitPass>
+                    speed="fast" reports="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences" speed="fast"
+                    reports="VR_UNRESOLVABLE_REFERENCE" disabled="true" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation" speed="fast"
+                    reports="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException"
+                    speed="fast" reports="IMSE_DONT_CATCH_IMSE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath" speed="moderate"
+                    disabled="true" hidden="true" reports="FL_MATH_USING_FLOAT_PRECISION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom" speed="fast"
+                    reports="CN_IDIOM,CN_IDIOM_NO_SUPER_CALL,CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ComparatorIdiom" speed="fast"
+                    reports="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" speed="fast"
+                    reports="SA_FIELD_SELF_ASSIGNMENT,SA_LOCAL_DOUBLE_ASSIGNMENT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison" speed="fast"
+                    reports="SA_FIELD_SELF_COMPARISON,SA_LOCAL_SELF_COMPARISON,SA_FIELD_SELF_COMPUTATION,SA_LOCAL_SELF_COMPUTATION,SA_FIELD_DOUBLE_ASSIGNMENT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison2" speed="fast"
+                    reports="SA_FIELD_SELF_COMPARISON,SA_LOCAL_SELF_COMPARISON,SA_FIELD_SELF_COMPUTATION,SA_LOCAL_SELF_COMPUTATION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DroppedException" speed="fast"
+                    reports="DE_MIGHT_DROP,DE_MIGHT_IGNORE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" speed="fast"
+                    disabled="false" reports="NP_LOAD_OF_KNOWN_NULL_VALUE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations" speed="fast"
+                    disabled="false"
+                    reports="DMI_EMPTY_DB_PASSWORD,DMI_CONSTANT_DB_PASSWORD,DMI_USELESS_SUBSTRING,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+          <Detector class="edu.umd.cs.findbugs.detect.URLProblems" speed="fast"
+                    reports="DMI_BLOCKING_METHODS_ON_URL,DMI_COLLECTION_OF_URLS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.CovariantArrayAssignment" speed="fast" disabled="true"
+                    reports="CAA_COVARIANT_ARRAY_FIELD,CAA_COVARIANT_ARRAY_RETURN,CAA_COVARIANT_ARRAY_LOCAL,CAA_COVARIANT_ARRAY_ELEMENT_STORE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" speed="fast"
+                    reports="NP_IMMEDIATE_DEREFERENCE_OF_READLINE,RV_01_TO_INT,DM_INVALID_MIN_MAX,DM_RUN_FINALIZERS_ON_EXIT,DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_BOXED_PRIMITIVE_FOR_PARSING,DM_BOXED_PRIMITIVE_FOR_COMPARE,DM_NEW_FOR_GETCLASS,DM_NEXTINT_VIA_NEXTDOUBLE,DM_USELESS_THREAD,DM_MONITOR_WAIT_ON_CONDITION,DMI_CALLING_NEXT_FROM_HASNEXT,RV_REM_OF_HASHCODE,RV_REM_OF_RANDOM_INT,RV_ABSOLUTE_VALUE_OF_RANDOM_INT,RV_ABSOLUTE_VALUE_OF_HASHCODE,BIT_ADD_OF_SIGNED_BYTE,BIT_IOR_OF_SIGNED_BYTE,INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE,INT_BAD_COMPARISON_WITH_SIGNED_BYTE,INT_BAD_REM_BY_1,DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION,INT_VACUOUS_COMPARISON,BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS,DMI_RANDOM_USED_ONLY_ONCE,DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT,DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED,DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR,DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS,DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD,DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE,INT_VACUOUS_BIT_OPERATION,DMI_COLLECTION_OF_URLS,INT_BAD_COMPARISON_WITH_INT_VALUE,DMI_DOH,DMI_ARGUMENTS_WRONG_ORDER,RANGE_ARRAY_INDEX,RANGE_ARRAY_OFFSET,RANGE_ARRAY_LENGTH,RANGE_STRING_INDEX"/>
+          <Detector class="edu.umd.cs.findbugs.detect.NumberConstructor" speed="fast"
+                    disabled="false" reports="DM_NUMBER_CTOR,DM_FP_NUMBER_CTOR"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindSqlInjection" speed="moderate"
+                    reports="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE,SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"
+                    disabled="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast"
+                    reports="DC_DOUBLECHECK,DC_PARTIALLY_CONSTRUCTED"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast"
+                    reports="FI_PUBLIC_SHOULD_BE_PROTECTED,FI_EMPTY,FI_NULLIFY_SUPER,FI_USELESS,FI_MISSING_SUPER_CALL,FI_EXPLICIT_INVOCATION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" speed="fast"
+                    reports="EQ_DONT_DEFINE_EQUALS_FOR_ENUM,EQ_SELF_USE_OBJECT,EQ_SELF_NO_OBJECT,CO_SELF_NO_OBJECT,HE_HASHCODE_USE_OBJECT_EQUALS,HE_HASHCODE_NO_EQUALS,HE_EQUALS_USE_HASHCODE,HE_EQUALS_NO_HASHCODE,HE_INHERITS_EQUALS_USE_HASHCODE,CO_ABSTRACT_SELF,EQ_ABSTRACT_SELF,HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS,HE_USE_OF_UNHASHABLE_CLASS,EQ_COMPARETO_USE_OBJECT_EQUALS,EQ_DOESNT_OVERRIDE_EQUALS,EQ_OTHER_USE_OBJECT,EQ_OTHER_NO_OBJECT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" speed="fast"
+                    reports="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC,EQ_ALWAYS_TRUE,EQ_ALWAYS_FALSE,EQ_COMPARING_CLASS_NAMES,EQ_UNUSUAL,EQ_GETCLASS_AND_CLASS_CONSTANT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" speed="fast"
+                    reports="NN_NAKED_NOTIFY"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" speed="fast"
+                    reports="MS_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_REP2,EI_EXPOSE_STATIC_REP2,MS_EXPOSE_BUF,EI_EXPOSE_BUF,EI_EXPOSE_STATIC_BUF2,EI_EXPOSE_BUF2"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast"
+                    reports="RU_INVOKE_RUN"/>
+          <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" speed="fast"
+                    reports="SF_SWITCH_FALLTHROUGH,SF_SWITCH_NO_DEFAULT,SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH,SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" speed="fast"
+                    reports="SP_SPIN_ON_FIELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit" speed="fast"
+                    reports="NS_NON_SHORT_CIRCUIT,NS_DANGEROUS_NON_SHORT_CIRCUIT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" speed="slow"
+                    reports="TLW_TWO_LOCK_WAIT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" speed="fast"
+                    reports="UW_UNCOND_WAIT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet" speed="fast"
+                    reports="UR_UNINIT_READ"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DontUseEnum" speed="fast"
+                    reports="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER,NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" speed="fast"
+                    reports="UG_SYNC_SET_UNSYNC_GET"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" speed="fast"
+                    reports="SI_INSTANCE_BEFORE_FINALS_ASSIGNED,IC_INIT_CIRCULARITY"/>
+          <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" speed="fast"
+                    reports="IT_NO_SUCH_ELEMENT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays" speed="fast"
+                    reports="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.SynchronizingOnContentsOfFieldToProtectField"
+                    speed="fast" reports="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.MutableLock" speed="fast"
+                    reports="ML_SYNC_ON_UPDATED_FIELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUselessObjects" speed="fast"
+                    reports="UC_USELESS_OBJECT,UC_USELESS_OBJECT_STACK"/>
+          <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" speed="fast"
+                    reports="MS_OOI_PKGPROTECT,MS_FINAL_PKGPROTECT,MS_SHOULD_BE_REFACTORED_TO_BE_FINAL,MS_SHOULD_BE_FINAL,MS_PKGPROTECT,MS_MUTABLE_HASHTABLE,MS_MUTABLE_ARRAY,MS_CANNOT_BE_FINAL,MS_MUTABLE_COLLECTION,MS_MUTABLE_COLLECTION_PKGPROTECT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.Naming" speed="fast"
+                    reports="NM_WRONG_PACKAGE,NM_WRONG_PACKAGE_INTENTIONAL,NM_VERY_CONFUSING,NM_VERY_CONFUSING_INTENTIONAL,NM_CONFUSING,NM_METHOD_CONSTRUCTOR_CONFUSION,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING,NM_BAD_EQUAL,NM_CLASS_NAMING_CONVENTION,NM_FIELD_NAMING_CONVENTION,NM_METHOD_NAMING_CONVENTION,NM_CLASS_NOT_EXCEPTION,NM_SAME_SIMPLE_NAME_AS_SUPERCLASS,NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" speed="fast"
+                    reports="RR_NOT_CHECKED,SR_NOT_CHECKED"/>
+          <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" speed="fast"
+                    reports="SE_NO_SERIALVERSIONID,SE_METHOD_MUST_BE_PRIVATE,WS_WRITEOBJECT_SYNC,RS_READOBJECT_SYNC,SE_INNER_CLASS,SE_BAD_FIELD,SE_BAD_FIELD_STORE,SE_NONLONG_SERIALVERSIONID,SE_NONSTATIC_SERIALVERSIONID,SE_NONFINAL_SERIALVERSIONID,SE_NO_SUITABLE_CONSTRUCTOR,SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION,SE_READ_RESOLVE_MUST_RETURN_OBJECT,SE_TRANSIENT_FIELD_NOT_RESTORED,SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS,SE_BAD_FIELD_INNER_CLASS,SE_READ_RESOLVE_IS_STATIC,SE_PRIVATE_READ_RESOLVE_NOT_INHERITED,SE_PREVENT_EXT_OBJ_OVERWRITE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" speed="fast"
+                    reports="SC_START_IN_CTOR"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindBadForLoop" speed="fast"
+                    reports="QF_QUESTIONABLE_FOR_LOOP"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization" speed="fast"
+        reports=""/>
+          <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" speed="fast"
+                    reports="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD,NP_UNWRITTEN_FIELD,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_NULL_FIELD,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS,SIC_THREADLOCAL_DEADLY_EMBRACE,UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD,UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD,URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" speed="fast"
+                    reports="WA_NOT_IN_LOOP,WA_AWAIT_NOT_IN_LOOP,NO_NOTIFY_NOT_NOTIFYALL"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindComparatorProblems" speed="fast"
+                    reports="CO_COMPARETO_RESULTS_MIN_VALUE,CO_COMPARETO_INCORRECT_FLOATING"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" speed="slow"
+                    reports="NP_DEREFERENCE_OF_READLINE_VALUE,NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE,NP_TOSTRING_COULD_RETURN_NULL,NP_CLONE_COULD_RETURN_NULL,NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_STORE_INTO_NONNULL_FIELD,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,NP_NULL_PARAM_DEREF_NONVIRTUAL,NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS,NP_NULL_PARAM_DEREF,RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE,RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE,RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES,RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE,NP_NONNULL_PARAM_VIOLATION,NP_NONNULL_RETURN_VIOLATION,NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE,NP_GUARANTEED_DEREF,NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH,NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT,NP_ARGUMENT_MIGHT_BE_NULL,NP_CLOSING_NULL"/>
+          <Detector
+                    class="edu.umd.cs.findbugs.detect.FindNullDerefsInvolvingNonShortCircuitEvaluation"
+                    speed="slow" reports="NP_NULL_ON_SOME_PATH,NP_GUARANTEED_DEREF"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream" speed="slow"
+                    reports="OS_OPEN_STREAM,OS_OPEN_STREAM_EXCEPTION_PATH,ODR_OPEN_DATABASE_RESOURCE,ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" speed="fast"
+                    reports="UCF_USELESS_CONTROL_FLOW,UCF_USELESS_CONTROL_FLOW_NEXT_LINE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate"
+                    requirejre="1.5" reports="UL_UNRELEASED_LOCK,UL_UNRELEASED_LOCK_EXCEPTION_PATH"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" speed="slow"
+                    reports="ES_COMPARING_STRINGS_WITH_EQ,ES_COMPARING_PARAMETER_STRING_WITH_EQ,RC_REF_COMPARISON,RC_REF_COMPARISON_BAD_PRACTICE,RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN,EC_UNRELATED_TYPES,EC_NULL_ARG,EC_UNRELATED_CLASS_AND_INTERFACE,EC_UNRELATED_INTERFACES,EC_ARRAY_AND_NONARRAY,EC_INCOMPATIBLE_ARRAY_COMPARE,EC_BAD_ARRAY_COMPARE,EC_UNRELATED_TYPES_USING_POINTER_EQUALITY,DMI_DOH"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" speed="moderate"
+                    reports="MWN_MISMATCHED_WAIT,MWN_MISMATCHED_NOTIFY"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindEmptySynchronizedBlock" speed="fast"
+                    reports="ESync_EMPTY_SYNC"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" speed="slow"
+                    reports="IS2_INCONSISTENT_SYNC,IS_FIELD_NOT_GUARDED,MSF_MUTABLE_SERVLET_FIELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2" speed="fast"
+                    reports="SA_LOCAL_SELF_ASSIGNMENT,SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.IncompatMask" speed="fast"
+                    reports="BIT_AND,BIT_AND_ZZ,BIT_IOR,BIT_SIGNED_CHECK,BIT_SIGNED_CHECK_HIGH_BIT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.LazyInit" speed="moderate"
+                    reports="LI_LAZY_INIT_STATIC,LI_LAZY_INIT_UPDATE_STATIC" disabled="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" speed="moderate"
+                    requirejre="1.5"
+                    reports="JLM_JSR166_LOCK_MONITORENTER,JLM_JSR166_UTILCONCURRENT_MONITORENTER,JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods" speed="fast"
+                    reports="UPM_UNCALLED_PRIVATE_METHOD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass" speed="fast"
+                    reports="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation" speed="fast"
+                    reports="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InefficientInitializationInsideLoop" speed="fast" disabled="true"
+                    reports="IIL_PREPARE_STATEMENT_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT,IIL_ELEMENTS_GET_LENGTH_IN_LOOP"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InefficientIndexOf" speed="fast" disabled="true"
+                    reports="IIO_INEFFICIENT_INDEX_OF,IIO_INEFFICIENT_LAST_INDEX_OF"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray" speed="fast" disabled="true"
+                    reports="ITA_INEFFICIENT_TO_ARRAY"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest" speed="fast"
+                    reports="IJU_SETUP_NO_SUPER,IJU_TEARDOWN_NO_SUPER,IJU_SUITE_NOT_STATIC,IJU_NO_TESTS,IJU_BAD_SUITE_METHOD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter" speed="fast"
+                    reports="BOA_BADLY_OVERRIDDEN_ADAPTER"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BadResultSetAccess" speed="fast"
+                    reports="SQL_BAD_RESULTSET_ACCESS,SQL_BAD_PREPARED_STATEMENT_ACCESS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf" speed="fast"
+                    reports="SIO_SUPERFLUOUS_INSTANCEOF"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor" speed="fast"
+                    reports="BAC_BAD_APPLET_CONSTRUCTOR" disabled="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted" speed="fast"
+                    reports="STI_INTERRUPTED_ON_CURRENTTHREAD,STI_INTERRUPTED_ON_UNKNOWNTHREAD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores" speed="moderate"
+                    reports="DLS_DEAD_LOCAL_STORE,IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN,DLS_DEAD_LOCAL_STORE_OF_NULL,DLS_DEAD_STORE_OF_CLASS_LITERAL,DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD,DLS_DEAD_LOCAL_INCREMENT_IN_RETURN"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields" speed="fast"
+                    reports="MF_METHOD_MASKS_FIELD,MF_CLASS_MASKS_FIELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.WrongMapIterator" speed="fast"
+                    reports="WMI_WRONG_MAP_ITERATOR"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass" speed="fast"
+                    reports="ISC_INSTANTIATE_STATIC_CLASS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture"
+                    reports="REC_CATCH_EXCEPTION" speed="fast"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DontCatchNullPointerException"
+                    reports="DCN_NULLPOINTER_EXCEPTION" speed="fast"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality" speed="fast"
+                    reports="FE_FLOATING_POINT_EQUALITY,FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation" speed="slow"
+                    reports="OBL_UNSATISFIED_OBLIGATION,OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath" speed="fast"
+                    reports="UM_UNNECESSARY_MATH"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies" speed="moderate"
+                    disabled="true" reports="CD_CIRCULAR_DEPENDENCY"/>
+          <Detector class="edu.umd.cs.findbugs.detect.RedundantInterfaces" speed="fast"
+                    reports="RI_REDUNDANT_INTERFACES"/>
+          <Detector class="edu.umd.cs.findbugs.detect.MultithreadedInstanceAccess" speed="fast"
+                    reports="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD,MTIA_SUSPECT_SERVLET_INSTANCE_FIELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores" speed="fast" disabled="true"
+                    reports="PS_PUBLIC_SEMAPHORES"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue" speed="fast"
+                    reports="RV_CHECK_FOR_POSITIVE_INDEXOF,RV_DONT_JUST_NULL_CHECK_READLINE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck" speed="fast"
+                    reports="RV_RETURN_VALUE_IGNORED,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE,RV_EXCEPTION_NOT_THROWN,RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE,RV_RETURN_VALUE_IGNORED_INFERRED,RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT,UC_USELESS_VOID_METHOD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" speed="fast"
+                    reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2" speed="fast"
+                    reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_DOWNCAST,BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY" />
 
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention"/>
-            <Later class="edu.umd.cs.findbugs.detect.DumbMethods"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier
-                    class="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers"/>
-            <Later class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier
-                    class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation"/>
-        </SplitPass>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"
+                    speed="fast" reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION,DMI_NONSERIALIZABLE_OBJECT_WRITTEN"/>
 
+          <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession"
+                    speed="fast" reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION"
+            disabled="true" hidden="true"  />
+          <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject"
+                    speed="fast" reports="DMI_NONSERIALIZABLE_OBJECT_WRITTEN"
+            disabled="true" hidden="true"  />
 
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.ReflectiveClasses"/>
-            <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.ExplicitSerialization"/>
-            <Later class="edu.umd.cs.findbugs.detect.SerializationIdiom"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass"
-            />
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
-            />
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.FindUselessObjects"
-            />
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.FindDoubleCheck"
-            />
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.RepeatedConditionals"
-            />
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
-            <Later class="edu.umd.cs.findbugs.detect.DumbMethodInvocations"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
-            <Later class="edu.umd.cs.findbugs.detect.CrossSiteScripting"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindSqlInjection"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindReturnRef"/>
-        </SplitPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
-            <Later
-                    class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod"
-            />
-        </SplitPass>
-        <SplitPass>
-            <Earlier
-                    class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations"/>
-            <Later class="edu.umd.cs.findbugs.detect.MethodReturnCheck"/>
-        </SplitPass>
-
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindInconsistentSync2"/>
-        </SplitPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues"/>
-            <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
-            <Later class="edu.umd.cs.findbugs.detect.DontIgnoreResultOfPutIfAbsent"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
-            <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindMaskedFields"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindUninitializedGet"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"/>
-            <Later class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject"/>
-        </WithinPass>
-        <WithinPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
-            <Later class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass"/>
-        </WithinPass>
-        <SplitPass>
-            <Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
-            <Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
-        </SplitPass>
-
-
-        <!--
-Make CheckExpectedWarnings run in a separate pass, after all
-reporting detectors have completed.
--->
-        <SplitPass>
-            <EarlierCategory name="reporting" spanplugins="true"/>
-            <Later class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings"/>
-        </SplitPass>
-    </OrderingConstraints>
-
-    <Detector class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector"
-              reports="OVERRIDING_METHODS_MUST_INVOKE_SUPER" speed="fast" hidden="false"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindRoughConstants"
-              reports="CNT_ROUGH_CONSTANT_VALUE" speed="fast" hidden="false"/>
-
-    <Detector class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" speed="fast"
-              reports="" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" speed="fast"
-              reports="" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" speed="fast"
-              reports="" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers"
-              speed="fast" reports="" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.BuildInterproceduralCallGraph" speed="fast"
-              reports="" disabled="true" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" speed="fast"
-              reports="" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField" speed="moderate"
-              reports="NP_SYNC_AND_NULL_CHECK_FIELD" hidden="false"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InitializeNonnullFieldsInConstructor" speed="moderate"
-              reports="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" hidden="false"/>
-    <Detector class="edu.umd.cs.findbugs.detect.BooleanReturnNull"
-              reports="NP_BOOLEAN_RETURN_NULL" hidden="false"/>
-    <Detector class="edu.umd.cs.findbugs.detect.OptionalReturnNull"
-              reports="NP_OPTIONAL_RETURN_NULL" hidden="false"/>
-    <Detector class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation" speed="fast" reports=""
-              hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.Methods" speed="fast" reports=""
-              disabled="false" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.ReflectiveClasses" speed="fast" reports=""
-              disabled="false" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.CalledMethods" speed="fast" reports=""
-              disabled="false" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" speed="moderate" reports=""
-              disabled="false" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" speed="fast" reports=""
-              disabled="false" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod"
-              speed="moderate" reports="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"
-              disabled="false" hidden="false"/>
-    <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant"
-              speed="fast"
-              reports="DL_SYNCHRONIZATION_ON_BOOLEAN,DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_SHARED_CONSTANT,DL_SYNCHRONIZATION_ON_INTERNED_STRING"
-              hidden="false"/>
-    <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations" speed="fast"
-              reports="" requirejre="1.5" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FieldItemSummary" speed="fast" reports=""
-              hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations" speed="fast"
-              reports="" hidden="true" disabled="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs" speed="slow"
-              reports="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT,NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues" speed="slow"
-              reports="" hidden="true" disabled="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.SynchronizeOnClassLiteralNotGetClass"
-              speed="fast" reports="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL"
-              hidden="false"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" speed="fast"
-              reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InfiniteLoop" speed="fast"
-              reports="IL_INFINITE_LOOP"/>
-    <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage" speed="fast"
-              reports="VO_VOLATILE_REFERENCE_TO_ARRAY,VO_VOLATILE_INCREMENT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource" speed="fast"
-              reports="UI_INHERITANCE_UNSAFE_GETRESOURCE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry" speed="moderate" disabled="true"
-              reports="AM_CREATES_EMPTY_ZIP_FILE_ENTRY,AM_CREATES_EMPTY_JAR_FILE_ENTRY"/>
-    <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged" speed="fast"
-              reports="DP_DO_INSIDE_DO_PRIVILEGED,DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
-    <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants" speed="fast"
-              reports="HSC_HUGE_SHARED_STRING_CONSTANT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FinalizerNullsFields" speed="fast"
-              reports="FI_FINALIZER_NULLS_FIELDS,FI_FINALIZER_ONLY_NULLS_FIELDS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.MutableEnum" speed="fast"
-              reports="ME_MUTABLE_ENUM_FIELD,ME_ENUM_FIELD_SETTER"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations" speed="fast"
-              reports="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.RepeatedConditionals" speed="fast"
-              reports="RpC_REPEATED_CONDITIONAL_TEST"/>
-    <Detector class="edu.umd.cs.findbugs.detect.RedundantConditions" speed="fast"
-              reports="UC_USELESS_CONDITION,UC_USELESS_CONDITION_TYPE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod" speed="fast"
-              disabled="true" reports="DMI_UNSUPPORTED_METHOD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker" speed="fast"
-              reports="VA_FORMAT_STRING_USES_NEWLINE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference" speed="fast"
-              reports="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.TestingGround" speed="fast" reports="TESTING"
-              disabled="true" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.TestingGround2" speed="fast" reports="TESTING"
-              disabled="true" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.NoiseNullDeref" speed="fast"
-              reports="NOISE_NULL_DEREFERENCE" disabled="true" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.Noise" speed="fast"
-              reports="NOISE_METHOD_CALL,NOISE_FIELD_REFERENCE,NOISE_OPERATION"
-              disabled="true" hidden="true"/>
-    <Detector
-            class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"
-            speed="fast" reports="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences" speed="fast"
-              reports="VR_UNRESOLVABLE_REFERENCE" disabled="true" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation" speed="fast"
-              reports="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException"
-              speed="fast" reports="IMSE_DONT_CATCH_IMSE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath" speed="moderate"
-              disabled="true" hidden="true" reports="FL_MATH_USING_FLOAT_PRECISION"/>
-    <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom" speed="fast"
-              reports="CN_IDIOM,CN_IDIOM_NO_SUPER_CALL,CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.ComparatorIdiom" speed="fast"
-              reports="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" speed="fast"
-              reports="SA_FIELD_SELF_ASSIGNMENT,SA_LOCAL_DOUBLE_ASSIGNMENT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison" speed="fast"
-              reports="SA_FIELD_SELF_COMPARISON,SA_LOCAL_SELF_COMPARISON,SA_FIELD_SELF_COMPUTATION,SA_LOCAL_SELF_COMPUTATION,SA_FIELD_DOUBLE_ASSIGNMENT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison2" speed="fast"
-              reports="SA_FIELD_SELF_COMPARISON,SA_LOCAL_SELF_COMPARISON,SA_FIELD_SELF_COMPUTATION,SA_LOCAL_SELF_COMPUTATION"/>
-    <Detector class="edu.umd.cs.findbugs.detect.DroppedException" speed="fast"
-              reports="DE_MIGHT_DROP,DE_MIGHT_IGNORE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" speed="fast"
-              disabled="false" reports="NP_LOAD_OF_KNOWN_NULL_VALUE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations" speed="fast"
-              disabled="false"
-              reports="DMI_EMPTY_DB_PASSWORD,DMI_CONSTANT_DB_PASSWORD,DMI_USELESS_SUBSTRING,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
-    <Detector class="edu.umd.cs.findbugs.detect.URLProblems" speed="fast"
-              reports="DMI_BLOCKING_METHODS_ON_URL,DMI_COLLECTION_OF_URLS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.CovariantArrayAssignment" speed="fast" disabled="true"
-              reports="CAA_COVARIANT_ARRAY_FIELD,CAA_COVARIANT_ARRAY_RETURN,CAA_COVARIANT_ARRAY_LOCAL,CAA_COVARIANT_ARRAY_ELEMENT_STORE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" speed="fast"
-              reports="NP_IMMEDIATE_DEREFERENCE_OF_READLINE,RV_01_TO_INT,DM_INVALID_MIN_MAX,DM_RUN_FINALIZERS_ON_EXIT,DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_BOXED_PRIMITIVE_FOR_PARSING,DM_BOXED_PRIMITIVE_FOR_COMPARE,DM_NEW_FOR_GETCLASS,DM_NEXTINT_VIA_NEXTDOUBLE,DM_USELESS_THREAD,DM_MONITOR_WAIT_ON_CONDITION,DMI_CALLING_NEXT_FROM_HASNEXT,RV_REM_OF_HASHCODE,RV_REM_OF_RANDOM_INT,RV_ABSOLUTE_VALUE_OF_RANDOM_INT,RV_ABSOLUTE_VALUE_OF_HASHCODE,BIT_ADD_OF_SIGNED_BYTE,BIT_IOR_OF_SIGNED_BYTE,INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE,INT_BAD_COMPARISON_WITH_SIGNED_BYTE,INT_BAD_REM_BY_1,DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION,INT_VACUOUS_COMPARISON,BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS,DMI_RANDOM_USED_ONLY_ONCE,DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT,DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED,DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR,DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS,DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD,DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE,INT_VACUOUS_BIT_OPERATION,DMI_COLLECTION_OF_URLS,INT_BAD_COMPARISON_WITH_INT_VALUE,DMI_DOH,DMI_ARGUMENTS_WRONG_ORDER,RANGE_ARRAY_INDEX,RANGE_ARRAY_OFFSET,RANGE_ARRAY_LENGTH,RANGE_STRING_INDEX"/>
-    <Detector class="edu.umd.cs.findbugs.detect.NumberConstructor" speed="fast"
-              disabled="false" reports="DM_NUMBER_CTOR,DM_FP_NUMBER_CTOR"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindSqlInjection" speed="moderate"
-              reports="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE,SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"
-              disabled="false"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast"
-              reports="DC_DOUBLECHECK,DC_PARTIALLY_CONSTRUCTED"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast"
-              reports="FI_PUBLIC_SHOULD_BE_PROTECTED,FI_EMPTY,FI_NULLIFY_SUPER,FI_USELESS,FI_MISSING_SUPER_CALL,FI_EXPLICIT_INVOCATION"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" speed="fast"
-              reports="EQ_DONT_DEFINE_EQUALS_FOR_ENUM,EQ_SELF_USE_OBJECT,EQ_SELF_NO_OBJECT,CO_SELF_NO_OBJECT,HE_HASHCODE_USE_OBJECT_EQUALS,HE_HASHCODE_NO_EQUALS,HE_EQUALS_USE_HASHCODE,HE_EQUALS_NO_HASHCODE,HE_INHERITS_EQUALS_USE_HASHCODE,CO_ABSTRACT_SELF,EQ_ABSTRACT_SELF,HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS,HE_USE_OF_UNHASHABLE_CLASS,EQ_COMPARETO_USE_OBJECT_EQUALS,EQ_DOESNT_OVERRIDE_EQUALS,EQ_OTHER_USE_OBJECT,EQ_OTHER_NO_OBJECT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" speed="fast"
-              reports="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC,EQ_ALWAYS_TRUE,EQ_ALWAYS_FALSE,EQ_COMPARING_CLASS_NAMES,EQ_UNUSUAL,EQ_GETCLASS_AND_CLASS_CONSTANT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" speed="fast"
-              reports="NN_NAKED_NOTIFY"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" speed="fast"
-              reports="MS_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_REP2,EI_EXPOSE_STATIC_REP2,MS_EXPOSE_BUF,EI_EXPOSE_BUF,EI_EXPOSE_STATIC_BUF2,EI_EXPOSE_BUF2"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast"
-              reports="RU_INVOKE_RUN"/>
-    <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" speed="fast"
-              reports="SF_SWITCH_FALLTHROUGH,SF_SWITCH_NO_DEFAULT,SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH,SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" speed="fast"
-              reports="SP_SPIN_ON_FIELD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit" speed="fast"
-              reports="NS_NON_SHORT_CIRCUIT,NS_DANGEROUS_NON_SHORT_CIRCUIT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" speed="slow"
-              reports="TLW_TWO_LOCK_WAIT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" speed="fast"
-              reports="UW_UNCOND_WAIT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet" speed="fast"
-              reports="UR_UNINIT_READ"/>
-    <Detector class="edu.umd.cs.findbugs.detect.DontUseEnum" speed="fast"
-              reports="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER,NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" speed="fast"
-              reports="UG_SYNC_SET_UNSYNC_GET"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" speed="fast"
-              reports="SI_INSTANCE_BEFORE_FINALS_ASSIGNED,IC_INIT_CIRCULARITY"/>
-    <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" speed="fast"
-              reports="IT_NO_SUCH_ELEMENT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays" speed="fast"
-              reports="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.SynchronizingOnContentsOfFieldToProtectField"
-              speed="fast" reports="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.MutableLock" speed="fast"
-              reports="ML_SYNC_ON_UPDATED_FIELD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindUselessObjects" speed="fast"
-              reports="UC_USELESS_OBJECT,UC_USELESS_OBJECT_STACK"/>
-    <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" speed="fast"
-              reports="MS_OOI_PKGPROTECT,MS_FINAL_PKGPROTECT,MS_SHOULD_BE_REFACTORED_TO_BE_FINAL,MS_SHOULD_BE_FINAL,MS_PKGPROTECT,MS_MUTABLE_HASHTABLE,MS_MUTABLE_ARRAY,MS_CANNOT_BE_FINAL,MS_MUTABLE_COLLECTION,MS_MUTABLE_COLLECTION_PKGPROTECT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.Naming" speed="fast"
-              reports="NM_WRONG_PACKAGE,NM_WRONG_PACKAGE_INTENTIONAL,NM_VERY_CONFUSING,NM_VERY_CONFUSING_INTENTIONAL,NM_CONFUSING,NM_METHOD_CONSTRUCTOR_CONFUSION,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING,NM_BAD_EQUAL,NM_CLASS_NAMING_CONVENTION,NM_FIELD_NAMING_CONVENTION,NM_METHOD_NAMING_CONVENTION,NM_CLASS_NOT_EXCEPTION,NM_SAME_SIMPLE_NAME_AS_SUPERCLASS,NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" speed="fast"
-              reports="RR_NOT_CHECKED,SR_NOT_CHECKED"/>
-    <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" speed="fast"
-              reports="SE_NO_SERIALVERSIONID,SE_METHOD_MUST_BE_PRIVATE,WS_WRITEOBJECT_SYNC,RS_READOBJECT_SYNC,SE_INNER_CLASS,SE_BAD_FIELD,SE_BAD_FIELD_STORE,SE_NONLONG_SERIALVERSIONID,SE_NONSTATIC_SERIALVERSIONID,SE_NONFINAL_SERIALVERSIONID,SE_NO_SUITABLE_CONSTRUCTOR,SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION,SE_READ_RESOLVE_MUST_RETURN_OBJECT,SE_TRANSIENT_FIELD_NOT_RESTORED,SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS,SE_BAD_FIELD_INNER_CLASS,SE_READ_RESOLVE_IS_STATIC,SE_PRIVATE_READ_RESOLVE_NOT_INHERITED,SE_PREVENT_EXT_OBJ_OVERWRITE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" speed="fast"
-              reports="SC_START_IN_CTOR"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindBadForLoop" speed="fast"
-              reports="QF_QUESTIONABLE_FOR_LOOP"/>
-    <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization" speed="fast"
-              reports=""/>
-    <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" speed="fast"
-              reports="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD,NP_UNWRITTEN_FIELD,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_NULL_FIELD,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS,SIC_THREADLOCAL_DEADLY_EMBRACE,UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD,UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD,URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" speed="fast"
-              reports="WA_NOT_IN_LOOP,WA_AWAIT_NOT_IN_LOOP,NO_NOTIFY_NOT_NOTIFYALL"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindComparatorProblems" speed="fast"
-              reports="CO_COMPARETO_RESULTS_MIN_VALUE,CO_COMPARETO_INCORRECT_FLOATING"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" speed="slow"
-              reports="NP_DEREFERENCE_OF_READLINE_VALUE,NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE,NP_TOSTRING_COULD_RETURN_NULL,NP_CLONE_COULD_RETURN_NULL,NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_STORE_INTO_NONNULL_FIELD,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,NP_NULL_PARAM_DEREF_NONVIRTUAL,NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS,NP_NULL_PARAM_DEREF,RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE,RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE,RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES,RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE,NP_NONNULL_PARAM_VIOLATION,NP_NONNULL_RETURN_VIOLATION,NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE,NP_GUARANTEED_DEREF,NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH,NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT,NP_ARGUMENT_MIGHT_BE_NULL,NP_CLOSING_NULL"/>
-    <Detector
-            class="edu.umd.cs.findbugs.detect.FindNullDerefsInvolvingNonShortCircuitEvaluation"
-            speed="slow" reports="NP_NULL_ON_SOME_PATH,NP_GUARANTEED_DEREF"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream" speed="slow"
-              reports="OS_OPEN_STREAM,OS_OPEN_STREAM_EXCEPTION_PATH,ODR_OPEN_DATABASE_RESOURCE,ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" speed="fast"
-              reports="UCF_USELESS_CONTROL_FLOW,UCF_USELESS_CONTROL_FLOW_NEXT_LINE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate"
-              requirejre="1.5" reports="UL_UNRELEASED_LOCK,UL_UNRELEASED_LOCK_EXCEPTION_PATH"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" speed="slow"
-              reports="ES_COMPARING_STRINGS_WITH_EQ,ES_COMPARING_PARAMETER_STRING_WITH_EQ,RC_REF_COMPARISON,RC_REF_COMPARISON_BAD_PRACTICE,RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN,EC_UNRELATED_TYPES,EC_NULL_ARG,EC_UNRELATED_CLASS_AND_INTERFACE,EC_UNRELATED_INTERFACES,EC_ARRAY_AND_NONARRAY,EC_INCOMPATIBLE_ARRAY_COMPARE,EC_BAD_ARRAY_COMPARE,EC_UNRELATED_TYPES_USING_POINTER_EQUALITY,DMI_DOH"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" speed="moderate"
-              reports="MWN_MISMATCHED_WAIT,MWN_MISMATCHED_NOTIFY"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindEmptySynchronizedBlock" speed="fast"
-              reports="ESync_EMPTY_SYNC"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" speed="slow"
-              reports="IS2_INCONSISTENT_SYNC,IS_FIELD_NOT_GUARDED,MSF_MUTABLE_SERVLET_FIELD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2" speed="fast"
-              reports="SA_LOCAL_SELF_ASSIGNMENT,SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.IncompatMask" speed="fast"
-              reports="BIT_AND,BIT_AND_ZZ,BIT_IOR,BIT_SIGNED_CHECK,BIT_SIGNED_CHECK_HIGH_BIT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.LazyInit" speed="moderate"
-              reports="LI_LAZY_INIT_STATIC,LI_LAZY_INIT_UPDATE_STATIC" disabled="false"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" speed="moderate"
-              requirejre="1.5"
-              reports="JLM_JSR166_LOCK_MONITORENTER,JLM_JSR166_UTILCONCURRENT_MONITORENTER,JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods" speed="fast"
-              reports="UPM_UNCALLED_PRIVATE_METHOD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass" speed="fast"
-              reports="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation" speed="fast"
-              reports="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InefficientInitializationInsideLoop" speed="fast" disabled="true"
-              reports="IIL_PREPARE_STATEMENT_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT,IIL_ELEMENTS_GET_LENGTH_IN_LOOP"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InefficientIndexOf" speed="fast" disabled="true"
-              reports="IIO_INEFFICIENT_INDEX_OF,IIO_INEFFICIENT_LAST_INDEX_OF"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray" speed="fast" disabled="true"
-              reports="ITA_INEFFICIENT_TO_ARRAY"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest" speed="fast"
-              reports="IJU_SETUP_NO_SUPER,IJU_TEARDOWN_NO_SUPER,IJU_SUITE_NOT_STATIC,IJU_NO_TESTS,IJU_BAD_SUITE_METHOD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter" speed="fast"
-              reports="BOA_BADLY_OVERRIDDEN_ADAPTER"/>
-    <Detector class="edu.umd.cs.findbugs.detect.BadResultSetAccess" speed="fast"
-              reports="SQL_BAD_RESULTSET_ACCESS,SQL_BAD_PREPARED_STATEMENT_ACCESS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf" speed="fast"
-              reports="SIO_SUPERFLUOUS_INSTANCEOF"/>
-    <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor" speed="fast"
-              reports="BAC_BAD_APPLET_CONSTRUCTOR" disabled="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted" speed="fast"
-              reports="STI_INTERRUPTED_ON_CURRENTTHREAD,STI_INTERRUPTED_ON_UNKNOWNTHREAD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores" speed="moderate"
-              reports="DLS_DEAD_LOCAL_STORE,IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN,DLS_DEAD_LOCAL_STORE_OF_NULL,DLS_DEAD_STORE_OF_CLASS_LITERAL,DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD,DLS_DEAD_LOCAL_INCREMENT_IN_RETURN"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields" speed="fast"
-              reports="MF_METHOD_MASKS_FIELD,MF_CLASS_MASKS_FIELD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.WrongMapIterator" speed="fast"
-              reports="WMI_WRONG_MAP_ITERATOR"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass" speed="fast"
-              reports="ISC_INSTANTIATE_STATIC_CLASS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture"
-              reports="REC_CATCH_EXCEPTION" speed="fast"/>
-    <Detector class="edu.umd.cs.findbugs.detect.DontCatchNullPointerException"
-              reports="DCN_NULLPOINTER_EXCEPTION" speed="fast"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality" speed="fast"
-              reports="FE_FLOATING_POINT_EQUALITY,FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation" speed="slow"
-              reports="OBL_UNSATISFIED_OBLIGATION,OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath" speed="fast"
-              reports="UM_UNNECESSARY_MATH"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies" speed="moderate"
-              disabled="true" reports="CD_CIRCULAR_DEPENDENCY"/>
-    <Detector class="edu.umd.cs.findbugs.detect.RedundantInterfaces" speed="fast"
-              reports="RI_REDUNDANT_INTERFACES"/>
-    <Detector class="edu.umd.cs.findbugs.detect.MultithreadedInstanceAccess" speed="fast"
-              reports="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD,MTIA_SUSPECT_SERVLET_INSTANCE_FIELD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores" speed="fast" disabled="true"
-              reports="PS_PUBLIC_SEMAPHORES"/>
-    <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue" speed="fast"
-              reports="RV_CHECK_FOR_POSITIVE_INDEXOF,RV_DONT_JUST_NULL_CHECK_READLINE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck" speed="fast"
-              reports="RV_RETURN_VALUE_IGNORED,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE,RV_EXCEPTION_NOT_THROWN,RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE,RV_RETURN_VALUE_IGNORED_INFERRED,RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT,UC_USELESS_VOID_METHOD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" speed="fast"
-              reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2" speed="fast"
-              reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_DOWNCAST,BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY"/>
-
-    <Detector class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"
-              speed="fast"
-              reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION,DMI_NONSERIALIZABLE_OBJECT_WRITTEN"/>
-
-    <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession"
-              speed="fast" reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION"
-              disabled="true" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject"
-              speed="fast" reports="DMI_NONSERIALIZABLE_OBJECT_WRITTEN"
-              disabled="true" hidden="true"/>
-
-    <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression" speed="fast"
-              reports="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION,RE_POSSIBLE_UNINTENDED_PATTERN,RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION"/>
-    <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems" speed="fast"
-              reports="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindPuzzlers" speed="fast"
-              reports="DLS_DEAD_LOCAL_STORE_IN_RETURN,EC_BAD_ARRAY_COMPARE,DLS_OVERWRITTEN_INCREMENT,ICAST_BAD_SHIFT_AMOUNT,BSHIFT_WRONG_ADD_PRIORITY,ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT,DMI_BAD_MONTH,IM_MULTIPLYING_RESULT_OF_IREM,IM_BAD_CHECK_FOR_ODD,DMI_INVOKING_TOSTRING_ON_ARRAY,DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY,IM_AVERAGE_COMPUTATION_COULD_OVERFLOW,IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION,ICAST_INTEGER_MULTIPLY_CAST_TO_LONG,BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR,BX_BOXING_IMMEDIATELY_UNBOXED,BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION,IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD,DMI_INVOKING_HASHCODE_ON_ARRAY,BX_UNBOXING_IMMEDIATELY_REBOXED,RV_NEGATING_RESULT_OF_COMPARETO,DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS,PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.IntCast2LongAsInstant" speed="fast"
-              reports="ICAST_INT_2_LONG_AS_INSTANT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindSleepWithLockHeld" speed="slow"
-              reports="SWL_SLEEP_WITH_LOCK_HELD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.InefficientMemberAccess" speed="fast"
-              disabled="true" reports="IMA_INEFFICIENT_MEMBER_ACCESS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches" speed="fast"
-              reports="DB_DUPLICATE_BRANCHES,DB_DUPLICATE_SWITCH_CLAUSES"/>
-    <Detector class="edu.umd.cs.findbugs.detect.XMLFactoryBypass" speed="fast"
-              reports="XFB_XML_FACTORY_BYPASS"/>
-    <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod" speed="fast"
-              disabled="true"
-              reports="USM_USELESS_SUBCLASS_METHOD,USM_USELESS_ABSTRACT_METHOD"/>
-    <Detector class="edu.umd.cs.findbugs.detect.ConfusedInheritance" speed="fast"
-              reports="CI_CONFUSED_INHERITANCE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.QuestionableBooleanAssignment" speed="fast"
-              reports="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT"/>
-    <Detector class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams" hidden="true"
-              speed="slow" reports=""/>
-    <Detector class="edu.umd.cs.findbugs.detect.TrainLongInstantfParams" hidden="true"
-              speed="slow" reports=""/>
-    <Detector class="edu.umd.cs.findbugs.detect.TrainFieldStoreTypes" hidden="true"
-              speed="slow" reports=""/>
-    <Detector class="edu.umd.cs.findbugs.detect.TrainNonNullAnnotations" hidden="true"
-              speed="fast" reports=""/>
-    <Detector class="edu.umd.cs.findbugs.detect.CheckCalls" speed="fast" reports=""
-              disabled="true" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast"
-              hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream" speed="fast"
-              reports="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM"/>
-    <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true"
-              hidden="true"
-              reports="NM_METHOD_NAMING_CONVENTION,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,NM_FIELD_NAMING_CONVENTION"/>
-    <Detector class="edu.umd.cs.findbugs.detect.ViewCFG" disabled="true"
-              hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer"
-              speed="fast"
-              reports="GC_UNRELATED_TYPES,DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES,DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION,DMI_VACUOUS_SELF_COLLECTION_CALL,GC_UNCHECKED_TYPE_IN_GENERIC_CALL"/>
-    <Detector class="edu.umd.cs.findbugs.detect.StaticCalendarDetector" speed="fast"
-              reports="STCAL_STATIC_CALENDAR_INSTANCE,STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE,STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE,STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE"/>
-    <Detector class="edu.umd.cs.findbugs.detect.TestDataflowAnalysis" speed="slow" reports=""
-              disabled="true" hidden="true"/>
-    <Detector class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers" speed="slow"
-              reports="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED,TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED,TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK,TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK,TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK,TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK,TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS,TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression" speed="fast"
+                    reports="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION,RE_POSSIBLE_UNINTENDED_PATTERN,RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems" speed="fast"
+                    reports="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindPuzzlers" speed="fast"
+                    reports="DLS_DEAD_LOCAL_STORE_IN_RETURN,EC_BAD_ARRAY_COMPARE,DLS_OVERWRITTEN_INCREMENT,ICAST_BAD_SHIFT_AMOUNT,BSHIFT_WRONG_ADD_PRIORITY,ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT,DMI_BAD_MONTH,IM_MULTIPLYING_RESULT_OF_IREM,IM_BAD_CHECK_FOR_ODD,DMI_INVOKING_TOSTRING_ON_ARRAY,DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY,IM_AVERAGE_COMPUTATION_COULD_OVERFLOW,IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION,ICAST_INTEGER_MULTIPLY_CAST_TO_LONG,BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR,BX_BOXING_IMMEDIATELY_UNBOXED,BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION,IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD,DMI_INVOKING_HASHCODE_ON_ARRAY,BX_UNBOXING_IMMEDIATELY_REBOXED,RV_NEGATING_RESULT_OF_COMPARETO,DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS,PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.IntCast2LongAsInstant" speed="fast"
+                    reports="ICAST_INT_2_LONG_AS_INSTANT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindSleepWithLockHeld" speed="slow"
+                    reports="SWL_SLEEP_WITH_LOCK_HELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InefficientMemberAccess" speed="fast"
+                    disabled="true" reports="IMA_INEFFICIENT_MEMBER_ACCESS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches" speed="fast"
+                    reports="DB_DUPLICATE_BRANCHES,DB_DUPLICATE_SWITCH_CLAUSES"/>
+          <Detector class="edu.umd.cs.findbugs.detect.XMLFactoryBypass" speed="fast"
+                    reports="XFB_XML_FACTORY_BYPASS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod" speed="fast"
+                    disabled="true"
+                    reports="USM_USELESS_SUBCLASS_METHOD,USM_USELESS_ABSTRACT_METHOD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ConfusedInheritance" speed="fast"
+                    reports="CI_CONFUSED_INHERITANCE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.QuestionableBooleanAssignment" speed="fast"
+                    reports="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT"/>
+          <Detector class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams" hidden="true"
+                    speed="slow" reports=""/>
+          <Detector class="edu.umd.cs.findbugs.detect.TrainLongInstantfParams" hidden="true"
+                    speed="slow" reports=""/>
+          <Detector class="edu.umd.cs.findbugs.detect.TrainFieldStoreTypes" hidden="true"
+                    speed="slow" reports=""/>
+          <Detector class="edu.umd.cs.findbugs.detect.TrainNonNullAnnotations" hidden="true"
+                    speed="fast" reports=""/>
+          <Detector class="edu.umd.cs.findbugs.detect.CheckCalls" speed="fast" reports=""
+                    disabled="true" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast"
+                    hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream" speed="fast"
+                    reports="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM"/>
+          <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true"
+                    hidden="true" reports="NM_METHOD_NAMING_CONVENTION,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,NM_FIELD_NAMING_CONVENTION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ViewCFG" disabled="true"
+                    hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer"
+                    speed="fast"
+                    reports="GC_UNRELATED_TYPES,DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES,DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION,DMI_VACUOUS_SELF_COLLECTION_CALL,GC_UNCHECKED_TYPE_IN_GENERIC_CALL"/>
+          <Detector class="edu.umd.cs.findbugs.detect.StaticCalendarDetector" speed="fast"
+                    reports="STCAL_STATIC_CALENDAR_INSTANCE,STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE,STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE,STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.TestDataflowAnalysis" speed="slow" reports=""
+                    disabled="true" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers" speed="slow"
+                    reports="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED,TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED,TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK,TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK,TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK,TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK,TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS,TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED"/>
 
           <Detector class="edu.umd.cs.findbugs.detect.CrossSiteScripting"
                     reports="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER,HRS_REQUEST_PARAMETER_TO_COOKIE,XSS_REQUEST_PARAMETER_TO_JSP_WRITER,XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER,XSS_REQUEST_PARAMETER_TO_SEND_ERROR,PT_ABSOLUTE_PATH_TRAVERSAL,PT_RELATIVE_PATH_TRAVERSAL"/>
@@ -686,530 +684,532 @@ reporting detectors have completed.
                     disabled="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryEnvUsage" speed="fast"
                     reports="ENV_USE_PROPERTY_INSTEAD_OF_ENV"/>
+          <Detector class="edu.umd.cs.findbugs.detect.MultipleInstantiationsOfSingletons" speed="fast"
+                    reports="SING_SINGLETON_IMPLEMENTS_CLONEABLE,SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE,SING_SINGLETON_IMPLEMENTS_CLONE_METHOD,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR,SING_SINGLETON_IMPLEMENTS_SERIALIZABLE,SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" />
           <Detector class="edu.umd.cs.findbugs.detect.FindSynchronizationLock" speed="fast"
                     reports="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"/>
-          <!-- Bug Categories -->
+    <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
 
-    <!-- Bug Codes -->
-    <BugCode abbrev="USELESS_STRING"/>
-    <BugCode abbrev="DCN"/>
-    <BugCode abbrev="DMI" cweid="440"/>
-    <BugCode abbrev="CN" cweid="580"/>
-    <BugCode abbrev="DLS" cweid="563"/>
-    <BugCode abbrev="RV" cweid="440"/>
-    <BugCode abbrev="IS" cweid="366"/>
-    <BugCode abbrev="NP" cweid="476"/>
-    <BugCode abbrev="RCN" cweid="476"/>
-    <BugCode abbrev="EQ" cweid="595"/>
-    <BugCode abbrev="ES" cweid="597"/>
-    <BugCode abbrev="FI" cweid="586"/>
-    <BugCode abbrev="AM" cweid="227"/>
-    <BugCode abbrev="J2EE" cweid="4"/>
-    <BugCode abbrev="RE" cweid="185"/>
-    <BugCode abbrev="MS" cweid="218"/>
-    <BugCode abbrev="DE" cweid="391"/>
-    <BugCode abbrev="XSS" cweid="79"/>
-    <BugCode abbrev="HRS" cweid="113"/>
-    <BugCode abbrev="STCAL" cweid="366"/>
-    <BugCode abbrev="ICAST" cweid="192"/>
-    <BugCode abbrev="FB"/>
-    <BugCode abbrev="CT"/>
-    <BugCode abbrev="AT"/>
-    <BugCode abbrev="JUA"/>
-    <BugCode abbrev="ASE"/>
-    <BugCode abbrev="VSC"/>
-    <BugCode abbrev="DA"/>
-    <!-- Bug patterns -->
-    <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true"/>
-    <BugPattern abbrev="AA" type="AA_ASSERTION_OF_ARGUMENTS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="CT" type="CT_CONSTRUCTOR_THROW" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS"/>
-    <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
+          <!-- Bug Codes -->
+          <BugCode abbrev="USELESS_STRING"/>
+          <BugCode abbrev="DCN"/>
+          <BugCode abbrev="DMI" cweid="440"/>
+          <BugCode abbrev="CN" cweid="580"/>
+          <BugCode abbrev="DLS" cweid="563"/>
+          <BugCode abbrev="RV" cweid="440"/>
+          <BugCode abbrev="IS" cweid="366"/>
+          <BugCode abbrev="NP" cweid="476"/>
+          <BugCode abbrev="RCN" cweid="476"/>
+          <BugCode abbrev="EQ" cweid="595"/>
+          <BugCode abbrev="ES" cweid="597"/>
+          <BugCode abbrev="FI" cweid="586"/>
+          <BugCode abbrev="AM" cweid="227"/>
+          <BugCode abbrev="J2EE" cweid="4"/>
+          <BugCode abbrev="RE" cweid="185"/>
+          <BugCode abbrev="MS" cweid="218"/>
+          <BugCode abbrev="DE" cweid="391"/>
+          <BugCode abbrev="XSS" cweid="79"/>
+          <BugCode abbrev="HRS" cweid="113"/>
+          <BugCode abbrev="STCAL" cweid="366"/>
+          <BugCode abbrev="ICAST" cweid="192"/>
+          <BugCode abbrev="FB"/>
+          <BugCode abbrev="CT"/>
+          <BugCode abbrev="AT"/>
+          <BugCode abbrev="JUA"/>
+          <BugCode abbrev="ASE"/>
+          <BugCode abbrev="VSC"/>
+          <BugCode abbrev="DA"/>
+          <!-- Bug patterns -->
+          <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
+          <BugPattern abbrev="AA" type="AA_ASSERTION_OF_ARGUMENTS" category="BAD_PRACTICE" />
+          <BugPattern abbrev="CT" type="CT_CONSTRUCTOR_THROW" category="BAD_PRACTICE" />
+          <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
+          <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
 
-    <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY" cweid="81"/>
-    <BugPattern abbrev="SKIPPED" type="SKIPPED_CLASS_TOO_BIG" category="EXPERIMENTAL"/>
-    <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER"
-                category="SECURITY"/>
-    <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_JSP_WRITER" category="SECURITY"/>
-    <BugPattern abbrev="HRS" type="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER" category="SECURITY" cweid="113"/>
-    <BugPattern abbrev="HRS" type="HRS_REQUEST_PARAMETER_TO_COOKIE" category="SECURITY" cweid="113"/>
-    <BugPattern abbrev="PT" type="PT_ABSOLUTE_PATH_TRAVERSAL" category="SECURITY" cweid="36"/>
-    <BugPattern abbrev="PT" type="PT_RELATIVE_PATH_TRAVERSAL" category="SECURITY" cweid="23"/>
-    <BugPattern abbrev="STCAL" type="STCAL_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_SYNC_AND_NULL_CHECK_FIELD" category="MT_CORRECTNESS"
-                cweid="585"/>
-    <BugPattern abbrev="NP" type="NP_BOOLEAN_RETURN_NULL" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="NP" type="NP_OPTIONAL_RETURN_NULL" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="CORRECTNESS"/>
-    <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
-                experimental="true"/>
-    <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="IL" type="IL_INFINITE_LOOP" category="CORRECTNESS"/>
-    <BugPattern abbrev="IO" type="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM" category="CORRECTNESS"/>
-    <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS"
-                cweid="674"/>
-    <BugPattern abbrev="FI" type="FI_FINALIZER_ONLY_NULLS_FIELDS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="FI" type="FI_FINALIZER_NULLS_FIELDS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="IL" type="IL_CONTAINER_ADDED_TO_ITSELF" category="CORRECTNESS"/>
-    <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="VO" type="VO_VOLATILE_INCREMENT" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="HSC" type="HSC_HUGE_SHARED_STRING_CONSTANT" category="PERFORMANCE"/>
-    <BugPattern abbrev="RpC" type="RpC_REPEATED_CONDITIONAL_TEST" category="CORRECTNESS"/>
-    <BugPattern abbrev="NOISE" type="NOISE_NULL_DEREFERENCE" category="NOISE"/>
-    <BugPattern abbrev="NOISE" type="NOISE_METHOD_CALL" category="NOISE"/>
-    <BugPattern abbrev="NOISE" type="NOISE_FIELD_REFERENCE" category="NOISE"/>
-    <BugPattern abbrev="NOISE" type="NOISE_OPERATION" category="NOISE"/>
-    <BugPattern abbrev="TEST" type="UNKNOWN" category="EXPERIMENTAL"/>
-    <BugPattern abbrev="TEST" type="TESTING" category="EXPERIMENTAL"/>
-    <BugPattern abbrev="TEST" type="TESTING1" category="EXPERIMENTAL"/>
-    <BugPattern abbrev="TEST" type="TESTING2" category="EXPERIMENTAL"/>
-    <BugPattern abbrev="TEST" type="TESTING3" category="EXPERIMENTAL"/>
-    <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEGED" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="DP" type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"
-                category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS"/>
-    <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_FIELD" category="STYLE"
-                experimental="true"/>
-    <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_RETURN" category="STYLE"
-                experimental="true"/>
-    <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_LOCAL" category="STYLE"
-                experimental="true"/>
-    <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_ELEMENT_STORE" category="CORRECTNESS"
-                experimental="true"/>
-    <BugPattern abbrev="CN" type="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="CN" type="CN_IDIOM" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="CN" type="CN_IDIOM_NO_SUPER_CALL" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Dm" type="DM_EXIT" category="BAD_PRACTICE" cweid="382"/>
-    <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Dm" type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD" category="CORRECTNESS"/>
-    <BugPattern abbrev="Dm" type="DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="DMI" type="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="Dm" type="DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="Dm" type="DMI_CONSTANT_DB_PASSWORD" category="SECURITY" cweid="259"/>
-    <BugPattern abbrev="Dm" type="DMI_EMPTY_DB_PASSWORD" category="SECURITY" cweid="259"/>
-    <BugPattern abbrev="Dm" type="DMI_UNSUPPORTED_METHOD" category="STYLE"/>
-    <BugPattern abbrev="Dm" type="DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED" category="STYLE"/>
-    <BugPattern abbrev="Dm" type="DMI_BLOCKING_METHODS_ON_URL" category="PERFORMANCE"/>
-    <BugPattern abbrev="Dm" type="DMI_COLLECTION_OF_URLS" category="PERFORMANCE"/>
-    <BugPattern abbrev="Dm" type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="Dm" type="DM_RUN_FINALIZERS_ON_EXIT" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE"/>
-    <BugPattern abbrev="Dm" type="DM_STRING_VOID_CTOR" category="PERFORMANCE"/>
-    <BugPattern abbrev="Dm" type="DM_STRING_TOSTRING" category="PERFORMANCE"/>
-    <BugPattern abbrev="Dm" type="DM_GC" category="PERFORMANCE"/>
-    <BugPattern abbrev="Dm" type="DM_BOOLEAN_CTOR" category="PERFORMANCE"/>
-    <BugPattern abbrev="Bx" type="DM_NUMBER_CTOR" category="PERFORMANCE"/>
-    <BugPattern abbrev="Bx" type="DM_FP_NUMBER_CTOR" category="PERFORMANCE"/>
-    <BugPattern abbrev="Dm" type="DM_CONVERT_CASE" category="I18N"/>
-    <BugPattern abbrev="Bx" type="DM_BOXED_PRIMITIVE_TOSTRING" category="PERFORMANCE"/>
-    <BugPattern abbrev="Bx" type="DM_BOXED_PRIMITIVE_FOR_PARSING" category="PERFORMANCE"/>
-    <BugPattern abbrev="Bx" type="DM_BOXED_PRIMITIVE_FOR_COMPARE" category="PERFORMANCE"/>
-    <BugPattern abbrev="Bx" type="BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR"
-                category="PERFORMANCE"/>
-    <BugPattern abbrev="Bx" type="BX_UNBOXING_IMMEDIATELY_REBOXED" category="PERFORMANCE"/>
-    <BugPattern abbrev="Bx" type="BX_BOXING_IMMEDIATELY_UNBOXED" category="PERFORMANCE"/>
-    <BugPattern abbrev="Bx" type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION"
-                category="PERFORMANCE" cweid="192"/>
-    <BugPattern abbrev="Dm" type="DM_NEW_FOR_GETCLASS" category="PERFORMANCE"/>
-    <BugPattern abbrev="Dm" type="DM_MONITOR_WAIT_ON_CONDITION" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_ARGUMENT_MIGHT_BE_NULL" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="NP" type="NP_DEREFERENCE_OF_READLINE_VALUE" category="STYLE"/>
-    <BugPattern abbrev="NP" type="NP_IMMEDIATE_DEREFERENCE_OF_READLINE" category="STYLE"/>
-    <BugPattern abbrev="RV" type="RV_ABSOLUTE_VALUE_OF_RANDOM_INT" category="CORRECTNESS"/>
-    <BugPattern abbrev="RV" type="RV_ABSOLUTE_VALUE_OF_HASHCODE" category="CORRECTNESS"/>
-    <BugPattern abbrev="RV" type="RV_REM_OF_RANDOM_INT" category="STYLE"/>
-    <BugPattern abbrev="RV" type="RV_REM_OF_HASHCODE" category="STYLE"/>
-    <BugPattern abbrev="RV" type="RV_01_TO_INT" category="CORRECTNESS"/>
-    <BugPattern abbrev="Dm" type="DM_INVALID_MIN_MAX" category="CORRECTNESS"/>
-    <BugPattern abbrev="Dm" type="DM_NEXTINT_VIA_NEXTDOUBLE" category="PERFORMANCE"/>
-    <BugPattern abbrev="Dm" type="DM_USELESS_THREAD" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="SQL" type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"
-                category="SECURITY" cweid="89"/>
-    <BugPattern abbrev="SQL" type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"
-                category="SECURITY" cweid="89"/>
-    <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" cweid="609"/>
-    <BugPattern abbrev="DC" type="DC_PARTIALLY_CONSTRUCTED" category="MT_CORRECTNESS" cweid="609"/>
-    <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE"
-                cweid="583"/>
-    <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="FI" type="FI_USELESS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="BAD_PRACTICE" cweid="586"/>
-    <BugPattern abbrev="Eq" type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Eq" type="EQ_COMPARING_CLASS_NAMES" category="CORRECTNESS"/>
-    <BugPattern abbrev="Eq" type="EQ_UNUSUAL" category="STYLE"/>
-    <BugPattern abbrev="Eq" type="EQ_GETCLASS_AND_CLASS_CONSTANT" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Eq" type="EQ_ALWAYS_TRUE" category="CORRECTNESS"/>
-    <BugPattern abbrev="Eq" type="EQ_ALWAYS_FALSE" category="CORRECTNESS"/>
-    <BugPattern abbrev="Eq" type="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC" category="CORRECTNESS"/>
-    <BugPattern abbrev="Eq" type="EQ_DOESNT_OVERRIDE_EQUALS" category="STYLE"/>
-    <BugPattern abbrev="Eq" type="EQ_DONT_DEFINE_EQUALS_FOR_ENUM" category="CORRECTNESS"/>
-    <BugPattern abbrev="Eq" type="EQ_SELF_USE_OBJECT" category="CORRECTNESS"/>
-    <BugPattern abbrev="Eq" type="EQ_OTHER_USE_OBJECT" category="CORRECTNESS"/>
-    <BugPattern abbrev="Eq" type="EQ_OTHER_NO_OBJECT" category="CORRECTNESS"/>
-    <BugPattern abbrev="Eq" type="EQ_SELF_NO_OBJECT" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Co" type="CO_COMPARETO_RESULTS_MIN_VALUE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Co" type="CO_COMPARETO_INCORRECT_FLOATING" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="RV" type="RV_NEGATING_RESULT_OF_COMPARETO" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="ES" type="ES_COMPARING_PARAMETER_STRING_WITH_EQ"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="HE" type="HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="HE" type="HE_USE_OF_UNHASHABLE_CLASS" category="CORRECTNESS"/>
-    <BugPattern abbrev="Eq" type="EQ_COMPARETO_USE_OBJECT_EQUALS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="HE" type="HE_INHERITS_EQUALS_USE_HASHCODE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="HE" type="HE_EQUALS_NO_HASHCODE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Eq" type="EQ_ABSTRACT_SELF" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOOLEAN" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_INTERNED_STRING"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="WL" type="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="ESync" type="ESync_EMPTY_SYNC" category="MT_CORRECTNESS" cweid="585"/>
-    <BugPattern abbrev="MSF" type="MSF_MUTABLE_SERVLET_FIELD" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="IS" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="MS" type="MS_EXPOSE_REP" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="MS" type="MS_EXPOSE_BUF" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="EI" type="EI_EXPOSE_REP" category="MALICIOUS_CODE" cweid="374"/>
-    <BugPattern abbrev="EI" type="EI_EXPOSE_BUF" category="MALICIOUS_CODE" cweid="374"/>
-    <BugPattern abbrev="EI2" type="EI_EXPOSE_REP2" category="MALICIOUS_CODE" cweid="374"/>
-    <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_REP2" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="EI2" type="EI_EXPOSE_BUF2" category="MALICIOUS_CODE" cweid="374"/>
-    <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_BUF2" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" cweid="572"/>
-    <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="STYLE"/>
-    <BugPattern abbrev="NS" type="NS_DANGEROUS_NON_SHORT_CIRCUIT" category="STYLE"/>
-    <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_WAIT" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_NOTIFY" category="MT_CORRECTNESS"
-                deprecated="true" experimental="true"/>
-    <!-- has never been generated -->
-    <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS"/>
-    <BugPattern abbrev="UR" type="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="STYLE"/>
-    <BugPattern abbrev="IC" type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="SI" type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" deprecated="true"/>
-    <BugPattern abbrev="IS" type="IS_FIELD_NOT_GUARDED" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="ML" type="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="ML" type="ML_SYNC_ON_UPDATED_FIELD" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="MS" type="MS_OOI_PKGPROTECT" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="MS" type="MS_FINAL_PKGPROTECT" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="MS" type="MS_SHOULD_BE_FINAL" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="MS" type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="MS" type="MS_PKGPROTECT" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="MS" type="MS_MUTABLE_HASHTABLE" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="MS" type="MS_MUTABLE_ARRAY" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="MS" type="MS_MUTABLE_COLLECTION" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="MS" type="MS_MUTABLE_COLLECTION_PKGPROTECT" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="MS" type="MS_CANNOT_BE_FINAL" category="MALICIOUS_CODE"/>
-    <BugPattern abbrev="ME" type="ME_MUTABLE_ENUM_FIELD" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="ME" type="ME_ENUM_FIELD_SETTER" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Nm" type="NM_METHOD_NAMING_CONVENTION" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Nm" type="NM_FIELD_NAMING_CONVENTION" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Nm" type="NM_SAME_SIMPLE_NAME_AS_INTERFACE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Nm" type="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Nm" type="NM_CLASS_NAMING_CONVENTION" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING" category="CORRECTNESS"/>
-    <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING_INTENTIONAL" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Nm" type="NM_WRONG_PACKAGE" category="CORRECTNESS"/>
-    <BugPattern abbrev="Nm" type="NM_WRONG_PACKAGE_INTENTIONAL" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Nm" type="NM_CONFUSING" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Nm" type="NM_METHOD_CONSTRUCTOR_CONFUSION" category="CORRECTNESS"/>
-    <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="CORRECTNESS"/>
-    <BugPattern abbrev="Nm" type="NM_LCASE_TOSTRING" category="CORRECTNESS"/>
-    <BugPattern abbrev="Nm" type="NM_BAD_EQUAL" category="CORRECTNESS"/>
-    <BugPattern abbrev="IA" type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"
-                category="STYLE"/>
-    <BugPattern abbrev="Nm" type="NM_CLASS_NOT_EXCEPTION" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_READ_RESOLVE_IS_STATIC" category="CORRECTNESS"/>
-    <BugPattern abbrev="Se" type="SE_PRIVATE_READ_RESOLVE_NOT_INHERITED" category="STYLE"/>
-    <BugPattern abbrev="Se" type="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS"
-                category="STYLE"/>
-    <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="SnVI" type="SE_NO_SERIALVERSIONID" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_READ_RESOLVE_MUST_RETURN_OBJECT" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_TRANSIENT_FIELD_NOT_RESTORED" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_PREVENT_EXT_OBJ_OVERWRITE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="Se" type="SE_NONFINAL_SERIALVERSIONID" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_NONSTATIC_SERIALVERSIONID" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_NONLONG_SERIALVERSIONID" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_METHOD_MUST_BE_PRIVATE" category="CORRECTNESS"/>
-    <BugPattern abbrev="Se" type="SE_BAD_FIELD" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_INNER_CLASS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_BAD_FIELD_INNER_CLASS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="Se" type="SE_BAD_FIELD_STORE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="STYLE" cweid="484"/>
-    <BugPattern abbrev="SF" type="SF_SWITCH_NO_DEFAULT" category="STYLE"/>
-    <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH"
-                category="CORRECTNESS" cweid="484"/>
-    <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW"
-                category="CORRECTNESS" cweid="484"/>
-    <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="PERFORMANCE"/>
-    <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE"/>
-    <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE"/>
-    <BugPattern abbrev="UuF" type="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
-    <BugPattern abbrev="UrF" type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
-    <BugPattern abbrev="QF" type="QF_QUESTIONABLE_FOR_LOOP" category="STYLE"/>
-    <BugPattern abbrev="NP" type="NP_UNWRITTEN_FIELD" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
-    <BugPattern abbrev="UwF" type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="STYLE"/>
-    <BugPattern abbrev="UwF" type="UWF_NULL_FIELD" category="CORRECTNESS"/>
-    <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_FIELD" category="CORRECTNESS"/>
-    <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
-    <BugPattern abbrev="SIC" type="SIC_THREADLOCAL_DEADLY_EMBRACE" category="CORRECTNESS"/>
-    <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC" category="PERFORMANCE"/>
-    <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS"
-                category="PERFORMANCE"/>
-    <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_ANON" category="PERFORMANCE"/>
-    <BugPattern abbrev="Wa" type="WA_NOT_IN_LOOP" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="Wa" type="WA_AWAIT_NOT_IN_LOOP" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="UC" type="UC_USELESS_VOID_METHOD" category="STYLE"/>
-    <BugPattern abbrev="UC" type="UC_USELESS_CONDITION" category="STYLE"/>
-    <BugPattern abbrev="UC" type="UC_USELESS_CONDITION_TYPE" category="STYLE"/>
-    <BugPattern abbrev="UC" type="UC_USELESS_OBJECT" category="STYLE"/>
-    <BugPattern abbrev="UC" type="UC_USELESS_OBJECT_STACK" category="STYLE"/>
-    <BugPattern abbrev="RANGE" type="RANGE_ARRAY_INDEX" category="CORRECTNESS"/>
-    <BugPattern abbrev="RANGE" type="RANGE_ARRAY_OFFSET" category="CORRECTNESS"/>
-    <BugPattern abbrev="RANGE" type="RANGE_ARRAY_LENGTH" category="CORRECTNESS"/>
-    <BugPattern abbrev="RANGE" type="RANGE_STRING_INDEX" category="CORRECTNESS"/>
-    <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS"/>
-    <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_INFERRED" category="STYLE"/>
-    <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" category="STYLE"/>
-    <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"
-                category="BAD_PRACTICE" cweid="253"/>
-    <BugPattern abbrev="RV" type="RV_EXCEPTION_NOT_THROWN" category="CORRECTNESS"/>
-    <BugPattern abbrev="RV" type="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE" category="CORRECTNESS"/>
-    <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="STYLE"/>
-    <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="STYLE"/>
-    <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_CLOSING_NULL" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_STORE_INTO_NONNULL_FIELD" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_ALWAYS_NULL_EXCEPTION" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"
-                category="STYLE"/>
-    <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" category="STYLE"/>
-    <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE" category="STYLE"/>
-    <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_EXCEPTION" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_NULL_PARAM_DEREF" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_NULL_PARAM_DEREF_NONVIRTUAL" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_NONNULL_PARAM_VIOLATION" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_NONNULL_RETURN_VIOLATION" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_TOSTRING_COULD_RETURN_NULL" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="NP" type="NP_CLONE_COULD_RETURN_NULL" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="NP" type="NP_LOAD_OF_KNOWN_NULL_VALUE" category="STYLE"/>
-    <BugPattern abbrev="NP" type="NP_GUARANTEED_DEREF" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="OS" type="OS_OPEN_STREAM" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="STYLE"/>
-    <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="STYLE"/>
-    <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW_NEXT_LINE" category="STYLE"/>
-    <BugPattern abbrev="DMI" type="DMI_ARGUMENTS_WRONG_ORDER" category="CORRECTNESS"/>
-    <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE" category="STYLE"/>
-    <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" category="CORRECTNESS"/>
-    <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" category="STYLE"/>
-    <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES" category="STYLE"/>
-    <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE" category="STYLE"/>
-    <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="RC" type="RC_REF_COMPARISON_BAD_PRACTICE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="RC" type="RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS"/>
-    <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="FS" type="VA_FORMAT_STRING_USES_NEWLINE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
-    <BugPattern abbrev="EC" type="EC_ARRAY_AND_NONARRAY" category="CORRECTNESS"/>
-    <BugPattern abbrev="EC" type="EC_NULL_ARG" category="CORRECTNESS"/>
-    <BugPattern abbrev="EC" type="EC_UNRELATED_INTERFACES" category="CORRECTNESS"/>
-    <BugPattern abbrev="EC" type="EC_UNRELATED_CLASS_AND_INTERFACE" category="CORRECTNESS"/>
-    <BugPattern abbrev="MWN" type="MWN_MISMATCHED_WAIT" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT" category="STYLE"/>
-    <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="INT" type="INT_BAD_COMPARISON_WITH_INT_VALUE" category="CORRECTNESS"/>
-    <BugPattern abbrev="INT" type="INT_BAD_COMPARISON_WITH_SIGNED_BYTE" category="CORRECTNESS"/>
-    <BugPattern abbrev="INT" type="INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="INT" type="INT_BAD_REM_BY_1" category="STYLE"/>
-    <BugPattern abbrev="INT" type="INT_VACUOUS_COMPARISON" category="STYLE"/>
-    <BugPattern abbrev="INT" type="INT_VACUOUS_BIT_OPERATION" category="STYLE"/>
-    <BugPattern abbrev="BIT" type="BIT_ADD_OF_SIGNED_BYTE" category="CORRECTNESS"/>
-    <BugPattern abbrev="BIT" type="BIT_IOR_OF_SIGNED_BYTE" category="CORRECTNESS"/>
-    <BugPattern abbrev="BIT" type="BIT_SIGNED_CHECK" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="BIT" type="BIT_SIGNED_CHECK_HIGH_BIT" category="CORRECTNESS"/>
-    <BugPattern abbrev="BIT" type="BIT_AND" category="CORRECTNESS"/>
-    <BugPattern abbrev="BIT" type="BIT_AND_ZZ" category="CORRECTNESS"/>
-    <BugPattern abbrev="BIT" type="BIT_IOR" category="CORRECTNESS"/>
-    <BugPattern abbrev="SA" type="SA_FIELD_SELF_ASSIGNMENT" category="CORRECTNESS"/>
-    <BugPattern abbrev="SA" type="SA_LOCAL_DOUBLE_ASSIGNMENT" category="STYLE"/>
-    <BugPattern abbrev="SA" type="SA_FIELD_DOUBLE_ASSIGNMENT" category="STYLE"/>
-    <BugPattern abbrev="SA" type="SA_FIELD_SELF_COMPUTATION" category="CORRECTNESS"/>
-    <BugPattern abbrev="SA" type="SA_LOCAL_SELF_COMPUTATION" category="CORRECTNESS"/>
-    <BugPattern abbrev="SA" type="SA_FIELD_SELF_COMPARISON" category="CORRECTNESS"/>
-    <BugPattern abbrev="SA" type="SA_LOCAL_SELF_COMPARISON" category="CORRECTNESS"/>
-    <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS"
-                deprecated="true" experimental="true"/>
-    <!-- has never been generated? -->
-    <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" cweid="543"/>
-    <BugPattern abbrev="LI" type="LI_LAZY_INIT_UPDATE_STATIC" category="MT_CORRECTNESS"
-                cweid="543"/>
-    <BugPattern abbrev="JLM" type="JLM_JSR166_UTILCONCURRENT_MONITORENTER"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="JLM" type="JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT"
-                category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS"/>
-    <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE"/>
-    <BugPattern abbrev="UMAC" type="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION"
-                category="PERFORMANCE"/>
-    <BugPattern abbrev="IIL" type="IIL_ELEMENTS_GET_LENGTH_IN_LOOP" category="PERFORMANCE"
-                experimental="true"/>
-    <BugPattern abbrev="IIL" type="IIL_PREPARE_STATEMENT_IN_LOOP" category="PERFORMANCE"
-                experimental="true"/>
-    <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP" category="PERFORMANCE"
-                experimental="true"/>
-    <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT" category="PERFORMANCE"
-                experimental="true"/>
-    <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_INDEX_OF" category="PERFORMANCE"
-                experimental="true"/>
-    <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_LAST_INDEX_OF" category="PERFORMANCE"
-                experimental="true"/>
-    <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE"
-                experimental="true"/>
-    <BugPattern abbrev="IJU" type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="IJU" type="IJU_BAD_SUITE_METHOD" category="CORRECTNESS"/>
-    <BugPattern abbrev="IJU" type="IJU_SETUP_NO_SUPER" category="CORRECTNESS"/>
-    <BugPattern abbrev="IJU" type="IJU_TEARDOWN_NO_SUPER" category="CORRECTNESS"/>
-    <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS"/>
-    <BugPattern abbrev="IJU" type="IJU_NO_TESTS" category="CORRECTNESS"/>
-    <BugPattern abbrev="BOA" type="BOA_BADLY_OVERRIDDEN_ADAPTER" category="CORRECTNESS"/>
-    <BugPattern abbrev="SQL" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
-                deprecated="true" experimental="true"/>
-    <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
-    <BugPattern abbrev="SQL" type="SQL_BAD_RESULTSET_ACCESS" category="CORRECTNESS"/>
-    <BugPattern abbrev="SQL" type="SQL_BAD_PREPARED_STATEMENT_ACCESS" category="CORRECTNESS"/>
-    <BugPattern abbrev="SIO" type="SIO_SUPERFLUOUS_INSTANCEOF" category="CORRECTNESS"/>
-    <BugPattern abbrev="BAC" type="BAC_BAD_APPLET_CONSTRUCTOR" category="CORRECTNESS"
-                experimental="true"/>
-    <BugPattern abbrev="EC" type="EC_INCOMPATIBLE_ARRAY_COMPARE" category="CORRECTNESS"/>
-    <BugPattern abbrev="EC" type="EC_BAD_ARRAY_COMPARE" category="CORRECTNESS"/>
-    <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_CURRENTTHREAD" category="CORRECTNESS"/>
-    <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_UNKNOWNTHREAD" category="CORRECTNESS"/>
-    <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_IN_RETURN" category="STYLE"/>
-    <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_INCREMENT_IN_RETURN" category="CORRECTNESS"/>
-    <BugPattern abbrev="DLS" type="DLS_DEAD_STORE_OF_CLASS_LITERAL" category="CORRECTNESS"/>
-    <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="STYLE"/>
-    <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD" category="STYLE"/>
-    <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_OF_NULL" category="STYLE"/>
-    <BugPattern abbrev="IP" type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN" category="CORRECTNESS"
-                cweid="563"/>
-    <BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"/>
-    <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
-    <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"/>
-    <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" cweid="396"/>
-    <BugPattern abbrev="DCN" type="DCN_NULLPOINTER_EXCEPTION" category="STYLE"/>
-    <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="STYLE"/>
-    <BugPattern abbrev="FE" type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER" category="CORRECTNESS"/>
-    <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="PERFORMANCE"/>
-    <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="STYLE" experimental="true"/>
-    <BugPattern abbrev="RI" type="RI_REDUNDANT_INTERFACES" category="STYLE"/>
-    <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE"/>
-    <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" category="STYLE"/>
-    <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE"/>
-    <BugPattern abbrev="ICAST" type="ICAST_INT_2_LONG_AS_INSTANT" category="CORRECTNESS"/>
-    <BugPattern abbrev="ICAST" type="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG" category="STYLE"/>
-    <BugPattern abbrev="ICAST" type="ICAST_IDIV_CAST_TO_DOUBLE" category="STYLE"/>
-    <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="NP_NULL_INSTANCEOF" category="CORRECTNESS"/>
-    <BugPattern abbrev="NP" type="BC_NULL_INSTANCEOF" category="CORRECTNESS" deprecated="true"
-                experimental="true"/>
-    <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
-    <BugPattern abbrev="DMI" type="DMI_RANDOM_USED_ONLY_ONCE" category="BAD_PRACTICE"/>
-    <BugPattern abbrev="DMI" type="DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT"
-                category="CORRECTNESS"/>
-    <BugPattern abbrev="BC" type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS"
-                category="BAD_PRACTICE"/>
-    <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
-    <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST" category="STYLE"/>
-    <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" category="STYLE"/>
+          <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY" cweid="81"/>
+          <BugPattern abbrev="SKIPPED" type="SKIPPED_CLASS_TOO_BIG" category="EXPERIMENTAL"/>
+          <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER"
+                    category="SECURITY"/>
+          <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_JSP_WRITER" category="SECURITY"/>
+          <BugPattern abbrev="HRS" type="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER" category="SECURITY" cweid="113"/>
+          <BugPattern abbrev="HRS" type="HRS_REQUEST_PARAMETER_TO_COOKIE" category="SECURITY" cweid="113" />
+          <BugPattern abbrev="PT" type="PT_ABSOLUTE_PATH_TRAVERSAL" category="SECURITY" cweid="36" />
+          <BugPattern abbrev="PT" type="PT_RELATIVE_PATH_TRAVERSAL" category="SECURITY" cweid="23" />
+          <BugPattern abbrev="STCAL" type="STCAL_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_SYNC_AND_NULL_CHECK_FIELD" category="MT_CORRECTNESS"
+                    cweid="585"/>
+          <BugPattern abbrev="NP" type="NP_BOOLEAN_RETURN_NULL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="NP" type="NP_OPTIONAL_RETURN_NULL" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="CORRECTNESS"/>
+          <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
+                    experimental="true"/>
+          <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="IL" type="IL_INFINITE_LOOP" category="CORRECTNESS"/>
+          <BugPattern abbrev="IO" type="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM" category="CORRECTNESS"/>
+          <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS"
+                    cweid="674"/>
+          <BugPattern abbrev="FI" type="FI_FINALIZER_ONLY_NULLS_FIELDS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_FINALIZER_NULLS_FIELDS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="IL" type="IL_CONTAINER_ADDED_TO_ITSELF" category="CORRECTNESS"/>
+          <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="VO" type="VO_VOLATILE_INCREMENT" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="HSC" type="HSC_HUGE_SHARED_STRING_CONSTANT" category="PERFORMANCE"/>
+          <BugPattern abbrev="RpC" type="RpC_REPEATED_CONDITIONAL_TEST" category="CORRECTNESS"/>
+          <BugPattern abbrev="NOISE" type="NOISE_NULL_DEREFERENCE" category="NOISE"/>
+          <BugPattern abbrev="NOISE" type="NOISE_METHOD_CALL" category="NOISE"/>
+          <BugPattern abbrev="NOISE" type="NOISE_FIELD_REFERENCE" category="NOISE"/>
+          <BugPattern abbrev="NOISE" type="NOISE_OPERATION" category="NOISE"/>
+          <BugPattern abbrev="TEST" type="UNKNOWN" category="EXPERIMENTAL"/>
+          <BugPattern abbrev="TEST" type="TESTING" category="EXPERIMENTAL"/>
+          <BugPattern abbrev="TEST" type="TESTING1" category="EXPERIMENTAL"/>
+          <BugPattern abbrev="TEST" type="TESTING2" category="EXPERIMENTAL"/>
+          <BugPattern abbrev="TEST" type="TESTING3" category="EXPERIMENTAL"/>
+          <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEGED" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="DP" type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"
+                    category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS"/>
+          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_FIELD" category="STYLE"
+                    experimental="true"/>
+          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_RETURN" category="STYLE"
+                    experimental="true"/>
+          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_LOCAL" category="STYLE"
+                    experimental="true"/>
+          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_ELEMENT_STORE" category="CORRECTNESS"
+                    experimental="true"/>
+          <BugPattern abbrev="CN" type="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="CN" type="CN_IDIOM" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="CN" type="CN_IDIOM_NO_SUPER_CALL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Dm" type="DM_EXIT" category="BAD_PRACTICE" cweid="382"/>
+          <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Dm" type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD" category="CORRECTNESS"/>
+          <BugPattern abbrev="Dm" type="DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="DMI" type="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="Dm" type="DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="Dm" type="DMI_CONSTANT_DB_PASSWORD" category="SECURITY" cweid="259"/>
+          <BugPattern abbrev="Dm" type="DMI_EMPTY_DB_PASSWORD" category="SECURITY" cweid="259"/>
+          <BugPattern abbrev="Dm" type="DMI_UNSUPPORTED_METHOD" category="STYLE"/>
+          <BugPattern abbrev="Dm" type="DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED" category="STYLE"/>
+          <BugPattern abbrev="Dm" type="DMI_BLOCKING_METHODS_ON_URL" category="PERFORMANCE"/>
+          <BugPattern abbrev="Dm" type="DMI_COLLECTION_OF_URLS" category="PERFORMANCE"/>
+          <BugPattern abbrev="Dm" type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="Dm" type="DM_RUN_FINALIZERS_ON_EXIT" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE"/>
+          <BugPattern abbrev="Dm" type="DM_STRING_VOID_CTOR" category="PERFORMANCE"/>
+          <BugPattern abbrev="Dm" type="DM_STRING_TOSTRING" category="PERFORMANCE"/>
+          <BugPattern abbrev="Dm" type="DM_GC" category="PERFORMANCE"/>
+          <BugPattern abbrev="Dm" type="DM_BOOLEAN_CTOR" category="PERFORMANCE"/>
+          <BugPattern abbrev="Bx" type="DM_NUMBER_CTOR" category="PERFORMANCE"/>
+          <BugPattern abbrev="Bx" type="DM_FP_NUMBER_CTOR" category="PERFORMANCE"/>
+          <BugPattern abbrev="Dm" type="DM_CONVERT_CASE" category="I18N"/>
+          <BugPattern abbrev="Bx" type="DM_BOXED_PRIMITIVE_TOSTRING" category="PERFORMANCE"/>
+          <BugPattern abbrev="Bx" type="DM_BOXED_PRIMITIVE_FOR_PARSING" category="PERFORMANCE"/>
+          <BugPattern abbrev="Bx" type="DM_BOXED_PRIMITIVE_FOR_COMPARE" category="PERFORMANCE"/>
+          <BugPattern abbrev="Bx" type="BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR"
+                    category="PERFORMANCE"/>
+          <BugPattern abbrev="Bx" type="BX_UNBOXING_IMMEDIATELY_REBOXED" category="PERFORMANCE"/>
+          <BugPattern abbrev="Bx" type="BX_BOXING_IMMEDIATELY_UNBOXED" category="PERFORMANCE"/>
+          <BugPattern abbrev="Bx" type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION"
+                    category="PERFORMANCE" cweid="192"/>
+          <BugPattern abbrev="Dm" type="DM_NEW_FOR_GETCLASS" category="PERFORMANCE"/>
+          <BugPattern abbrev="Dm" type="DM_MONITOR_WAIT_ON_CONDITION" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_ARGUMENT_MIGHT_BE_NULL" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="NP" type="NP_DEREFERENCE_OF_READLINE_VALUE" category="STYLE"/>
+          <BugPattern abbrev="NP" type="NP_IMMEDIATE_DEREFERENCE_OF_READLINE" category="STYLE"/>
+          <BugPattern abbrev="RV" type="RV_ABSOLUTE_VALUE_OF_RANDOM_INT" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_ABSOLUTE_VALUE_OF_HASHCODE" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_REM_OF_RANDOM_INT" category="STYLE"/>
+          <BugPattern abbrev="RV" type="RV_REM_OF_HASHCODE" category="STYLE"/>
+          <BugPattern abbrev="RV" type="RV_01_TO_INT" category="CORRECTNESS"/>
+          <BugPattern abbrev="Dm" type="DM_INVALID_MIN_MAX" category="CORRECTNESS"/>
+          <BugPattern abbrev="Dm" type="DM_NEXTINT_VIA_NEXTDOUBLE" category="PERFORMANCE"/>
+          <BugPattern abbrev="Dm" type="DM_USELESS_THREAD" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="SQL" type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"
+                    category="SECURITY" cweid="89"/>
+          <BugPattern abbrev="SQL" type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"
+                    category="SECURITY" cweid="89"/>
+          <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" cweid="609"/>
+          <BugPattern abbrev="DC" type="DC_PARTIALLY_CONSTRUCTED" category="MT_CORRECTNESS" cweid="609"/>
+          <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE"
+                    cweid="583"/>
+          <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_USELESS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="BAD_PRACTICE" cweid="586"/>
+          <BugPattern abbrev="Eq" type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Eq" type="EQ_COMPARING_CLASS_NAMES" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_UNUSUAL" category="STYLE"/>
+          <BugPattern abbrev="Eq" type="EQ_GETCLASS_AND_CLASS_CONSTANT" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Eq" type="EQ_ALWAYS_TRUE" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_ALWAYS_FALSE" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_DOESNT_OVERRIDE_EQUALS" category="STYLE"/>
+          <BugPattern abbrev="Eq" type="EQ_DONT_DEFINE_EQUALS_FOR_ENUM" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_SELF_USE_OBJECT" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_OTHER_USE_OBJECT" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_OTHER_NO_OBJECT" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_SELF_NO_OBJECT" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Co" type="CO_COMPARETO_RESULTS_MIN_VALUE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Co" type="CO_COMPARETO_INCORRECT_FLOATING" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="RV" type="RV_NEGATING_RESULT_OF_COMPARETO" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="ES" type="ES_COMPARING_PARAMETER_STRING_WITH_EQ"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="HE" type="HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="HE" type="HE_USE_OF_UNHASHABLE_CLASS" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_COMPARETO_USE_OBJECT_EQUALS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="HE" type="HE_INHERITS_EQUALS_USE_HASHCODE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="HE" type="HE_EQUALS_NO_HASHCODE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Eq" type="EQ_ABSTRACT_SELF" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOOLEAN" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_INTERNED_STRING"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="WL" type="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="ESync" type="ESync_EMPTY_SYNC" category="MT_CORRECTNESS" cweid="585"/>
+          <BugPattern abbrev="MSF" type="MSF_MUTABLE_SERVLET_FIELD" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="IS" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="MS" type="MS_EXPOSE_REP" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_EXPOSE_BUF" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="EI" type="EI_EXPOSE_REP" category="MALICIOUS_CODE" cweid="374"/>
+          <BugPattern abbrev="EI" type="EI_EXPOSE_BUF" category="MALICIOUS_CODE" cweid="374"/>
+          <BugPattern abbrev="EI2" type="EI_EXPOSE_REP2" category="MALICIOUS_CODE" cweid="374"/>
+          <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_REP2" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="EI2" type="EI_EXPOSE_BUF2" category="MALICIOUS_CODE" cweid="374"/>
+          <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_BUF2" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" cweid="572"/>
+          <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="STYLE"/>
+          <BugPattern abbrev="NS" type="NS_DANGEROUS_NON_SHORT_CIRCUIT" category="STYLE"/>
+          <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_WAIT" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_NOTIFY" category="MT_CORRECTNESS"
+                    deprecated="true" experimental="true"/>
+          <!-- has never been generated -->
+          <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS"/>
+          <BugPattern abbrev="UR" type="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="STYLE"/>
+          <BugPattern abbrev="IC" type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SI" type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" deprecated="true"/>
+          <BugPattern abbrev="IS" type="IS_FIELD_NOT_GUARDED" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="ML" type="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="ML" type="ML_SYNC_ON_UPDATED_FIELD" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="MS" type="MS_OOI_PKGPROTECT" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_FINAL_PKGPROTECT" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_SHOULD_BE_FINAL" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_PKGPROTECT" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_MUTABLE_HASHTABLE" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_MUTABLE_ARRAY" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_MUTABLE_COLLECTION" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_MUTABLE_COLLECTION_PKGPROTECT" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_CANNOT_BE_FINAL" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="ME" type="ME_MUTABLE_ENUM_FIELD" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="ME" type="ME_ENUM_FIELD_SETTER" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Nm" type="NM_METHOD_NAMING_CONVENTION" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Nm" type="NM_FIELD_NAMING_CONVENTION" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Nm" type="NM_SAME_SIMPLE_NAME_AS_INTERFACE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Nm" type="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Nm" type="NM_CLASS_NAMING_CONVENTION" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING" category="CORRECTNESS"/>
+          <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING_INTENTIONAL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Nm" type="NM_WRONG_PACKAGE" category="CORRECTNESS"/>
+          <BugPattern abbrev="Nm" type="NM_WRONG_PACKAGE_INTENTIONAL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Nm" type="NM_CONFUSING" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Nm" type="NM_METHOD_CONSTRUCTOR_CONFUSION" category="CORRECTNESS"/>
+          <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="CORRECTNESS"/>
+          <BugPattern abbrev="Nm" type="NM_LCASE_TOSTRING" category="CORRECTNESS"/>
+          <BugPattern abbrev="Nm" type="NM_BAD_EQUAL" category="CORRECTNESS"/>
+          <BugPattern abbrev="IA" type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"
+                    category="STYLE"/>
+          <BugPattern abbrev="Nm" type="NM_CLASS_NOT_EXCEPTION" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_READ_RESOLVE_IS_STATIC" category="CORRECTNESS"/>
+          <BugPattern abbrev="Se" type="SE_PRIVATE_READ_RESOLVE_NOT_INHERITED" category="STYLE"/>
+          <BugPattern abbrev="Se" type="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS"
+                    category="STYLE"/>
+          <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SnVI" type="SE_NO_SERIALVERSIONID" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_READ_RESOLVE_MUST_RETURN_OBJECT" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_TRANSIENT_FIELD_NOT_RESTORED" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_PREVENT_EXT_OBJ_OVERWRITE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="Se" type="SE_NONFINAL_SERIALVERSIONID" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_NONSTATIC_SERIALVERSIONID" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_NONLONG_SERIALVERSIONID" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_METHOD_MUST_BE_PRIVATE" category="CORRECTNESS"/>
+          <BugPattern abbrev="Se" type="SE_BAD_FIELD" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_INNER_CLASS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_BAD_FIELD_INNER_CLASS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Se" type="SE_BAD_FIELD_STORE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="STYLE" cweid="484"/>
+          <BugPattern abbrev="SF" type="SF_SWITCH_NO_DEFAULT" category="STYLE"/>
+          <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH"
+                    category="CORRECTNESS" cweid="484"/>
+          <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW"
+                    category="CORRECTNESS" cweid="484"/>
+          <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="PERFORMANCE"/>
+          <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE"/>
+          <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE"/>
+          <BugPattern abbrev="UuF" type="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
+          <BugPattern abbrev="UrF" type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
+          <BugPattern abbrev="QF" type="QF_QUESTIONABLE_FOR_LOOP" category="STYLE"/>
+          <BugPattern abbrev="NP" type="NP_UNWRITTEN_FIELD" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
+          <BugPattern abbrev="UwF" type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="STYLE"/>
+          <BugPattern abbrev="UwF" type="UWF_NULL_FIELD" category="CORRECTNESS"/>
+          <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_FIELD" category="CORRECTNESS"/>
+          <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
+          <BugPattern abbrev="SIC" type="SIC_THREADLOCAL_DEADLY_EMBRACE" category="CORRECTNESS"/>
+          <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC" category="PERFORMANCE"/>
+          <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS"
+                    category="PERFORMANCE"/>
+          <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_ANON" category="PERFORMANCE"/>
+          <BugPattern abbrev="Wa" type="WA_NOT_IN_LOOP" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="Wa" type="WA_AWAIT_NOT_IN_LOOP" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_VOID_METHOD" category="STYLE"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_CONDITION" category="STYLE"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_CONDITION_TYPE" category="STYLE"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_OBJECT" category="STYLE"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_OBJECT_STACK" category="STYLE"/>
+          <BugPattern abbrev="RANGE" type="RANGE_ARRAY_INDEX" category="CORRECTNESS"/>
+          <BugPattern abbrev="RANGE" type="RANGE_ARRAY_OFFSET" category="CORRECTNESS"/>
+          <BugPattern abbrev="RANGE" type="RANGE_ARRAY_LENGTH" category="CORRECTNESS"/>
+          <BugPattern abbrev="RANGE" type="RANGE_STRING_INDEX" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_INFERRED" category="STYLE"/>
+          <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" category="STYLE"/>
+          <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"
+                    category="BAD_PRACTICE" cweid="253"/>
+          <BugPattern abbrev="RV" type="RV_EXCEPTION_NOT_THROWN" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="STYLE"/>
+          <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="STYLE"/>
+          <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_CLOSING_NULL" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_STORE_INTO_NONNULL_FIELD" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_ALWAYS_NULL_EXCEPTION" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"
+                    category="STYLE"/>
+          <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" category="STYLE"/>
+          <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE" category="STYLE"/>
+          <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_EXCEPTION" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_NULL_PARAM_DEREF" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_NULL_PARAM_DEREF_NONVIRTUAL" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_NONNULL_PARAM_VIOLATION" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_NONNULL_RETURN_VIOLATION" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_TOSTRING_COULD_RETURN_NULL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="NP" type="NP_CLONE_COULD_RETURN_NULL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="NP" type="NP_LOAD_OF_KNOWN_NULL_VALUE" category="STYLE"/>
+          <BugPattern abbrev="NP" type="NP_GUARANTEED_DEREF" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="OS" type="OS_OPEN_STREAM" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="STYLE"/>
+          <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="STYLE"/>
+          <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW_NEXT_LINE" category="STYLE"/>
+          <BugPattern abbrev="DMI" type="DMI_ARGUMENTS_WRONG_ORDER" category="CORRECTNESS"/>
+          <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE" category="STYLE"/>
+          <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" category="CORRECTNESS"/>
+          <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" category="STYLE"/>
+          <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES" category="STYLE"/>
+          <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE" category="STYLE"/>
+          <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="RC" type="RC_REF_COMPARISON_BAD_PRACTICE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="RC" type="RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS"/>
+          <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_USES_NEWLINE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
+          <BugPattern abbrev="EC" type="EC_ARRAY_AND_NONARRAY" category="CORRECTNESS"/>
+          <BugPattern abbrev="EC" type="EC_NULL_ARG" category="CORRECTNESS"/>
+          <BugPattern abbrev="EC" type="EC_UNRELATED_INTERFACES" category="CORRECTNESS"/>
+          <BugPattern abbrev="EC" type="EC_UNRELATED_CLASS_AND_INTERFACE" category="CORRECTNESS"/>
+          <BugPattern abbrev="MWN" type="MWN_MISMATCHED_WAIT" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT" category="STYLE"/>
+          <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="INT" type="INT_BAD_COMPARISON_WITH_INT_VALUE" category="CORRECTNESS"/>
+          <BugPattern abbrev="INT" type="INT_BAD_COMPARISON_WITH_SIGNED_BYTE" category="CORRECTNESS"/>
+          <BugPattern abbrev="INT" type="INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="INT" type="INT_BAD_REM_BY_1" category="STYLE"/>
+          <BugPattern abbrev="INT" type="INT_VACUOUS_COMPARISON" category="STYLE"/>
+          <BugPattern abbrev="INT" type="INT_VACUOUS_BIT_OPERATION" category="STYLE"/>
+          <BugPattern abbrev="BIT" type="BIT_ADD_OF_SIGNED_BYTE" category="CORRECTNESS"/>
+          <BugPattern abbrev="BIT" type="BIT_IOR_OF_SIGNED_BYTE" category="CORRECTNESS"/>
+          <BugPattern abbrev="BIT" type="BIT_SIGNED_CHECK" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="BIT" type="BIT_SIGNED_CHECK_HIGH_BIT" category="CORRECTNESS"/>
+          <BugPattern abbrev="BIT" type="BIT_AND" category="CORRECTNESS"/>
+          <BugPattern abbrev="BIT" type="BIT_AND_ZZ" category="CORRECTNESS"/>
+          <BugPattern abbrev="BIT" type="BIT_IOR" category="CORRECTNESS"/>
+          <BugPattern abbrev="SA" type="SA_FIELD_SELF_ASSIGNMENT" category="CORRECTNESS"/>
+          <BugPattern abbrev="SA" type="SA_LOCAL_DOUBLE_ASSIGNMENT" category="STYLE"/>
+          <BugPattern abbrev="SA" type="SA_FIELD_DOUBLE_ASSIGNMENT" category="STYLE"/>
+          <BugPattern abbrev="SA" type="SA_FIELD_SELF_COMPUTATION" category="CORRECTNESS"/>
+          <BugPattern abbrev="SA" type="SA_LOCAL_SELF_COMPUTATION" category="CORRECTNESS"/>
+          <BugPattern abbrev="SA" type="SA_FIELD_SELF_COMPARISON" category="CORRECTNESS"/>
+          <BugPattern abbrev="SA" type="SA_LOCAL_SELF_COMPARISON" category="CORRECTNESS"/>
+          <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS"
+                    deprecated="true" experimental="true"/>
+          <!-- has never been generated? -->
+          <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" cweid="543"/>
+          <BugPattern abbrev="LI" type="LI_LAZY_INIT_UPDATE_STATIC" category="MT_CORRECTNESS"
+                    cweid="543"/>
+          <BugPattern abbrev="JLM" type="JLM_JSR166_UTILCONCURRENT_MONITORENTER"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="JLM" type="JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE"/>
+          <BugPattern abbrev="UMAC" type="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION"
+                    category="PERFORMANCE"/>
+          <BugPattern abbrev="IIL" type="IIL_ELEMENTS_GET_LENGTH_IN_LOOP" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IIL" type="IIL_PREPARE_STATEMENT_IN_LOOP" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_INDEX_OF" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_LAST_INDEX_OF" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IJU" type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="IJU" type="IJU_BAD_SUITE_METHOD" category="CORRECTNESS"/>
+          <BugPattern abbrev="IJU" type="IJU_SETUP_NO_SUPER" category="CORRECTNESS"/>
+          <BugPattern abbrev="IJU" type="IJU_TEARDOWN_NO_SUPER" category="CORRECTNESS"/>
+          <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS"/>
+          <BugPattern abbrev="IJU" type="IJU_NO_TESTS" category="CORRECTNESS"/>
+          <BugPattern abbrev="BOA" type="BOA_BADLY_OVERRIDDEN_ADAPTER" category="CORRECTNESS"/>
+          <BugPattern abbrev="SQL" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
+                    deprecated="true" experimental="true"/>
+          <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
+          <BugPattern abbrev="SQL" type="SQL_BAD_RESULTSET_ACCESS" category="CORRECTNESS"/>
+          <BugPattern abbrev="SQL" type="SQL_BAD_PREPARED_STATEMENT_ACCESS" category="CORRECTNESS"/>
+          <BugPattern abbrev="SIO" type="SIO_SUPERFLUOUS_INSTANCEOF" category="CORRECTNESS"/>
+          <BugPattern abbrev="BAC" type="BAC_BAD_APPLET_CONSTRUCTOR" category="CORRECTNESS"
+                    experimental="true"/>
+          <BugPattern abbrev="EC" type="EC_INCOMPATIBLE_ARRAY_COMPARE" category="CORRECTNESS"/>
+          <BugPattern abbrev="EC" type="EC_BAD_ARRAY_COMPARE" category="CORRECTNESS"/>
+          <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_CURRENTTHREAD" category="CORRECTNESS"/>
+          <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_UNKNOWNTHREAD" category="CORRECTNESS"/>
+          <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_IN_RETURN" category="STYLE"/>
+          <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_INCREMENT_IN_RETURN" category="CORRECTNESS"/>
+          <BugPattern abbrev="DLS" type="DLS_DEAD_STORE_OF_CLASS_LITERAL" category="CORRECTNESS"/>
+          <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="STYLE"/>
+          <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD" category="STYLE"/>
+          <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_OF_NULL" category="STYLE"/>
+          <BugPattern abbrev="IP" type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN" category="CORRECTNESS"
+                    cweid="563"/>
+          <BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"/>
+          <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
+          <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"/>
+          <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" cweid="396"/>
+          <BugPattern abbrev="DCN" type="DCN_NULLPOINTER_EXCEPTION" category="STYLE"/>
+          <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="STYLE"/>
+          <BugPattern abbrev="FE" type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER" category="CORRECTNESS"/>
+          <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="PERFORMANCE"/>
+          <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="STYLE" experimental="true"/>
+          <BugPattern abbrev="RI" type="RI_REDUNDANT_INTERFACES" category="STYLE"/>
+          <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE"/>
+          <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" category="STYLE"/>
+          <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE"/>
+          <BugPattern abbrev="ICAST" type="ICAST_INT_2_LONG_AS_INSTANT" category="CORRECTNESS"/>
+          <BugPattern abbrev="ICAST" type="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG" category="STYLE"/>
+          <BugPattern abbrev="ICAST" type="ICAST_IDIV_CAST_TO_DOUBLE" category="STYLE"/>
+          <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_NULL_INSTANCEOF" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="BC_NULL_INSTANCEOF" category="CORRECTNESS" deprecated="true"
+                    experimental="true"/>
+          <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
+          <BugPattern abbrev="DMI" type="DMI_RANDOM_USED_ONLY_ONCE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="DMI" type="DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT"
+                    category="CORRECTNESS"/>
+          <BugPattern abbrev="BC" type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS"
+                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
+          <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST" category="STYLE"/>
+          <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" category="STYLE"/>
 
           <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY" category="CORRECTNESS"
                     deprecated="true"/>
@@ -1325,6 +1325,12 @@ reporting detectors have completed.
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_CLONEABLE" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_CLONE_METHOD" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" category="CORRECTNESS" />
           <BugPattern abbrev="ENV" type="ENV_USE_PROPERTY_INSTEAD_OF_ENV" category="BAD_PRACTICE" />
           <BugPattern abbrev="PFL" type="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PFL" type="PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS" category="BAD_PRACTICE"/>

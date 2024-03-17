@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
@@ -11,6 +12,8 @@ import static org.hamcrest.Matchers.hasItem;
 
 class RegressionIdeas20110722Test extends AbstractIntegrationTest {
 
+    // Problems in null checks, see https://github.com/spotbugs/spotbugs/issues/2890
+    @Disabled
     @Test
     void testArgumentAssertions() {
         performAnalysis("bugIdeas/Ideas_2011_07_22.class");
