@@ -28,13 +28,13 @@ jobs:
       - name: Download Eclipse on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: |
-          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz&r=1' --output eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz
+          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz
           tar xzf eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Download Eclipse on Windows
         if: matrix.os == 'windows-latest'
         run: |
-          curl 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-win32-x86_64.zip&r=1' -o eclipse-SDK-4.24-win32-x86_64.zip
+          curl 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-win32-x86_64.zip&mirror_id=1' -o eclipse-SDK-4.24-win32-x86_64.zip
           Expand-Archive "eclipse-SDK-4.24-win32-x86_64.zip" -DestinationPath "." -Force
           $escapedPwd = $pwd.Path -replace '\\', '\\'
           [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
@@ -42,7 +42,7 @@ jobs:
       - name: Download Eclipse on Mac
         if: matrix.os == 'macos-latest'
         run: |
-          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-macosx-cocoa-x86_64.dmg&r=1' --output eclipse-SDK-4.24-macosx-cocoa-x86_64.dmg
+          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-macosx-cocoa-x86_64.dmg&mirror_id=1' --output eclipse-SDK-4.24-macosx-cocoa-x86_64.dmg
           hdiutil attach eclipse-SDK-4.24-macosx-cocoa-x86_64.dmg
           cp -r /Volumes/Eclipse/Eclipse.app /Applications/
           hdiutil detach /Volumes/Eclipse
