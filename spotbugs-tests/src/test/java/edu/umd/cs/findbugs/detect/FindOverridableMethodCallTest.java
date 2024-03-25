@@ -152,6 +152,16 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void testIndirectStreamMethods1() {
+        testPass("IndirectStreamMethods1");
+    }
+
+    @Test
+    void testIndirectStreamMethods2() {
+        testPass("IndirectStreamMethods2");
+    }
+
+    @Test
     void DoubleIndirectReadObjectCase1() {
         testReadObject("DoubleIndirectReadObjectCase1", 18);
     }

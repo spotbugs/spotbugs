@@ -255,8 +255,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                     new BugInstance(this, "MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT", NORMAL_PRIORITY)
                             .addClass(this)
                             .addMethod(caller)
-                            .addString(method.getName()),
-                    sourceLine);
+                            .addString(method.getName()), sourceLine);
             return false;
         }
 
