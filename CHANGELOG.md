@@ -29,6 +29,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed crash in ValueRangeAnalysisFactory when looking for redundant conditions used in assertions [#2887](https://github.com/spotbugs/spotbugs/pull/2887))
 - Revert again commons-text from 1.11.0 to 1.10.0 to resolve a version conflict ([#2686](https://github.com/spotbugs/spotbugs/issues/2686))
 - Fixed false positive MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR when referencing but not calling an overridable method [#2837](https://github.com/spotbugs/spotbugs/pull/2837))
+- Update the filter XSD namespace and location for the upcoming 4.8.4 release [#2909](https://github.com/spotbugs/spotbugs/issues/2909))
 
 ### Added
 - New detector `MultipleInstantiationsOfSingletons` and introduced new bug types:
