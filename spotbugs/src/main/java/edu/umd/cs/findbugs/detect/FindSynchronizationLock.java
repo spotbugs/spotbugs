@@ -298,7 +298,9 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                         }
 
                         if (instruction instanceof ARETURN) {
-                            OpcodeStack currentStack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), possibleAccessorMethod, handle.getPosition());
+                            OpcodeStack currentStack = OpcodeStackScanner.getStackAt(
+                                    classContext.getJavaClass(), possibleAccessorMethod, handle
+                                            .getPosition());
                             XField xField = currentStack.getStackItem(0).getXField();
 
                             if (isSameAsLockObject(xField, lockObject) && !xField.isPublic()) {

@@ -8,58 +8,21 @@ import org.junit.jupiter.api.Test;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
-    /**
-     * Report:<br>
-     *      0) the class where the bug is detected <br>
-     *      1) the method used for synchronization<br>
-     *      2) the exposing methods<br>
-     */
     private static final String METHOD_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    /**
-     * Report:<br>
-     *      0) the class where the bug is detected <br>
-     *      1) the static method used for synchronization<br>
-     */
     private static final String STATIC_METHOD_BUG = "PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    /**
-     * Report:<br>
-     *      0) the class where the bug is detected <br>
-     *      1) the method where it was used as lock (here)<br>
-     *      2) the lock object itself<br>
-     */
     private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    /**
-     * Report:<br>
-     *      0) the class where the bug is detected <br>
-     *      1) the method where it was used as lock (here)<br>
-     *      2) the lock object itself<br>
-     *      3) accessor methods(can be multiple places)<br>
-     */
     private static final String ACCESSIBLE_OBJECT_BUG = "PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    /**
-     * Report:<br>
-     *      0) the class where it was detected (here)<br>
-     *      1) the method where it was used as lock (here)<br>
-     *      2) the lock object itself (here)<br>
-     */
     private static final String INHERITED_OBJECT_BUG = "PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    /**
-     * Report:<br>
-     *      0) the class where it was detected<br>
-     *      1) the method where it was used as lock (in parent)<br>
-     *      2) the lock object itself<br>
-     *      3) the methods where it was exposed (in descendant)<br>
-    */
     private static final String EXPOSING_LOCK_OBJECT_BUG = "PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
 
 
     /**
      * The following tests are for object synchronization bugs
      */
-
     @Test
     void testBadMethodSynchronizationLock() {
         performAnalysis("privateFinalLocks/BadMethodSynchronizationWithClassExposingItSelf.class",
@@ -87,8 +50,7 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     void testBadMethodSynchronizationWithMixedBugs() {
         performAnalysis("privateFinalLocks/BadMixedMethodSynchronization.class");
 
-        assertNumOfBugs(1, METHOD_BUG);
-        assertNumOfBugs(1, STATIC_METHOD_BUG);
+        assertNumOfBugs(2, METHOD_BUG, STATIC_METHOD_BUG);
 
         assertMethodBugExactly("privateFinalLocks.BadMixedMethodSynchronization", "doStuff");
         assertStaticMethodBugExactly("privateFinalLocks.BadMixedMethodSynchronization", "doStuff");
@@ -110,7 +72,7 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
                 "privateFinalLocks/BadSynchronizationWithExposingLockInDescendant.class",
                 "privateFinalLocks/BadSynchronizationWithExposingLockInDescendant2.class");
 
-        assertNumOfBugs(6, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(12, EXPOSING_LOCK_OBJECT_BUG, INHERITED_OBJECT_BUG, OBJECT_BUG);
 
         assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff1" /* in base */,
                 "lock1"); /* Exposed by getLock1 */
@@ -241,7 +203,7 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
         assertNumOfBugs(14, OBJECT_BUG);
 
-        // Public locks - Do we want to report them in descendant if we have already reported in parent? Do we want to try optimizing it?
+        // Public locks
         assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff1", "lock1");
         assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff1Again", "lock1");
         assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff2", "lock2");
@@ -285,17 +247,39 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     }
 
     private void assertNoBadLockBugs() {
-        assertNumOfBugs(0, METHOD_BUG);
-        assertNumOfBugs(0, STATIC_METHOD_BUG);
-        assertNumOfBugs(0, OBJECT_BUG);
-        assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertEquals(0, countTotalNumberOfBugs());
+    }
+
+    private int countTotalNumberOfBugs() {
+        long countOfBugs = 0;
+        final String[] bugTypes = new String[] { METHOD_BUG, STATIC_METHOD_BUG, OBJECT_BUG, ACCESSIBLE_OBJECT_BUG, INHERITED_OBJECT_BUG,
+            EXPOSING_LOCK_OBJECT_BUG };
+        for (String bt : bugTypes) {
+            final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                    .bugType(bt)
+                    .build();
+            countOfBugs += getBugCollection().getCollection().stream().filter(bugInstanceMatcher::matches).count();
+        }
+
+        return (int) countOfBugs;
     }
 
     private void assertNumOfBugs(int number, String bugType) {
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType(bugType).build();
         assertThat(getBugCollection(), containsExactly(number, bugTypeMatcher));
+        assertEquals(number, countTotalNumberOfBugs());
+    }
+
+    private void assertNumOfBugs(int number, String... bugTypes) {
+        long countOfExpectedBugs = 0;
+        for (String bt : bugTypes) {
+            final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                    .bugType(bt)
+                    .build();
+            countOfExpectedBugs += getBugCollection().getCollection().stream().filter(bugInstanceMatcher::matches).count();
+        }
+        assertEquals(number, countOfExpectedBugs);
+        assertEquals(number, countTotalNumberOfBugs());
     }
 
     private void assertMethodBugExactly(String clazz, String method) {
