@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -413,7 +414,7 @@ public class URLClassPath implements AutoCloseable, Serializable {
         if (classesThatCantBeFound.contains(className)) {
             throw new ClassNotFoundException("Error while looking for class " + className + ": class not found");
         }
-        String resourceName = className.replace('.', '/') + ".class";
+        String resourceName = ClassName.toSlashedClassName(className) + ".class";
         InputStream in = null;
         boolean parsedClass = false;
 

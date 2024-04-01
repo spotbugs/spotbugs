@@ -25,6 +25,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.LOOKUPSWITCH;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 
@@ -38,6 +39,7 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SwitchHandler;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -47,6 +49,7 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -195,6 +198,7 @@ public class FindBadCast2 implements Detector {
         Map<BugAnnotation, String> instanceOfChecks = new HashMap<>();
         String constantClass = null;
         boolean methodInvocationWasGeneric = false;
+        SwitchHandler switchHandler = new SwitchHandler();
 
         int pcForConstantClass = -1;
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
@@ -206,8 +210,24 @@ public class FindBadCast2 implements Detector {
 
             boolean wasMethodInvocationWasGeneric = methodInvocationWasGeneric;
             methodInvocationWasGeneric = false;
+
+            if (ins instanceof LOOKUPSWITCH) {
+                LOOKUPSWITCH switchInstruction = (LOOKUPSWITCH) ins;
+                int[] indices = switchInstruction.getIndices();
+
+                switchHandler.enterSwitch(ins.getOpcode(),
+                        pc,
+                        indices,
+                        0, // Not sure how to get the default offset from BCEL but it doesn't matter here
+                        false); // It shouldn't matter here if the switch was exhaustive or not
+            }
+
             if (ins instanceof InvokeInstruction) {
                 if (ins instanceof INVOKEDYNAMIC) {
+                    INVOKEDYNAMIC invokeDynamicInstruction = (INVOKEDYNAMIC) ins;
+                    String invokeMethodName = invokeDynamicInstruction.getMethodName(cpg);
+                    switchHandler.sawInvokeDynamic(pc, invokeMethodName);
+
                     continue;
                 }
                 InvokeInstruction iinv = (InvokeInstruction) ins;
@@ -216,6 +236,17 @@ public class FindBadCast2 implements Detector {
                     String sourceSignature = m.getSourceSignature();
                     methodInvocationWasGeneric = sourceSignature != null
                             && (sourceSignature.startsWith("<") || sourceSignature.indexOf("java/lang/Class") >= 0);
+
+                    if (sourceSignature != null) {
+                        GenericSignatureParser signatureParser = new GenericSignatureParser(sourceSignature);
+                        String returnTypeSignature = signatureParser.getReturnTypeSignature();
+
+                        if (returnTypeSignature != null && returnTypeSignature.startsWith("T")) {
+                            // The signature for variable types starts by a T (so <X> would have signature TX)
+                            methodInvocationWasGeneric = true;
+                        }
+                    }
+
                     if (DEBUG && methodInvocationWasGeneric) {
                         System.out.println(m + " has source signature " + sourceSignature);
                     }
@@ -313,6 +344,11 @@ public class FindBadCast2 implements Detector {
                 continue;
             }
 
+            if (switchHandler.isTypeSwitchCaseCheckCast(ins.getOpcode(), pc)) {
+                // javac adds a checkcast for each case in a type switch, ignore them
+                continue;
+            }
+
             String refSig = refType.getSignature();
             String castSig2 = castSig;
             String refSig2 = refSig;
@@ -357,8 +393,8 @@ public class FindBadCast2 implements Detector {
                 // skip; might be due to JSR inlining
                 continue;
             }*/
-            String castName = castSig2.substring(1, castSig2.length() - 1).replace('/', '.');
-            String refName = refSig2.substring(1, refSig2.length() - 1).replace('/', '.');
+            String castName = ClassName.toDottedClassName(castSig2.substring(1, castSig2.length() - 1));
+            String refName = ClassName.toDottedClassName(refSig2.substring(1, refSig2.length() - 1));
 
             if (vnaDataflow == null) {
                 vnaDataflow = classContext.getValueNumberDataflow(method);

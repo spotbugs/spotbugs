@@ -90,18 +90,16 @@ public class PDEClassPathGenerator {
             for (IClasspathEntry entry : rawClasspath) {
                 if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
                     IClasspathContainer classpathContainer = JavaCore.getClasspathContainer(entry.getPath(), javaProject);
-                    if (classpathContainer != null) {
-                        if (classpathContainer instanceof JREContainer) {
-                            IClasspathEntry[] classpathEntries = classpathContainer.getClasspathEntries();
-                            for (IClasspathEntry iClasspathEntry : classpathEntries) {
-                                IPath path = iClasspathEntry.getPath();
-                                // smallest possible fix for #1228 Eclipse plugin always uses host VM to resolve JDK classes
-                                if (isValidPath(path) &&
-                                        ("rt.jar".equals(path.lastSegment())
-                                                || "jrt-fs.jar".equals(path.lastSegment())
-                                                || "jce.jar".equals(path.lastSegment()))) {
-                                    classPath.add(path.toOSString());
-                                }
+                    if (classpathContainer instanceof JREContainer) {
+                        IClasspathEntry[] classpathEntries = classpathContainer.getClasspathEntries();
+                        for (IClasspathEntry iClasspathEntry : classpathEntries) {
+                            IPath path = iClasspathEntry.getPath();
+                            // smallest possible fix for #1228 Eclipse plugin always uses host VM to resolve JDK classes
+                            if (isValidPath(path) &&
+                                    ("rt.jar".equals(path.lastSegment())
+                                            || "jrt-fs.jar".equals(path.lastSegment())
+                                            || "jce.jar".equals(path.lastSegment()))) {
+                                classPath.add(path.toOSString());
                             }
                         }
                     }

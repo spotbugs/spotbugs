@@ -53,7 +53,7 @@ class RelationalOpTest {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         assertThat(RelationalOp.EQ.toString(), is("=="));
     }
 

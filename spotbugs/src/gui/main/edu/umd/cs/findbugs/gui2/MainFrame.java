@@ -642,7 +642,7 @@ public class MainFrame extends FBFrame implements LogSync {
     public void updateTitle() {
         Project project = getProject();
         String name = project.getProjectName();
-        if ((name == null || "".equals(name.trim())) && saveFile != null) {
+        if ((name == null || name.trim().isEmpty()) && saveFile != null) {
             name = saveFile.getAbsolutePath();
         }
         if (name == null) {

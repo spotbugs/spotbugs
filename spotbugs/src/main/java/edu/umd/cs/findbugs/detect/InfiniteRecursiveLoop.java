@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
@@ -125,7 +126,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                 System.out.println("vs. " + getClassName() + "." + getMethodName() + " : " + getMethodSig());
 
             }
-            if (xMethod.getClassName().replace('.', '/').equals(getClassName()) || seen == Const.INVOKEINTERFACE) {
+            if (ClassName.toSlashedClassName(xMethod.getClassName()).equals(getClassName()) || seen == Const.INVOKEINTERFACE) {
                 // Invocation of same method
                 // Now need to see if parameters are the same
                 int firstParameter = 0;

@@ -7883,6 +7883,13 @@ double value2 = x / (double) y;
 <p>
 この書式文字列は改行文字 (<code>\n</code>) が含まれています。
 一般的に書式文字列には <code>%n</code> を使用することがより望ましいです。<code>%n</code> は，プラットフォーム特有の行セパレータを作り出します。
+
+Java 15 複数行テキスト ブロック
+
+<code>String value = """
+                first line%n\
+                second line%n\
+                """;</code>
 </p>
 ]]>
   </Details>

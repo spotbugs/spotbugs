@@ -429,7 +429,7 @@ msgstr ""
 "を参照してください。"
 
 #: ../../running.rst:188
-msgid "-onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.**:"
+msgid "-onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.*,!com.foobar.mypkg.ExcludedClass*:"
 msgstr ""
 
 #: ../../running.rst:184

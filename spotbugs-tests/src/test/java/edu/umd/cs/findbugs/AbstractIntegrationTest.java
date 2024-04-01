@@ -123,6 +123,19 @@ public abstract class AbstractIntegrationTest {
             throw new UncheckedIOException(e);
         }
 
+        final Path dependencies = getFindbugsTestCases().resolve("build/spotbugs/auxclasspath/spotbugsMain");
+        try {
+            final List<String> lines = Files.readAllLines(dependencies);
+            for (String line : lines) {
+                Path path = Paths.get(line);
+                if (Files.isReadable(path)) {
+                    runner.addAuxClasspathEntry(path);
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
         // TODO : Unwire this once we move bug samples to a proper sourceset
         Path[] paths = Arrays.stream(analyzeMe)
                 .map(AbstractIntegrationTest::getFindbugsTestCasesFile)
