@@ -406,8 +406,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
             TextUIBugReporter reporter = initializeReporter(optionExtraPart,
                     () -> new HTMLBugReporter(project, "default.xsl"),
                     (r, rOpt) -> {
-                        if (!"".equals(rOpt))
+                        if (!"".equals(rOpt)) {
                             r.setStylesheet(rOpt);
+                        }
                     });
             if (reporter != null) {
                 reporters.add(reporter);
