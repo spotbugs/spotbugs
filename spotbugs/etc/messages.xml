@@ -229,6 +229,15 @@ applied to method parameters and uses of those method parameters. </p>
 ]]>
      </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ResourceInMultipleThreadsDetector">
+    <Details>
+      <![CDATA[
+<p> Finds sequences of operations on synchronized/atomic abstractions
+    like SynchronizedList or AtomicReference that are not in a synchronized block.
+    </p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant">
     <Details>
 <![CDATA[
@@ -8671,6 +8680,15 @@ after the call to initLogging, the logger configuration is lost
             These calls will not be executed atomically.
           ]]>
       </Details>
+  </BugPattern>
+  <BugPattern type="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD">
+    <ShortDescription>todo</ShortDescription>
+    <LongDescription>todo</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>todo
+        </p>]]>
+    </Details>
   </BugPattern>
   <BugPattern type="DM_DEFAULT_ENCODING">
     <ShortDescription>Reliance on default encoding</ShortDescription>
