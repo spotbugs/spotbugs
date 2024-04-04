@@ -232,8 +232,7 @@ applied to method parameters and uses of those method parameters. </p>
   <Detector class="edu.umd.cs.findbugs.detect.ResourceInMultipleThreadsDetector">
     <Details>
       <![CDATA[
-<p> Finds sequences of operations on synchronized/atomic abstractions
-    like SynchronizedList or AtomicReference that are not in a synchronized block.
+<p> Finds non-atomic typed resources that are used in multiple threads without proper synchronization.
     </p>
 ]]>
     </Details>
@@ -8682,11 +8681,17 @@ after the call to initLogging, the logger configuration is lost
       </Details>
   </BugPattern>
   <BugPattern type="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD">
-    <ShortDescription>todo</ShortDescription>
-    <LongDescription>todo</LongDescription>
+    <ShortDescription>Operation on resource is not safe in a multithreaded context</ShortDescription>
+    <LongDescription>Operation on resource {3} is not safe in a multithreaded context in {1}</LongDescription>
     <Details>
       <![CDATA[
-        <p>todo
+        <p>This code contains an operation on a resource that is not safe in a multithreaded context.
+            The resource may be accessed by multiple threads concurrently without proper synchronization.
+            This may lead to data corruption. Use synchronization or other
+            concurrency control mechanisms to ensure that the resource is accessed safely.</p>
+        <p>See the related SEI CERT rule, but the detector is not restricted to chained methods:
+          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA04-J.+Ensure+that+calls+to+chained+methods+are+atomic">
+          VNA04-J. Ensure that calls to chained methods are atomic</a>.
         </p>]]>
     </Details>
   </BugPattern>

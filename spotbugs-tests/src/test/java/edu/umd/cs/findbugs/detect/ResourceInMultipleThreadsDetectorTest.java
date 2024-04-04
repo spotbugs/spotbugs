@@ -12,9 +12,63 @@ import static org.hamcrest.Matchers.hasItem;
 class ResourceInMultipleThreadsDetectorTest extends AbstractIntegrationTest {
 
     @Test
-    void testUSCurrency() {
-        performAnalysis("atomicMethods/ExampleClientCode.class", "atomicMethods/USCurrency.class");
+    void testSafeUsages() {
+        performAnalysis("commonResources/SafeAtomicFieldUsage.class",
+                "commonResources/SafeSynchronizedCollectionUsage.class",
+                "commonResources/SafeFieldUsages.class",
+                "commonResources/SynchronizedSafeFieldUsage.class",
+                "commonResources/SafeFieldGetterUsage.class",
+                "commonResources/SafeBuilderPattern.class",
+                "commonResources/SafePutFieldWithBuilderPattern.class",
+                "commonResources/SafeFieldUsageInMainThread.class",
+                "commonResources/CombinedThreadsInShutdownHook.class",
+                "commonResources/CombinedThreadsInShutdownHook$1.class",
+                "commonResources/Vehicle.class",
+                "commonResources/Vehicle$Builder.class");
         assertNumOfBugs(0);
+    }
+
+    @Test
+    void testUnsafeFieldUsages() {
+        performAnalysis("commonResources/UnsafeFieldUsage.class",
+                "commonResources/Vehicle.class",
+                "commonResources/Vehicle$Builder.class");
+        assertNumOfBugs(5);
+        assertBug("UnsafeFieldUsage", "lambda$new$0", 8);
+        assertBug("UnsafeFieldUsage", "createVehicle", 16);
+        assertBug("UnsafeFieldUsage", "createVehicle", 17);
+        assertBug("UnsafeFieldUsage", "createVehicle", 18);
+        assertBug("UnsafeFieldUsage", "createVehicle", 19);
+    }
+
+    @Test
+    void testUnsafeFieldUsages2() {
+        performAnalysis("commonResources/UnsafeFieldUsage2.class",
+                "commonResources/Vehicle.class",
+                "commonResources/Vehicle$Builder.class");
+        assertNumOfBugs(2);
+        assertBug("UnsafeFieldUsage2", "lambda$new$0", 8);
+        assertBug("UnsafeFieldUsage2", "createVehicle", 16);
+    }
+
+    @Test
+    void testUnsafeFieldUsages3() {
+        performAnalysis("commonResources/UnsafeFieldUsage3.class",
+                "commonResources/Vehicle.class",
+                "commonResources/Vehicle$Builder.class");
+        assertNumOfBugs(2);
+        assertBug("UnsafeFieldUsage3", "lambda$new$0", 12);
+        assertBug("UnsafeFieldUsage3", "createVehicle", 8);
+    }
+
+    @Test
+    void testSynchronizedUnsafeFieldUsage() {
+        performAnalysis("commonResources/SynchronizedUnsafeFieldUsage.class",
+                "commonResources/Vehicle.class",
+                "commonResources/Vehicle$Builder.class");
+        assertNumOfBugs(2);
+        assertBug("SynchronizedUnsafeFieldUsage", "lambda$new$0", 8);
+        assertBug("SynchronizedUnsafeFieldUsage", "createVehicle", 16);
     }
 
     private void assertNumOfBugs(int num) {
