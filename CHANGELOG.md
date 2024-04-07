@@ -5,6 +5,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased - 2024-??-??
+
 ## 4.8.4 - 2024-04-07
 ### Fixed
 - Fix FP in SE_PREVENT_EXT_OBJ_OVERWRITE when the if statement checking for null value, checking multiple variables or the method exiting in the if branch with an exception. ([#2750](https://github.com/spotbugs/spotbugs/issues/2750))
