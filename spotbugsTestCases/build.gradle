@@ -30,7 +30,7 @@ dependencies {
 
   implementation 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
   implementation 'org.junit.jupiter:junit-jupiter-params:5.10.2'
-  implementation 'org.testng:testng:7.9.0'
+  implementation 'org.testng:testng:7.10.0'
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
