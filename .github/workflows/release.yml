@@ -16,6 +16,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Print data
         run: |
           echo "github.ref_type = ${{github.ref_type}}"
