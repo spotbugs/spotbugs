@@ -16,6 +16,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Print data
+        run: |
+          echo "github.ref_type = ${{github.ref_type}}"
+          echo "github.event.base_ref = ${{github.event.base_ref}}"
 
       - name: Get previous tag for the change log
         id: previousTag
