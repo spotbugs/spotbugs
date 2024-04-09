@@ -51,7 +51,7 @@ jobs:
       - uses: gradle/wrapper-validation-action@v2
       - name: Download Eclipse
         run: |
-          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz&r=1' --output eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz
+          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz
           tar xzvf eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" > eclipsePlugin/local.properties
       - name: Build on tag
@@ -83,14 +83,14 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
       - name: Deploy eclipse-latest
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           external_repository: spotbugs/eclipse-latest
           personal_token: ${{ secrets.PERSONAL_TOKEN_FOR_PAGES }}
           publish_branch: gh-pages
           publish_dir: ./eclipsePlugin/build/site/eclipse-daily
       - name: Deploy eclipse-candidate
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: startsWith(github.ref, 'refs/tags/')
         with:
           external_repository: spotbugs/eclipse-candidate
@@ -98,7 +98,7 @@ jobs:
           publish_branch: gh-pages
           publish_dir: ./eclipsePlugin/build/site/eclipse-candidate
       - name: Deploy eclipse
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, '_RC') && !contains(github.ref, '_beta')
         with:
           external_repository: spotbugs/eclipse

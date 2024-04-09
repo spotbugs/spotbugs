@@ -1738,11 +1738,14 @@ factory pattern to create these objects.</p>
   <Detector class="edu.umd.cs.findbugs.detect.FindOverridableMethodCall">
     <Details>
       <![CDATA[
-            <p>Detector for patterns where a constructor or a clone() method calls an overridable
-               method.</p>
+            <p>
+               Detector for patterns where a constructor, a clone(), or a readObject() method
+               calls an overridable method.
+            </p>
             <p>
                Calling an overridable method from a constructor may result in the use of
-               uninitialized data. Calling such method from a clone() method is insecure.
+               uninitialized data. Calling such method from a clone(), or readObject() method
+               is insecure.
             </p>
       ]]>
     </Details>
@@ -8798,6 +8801,22 @@ object explicitly.</p>
       <p>
       See SEI CERT rule
       <a href="https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88487921">MET06-J. Do not invoke overridable methods in clone()</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT">
+    <ShortDescription>An overridable method is called from the readObject method.</ShortDescription>
+    <LongDescription>Overridable method {2} is called from readObject.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      The readObject() method must not call any overridable methods. Invoking overridable methods from the readObject()
+      method can provide the overriding method with access to the object's state before it is fully initialized. This
+      premature access is possible because, in deserialization, readObject plays the role of object constructor and
+      therefore object initialization is not complete until readObject exits.</p>
+      <p>
+      <br/>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SER09-J.+Do+not+invoke+overridable+methods+from+the+readObject%28%29+method">
+      SER09-J. Do not invoke overridable methods from the readObject() method</a>.
       </p>]]>
     </Details>
   </BugPattern>
