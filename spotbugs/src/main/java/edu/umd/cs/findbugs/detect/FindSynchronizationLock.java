@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 
 public class FindSynchronizationLock extends OpcodeStackDetector {
     private final BugReporter bugReporter;
-    private final HashSet<Method> exposingMethods;
+    private final HashSet<XMethod> exposingMethods;
     private final HashSet<XMethod> synchronizedMethods;
     private final HashMap<XField, XMethod> declaredLockObjects;
     private final HashMap<XField, XMethod> inheritedLockObjects;
@@ -101,13 +101,14 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             GenericSignatureParser signature = new GenericSignatureParser(sourceSig);
             String genericReturnValue = signature.getReturnTypeSignature();
             if (genericReturnValue.contains(getClassName())) {
-                exposingMethods.add(obj);
+                exposingMethods.add(xMethod);
             }
-        } else {
+        }
+        else {
             SignatureParser signature = new SignatureParser(obj.getSignature());
             String returnType = signature.getReturnTypeSignature();
             if (returnType.contains(getClassName())) {
-                exposingMethods.add(obj);
+                exposingMethods.add(xMethod);
             }
         }
 
@@ -122,14 +123,14 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             if (lockObject != null) {
                 XMethod xMethod = getXMethod();
                 try {
-                    boolean inheritedFromHierarchy = inheritsFromHierarchy(lockObject);
+                    boolean inheritedFromHierarchy = isInherited(lockObject);
                     if (inheritedFromHierarchy) {
                         inheritedLockObjects.put(lockObject, xMethod);
                         findExposureInHierarchy(lockObject).forEach(method -> lockAccessorsInHierarchy.add(lockObject, method));
 
                         if (lockObject.isPublic()) {
                             potentialObjectBugContainingMethods.add(lockObject, xMethod);
-                        } else if (isPossiblyNonPublicObjectBug(lockObject)) {
+                        } else if (lockObject.isProtected() || !(lockObject.isPublic() || lockObject.isPrivate())) {
                             potentialObjectBugContainingMethods.add(lockObject, xMethod);
                         }
                     } else {
@@ -138,7 +139,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                             potentialObjectBugContainingMethods.add(lockObject, xMethod);
                         }
 
-                        if (isPossiblyProtectedInheritedBug(lockObject)) {
+                        if (lockObject.isProtected() && !getThisClass().isFinal()) {
                             potentialInheritedBugContainingMethods.add(lockObject, xMethod);
                         } else if (isPackagePrivate(lockObject)) {
                             potentialInheritedBugContainingMethods.add(lockObject, xMethod);
@@ -233,14 +234,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         return !(field.isPublic() || field.isProtected() || field.isPrivate());
     }
 
-    private boolean isPossiblyNonPublicObjectBug(XField lockObject) {
-        return lockObject.isProtected() || !(lockObject.isPublic() || lockObject.isPrivate());
-    }
-
-    private boolean isPossiblyProtectedInheritedBug(XField lockObject) {
-        return lockObject.isProtected() && !getThisClass().isFinal();
-    }
-
     private boolean isInitializerMethod(String methodName) {
         return Const.CONSTRUCTOR_NAME.equals(methodName) || Const.STATIC_INITIALIZER_NAME.equals(methodName);
     }
@@ -264,7 +257,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         return lockObject.equals(maybeLockObject);
     }
 
-    private boolean inheritsFromHierarchy(XField lockObject) throws ClassNotFoundException {
+    private boolean isInherited(XField lockObject) throws ClassNotFoundException {
         return !getDottedClassName().equals(lockObject.getClassName());
     }
 
@@ -358,7 +351,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
     private void checkLockUsageInHierarchy(XField field, XMethod exposingMethod) {
         try {
-            if (inheritsFromHierarchy(field)) {
+            if (isInherited(field)) {
                 if (declaredFieldReturningMethods.get(field).isEmpty()) {
                     findLockUsageInHierarchy(field).forEach(m -> lockUsingMethodsInHierarchy.add(field, m));
                 }
@@ -369,7 +362,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
     }
 
-    private <T> String buildMethodsMessage(Collection<T> methods) {
+    private String buildMethodsMessage(Collection<XMethod> methods) {
         return methods.stream().map(Object::toString).collect(Collectors.joining(",\n"));
     }
 

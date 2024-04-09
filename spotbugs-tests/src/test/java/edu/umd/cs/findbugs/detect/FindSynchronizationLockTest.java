@@ -76,18 +76,28 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
         assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff1" /* in base */,
                 "lock1"); /* Exposed by getLock1 */
+        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockInDescendant", "doStuff1", "lock1");
+
         assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff2" /* in base */,
                 "lock2"); /* Exposed by getLock2 */
+        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockInDescendant", "doStuff2", "lock2");
+
         assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff3" /* in base */,
                 "lock3"); /* Exposed by updateLock3 */
+        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockInDescendant", "doStuff3", "lock3");
+
         assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff4" /* in base */,
                 "lock4"); /* Exposed by updateLock4 */
+        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockInDescendant", "doStuff4", "lock4");
+
         assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff5" /* in base */,
                 "lock5"); /* Exposed by updateLock5 */
+        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockInDescendant", "doStuff5", "lock5");
 
         // More complex cases involving longer chains of inheritance
         assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant2", "doStuff6" /* in parent */,
                 "lock6"); /* Exposed by getLock6 */
+        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff6", "lock6");
     }
 
     @Test
