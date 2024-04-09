@@ -11,7 +11,7 @@ jobs:
     permissions:
       contents: write # to push pages branch (peaceiris/actions-gh-pages)
 
-    if: github.repository_owner == 'JuditKnoll'
+    if: github.repository_owner == 'gtoison'
     runs-on: ubuntu-latest
 
     steps:
