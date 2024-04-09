@@ -11,11 +11,17 @@ jobs:
     permissions:
       contents: write # to push pages branch (peaceiris/actions-gh-pages)
 
-    if: github.repository_owner == 'spotbugs'
+    if: github.repository_owner == 'JuditKnoll'
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Print data
+        run: |
+          echo "github.ref_type = ${{github.ref_type}}"
+          echo "github.event.base_ref = ${{github.event.base_ref}}"
 
       - name: Get previous tag for the change log
         id: previousTag
