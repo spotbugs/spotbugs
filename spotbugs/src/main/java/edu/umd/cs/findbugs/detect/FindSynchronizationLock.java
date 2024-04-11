@@ -103,9 +103,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             if (genericReturnValue.contains(getClassName())) {
                 exposingMethods.add(xMethod);
             }
-        }
-        else {
-            SignatureParser signature = new SignatureParser(obj.getSignature());
+        } else {
+            SignatureParser signature = new SignatureParser(xMethod.getSignature());
             String returnType = signature.getReturnTypeSignature();
             if (returnType.contains(getClassName())) {
                 exposingMethods.add(xMethod);
@@ -126,7 +125,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                     boolean inheritedFromHierarchy = isInherited(lockObject);
                     if (inheritedFromHierarchy) {
                         inheritedLockObjects.put(lockObject, xMethod);
-                        findExposureInHierarchy(lockObject).forEach(method -> lockAccessorsInHierarchy.add(lockObject, method));
+                        findExposureInHierarchy(lockObject).forEach(
+                                method -> lockAccessorsInHierarchy.add(lockObject, method));
 
                         if (lockObject.isPublic()) {
                             potentialObjectBugContainingMethods.add(lockObject, xMethod);
@@ -258,7 +258,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     }
 
     private boolean isInherited(XField lockObject) throws ClassNotFoundException {
-        return !getDottedClassName().equals(lockObject.getClassName());
+        return !getDottedClassName().equals(lockObject.getClassName().split("\\$")[0]);
     }
 
     private Set<XMethod> findExposureInHierarchy(XField lockObject) throws ClassNotFoundException {
