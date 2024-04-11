@@ -8,12 +8,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2024-??-??
 ### Added
 - New detector `FindSynchronizationLock` and introduced new bug types:
-    - `PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when using synchronized methods with the class' accessible intrinsic lock
-    - `PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when using static synchronized methods with the class' exposed intrinsic lock
-    - `PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is visible from the outside
-    - `PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside
-    - `PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is can be altered by subclasses
-    - `PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is later exposed in the subclasses
+    - `PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when using synchronized methods with the class' accessible intrinsic lock,
+    - `PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when using static synchronized methods with the class' exposed intrinsic lock,
+    - `PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is visible from the outside,
+    - `PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside,
+    - `PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is can be altered by subclasses,
+    - `PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is later exposed in the subclasses.
       (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code#:~:text=LCK00%2DJ%2DEX2,lock%20object%20inadvertently.))
 
 ## 4.8.4 - 2024-04-07
