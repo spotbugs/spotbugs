@@ -110,13 +110,13 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-      - name: Create Release
+      - name: Create draft Release
         # attach zip, tgz and eclipse plugin to the GitHub Release
         # https://github.com/github/hub#github-actions
         # https://github.com/actions/upload-release-asset/issues/28#issuecomment-617208601
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: (github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')
+        if: (github.ref_type == 'tag')
         run: |
           set -x
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
@@ -124,4 +124,10 @@ jobs:
           for asset in ./spotbugs/build/distributions/*; do
             assets+=("-a" "$asset")
           done
-          bin/hub release create "${assets[@]}" -F build/release.md "${{ steps.get_version.outputs.VERSION }}"
+          bin/hub release create "${assets[@]}" -F build/release.md "${{ steps.get_version.outputs.VERSION }}" --draft
+      - name: Publish draft Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: (github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')
+        run: |
+          bin/hub release edit ${{ github.ref_name }} --draft=false
