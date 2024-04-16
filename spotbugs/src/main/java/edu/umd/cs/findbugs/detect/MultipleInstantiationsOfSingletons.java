@@ -30,7 +30,9 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
 import edu.umd.cs.findbugs.ba.XMethod;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.lang.reflect.InvocationTargetException;
@@ -41,17 +43,15 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     private enum Methods {
         CONSTRUCTOR,
-        CLONE,
-        INSTANCE_GETTER
-    };
+        CLONE
+    }
 
     private final BugReporter bugReporter;
 
     private JavaClass cloneableInterface;
     private JavaClass serializableInterface;
 
-    private boolean isSingleton;
-    private boolean isGetterMethodSynchronized;
+    private boolean hasSingletonPostFix;
 
     private boolean isCloneable;
     private boolean implementsCloneableDirectly;
@@ -60,7 +60,10 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     private boolean cloneOnlyThrowsCloneNotSupportedException;
 
     private boolean isSerializable;
+    private boolean isInstanceAssignOk;
     private boolean hasLazyInit;
+    private XField instanceField;
+    private Map<XField, XMethod> instanceGetterMethods;
 
     private EnumMap<Methods, XMethod> methods;
     private List<XMethod> methodsUsingMonitor;
@@ -79,8 +82,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     @Override
     public void visit(JavaClass obj) {
-        isSingleton = false;
-        isGetterMethodSynchronized = false;
+        hasSingletonPostFix = false;
 
         isCloneable = false;
         implementsCloneableDirectly = false;
@@ -89,14 +91,17 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         cloneOnlyThrowsCloneNotSupportedException = false;
 
         isSerializable = false;
+        isInstanceAssignOk = false;
         hasLazyInit = false;
+        instanceField = null;
 
+        instanceGetterMethods = new HashMap<>();
         constructors = new HashSet<>();
         methods = new EnumMap<>(Methods.class);
         methodsUsingMonitor = new ArrayList<>();
 
         if (obj.getClassName().endsWith("Singleton")) {
-            isSingleton = true;
+            hasSingletonPostFix = true;
         }
 
         // Does this class directly implement Cloneable or Serializable?
@@ -144,9 +149,19 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.PUTSTATIC && isInstanceField(getXFieldOperand(), getClassName())
-                && !Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
-            hasLazyInit = true;
+        if (seen == Const.PUTSTATIC && isInstanceField(getXFieldOperand(), getClassName())) {
+            if (!Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
+                hasLazyInit = true;
+            }
+            if (stack.getStackDepth() > 0) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                XMethod calledMethod = item.getReturnValueOf();
+                if (calledMethod != null && Const.CONSTRUCTOR_NAME.equals(calledMethod.getName())
+                        && calledMethod.getClassName().equals(getDottedClassName())) {
+                    isInstanceAssignOk = true;
+                    instanceField = getXFieldOperand();
+                }
+            }
         } else if (seen == Const.ATHROW && stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);
             if (item != null && "Ljava/lang/CloneNotSupportedException;".equals(item.getSignature()) && cloneOnlyThrowsException) {
@@ -154,10 +169,10 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             }
         } else if (seen == Const.ARETURN && stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            if (isInstanceField(item.getXField(), getClassName())) {
-                isSingleton = true;
-                isGetterMethodSynchronized = getMethod().isSynchronized();
-                methods.put(Methods.INSTANCE_GETTER, getXMethod());
+            XMethod method = getXMethod();
+            XField field = item.getXField();
+            if (isInstanceField(field, getClassName()) && method.isPublic() && method.isStatic()) {
+                instanceGetterMethods.put(field, method);
             }
         } else if (seen == Const.MONITORENTER) {
             methodsUsingMonitor.add(getXMethod());
@@ -171,7 +186,9 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     @Override
     public void visitAfter(JavaClass javaClass) {
-        if (!isSingleton) {
+        XMethod instanceGetterMethod = instanceGetterMethods.get(instanceField);
+
+        if (!hasSingletonPostFix && (instanceGetterMethod == null || javaClass.isAbstract() || javaClass.isInterface() || !isInstanceAssignOk)) {
             return;
         }
 
@@ -184,16 +201,16 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             }
         }
 
-        boolean isGetterMethodUsingMonitor = methodsUsingMonitor.contains(methods.get(Methods.INSTANCE_GETTER));
+        boolean isGetterMethodUsingMonitor = methodsUsingMonitor.contains(instanceGetterMethod);
 
         if (hasNonPrivateConstructor) {
             bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", NORMAL_PRIORITY).addClass(this)
                     .addMethod(methods.get(Methods.CONSTRUCTOR)));
         }
 
-        if (methods.containsKey(Methods.INSTANCE_GETTER) && !isGetterMethodSynchronized && !isGetterMethodUsingMonitor && hasLazyInit) {
+        if (instanceGetterMethod != null && !instanceGetterMethod.isSynchronized() && !isGetterMethodUsingMonitor && hasLazyInit) {
             bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", NORMAL_PRIORITY).addClass(this)
-                    .addMethod(methods.get(Methods.INSTANCE_GETTER)));
+                    .addMethod(instanceGetterMethod));
         }
 
         if (isCloneable) {
@@ -213,7 +230,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         if (isSerializable) {
             if (javaClass.isEnum()) {
                 int numberOfEnumValues = getNumberOfEnumValues(javaClass);
-                if (numberOfEnumValues > 0) {
+                if (numberOfEnumValues > 1) {
                     bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", NORMAL_PRIORITY).addClass(this));
                 }
             } else {
@@ -233,9 +250,8 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            String msg = "Detector " + this.getClass().getName() + " caught an exception while determining the number of enum values of " +
-                    javaClass.getClassName();
-            bugReporter.logError(msg, e);
+            bugReporter.logError(String.format("Detector %s caught an exception while determining the number of enum values of %s.",
+                    this.getClass().getName(), javaClass.getClassName()), e);
         }
         return 0;
     }
