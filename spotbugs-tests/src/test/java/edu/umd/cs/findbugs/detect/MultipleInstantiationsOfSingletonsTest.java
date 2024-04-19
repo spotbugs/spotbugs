@@ -65,6 +65,12 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void notSingletonWithFactoryMethodTest() {
+        performAnalysis("singletons/NotSingletonWithFactoryMethod.class");
+        assertNoBugs();
+    }
+
+    @Test
     void notLazyInitSingletonTest() {
         performAnalysis("singletons/NotLazyInitSingleton.class");
         assertNoBugs();

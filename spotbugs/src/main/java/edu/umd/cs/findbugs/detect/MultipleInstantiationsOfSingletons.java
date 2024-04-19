@@ -19,8 +19,10 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
@@ -30,11 +32,13 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
 import edu.umd.cs.findbugs.ba.XMethod;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Set;
 
 public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     private final BugReporter bugReporter;
@@ -52,10 +56,12 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     private boolean isSerializable;
     private boolean isInstanceAssignOk;
-    private boolean hasLazyInit;
+    private boolean hasNoFactoryMethod;
     private XField instanceField;
-    private Map<XField, XMethod> instanceGetterMethods;
-    private List<XMethod> methodsUsingMonitor;
+    private final Set<XField> lazilyInitializedFields = new HashSet<>();
+    private final Set<XField> eagerlyInitializedFields = new HashSet<>();
+    private final Map<XField, XMethod> instanceGetterMethods = new HashMap<>();
+    private final List<XMethod> methodsUsingMonitor = new ArrayList<>();
 
     public MultipleInstantiationsOfSingletons(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -79,12 +85,14 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
         isSerializable = false;
         isInstanceAssignOk = false;
-        hasLazyInit = false;
+        hasNoFactoryMethod = true;
         instanceField = null;
         cloneMethod = null;
 
-        instanceGetterMethods = new HashMap<>();
-        methodsUsingMonitor = new ArrayList<>();
+        lazilyInitializedFields.clear();
+        eagerlyInitializedFields.clear();
+        instanceGetterMethods.clear();
+        methodsUsingMonitor.clear();
 
         if (obj.getClassName().endsWith("Singleton")) {
             hasSingletonPostFix = true;
@@ -116,23 +124,29 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
     @Override
     public boolean beforeOpcode(int seen) {
-        return seen == Const.PUTSTATIC || seen == Const.ARETURN || seen == Const.MONITORENTER
+        return seen == Const.PUTSTATIC || seen == Const.ARETURN || seen == Const.MONITORENTER || seen == Const.IFNONNULL
                 || (seen == Const.ATHROW && "clone".equals(getMethodName()));
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.PUTSTATIC && isInstanceField(getXFieldOperand(), getClassName())) {
-            if (!Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
-                hasLazyInit = true;
-            }
-            if (stack.getStackDepth() > 0) {
-                OpcodeStack.Item item = stack.getStackItem(0);
-                XMethod calledMethod = item.getReturnValueOf();
-                if (calledMethod != null && Const.CONSTRUCTOR_NAME.equals(calledMethod.getName())
-                        && calledMethod.getClassName().equals(getDottedClassName())) {
-                    isInstanceAssignOk = true;
-                    instanceField = getXFieldOperand();
+        if (seen == Const.PUTSTATIC) {
+            XField field = getXFieldOperand();
+            if (isInstanceField(field, getClassName())) {
+                if (Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
+                    eagerlyInitializedFields.add(field);
+                } else {
+                    // TODO check if it's real lazy init
+                    lazilyInitializedFields.add(field);
+                }
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    XMethod calledMethod = item.getReturnValueOf();
+                    if (calledMethod != null && Const.CONSTRUCTOR_NAME.equals(calledMethod.getName())
+                            && calledMethod.getClassName().equals(getDottedClassName())) {
+                        isInstanceAssignOk = true;
+                        instanceField = field;
+                    }
                 }
             }
         } else if (seen == Const.ATHROW && stack.getStackDepth() > 0) {
@@ -146,6 +160,18 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             XField field = item.getXField();
             if (isInstanceField(field, getClassName()) && method.isPublic() && method.isStatic()) {
                 instanceGetterMethods.put(field, method);
+            } else {
+                XMethod calledMethod = item.getReturnValueOf();
+                SignatureParser parser = new SignatureParser(getMethodSig());
+                String calledMethodReturnType = ClassName.fromFieldSignature(parser.getReturnTypeSignature());
+
+                if (calledMethod != null && Const.CONSTRUCTOR_NAME.equals(calledMethod.getName())
+                        && calledMethod.getClassName().equals(getDottedClassName())
+                        && !method.isPrivate() && method.isStatic() && getClassName().equals(calledMethodReturnType)
+                        && !Const.CONSTRUCTOR_NAME.equals(getMethodName()) && !Const.STATIC_INITIALIZER_NAME.equals(getMethodName())
+                        && !("clone".equals(getMethodName()) && "()Ljava/lang/Object;".equals(getMethodSig()))) {
+                    hasNoFactoryMethod = false;
+                }
             }
         } else if (seen == Const.MONITORENTER) {
             methodsUsingMonitor.add(getXMethod());
@@ -161,7 +187,21 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     public void visitAfter(JavaClass javaClass) {
         XMethod instanceGetterMethod = instanceGetterMethods.get(instanceField);
 
-        if (!hasSingletonPostFix && (instanceGetterMethod == null || javaClass.isAbstract() || javaClass.isInterface() || !isInstanceAssignOk)) {
+        // a class is considered a singleton, if
+        // - the user clearly indicated, that it's intended to be a singleton
+        // OR
+        // - it can be instantiated (not abstract, not interface)
+        // - the instance field is assigned the contained class
+        // - has no factory method (which returns a new instance and is not a constructor)
+        // - has an instance getter method
+        // - the instance field is either eagerly or lazily initialized
+
+        if (!(hasSingletonPostFix
+                || (!javaClass.isAbstract() && !javaClass.isInterface()
+                        && isInstanceAssignOk
+                        && hasNoFactoryMethod
+                        && instanceGetterMethod != null
+                        && (lazilyInitializedFields.contains(instanceField) || eagerlyInitializedFields.contains(instanceField))))) {
             return;
         }
 
@@ -177,7 +217,8 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
         boolean isGetterMethodUsingMonitor = methodsUsingMonitor.contains(instanceGetterMethod);
 
-        if (instanceGetterMethod != null && !instanceGetterMethod.isSynchronized() && !isGetterMethodUsingMonitor && hasLazyInit) {
+        if (instanceGetterMethod != null && !instanceGetterMethod.isSynchronized() && !isGetterMethodUsingMonitor && lazilyInitializedFields.contains(
+                instanceField)) {
             bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", NORMAL_PRIORITY).addClass(this)
                     .addMethod(instanceGetterMethod));
         }
