@@ -12,6 +12,12 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
+    void notLazyInitSingletonTest() {
+        performAnalysis("singletons/NotLazyInitSingleton.class");
+        assertNoBugs();
+    }
+
+    @Test
     void cloneableSingletonTest() {
         performAnalysis("singletons/CloneableSingleton.class");
         assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 1);

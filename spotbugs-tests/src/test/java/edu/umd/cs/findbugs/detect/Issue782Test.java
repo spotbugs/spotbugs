@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 import org.junit.jupiter.api.Test;
 
-public class Issue782Test extends AbstractIntegrationTest {
+class Issue782Test extends AbstractIntegrationTest {
 
     @Test
     void testIssue() {

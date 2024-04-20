@@ -10,7 +10,7 @@ import org.junit.jupiter.api.condition.JRE;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.*;
 
-public class Issue2782Test extends AbstractIntegrationTest {
+class Issue2782Test extends AbstractIntegrationTest {
 
     @Test
     @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11, JRE.JAVA_17 })
