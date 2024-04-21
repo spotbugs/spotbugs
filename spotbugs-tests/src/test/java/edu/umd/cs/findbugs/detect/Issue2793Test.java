@@ -22,7 +22,7 @@ class Issue2793Test extends AbstractIntegrationTest {
                 "../java17/ghIssues/Issue2793$SerializableClass.class",
                 "../java17/ghIssues/Issue2793$YangLibModule.class");
 
-        assertBugCount("SE_NO_SERIALVERSIONID", 0);
+        assertBugCount("SE_NO_SERIALVERSIONID", 2);
 
         assertBugCount("SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION", 0);
 

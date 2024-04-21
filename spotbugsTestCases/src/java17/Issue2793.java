@@ -7,9 +7,9 @@ import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.util.*;
 
-public class Issue2793 implements Serializable {
-	public static final long serialVersionUID = 1L;
-
+// For issue #2935 we need a serializable class analyzed right before the YangLibModule record
+// Due to the ordering of class analysis, we're making this class serializable to reproduce the issue
+public class Issue2793 implements Serializable { // SE_NO_SERIALVERSIONID
 	public record RecordWithoutSerialVersionUid(int x, int y, String message) implements Serializable {
 		
 	}
@@ -24,9 +24,7 @@ public class Issue2793 implements Serializable {
 		}
 	}
 
-	public static class SerializableClass implements Serializable {
-		public static final long serialVersionUID = 1L;
-
+	public static class SerializableClass implements Serializable { // SE_NO_SERIALVERSIONID
 		public Integer x;
 		public Integer y;
 	}
