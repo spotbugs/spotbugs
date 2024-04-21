@@ -1,4 +1,4 @@
-package ghIssues;
+package ghIssues.issue574;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlElement;
