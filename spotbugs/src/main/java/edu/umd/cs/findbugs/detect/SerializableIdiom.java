@@ -650,6 +650,10 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void visit(Field obj) {
+        if (isEnum || isRecord) {
+            return;
+        }
+
         int flags = obj.getAccessFlags();
         String genericSignature = obj.getGenericSignature();
         if (genericSignature != null && genericSignature.startsWith("T")) {

@@ -23,7 +23,7 @@ class Issue574Test extends AbstractIntegrationTest {
      */
     @Test
     void testSerializedNameAnnotation() {
-        performAnalysis("ghIssues/Issue574SerializedName.class");
+        performAnalysis("ghIssues/issue574/Issue574SerializedName.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(DESIRED_BUG_TYPE)
                 .build();
@@ -36,7 +36,7 @@ class Issue574Test extends AbstractIntegrationTest {
      */
     @Test
     void testXmlElementAnnotation() {
-        performAnalysis("ghIssues/Issue574XmlElement.class");
+        performAnalysis("ghIssues/issue574/Issue574XmlElement.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(DESIRED_BUG_TYPE)
                 .build();
@@ -49,8 +49,8 @@ class Issue574Test extends AbstractIntegrationTest {
      */
     @Test
     void testRegisterExtensionAnnotation() {
-        performAnalysis("ghIssues/Issue574RegisterExtension.class",
-                "ghIssues/BypassFileNotFoundExceptionExtension.class");
+        performAnalysis("ghIssues/issue574/Issue574RegisterExtension.class",
+                "ghIssues/issue574/BypassFileNotFoundExceptionExtension.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType(DESIRED_BUG_TYPE)
                 .build();
