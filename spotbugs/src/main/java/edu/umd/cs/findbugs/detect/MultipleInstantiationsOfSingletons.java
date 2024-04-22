@@ -19,7 +19,16 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.npe.IsNullValue;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
+import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -57,8 +66,8 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     private boolean isSerializable;
     private boolean isInstanceAssignOk;
     private boolean hasNoFactoryMethod;
+    private boolean isInstanceFieldLazilyInitialized;
     private XField instanceField;
-    private final Set<XField> lazilyInitializedFields = new HashSet<>();
     private final Set<XField> eagerlyInitializedFields = new HashSet<>();
     private final Map<XField, XMethod> instanceGetterMethods = new HashMap<>();
     private final List<XMethod> methodsUsingMonitor = new ArrayList<>();
@@ -86,10 +95,10 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         isSerializable = false;
         isInstanceAssignOk = false;
         hasNoFactoryMethod = true;
+        isInstanceFieldLazilyInitialized = false;
         instanceField = null;
         cloneMethod = null;
 
-        lazilyInitializedFields.clear();
         eagerlyInitializedFields.clear();
         instanceGetterMethods.clear();
         methodsUsingMonitor.clear();
@@ -135,9 +144,6 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             if (isInstanceField(field, getClassName())) {
                 if (Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
                     eagerlyInitializedFields.add(field);
-                } else {
-                    // TODO check if it's real lazy init
-                    lazilyInitializedFields.add(field);
                 }
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
@@ -146,6 +152,27 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                             && calledMethod.getClassName().equals(getDottedClassName())) {
                         isInstanceAssignOk = true;
                         instanceField = field;
+
+                        try {
+                            ValueNumberDataflow vnaDataflow = getClassContext().getValueNumberDataflow(getMethod());
+                            IsNullValueDataflow invDataflow = getClassContext().getIsNullValueDataflow(getMethod());
+                            ValueNumberFrame vFrame = vnaDataflow.getAnalysis().getFactAtPC(vnaDataflow.getCFG(), getPC());
+                            IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactAtPC(invDataflow.getCFG(), getPC());
+                            AvailableLoad l = new AvailableLoad(field);
+                            ValueNumber[] availableLoads = vFrame.getAvailableLoad(l);
+                            if (availableLoads != null && iFrame.isTrackValueNumbers()) {
+                                for (ValueNumber v : availableLoads) {
+                                    IsNullValue knownValue = iFrame.getKnownValue(v);
+                                    if (knownValue != null && knownValue.isDefinitelyNull()) {
+                                        isInstanceFieldLazilyInitialized = true;
+                                    }
+                                }
+                            }
+
+                        } catch (DataflowAnalysisException | CFGBuilderException e) {
+                            bugReporter.logError(String.format("Detector %s caught an exception while analyzing %s.",
+                                    this.getClass().getName(), getClassContext().getJavaClass().getClassName()), e);
+                        }
                     }
                 }
             }
@@ -186,6 +213,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     @Override
     public void visitAfter(JavaClass javaClass) {
         XMethod instanceGetterMethod = instanceGetterMethods.get(instanceField);
+        boolean isInstanceFieldEagerlyInitialized = eagerlyInitializedFields.contains(instanceField);
 
         // a class is considered a singleton, if
         // - the user clearly indicated, that it's intended to be a singleton
@@ -201,7 +229,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                         && isInstanceAssignOk
                         && hasNoFactoryMethod
                         && instanceGetterMethod != null
-                        && (lazilyInitializedFields.contains(instanceField) || eagerlyInitializedFields.contains(instanceField))))) {
+                        && (isInstanceFieldEagerlyInitialized || isInstanceFieldLazilyInitialized)))) {
             return;
         }
 
@@ -217,8 +245,8 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
 
         boolean isGetterMethodUsingMonitor = methodsUsingMonitor.contains(instanceGetterMethod);
 
-        if (instanceGetterMethod != null && !instanceGetterMethod.isSynchronized() && !isGetterMethodUsingMonitor && lazilyInitializedFields.contains(
-                instanceField)) {
+        if (instanceGetterMethod != null && !instanceGetterMethod.isSynchronized() && !isGetterMethodUsingMonitor
+                && isInstanceFieldLazilyInitialized) {
             bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", NORMAL_PRIORITY).addClass(this)
                     .addMethod(instanceGetterMethod));
         }
