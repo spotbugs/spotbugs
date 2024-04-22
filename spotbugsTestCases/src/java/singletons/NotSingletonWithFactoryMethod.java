@@ -1,7 +1,7 @@
 package singletons;
 
 /**
- * See https://github.com/spotbugs/spotbugs/issues/2934
+ * See <a href="https://github.com/spotbugs/spotbugs/issues/2934">#2934</a>
  */
 public class NotSingletonWithFactoryMethod {
 
@@ -11,6 +11,10 @@ public class NotSingletonWithFactoryMethod {
 
     private NotSingletonWithFactoryMethod(String text) {
         this.text = text;
+    }
+
+    public NotSingletonWithFactoryMethod() {
+        this.text = "default";
     }
 
     public static NotSingletonWithFactoryMethod instance1() {
