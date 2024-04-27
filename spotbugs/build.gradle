@@ -65,7 +65,7 @@ dependencies {
   api libs.asm.commons
   api libs.asm.tree
   api libs.asm.util
-  api 'org.apache.bcel:bcel:6.8.2'
+  api 'org.apache.bcel:bcel:6.9.0'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
   api('org.dom4j:dom4j:2.1.4') {
     // exclude transitive dependencies to keep compatible with dom4j 2.1.1
