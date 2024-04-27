@@ -12,6 +12,65 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
+    void abstractClassTest() {
+        performAnalysis("singletons/AbstractClass.class",
+                "singletons/AbstractClass$Nested.class");
+        assertNoBugs();
+    }
+
+    @Test
+    void innerChildInstanceTest() {
+        performAnalysis("singletons/InnerChildInstance.class",
+                "singletons/InnerChildInstance$Unknown.class",
+                "singletons/InnerChildInstance$1.class");
+        assertNoBugs();
+    }
+
+    @Test
+    void innerChildAndMoreInstanceTest() {
+        performAnalysis("singletons/InnerChildAndMoreInstance.class",
+                "singletons/InnerChildAndMoreInstance$1.class",
+                "singletons/InnerChildAndMoreInstance$Unknown.class");
+        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "InnerChildAndMoreInstance");
+
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+    }
+
+    @Test
+    void InnerChildAndMoreInstanceReorderedTest() {
+        performAnalysis("singletons/InnerChildAndMoreInstanceReordered.class",
+                "singletons/InnerChildAndMoreInstanceReordered$1.class",
+                "singletons/InnerChildAndMoreInstanceReordered$Unknown.class");
+        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "InnerChildAndMoreInstanceReordered");
+
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+    }
+
+    @Test
+    void InnerChildAndMoreInstanceNoGetterTest() {
+        performAnalysis("singletons/InnerChildAndMoreInstanceNoGetter.class",
+                "singletons/InnerChildAndMoreInstanceNoGetter$1.class",
+                "singletons/InnerChildAndMoreInstanceNoGetter$Unknown.class");
+        assertNoBugs();
+    }
+
+    @Test
+    void notSingletonWithFactoryMethodTest() {
+        performAnalysis("singletons/NotSingletonWithFactoryMethod.class");
+        assertNoBugs();
+    }
+
+    @Test
     void notLazyInitSingletonTest() {
         performAnalysis("singletons/NotLazyInitSingleton.class");
         assertNoBugs();
@@ -61,6 +120,32 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
         performAnalysis("singletons/ProtectedConstructor.class");
         assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
         assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "ProtectedConstructor");
+
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+    }
+
+    @Test
+    void protectedConstructorStaticInitTest() {
+        performAnalysis("singletons/ProtectedConstructorStaticInit.class");
+        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "ProtectedConstructorStaticInit");
+
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
+        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+    }
+
+    @Test
+    void protectedConstructorStaticInitReorderedTest() {
+        performAnalysis("singletons/ProtectedConstructorStaticInitReordered.class");
+        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "ProtectedConstructorStaticInitReordered");
 
         assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
         assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
@@ -139,6 +224,12 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
     void enumSingletonTest() {
         performAnalysis("singletons/EnumSingleton.class");
+        assertNoBugs();
+    }
+
+    @Test
+    void oneEnumSingletonTest() {
+        performAnalysis("singletons/OneEnumSingleton.class");
         assertNoBugs();
     }
 
