@@ -96,18 +96,25 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             return;
         }
 
-        String sourceSig = xMethod.getSourceSignature();
-        if (sourceSig != null) {
-            GenericSignatureParser signature = new GenericSignatureParser(sourceSig);
-            String genericReturnValue = signature.getReturnTypeSignature();
-            if (genericReturnValue.contains(getClassName())) {
-                exposingMethods.add(xMethod);
+        String javaStyleClassType = "L" + getClassName() + ";";
+        SignatureParser signature = new SignatureParser(xMethod.getSignature());
+        String returnType = signature.getReturnTypeSignature();
+
+        if (returnType.equals(javaStyleClassType)) {
+            if ("clone".equals(obj.getName())) {
+                return;
             }
+
+            exposingMethods.add(xMethod);
         } else {
-            SignatureParser signature = new SignatureParser(xMethod.getSignature());
-            String returnType = signature.getReturnTypeSignature();
-            if (returnType.contains(getClassName())) {
-                exposingMethods.add(xMethod);
+            String sourceSig = xMethod.getSourceSignature();
+            if (sourceSig != null) {
+                String typePattern = "^.*<.*" + javaStyleClassType + ".*>;$";
+                GenericSignatureParser genericSignature = new GenericSignatureParser(sourceSig);
+                String genericReturnValue = genericSignature.getReturnTypeSignature();
+                if (genericReturnValue.matches(typePattern)) {
+                    exposingMethods.add(xMethod);
+                }
             }
         }
 

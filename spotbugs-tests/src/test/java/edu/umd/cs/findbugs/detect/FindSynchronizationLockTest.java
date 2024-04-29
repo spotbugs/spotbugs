@@ -26,9 +26,10 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     void testBadMethodSynchronizationLock() {
         performAnalysis("privateFinalLocks/BadMethodSynchronizationWithClassExposingItSelf.class",
                 "privateFinalLocks/BadMethodSynchronizationWithClassExposingACollectionOfItself.class",
-                "privateFinalLocks/BadMethodSynchronizationWithClassExposingAMapOfItself.class");
+                "privateFinalLocks/BadMethodSynchronizationWithClassExposingAMapOfItself.class",
+                "privateFinalLocks/BadMethodSynchronizationWithClassExposingMixedGenericOfItself.class");
 
-        assertNumOfBugs(4, METHOD_BUG);
+        assertNumOfBugs(5, METHOD_BUG);
         assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
@@ -39,6 +40,7 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingItSelf", "doStuff2");
         assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingACollectionOfItself", "doStuff");
         assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingAMapOfItself", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingMixedGenericOfItself", "doStuff");
     }
 
     @Test
