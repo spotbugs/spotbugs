@@ -9315,8 +9315,8 @@ Using floating-point variables should not be used as loop counters, as they are 
         Synchronizing on a non-private lock object can lead to security vulnerabilities.
         Untrusted code can gain access to the lock object, and can exploit the system to execute unsafe operations.
 
-        In scenarios where a thread synchronizes on the lock and enters the critical section, untrusted code can manipulate the lock object,
-        allowing another thread to synchronize on the new value and concurrently enter the critical section.
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, untrusted code can manipulate the lock object,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
         Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
 
         A public lock object can be accessed directly by untrusted code, while protected lock objects expose the lock object to subclasses. Then subclasses can use the lock object for synchronizing with unrelated operations.
@@ -9330,14 +9330,14 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
     <ShortDescription>Use private final lock objects in synchronization blocks when the lock is accessible</ShortDescription>
-    <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, through updating or returning its value from {4}.</LongDescription>
+    <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, through updating or returning its value from {3}.</LongDescription>
     <Details>
       <![CDATA[<p>
         Synchronizing on a lock object that is made accessible to outside classes by returning it from a method or updating it through a method can lead to security vulnerabilities.
         Untrusted code can gain access to the lock or modify its value and exploit the system.
 
-        In scenarios where a thread synchronizes on the lock and enters the critical section, an attacker can access the lock object or update its value,
-        allowing another thread to synchronize on the new value and concurrently enter the critical section.
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
         Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
 
         This can be resolved in two ways: either by using a private final lock object or by removing or restricting the visibility of the functions, which update or return the lock object.
@@ -9355,8 +9355,8 @@ Using floating-point variables should not be used as loop counters, as they are 
         Declaring a lock object that is visible to outside classes or subclasses might lead to security vulnerabilities.
         Untrusted code can access the lock object, and it can exploit the system to execute unsafe operations.
 
-        In scenarios where a thread synchronizes on the lock and enters the critical section, an attacker can access the lock object or update its value,
-        allowing another thread to synchronize on the new value and concurrently enter the critical section.
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
         Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
 
         Generally it is not a problem to use a protected or package-private lock object if it is used with great care and thought, but it still might cause problems.
@@ -9370,15 +9370,15 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
-    <ShortDescription>Use private final lock objects in synchronization blocks, when class can be extended</ShortDescription>
+    <ShortDescription>Do not expose inherited lock objects through methods by updating or returning them</ShortDescription>
     <LongDescription>The lock object {2} - used in method {1} from super class - is exposed to untrusted in class {0}, through updating or returning it in {3}.</LongDescription>
     <Details>
       <![CDATA[<p>
         Synchronizing on a lock that is made accessible in the class hierarchy can lead to security vulnerabilities.
         Untrusted code can access the lock object, and it can exploit the system to execute unsafe operations.
 
-        In scenarios where a thread synchronizes on the lock and enters the critical section, an attacker can access the lock object or update its value,
-        allowing another thread to synchronize on the new value and concurrently enter the critical section.
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
         Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
 
         This can be resolved in two ways: either by using a private final lock object or by restricting access to the lock object.
