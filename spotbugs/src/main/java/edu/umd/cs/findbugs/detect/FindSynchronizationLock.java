@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.MultiMap;
@@ -82,6 +83,10 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
+        if (isInitializerMethod(obj.getName())) {
+            return;
+        }
+
         XMethod xMethod = getXMethod();
         if (xMethod.isPublic() && xMethod.isSynchronized()) {
             if (xMethod.isStatic()) {
@@ -92,19 +97,23 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             synchronizedMethods.add(xMethod);
         }
 
+        String javaStyleClassType = "L" + getClassName() + ";";
+        SignatureParser signature = new SignatureParser(xMethod.getSignature());
+        if ("readResolve".equals(obj.getName())
+                && "()Ljava/lang/Object;".equals(obj.getSignature())
+                && Subtypes2.instanceOf(getThisClass(), "java.io.Serializable")) {
+            return;
+        }
+
         if (!(xMethod.isStatic() || xMethod.isPublic())) {
             return;
         }
 
-        String javaStyleClassType = "L" + getClassName() + ";";
-        SignatureParser signature = new SignatureParser(xMethod.getSignature());
         String returnType = signature.getReturnTypeSignature();
-
         if (returnType.equals(javaStyleClassType)) {
             if ("clone".equals(obj.getName())) {
                 return;
             }
-
             exposingMethods.add(xMethod);
         } else {
             String sourceSig = xMethod.getSourceSignature();

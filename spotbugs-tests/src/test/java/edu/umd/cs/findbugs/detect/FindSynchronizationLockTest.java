@@ -18,7 +18,6 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     private static final String INHERITED_OBJECT_BUG = "PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String EXPOSING_LOCK_OBJECT_BUG = "PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
 
-
     /**
      * The following tests are for object synchronization bugs
      */
@@ -306,6 +305,14 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
         assertNoBadLockBugs();
     }
+
+    @Test
+    void testGoodSynchronizationWithBuiltinMethodsSeemToExposeLock() {
+        performAnalysis("privateFinalLocks/GoodSynchronizationWithBuiltinMethodExposingLock.class");
+
+        assertNoBadLockBugs();
+    }
+
 
     private void assertNoBadLockBugs() {
         assertNumOfBugs(0, METHOD_BUG);
