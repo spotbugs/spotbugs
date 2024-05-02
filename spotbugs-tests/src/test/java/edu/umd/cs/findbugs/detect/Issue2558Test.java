@@ -10,9 +10,9 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 
-public class Issue2558Test extends AbstractIntegrationTest {
+class Issue2558Test extends AbstractIntegrationTest {
     @Test
-    public void test() {
+    void test() {
         performAnalysis("ghIssues/Issue2558.class");
 
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()

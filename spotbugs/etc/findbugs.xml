@@ -686,6 +686,8 @@
                     reports="ENV_USE_PROPERTY_INSTEAD_OF_ENV"/>
           <Detector class="edu.umd.cs.findbugs.detect.MultipleInstantiationsOfSingletons" speed="fast"
                     reports="SING_SINGLETON_IMPLEMENTS_CLONEABLE,SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE,SING_SINGLETON_IMPLEMENTS_CLONE_METHOD,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR,SING_SINGLETON_IMPLEMENTS_SERIALIZABLE,SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" />
+          <Detector class="edu.umd.cs.findbugs.detect.FindSynchronizationLock" speed="fast"
+                    reports="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS,PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"/>
     <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
 
@@ -1331,4 +1333,16 @@
           <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE" category="CORRECTNESS" />
           <BugPattern abbrev="SING" type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" category="CORRECTNESS" />
           <BugPattern abbrev="ENV" type="ENV_USE_PROPERTY_INSTEAD_OF_ENV" category="BAD_PRACTICE" />
+          <BugPattern abbrev="PFL" type="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"
+                      category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="PFL" type="PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"
+                      category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="PFL" type="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"
+                      category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="PFL" type="PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"
+                      category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="PFL" type="PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"
+                      category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="PFL" type="PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS"
+                      category="SECURITY" cweid="412"/>
 </FindbugsPlugin>

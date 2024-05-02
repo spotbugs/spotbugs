@@ -5,7 +5,24 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2023-??-??
+## Unreleased - 2024-??-??
+### Fixed
+- Fix FP `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` with eager instances ([#2932](https://github.com/spotbugs/spotbugs/issues/2932))
+- Fix FPs when looking for multiple initialization of Singletons ([#2934](https://github.com/spotbugs/spotbugs/issues/2934))
+- Do not report DLS_DEAD_LOCAL_STORE for Java 21's type switches when switch instruction is TABLESWITCH([#2736](https://github.com/spotbugs/spotbugs/issues/2736))
+- Fix FP `SE_BAD_FIELD` for record fields ([#2935]https://github.com/spotbugs/spotbugs/issues/2935)
+
+### Added
+- New detector `FindSynchronizationLock` and introduced new bug types:
+    - `PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when using synchronized methods with the class' accessible intrinsic lock,
+    - `PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when using static synchronized methods with the class' exposed intrinsic lock,
+    - `PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is visible from the outside,
+    - `PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside,
+    - `PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is can be altered by subclasses,
+    - `PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is later exposed in the subclasses.
+      (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code#:~:text=LCK00%2DJ%2DEX2,lock%20object%20inadvertently.))
+
+## 4.8.4 - 2024-04-07
 ### Fixed
 - Fix FP in SE_PREVENT_EXT_OBJ_OVERWRITE when the if statement checking for null value, checking multiple variables or the method exiting in the if branch with an exception. ([#2750](https://github.com/spotbugs/spotbugs/issues/2750))
 - Fix possible null value in taxonomies of SARIF output ([#2744](https://github.com/spotbugs/spotbugs/issues/2744))
@@ -29,6 +46,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed crash in ValueRangeAnalysisFactory when looking for redundant conditions used in assertions [#2887](https://github.com/spotbugs/spotbugs/pull/2887))
 - Revert again commons-text from 1.11.0 to 1.10.0 to resolve a version conflict ([#2686](https://github.com/spotbugs/spotbugs/issues/2686))
 - Fixed false positive MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR when referencing but not calling an overridable method [#2837](https://github.com/spotbugs/spotbugs/pull/2837))
+- Update the filter XSD namespace and location for the upcoming 4.8.4 release [#2909](https://github.com/spotbugs/spotbugs/issues/2909))
 
 ### Added
 - New detector `MultipleInstantiationsOfSingletons` and introduced new bug types:

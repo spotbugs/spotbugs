@@ -1,4 +1,4 @@
-package ghIssues;
+package ghIssues.issue574;
 
 import java.io.FileNotFoundException;
 

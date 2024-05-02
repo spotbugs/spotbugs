@@ -1839,6 +1839,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindSynchronizationLock">
+    <Details>
+      <![CDATA[
+            <p>Finds bad synchronizations on accessible lock objects.</p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -9269,6 +9276,119 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+    <ShortDescription>Instead of synchronized methods, use private final lock objects with block synchronization</ShortDescription>
+    <LongDescription>Method {1} uses intrinsic lock of class {0} for synchronization, that is exposed by {2}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Synchronized methods use the class object as a monitor (that is, its intrinsic lock), thus an attacker, if it has access to the object,
+        can exploit the system by indefinitely locking the object, leading to a Denial of Service (DoS) scenario.
+
+        This can be resolved in two ways: either by using a private final lock object or by restricting access to the class.
+        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+    <ShortDescription>Instead of static synchronized methods, use private final lock objects with block synchronization</ShortDescription>
+    <LongDescription>Static synchronized method {1} uses intrinsic lock of class {0} for synchronization, exposing the class to untrusted code.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Static synchronized methods use the class object as a monitor (that is, its intrinsic lock), thus an attacker,
+        if it has access to an instance of the class or the subclass, can gain access to the class object using <code>getClass()</code> and
+        indefinitely lock the object, leading to a Denial of Service (DoS) scenario.
+
+        This can be resolved in two ways: either by using a private static final lock object or by restricting access to the class.
+        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+    <ShortDescription>Use private final lock objects in synchronization blocks</ShortDescription>
+    <LongDescription>The lock object {2} used in method {1} is visible outside the class, thus exposing class {0}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Synchronizing on a non-private lock object can lead to security vulnerabilities.
+        Untrusted code can gain access to the lock object, and can exploit the system to execute unsafe operations.
+
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, untrusted code can manipulate the lock object,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
+        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
+
+        A public lock object can be accessed directly by untrusted code, while protected lock objects expose the lock object to subclasses. Then subclasses can use the lock object for synchronizing with unrelated operations.
+        Generally a package-private lock object can be useful inside a sealed package if used with care, but it is still exposed to all classes in the package.
+
+        This can be resolved by declaring the lock object as private final, which restricts access to the lock object, providing granularity and enhanced security.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+    <ShortDescription>Use private final lock objects in synchronization blocks when the lock is accessible</ShortDescription>
+    <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, through updating or returning its value from {3}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Synchronizing on a lock object that is made accessible to outside classes by returning it from a method or updating it through a method can lead to security vulnerabilities.
+        Untrusted code can gain access to the lock or modify its value and exploit the system.
+
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
+        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
+
+        This can be resolved in two ways: either by using a private final lock object or by removing or restricting the visibility of the functions, which update or return the lock object.
+        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+    <ShortDescription>Use private final lock objects in synchronization blocks, when class can be extended</ShortDescription>
+    <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, because the class is open for extension.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Declaring a lock object that is visible to outside classes or subclasses might lead to security vulnerabilities.
+        Untrusted code can access the lock object, and it can exploit the system to execute unsafe operations.
+
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
+        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
+
+        Generally it is not a problem to use a protected or package-private lock object if it is used with great care and thought, but it still might cause problems.
+        A protected lock object declared in a non-final class can be accessed by subclasses, which can use the lock object for synchronizing with unrelated operations.
+        Similar the case with a package-private lock object, which is exposed to all classes in the package.
+
+        This can be resolved by declaring the lock object as private final, which restricts access to the lock object, providing granularity and enhanced security.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+    <ShortDescription>Do not expose inherited lock objects through methods by updating or returning them</ShortDescription>
+    <LongDescription>The lock object {2} - used in method {1} from super class - is exposed to untrusted in class {0}, through updating or returning it in {3}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Synchronizing on a lock that is made accessible in the class hierarchy can lead to security vulnerabilities.
+        Untrusted code can access the lock object, and it can exploit the system to execute unsafe operations.
+
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
+        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
+
+        This can be resolved in two ways: either by using a private final lock object or by restricting access to the lock object.
+        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+    
   <!--
   **********************************************************************
    BugCodes
@@ -9430,4 +9550,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
+  <BugCode abbrev="PFL">Use private final lock objects for synchronization</BugCode>
 </MessageCollection>
