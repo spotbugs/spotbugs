@@ -17,7 +17,7 @@ dependencies {
   implementation 'jakarta.servlet:jakarta.servlet-api:4.0.4'
   implementation 'jakarta.ejb:jakarta.ejb-api:3.2.6'
   implementation 'com.google.code.gson:gson:2.10.1'
-  implementation 'com.google.guava:guava:33.1.0-jre'
+  implementation 'com.google.guava:guava:33.2.0-jre'
   implementation libs.guice
   implementation libs.guice.assistedinject
   implementation libs.guice.servlet
