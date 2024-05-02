@@ -19,7 +19,7 @@ jobs:
       - uses: actions/stale@v9
         with:
           days-before-stale: 30
-          days-before-close: 30
+          days-before-close: -1
           stale-pr-label: 'Stale'
           stale-issue-label: 'need info'
           only-issue-labels: 'need info'

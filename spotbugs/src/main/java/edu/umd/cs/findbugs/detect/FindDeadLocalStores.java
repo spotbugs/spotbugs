@@ -52,11 +52,11 @@ import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LRETURN;
 import org.apache.bcel.generic.LSTORE;
 import org.apache.bcel.generic.LoadInstruction;
-import org.apache.bcel.generic.LOOKUPSWITCH;
 import org.apache.bcel.generic.MULTIANEWARRAY;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.StoreInstruction;
 import org.apache.bcel.generic.Type;
 
@@ -276,8 +276,8 @@ public class FindDeadLocalStores implements Detector {
                     switchHandler.sawInvokeDynamic(pc, invokeMethodName);
 
                     continue;
-                } else if (handle.getInstruction() instanceof LOOKUPSWITCH) {
-                    LOOKUPSWITCH switchInstruction = (LOOKUPSWITCH) handle.getInstruction();
+                } else if (handle.getInstruction() instanceof Select) {
+                    Select switchInstruction = (Select) handle.getInstruction();
                     int[] indices = switchInstruction.getIndices();
 
                     switchHandler.enterSwitch(switchInstruction.getOpcode(),

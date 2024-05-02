@@ -169,9 +169,6 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void visit(JavaClass obj) {
-        String superClassname = obj.getSuperclassName();
-        // System.out.println("superclass of " + getClassName() + " is " +
-        // superClassname);
         isEnum = Subtypes2.isEnum(obj);
         isRecord = Subtypes2.isRecord(obj);
 
@@ -653,6 +650,10 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void visit(Field obj) {
+        if (isEnum || isRecord) {
+            return;
+        }
+
         int flags = obj.getAccessFlags();
         String genericSignature = obj.getGenericSignature();
         if (genericSignature != null && genericSignature.startsWith("T")) {

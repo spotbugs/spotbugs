@@ -6,6 +6,12 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2024-??-??
+### Fixed
+- Fix FP `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` with eager instances ([#2932](https://github.com/spotbugs/spotbugs/issues/2932))
+- Fix FPs when looking for multiple initialization of Singletons ([#2934](https://github.com/spotbugs/spotbugs/issues/2934))
+- Do not report DLS_DEAD_LOCAL_STORE for Java 21's type switches when switch instruction is TABLESWITCH([#2736](https://github.com/spotbugs/spotbugs/issues/2736))
+- Fix FP `SE_BAD_FIELD` for record fields ([#2935]https://github.com/spotbugs/spotbugs/issues/2935)
+
 ### Added
 - New detector `FindSynchronizationLock` and introduced new bug types:
     - `PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when using synchronized methods with the class' accessible intrinsic lock,

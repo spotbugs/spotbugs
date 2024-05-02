@@ -24,7 +24,7 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: gradle
-      - uses: gradle/wrapper-validation-action@v2
+      - uses: gradle/wrapper-validation-action@v3
       - name: Download Eclipse on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: |
