@@ -25,7 +25,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.LOOKUPSWITCH;
+import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 
@@ -211,8 +211,8 @@ public class FindBadCast2 implements Detector {
             boolean wasMethodInvocationWasGeneric = methodInvocationWasGeneric;
             methodInvocationWasGeneric = false;
 
-            if (ins instanceof LOOKUPSWITCH) {
-                LOOKUPSWITCH switchInstruction = (LOOKUPSWITCH) ins;
+            if (ins instanceof Select) {
+                Select switchInstruction = (Select) ins;
                 int[] indices = switchInstruction.getIndices();
 
                 switchHandler.enterSwitch(ins.getOpcode(),
