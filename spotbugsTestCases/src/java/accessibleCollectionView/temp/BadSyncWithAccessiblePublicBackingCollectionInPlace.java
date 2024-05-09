@@ -53,7 +53,7 @@ public class BadSyncWithAccessiblePublicBackingCollectionInPlace {
     public ArrayList<Object> collection9 = new ArrayList<>();
     private final Collection<Object> view9 = Collections.unmodifiableCollection(collection9);
 
-    // @todo Why does this have other syntax????
+    // todo Why does this have other syntax????
     public final List<Integer> collection10 = new ArrayList<>();
     private final List<Integer> view10 = Collections.unmodifiableList(collection10);
 
