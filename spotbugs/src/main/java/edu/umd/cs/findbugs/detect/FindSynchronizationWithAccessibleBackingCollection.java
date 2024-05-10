@@ -4,7 +4,6 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -14,24 +13,16 @@ import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
-import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.classfile.FieldOrMethodName;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
 import static edu.umd.cs.findbugs.ba.ca.CallListAnalysis.*;
-import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Utility;
 import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
@@ -45,13 +36,10 @@ import org.apache.bcel.generic.MONITORENTER;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.Type;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -93,11 +81,14 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
                 new MethodDescriptor(juCollections, "checkedCollection", "(Ljava/util/Collection;Ljava/lang/Class;)Ljava/util/Collection;", true),
                 new MethodDescriptor(juCollections, "checkedList", "(Ljava/util/List;Ljava/lang/Class;)Ljava/util/List;", true),
                 new MethodDescriptor(juCollections, "checkedMap", "(Ljava/util/Map;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/Map;", true),
-                new MethodDescriptor(juCollections, "checkedSortedMap", "(Ljava/util/SortedMap;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/SortedMap;", true),
-                new MethodDescriptor(juCollections, "checkedNavigableMap", "(Ljava/util/NavigableMap;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/NavigableMap;", true),
+                new MethodDescriptor(juCollections, "checkedSortedMap",
+                        "(Ljava/util/SortedMap;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/SortedMap;", true),
+                new MethodDescriptor(juCollections, "checkedNavigableMap",
+                        "(Ljava/util/NavigableMap;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/NavigableMap;", true),
                 new MethodDescriptor(juCollections, "checkedSet", "(Ljava/util/Set;Ljava/lang/Class;)Ljava/util/Set;", true),
                 new MethodDescriptor(juCollections, "checkedSortedSet", "(Ljava/util/SortedSet;Ljava/lang/Class;)Ljava/util/SortedSet;", true),
-                new MethodDescriptor(juCollections, "checkedNavigableSet", "(Ljava/util/NavigableSet;Ljava/lang/Class;)Ljava/util/NavigableSet;", true),
+                new MethodDescriptor(juCollections, "checkedNavigableSet", "(Ljava/util/NavigableSet;Ljava/lang/Class;)Ljava/util/NavigableSet;",
+                        true),
                 new MethodDescriptor(juCollections, "checkedQueue", "(Ljava/util/Queue;Ljava/lang/Class;)Ljava/util/Queue;", true)));
         // todo add Arrays.asList etc.
     }
@@ -139,26 +130,26 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
         }
     }
 
-//    private static class CollectionWrapper {
-//        private final String packageName;
-//        private final String methodName;
-//        private final String signature;
-//
-//        public static CollectionWrapper fromSignature(String signature) {
-////            new MethodDescriptor()
-//            return null;
-//        }
-//
-//        public CollectionWrapper(String packageName, String methodName, String signature) {
-//            this.packageName = packageName;
-//            this.methodName = methodName;
-//            this.signature = signature;
-//        }
-//
-//        public boolean matches(String packageName, String methodName, String signature) {
-//            return this.packageName.equals(packageName) && this.methodName.equals(methodName) && this.signature.equals(signature);
-//        }
-//    }
+    //    private static class CollectionWrapper {
+    //        private final String packageName;
+    //        private final String methodName;
+    //        private final String signature;
+    //
+    //        public static CollectionWrapper fromSignature(String signature) {
+    ////            new MethodDescriptor()
+    //            return null;
+    //        }
+    //
+    //        public CollectionWrapper(String packageName, String methodName, String signature) {
+    //            this.packageName = packageName;
+    //            this.methodName = methodName;
+    //            this.signature = signature;
+    //        }
+    //
+    //        public boolean matches(String packageName, String methodName, String signature) {
+    //            return this.packageName.equals(packageName) && this.methodName.equals(methodName) && this.signature.equals(signature);
+    //        }
+    //    }
 
     private static boolean isWrapperImplementation(MethodDescriptor methodDescriptor) {
         return WRAPPER_IMPLEMENTATIONS.contains(methodDescriptor);
@@ -177,7 +168,7 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
         }
         System.out.println("Declared lock accessors: " + declaredLockAccessors);
 
-//        reportBugs();
+        //        reportBugs();
     }
 
     @Override
@@ -218,7 +209,8 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
                         InstructionHandle prevHandle = location.getBasicBlock().getPredecessorOf(handle);
                         Instruction prevInstruction = prevHandle.getInstruction();
                         if (isMethodCall(prevInstruction)) { // collection wrappers
-                            XField wrappedField = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), obj, prevHandle.getPosition()).getStackItem(0).getXField();
+                            XField wrappedField = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), obj, prevHandle.getPosition())
+                                    .getStackItem(0).getXField();
 
 
                             // todo this could be  analyzed further
@@ -252,7 +244,8 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
     }
 
     private boolean isMethodCall(Instruction instruction) {
-        return (instruction instanceof INVOKESTATIC) || (instruction instanceof INVOKESPECIAL) || (instruction instanceof INVOKEVIRTUAL) || (instruction instanceof INVOKEINTERFACE);
+        return (instruction instanceof INVOKESTATIC) || (instruction instanceof INVOKESPECIAL) || (instruction instanceof INVOKEVIRTUAL)
+                || (instruction instanceof INVOKEINTERFACE);
     }
 
     private void analyzeExposure(Method method, ClassContext classContext) throws CFGBuilderException {
@@ -273,13 +266,13 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
                 XField assignedField = item.getXField();
 
                 if (isInterestingField(assignedField)) {
-//                    declaredFieldExposingMethods.add(assignedField, obj);
-//                    MethodDescriptor methodDescriptor = new MethodDescriptor("", obj.getName(), obj.getSignature(), obj.isStatic());
-//                    bugReporter.reportBug(new BugInstance(
-//                            this, "SABC_SYNCHRONIZATION_WITH_PUBLIC_BACKING_COLLECTION", NORMAL_PRIORITY)
-//                                    .addClassAndMethod(methodDescriptor)
-//                                    .addField(assignedField)
-//                            );
+                    //                    declaredFieldExposingMethods.add(assignedField, obj);
+                    //                    MethodDescriptor methodDescriptor = new MethodDescriptor("", obj.getName(), obj.getSignature(), obj.isStatic());
+                    //                    bugReporter.reportBug(new BugInstance(
+                    //                            this, "SABC_SYNCHRONIZATION_WITH_PUBLIC_BACKING_COLLECTION", NORMAL_PRIORITY)
+                    //                                    .addClassAndMethod(methodDescriptor)
+                    //                                    .addField(assignedField)
+                    //                            );
                 }
             }
 
@@ -308,7 +301,7 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
 
         for (XField field : assignedWrappedCollectionFields.keySet()) {
             for (XField backingField : assignedWrappedCollectionFields.get(field)) {
-                if (isInterestingField(field) && backingField.isPublic()){
+                if (isInterestingField(field) && backingField.isPublic()) {
                     collectionsBackedByPublicFields.add(field, backingField);
                 }
             }
@@ -318,7 +311,7 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
 
     // @note Should I align this with LCK00-J and  only work with the private final fields? All other cases should be handled by LCK00-J.
     private void analyzeLockUsage(Method obj, ClassContext classContext) throws CFGBuilderException {
-//        ConstantPoolGen cpg = classContext.getConstantPoolGen();
+        //        ConstantPoolGen cpg = classContext.getConstantPoolGen();
         for (Location location : classContext.getCFG(obj).orderedLocations()) {
             InstructionHandle handle = location.getHandle();
             Instruction instruction = handle.getInstruction();
@@ -356,38 +349,38 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
 
     }
 
-        /**
-     * Steps:
-     * Find synchronization on a lock                                   - DONE
-     * Check if the lock is a collection                                - DONE
-     *  - if not, continue - no other things to do
-     * Check if the lock is a backing collection for another collection - In progress
-     * - if not, continue - no other things to do
-     * Check whoever backs it up is accessible
-     * - if not, continue - no other things to do
-     * Report bug and also check if the backing collection is also a backing collection for another collection and so forth
-     */
-//    @Override
-//    public void sawOpcode(int seen) {
-////        if (seen == Const.MONITORENTER) {
-//            OpcodeStack.Item lock = stack.getStackItem(0);
-//            XField lockObject = lock.getXField();
-//
-//            if (lockObject != null) {
-//                if (isCollection(lockObject)) {
-//                  boolean isItBackedUpByCollection = hasBackingCollection(lockObject);
-//                }
-//            }
-//        }
-//
-//        if (seen == Const.PUTSTATIC || seen == Const.PUTFIELD) {
-//            analyzeAssignments();
-//        }
+    /**
+    * Steps:
+    * Find synchronization on a lock                                   - DONE
+    * Check if the lock is a collection                                - DONE
+    *  - if not, continue - no other things to do
+    * Check if the lock is a backing collection for another collection - In progress
+    * - if not, continue - no other things to do
+    * Check whoever backs it up is accessible
+    * - if not, continue - no other things to do
+    * Report bug and also check if the backing collection is also a backing collection for another collection and so forth
+    */
+    //    @Override
+    //    public void sawOpcode(int seen) {
+    ////        if (seen == Const.MONITORENTER) {
+    //            OpcodeStack.Item lock = stack.getStackItem(0);
+    //            XField lockObject = lock.getXField();
+    //
+    //            if (lockObject != null) {
+    //                if (isCollection(lockObject)) {
+    //                  boolean isItBackedUpByCollection = hasBackingCollection(lockObject);
+    //                }
+    //            }
+    //        }
+    //
+    //        if (seen == Const.PUTSTATIC || seen == Const.PUTFIELD) {
+    //            analyzeAssignments();
+    //        }
 
-//        if (seen == Const.AASTORE)
+    //        if (seen == Const.AASTORE)
 
 
-//    }
+    //    }
 
     private boolean isCollection(Type type) {
         if (type instanceof ReferenceType) {
@@ -405,6 +398,7 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
         }
         return false;
     }
+
     private boolean isCollection(XField field) {
         return isCollection(TypeFrameModelingVisitor.getType(field));
     }
@@ -418,74 +412,74 @@ public class FindSynchronizationWithAccessibleBackingCollection implements Detec
         return false;
     }
 
-//    private void analyzeAssignments() {
-//        XMethod updateMethod = getXMethod();
-//        XField updatedField = getXFieldOperand();
-//
-//        if (updatedField == null) {
-//            return;
-//        }
-//
-//        if (!isCollection(updatedField)) {
-//            return;
-//        }
-//
-//        OpcodeStack.Item top = stack.getStackItem(0);
-//        XMethod returnValueOf = top.getReturnValueOf();
-//        XField assignedField = top.getXField();
-//
-////        ClassContext classContext = new ClassContext(declaringClass, AnalysisContext.currentAnalysisContext());
-//        ConstantPoolGen cpg = getClassContext().getConstantPoolGen();
-//
-//
-////        XField f = getXFieldOperand();
-////        OpcodeStack.Item item = stack.getStackItem(1);
-////        if (item.getRegisterNumber() != 0) {
-////            return;
-////        }
-//
-//        if (returnValueOf != null) {
-//            if (top.isNewlyAllocated()) {
-//                // this comes in here: private final List<Object> view5 = Arrays.asList(collection5);
-//                // reference not stored
-//                // cannot be exposed if newly allocated, everything is fine
-//                return;
-//            }
-//
-//            assignedMethods.add(updatedField, returnValueOf);
-//
-//            // check somehow if the return value is a collection that is somehow backed up
-//
-//        } else if (assignedField != null) {
-//            if (isCollection(assignedField)) {
-//                // we got a backing collection!
-//                // we should check if it is accessible
-//                assignedCollectionFields.add(updatedField, assignedField);
-//            }
-//        }
-//
-//        System.out.println("Collection assignments...");
-//
-//        // maybe top.getReturnValueOf().getName() and getPackageName() or getSourceSignature and check for collection type
-//        // What about direct mapping?
-//        //   - field = anotherField?
-//
-//
-//
-////        if (isCollection(updatedField)) {
-////            collectionAssignments.add(updatedField, getXFieldOperand());
-////        }
-//
-//        //checkLockUsageInHierarchy(updatedField, updateMethod);
-//
-////        if (updateMethod.isPublic() || updateMethod.isProtected()) {
-////            if (updatedField.isPublic()) {
-////                return;
-////            }
-////            declaredLockAccessors.add(updatedField, updateMethod);
-////        }
-//
-//    }
+    //    private void analyzeAssignments() {
+    //        XMethod updateMethod = getXMethod();
+    //        XField updatedField = getXFieldOperand();
+    //
+    //        if (updatedField == null) {
+    //            return;
+    //        }
+    //
+    //        if (!isCollection(updatedField)) {
+    //            return;
+    //        }
+    //
+    //        OpcodeStack.Item top = stack.getStackItem(0);
+    //        XMethod returnValueOf = top.getReturnValueOf();
+    //        XField assignedField = top.getXField();
+    //
+    ////        ClassContext classContext = new ClassContext(declaringClass, AnalysisContext.currentAnalysisContext());
+    //        ConstantPoolGen cpg = getClassContext().getConstantPoolGen();
+    //
+    //
+    ////        XField f = getXFieldOperand();
+    ////        OpcodeStack.Item item = stack.getStackItem(1);
+    ////        if (item.getRegisterNumber() != 0) {
+    ////            return;
+    ////        }
+    //
+    //        if (returnValueOf != null) {
+    //            if (top.isNewlyAllocated()) {
+    //                // this comes in here: private final List<Object> view5 = Arrays.asList(collection5);
+    //                // reference not stored
+    //                // cannot be exposed if newly allocated, everything is fine
+    //                return;
+    //            }
+    //
+    //            assignedMethods.add(updatedField, returnValueOf);
+    //
+    //            // check somehow if the return value is a collection that is somehow backed up
+    //
+    //        } else if (assignedField != null) {
+    //            if (isCollection(assignedField)) {
+    //                // we got a backing collection!
+    //                // we should check if it is accessible
+    //                assignedCollectionFields.add(updatedField, assignedField);
+    //            }
+    //        }
+    //
+    //        System.out.println("Collection assignments...");
+    //
+    //        // maybe top.getReturnValueOf().getName() and getPackageName() or getSourceSignature and check for collection type
+    //        // What about direct mapping?
+    //        //   - field = anotherField?
+    //
+    //
+    //
+    ////        if (isCollection(updatedField)) {
+    ////            collectionAssignments.add(updatedField, getXFieldOperand());
+    ////        }
+    //
+    //        //checkLockUsageInHierarchy(updatedField, updateMethod);
+    //
+    ////        if (updateMethod.isPublic() || updateMethod.isProtected()) {
+    ////            if (updatedField.isPublic()) {
+    ////                return;
+    ////            }
+    ////            declaredLockAccessors.add(updatedField, updateMethod);
+    ////        }
+    //
+    //    }
 
     /**
      * @note Logic:
