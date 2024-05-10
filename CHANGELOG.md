@@ -6,6 +6,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2024-??-??
+### Fixed
+- Do not report BC_UNCONFIRMED_CAST for Java 21's type switches when the switch instruction is TABLESWITCH ([#2782](https://github.com/spotbugs/spotbugs/issues/2782))
 
 ## 4.8.5 - 2024-05-03
 ### Fixed
