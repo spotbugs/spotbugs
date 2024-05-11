@@ -1,4 +1,4 @@
-package accessibleCollectionView.temp;
+package synchronizationLocks.collectionViews;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +19,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class BadSyncWithAccessiblePublicBackingCollectionInPlace {
-
     // Synchronized collection views
     public ArrayList<Object> collection1 = new ArrayList<>();
     private final Collection<Object> view1 = Collections.synchronizedCollection(collection1);
@@ -48,12 +47,10 @@ public class BadSyncWithAccessiblePublicBackingCollectionInPlace {
     public static NavigableSet<Object> collection8 = new TreeSet<>();
     private final Set<Object> view8 = Collections.synchronizedNavigableSet(collection8);
 
-
     // unmodifiable collections
     public ArrayList<Object> collection9 = new ArrayList<>();
     private final Collection<Object> view9 = Collections.unmodifiableCollection(collection9);
 
-    // todo Why does this have other syntax????
     public final List<Integer> collection10 = new ArrayList<>();
     private final List<Integer> view10 = Collections.unmodifiableList(collection10);
 
@@ -74,7 +71,6 @@ public class BadSyncWithAccessiblePublicBackingCollectionInPlace {
 
     public static NavigableSet<Object> collection16 = new TreeSet<>();
     private final Set<Object> view16 = Collections.unmodifiableNavigableSet(collection16);
-
 
     // checked collections
     public ArrayList<Object> collection17 = new ArrayList<>();
@@ -104,8 +100,7 @@ public class BadSyncWithAccessiblePublicBackingCollectionInPlace {
     public Queue<Object> collection25 = new PriorityQueue<>();
     private final Queue<Object> view25 = Collections.checkedQueue(collection25, Object.class);
 
-
-    // Primitive collections
+    // Primitive collections - not supported
     public Object[] collection26 = new Object[10];
     private final List<Object> view26 = Arrays.asList(collection26);
 
@@ -113,7 +108,7 @@ public class BadSyncWithAccessiblePublicBackingCollectionInPlace {
     private final List<Object> view27 = Arrays.asList(collection27);
 
 
-//     Synchronizations on the views
+    // Synchronizations
     public void doStuff1() {
         synchronized (view1) { /* using view as lock with a public backing collection detect bug here */
             System.out.println("Do stuff");
@@ -150,7 +145,6 @@ public class BadSyncWithAccessiblePublicBackingCollectionInPlace {
         }
     }
 
-    // These are only for experimenting
     public void doStuff6() {
         synchronized (view6) { /* using view as lock with a public backing collection detect bug here */
             System.out.println("Do stuff");

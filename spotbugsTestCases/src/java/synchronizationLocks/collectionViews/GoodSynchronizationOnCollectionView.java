@@ -1,13 +1,11 @@
-package synchronizationOnCollectionView;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+package synchronizationLocks.collectionViews;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressFBWarnings("EI_EXPOSE_REP")
+
 public class GoodSynchronizationOnCollectionView {
     private final Map<Integer, String> mapView = Collections.synchronizedMap(new HashMap<Integer, String>());
     private final Set<Integer> setView = mapView.keySet();

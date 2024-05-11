@@ -1,4 +1,4 @@
-package accessibleCollectionView.temp;
+package synchronizationLocks.collectionViews;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,70 +17,53 @@ public class BadSyncWithBackingCollectionExposedInPlace {
     private final Set<Map.Entry<Object, Object>> view2 = collection1.entrySet();
     private final Collection<Object> view3 = collection1.values();
 
-
     protected final Set<Object> collection2 = new HashSet<>();
     private final Set<Object> view4 = collection2;
-
 
     protected static List<Object> collection3 = Collections.synchronizedList(Arrays.asList(new Object(), new Object(), new Object()));
     private final List<Object> view5 = collection3.subList(0, 1);
 
-
     protected volatile Collection<Object> collection4 = new ArrayList<>();
     private final Collection<Object> view6 = collection4;
-
 
     private Map<Object, Object> collection5 = new HashMap<>();
     protected Map<Object, Object> view7 = Collections.synchronizedMap(collection5);
     private final Set<Object> view8 = view7.keySet();
 
-
-
     // Private locks
-
     private Map<Object, Object> collection6 = Collections.synchronizedMap(new HashMap<>());
     private final Set<Object> view9 = collection6.keySet();
     private final Set<Map.Entry<Object, Object>> view10 = collection6.entrySet();
     private final Collection<Object> view11 = collection6.values();
-    // private final Map<Object, Object> collection7 = Collections.synchronizedMap(new HashMap<>()); // this is fine
-
 
     private final Set<Object> collection7 = new HashSet<>();
     private final Set<Object> view12 = collection7;
 
-
     private static List<Object> collection8 = Collections.synchronizedList(Arrays.asList(new Object(), new Object(), new Object()));
     private final List<Object> view13 = collection8.subList(0, 1);
 
-
     private volatile Collection<Object> collection9 = new ArrayList<>();
     private final Collection<Object> view14 = collection9;
-
 
     private Map<Object, Object> collection10 = new HashMap<>();
     private Map<Object, Object> view15 = Collections.synchronizedMap(collection10);
     private final Set<Object> view16 = view15.keySet();
 
-
     protected Map<Object, Object> collection11 = new HashMap<>();
     private Map<Object, Object> view17 = Collections.synchronizedMap(collection11);
     private final Set<Object> view18 = view17.keySet();
 
-
     // Complex case where both backing collections are exposed
-
     private Map<Object, Object> collection12 = new HashMap<>();
     protected Map<Object, Object> view19 = Collections.synchronizedMap(collection12);
     private final Set<Object> view20 = view19.keySet();
 
-
-    // Primitive collections
+    // Primitive collections - not supported
     private Integer[] collection13 = new Integer[20];
     private final List<Object> view21 = Arrays.asList(collection13);
 
     private boolean[] collection14 = new boolean[10];
     private final List<Object> view22 = Arrays.asList(collection14);
-
 
     // Exposing methods
     public Map<Object, Object> getCollection1() {
@@ -143,6 +126,7 @@ public class BadSyncWithBackingCollectionExposedInPlace {
         return this.collection14;
     }
 
+    // Synchronizations
     public void doStuff1() {
         synchronized (view1) { /* using view as lock with an exposed backing collection detect bug here */
             System.out.println("Do stuff");
