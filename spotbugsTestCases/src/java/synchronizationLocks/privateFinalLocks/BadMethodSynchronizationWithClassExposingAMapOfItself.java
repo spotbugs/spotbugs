@@ -1,4 +1,4 @@
-package privateFinalLocks;
+package synchronizationLocks.privateFinalLocks;
 
 import java.util.Collections;
 import java.util.Map;

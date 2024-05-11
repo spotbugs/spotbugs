@@ -1,4 +1,4 @@
-package privateFinalLocks;
+package synchronizationLocks.privateFinalLocks;
 
 public class BadSynchronizationWithVisibleLocksExposedWithPolymorphism {
     // Public locks

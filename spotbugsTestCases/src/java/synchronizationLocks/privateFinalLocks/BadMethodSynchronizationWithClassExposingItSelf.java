@@ -1,4 +1,4 @@
-package privateFinalLocks;
+package synchronizationLocks.privateFinalLocks;
 
 class BadMethodSynchronizationWithClassExposingItSelf {
     public synchronized void doStuff() { // Locks on the object's monitor(intrinsic lock), bug should be detected here

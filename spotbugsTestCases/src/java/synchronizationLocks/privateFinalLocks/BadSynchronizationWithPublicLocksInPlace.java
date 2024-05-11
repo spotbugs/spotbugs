@@ -1,4 +1,4 @@
-package privateFinalLocks;
+package synchronizationLocks.privateFinalLocks;
 
 public class BadSynchronizationWithPublicLocksInPlace {
     public Object lock1 = new Object();

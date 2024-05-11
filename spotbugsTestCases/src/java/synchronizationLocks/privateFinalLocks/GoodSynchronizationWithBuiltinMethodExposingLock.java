@@ -1,4 +1,4 @@
-package privateFinalLocks;
+package synchronizationLocks.privateFinalLocks;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;

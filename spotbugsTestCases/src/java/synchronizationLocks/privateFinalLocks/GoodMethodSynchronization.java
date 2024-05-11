@@ -1,4 +1,4 @@
-package privateFinalLocks;
+package synchronizationLocks.privateFinalLocks;
 
 public class GoodMethodSynchronization {
     public synchronized void doStuff() {
@@ -6,7 +6,7 @@ public class GoodMethodSynchronization {
     }
 
     private GoodMethodSynchronization factory() { // this should only be fine if the constructors were private
-        return new privateFinalLocks.GoodMethodSynchronization();
+        return new GoodMethodSynchronization();
     }
 
     private static final Object lock = new Object();

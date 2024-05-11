@@ -1,4 +1,4 @@
-package privateFinalLocks;
+package synchronizationLocks.privateFinalLocks;
 
 public final class GoodSynchronizationWithProtectedLockInFinalClass {
     protected Object lock1 = new Object();
