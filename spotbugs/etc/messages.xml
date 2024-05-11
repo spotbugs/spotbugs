@@ -9388,12 +9388,12 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="SABC_SYNCHRONIZATION_WITH_PUBLIC_BACKING_COLLECTION">
-    <ShortDescription>Synchronization on a collection view when the backing collection is public may result in nondeterministic behavior</ShortDescription>
-    <LongDescription>The collection lock object {2} used in method {1} has {3} as a backing collection that is public, making it accessible from outside class {0}.</LongDescription>
+  <BugPattern type="SABC_BAD_SYNCHRONIZATION_WITH_BACKING_COLLECTION">
+    <ShortDescription>Do not synchronize on a collection view when the backing collection is accessible</ShortDescription>
+    <LongDescription>The collection lock object {2}, used in method {1} at line {4}, that has {3} as a visible backing collection outside of class {0}.</LongDescription>
     <Details>
       <![CDATA[<p>
-         Synchronizing a collection view when its backing collection is publicly accessible can lead to nondeterministic behavior.
+         Synchronizing a collection view when its backing collection is accessible can lead to nondeterministic behavior.
 
          The <a href="https://docs.oracle.com/javase/tutorial/collections/implementations/wrapper.html">Java Wrapper implementations</a> warns about the consequences
          of synchronizing on the collection view rather than the backing collection itself.
@@ -9406,8 +9406,8 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="SABC_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION">
-    <ShortDescription>Synchronization on a collection view when the backing collection is publicly accessible may result in nondeterministic behavior</ShortDescription>
-    <LongDescription>The collection lock object {2} used in method {1} has {3} as a backing collection that is made accessible from outside class {0}, by method(s) {4].</LongDescription>
+    <ShortDescription>Do not synchronize on a collection view, when the backing collection when it is made accessible through methods</ShortDescription>
+    <LongDescription>The collection lock object {2}, used in method {1} at line {4}, has {3} as a backing collection that is made accessible from outside class {0}, by method(s) {5}.</LongDescription>
     <Details>
       <![CDATA[<p>
          Synchronizing a collection view when its backing collection is made accessible through a method, that updates
@@ -9423,7 +9423,24 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SABC_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION">
+    <ShortDescription>Do not synchronize on a collection view, when the backing collection is made accessible through class extension</ShortDescription>
+    <LongDescription>The collection lock object {2}, used in method {1} at line {4}, has {3} as a backing collection, that is exposed to untrusted code outside of class {0}, because the class is open for extension.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+         Synchronizing a collection view with a backing collection that is visible outside classes or subclass,
+         might lead to nondeterministic behavior.
 
+         The <a href="https://docs.oracle.com/javase/tutorial/collections/implementations/wrapper.html">Java Wrapper implementations</a> warns about the consequences
+         of synchronizing on the collection view rather than the backing collection itself.
+         Failing to comply with this can end up using two distinct locking strategies and violates thread safety.
+
+         To solve this issue, synchronize on the backing collection object instead of the collection view.
+
+         See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible">LCK04-J. Do not synchronize on a collection view if the backing collection is accessible</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
 
   <!--
   **********************************************************************
