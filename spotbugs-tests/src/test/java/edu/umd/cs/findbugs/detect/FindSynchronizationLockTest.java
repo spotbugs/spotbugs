@@ -329,67 +329,65 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
     }
 
     private void assertMethodBugExactly(String clazz, String method) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+        final BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(METHOD_BUG)
                 .inClass(clazz)
-                .inMethod(method);
-
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+                .inMethod(method)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertStaticMethodBugExactly(String clazz, String method) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+        final BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(STATIC_METHOD_BUG)
                 .inClass(clazz)
-                .inMethod(method);
-
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+                .inMethod(method)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertObjectBugExactly(String clazz, String method, String field) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+        final BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
-                .atField(field);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+                .atField(field)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertAccessibleObjectBugExactly(String clazz, String method, String field) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+        final BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(ACCESSIBLE_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
-                .atField(field);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+                .atField(field)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertInheritedObjectBugExactly(String clazz, String method, String field) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+        final BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(INHERITED_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
-                .atField(field);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+                .atField(field)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertExposingObjectBugExactly(String clazz, String method, String field) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+        final BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(EXPOSING_LOCK_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
-                .atField(field);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+                .atField(field)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
