@@ -124,7 +124,9 @@ import edu.umd.cs.findbugs.util.Values;
 public class FindRefComparison implements Detector, ExtendedTypes {
     private static final boolean DEBUG = SystemProperties.getBoolean("frc.debug");
 
-    private static final boolean REPORT_ALL_REF_COMPARISONS = SystemProperties.getBoolean("findbugs.refcomp.reportAll");
+    private boolean reportAllRefComparisons() {
+        return SystemProperties.getBoolean("findbugs.refcomp.reportAll");
+    }
 
     private static final int BASE_ES_PRIORITY = SystemProperties.getInt("es.basePriority", NORMAL_PRIORITY);
 
@@ -878,7 +880,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
     private void reportBest(ClassContext classContext, Method method, LinkedList<WarningWithProperties> warningList,
             boolean relaxed) {
-        boolean reportAll = relaxed || REPORT_ALL_REF_COMPARISONS;
+        boolean reportAll = relaxed || reportAllRefComparisons();
 
         int bestPriority = Integer.MAX_VALUE;
         for (WarningWithProperties warn : warningList) {
@@ -961,7 +963,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
             if (Values.DOTTED_JAVA_LANG_STRING.equals(lhs) || Values.DOTTED_JAVA_LANG_STRING.equals(rhs)) {
                 handleStringComparison(jclass, method, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
-            } else if (REPORT_ALL_REF_COMPARISONS) {
+            } else if (reportAllRefComparisons()) {
                 handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
                         (ReferenceType) lhsType, (ReferenceType) rhsType);
             } else if (suspiciousSet.contains(lhs)) {
