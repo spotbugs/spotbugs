@@ -13,7 +13,7 @@ import java.util.Set;
 /*
  * note: The problem arises when a class extends the current class and can access the backing collection of the lock.
  */
-public class BadSyncWithPotentiallyInheritedProtectedBackingCollections {
+public class UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections {
     protected Map<Object, Object> collection1 = Collections.synchronizedMap(new HashMap<>());
     private final Set<Object> view1 = collection1.keySet();
     private final Set<Map.Entry<Object, Object>> view2 = collection1.entrySet();

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class BadSyncWithBackingCollectionExposedInPlace {
+public class UnsafeSyncWithBackingCollectionExposedInPlace {
     // Protected locks
     protected Map<Object, Object> collection1 = Collections.synchronizedMap(new HashMap<>());
     private final Set<Object> view1 = collection1.keySet();

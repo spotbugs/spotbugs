@@ -134,7 +134,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                 "/NavigableSet;Ljava/lang/Class;)Ljava/util/NavigableSet;", true), 1);
         WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedQueue", "(Ljava/util/Queue;" +
                 "Ljava/lang/Class;)Ljava/util/Queue;", true), 1);
-        // todo add Arrays.asList etc.
         WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "keySet", "()Ljava/util/Set;", false), 0);
         WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "entrySet", "()Ljava/util/Set;", false), 0);
         WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "values", "()Ljava/util/Collection;", false), 0);
@@ -781,7 +780,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             for (BugInfo bugInfo : bugContainingMethods.get(lock)) {
                 bugReporter.reportBug(bugInfo
                         .createBugInstance(this,
-                                "SABC_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION",
+                                "USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION",
                                 lock, backingCollection, exposingMethods));
             }
         }
@@ -792,7 +791,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         for (BugInfo bugInfo : bugContainingMethods.get(lock)) {
             bugReporter.reportBug(bugInfo
                     .createBugInstance(this,
-                            "SABC_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION",
+                            "USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION",
                             lock, backingCollection));
         }
     }
@@ -802,7 +801,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         for (BugInfo bugInfo : bugContainingMethods.get(lock)) {
             bugReporter.reportBug(bugInfo
                     .createBugInstance(this,
-                            "SABC_BAD_SYNCHRONIZATION_WITH_BACKING_COLLECTION",
+                            "USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION",
                             lock, backingCollection));
         }
     }

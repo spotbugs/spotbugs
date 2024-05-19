@@ -1,7 +1,6 @@
 package synchronizationLocks.collectionViews;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,95 +17,102 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-public class BadSyncWithAccessiblePublicBackingCollectionInPlace {
-    // Synchronized collection views
-    public ArrayList<Object> collection1 = new ArrayList<>();
+
+public class SafeSynchronizationOnCollectionView {
+    private final Map<Integer, String> mapView = Collections.synchronizedMap(new HashMap<Integer, String>());
+    private final Set<Integer> setView = mapView.keySet();
+
+    public Map<Integer, String> getMap() {
+        return mapView;
+    }
+
+    private final ArrayList<Object> collection1 = new ArrayList<>();
     private final Collection<Object> view1 = Collections.synchronizedCollection(collection1);
 
-    public final List<Integer> collection2 = new ArrayList<>();
+    private final List<Integer> collection2 = new ArrayList<>();
     private final List<Integer> view2 = Collections.synchronizedList(collection2);
 
-    public volatile Map<Object, Object> collection3 = new TreeMap<>();
+    private final Map<Object, Object> collection3 = new TreeMap<>();
     private final Map<Object, Object> view3 = Collections.synchronizedMap(collection3);
-            //collection3.keySet();
+    //collection3.keySet();
 
-    public SortedMap<Object, Object> collection4 = new TreeMap<>();
+    private final SortedMap<Object, Object> collection4 = new TreeMap<>();
     private final Map<Object, Object> view4 = Collections.synchronizedSortedMap(collection4);
-            //collection4.values();
 
-    public NavigableMap<Object, Object> collection5 = new TreeMap<>();
+    private final NavigableMap<Object, Object> collection5 = new TreeMap<>();
     private final Map<Object, Object> view5 = Collections.synchronizedNavigableMap(collection5);
-            //collection6.entrySet();
+    //collection6.entrySet();
 
-    public static Set<Object> collection6 = new HashSet<>();
+    private static final Set<Object> collection6 = new HashSet<>();
     private final Set<Object> view6 = Collections.synchronizedSet(collection6);
 
-    public static SortedSet<Object> collection7 = new TreeSet<>();
+    private static final SortedSet<Object> collection7 = new TreeSet<>();
     private final Set<Object> view7 = Collections.synchronizedSortedSet(collection7);
 
-    public static NavigableSet<Object> collection8 = new TreeSet<>();
+    private static final NavigableSet<Object> collection8 = new TreeSet<>();
     private final Set<Object> view8 = Collections.synchronizedNavigableSet(collection8);
 
     // unmodifiable collections
-    public ArrayList<Object> collection9 = new ArrayList<>();
+    private final ArrayList<Object> collection9 = new ArrayList<>();
     private final Collection<Object> view9 = Collections.unmodifiableCollection(collection9);
 
-    public final List<Integer> collection10 = new ArrayList<>();
+    private final List<Integer> collection10 = new ArrayList<>();
     private final List<Integer> view10 = Collections.unmodifiableList(collection10);
 
-    public volatile Map<Object, Object> collection11 = new TreeMap<>();
+    private final Map<Object, Object> collection11 = new TreeMap<>();
     private final Map<Object, Object> view11 = Collections.unmodifiableMap(collection11);
 
-    public SortedMap<Object, Object> collection12 = new TreeMap<>();
+    private final SortedMap<Object, Object> collection12 = new TreeMap<>();
     private final Map<Object, Object> view12 = Collections.unmodifiableSortedMap(collection12);
 
-    public NavigableMap<Object, Object> collection13 = new TreeMap<>();
+    private final NavigableMap<Object, Object> collection13 = new TreeMap<>();
     private final Map<Object, Object> view13 = Collections.unmodifiableNavigableMap(collection13);
 
-    public static Set<Object> collection14 = new HashSet<>();
+    private static final Set<Object> collection14 = new HashSet<>();
     private final Set<Object> view14 = Collections.unmodifiableSet(collection14);
 
-    public static SortedSet<Object> collection15 = new TreeSet<>();
+    private static final SortedSet<Object> collection15 = new TreeSet<>();
     private final Set<Object> view15 = Collections.unmodifiableSortedSet(collection15);
 
-    public static NavigableSet<Object> collection16 = new TreeSet<>();
+    private static final NavigableSet<Object> collection16 = new TreeSet<>();
     private final Set<Object> view16 = Collections.unmodifiableNavigableSet(collection16);
 
     // checked collections
-    public ArrayList<Object> collection17 = new ArrayList<>();
+    private final ArrayList<Object> collection17 = new ArrayList<>();
     private final Collection<Object> view17 = Collections.checkedCollection(collection17, Object.class);
 
-    public List<Object> collection18 = new ArrayList<>();
+    private final List<Object> collection18 = new ArrayList<>();
     private final List<Object> view18 = Collections.checkedList(collection18, Object.class);
 
-    public Map<Object, Object> collection19 = new HashMap<>();
+    private final Map<Object, Object> collection19 = new HashMap<>();
     private final Map<Object, Object> view19 = Collections.checkedMap(collection19, Object.class, Object.class);
 
-    public SortedMap<Object, Object> collection20 = new TreeMap<>();
+    private final SortedMap<Object, Object> collection20 = new TreeMap<>();
     private final Map<Object, Object> view20 = Collections.checkedSortedMap(collection20, Object.class, Object.class);
 
-    public NavigableMap<Object, Object> collection21 = new TreeMap<>();
-    private final Map<Object, Object> view21 = Collections.checkedNavigableMap(collection21, Object.class, Object.class);
+    private final NavigableMap<Object, Object> collection21 = new TreeMap<>();
+    private final Map<Object, Object> view21 = Collections.checkedNavigableMap(collection21, Object.class,
+            Object.class);
 
-    public Set<Object> collection22 = new HashSet<>();
+    private final Set<Object> collection22 = new HashSet<>();
     private final Set<Object> view22 = Collections.checkedSet(collection22, Object.class);
 
-    public SortedSet<Object> collection23 = new TreeSet<>();
+    private final SortedSet<Object> collection23 = new TreeSet<>();
     private final Set<Object> view23 = Collections.checkedSortedSet(collection23, Object.class);
 
-    public NavigableSet<Object> collection24 = new TreeSet<>();
+    private final NavigableSet<Object> collection24 = new TreeSet<>();
     private final Set<Object> view24 = Collections.checkedNavigableSet(collection24, Object.class);
 
-    public Queue<Object> collection25 = new PriorityQueue<>();
+    private final Queue<Object> collection25 = new PriorityQueue<>();
     private final Queue<Object> view25 = Collections.checkedQueue(collection25, Object.class);
 
-    // Primitive collections - not supported
-    public Object[] collection26 = new Object[10];
-    private final List<Object> view26 = Arrays.asList(collection26);
-
-    public int[] collection27 = new int[10];
-    private final List<Object> view27 = Arrays.asList(collection27);
-
+    public void doSomething() {
+        synchronized (mapView) {  // Synchronize on map, rather than set
+            for (Integer k : setView) {
+                System.out.println(k);
+            }
+        }
+    }
 
     // Synchronizations
     public void doStuff1() {
@@ -261,18 +267,6 @@ public class BadSyncWithAccessiblePublicBackingCollectionInPlace {
 
     public void doStuff25() {
         synchronized (view25) { /* using view as lock with a public backing collection detect bug here */
-            System.out.println("Do stuff");
-        }
-    }
-
-    public void doStuff26() {
-        synchronized (view26) { /* using view as lock with a public backing collection detect bug here */
-            System.out.println("Do stuff");
-        }
-    }
-
-    public void doStuff27() {
-        synchronized (view27) { /* using view as lock with a public backing collection detect bug here */
             System.out.println("Do stuff");
         }
     }

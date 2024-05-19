@@ -9388,7 +9388,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="SABC_BAD_SYNCHRONIZATION_WITH_BACKING_COLLECTION">
+  <BugPattern type="USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION">
     <ShortDescription>Do not synchronize on a collection view when the backing collection is accessible</ShortDescription>
     <LongDescription>The collection lock object {2}, used in method {1} at line {4}, that has {3} as a visible backing collection outside of class {0}.</LongDescription>
     <Details>
@@ -9405,7 +9405,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
-  <BugPattern type="SABC_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION">
+  <BugPattern type="USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION">
     <ShortDescription>Do not synchronize on a collection view, when the backing collection when it is made accessible through methods</ShortDescription>
     <LongDescription>The collection lock object {2}, used in method {1} at line {4}, has {3} as a backing collection that is made accessible from outside class {0}, by method(s) {5}.</LongDescription>
     <Details>
@@ -9423,7 +9423,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
-  <BugPattern type="SABC_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION">
+  <BugPattern type="USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION">
     <ShortDescription>Do not synchronize on a collection view, when the backing collection is made accessible through class extension</ShortDescription>
     <LongDescription>The collection lock object {2}, used in method {1} at line {4}, has {3} as a backing collection, that is exposed to untrusted code outside of class {0}, because the class is open for extension.</LongDescription>
     <Details>
