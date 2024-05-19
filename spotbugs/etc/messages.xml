@@ -9276,7 +9276,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
-  <BugPattern type="PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+  <BugPattern type="US_UNSAFE_METHOD_SYNCHRONIZATION">
     <ShortDescription>Instead of synchronized methods, use private final lock objects with block synchronization</ShortDescription>
     <LongDescription>Method {1} uses intrinsic lock of class {0} for synchronization, that is exposed by {2}.</LongDescription>
     <Details>
@@ -9291,7 +9291,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+  <BugPattern type="US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION">
     <ShortDescription>Instead of static synchronized methods, use private final lock objects with block synchronization</ShortDescription>
     <LongDescription>Static synchronized method {1} uses intrinsic lock of class {0} for synchronization, exposing the class to untrusted code.</LongDescription>
     <Details>

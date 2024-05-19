@@ -14,8 +14,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Added
 - New detector `FindSynchronizationLock` and introduced new bug types:
-    - `PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when using synchronized methods with the class' accessible intrinsic lock,
-    - `PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when using static synchronized methods with the class' exposed intrinsic lock,
+    - `US_UNSAFE_METHOD_SYNCHRONIZATION` is reported when using synchronized methods with the class' accessible intrinsic lock,
+    - `US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION` is reported when using static synchronized methods with the class' exposed intrinsic lock,
     - `PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is visible from the outside,
     - `PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside,
     - `PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS` is reported when the lock used for synchronization is can be altered by subclasses,

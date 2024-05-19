@@ -11,8 +11,8 @@ import static org.hamcrest.Matchers.hasItem;
 
 class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
-    private static final String METHOD_BUG = "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    private static final String STATIC_METHOD_BUG = "PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
+    private static final String METHOD_BUG = "US_UNSAFE_METHOD_SYNCHRONIZATION";
+    private static final String STATIC_METHOD_BUG = "US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION";
     private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String ACCESSIBLE_OBJECT_BUG = "PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
     private static final String INHERITED_OBJECT_BUG = "PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
@@ -22,11 +22,11 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
      * The following tests are for object synchronization bugs
      */
     @Test
-    void testBadMethodSynchronizationLock() {
-        performAnalysis("privateFinalLocks/BadMethodSynchronizationWithClassExposingItSelf.class",
-                "privateFinalLocks/BadMethodSynchronizationWithClassExposingACollectionOfItself.class",
-                "privateFinalLocks/BadMethodSynchronizationWithClassExposingAMapOfItself.class",
-                "privateFinalLocks/BadMethodSynchronizationWithClassExposingMixedGenericOfItself.class");
+    void testUnsafeMethodSynchronizationLock() {
+        performAnalysis("privateFinalLocks/UnsafeMethodSynchronizationWithClassExposingItSelf.class",
+                "privateFinalLocks/UnsafeMethodSynchronizationWithClassExposingACollectionOfItself.class",
+                "privateFinalLocks/UnsafeMethodSynchronizationWithClassExposingAMapOfItself.class",
+                "privateFinalLocks/UnsafeMethodSynchronizationWithClassExposingMixedGenericOfItself.class");
 
         assertNumOfBugs(5, METHOD_BUG);
         assertNumOfBugs(0, STATIC_METHOD_BUG);
@@ -35,16 +35,16 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertNumOfBugs(0, INHERITED_OBJECT_BUG);
         assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
 
-        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingItSelf", "doStuff");
-        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingItSelf", "doStuff2");
-        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingACollectionOfItself", "doStuff");
-        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingAMapOfItself", "doStuff");
-        assertMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithClassExposingMixedGenericOfItself", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff2");
+        assertMethodBugExactly("privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingACollectionOfItself", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingAMapOfItself", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingMixedGenericOfItself", "doStuff");
     }
 
     @Test
-    void testBadMethodSynchronizationWithPublicStaticLockObject() {
-        performAnalysis("privateFinalLocks/BadMethodSynchronizationWithPublicStaticSynchronization.class");
+    void testUnsafeStaticMethodSynchronizationLock() {
+        performAnalysis("privateFinalLocks/UnsafeMethodSynchronizationWithPublicStaticSynchronization.class");
 
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(1, STATIC_METHOD_BUG);
@@ -53,11 +53,11 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertNumOfBugs(0, INHERITED_OBJECT_BUG);
         assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
 
-        assertStaticMethodBugExactly("privateFinalLocks.BadMethodSynchronizationWithPublicStaticSynchronization", "doStuff");
+        assertStaticMethodBugExactly("privateFinalLocks.UnsafeMethodSynchronizationWithPublicStaticSynchronization", "doStuff");
     }
 
     @Test
-    void testBadMethodSynchronizationWithMixedBugs() {
+    void testUnsafeMethodSynchronizationWithMixedBugs() {
         performAnalysis("privateFinalLocks/BadMixedMethodSynchronization.class");
 
         assertNumOfBugs(1, METHOD_BUG);
