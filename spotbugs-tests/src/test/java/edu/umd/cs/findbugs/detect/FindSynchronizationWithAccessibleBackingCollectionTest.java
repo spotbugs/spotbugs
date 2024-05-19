@@ -227,7 +227,7 @@ public class FindSynchronizationWithAccessibleBackingCollectionTest extends Abst
                         .atField(view)
                         .build();
 
-        assertThat(getBugCollection(), containsExactly(2, bugInstance));
+        assertThat(getBugCollection(), containsExactly(numberOfBugs, bugInstance));
     }
 
     private void assertInheritableBackingCollectionBugExactly(String clazz, String method, String view) {
