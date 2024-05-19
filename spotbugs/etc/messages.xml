@@ -9307,7 +9307,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+  <BugPattern type="US_UNSAFE_OBJECT_SYNCHRONIZATION">
     <ShortDescription>Use private final lock objects in synchronization blocks</ShortDescription>
     <LongDescription>The lock object {2} used in method {1} is visible outside the class, thus exposing class {0}.</LongDescription>
     <Details>
@@ -9328,7 +9328,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+  <BugPattern type="US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION">
     <ShortDescription>Use private final lock objects in synchronization blocks when the lock is accessible</ShortDescription>
     <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, through updating or returning its value from {3}.</LongDescription>
     <Details>
@@ -9347,7 +9347,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+  <BugPattern type="US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION">
     <ShortDescription>Use private final lock objects in synchronization blocks, when class can be extended</ShortDescription>
     <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, because the class is open for extension.</LongDescription>
     <Details>
@@ -9369,7 +9369,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS">
+  <BugPattern type="US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION">
     <ShortDescription>Do not expose inherited lock objects through methods by updating or returning them</ShortDescription>
     <LongDescription>The lock object {2} - used in method {1} from super class - is exposed to untrusted in class {0}, through updating or returning it in {3}.</LongDescription>
     <Details>

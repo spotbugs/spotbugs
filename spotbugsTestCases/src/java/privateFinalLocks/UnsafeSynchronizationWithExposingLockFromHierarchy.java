@@ -1,6 +1,6 @@
 package privateFinalLocks;
 
-public class BadSynchronizationWithExposingLockFromHierarchy {
+public class UnsafeSynchronizationWithExposingLockFromHierarchy {
     protected Object lock1 = new Object();
     protected final Object lock2 = new Object();
     protected static Object lock3 = new Object();
@@ -8,7 +8,7 @@ public class BadSynchronizationWithExposingLockFromHierarchy {
     protected Object lock5 = new Object();
 }
 
-class BadSynchronizationByExposingLockFromHierarchy extends BadSynchronizationWithExposingLockFromHierarchy {
+class UnsafeSynchronizationByExposingLockFromHierarchy extends UnsafeSynchronizationWithExposingLockFromHierarchy {
     public void doStuff1() {
         synchronized (lock1) { /* detect bug here */
             System.out.println("Do stuff");

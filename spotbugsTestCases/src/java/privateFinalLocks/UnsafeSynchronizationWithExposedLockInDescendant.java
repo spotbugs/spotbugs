@@ -1,6 +1,6 @@
 package privateFinalLocks;
 
-public class BadSynchronizationWithExposedLockInDescendant {
+public class UnsafeSynchronizationWithExposedLockInDescendant {
     protected Object lock1 = new Object();
     protected final Object lock2 = new Object();
     protected static Object lock3 = new Object();
@@ -41,7 +41,7 @@ public class BadSynchronizationWithExposedLockInDescendant {
     }
 }
 
-class BadSynchronizationWithExposingLockInDescendant extends BadSynchronizationWithExposedLockInDescendant {
+class UnsafeSynchronizationWithExposingLockInDescendant extends UnsafeSynchronizationWithExposedLockInDescendant {
    public Object getLock1() { /* detect bug here */
        return lock1;
    }
@@ -72,7 +72,7 @@ class BadSynchronizationWithExposingLockInDescendant extends BadSynchronizationW
     }
 }
 
-class BadSynchronizationWithExposingLockInDescendant2 extends BadSynchronizationWithExposingLockInDescendant {
+class UnsafeSynchronizationWithExposingLockInDescendant2 extends UnsafeSynchronizationWithExposingLockInDescendant {
     // More complex cases
 
     public Object getLock6() {

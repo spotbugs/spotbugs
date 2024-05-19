@@ -1,10 +1,13 @@
 package privateFinalLocks;
 
-public class BadSynchronizationWithExposedPackagePrivateLocks {
-    Object lock1 = new Object();
-    final Object lock2 = new Object();
-    static Object lock3 = new Object();
-    volatile Object lock4 = new Object();
+/**
+ * @note The problem arises when a class extends the current class and can access the lock
+ */
+public class UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks {
+    protected Object lock1 = new Object();
+    protected final Object lock2 = new Object();
+    protected static Object lock3 = new Object();
+    protected volatile Object lock4 = new Object();
 
     public void doStuff1() {
         synchronized (lock1) { /* detect bug here */

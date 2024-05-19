@@ -386,7 +386,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         String exposingMethodsMessage = buildMethodsMessage(exposingMethods);
         for (XMethod lockUsingMethod : lockUsingMethods) {
             bugReporter.reportBug(new BugInstance(this,
-                    "PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS", NORMAL_PRIORITY).addClass(this).addMethod(
+                    "US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY).addClass(this).addMethod(
                             lockUsingMethod).addField(lock).addString(exposingMethodsMessage));
         }
     }
@@ -395,7 +395,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         if (!definedLockAccessors.isEmpty()) {
             String problematicMethods = buildMethodsMessage(definedLockAccessors);
             bugReporter.reportBug(new BugInstance(this,
-                    "PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS", NORMAL_PRIORITY).addClass(this).addMethod(
+                    "US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY).addClass(this).addMethod(
                             synchronizedMethods.get(lock)).addField(lock).addString(problematicMethods));
         }
     }
@@ -403,7 +403,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     private void reportInheritedObjectBugs(XField lock, Collection<XMethod> synchronizedMethods) {
         for (XMethod synchronizedMethod : synchronizedMethods) {
             bugReporter.reportBug(new BugInstance(this,
-                    "PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS", LOW_PRIORITY).addClass(this).addMethod(
+                    "US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION", LOW_PRIORITY).addClass(this).addMethod(
                             synchronizedMethod).addField(lock));
         }
     }
@@ -411,7 +411,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     private void reportObjectBugs(XField lock, Collection<XMethod> synchronizedMethods) {
         for (XMethod synchronizedMethod : synchronizedMethods) {
             bugReporter.reportBug(new BugInstance(this,
-                    "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS", NORMAL_PRIORITY).addClass(this).addMethod(synchronizedMethod)
+                    "US_UNSAFE_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY).addClass(this).addMethod(synchronizedMethod)
                     .addField(lock));
         }
     }

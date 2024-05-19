@@ -1,19 +1,12 @@
 package privateFinalLocks;
 
-public class BadSynchronizationWithPublicLocksInPlace {
-    public Object lock1 = new Object();
-    public final Object lock2 = new Object();
-    public static Object lock3 = new Object();
-    public volatile Object lock4 = new Object();
-    public Object lock5 = new Object();
+public class UnsafeSynchronizationWithExposedPackagePrivateLocks {
+    Object lock1 = new Object();
+    final Object lock2 = new Object();
+    static Object lock3 = new Object();
+    volatile Object lock4 = new Object();
 
     public void doStuff1() {
-        synchronized (lock1) { /* detect bug here */
-            System.out.println("Do stuff");
-        }
-    }
-
-    public void doStuff1Again() {
         synchronized (lock1) { /* detect bug here */
             System.out.println("Do stuff");
         }
@@ -37,9 +30,4 @@ public class BadSynchronizationWithPublicLocksInPlace {
         }
     }
 
-    public void doStuff5() {
-        synchronized (lock5) { /* detect bug here */
-            System.out.println("Do stuff");
-        }
-    }
 }

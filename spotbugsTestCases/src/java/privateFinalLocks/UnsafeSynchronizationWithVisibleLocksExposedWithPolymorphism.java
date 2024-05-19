@@ -1,6 +1,6 @@
 package privateFinalLocks;
 
-public class BadSynchronizationWithVisibleLocksExposedWithPolymorphism {
+public class UnsafeSynchronizationWithVisibleLocksExposedWithPolymorphism {
     // Public locks
     public Object lock1 = new Object();
     public final Object lock2 = new Object();
@@ -21,7 +21,7 @@ public class BadSynchronizationWithVisibleLocksExposedWithPolymorphism {
     volatile Object lock13 = new Object();
 }
 
-class BadSynchronizationWithVisibleLocksFromHierarchy extends BadSynchronizationWithVisibleLocksExposedWithPolymorphism {
+class UnsafeSynchronizationWithVisibleLocksFromHierarchy extends UnsafeSynchronizationWithVisibleLocksExposedWithPolymorphism {
     public void doStuff1() {
         synchronized (lock1) { /* detect bug here */
             System.out.println("Do stuff");

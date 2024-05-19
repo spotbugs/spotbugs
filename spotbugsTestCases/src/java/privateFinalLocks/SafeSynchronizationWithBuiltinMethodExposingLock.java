@@ -3,15 +3,15 @@ package privateFinalLocks;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 
-public class GoodSynchronizationWithBuiltinMethodExposingLock implements Cloneable, Serializable {
+public class SafeSynchronizationWithBuiltinMethodExposingLock implements Cloneable, Serializable {
     public synchronized void doStuff() {
         System.out.println("Do some stuff");
     }
 
     @Override
-    public GoodSynchronizationWithBuiltinMethodExposingLock clone() {
+    public SafeSynchronizationWithBuiltinMethodExposingLock clone() {
         try {
-            return (GoodSynchronizationWithBuiltinMethodExposingLock) super.clone();
+            return (SafeSynchronizationWithBuiltinMethodExposingLock) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }

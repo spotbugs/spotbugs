@@ -1,6 +1,6 @@
 package privateFinalLocks;
 
-public class BadSynchronizationWithLockExposedInDeclaringClass {
+public class UnsafeSynchronizationWithLockExposedInDeclaringClass {
     // Protected locks
     protected Object lock1 = new Object();
     protected final Object lock2 = new Object();

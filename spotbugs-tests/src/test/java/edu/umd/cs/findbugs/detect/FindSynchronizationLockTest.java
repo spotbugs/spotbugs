@@ -13,10 +13,10 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
 
     private static final String METHOD_BUG = "US_UNSAFE_METHOD_SYNCHRONIZATION";
     private static final String STATIC_METHOD_BUG = "US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION";
-    private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    private static final String ACCESSIBLE_OBJECT_BUG = "PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    private static final String INHERITED_OBJECT_BUG = "PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    private static final String EXPOSING_LOCK_OBJECT_BUG = "PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
+    private static final String OBJECT_BUG = "US_UNSAFE_OBJECT_SYNCHRONIZATION";
+    private static final String ACCESSIBLE_OBJECT_BUG = "US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION";
+    private static final String INHERITABLE_OBJECT_BUG = "US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION";
+    private static final String EXPOSED_LOCK_OBJECT_BUG = "US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION";
 
     /**
      * The following tests are for object synchronization bugs
@@ -32,8 +32,8 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
 
         assertMethodBugExactly("privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff");
         assertMethodBugExactly("privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff2");
@@ -50,277 +50,277 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertNumOfBugs(1, STATIC_METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
 
         assertStaticMethodBugExactly("privateFinalLocks.UnsafeMethodSynchronizationWithPublicStaticSynchronization", "doStuff");
     }
 
     @Test
     void testUnsafeMethodSynchronizationWithMixedBugs() {
-        performAnalysis("privateFinalLocks/BadMixedMethodSynchronization.class");
+        performAnalysis("privateFinalLocks/UnsafeMixedMethodSynchronization.class");
 
         assertNumOfBugs(1, METHOD_BUG);
         assertNumOfBugs(1, STATIC_METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
 
-        assertMethodBugExactly("privateFinalLocks.BadMixedMethodSynchronization", "doStuff");
-        assertStaticMethodBugExactly("privateFinalLocks.BadMixedMethodSynchronization", "doStuff");
+        assertMethodBugExactly("privateFinalLocks.UnsafeMixedMethodSynchronization", "doStuff");
+        assertStaticMethodBugExactly("privateFinalLocks.UnsafeMixedMethodSynchronization", "doStuff");
     }
 
     @Test
-    void goodMethodSynchronizationLock() {
-        performAnalysis("privateFinalLocks/GoodMethodSynchronization.class");
+    void testSafeMethodSynchronizationLock() {
+        performAnalysis("privateFinalLocks/SafeMethodSynchronization.class");
 
-        assertNoBadLockBugs();
+        assertNoUnsafeLockBugs();
     }
 
     /**
      * The following tests are for object synchronization bugs
      */
     @Test
-    void testBadSynchronizationExposedLockInDescendant() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithExposedLockInDescendant.class",
-                "privateFinalLocks/BadSynchronizationWithExposingLockInDescendant.class",
-                "privateFinalLocks/BadSynchronizationWithExposingLockInDescendant2.class");
+    void testUnsafeSynchronizationExposedLockInDescendant() {
+        performAnalysis("privateFinalLocks/UnsafeSynchronizationWithExposedLockInDescendant.class",
+                "privateFinalLocks/UnsafeSynchronizationWithExposingLockInDescendant.class",
+                "privateFinalLocks/UnsafeSynchronizationWithExposingLockInDescendant2.class");
 
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(1, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(5, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(6, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(5, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(6, EXPOSED_LOCK_OBJECT_BUG);
 
-        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff1" /* in base */,
+        assertExposedObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant", "doStuff1" /* in base */,
                 "lock1"); /* Exposed by getLock1 */
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockInDescendant", "doStuff1", "lock1");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposedLockInDescendant", "doStuff1", "lock1");
 
-        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff2" /* in base */,
+        assertExposedObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant", "doStuff2" /* in base */,
                 "lock2"); /* Exposed by getLock2 */
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockInDescendant", "doStuff2", "lock2");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposedLockInDescendant", "doStuff2", "lock2");
 
-        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff3" /* in base */,
+        assertExposedObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant", "doStuff3" /* in base */,
                 "lock3"); /* Exposed by updateLock3 */
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockInDescendant", "doStuff3", "lock3");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposedLockInDescendant", "doStuff3", "lock3");
 
-        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff4" /* in base */,
+        assertExposedObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant", "doStuff4" /* in base */,
                 "lock4"); /* Exposed by updateLock4 */
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockInDescendant", "doStuff4", "lock4");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposedLockInDescendant", "doStuff4", "lock4");
 
-        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff5" /* in base */,
+        assertExposedObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant", "doStuff5" /* in base */,
                 "lock5"); /* Exposed by updateLock5 */
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedLockInDescendant", "doStuff5", "lock5");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposedLockInDescendant", "doStuff5", "lock5");
 
         // More complex cases involving longer chains of inheritance
-        assertExposingObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant2", "doStuff6" /* in parent */,
+        assertExposedObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant2", "doStuff6" /* in parent */,
                 "lock6"); /* Exposed by getLock6 */
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposingLockInDescendant", "doStuff6", "lock6");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant", "doStuff6", "lock6");
     }
 
     @Test
-    void testBadSynchronizationWithInheritedLocks() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithPotentiallyInheritedProtectedLocks.class",
-                "privateFinalLocks/BadSynchronizationWithExposedPackagePrivateLocks.class");
+    void testUnsafeSynchronizationWithInheritedLocks() {
+        performAnalysis("privateFinalLocks/UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks.class",
+                "privateFinalLocks/UnsafeSynchronizationWithExposedPackagePrivateLocks.class");
 
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(8, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(8, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
 
         /* Protected bugs */
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithPotentiallyInheritedProtectedLocks", "doStuff1", "lock1");
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithPotentiallyInheritedProtectedLocks", "doStuff2", "lock2");
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithPotentiallyInheritedProtectedLocks", "doStuff3", "lock3");
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithPotentiallyInheritedProtectedLocks", "doStuff4", "lock4");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks", "doStuff1", "lock1");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks", "doStuff2", "lock2");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks", "doStuff3", "lock3");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks", "doStuff4", "lock4");
 
         /* Package private bugs */
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedPackagePrivateLocks", "doStuff1", "lock1");
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedPackagePrivateLocks", "doStuff2", "lock2");
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedPackagePrivateLocks", "doStuff3", "lock3");
-        assertInheritedObjectBugExactly("privateFinalLocks.BadSynchronizationWithExposedPackagePrivateLocks", "doStuff4", "lock4");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposedPackagePrivateLocks", "doStuff1", "lock1");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposedPackagePrivateLocks", "doStuff2", "lock2");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposedPackagePrivateLocks", "doStuff3", "lock3");
+        assertInheritableObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithExposedPackagePrivateLocks", "doStuff4", "lock4");
     }
 
     @Test
-    void testBadSynchronizationWithExposedLockInDeclaringClass() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithLockExposedInDeclaringClass.class");
+    void testUnsafeSynchronizationWithExposedLockInDeclaringClass() {
+        performAnalysis("privateFinalLocks/UnsafeSynchronizationWithLockExposedInDeclaringClass.class");
 
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(9, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
 
         /* Protected lock bugs */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithLockExposedInDeclaringClass", "doStuff1",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass", "doStuff1",
                 "lock1"); /* Exposed by getLock1 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithLockExposedInDeclaringClass", "doStuff2",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass", "doStuff2",
                 "lock2"); /* Exposed by getLock2 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithLockExposedInDeclaringClass", "doStuff3",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass", "doStuff3",
                 "lock3"); /* Exposed by updateLock3 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithLockExposedInDeclaringClass", "doStuff4",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass", "doStuff4",
                 "lock4"); /* Exposed by updateLock4 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithLockExposedInDeclaringClass", "doStuff5",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass", "doStuff5",
                 "lock5"); /* Exposed by updateLock5 */
 
         /* Private lock bugs */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithLockExposedInDeclaringClass", "doStuff6",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass", "doStuff6",
                 "lock6"); /* Exposed by getLock6 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithLockExposedInDeclaringClass", "doStuff7",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass", "doStuff7",
                 "lock7"); /* Exposed by updateLock7 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithLockExposedInDeclaringClass", "doStuff8",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass", "doStuff8",
                 "lock8"); /* Exposed by updateLock8 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationWithLockExposedInDeclaringClass", "doStuff9",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass", "doStuff9",
                 "lock9"); /* Exposed by updateLock9 */
     }
 
     @Test
-    void testBadSynchronizationWithExposedLockInHierarchy() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithExposedLockFromHierarchy.class",
-                "privateFinalLocks/BadSynchronizationUsingExposedLockFromHierarchy.class",
-                "privateFinalLocks/BadSynchronizationUsingExposedLockFromHierarchy2.class");
+    void testUnsafeSynchronizationWithExposedLockInHierarchy() {
+        performAnalysis("privateFinalLocks/UnsafeSynchronizationWithExposedLockFromHierarchy.class",
+                "privateFinalLocks/UnsafeSynchronizationUsingExposedLockFromHierarchy.class",
+                "privateFinalLocks/UnsafeSynchronizationUsingExposedLockFromHierarchy2.class");
 
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(6, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
 
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationUsingExposedLockFromHierarchy", "doStuff1",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy", "doStuff1",
                 "lock1"); /* Exposed by getLock1 in parent */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationUsingExposedLockFromHierarchy", "doStuff2",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy", "doStuff2",
                 "lock2"); /* Exposed by getLock2 in parent */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationUsingExposedLockFromHierarchy", "doStuff3",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy", "doStuff3",
                 "lock3"); /* Exposed by updateLock3 in parent */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationUsingExposedLockFromHierarchy", "doStuff4",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy", "doStuff4",
                 "lock4"); /* Exposed by updateLock4 in parent */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationUsingExposedLockFromHierarchy", "doStuff5",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy", "doStuff5",
                 "lock5"); /* Exposed by updateLock5 in parent */
 
         // More complex cases involving longer chains of inheritance
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationUsingExposedLockFromHierarchy2", "doStuff6",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy2", "doStuff6",
                 "lock6"); /* Exposed by getLock6 in parent */
     }
 
     @Test
-    void testBadSynchronizationByExposingLockFromHierarchy() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithExposingLockFromHierarchy.class",
-                "privateFinalLocks/BadSynchronizationByExposingLockFromHierarchy.class");
+    void testUnsafeSynchronizationByExposingLockFromHierarchy() {
+        performAnalysis("privateFinalLocks/UnsafeSynchronizationWithExposingLockFromHierarchy.class",
+                "privateFinalLocks/UnsafeSynchronizationByExposingLockFromHierarchy.class");
 
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(5, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
 
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationByExposingLockFromHierarchy", "doStuff1",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy", "doStuff1",
                 "lock1"); /* Exposed by getLock1 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationByExposingLockFromHierarchy", "doStuff2",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy", "doStuff2",
                 "lock2"); /* Exposed by getLock1 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationByExposingLockFromHierarchy", "doStuff3",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy", "doStuff3",
                 "lock3"); /* Exposed by updateLock3 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationByExposingLockFromHierarchy", "doStuff4",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy", "doStuff4",
                 "lock4"); /* Exposed by updateLock4 */
-        assertAccessibleObjectBugExactly("privateFinalLocks.BadSynchronizationByExposingLockFromHierarchy", "doStuff5",
+        assertAccessibleObjectBugExactly("privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy", "doStuff5",
                 "lock5"); /* Exposed by updateLock5 */
     }
 
     @Test
-    void testBadSynchronizationWithPublicLocksInPlace() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithPublicLocksInPlace.class");
+    void testUnsafeSynchronizationWithPublicLocksInPlace() {
+        performAnalysis("privateFinalLocks/UnsafeSynchronizationWithPublicLocksInPlace.class");
 
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(6, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
 
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff1", "lock1");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff1Again", "lock1");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff2", "lock2");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff3", "lock3");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff4", "lock4");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithPublicLocksInPlace", "doStuff5", "lock5");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff1", "lock1");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff1Again", "lock1");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff2", "lock2");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff3", "lock3");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff4", "lock4");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff5", "lock5");
     }
 
     @Test
-    void testBadSynchronizationWithVisibleLocksExposedWithPolymorphism() {
-        performAnalysis("privateFinalLocks/BadSynchronizationWithVisibleLocksExposedWithPolymorphism.class",
-                "privateFinalLocks/BadSynchronizationWithVisibleLocksFromHierarchy.class");
+    void testUnsafeSynchronizationWithVisibleLocksExposedWithPolymorphism() {
+        performAnalysis("privateFinalLocks/UnsafeSynchronizationWithVisibleLocksExposedWithPolymorphism.class",
+                "privateFinalLocks/UnsafeSynchronizationWithVisibleLocksFromHierarchy.class");
 
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(14, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
 
         // Public locks
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff1", "lock1");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff1Again", "lock1");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff2", "lock2");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff3", "lock3");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff4", "lock4");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff5", "lock5");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff1", "lock1");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff1Again", "lock1");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff2", "lock2");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff3", "lock3");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff4", "lock4");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff5", "lock5");
 
         // Protected locks - it is important that the declaring class is NOT final
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff6", "lock6");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff7", "lock7");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff8", "lock8");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff9", "lock9");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff6", "lock6");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff7", "lock7");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff8", "lock8");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff9", "lock9");
 
         // Package private locks
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff10", "lock10");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff11", "lock11");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff12", "lock12");
-        assertObjectBugExactly("privateFinalLocks.BadSynchronizationWithVisibleLocksFromHierarchy", "doStuff13", "lock13");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff10", "lock10");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff11", "lock11");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff12", "lock12");
+        assertObjectBugExactly("privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff13", "lock13");
     }
 
     @Test
-    void testGoodSynchronizationWithPrivateFinalLockObject() {
-        performAnalysis("privateFinalLocks/GoodSynchronizationWithPrivateFinalLock.class");
+    void testSafeSynchronizationWithPrivateFinalLockObject() {
+        performAnalysis("privateFinalLocks/SafeSynchronizationWithPrivateFinalLock.class");
 
-        assertNoBadLockBugs();
+        assertNoUnsafeLockBugs();
     }
 
     @Test
-    void testGoodSynchronizationWithProtectedLockInFinalClass() {
-        performAnalysis("privateFinalLocks/GoodSynchronizationWithProtectedLockInFinalClass.class");
+    void testSafeSynchronizationWithProtectedLockInFinalClass() {
+        performAnalysis("privateFinalLocks/SafeSynchronizationWithProtectedLockInFinalClass.class");
 
-        assertNoBadLockBugs();
+        assertNoUnsafeLockBugs();
     }
 
     @Test
-    void testGoodSynchronizationWithInheritance() {
-        performAnalysis("privateFinalLocks/GoodSynchronizationWithInheritance.class",
-                "privateFinalLocks/GoodSynchronizationInheritedFromParent.class");
+    void testSafeSynchronizationWithInheritance() {
+        performAnalysis("privateFinalLocks/SafeSynchronizationWithInheritance.class",
+                "privateFinalLocks/SafeSynchronizationInheritedFromParent.class");
 
-        assertNoBadLockBugs();
+        assertNoUnsafeLockBugs();
     }
 
     @Test
-    void testGoodSynchronizationWithBuiltinMethodsSeemToExposeLock() {
-        performAnalysis("privateFinalLocks/GoodSynchronizationWithBuiltinMethodExposingLock.class");
+    void testSafeSynchronizationWithBuiltinMethodsSeemToExposeLock() {
+        performAnalysis("privateFinalLocks/SafeSynchronizationWithBuiltinMethodExposingLock.class");
 
-        assertNoBadLockBugs();
+        assertNoUnsafeLockBugs();
     }
 
 
-    private void assertNoBadLockBugs() {
+    private void assertNoUnsafeLockBugs() {
         assertNumOfBugs(0, METHOD_BUG);
         assertNumOfBugs(0, STATIC_METHOD_BUG);
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
     }
 
     private void assertNumOfBugs(int number, String bugType) {
@@ -370,9 +370,9 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
-    private void assertInheritedObjectBugExactly(String clazz, String method, String field) {
+    private void assertInheritableObjectBugExactly(String clazz, String method, String field) {
         final BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
-                .bugType(INHERITED_OBJECT_BUG)
+                .bugType(INHERITABLE_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
                 .atField(field)
@@ -381,9 +381,9 @@ class FindSynchronizationLockTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
-    private void assertExposingObjectBugExactly(String clazz, String method, String field) {
+    private void assertExposedObjectBugExactly(String clazz, String method, String field) {
         final BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
-                .bugType(EXPOSING_LOCK_OBJECT_BUG)
+                .bugType(EXPOSED_LOCK_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
                 .atField(field)

@@ -1,12 +1,12 @@
 package privateFinalLocks;
 
-public class GoodMethodSynchronization {
+public class SafeMethodSynchronization {
     public synchronized void doStuff() {
         System.out.println("Do some stuff");
     }
 
-    private GoodMethodSynchronization factory() { // this should only be fine if the constructors were private
-        return new privateFinalLocks.GoodMethodSynchronization();
+    private SafeMethodSynchronization factory() { // this should only be fine if the constructors were private
+        return new SafeMethodSynchronization();
     }
 
     private static final Object lock = new Object();
