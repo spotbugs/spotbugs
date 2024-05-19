@@ -75,81 +75,78 @@ public class FindMixedSynchronizationTest extends AbstractIntegrationTest {
     }
 
     private void assertObjectBugExactly(String clazz, String method, String field) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+        BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
-                .atField(field);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+                .atField(field)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertAccessibleObjectBugExactly(String clazz, String method, String field) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+        BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(ACCESSIBLE_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
-                .atField(field);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+                .atField(field)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertInheritedObjectBugExactly(String clazz, String method, String field) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+        BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(INHERITED_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
-                .atField(field);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+                .atField(field)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertExposingObjectBugExactly(String clazz, String method, String field) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder = new BugInstanceMatcherBuilder()
+        BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(EXPOSING_LOCK_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
-                .atField(field);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+                .atField(field)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertBadBackingCollectionBugExactly(String clazz, String method, String view) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder =
-                new BugInstanceMatcherBuilder()
-                        .bugType(BAD_BACKING_COLLECTION)
-                        .inClass(clazz)
-                        .inMethod(method)
-                        .atField(view);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+        BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
+                .bugType(BAD_BACKING_COLLECTION)
+                .inClass(clazz)
+                .inMethod(method)
+                .atField(view)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertAccessibleBackingCollectionBugExactly(String clazz, String method, String view) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder =
-                new BugInstanceMatcherBuilder()
-                        .bugType(ACCESSIBLE_BACKING_COLLECTION)
-                        .inClass(clazz)
-                        .inMethod(method)
-                        .atField(view);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+        BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
+                .bugType(ACCESSIBLE_BACKING_COLLECTION)
+                .inClass(clazz)
+                .inMethod(method)
+                .atField(view)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }
 
     private void assertInheritableBackingCollectionBugExactly(String clazz, String method, String view) {
-        BugInstanceMatcherBuilder bugInstanceMatcherBuilder =
-                new BugInstanceMatcherBuilder()
-                        .bugType(INHERITABLE_BACKING_COLLECTION)
-                        .inClass(clazz)
-                        .inMethod(method)
-                        .atField(view);
-        final BugInstanceMatcher bugInstance = bugInstanceMatcherBuilder.build();
+        BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
+                .bugType(INHERITABLE_BACKING_COLLECTION)
+                .inClass(clazz)
+                .inMethod(method)
+                .atField(view)
+                .build();
 
         assertThat(getBugCollection(), hasItem(bugInstance));
     }

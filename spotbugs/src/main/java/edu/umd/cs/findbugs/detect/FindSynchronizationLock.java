@@ -70,15 +70,83 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/*
-    The following cases are not handled:
-     - Chained wrapping calls for backing collections, like Collections.synchronizedList((List<...>)Arrays.asList(...))
-     - Backing collections involving inheritance, like using a lock from a parent class, that has a backing collection exposed in the parent
-     - primitive collections and reference arrays, like int[], Object[], etc.
- */
 public class FindSynchronizationLock extends OpcodeStackDetector {
     private static final Map<MethodDescriptor, Integer> WRAPPER_IMPLEMENTATIONS = new HashMap<>();
     private static final Set<String> IMMUTABLE_RETURNERS = new HashSet<>();
+
+    static {
+        String juCollections = ClassName.toSlashedClassName(java.util.Collections.class);
+        String juMaps = ClassName.toSlashedClassName(Map.class);
+        String juLists = ClassName.toSlashedClassName(java.util.List.class);
+
+        //synchronized collections
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedCollection", "(Ljava/util" +
+                "/Collection;)Ljava/util/Collection;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedList", "(Ljava/util/List;)" +
+                "Ljava/util/List;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedMap", "(Ljava/util/Map;)" +
+                "Ljava/util/Map;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSortedMap", "(Ljava/util" +
+                "/SortedMap;)Ljava/util/SortedMap;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedNavigableMap", "(Ljava/util" +
+                "/NavigableMap;)Ljava/util/NavigableMap;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSet", "(Ljava/util/Set;)" +
+                "Ljava/util/Set;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSortedSet", "(Ljava/util" +
+                "/SortedSet;)Ljava/util/SortedSet;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedNavigableSet", "(Ljava/util" +
+                "/NavigableSet;)Ljava/util/NavigableSet;", true), 0);
+        // unmodifiable collections
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableCollection", "(Ljava/util" +
+                "/Collection;)Ljava/util/Collection;", true), 0);
+        // These static methods return an immutable value on the stack, therefore handled differently; leaving it
+        // here for reference
+        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableList", "(Ljava/util/List;)
+        //  Ljava/util/List;", true), 0);
+        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableMap", "(Ljava/util/Map;)
+        //  Ljava/util/Map;", true), 0);
+        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableSortedMap", "
+        //  (Ljava/util/SortedMap;)Ljava/util/SortedMap;", true), 0);
+        //  Map.entry(new MethodDescriptor(juCollections, "unmodifiableNavigableMap", "(Ljava/util/NavigableMap;)
+        //  Ljava/util/NavigableMap;", true),0), //Ljava/util/Collections$UnmodifiableNavigableMap;
+        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableSet", "(Ljava/util/Set;)
+        //  Ljava/util/Set;", true), 0);
+        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableSortedSet", "
+        //  (Ljava/util/SortedSet;)Ljava/util/SortedSet;", true), 0);
+        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableNavigableSet", "
+        //  (Ljava/util/NavigableSet;)Ljava/util/NavigableSet;", true), 0);
+        // checked collections
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedCollection", "(Ljava/util/Collection;" +
+                "Ljava/lang/Class;)Ljava/util/Collection;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedList", "(Ljava/util/List;" +
+                "Ljava/lang/Class;)Ljava/util/List;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedMap", "(Ljava/util/Map;" +
+                "Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/Map;", true), 2);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSortedMap", "(Ljava/util/SortedMap;" +
+                "Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/SortedMap;", true), 2);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedNavigableMap", "(Ljava/util" +
+                "/NavigableMap;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/NavigableMap;", true), 2);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSet", "(Ljava/util/Set;" +
+                "Ljava/lang/Class;)Ljava/util/Set;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSortedSet", "(Ljava/util/SortedSet;" +
+                "Ljava/lang/Class;)Ljava/util/SortedSet;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedNavigableSet", "(Ljava/util" +
+                "/NavigableSet;Ljava/lang/Class;)Ljava/util/NavigableSet;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedQueue", "(Ljava/util/Queue;" +
+                "Ljava/lang/Class;)Ljava/util/Queue;", true), 1);
+        // todo add Arrays.asList etc.
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "keySet", "()Ljava/util/Set;", false), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "entrySet", "()Ljava/util/Set;", false), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "values", "()Ljava/util/Collection;", false), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juLists, "subList", "(II)Ljava/util/List;", false), 2);
+
+        IMMUTABLE_RETURNERS.addAll(Arrays.asList("Ljava/util/Arrays$ArrayList;", "Ljava/util" +
+                "/Collections$UnmodifiableList;", "Ljava/util/Collections$UnmodifiableMap;", "Ljava/util" +
+                        "/Collections$UnmodifiableSortedMap;", "Ljava/util/Collections$UnmodifiableSet;", "Ljava/util" +
+                                "/Collections$UnmodifiableNavigableMap;", "Ljava/util/Collections$UnmodifiableSortedSet;", "Ljava" +
+                                        "/util/Collections$UnmodifiableNavigableSet;"));
+    }
+
     private final BugReporter bugReporter;
     private final HashSet<XMethod> exposingMethods;
     private final HashSet<XMethod> synchronizedMethods;
@@ -90,7 +158,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     private final MultiMap<XField, XMethod> declaredInheritedFieldAccessingMethods;
     private final MultiMap<XField, XMethod> potentialObjectBugContainingMethods;
     private final MultiMap<XField, XMethod> potentialInheritedBugContainingMethods;
-
     // Backing collections
     private final Set<XField> badBackingCollections;
     private final Set<XField> inheritableBackingCollections;
@@ -103,71 +170,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     private final MultiMap<XField, Method> declaredFieldExposingMethods;
     private final MultiMap<XField, XField> collectionsBackedByPublicFields;
     private final MultiMap<XField, XMethod> declaredInheritedCollectionFieldAccessingMethods;
-
-    static {
-        String juCollections = ClassName.toSlashedClassName(java.util.Collections.class);
-        String juMaps = ClassName.toSlashedClassName(Map.class);
-        String juLists = ClassName.toSlashedClassName(java.util.List.class);
-
-        //synchronized collections
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedCollection", "(Ljava/util/Collection;)Ljava/util/Collection;",
-                true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedList", "(Ljava/util/List;)Ljava/util/List;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedMap", "(Ljava/util/Map;)Ljava/util/Map;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSortedMap", "(Ljava/util/SortedMap;)Ljava/util/SortedMap;",
-                true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedNavigableMap",
-                "(Ljava/util/NavigableMap;)Ljava/util/NavigableMap;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSet", "(Ljava/util/Set;)Ljava/util/Set;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSortedSet", "(Ljava/util/SortedSet;)Ljava/util/SortedSet;",
-                true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedNavigableSet",
-                "(Ljava/util/NavigableSet;)Ljava/util/NavigableSet;", true), 0);
-        // unmodifiable collections
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableCollection", "(Ljava/util/Collection;)Ljava/util/Collection;",
-                true), 0);
-        // These static methods return an immutable value on the stack, therefore handled differently; leaving it here for reference
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableList", "(Ljava/util/List;)Ljava/util/List;", true), 0);
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableMap", "(Ljava/util/Map;)Ljava/util/Map;", true), 0);
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableSortedMap", "(Ljava/util/SortedMap;)Ljava/util/SortedMap;", true), 0);
-        //  Map.entry(new MethodDescriptor(juCollections, "unmodifiableNavigableMap", "(Ljava/util/NavigableMap;)Ljava/util/NavigableMap;", true),0), //Ljava/util/Collections$UnmodifiableNavigableMap;
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;", true), 0);
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableSortedSet", "(Ljava/util/SortedSet;)Ljava/util/SortedSet;", true), 0);
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableNavigableSet", "(Ljava/util/NavigableSet;)Ljava/util/NavigableSet;", true), 0);
-        // checked collections
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedCollection",
-                "(Ljava/util/Collection;Ljava/lang/Class;)Ljava/util/Collection;", true), 1);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedList", "(Ljava/util/List;Ljava/lang/Class;)Ljava/util/List;", true),
-                1);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedMap",
-                "(Ljava/util/Map;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/Map;", true), 2);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSortedMap",
-                "(Ljava/util/SortedMap;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/SortedMap;", true), 2);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedNavigableMap",
-                "(Ljava/util/NavigableMap;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/NavigableMap;", true), 2);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSet", "(Ljava/util/Set;Ljava/lang/Class;)Ljava/util/Set;", true), 1);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSortedSet",
-                "(Ljava/util/SortedSet;Ljava/lang/Class;)Ljava/util/SortedSet;", true), 1);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedNavigableSet",
-                "(Ljava/util/NavigableSet;Ljava/lang/Class;)Ljava/util/NavigableSet;", true), 1);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedQueue", "(Ljava/util/Queue;Ljava/lang/Class;)Ljava/util/Queue;",
-                true), 1);
-        // todo add Arrays.asList etc.
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "keySet", "()Ljava/util/Set;", false), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "entrySet", "()Ljava/util/Set;", false), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "values", "()Ljava/util/Collection;", false), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juLists, "subList", "(II)Ljava/util/List;", false), 2);
-
-        IMMUTABLE_RETURNERS.addAll(Arrays.asList(
-                "Ljava/util/Arrays$ArrayList;",
-                "Ljava/util/Collections$UnmodifiableList;",
-                "Ljava/util/Collections$UnmodifiableMap;",
-                "Ljava/util/Collections$UnmodifiableSortedMap;",
-                "Ljava/util/Collections$UnmodifiableSet;",
-                "Ljava/util/Collections$UnmodifiableNavigableMap;",
-                "Ljava/util/Collections$UnmodifiableSortedSet;",
-                "Ljava/util/Collections$UnmodifiableNavigableSet;"));
-    }
 
     public FindSynchronizationLock(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -196,6 +198,17 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         this.declaredInheritedCollectionFieldAccessingMethods = new MultiMap<>(HashSet.class);
     }
 
+    private static boolean isWrapperImplementation(MethodDescriptor methodDescriptor) {
+        return WRAPPER_IMPLEMENTATIONS.containsKey(methodDescriptor);
+    }
+
+    private static Integer getStackOffset(MethodDescriptor methodDescriptor) {
+        return WRAPPER_IMPLEMENTATIONS.get(methodDescriptor);
+    }
+
+    private static boolean isImmutableReturner(String signature) {
+        return IMMUTABLE_RETURNERS.contains(signature);
+    }
 
     @Override
     public void visit(Method obj) {
@@ -253,7 +266,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
     @Override
     public void visit(Field obj) {
-        XField xField = XFactory.createXField(getClassContext().getJavaClass(), obj);
+        XField xField = getXField();
         if (isCollection(xField)) {
             try {
                 if (isInherited(xField)) {
@@ -261,7 +274,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                         badBackingCollections.add(xField);
                     }
 
-                    findExposureInHierarchy(xField).forEach(method -> collectionAccessorsInHierarchy.add(xField, method));
+                    findExposureInHierarchy(xField).forEach(method -> collectionAccessorsInHierarchy
+                            .add(xField, method));
                 } else {
                     if (xField.isPublic()) {
                         badBackingCollections.add(xField);
@@ -300,8 +314,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                             }
                         }
 
-                        findExposureInHierarchy(lockObject).forEach(
-                                method -> lockAccessorsInHierarchy.add(lockObject, method));
+                        findExposureInHierarchy(lockObject).forEach(method -> lockAccessorsInHierarchy
+                                .add(lockObject, method));
 
                         if (lockObject.isProtected() || lockObject.isPublic() || !lockObject.isPrivate()) {
                             potentialObjectBugContainingMethods.add(lockObject, xMethod);
@@ -410,20 +424,25 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
         for (XField lock : lockUsingMethodsInHierarchy.keySet()) {
             if (!declaredInheritedFieldAccessingMethods.get(lock).isEmpty()) {
-                reportExposingLockObjectBugs(lock, lockUsingMethodsInHierarchy.get(lock), declaredInheritedFieldAccessingMethods.get(lock));
+                reportExposingLockObjectBugs(
+                        lock,
+                        lockUsingMethodsInHierarchy.get(lock),
+                        declaredInheritedFieldAccessingMethods.get(lock));
             }
         }
 
         // backing collections
         MultiMap<XField, XField> allBackingCollections = assignedCollectionFields;
         for (XField field : assignedWrappedCollectionFields.keySet()) {
-            assignedWrappedCollectionFields.get(field).forEach(backingField -> allBackingCollections.add(field, backingField));
+            assignedWrappedCollectionFields.get(field).forEach(backingField -> allBackingCollections
+                    .add(field, backingField));
         }
 
         for (XField lock : declaredCollectionLockObjects.keySet()) {
             for (XField backingCollection : allBackingCollections.get(lock)) {
                 if (declaredCollectionAccessors.containsKey(backingCollection)) {
-                    reportAccessibleBackingCollectionBug(lock, declaredCollectionLockObjects, backingCollection, declaredCollectionAccessors);
+                    reportAccessibleBackingCollectionBug(lock, declaredCollectionLockObjects, backingCollection,
+                            declaredCollectionAccessors);
                 } else if (inheritableBackingCollections.contains(backingCollection)) {
                     reportInheritedBackingCollectionBug(lock, declaredCollectionLockObjects, backingCollection);
                 } else if (badBackingCollections.contains(backingCollection)) { // if (backingCollection.isPublic()) {
@@ -435,9 +454,11 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         for (XField lock : inheritedCollectionLockObjects.keySet()) {
             for (XField backingCollection : allBackingCollections.get(lock)) {
                 if (declaredCollectionAccessors.containsKey(backingCollection)) {
-                    reportAccessibleBackingCollectionBug(lock, inheritedCollectionLockObjects, backingCollection, declaredCollectionAccessors);
+                    reportAccessibleBackingCollectionBug(lock, inheritedCollectionLockObjects, backingCollection,
+                            declaredCollectionAccessors);
                 } else if (collectionAccessorsInHierarchy.containsKey(backingCollection)) {
-                    reportAccessibleBackingCollectionBug(lock, inheritedCollectionLockObjects, backingCollection, collectionAccessorsInHierarchy);
+                    reportAccessibleBackingCollectionBug(lock, inheritedCollectionLockObjects, backingCollection,
+                            collectionAccessorsInHierarchy);
                 } else if (badBackingCollections.contains(backingCollection)) {
                     reportBadCollectionObjectBugs(lock, declaredCollectionLockObjects, backingCollection);
                 }
@@ -445,18 +466,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
 
         clearState();
-    }
-
-    private static boolean isWrapperImplementation(MethodDescriptor methodDescriptor) {
-        return WRAPPER_IMPLEMENTATIONS.containsKey(methodDescriptor);
-    }
-
-    private static Integer getStackOffset(MethodDescriptor methodDescriptor) {
-        return WRAPPER_IMPLEMENTATIONS.get(methodDescriptor);
-    }
-
-    private static boolean isImmutableReturner(String signature) {
-        return IMMUTABLE_RETURNERS.contains(signature);
     }
 
     /*
@@ -479,7 +488,9 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     }
 
     private boolean isMethodCall(Instruction instruction) {
-        return (instruction instanceof INVOKESTATIC) || (instruction instanceof INVOKESPECIAL) || (instruction instanceof INVOKEVIRTUAL)
+        return (instruction instanceof INVOKESTATIC)
+                || (instruction instanceof INVOKESPECIAL)
+                || (instruction instanceof INVOKEVIRTUAL)
                 || (instruction instanceof INVOKEINTERFACE);
     }
 
@@ -514,17 +525,21 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         return !getDottedClassName().equals(lockObject.getClassName().split("\\$")[0]);
     }
 
-    private void analyzeWrappedField(Method obj, ClassContext classContext, Location location, InstructionHandle handle, XField xfield,
-            Integer stackOffset) {
+    private void analyzeWrappedField(Method obj, ClassContext classContext, Location location,
+            InstructionHandle handle, XField xfield, Integer stackOffset) {
         InstructionHandle prevHandle = location.getBasicBlock().getPredecessorOf(handle);
         Instruction prevInstruction = prevHandle.getInstruction();
         if (isMethodCall(prevInstruction)) { // collection wrappers
-            XField wrappedField = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), obj, prevHandle.getPosition()).getStackItem(stackOffset)
-                    .getXField();
-            // todo this could be  analyzed further
-            if (wrappedField != null && isCollection(wrappedField)) {
-                assignedWrappedCollectionFields.add(xfield, wrappedField);
-                assignedWrappedCollectionFields.get(wrappedField).forEach(f -> assignedWrappedCollectionFields.add(xfield, f));
+            OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), obj, prevHandle.getPosition());
+            if (stack.getStackDepth() > stackOffset) {
+                XField wrappedField =
+                        stack
+                                .getStackItem(stackOffset)
+                                .getXField();
+                if (wrappedField != null && isCollection(wrappedField)) {
+                    assignedWrappedCollectionFields.add(xfield, wrappedField);
+                    assignedWrappedCollectionFields.get(wrappedField).forEach(f -> assignedWrappedCollectionFields.add(xfield, f));
+                }
             }
         }
     }
@@ -547,27 +562,32 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                     continue;
                 }
 
-                OpcodeStack.Item item = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), obj, handle.getPosition()).getStackItem(0);
-                XMethod returnValueOf = item.getReturnValueOf();
-                XField assignedField = item.getXField();
 
-                if (returnValueOf != null) {
-                    if (item.isNewlyAllocated()) { // reference not stored
-                        continue;
-                    }
+                OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), obj, handle.getPosition());
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    XMethod returnValueOf = item.getReturnValueOf();
+                    XField assignedField = item.getXField();
 
-                    if (isWrapperImplementation(returnValueOf.getMethodDescriptor())) {
-                        // note The prev instruction isn't necessarily the one that assigns the field
-                        analyzeWrappedField(obj, classContext, location, handle, xfield, getStackOffset(returnValueOf.getMethodDescriptor()));
-                    }
-                } else if (assignedField != null) {
-                    if (isCollection(assignedField)) {
-                        assignedCollectionFields.add(xfield, assignedField);
-                        assignedCollectionFields.get(assignedField).forEach(f -> assignedCollectionFields.add(xfield, f));
-                    }
-                } else {
-                    if (isImmutableReturner(item.getSignature())) {
-                        analyzeWrappedField(obj, classContext, location, handle, xfield, 0);
+                    if (returnValueOf != null) {
+                        if (item.isNewlyAllocated()) {
+                            continue;
+                        }
+
+                        if (isWrapperImplementation(returnValueOf.getMethodDescriptor())) {
+                            analyzeWrappedField(obj, classContext, location, handle, xfield,
+                                    getStackOffset(returnValueOf.getMethodDescriptor()));
+                        }
+                    } else if (assignedField != null) {
+                        if (isCollection(assignedField)) {
+                            assignedCollectionFields.add(xfield, assignedField);
+                            assignedCollectionFields.get(assignedField).forEach(f -> assignedCollectionFields.add(xfield,
+                                    f));
+                        }
+                    } else {
+                        if (isImmutableReturner(item.getSignature())) {
+                            analyzeWrappedField(obj, classContext, location, handle, xfield, 0);
+                        }
                     }
                 }
             }
@@ -624,7 +644,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                 }
 
                 try {
-                    ClassContext classContext = new ClassContext(declaringClass, AnalysisContext.currentAnalysisContext());
+                    ClassContext classContext = new ClassContext(declaringClass,
+                            AnalysisContext.currentAnalysisContext());
                     ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
                     for (Location location : classContext.getCFG(possibleAccessorMethod).orderedLocations()) {
@@ -642,14 +663,14 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                         }
 
                         if (instruction instanceof ARETURN) {
-                            OpcodeStack currentStack = OpcodeStackScanner.getStackAt(
-                                    classContext.getJavaClass(), possibleAccessorMethod, handle
-                                            .getPosition());
-                            XField xField = currentStack.getStackItem(0).getXField();
-
-                            if (isSameAsLockObject(xField, lockObject) && !xField.isPublic()) {
-                                XMethod unsafeXMethod = XFactory.createXMethod(declaringClass, possibleAccessorMethod);
-                                unsafeMethods.add(unsafeXMethod);
+                            OpcodeStack currentStack = OpcodeStackScanner
+                                    .getStackAt(classContext.getJavaClass(), possibleAccessorMethod, handle.getPosition());
+                            if (currentStack.getStackDepth() > 0) {
+                                XField xField = currentStack.getStackItem(0).getXField();
+                                if (isSameAsLockObject(xField, lockObject) && !xField.isPublic()) {
+                                    XMethod unsafeXMethod = XFactory.createXMethod(declaringClass, possibleAccessorMethod);
+                                    unsafeMethods.add(unsafeXMethod);
+                                }
                             }
                         }
 
@@ -672,7 +693,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                 }
 
                 try {
-                    ClassContext classContext = new ClassContext(declaringClass, AnalysisContext.currentAnalysisContext());
+                    ClassContext classContext = new ClassContext(declaringClass,
+                            AnalysisContext.currentAnalysisContext());
                     CFG cfg = classContext.getCFG(possibleAccessorMethod);
 
                     for (Location location : cfg.orderedLocations()) {
@@ -680,13 +702,15 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                         Instruction instruction = handle.getInstruction();
 
                         if (instruction.getOpcode() == Const.MONITORENTER) {
-                            OpcodeStack currentStack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), possibleAccessorMethod, handle
-                                    .getPosition());
-                            OpcodeStack.Item lock = currentStack.getStackItem(0);
-                            XField lockObject = lock.getXField();
+                            OpcodeStack currentStack = OpcodeStackScanner
+                                    .getStackAt(classContext.getJavaClass(), possibleAccessorMethod, handle.getPosition());
+                            if (currentStack.getStackDepth() > 0) {
+                                OpcodeStack.Item lock = currentStack.getStackItem(0);
+                                XField lockObject = lock.getXField();
 
-                            if (isSameAsLockObject(field, lockObject)) {
-                                methodsUsingFieldAsLock.add(XFactory.createXMethod(declaringClass, possibleAccessorMethod));
+                                if (isSameAsLockObject(field, lockObject)) {
+                                    methodsUsingFieldAsLock.add(XFactory.createXMethod(declaringClass, possibleAccessorMethod));
+                                }
                             }
                         }
                     }
@@ -704,7 +728,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         return methods.stream().sorted(Comparator.comparing(ClassMember::getName)).map(Object::toString).collect(Collectors.joining(",\n"));
     }
 
-    private void reportExposingLockObjectBugs(XField lock, Collection<XMethod> lockUsingMethods, Collection<XMethod> exposingMethods) {
+    private void reportExposingLockObjectBugs(XField lock, Collection<XMethod> lockUsingMethods,
+            Collection<XMethod> exposingMethods) {
         String exposingMethodsMessage = buildMethodsMessage(exposingMethods);
         for (XMethod lockUsingMethod : lockUsingMethods) {
             bugReporter.reportBug(new BugInstance(
@@ -748,32 +773,35 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
     }
 
-    private void reportAccessibleBackingCollectionBug(XField lock, MultiMap<XField, BugInfo> bugContainingMethods, XField backingCollection,
+    private void reportAccessibleBackingCollectionBug(XField lock, MultiMap<XField, BugInfo> bugContainingMethods,
+            XField backingCollection,
             MultiMap<XField, XMethod> collectionAccessors) {
         if (collectionAccessors.containsKey(backingCollection)) {
             String exposingMethods = buildMethodsMessage(collectionAccessors.get(backingCollection));
             for (BugInfo bugInfo : bugContainingMethods.get(lock)) {
-                bugReporter.reportBug(
-                        bugInfo.createBugInstance(this,
+                bugReporter.reportBug(bugInfo
+                        .createBugInstance(this,
                                 "SABC_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION",
                                 lock, backingCollection, exposingMethods));
             }
         }
     }
 
-    private void reportInheritedBackingCollectionBug(XField lock, MultiMap<XField, BugInfo> bugContainingMethods, XField backingCollection) {
+    private void reportInheritedBackingCollectionBug(XField lock, MultiMap<XField, BugInfo> bugContainingMethods,
+            XField backingCollection) {
         for (BugInfo bugInfo : bugContainingMethods.get(lock)) {
-            bugReporter.reportBug(
-                    bugInfo.createBugInstance(this,
+            bugReporter.reportBug(bugInfo
+                    .createBugInstance(this,
                             "SABC_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION",
                             lock, backingCollection));
         }
     }
 
-    private void reportBadCollectionObjectBugs(XField lock, MultiMap<XField, BugInfo> bugContainingMethods, XField backingCollection) {
+    private void reportBadCollectionObjectBugs(XField lock, MultiMap<XField, BugInfo> bugContainingMethods,
+            XField backingCollection) {
         for (BugInfo bugInfo : bugContainingMethods.get(lock)) {
-            bugReporter.reportBug(
-                    bugInfo.createBugInstance(this,
+            bugReporter.reportBug(bugInfo
+                    .createBugInstance(this,
                             "SABC_BAD_SYNCHRONIZATION_WITH_BACKING_COLLECTION",
                             lock, backingCollection));
         }
@@ -805,7 +833,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         inheritableBackingCollections.clear();
     }
 
-    private class BugInfo {
+    private static class BugInfo {
         private final XMethod inMethod;
         private final SourceLineAnnotation sourceLineAnnotation;
 
