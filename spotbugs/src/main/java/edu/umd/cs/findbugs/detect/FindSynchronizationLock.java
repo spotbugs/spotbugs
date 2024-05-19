@@ -90,7 +90,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
         XMethod xMethod = getXMethod();
         if (xMethod.isPublic() && xMethod.isSynchronized()) {
-            if (xMethod.isStatic()) {
+            if (xMethod.isStatic() && !(getClassName().contains("$") && getThisClass().isPrivate())) {
                 bugReporter.reportBug(new BugInstance(this,
                         "US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION", NORMAL_PRIORITY).addClassAndMethod(this));
             }
