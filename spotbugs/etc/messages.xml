@@ -9550,5 +9550,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
-  <BugCode abbrev="PFL">Use private final lock objects for synchronization</BugCode>
+  <BugCode abbrev="US">Use private final lock objects for synchronization</BugCode>
 </MessageCollection>
