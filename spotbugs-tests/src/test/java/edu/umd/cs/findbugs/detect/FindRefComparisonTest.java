@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
@@ -53,7 +52,6 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
                 .atLine(line)
                 .withConfidence(Confidence.HIGH)
                 .build();
-        BugCollection bugCollection = getBugCollection();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
