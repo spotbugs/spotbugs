@@ -54,8 +54,6 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
                 .withConfidence(Confidence.HIGH)
                 .build();
         BugCollection bugCollection = getBugCollection();
-        System.out.println("METHOD_NAMES: ");
-        bugCollection.forEach(bug -> System.out.println(bug.getPrimaryMethod().getMethodName()));
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
