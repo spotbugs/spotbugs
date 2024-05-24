@@ -87,7 +87,7 @@ public class SwitchHandler {
         int size = switchOffsetStack.size();
         while (--size >= 0) {
             SwitchDetails existingDetail = switchOffsetStack.get(size);
-            if (details.switchPC > (existingDetail.switchPC + existingDetail.swOffsets[existingDetail.swOffsets.length - 1])) {
+            if (details.switchPC > (existingDetail.switchPC + existingDetail.getLastOffset())) {
                 switchOffsetStack.remove(size);
             }
         }
@@ -289,6 +289,10 @@ public class SwitchHandler {
                 return Short.MIN_VALUE;
             }
             return switchPC + defaultOffset;
+        }
+
+        public int getLastOffset() {
+            return swOffsets.length > 0 ? swOffsets[swOffsets.length - 1] : 0;
         }
     }
 }
