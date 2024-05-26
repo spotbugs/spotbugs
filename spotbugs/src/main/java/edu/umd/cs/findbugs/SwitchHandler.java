@@ -291,7 +291,7 @@ public class SwitchHandler {
             return switchPC + defaultOffset;
         }
 
-        public int getLastOffset() {
+        private int getLastOffset() {
             return swOffsets.length > 0 ? swOffsets[swOffsets.length - 1] : 0;
         }
     }
