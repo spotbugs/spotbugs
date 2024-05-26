@@ -7,20 +7,24 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2024-??-??
 ### Fixed
+- Do not report BC_UNCONFIRMED_CAST for Java 21's type switches when the switch instruction is TABLESWITCH ([#2782](https://github.com/spotbugs/spotbugs/issues/2782))
+
+### Added
+- New detector `FindSynchronizationLock` and introduced new bug types:
+  - `US_UNSAFE_METHOD_SYNCHRONIZATION` is reported when using synchronized methods with the class' accessible intrinsic lock,
+  - `US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION` is reported when using static synchronized methods with the class' exposed intrinsic lock,
+  - `US_UNSAFE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is visible from the outside,
+  - `US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside,
+  - `US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is can be altered by subclasses,
+  - `US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is later exposed in the subclasses.
+    (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code#:~:text=LCK00%2DJ%2DEX2,lock%20object%20inadvertently.))
+
+## 4.8.5 - 2024-05-03
+### Fixed
 - Fix FP `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` with eager instances ([#2932](https://github.com/spotbugs/spotbugs/issues/2932))
 - Fix FPs when looking for multiple initialization of Singletons ([#2934](https://github.com/spotbugs/spotbugs/issues/2934))
 - Do not report DLS_DEAD_LOCAL_STORE for Java 21's type switches when switch instruction is TABLESWITCH([#2736](https://github.com/spotbugs/spotbugs/issues/2736))
 - Fix FP `SE_BAD_FIELD` for record fields ([#2935]https://github.com/spotbugs/spotbugs/issues/2935)
-
-### Added
-- New detector `FindSynchronizationLock` and introduced new bug types:
-    - `US_UNSAFE_METHOD_SYNCHRONIZATION` is reported when using synchronized methods with the class' accessible intrinsic lock,
-    - `US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION` is reported when using static synchronized methods with the class' exposed intrinsic lock,
-    - `US_UNSAFE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is visible from the outside,
-    - `US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside,
-    - `US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is can be altered by subclasses,
-    - `US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is later exposed in the subclasses.
-      (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code#:~:text=LCK00%2DJ%2DEX2,lock%20object%20inadvertently.))
 
 ## 4.8.4 - 2024-04-07
 ### Fixed
