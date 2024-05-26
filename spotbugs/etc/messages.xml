@@ -9284,7 +9284,7 @@ Using floating-point variables should not be used as loop counters, as they are 
         Synchronized methods use the class object as a monitor (that is, its intrinsic lock), thus an attacker, if it has access to the object,
         can exploit the system by indefinitely locking the object, leading to a Denial of Service (DoS) scenario.
 
-        This can be resolved in two ways: either by using a private final lock object or by restricting access to the class.
+        This can be resolved in two ways: either by using a private final lock object with block synchronization or by restricting access to the class.
         Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
 
         <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
@@ -9300,7 +9300,7 @@ Using floating-point variables should not be used as loop counters, as they are 
         if it has access to an instance of the class or the subclass, can gain access to the class object using <code>getClass()</code> and
         indefinitely lock the object, leading to a Denial of Service (DoS) scenario.
 
-        This can be resolved in two ways: either by using a private static final lock object or by restricting access to the class.
+        This can be resolved in two ways: either by using a private static final lock object with block synchronization or by restricting access to the class.
         Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
 
         <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
@@ -9340,7 +9340,7 @@ Using floating-point variables should not be used as loop counters, as they are 
         allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
         Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
 
-        This can be resolved in two ways: either by using a private final lock object or by removing or restricting the visibility of the functions, which update or return the lock object.
+        This can be resolved in two ways: either by using another object as a private final lock object, or by removing or restricting the visibility of the functions, which update or return the lock object.
         Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
 
         <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
@@ -9381,7 +9381,7 @@ Using floating-point variables should not be used as loop counters, as they are 
         allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
         Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
 
-        This can be resolved in two ways: either by using a private final lock object or by restricting access to the lock object.
+        This can be resolved in two ways: either by restricting access to the current lock object or using another private final object as lock object.
         Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
 
         <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
@@ -9406,7 +9406,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION">
-    <ShortDescription>Do not synchronize on a collection view, when the backing collection when it is made accessible through methods</ShortDescription>
+    <ShortDescription>Do not synchronize on a collection view, when the backing collection is accessible through methods</ShortDescription>
     <LongDescription>The collection lock object {2}, used in method {1} at line {4}, has {3} as a backing collection that is made accessible from outside class {0}, by method(s) {5}.</LongDescription>
     <Details>
       <![CDATA[<p>
