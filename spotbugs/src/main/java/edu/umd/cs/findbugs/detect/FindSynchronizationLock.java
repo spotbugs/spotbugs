@@ -80,77 +80,64 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         String juLists = ClassName.toSlashedClassName(java.util.List.class);
 
         //synchronized collections
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedCollection", "(Ljava/util" +
-                "/Collection;)Ljava/util/Collection;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedList", "(Ljava/util/List;)" +
-                "Ljava/util/List;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedMap", "(Ljava/util/Map;)" +
-                "Ljava/util/Map;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSortedMap", "(Ljava/util" +
-                "/SortedMap;)Ljava/util/SortedMap;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedNavigableMap", "(Ljava/util" +
-                "/NavigableMap;)Ljava/util/NavigableMap;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSet", "(Ljava/util/Set;)" +
-                "Ljava/util/Set;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSortedSet", "(Ljava/util" +
-                "/SortedSet;)Ljava/util/SortedSet;", true), 0);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedNavigableSet", "(Ljava/util" +
-                "/NavigableSet;)Ljava/util/NavigableSet;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedCollection",
+                "(Ljava/util/Collection;)Ljava/util/Collection;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedList",
+                "(Ljava/util/List;)Ljava/util/List;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedMap",
+                "(Ljava/util/Map;)Ljava/util/Map;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSortedMap",
+                "(Ljava/util/SortedMap;)Ljava/util/SortedMap;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedNavigableMap",
+                "(Ljava/util/NavigableMap;)Ljava/util/NavigableMap;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSet",
+                "(Ljava/util/Set;)Ljava/util/Set;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedSortedSet",
+                "(Ljava/util/SortedSet;)Ljava/util/SortedSet;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedNavigableSet",
+                "(Ljava/util/NavigableSet;)Ljava/util/NavigableSet;", true), 0);
         // unmodifiable collections
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableCollection", "(Ljava/util" +
-                "/Collection;)Ljava/util/Collection;", true), 0);
-        // These static methods return an immutable value on the stack, therefore handled differently; leaving it
-        // here for reference
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableList", "(Ljava/util/List;)
-        //  Ljava/util/List;", true), 0);
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableMap", "(Ljava/util/Map;)
-        //  Ljava/util/Map;", true), 0);
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableSortedMap", "
-        //  (Ljava/util/SortedMap;)Ljava/util/SortedMap;", true), 0);
-        //  Map.entry(new MethodDescriptor(juCollections, "unmodifiableNavigableMap", "(Ljava/util/NavigableMap;)
-        //  Ljava/util/NavigableMap;", true),0), //Ljava/util/Collections$UnmodifiableNavigableMap;
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableSet", "(Ljava/util/Set;)
-        //  Ljava/util/Set;", true), 0);
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableSortedSet", "
-        //  (Ljava/util/SortedSet;)Ljava/util/SortedSet;", true), 0);
-        //  WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableNavigableSet", "
-        //  (Ljava/util/NavigableSet;)Ljava/util/NavigableSet;", true), 0);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "unmodifiableCollection",
+                "(Ljava/util/Collection;)Ljava/util/Collection;", true), 0);
         // checked collections
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedCollection", "(Ljava/util/Collection;" +
-                "Ljava/lang/Class;)Ljava/util/Collection;", true), 1);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedList", "(Ljava/util/List;" +
-                "Ljava/lang/Class;)Ljava/util/List;", true), 1);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedMap", "(Ljava/util/Map;" +
-                "Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/Map;", true), 2);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSortedMap", "(Ljava/util/SortedMap;" +
-                "Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/SortedMap;", true), 2);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedNavigableMap", "(Ljava/util" +
-                "/NavigableMap;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/NavigableMap;", true), 2);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSet", "(Ljava/util/Set;" +
-                "Ljava/lang/Class;)Ljava/util/Set;", true), 1);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSortedSet", "(Ljava/util/SortedSet;" +
-                "Ljava/lang/Class;)Ljava/util/SortedSet;", true), 1);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedNavigableSet", "(Ljava/util" +
-                "/NavigableSet;Ljava/lang/Class;)Ljava/util/NavigableSet;", true), 1);
-        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedQueue", "(Ljava/util/Queue;" +
-                "Ljava/lang/Class;)Ljava/util/Queue;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedCollection",
+                "(Ljava/util/Collection;Ljava/lang/Class;)Ljava/util/Collection;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedList",
+                "(Ljava/util/List;Ljava/lang/Class;)Ljava/util/List;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedMap",
+                "(Ljava/util/Map;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/Map;", true), 2);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSortedMap",
+                "(Ljava/util/SortedMap;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/SortedMap;", true), 2);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedNavigableMap",
+                "(Ljava/util/NavigableMap;Ljava/lang/Class;Ljava/lang/Class;)Ljava/util/NavigableMap;", true), 2);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSet",
+                "(Ljava/util/Set;Ljava/lang/Class;)Ljava/util/Set;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedSortedSet",
+                "(Ljava/util/SortedSet;Ljava/lang/Class;)Ljava/util/SortedSet;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedNavigableSet",
+                "(Ljava/util/NavigableSet;Ljava/lang/Class;)Ljava/util/NavigableSet;", true), 1);
+        WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "checkedQueue",
+                "(Ljava/util/Queue;Ljava/lang/Class;)Ljava/util/Queue;", true), 1);
         WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "keySet", "()Ljava/util/Set;", false), 0);
         WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "entrySet", "()Ljava/util/Set;", false), 0);
         WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juMaps, "values", "()Ljava/util/Collection;", false), 0);
         WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juLists, "subList", "(II)Ljava/util/List;", false), 2);
 
-        IMMUTABLE_RETURNERS.addAll(Arrays.asList("Ljava/util/Arrays$ArrayList;", "Ljava/util" +
-                "/Collections$UnmodifiableList;", "Ljava/util/Collections$UnmodifiableMap;", "Ljava/util" +
-                        "/Collections$UnmodifiableSortedMap;", "Ljava/util/Collections$UnmodifiableSet;", "Ljava/util" +
-                                "/Collections$UnmodifiableNavigableMap;", "Ljava/util/Collections$UnmodifiableSortedSet;", "Ljava" +
-                                        "/util/Collections$UnmodifiableNavigableSet;"));
+        IMMUTABLE_RETURNERS.addAll(Arrays.asList("Ljava/util/Arrays$ArrayList;",
+                "Ljava/util/Collections$UnmodifiableList;",
+                "Ljava/util/Collections$UnmodifiableMap;",
+                "Ljava/util/Collections$UnmodifiableSortedMap;",
+                "Ljava/util/Collections$UnmodifiableSet;",
+                "Ljava/util/Collections$UnmodifiableNavigableMap;",
+                "Ljava/util/Collections$UnmodifiableSortedSet;",
+                "Ljava/util/Collections$UnmodifiableNavigableSet;"));
     }
 
     private final BugReporter bugReporter;
-    private final HashSet<XMethod> exposingMethods;
-    private final HashSet<XMethod> synchronizedMethods;
-    private final HashMap<XField, XMethod> declaredLockObjects;
-    private final HashMap<XField, XMethod> inheritedLockObjects;
+    private final Set<XMethod> exposingMethods;
+    private final Set<XMethod> synchronizedMethods;
+    private final Map<XField, XMethod> declaredLockObjects;
+    private final Map<XField, XMethod> inheritedLockObjects;
     private final MultiMap<XField, XMethod> declaredLockAccessors;
     private final MultiMap<XField, XMethod> lockAccessorsInHierarchy;
     private final MultiMap<XField, XMethod> lockUsingMethodsInHierarchy;
@@ -225,7 +212,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         if (xMethod.isPublic() && xMethod.isSynchronized()) {
             if (xMethod.isStatic()) {
                 bugReporter.reportBug(new BugInstance(
-                        this, "PFL_BAD_STATIC_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS", NORMAL_PRIORITY)
+                        this, "US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION", NORMAL_PRIORITY)
                         .addClassAndMethod(this));
             }
             synchronizedMethods.add(xMethod);
@@ -233,8 +220,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
         String javaStyleClassType = "L" + getClassName() + ";";
         SignatureParser signature = new SignatureParser(xMethod.getSignature());
-        if ("readResolve".equals(obj.getName())
-                && "()Ljava/lang/Object;".equals(obj.getSignature())
+        if ("readResolve".equals(obj.getName()) && "()Ljava/lang/Object;".equals(obj.getSignature())
                 && Subtypes2.instanceOf(getThisClass(), "java.io.Serializable")) {
             return;
         }
@@ -294,7 +280,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.MONITORENTER) {
+        if (seen == Const.MONITORENTER && stack.getStackDepth() > 0) {
             OpcodeStack.Item lock = stack.getStackItem(0);
             XField lockObject = lock.getXField();
 
@@ -395,7 +381,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             String exposingMethodsMessage = buildMethodsMessage(exposingMethods);
             for (XMethod synchronizedMethod : synchronizedMethods) {
                 bugReporter.reportBug(new BugInstance(
-                        this, "PFL_BAD_METHOD_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS", NORMAL_PRIORITY)
+                        this, "US_UNSAFE_METHOD_SYNCHRONIZATION", NORMAL_PRIORITY)
                         .addClassAndMethod(synchronizedMethod)
                         .addString(exposingMethodsMessage));
             }
@@ -423,10 +409,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
         for (XField lock : lockUsingMethodsInHierarchy.keySet()) {
             if (!declaredInheritedFieldAccessingMethods.get(lock).isEmpty()) {
-                reportExposingLockObjectBugs(
-                        lock,
-                        lockUsingMethodsInHierarchy.get(lock),
-                        declaredInheritedFieldAccessingMethods.get(lock));
+                reportExposingLockObjectBugs(lock, lockUsingMethodsInHierarchy.get(lock), declaredInheritedFieldAccessingMethods.get(lock));
             }
         }
 
@@ -444,7 +427,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                             declaredCollectionAccessors);
                 } else if (inheritableBackingCollections.contains(backingCollection)) {
                     reportInheritedBackingCollectionBug(lock, declaredCollectionLockObjects, backingCollection);
-                } else if (badBackingCollections.contains(backingCollection)) { // if (backingCollection.isPublic()) {
+                } else if (badBackingCollections.contains(backingCollection)) {
                     reportBadCollectionObjectBugs(lock, declaredCollectionLockObjects, backingCollection);
                 }
             }
@@ -467,9 +450,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         clearState();
     }
 
-    /*
-     Reference arrays and primitive collections are not recognized as collections.
-     */
     private boolean isCollection(Type type) {
         if (type instanceof ReferenceType) {
             ReferenceType rType = (ReferenceType) type;
@@ -501,7 +481,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         return Const.CONSTRUCTOR_NAME.equals(methodName) || Const.STATIC_INITIALIZER_NAME.equals(methodName);
     }
 
-    private boolean isMethodNotInteresting(Method method, Method[] ownMethods) {
+    private boolean isOwnMethod(Method method, Method[] ownMethods) {
         if (ownMethods.length > 0 && Arrays.asList(ownMethods).contains(method)) {
             return true;
         }
@@ -528,7 +508,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             InstructionHandle handle, XField xfield, Integer stackOffset) {
         InstructionHandle prevHandle = location.getBasicBlock().getPredecessorOf(handle);
         Instruction prevInstruction = prevHandle.getInstruction();
-        if (isMethodCall(prevInstruction)) { // collection wrappers
+        if (isMethodCall(prevInstruction)) {
             OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), obj, prevHandle.getPosition());
             if (stack.getStackDepth() > stackOffset) {
                 XField wrappedField =
@@ -632,13 +612,13 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     }
 
     private Set<XMethod> findExposureInHierarchy(XField lockObject) throws ClassNotFoundException {
-        HashSet<XMethod> unsafeMethods = new HashSet<>();
+        Set<XMethod> unsafeMethods = new HashSet<>();
         Method[] ownMethods = getThisClass().getMethods();
 
         for (JavaClass declaringClass : getThisClass().getSuperClasses()) {
             for (Method possibleAccessorMethod : declaringClass.getMethods()) {
 
-                if (isMethodNotInteresting(possibleAccessorMethod, ownMethods)) {
+                if (isOwnMethod(possibleAccessorMethod, ownMethods)) {
                     continue;
                 }
 
@@ -682,12 +662,12 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         return unsafeMethods;
     }
 
-    private HashSet<XMethod> findLockUsageInHierarchy(XField field) throws ClassNotFoundException {
-        HashSet<XMethod> methodsUsingFieldAsLock = new HashSet<>();
+    private Set<XMethod> findLockUsageInHierarchy(XField field) throws ClassNotFoundException {
+        Set<XMethod> methodsUsingFieldAsLock = new HashSet<>();
         for (JavaClass declaringClass : getThisClass().getSuperClasses()) {
             for (Method possibleAccessorMethod : declaringClass.getMethods()) {
 
-                if (isMethodNotInteresting(possibleAccessorMethod, new Method[0])) {
+                if (isOwnMethod(possibleAccessorMethod, new Method[0])) {
                     continue;
                 }
 
@@ -708,7 +688,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                                 XField lockObject = lock.getXField();
 
                                 if (isSameAsLockObject(field, lockObject)) {
-                                    methodsUsingFieldAsLock.add(XFactory.createXMethod(declaringClass, possibleAccessorMethod));
+                                    methodsUsingFieldAsLock.add(XFactory.createXMethod(declaringClass,
+                                            possibleAccessorMethod));
                                 }
                             }
                         }
@@ -732,7 +713,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         String exposingMethodsMessage = buildMethodsMessage(exposingMethods);
         for (XMethod lockUsingMethod : lockUsingMethods) {
             bugReporter.reportBug(new BugInstance(
-                    this, "PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS", NORMAL_PRIORITY)
+                    this, "US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY)
                     .addClass(this)
                     .addMethod(lockUsingMethod)
                     .addField(lock)
@@ -740,11 +721,11 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
     }
 
-    private void reportAccessibleObjectBug(XField lock, Collection<XMethod> definedLockAccessors, HashMap<XField, XMethod> synchronizedMethods) {
+    private void reportAccessibleObjectBug(XField lock, Collection<XMethod> definedLockAccessors, Map<XField, XMethod> synchronizedMethods) {
         if (!definedLockAccessors.isEmpty()) {
             String problematicMethods = buildMethodsMessage(definedLockAccessors);
             bugReporter.reportBug(new BugInstance(
-                    this, "PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS", NORMAL_PRIORITY)
+                    this, "US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY)
                     .addClass(this)
                     .addMethod(synchronizedMethods.get(lock))
                     .addField(lock)
@@ -755,7 +736,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     private void reportInheritedObjectBugs(XField lock, Collection<XMethod> synchronizedMethods) {
         for (XMethod synchronizedMethod : synchronizedMethods) {
             bugReporter.reportBug(new BugInstance(
-                    this, "PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS", LOW_PRIORITY)
+                    this, "US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION", LOW_PRIORITY)
                     .addClass(this)
                     .addMethod(synchronizedMethod)
                     .addField(lock));
@@ -765,7 +746,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     private void reportObjectBugs(XField lock, Collection<XMethod> synchronizedMethods) {
         for (XMethod synchronizedMethod : synchronizedMethods) {
             bugReporter.reportBug(new BugInstance(
-                    this, "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS", NORMAL_PRIORITY)
+                    this, "US_UNSAFE_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY)
                     .addClass(this)
                     .addMethod(synchronizedMethod)
                     .addField(lock));
@@ -846,7 +827,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             BugInstance bugInstance = new BugInstance(detector, bugType, NORMAL_PRIORITY)
                     .addClassAndMethod(inMethod)
                     .addField(lock)
-                    .addReferencedField(FieldAnnotation.fromXField(assignedBackingCollection)) // addReferencedField
+                    .addReferencedField(FieldAnnotation.fromXField(assignedBackingCollection))
                     .addSourceLine(sourceLineAnnotation);
             for (String message : extraMessages) {
                 bugInstance.addString(message);

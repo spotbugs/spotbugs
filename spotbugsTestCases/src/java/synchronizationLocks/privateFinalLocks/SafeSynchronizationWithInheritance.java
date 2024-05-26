@@ -1,6 +1,6 @@
 package synchronizationLocks.privateFinalLocks;
 
-public class GoodSynchronizationWithInheritance {
+public class SafeSynchronizationWithInheritance {
     private final Object lock = new Object();
 
     public void doSomeStuff() {
@@ -11,7 +11,7 @@ public class GoodSynchronizationWithInheritance {
 
 }
 
-class GoodSynchronizationInheritedFromParent extends GoodSynchronizationWithInheritance {
+class SafeSynchronizationInheritedFromParent extends SafeSynchronizationWithInheritance {
     private final Object lock = new Object();
 
     public void doStuff2() {

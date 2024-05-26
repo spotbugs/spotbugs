@@ -10,10 +10,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
 public class FindMixedSynchronizationTest extends AbstractIntegrationTest {
-    private static final String OBJECT_BUG = "PFL_BAD_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    private static final String ACCESSIBLE_OBJECT_BUG = "PFL_BAD_ACCESSIBLE_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    private static final String INHERITED_OBJECT_BUG = "PFL_BAD_INHERITED_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
-    private static final String EXPOSING_LOCK_OBJECT_BUG = "PFL_BAD_EXPOSING_OBJECT_SYNCHRONIZATION_USE_PRIVATE_FINAL_LOCK_OBJECTS";
+    private static final String OBJECT_BUG = "US_UNSAFE_OBJECT_SYNCHRONIZATION";
+    private static final String ACCESSIBLE_OBJECT_BUG = "US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION";
+    private static final String INHERITABLE_OBJECT_BUG = "US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION";
+    private static final String EXPOSED_LOCK_OBJECT_BUG = "US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION";
     private final String BAD_BACKING_COLLECTION = "USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION";
     private final String ACCESSIBLE_BACKING_COLLECTION = "USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION";
     private final String INHERITABLE_BACKING_COLLECTION = "USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION";
@@ -26,8 +26,8 @@ public class FindMixedSynchronizationTest extends AbstractIntegrationTest {
 
         assertNumOfBugs(1, OBJECT_BUG);
         assertNumOfBugs(2, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(3, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(1, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(3, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(1, EXPOSED_LOCK_OBJECT_BUG);
         assertNumOfBugs(3, BAD_BACKING_COLLECTION);
         assertNumOfBugs(1, ACCESSIBLE_BACKING_COLLECTION);
         assertNumOfBugs(1, INHERITABLE_BACKING_COLLECTION);
@@ -61,8 +61,8 @@ public class FindMixedSynchronizationTest extends AbstractIntegrationTest {
 
         assertNumOfBugs(0, OBJECT_BUG);
         assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITED_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSING_LOCK_OBJECT_BUG);
+        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
+        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
         assertNumOfBugs(0, BAD_BACKING_COLLECTION);
         assertNumOfBugs(0, ACCESSIBLE_BACKING_COLLECTION);
         assertNumOfBugs(0, INHERITABLE_BACKING_COLLECTION);
@@ -98,7 +98,7 @@ public class FindMixedSynchronizationTest extends AbstractIntegrationTest {
 
     private void assertInheritedObjectBugExactly(String clazz, String method, String field) {
         BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
-                .bugType(INHERITED_OBJECT_BUG)
+                .bugType(INHERITABLE_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
                 .atField(field)
@@ -109,7 +109,7 @@ public class FindMixedSynchronizationTest extends AbstractIntegrationTest {
 
     private void assertExposingObjectBugExactly(String clazz, String method, String field) {
         BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
-                .bugType(EXPOSING_LOCK_OBJECT_BUG)
+                .bugType(EXPOSED_LOCK_OBJECT_BUG)
                 .inClass(clazz)
                 .inMethod(method)
                 .atField(field)

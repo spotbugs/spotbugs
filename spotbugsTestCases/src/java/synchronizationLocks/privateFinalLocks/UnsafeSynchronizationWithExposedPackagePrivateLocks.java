@@ -1,6 +1,6 @@
 package synchronizationLocks.privateFinalLocks;
 
-public class BadSynchronizationWithExposedPackagePrivateLocks {
+public class UnsafeSynchronizationWithExposedPackagePrivateLocks {
     Object lock1 = new Object();
     final Object lock2 = new Object();
     static Object lock3 = new Object();

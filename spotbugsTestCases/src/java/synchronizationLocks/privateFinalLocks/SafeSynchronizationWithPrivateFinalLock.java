@@ -1,6 +1,6 @@
 package synchronizationLocks.privateFinalLocks;
 
-public class GoodSynchronizationWithPrivateFinalLock {
+public class SafeSynchronizationWithPrivateFinalLock {
     private final Object lock1 = new Object(); // private final lock object
     private static final Object lock2 = new Object(); // private final lock object
 
