@@ -56,6 +56,7 @@ import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MONITORENTER;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReferenceType;
@@ -134,54 +135,27 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     }
 
     private final BugReporter bugReporter;
-    private final Set<XMethod> exposingMethods;
-    private final Set<XMethod> synchronizedMethods;
-    private final Map<XField, XMethod> declaredLockObjects;
-    private final Map<XField, XMethod> inheritedLockObjects;
-    private final MultiMap<XField, XMethod> declaredLockAccessors;
-    private final MultiMap<XField, XMethod> lockAccessorsInHierarchy;
-    private final MultiMap<XField, XMethod> lockUsingMethodsInHierarchy;
-    private final MultiMap<XField, XMethod> declaredInheritedFieldAccessingMethods;
-    private final MultiMap<XField, XMethod> potentialObjectBugContainingMethods;
-    private final MultiMap<XField, XMethod> potentialInheritedBugContainingMethods;
+    private final Set<XMethod> exposingMethods = new HashSet<>();
+    private final Set<XMethod> synchronizedMethods = new HashSet<>();
+    private final Map<XField, XMethod> declaredLockObjects = new HashMap<>();
+    private final Map<XField, XMethod> inheritedLockObjects = new HashMap<>();
+    private final MultiMap<XField, XMethod> declaredLockAccessors = new MultiMap<>(HashSet.class);
+    private final MultiMap<XField, XMethod> lockAccessorsInHierarchy = new MultiMap<>(HashSet.class);
+    private final MultiMap<XField, XMethod> lockUsingMethodsInHierarchy = new MultiMap<>(HashSet.class);
+    private final MultiMap<XField, XMethod> declaredInheritedFieldAccessingMethods = new MultiMap<>(HashSet.class);
+    private final MultiMap<XField, XMethod> potentialObjectBugContainingMethods = new MultiMap<>(HashSet.class);
+    private final MultiMap<XField, XMethod> potentialInheritedBugContainingMethods = new MultiMap<>(HashSet.class);
     // Backing collections
-    private final Set<XField> badBackingCollections;
-    private final Set<XField> inheritableBackingCollections;
-    private final MultiMap<XField, BugInfo> declaredCollectionLockObjects;
-    private final MultiMap<XField, BugInfo> inheritedCollectionLockObjects;
-    private final MultiMap<XField, XMethod> declaredCollectionAccessors;
-    private final MultiMap<XField, XMethod> collectionAccessorsInHierarchy;
-    private final MultiMap<XField, XField> assignedCollectionFields;
-    private final MultiMap<XField, XField> assignedWrappedCollectionFields;
-    private final MultiMap<XField, Method> declaredFieldExposingMethods;
-    private final MultiMap<XField, XField> collectionsBackedByPublicFields;
-    private final MultiMap<XField, XMethod> declaredInheritedCollectionFieldAccessingMethods;
+    private final Set<XField> badBackingCollections = new HashSet<>();
+    private final Set<XField> inheritableBackingCollections = new HashSet<>();
+    private final MultiMap<XField, BugInfo> declaredCollectionLockObjects = new MultiMap<>(HashSet.class);
+    private final MultiMap<XField, BugInfo> inheritedCollectionLockObjects = new MultiMap<>(HashSet.class);
+    private final MultiMap<XField, XMethod> declaredCollectionAccessors = new MultiMap<>(HashSet.class);
+    private final MultiMap<XField, XMethod> collectionAccessorsInHierarchy = new MultiMap<>(HashSet.class);
+    private final MultiMap<XField, XField> backingCollections = new MultiMap<>(HashSet.class);
 
     public FindSynchronizationLock(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        this.exposingMethods = new HashSet<>();
-        this.synchronizedMethods = new HashSet<>();
-        this.declaredLockObjects = new HashMap<>();
-        this.inheritedLockObjects = new HashMap<>();
-        this.declaredLockAccessors = new MultiMap<>(HashSet.class);
-        this.lockAccessorsInHierarchy = new MultiMap<>(HashSet.class);
-        this.lockUsingMethodsInHierarchy = new MultiMap<>(HashSet.class);
-        this.declaredInheritedFieldAccessingMethods = new MultiMap<>(HashSet.class);
-        this.potentialObjectBugContainingMethods = new MultiMap<>(HashSet.class);
-        this.potentialInheritedBugContainingMethods = new MultiMap<>(HashSet.class);
-
-        // Backing collections
-        this.badBackingCollections = new HashSet<>();
-        this.inheritableBackingCollections = new HashSet<>();
-        this.declaredCollectionLockObjects = new MultiMap<>(HashSet.class);
-        this.inheritedCollectionLockObjects = new MultiMap<>(HashSet.class);
-        this.declaredCollectionAccessors = new MultiMap<>(HashSet.class);
-        this.collectionAccessorsInHierarchy = new MultiMap<>(HashSet.class);
-        this.assignedCollectionFields = new MultiMap<>(HashSet.class);
-        this.assignedWrappedCollectionFields = new MultiMap<>(HashSet.class);
-        this.declaredFieldExposingMethods = new MultiMap<>(HashSet.class);
-        this.collectionsBackedByPublicFields = new MultiMap<>(HashSet.class);
-        this.declaredInheritedCollectionFieldAccessingMethods = new MultiMap<>(HashSet.class);
     }
 
     private static boolean isWrapperImplementation(MethodDescriptor methodDescriptor) {
@@ -218,7 +192,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
             synchronizedMethods.add(xMethod);
         }
 
-        String javaStyleClassType = "L" + getClassName() + ";";
         SignatureParser signature = new SignatureParser(xMethod.getSignature());
         if ("readResolve".equals(obj.getName()) && "()Ljava/lang/Object;".equals(obj.getSignature())
                 && Subtypes2.instanceOf(getThisClass(), "java.io.Serializable")) {
@@ -230,6 +203,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
 
         String returnType = signature.getReturnTypeSignature();
+        String javaStyleClassType = "L" + getClassName() + ";";
         if (returnType.equals(javaStyleClassType)) {
             if ("clone".equals(obj.getName())) {
                 return;
@@ -255,12 +229,12 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         if (isCollection(xField)) {
             try {
                 if (isInherited(xField)) {
-                    if (xField.isProtected() || xField.isPublic() || !xField.isPrivate()) {
+                    if (!xField.isPrivate()) {
                         badBackingCollections.add(xField);
                     }
 
-                    findExposureInHierarchy(xField).forEach(method -> collectionAccessorsInHierarchy
-                            .add(xField, method));
+                    findExposureInHierarchy(xField)
+                            .forEach(method -> collectionAccessorsInHierarchy.add(xField, method));
                 } else {
                     if (xField.isPublic()) {
                         badBackingCollections.add(xField);
@@ -281,44 +255,42 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (seen == Const.MONITORENTER && stack.getStackDepth() > 0) {
-            OpcodeStack.Item lock = stack.getStackItem(0);
-            XField lockObject = lock.getXField();
+            XField lock = stack.getStackItem(0).getXField();
 
-            if (lockObject != null) {
+            if (lock != null) {
                 XMethod xMethod = getXMethod();
                 try {
-                    boolean inheritedFromHierarchy = isInherited(lockObject);
-                    if (inheritedFromHierarchy) {
-                        inheritedLockObjects.put(lockObject, xMethod);
-                        if (isCollection(lockObject)) {
-                            inheritedCollectionLockObjects.add(lockObject, new BugInfo(this));
+                    if (isInherited(lock)) {
+                        inheritedLockObjects.put(lock, xMethod);
+                        if (isCollection(lock)) {
+                            inheritedCollectionLockObjects.add(lock, new BugInfo(this));
                             try {
-                                analyzeAssignmentsInHierarchy(lockObject);
+                                analyzeAssignmentsInHierarchy(lock);
                             } catch (CFGBuilderException e) {
-                                throw new RuntimeException(e);
+                                AnalysisContext.logError("Error building CFG", e);
+                            } catch (ClassNotFoundException e) {
+                                AnalysisContext.reportMissingClass(e);
                             }
                         }
 
-                        findExposureInHierarchy(lockObject).forEach(method -> lockAccessorsInHierarchy
-                                .add(lockObject, method));
+                        findExposureInHierarchy(lock)
+                                .forEach(method -> lockAccessorsInHierarchy.add(lock, method));
 
-                        if (lockObject.isProtected() || lockObject.isPublic() || !lockObject.isPrivate()) {
-                            potentialObjectBugContainingMethods.add(lockObject, xMethod);
+                        if (lock.isProtected() || lock.isPublic() || !lock.isPrivate()) {
+                            potentialObjectBugContainingMethods.add(lock, xMethod);
                         }
                     } else {
-                        declaredLockObjects.put(lockObject, xMethod);
-                        if (isCollection(lockObject)) {
-                            declaredCollectionLockObjects.add(lockObject, new BugInfo(this));
+                        declaredLockObjects.put(lock, xMethod);
+                        if (isCollection(lock)) {
+                            declaredCollectionLockObjects.add(lock, new BugInfo(this));
                         }
 
-                        if (lockObject.isPublic()) {
-                            potentialObjectBugContainingMethods.add(lockObject, xMethod);
+                        if (lock.isPublic()) {
+                            potentialObjectBugContainingMethods.add(lock, xMethod);
                         }
 
-                        if (lockObject.isProtected() && !getThisClass().isFinal()) {
-                            potentialInheritedBugContainingMethods.add(lockObject, xMethod);
-                        } else if (isPackagePrivate(lockObject)) {
-                            potentialInheritedBugContainingMethods.add(lockObject, xMethod);
+                        if (lock.isProtected() && !getThisClass().isFinal() || isPackagePrivate(lock)) {
+                            potentialInheritedBugContainingMethods.add(lock, xMethod);
                         }
                     }
                 } catch (ClassNotFoundException e) {
@@ -414,14 +386,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
 
         // backing collections
-        MultiMap<XField, XField> allBackingCollections = assignedCollectionFields;
-        for (XField field : assignedWrappedCollectionFields.keySet()) {
-            assignedWrappedCollectionFields.get(field).forEach(backingField -> allBackingCollections
-                    .add(field, backingField));
-        }
-
         for (XField lock : declaredCollectionLockObjects.keySet()) {
-            for (XField backingCollection : allBackingCollections.get(lock)) {
+            for (XField backingCollection : backingCollections.get(lock)) {
                 if (declaredCollectionAccessors.containsKey(backingCollection)) {
                     reportAccessibleBackingCollectionBug(lock, declaredCollectionLockObjects, backingCollection,
                             declaredCollectionAccessors);
@@ -434,7 +400,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
 
         for (XField lock : inheritedCollectionLockObjects.keySet()) {
-            for (XField backingCollection : allBackingCollections.get(lock)) {
+            for (XField backingCollection : backingCollections.get(lock)) {
                 if (declaredCollectionAccessors.containsKey(backingCollection)) {
                     reportAccessibleBackingCollectionBug(lock, inheritedCollectionLockObjects, backingCollection,
                             declaredCollectionAccessors);
@@ -493,31 +459,43 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         return method.getCode() == null;
     }
 
-    private boolean isSameAsLockObject(XField maybeLockObject, XField lockObject) {
-        if (lockObject == null) {
-            return false;
-        }
-        return lockObject.equals(maybeLockObject);
-    }
-
+    /**
+     * Check if the lock object is inherited from the current class.
+     * To ensure no false positives, we compare only the outer class name if the lock object is contained in an inner class.
+     * @param lockObject the lock object to check for inheritance
+     * @return true if the lock object is inherited from the current class, false otherwise
+     * @throws ClassNotFoundException if the class of the lock object cannot be found
+     */
     private boolean isInherited(XField lockObject) throws ClassNotFoundException {
         return !getDottedClassName().equals(lockObject.getClassName().split("\\$")[0]);
     }
 
-    private void analyzeWrappedField(Method obj, ClassContext classContext, Location location,
-            InstructionHandle handle, XField xfield, Integer stackOffset) {
+    /**
+     * Analyze a wrapping method call and check if this the creation of a binding collection.
+     * There are specific methods that use their parameters to create a new collections,
+     * but they maintain a reference to the original collection.
+     * When a collection is wrapped by such a method and the result is assigned to a field, the wrapped collections becomes a backing collection.
+     * @param currentMethod the method in which the wrapping method call is located
+     * @param classContext the class context of the currently analyzed class
+     * @param location the location of the wrapping method call
+     * @param handle the instruction handle of the wrapping method call
+     * @param assignedField the field to which the result of the wrapping method call is assigned
+     * @param stackOffsetForWrapperMethodParameter the stack offset of the wrapped collection parameter of the wrapping method call
+     */
+    private void analyzeWrappedField(Method currentMethod, ClassContext classContext, Location location,
+            InstructionHandle handle, XField assignedField, Integer stackOffsetForWrapperMethodParameter) {
         InstructionHandle prevHandle = location.getBasicBlock().getPredecessorOf(handle);
         Instruction prevInstruction = prevHandle.getInstruction();
         if (isMethodCall(prevInstruction)) {
-            OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), obj, prevHandle.getPosition());
-            if (stack.getStackDepth() > stackOffset) {
-                XField wrappedField =
-                        stack
-                                .getStackItem(stackOffset)
-                                .getXField();
+            OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), currentMethod, prevHandle.getPosition());
+            if (stack.getStackDepth() > stackOffsetForWrapperMethodParameter) {
+                XField wrappedField = stack
+                        .getStackItem(stackOffsetForWrapperMethodParameter)
+                        .getXField();
                 if (wrappedField != null && isCollection(wrappedField)) {
-                    assignedWrappedCollectionFields.add(xfield, wrappedField);
-                    assignedWrappedCollectionFields.get(wrappedField).forEach(f -> assignedWrappedCollectionFields.add(xfield, f));
+                    backingCollections.add(assignedField, wrappedField);
+                    backingCollections.get(wrappedField)
+                            .forEach(f -> backingCollections.add(assignedField, f));
                 }
             }
         }
@@ -541,7 +519,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                     continue;
                 }
 
-
                 OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), obj, handle.getPosition());
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
@@ -559,14 +536,12 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                         }
                     } else if (assignedField != null) {
                         if (isCollection(assignedField)) {
-                            assignedCollectionFields.add(xfield, assignedField);
-                            assignedCollectionFields.get(assignedField).forEach(f -> assignedCollectionFields.add(xfield,
-                                    f));
+                            backingCollections.add(xfield, assignedField);
+                            backingCollections.get(assignedField)
+                                    .forEach(f -> backingCollections.add(xfield, f));
                         }
-                    } else {
-                        if (isImmutableReturner(item.getSignature())) {
-                            analyzeWrappedField(obj, classContext, location, handle, xfield, 0);
-                        }
+                    } else if (isImmutableReturner(item.getSignature())) {
+                        analyzeWrappedField(obj, classContext, location, handle, xfield, 0);
                     }
                 }
             }
@@ -602,9 +577,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                     findLockUsageInHierarchy(field).forEach(m -> lockUsingMethodsInHierarchy.add(field, m));
                 }
                 declaredInheritedFieldAccessingMethods.add(field, exposingMethod);
-                if (isCollection(field)) {
-                    declaredInheritedCollectionFieldAccessingMethods.add(field, exposingMethod);
-                }
             }
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
@@ -635,7 +607,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                             FieldInstruction fieldInstruction = (FieldInstruction) instruction;
                             XField xfield = Hierarchy.findXField(fieldInstruction, cpg);
 
-                            if (xfield != null && isSameAsLockObject(xfield, lockObject) && !xfield.isPublic()) {
+                            if (xfield != null && xfield.equals(lockObject) && !xfield.isPublic()) {
                                 XMethod unsafeXMethod = XFactory.createXMethod(declaringClass, possibleAccessorMethod);
                                 unsafeMethods.add(unsafeXMethod);
                             }
@@ -646,7 +618,8 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                                     .getStackAt(classContext.getJavaClass(), possibleAccessorMethod, handle.getPosition());
                             if (currentStack.getStackDepth() > 0) {
                                 XField xField = currentStack.getStackItem(0).getXField();
-                                if (isSameAsLockObject(xField, lockObject) && !xField.isPublic()) {
+
+                                if (xField != null && xField.equals(lockObject) && !xField.isPublic()) {
                                     XMethod unsafeXMethod = XFactory.createXMethod(declaringClass, possibleAccessorMethod);
                                     unsafeMethods.add(unsafeXMethod);
                                 }
@@ -680,14 +653,14 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
                         InstructionHandle handle = location.getHandle();
                         Instruction instruction = handle.getInstruction();
 
-                        if (instruction.getOpcode() == Const.MONITORENTER) {
+                        if (instruction instanceof MONITORENTER) {
                             OpcodeStack currentStack = OpcodeStackScanner
                                     .getStackAt(classContext.getJavaClass(), possibleAccessorMethod, handle.getPosition());
                             if (currentStack.getStackDepth() > 0) {
                                 OpcodeStack.Item lock = currentStack.getStackItem(0);
                                 XField lockObject = lock.getXField();
 
-                                if (isSameAsLockObject(field, lockObject)) {
+                                if (lockObject != null && lockObject.equals(field)) {
                                     methodsUsingFieldAsLock.add(XFactory.createXMethod(declaringClass,
                                             possibleAccessorMethod));
                                 }
@@ -753,12 +726,12 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
     }
 
-    private void reportAccessibleBackingCollectionBug(XField lock, MultiMap<XField, BugInfo> bugContainingMethods,
+    private void reportAccessibleBackingCollectionBug(XField lock, MultiMap<XField, BugInfo> possibleBugs,
             XField backingCollection,
             MultiMap<XField, XMethod> collectionAccessors) {
         if (collectionAccessors.containsKey(backingCollection)) {
             String exposingMethods = buildMethodsMessage(collectionAccessors.get(backingCollection));
-            for (BugInfo bugInfo : bugContainingMethods.get(lock)) {
+            for (BugInfo bugInfo : possibleBugs.get(lock)) {
                 bugReporter.reportBug(bugInfo
                         .createBugInstance(this,
                                 "USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION",
@@ -767,9 +740,9 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
     }
 
-    private void reportInheritedBackingCollectionBug(XField lock, MultiMap<XField, BugInfo> bugContainingMethods,
+    private void reportInheritedBackingCollectionBug(XField lock, MultiMap<XField, BugInfo> possibleBugs,
             XField backingCollection) {
-        for (BugInfo bugInfo : bugContainingMethods.get(lock)) {
+        for (BugInfo bugInfo : possibleBugs.get(lock)) {
             bugReporter.reportBug(bugInfo
                     .createBugInstance(this,
                             "USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION",
@@ -777,9 +750,9 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         }
     }
 
-    private void reportBadCollectionObjectBugs(XField lock, MultiMap<XField, BugInfo> bugContainingMethods,
+    private void reportBadCollectionObjectBugs(XField lock, MultiMap<XField, BugInfo> possibleBugs,
             XField backingCollection) {
-        for (BugInfo bugInfo : bugContainingMethods.get(lock)) {
+        for (BugInfo bugInfo : possibleBugs.get(lock)) {
             bugReporter.reportBug(bugInfo
                     .createBugInstance(this,
                             "USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION",
@@ -804,11 +777,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         inheritedCollectionLockObjects.clear();
         declaredCollectionAccessors.clear();
         collectionAccessorsInHierarchy.clear();
-        assignedCollectionFields.clear();
-        assignedWrappedCollectionFields.clear();
-        declaredFieldExposingMethods.clear();
-        collectionsBackedByPublicFields.clear();
-        declaredInheritedCollectionFieldAccessingMethods.clear();
+        backingCollections.clear();
         badBackingCollections.clear();
         inheritableBackingCollections.clear();
     }
