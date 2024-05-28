@@ -15,6 +15,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix FPs when looking for multiple initialization of Singletons ([#2934](https://github.com/spotbugs/spotbugs/issues/2934))
 - Do not report DLS_DEAD_LOCAL_STORE for Java 21's type switches when switch instruction is TABLESWITCH([#2736](https://github.com/spotbugs/spotbugs/issues/2736))
 - Fix FP `SE_BAD_FIELD` for record fields ([#2935]https://github.com/spotbugs/spotbugs/issues/2935)
+- Adjust priority since relaxed mode reports even `IGNORED_PRIORITY` ([#2994]https://github.com/spotbugs/spotbugs/issues/2994)
 
 ## 4.8.4 - 2024-04-07
 ### Fixed
