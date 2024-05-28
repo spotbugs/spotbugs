@@ -447,18 +447,6 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         return Const.CONSTRUCTOR_NAME.equals(methodName) || Const.STATIC_INITIALIZER_NAME.equals(methodName);
     }
 
-    private boolean isOwnMethod(Method method, Method[] ownMethods) {
-        if (ownMethods.length > 0 && Arrays.asList(ownMethods).contains(method)) {
-            return true;
-        }
-
-        if (isInitializerMethod(method.getName())) {
-            return true;
-        }
-
-        return method.getCode() == null;
-    }
-
     /**
      * Check if the lock object is inherited from the current class.
      * To ensure no false positives, we compare only the outer class name if the lock object is contained in an inner class.
@@ -476,7 +464,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
      * but they maintain a reference to the original collection.
      * When a collection is wrapped by such a method and the result is assigned to a field, the wrapped collections becomes a backing collection.
      * @param currentMethod the method in which the wrapping method call is located
-     * @param classContext the class context of the currently analyzed class
+     * @param classContext the class context of the currently analyzed class, in which the wrapping method call is located
      * @param location the location of the wrapping method call
      * @param handle the instruction handle of the wrapping method call
      * @param assignedField the field to which the result of the wrapping method call is assigned
@@ -589,8 +577,12 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
 
         for (JavaClass declaringClass : getThisClass().getSuperClasses()) {
             for (Method possibleAccessorMethod : declaringClass.getMethods()) {
+                if (possibleAccessorMethod.getCode() == null) {
+                    continue;
+                }
 
-                if (isOwnMethod(possibleAccessorMethod, ownMethods)) {
+                if (Arrays.asList(ownMethods).contains(possibleAccessorMethod)
+                        || isInitializerMethod(possibleAccessorMethod.getName())) {
                     continue;
                 }
 
@@ -640,7 +632,11 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
         for (JavaClass declaringClass : getThisClass().getSuperClasses()) {
             for (Method possibleAccessorMethod : declaringClass.getMethods()) {
 
-                if (isOwnMethod(possibleAccessorMethod, new Method[0])) {
+                if (possibleAccessorMethod.getCode() == null) {
+                    continue;
+                }
+
+                if (isInitializerMethod(possibleAccessorMethod.getName())) {
                     continue;
                 }
 
