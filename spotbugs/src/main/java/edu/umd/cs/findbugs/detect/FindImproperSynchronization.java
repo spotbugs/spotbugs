@@ -450,6 +450,8 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
     /**
      * Check if the lock object is inherited from the current class.
      * To ensure no false positives, we compare only the outer class name if the lock object is contained in an inner class.
+     * Only checking equality is enough, since the lock object is a field declared in a class. That means if
+     * the declaring class of the lock object is the same as the current class, the lock object is not inherited.
      * @param lockObject the lock object to check for inheritance
      * @return true if the lock object is inherited from the current class, false otherwise
      * @throws ClassNotFoundException if the class of the lock object cannot be found
