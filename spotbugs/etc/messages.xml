@@ -1839,7 +1839,7 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.FindSynchronizationLock">
+  <Detector class="edu.umd.cs.findbugs.detect.FindImproperSynchronization">
     <Details>
       <![CDATA[
             <p>Finds bad synchronizations on accessible lock objects and lock objects with accessible backing collections.</p>

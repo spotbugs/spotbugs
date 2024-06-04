@@ -9,7 +9,7 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-class FindSynchronizationLockTest extends AbstractIntegrationTest {
+class FindImproperSynchronizationTest extends AbstractIntegrationTest {
 
     private static final String METHOD_BUG = "US_UNSAFE_METHOD_SYNCHRONIZATION";
     private static final String STATIC_METHOD_BUG = "US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION";

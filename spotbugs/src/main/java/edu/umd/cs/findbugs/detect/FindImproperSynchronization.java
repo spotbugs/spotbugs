@@ -71,7 +71,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class FindSynchronizationLock extends OpcodeStackDetector {
+public class FindImproperSynchronization extends OpcodeStackDetector {
     private static final Map<MethodDescriptor, Integer> WRAPPER_IMPLEMENTATIONS = new HashMap<>();
     private static final Set<String> IMMUTABLE_RETURNERS = new HashSet<>();
 
@@ -154,7 +154,7 @@ public class FindSynchronizationLock extends OpcodeStackDetector {
     private final MultiMap<XField, XMethod> collectionAccessorsInHierarchy = new MultiMap<>(HashSet.class);
     private final MultiMap<XField, XField> backingCollections = new MultiMap<>(HashSet.class);
 
-    public FindSynchronizationLock(BugReporter bugReporter) {
+    public FindImproperSynchronization(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
