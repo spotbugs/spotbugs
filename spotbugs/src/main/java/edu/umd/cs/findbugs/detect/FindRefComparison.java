@@ -125,7 +125,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     private static final boolean DEBUG = SystemProperties.getBoolean("frc.debug");
 
     private boolean reportAllRefComparisons() {
-        return SystemProperties.getBoolean("findbugs.refcomp.reportAll");
+        return SystemProperties.getBoolean("findbugs.refcomp.reportAll", true);
     }
 
     private static final int BASE_ES_PRIORITY = SystemProperties.getInt("es.basePriority", NORMAL_PRIORITY);

@@ -17,7 +17,17 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
 
     @AfterAll
     static void tearDown() {
-        SystemProperties.setProperty("findbugs.refcomp.reportAll", "false");
+        SystemProperties.removeProperty("findbugs.refcomp.reportAll");
+    }
+
+    @Test
+    void testComparisonsWhenPropertyUnset() {
+        SystemProperties.removeProperty("findbugs.refcomp.reportAll");
+        performAnalysis("RefComparisons.class");
+        assertNumOfRefCompBugs(3);
+        assertRefCompBug("integerBadComparison", 4);
+        assertRefCompBug("myClass1BadComparison", 11);
+        assertRefCompBug("myClass2BadComparison", 18);
     }
 
     @Test
