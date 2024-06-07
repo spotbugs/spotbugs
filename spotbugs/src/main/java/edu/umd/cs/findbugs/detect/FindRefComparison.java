@@ -33,6 +33,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -909,6 +910,25 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 }
             }
         }
+    }
+
+    private static JavaClass resolveJavaClass(Type type) {
+        try {
+            return Repository.lookupClass(type.getSignature());
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    private static boolean comparingEnumsSameType(
+            Type lhsType,
+            Type rhsType) {
+        JavaClass lhsClass = resolveJavaClass(lhsType);
+        JavaClass rhsClass = resolveJavaClass(rhsType);
+        if (lhsClass != null && rhsClass != null) {
+            return lhsClass.isEnum() && rhsClass.isEnum() && lhsClass.equals(rhsClass);
+        }
+        return false;
     }
 
     private void checkRefComparison(Location location, JavaClass jclass, Method method, MethodGen methodGen,
