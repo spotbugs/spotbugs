@@ -912,23 +912,20 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
     }
 
-    private static JavaClass resolveJavaClass(Type type) {
-        try {
-            return Repository.lookupClass(type.getSignature());
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    private static boolean comparingEnumsSameType(
+    private static boolean isEqualsComparison(
+            JavaClass jClass,
+            Method method,
             Type lhsType,
             Type rhsType) {
-        JavaClass lhsClass = resolveJavaClass(lhsType);
-        JavaClass rhsClass = resolveJavaClass(rhsType);
-        if (lhsClass != null && rhsClass != null) {
-            return lhsClass.isEnum() && rhsClass.isEnum() && lhsClass.equals(rhsClass);
+        if (!method.getName().equals("equals")) {
+            return false;
         }
-        return false;
+        String className = jClass.getClassName();
+        String left = lhsType.getClassName();
+        String right = rhsType.getClassName();
+        return (className.equals(left) && className.equals(right)) ||
+                (className.equals(left) && right.equals(Object.class.getName())) ||
+                (className.equals(right) && left.equals(Object.class.getName()));
     }
 
     private void checkRefComparison(Location location, JavaClass jclass, Method method, MethodGen methodGen,
@@ -947,7 +944,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         Type lhsType = frame.getValue(numSlots - 2);
         Type rhsType = frame.getValue(numSlots - 1);
 
-        if (lhsType instanceof NullType || rhsType instanceof NullType) {
+        if (lhsType instanceof NullType ||
+                rhsType instanceof NullType ||
+                // Comparing enum values should be OK
+                comparingEnumsSameType(lhsType, rhsType) ||
+                // Assuming that comparing two classes is fine. e.g. `this.getClass() == obj.getClass()`
+                comparingClasses(lhsType, rhsType) ||
+                // Class comparisons inside the equals method of the same class are fine
+                isEqualsComparison(jclass, method, lhsType, rhsType)) {
             return;
         }
         if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
@@ -994,6 +998,39 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                         (ReferenceType) lhsType, (ReferenceType) rhsType);
             }
         }
+    }
+
+    private static boolean comparingEnumsSameType(
+            Type lhsType,
+            Type rhsType) {
+        JavaClass lhsClass = resolveJavaClass(lhsType);
+        JavaClass rhsClass = resolveJavaClass(rhsType);
+        if (lhsClass != null && rhsClass != null) {
+            return lhsClass.isEnum() && rhsClass.isEnum() && lhsClass.equals(rhsClass);
+        }
+        return false;
+    }
+
+    private static JavaClass resolveJavaClass(Type type) {
+        try {
+            if (type.getClassName().contains("$")) {
+                String[] parts = type.getClassName().split("\\$");
+                Repository.lookupClass(parts[0]);
+            }
+            return Repository.lookupClass(type.getClassName());
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    private static boolean comparingClasses(
+            Type lhsType,
+            Type rhsType) {
+        return isClassType(lhsType) && isClassType(rhsType);
+    }
+
+    private static boolean isClassType(Type type) {
+        return "java.lang.Class".equals(type.getClassName());
     }
 
     private void handleStringComparison(JavaClass jclass, Method method, MethodGen methodGen,
