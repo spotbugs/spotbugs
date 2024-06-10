@@ -1111,13 +1111,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 priority = Priorities.NORMAL_PRIORITY;
             }
         }
-        String lhsTypeDescriptor = "L" + ClassName.toSlashedClassName(lhs) + ";";
-        /*
-         * If the lhs is an array, we need to make it an array type descriptor
-         */
-        if (lhsType.getType() == Const.T_ARRAY) {
-            lhsTypeDescriptor = "[" + lhsTypeDescriptor.replace("[]", "");
-        }
+        String lhsTypeDescriptor = lhsType.getSignature();
         BugInstance instance = new BugInstance(this, bugPattern, priority).addClassAndMethod(methodGen, sourceFile)
                 .addType(lhsTypeDescriptor).describe(TypeAnnotation.FOUND_ROLE);
         if (xf != null) {
