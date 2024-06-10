@@ -912,20 +912,29 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
     }
 
-    private static boolean isEqualsComparison(
-            JavaClass jClass,
-            Method method,
-            Type lhsType,
-            Type rhsType) {
+    /**
+     * Identifies if it's a comparison of two instances of the class inside
+     * its equals method or if it's a comparison of the class with Object.
+     *
+     * This should be OK as this is usually an optimization inside the equals
+     * method.
+     * @param jClass: the class where this check is running on
+     * @param method: the method where the comparison is happening
+     * @param lhsType: the type of the left hand side of the comparison
+     * @param rhsType: the type of the right hand side of the comparison
+     * @return
+     */
+    private static boolean isComparisonInsideEqualsMethod(JavaClass jClass, Method method, Type lhsType, Type rhsType) {
         if (!method.getName().equals("equals")) {
             return false;
         }
         String className = jClass.getClassName();
         String left = lhsType.getClassName();
         String right = rhsType.getClassName();
-        return (className.equals(left) && className.equals(right)) ||
-                (className.equals(left) && right.equals(Object.class.getName())) ||
-                (className.equals(right) && left.equals(Object.class.getName()));
+        boolean comparingInstancesSameClass = className.equals(left) && className.equals(right);
+        boolean comparingLeftWithObject = className.equals(left) && right.equals(Object.class.getName());
+        boolean comparingRightWithObject = className.equals(right) && left.equals(Object.class.getName());
+        return comparingInstancesSameClass || comparingLeftWithObject || comparingRightWithObject;
     }
 
     private void checkRefComparison(Location location, JavaClass jclass, Method method, MethodGen methodGen,
@@ -944,14 +953,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         Type lhsType = frame.getValue(numSlots - 2);
         Type rhsType = frame.getValue(numSlots - 1);
 
-        if (lhsType instanceof NullType ||
-                rhsType instanceof NullType ||
+        if (lhsType instanceof NullType
+                || rhsType instanceof NullType
                 // Comparing enum values should be OK
-                comparingEnumsSameType(lhsType, rhsType) ||
+                || comparingEnumsSameType(lhsType, rhsType)
                 // Assuming that comparing two classes is fine. e.g. `this.getClass() == obj.getClass()`
-                comparingClasses(lhsType, rhsType) ||
+                || comparingClasses(lhsType, rhsType)
                 // Class comparisons inside the equals method of the same class are fine
-                isEqualsComparison(jclass, method, lhsType, rhsType)) {
+                || isComparisonInsideEqualsMethod(jclass, method, lhsType, rhsType)) {
             return;
         }
         if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
@@ -1000,9 +1009,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
     }
 
-    private static boolean comparingEnumsSameType(
-            Type lhsType,
-            Type rhsType) {
+    private static boolean comparingEnumsSameType(Type lhsType, Type rhsType) {
         JavaClass lhsClass = resolveJavaClass(lhsType);
         JavaClass rhsClass = resolveJavaClass(rhsType);
         if (lhsClass != null && rhsClass != null) {
@@ -1013,19 +1020,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
     private static JavaClass resolveJavaClass(Type type) {
         try {
-            if (type.getClassName().contains("$")) {
-                String[] parts = type.getClassName().split("\\$");
-                Repository.lookupClass(parts[0]);
-            }
             return Repository.lookupClass(type.getClassName());
         } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
             return null;
         }
     }
 
-    private static boolean comparingClasses(
-            Type lhsType,
-            Type rhsType) {
+    private static boolean comparingClasses(Type lhsType, Type rhsType) {
         return isClassType(lhsType) && isClassType(rhsType);
     }
 
@@ -1110,7 +1112,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             }
         }
         String lhsTypeDescriptor = "L" + ClassName.toSlashedClassName(lhs) + ";";
-        /**
+        /*
          * If the lhs is an array, we need to make it an array type descriptor
          */
         if (lhsType.getType() == Const.T_ARRAY) {
