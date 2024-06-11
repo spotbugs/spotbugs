@@ -63,9 +63,13 @@ class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
         performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames2.class");
         assertZeroPublicIdentifierBug();
 
-        // check inner classes imported from other classes
-        performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames3.class");
-        assertZeroPublicIdentifierBug();
+        performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames3.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$BigInteger.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$Buffer.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$File.class",
+                "publicIdentifiers/inner/ShadowedPublicIdentifiersInnerClassNames$Vector.class");
+        assertZeroPublicIdentifierBugInClass("GoodPublicIdentifiersInnerClassNames3");
     }
 
     @Test
@@ -126,6 +130,17 @@ class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
                 .bugType(bugType)
                 .build();
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
+    }
+
+    private void assertZeroPublicIdentifierBugInClass(String className) {
+        final String[] bugTypes = new String[] { PI_CLASS_BUG, PI_FIELD_BUG, PI_METHOD_BUG, PI_VARIABLE_BUG };
+        for (String bugType : bugTypes) {
+            final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+                    .bugType(bugType)
+                    .inClass(className)
+                    .build();
+            assertThat(getBugCollection(), containsExactly(0, bugInstanceMatcher));
+        }
     }
 
     private void assertZeroPublicIdentifierBug() {

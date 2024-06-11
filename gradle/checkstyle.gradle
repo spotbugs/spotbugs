@@ -1,14 +1,8 @@
 // Setup checkstyle
 apply plugin: 'checkstyle'
 
-configurations.checkstyle {
-  resolutionStrategy.capabilitiesResolution.withCapability("com.google.collections:google-collections") {
-    select("com.google.guava:guava:33.0.0-jre")
-  }
-}
-
 checkstyle {
-  toolVersion '10.12.7'
+  toolVersion '10.17.0'
   ignoreFailures false
   configFile file("$rootDir/spotbugs/etc/checkstyle.xml") // TODO : This config file is lame and should be moved out...
 }

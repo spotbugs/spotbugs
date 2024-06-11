@@ -915,14 +915,12 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                     }
                     if (m.isStatic() && getStaticMethods.contains(m) && !m.getSlashedClassName().startsWith("java/")) {
                         String returnClass = ClassName.fromFieldSignatureToDottedClassName(returnType);
-                        if (returnClass != null) {
-                            if (ClassName.extractPackageName(returnClass).equals(m.getClassDescriptor().getPackageName())) {
-                                /* Skip methods which only retrieve static field from the same package
-                                 * As they as often used to trigger class initialization
-                                 */
-                                noSideEffectMethods.add(m, MethodSideEffectStatus.NSE_EX);
-                                continue;
-                            }
+                        if (returnClass != null && ClassName.extractPackageName(returnClass).equals(m.getClassDescriptor().getPackageName())) {
+                            /* Skip methods which only retrieve static field from the same package
+                             * As they as often used to trigger class initialization
+                             */
+                            noSideEffectMethods.add(m, MethodSideEffectStatus.NSE_EX);
+                            continue;
                         }
                     }
                     noSideEffectMethods.add(m, MethodSideEffectStatus.NSE);

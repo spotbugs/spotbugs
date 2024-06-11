@@ -24,6 +24,8 @@ java {
 }
 
 test {
+  dependsOn(":test-harness-jupiter:spotbugsMain")
+  dependsOn(":test-harness-jupiter:spotbugsTest")
   useJUnitPlatform()
 }
 
