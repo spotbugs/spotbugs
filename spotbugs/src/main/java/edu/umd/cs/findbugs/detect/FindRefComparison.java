@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -998,13 +999,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 handleStringComparison(jclass, method, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
             } else if (reportAllRefComparisons()) {
                 handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
-                        (ReferenceType) lhsType, (ReferenceType) rhsType);
+                        (ReferenceType) lhsType, (ReferenceType) rhsType, Optional.of(Priorities.EXP_PRIORITY));
             } else if (suspiciousSet.contains(lhs)) {
                 handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
-                        (ReferenceType) lhsType, (ReferenceType) rhsType);
+                        (ReferenceType) lhsType, (ReferenceType) rhsType, Optional.empty());
             } else if (suspiciousSet.contains(rhs)) {
                 handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, rhs,
-                        (ReferenceType) lhsType, (ReferenceType) rhsType);
+                        (ReferenceType) lhsType, (ReferenceType) rhsType, Optional.empty());
             }
         }
     }
@@ -1092,7 +1093,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
     private void handleSuspiciousRefComparison(JavaClass jclass, Method method, MethodGen methodGen,
             List<WarningWithProperties> refComparisonList, Location location, String lhs, ReferenceType lhsType,
-            ReferenceType rhsType) {
+            ReferenceType rhsType, Optional<Integer> priorityOverride) {
         XField xf = null;
         if (lhsType instanceof FinalConstant) {
             xf = ((FinalConstant) lhsType).getXField();
@@ -1101,7 +1102,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
         String sourceFile = jclass.getSourceFileName();
         String bugPattern = "RC_REF_COMPARISON";
-        int priority = Priorities.HIGH_PRIORITY;
+        int priority = priorityOverride.orElse(Priorities.HIGH_PRIORITY);
         if ("java.lang.Boolean".equals(lhs)) {
             bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN";
             priority = Priorities.NORMAL_PRIORITY;
