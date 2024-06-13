@@ -10,6 +10,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches when the switch instruction is TABLESWITCH ([#2782](https://github.com/spotbugs/spotbugs/issues/2782))
 - Do not throw exception when inspecting empty switch statements ([#2995](https://github.com/spotbugs/spotbugs/issues/2995))
 - Adjust priority since relaxed mode reports even `IGNORED_PRIORITY` ([#2994]https://github.com/spotbugs/spotbugs/issues/2994)
+- 
+### Added
+- New detector `FindHiddenMethod` for bug type `HSM_HIDING_METHOD`. This bug is reported whenever a subclass method hides the static method of super class. (See [SEI CERT MET07-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface)).
 
 ## 4.8.5 - 2024-05-03
 ### Fixed
