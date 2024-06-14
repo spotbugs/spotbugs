@@ -186,6 +186,14 @@ def jar = tasks.named('jar', Jar) {
 }
 tasks.spotbugsMain.dependsOn(jar)
 tasks.spotbugsGui.dependsOn(jar)
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+  reports {
+    html {
+      // we use local spotbugs.jar, we cannot reference stylesheet from the published jar
+      stylesheet = resources.text.fromFile('src/xsl/fancy-hist.xsl')
+    }
+  }
+}
 
 // Populate bin folder with scripts
 def scripts = tasks.register('scripts', Copy) {
