@@ -18,7 +18,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -63,9 +62,9 @@ import edu.umd.cs.findbugs.ba.ca.CallList;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.classfile.engine.bcel.FinallyDuplicatesInfoFactory;
+import edu.umd.cs.findbugs.util.CollectionAnalysis;
+import edu.umd.cs.findbugs.util.MethodAnalysis;
 
 public class AtomicOperationsCombinedDetector implements Detector {
 
@@ -157,11 +156,7 @@ public class AtomicOperationsCombinedDetector implements Detector {
         if (classMember == null) {
             return false;
         }
-        Set<String> interestingCollectionMethodNames = new HashSet<>(Arrays.asList(
-                "synchronizedCollection", "synchronizedSet", "synchronizedSortedSet",
-                "synchronizedNavigableSet", "synchronizedList", "synchronizedMap",
-                "synchronizedSortedMap", "synchronizedNavigableMap"));
-        return ("java.util.Collections".equals(classMember.getClassName()) && interestingCollectionMethodNames.contains(classMember.getName()))
+        return CollectionAnalysis.isSynchronizedCollection(classMember)
                 || (classMember.getClassName().startsWith("java.util.concurrent.atomic") && classMember.getSignature().endsWith(")V"));
     }
 
@@ -175,8 +170,6 @@ public class AtomicOperationsCombinedDetector implements Detector {
         CallListDataflow callListDataflow = classContext.getCallListDataflow(method);
         JavaClass javaClass = classContext.getJavaClass();
         MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(javaClass, method);
-        FinallyDuplicatesInfoFactory.FinallyDuplicatesInfo methodAnalysis =
-                Global.getAnalysisCache().getMethodAnalysis(FinallyDuplicatesInfoFactory.FinallyDuplicatesInfo.class, methodDescriptor);
         boolean synchronizedBlock = false;
 
         for (Location location : cfg.orderedLocations()) {
@@ -189,7 +182,7 @@ public class AtomicOperationsCombinedDetector implements Detector {
                 synchronizedBlock = true;
             } else if (instruction instanceof MONITOREXIT) {
                 synchronizedBlock = false;
-            } else if (instruction instanceof PUTFIELD && !synchronizedBlock && !isDuplicatedLocation(methodAnalysis, pc)) {
+            } else if (instruction instanceof PUTFIELD && !synchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
                 XField xField = XFactory.createXField((FieldInstruction) instruction, cpg);
                 if (interestingFields.contains(xField)) {
                     bugPrototype.invokedField = xField;
@@ -198,7 +191,7 @@ public class AtomicOperationsCombinedDetector implements Detector {
                             .add(bugPrototype);
                 }
             } else if (instruction instanceof InvokeInstruction && !(instruction instanceof INVOKEDYNAMIC)
-                    && !synchronizedBlock && !isDuplicatedLocation(methodAnalysis, pc)) {
+                    && !synchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
                 OpcodeStack stack = OpcodeStackScanner.getStackAt(javaClass, method, pc);
                 Optional<XField> interestingField = getInterestingField(stack);
                 XMethod xMethod = XFactory.createXMethod((InvokeInstruction) instruction, cpg);
@@ -228,10 +221,6 @@ public class AtomicOperationsCombinedDetector implements Detector {
                 }
             }
         }
-    }
-
-    private boolean isDuplicatedLocation(FinallyDuplicatesInfoFactory.FinallyDuplicatesInfo methodAnalysis, int pc) {
-        return methodAnalysis.getDuplicates(pc).stream().anyMatch(duplicatePc -> duplicatePc < pc);
     }
 
     private Optional<XField> getInterestingField(OpcodeStack stack) {
