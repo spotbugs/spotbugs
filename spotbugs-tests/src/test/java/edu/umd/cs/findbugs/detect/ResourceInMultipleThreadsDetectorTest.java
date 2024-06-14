@@ -2,12 +2,6 @@ package edu.umd.cs.findbugs.detect;
 
 import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 class ResourceInMultipleThreadsDetectorTest extends AbstractIntegrationTest {
 
@@ -25,7 +19,7 @@ class ResourceInMultipleThreadsDetectorTest extends AbstractIntegrationTest {
                 "commonResources/CombinedThreadsInShutdownHook$1.class",
                 "commonResources/Vehicle.class",
                 "commonResources/Vehicle$Builder.class");
-        assertNumOfBugs(0);
+        assertBugTypeCount("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", 0);
     }
 
     @Test
@@ -33,12 +27,12 @@ class ResourceInMultipleThreadsDetectorTest extends AbstractIntegrationTest {
         performAnalysis("commonResources/UnsafeFieldUsage.class",
                 "commonResources/Vehicle.class",
                 "commonResources/Vehicle$Builder.class");
-        assertNumOfBugs(5);
-        assertBug("UnsafeFieldUsage", "lambda$new$0", 8);
-        assertBug("UnsafeFieldUsage", "createVehicle", 16);
-        assertBug("UnsafeFieldUsage", "createVehicle", 17);
-        assertBug("UnsafeFieldUsage", "createVehicle", 18);
-        assertBug("UnsafeFieldUsage", "createVehicle", 19);
+        assertBugTypeCount("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", 5);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "UnsafeFieldUsage", "lambda$new$0", 8);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "UnsafeFieldUsage", "createVehicle", 16);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "UnsafeFieldUsage", "createVehicle", 17);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "UnsafeFieldUsage", "createVehicle", 18);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "UnsafeFieldUsage", "createVehicle", 19);
     }
 
     @Test
@@ -46,9 +40,9 @@ class ResourceInMultipleThreadsDetectorTest extends AbstractIntegrationTest {
         performAnalysis("commonResources/UnsafeFieldUsage2.class",
                 "commonResources/Vehicle.class",
                 "commonResources/Vehicle$Builder.class");
-        assertNumOfBugs(2);
-        assertBug("UnsafeFieldUsage2", "lambda$new$0", 8);
-        assertBug("UnsafeFieldUsage2", "createVehicle", 16);
+        assertBugTypeCount("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", 2);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "UnsafeFieldUsage2", "lambda$new$0", 8);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "UnsafeFieldUsage2", "createVehicle", 16);
     }
 
     @Test
@@ -56,9 +50,9 @@ class ResourceInMultipleThreadsDetectorTest extends AbstractIntegrationTest {
         performAnalysis("commonResources/UnsafeFieldUsage3.class",
                 "commonResources/Vehicle.class",
                 "commonResources/Vehicle$Builder.class");
-        assertNumOfBugs(2);
-        assertBug("UnsafeFieldUsage3", "lambda$new$0", 12);
-        assertBug("UnsafeFieldUsage3", "createVehicle", 8);
+        assertBugTypeCount("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", 2);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "UnsafeFieldUsage3", "lambda$new$0", 12);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "UnsafeFieldUsage3", "createVehicle", 8);
     }
 
     @Test
@@ -66,24 +60,8 @@ class ResourceInMultipleThreadsDetectorTest extends AbstractIntegrationTest {
         performAnalysis("commonResources/SynchronizedUnsafeFieldUsage.class",
                 "commonResources/Vehicle.class",
                 "commonResources/Vehicle$Builder.class");
-        assertNumOfBugs(2);
-        assertBug("SynchronizedUnsafeFieldUsage", "lambda$new$0", 8);
-        assertBug("SynchronizedUnsafeFieldUsage", "createVehicle", 16);
-    }
-
-    private void assertNumOfBugs(int num) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD").build();
-        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertBug(String className, String methodName, int line) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD")
-                .inClass(className)
-                .inMethod(methodName)
-                .atLine(line)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+        assertBugTypeCount("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", 2);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "SynchronizedUnsafeFieldUsage", "lambda$new$0", 8);
+        assertBugInMethodAtLine("AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD", "SynchronizedUnsafeFieldUsage", "createVehicle", 16);
     }
 }

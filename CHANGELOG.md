@@ -33,16 +33,16 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Return objects directly instead of creating more garbage collection by defining them ([#3133](https://github.com/spotbugs/spotbugs/issues/3133))
 - Cleanup double initization and fix comments referring to findbugs instead of spotbugs([#3134](https://github.com/spotbugs/spotbugs/issues/3134))
 
+### Added
+- New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
+  - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
+
 ## 4.8.6 - 2024-06-17
 ### Fixed
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches when the switch instruction is TABLESWITCH ([#2782](https://github.com/spotbugs/spotbugs/issues/2782))
 - Do not throw exception when inspecting empty switch statements ([#2995](https://github.com/spotbugs/spotbugs/issues/2995))
 - Adjust priority since relaxed mode reports even `IGNORED_PRIORITY` ([#2994](https://github.com/spotbugs/spotbugs/issues/2994))
 - Fix duplicated log4j2 jar in distribution ([#3001](https://github.com/spotbugs/spotbugs/issues/3001))
-
-### Added
-- New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
-  - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
 
 ## 4.8.5 - 2024-05-03
 ### Fixed
