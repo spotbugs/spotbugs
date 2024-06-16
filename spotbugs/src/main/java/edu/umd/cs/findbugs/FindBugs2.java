@@ -224,113 +224,110 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         Profiler profiler = bugReporter.getProjectStats().getProfiler();
 
         try {
-            try {
-                // Get the class factory for creating classpath/codebase/etc.
-                classFactory = ClassFactory.instance();
+            // Get the class factory for creating classpath/codebase/etc.
+            classFactory = ClassFactory.instance();
 
-                // The class path object
-                createClassPath();
+            // The class path object
+            createClassPath();
 
-                progressReporter.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
-                profiler.start(this.getClass());
+            progressReporter.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
+            profiler.start(this.getClass());
 
-                // The analysis cache object
-                createAnalysisCache();
+            // The analysis cache object
+            createAnalysisCache();
 
-                // Create BCEL compatibility layer
-                createAnalysisContext(project, appClassList, analysisOptions.sourceInfoFileName);
+            // Create BCEL compatibility layer
+            createAnalysisContext(project, appClassList, analysisOptions.sourceInfoFileName);
 
-                // Discover all codebases in classpath and
-                // enumerate all classes (application and non-application)
-                buildClassPath();
+            // Discover all codebases in classpath and
+            // enumerate all classes (application and non-application)
+            buildClassPath();
 
 
-                // Build set of classes referenced by application classes
-                buildReferencedClassSet();
+            // Build set of classes referenced by application classes
+            buildReferencedClassSet();
 
-                // Create BCEL compatibility layer
-                setAppClassList(appClassList);
+            // Create BCEL compatibility layer
+            setAppClassList(appClassList);
 
-                // Configure the BugCollection (if we are generating one)
-                FindBugs.configureBugCollection(this);
+            // Configure the BugCollection (if we are generating one)
+            FindBugs.configureBugCollection(this);
 
-                // Enable/disabled relaxed reporting mode
-                FindBugsAnalysisFeatures.setRelaxedMode(analysisOptions.relaxedReportingMode);
-                FindBugsDisplayFeatures.setAbridgedMessages(analysisOptions.abridgedMessages);
+            // Enable/disabled relaxed reporting mode
+            FindBugsAnalysisFeatures.setRelaxedMode(analysisOptions.relaxedReportingMode);
+            FindBugsDisplayFeatures.setAbridgedMessages(analysisOptions.abridgedMessages);
 
-                // Configure training databases
-                FindBugs.configureTrainingDatabases(this);
+            // Configure training databases
+            FindBugs.configureTrainingDatabases(this);
 
-                // Configure analysis features
-                configureAnalysisFeatures();
+            // Configure analysis features
+            configureAnalysisFeatures();
 
-                // Create the execution plan (which passes/detectors to execute)
-                createExecutionPlan();
+            // Create the execution plan (which passes/detectors to execute)
+            createExecutionPlan();
 
-                for (Plugin p : detectorFactoryCollection.plugins()) {
-                    for (ComponentPlugin<BugReporterDecorator> brp : p.getComponentPlugins(BugReporterDecorator.class)) {
-                        if (brp.isEnabledByDefault() && !brp.isNamed(explicitlyDisabledBugReporterDecorators)
-                                || brp.isNamed(explicitlyEnabledBugReporterDecorators)) {
-                            bugReporter = BugReporterDecorator.construct(brp, bugReporter);
-                        }
+            for (Plugin p : detectorFactoryCollection.plugins()) {
+                for (ComponentPlugin<BugReporterDecorator> brp : p.getComponentPlugins(BugReporterDecorator.class)) {
+                    if (brp.isEnabledByDefault() && !brp.isNamed(explicitlyDisabledBugReporterDecorators)
+                            || brp.isNamed(explicitlyEnabledBugReporterDecorators)) {
+                        bugReporter = BugReporterDecorator.construct(brp, bugReporter);
                     }
                 }
-                if (!classScreener.vacuous()) {
-                    bugReporter = new DelegatingBugReporter(bugReporter) {
-
-                        @Override
-                        public void reportBug(@Nonnull BugInstance bugInstance) {
-                            String className = bugInstance.getPrimaryClass().getClassName();
-                            String resourceName = ClassName.toSlashedClassName(className) + ".class";
-                            if (classScreener.matches(resourceName)) {
-                                this.getDelegate().reportBug(bugInstance);
-                            }
-                        }
-                    };
-                }
-
-                if (executionPlan.isActive(NoteSuppressedWarnings.class)) {
-                    SuppressionMatcher m = AnalysisContext.currentAnalysisContext().getSuppressionMatcher();
-                    bugReporter = new FilterBugReporter(bugReporter, m, false);
-                }
-
-                if (appClassList.size() == 0) {
-                    Map<String, ICodeBaseEntry> codebase = classPath.getApplicationCodebaseEntries();
-                    if (analysisOptions.noClassOk) {
-                        System.err.println("No classfiles specified; output will have no warnings");
-                    } else if (codebase.isEmpty()) {
-                        throw new IOException("No files to analyze could be opened");
-                    } else {
-                        throw new NoClassesFoundToAnalyzeException(classPath);
-                    }
-                }
-
-                // Analyze the application
-                analyzeApplication();
-            } catch (CheckedAnalysisException e) {
-                IOException ioe = new IOException("IOException while scanning codebases");
-                ioe.initCause(e);
-                throw ioe;
-            } catch (OutOfMemoryError e) {
-                System.err.println("Out of memory");
-                System.err.println("Total memory: " + Runtime.getRuntime().maxMemory() / 1000000 + "M");
-                System.err.println(" free memory: " + Runtime.getRuntime().freeMemory() / 1000000 + "M");
-
-                for (String s : project.getFileList()) {
-                    System.err.println("Analyzed: " + s);
-                }
-                for (String s : project.getAuxClasspathEntryList()) {
-                    System.err.println("     Aux: " + s);
-                }
-                throw e;
-            } finally {
-                clearCaches();
-                profiler.end(this.getClass());
-                profiler.report();
             }
-        } catch (IOException e) {
+            if (!classScreener.vacuous()) {
+                bugReporter = new DelegatingBugReporter(bugReporter) {
+
+                    @Override
+                    public void reportBug(@Nonnull BugInstance bugInstance) {
+                        String className = bugInstance.getPrimaryClass().getClassName();
+                        String resourceName = ClassName.toSlashedClassName(className) + ".class";
+                        if (classScreener.matches(resourceName)) {
+                            this.getDelegate().reportBug(bugInstance);
+                        }
+                    }
+                };
+            }
+
+            if (executionPlan.isActive(NoteSuppressedWarnings.class)) {
+                SuppressionMatcher m = AnalysisContext.currentAnalysisContext().getSuppressionMatcher();
+                bugReporter = new FilterBugReporter(bugReporter, m, false);
+            }
+
+            if (appClassList.size() == 0) {
+                Map<String, ICodeBaseEntry> codebase = classPath.getApplicationCodebaseEntries();
+                if (analysisOptions.noClassOk) {
+                    System.err.println("No classfiles specified; output will have no warnings");
+                } else if (codebase.isEmpty()) {
+                    bugReporter.reportQueuedErrors();
+                    throw new IOException("No files to analyze could be opened");
+                } else {
+                    throw new NoClassesFoundToAnalyzeException(classPath);
+                }
+            }
+
+            // Analyze the application
+            analyzeApplication();
+        } catch (CheckedAnalysisException e) {
+            IOException ioe = new IOException("IOException while scanning codebases");
+            ioe.initCause(e);
             bugReporter.reportQueuedErrors();
+            throw ioe;
+        } catch (OutOfMemoryError e) {
+            System.err.println("Out of memory");
+            System.err.println("Total memory: " + Runtime.getRuntime().maxMemory() / 1000000 + "M");
+            System.err.println(" free memory: " + Runtime.getRuntime().freeMemory() / 1000000 + "M");
+
+            for (String s : project.getFileList()) {
+                System.err.println("Analyzed: " + s);
+            }
+            for (String s : project.getAuxClasspathEntryList()) {
+                System.err.println("     Aux: " + s);
+            }
             throw e;
+        } finally {
+            clearCaches();
+            profiler.end(this.getClass());
+            profiler.report();
         }
     }
 
@@ -1197,7 +1194,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
      */
     private void logRecoverableException(ClassDescriptor classDescriptor, Detector2 detector, Throwable e) {
         bugReporter.logError(
-                "Exception analyzing " + classDescriptor.toDottedClassName() + " using detector "
+                "Exception analyzing " + classDescriptor.getDottedClassName() + " using detector "
                         + detector.getDetectorClassName(), e);
     }
 

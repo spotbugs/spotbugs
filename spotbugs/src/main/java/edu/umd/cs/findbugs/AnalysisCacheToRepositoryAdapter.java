@@ -37,11 +37,6 @@ import edu.umd.cs.findbugs.util.ClassName;
  * @author David Hovemeyer
  */
 public class AnalysisCacheToRepositoryAdapter implements Repository {
-    /**
-     * Constructor.
-     */
-    public AnalysisCacheToRepositoryAdapter() {
-    }
 
     /*
      * (non-Javadoc)

@@ -98,13 +98,13 @@ public class SortedBugCollection implements BugCollection {
 
     boolean earlyStats = SystemProperties.getBoolean("findbugs.report.summaryFirst");
 
-    boolean bugsPopulated = false;
+    boolean bugsPopulated;
 
-    private boolean withMessages = false;
+    private boolean withMessages;
 
-    private boolean minimalXML = false;
+    private boolean minimalXML;
 
-    private boolean applySuppressions = false;
+    private boolean applySuppressions;
 
     long timeStartedLoading, timeFinishedLoading;
 
@@ -129,7 +129,7 @@ public class SortedBugCollection implements BugCollection {
 
     private final List<AppVersion> appVersionList;
 
-    private boolean preciseHashOccurrenceNumbersAvailable = false;
+    private boolean preciseHashOccurrenceNumbersAvailable;
 
     /**
      * Sequence number of the most-recently analyzed version of the code.
@@ -460,7 +460,6 @@ public class SortedBugCollection implements BugCollection {
         bugsPopulated();
         XMLOutput xmlOutput;
         // if (project == null) throw new NullPointerException("No project");
-
 
         xmlOutput = new OutputStreamXMLOutput(out);
 
@@ -821,6 +820,8 @@ public class SortedBugCollection implements BugCollection {
     }
 
     private static final class BoundedLinkedHashSet extends LinkedHashSet<AnalysisError> {
+        private static final long serialVersionUID = 1L;
+
         @Override
         public boolean add(AnalysisError a) {
             if (this.size() > 1000) {

@@ -100,17 +100,18 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     private String description;
 
-    final private @DottedClassName String className;
+    @DottedClassName
+    private final String className;
 
     private String sourceFile;
 
-    final private int startLine;
+    private final int startLine;
 
-    final private int endLine;
+    private final int endLine;
 
-    final private int startBytecode;
+    private final int startBytecode;
 
-    final private int endBytecode;
+    private final int endBytecode;
 
     private boolean synthetic;
 
@@ -346,7 +347,7 @@ public class SourceLineAnnotation implements BugAnnotation {
                 }
                 if (firstLine < Integer.MAX_VALUE) {
 
-                    result = new SourceLineAnnotation(methodDescriptor.getClassDescriptor().toDottedClassName(), sourceFile,
+                    result = new SourceLineAnnotation(methodDescriptor.getClassDescriptor().getDottedClassName(), sourceFile,
                             firstLine, firstLine, bytecode, bytecode);
                 }
             }
@@ -355,7 +356,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
 
         if (result == null) {
-            result = createUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
+            result = createUnknown(methodDescriptor.getClassDescriptor().getDottedClassName());
         }
         return result;
     }
@@ -442,7 +443,7 @@ public class SourceLineAnnotation implements BugAnnotation {
             Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
             return fromVisitedInstruction(jclass, method, position);
         } catch (CheckedAnalysisException e) {
-            return createReallyUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
+            return createReallyUnknown(methodDescriptor.getClassDescriptor().getDottedClassName());
         }
     }
 
@@ -944,11 +945,10 @@ public class SourceLineAnnotation implements BugAnnotation {
     public String getSourcePath() {
         String classname = getClassName();
         String packageName = "";
-        if (classname.indexOf('.') > 0) {
+        if (classname.contains(".")) {
             packageName = classname.substring(0, 1 + classname.lastIndexOf('.'));
         }
-        String sourcePath = packageName.replace('.', CANONICAL_PACKAGE_SEPARATOR) + sourceFile;
-        return sourcePath;
+        return packageName.replace('.', CANONICAL_PACKAGE_SEPARATOR) + sourceFile;
     }
 
     /**

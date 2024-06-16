@@ -94,8 +94,7 @@ class BugExplorerViewTwoSrcFoldersTest extends AbstractBugExplorerViewTest {
                 setOf(expectedMarker2));
         ExpectedViewElement expectedPattern3 = new ExpectedViewBugGroup(GroupType.Pattern, null, setOf(expectedMarker3),
                 setOf(expectedMarker3));
-        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
+        return new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
                 expectedPattern2, expectedPattern3), setOf(expectedMarker1, expectedMarker2, expectedMarker3));
-        return expectedProject;
     }
 }

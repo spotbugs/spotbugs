@@ -52,6 +52,10 @@ import static java.util.logging.Level.*;
  * @author David Hovemeyer
  */
 public abstract class FindBugs {
+
+    /** Date of release of Java 1.0 */
+    public static final long MINIMUM_TIMESTAMP = new GregorianCalendar(1996, 0, 23).getTime().getTime();
+
     /**
      * Analysis settings for -effort:min.
      */
@@ -250,7 +254,7 @@ public abstract class FindBugs {
      * @param factory
      *            the DetectorFactory
      * @param rankThreshold
-     *            TODO
+     *            the rank threshold
      * @return true if the DetectorFactory should be enabled, false otherwise
      */
     public static boolean isDetectorEnabled(IFindBugsEngine findBugs, DetectorFactory factory, int rankThreshold) {
@@ -396,6 +400,7 @@ public abstract class FindBugs {
         } catch (InterruptedException e) {
             assert false; // should not occur
             checkExitCodeFail(commandLine, e);
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         } catch (RuntimeException | IOException e) {
             checkExitCodeFail(commandLine, e);
@@ -518,9 +523,6 @@ public abstract class FindBugs {
             bugs.getProjectStats().setTimestamp(timestamp);
         }
     }
-
-    /** Date of release of Java 1.0 */
-    public final static long MINIMUM_TIMESTAMP = new GregorianCalendar(1996, 0, 23).getTime().getTime();
 
     public static boolean validTimestamp(long timestamp) {
         return timestamp > MINIMUM_TIMESTAMP;

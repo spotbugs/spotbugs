@@ -64,7 +64,7 @@ public class FindBugsMessageFormat {
      * @param args
      *            the BugAnnotations used as arguments
      * @param primaryClass
-     *            TODO
+     *            the primary class
      * @return the formatted message
      */
     public String format(BugAnnotation[] args, ClassAnnotation primaryClass, boolean abridgedMessages) {

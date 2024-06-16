@@ -34,9 +34,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.xml.XMLUtil;
 
 /**
- * Add human-readable messages to a dom4j tree containing FindBugs XML output.
- * This transformation makes it easier to generate reports (such as HTML) from
- * the XML.
+ * Add human-readable messages to a dom4j tree containing FindBugs XML output. This transformation makes it easier to
+ * generate reports (such as HTML) from the XML.
  *
  * @see BugCollection
  * @author David Hovemeyer

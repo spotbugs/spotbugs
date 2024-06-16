@@ -64,7 +64,7 @@ public class LaunchAppropriateUI {
      * Map of UI name strings to integer UI codes.
      */
     @StaticConstant
-    public static final Map<String, Integer> uiNameToCodeMap;
+    protected static final Map<String, Integer> uiNameToCodeMap;
     static {
         uiNameToCodeMap = new HashMap<>();
         uiNameToCodeMap.put("textui", TEXTUI);
@@ -193,7 +193,7 @@ public class LaunchAppropriateUI {
      *            command line arguments
      * @throws java.lang.Exception
      */
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         LaunchAppropriateUI launcher = new LaunchAppropriateUI(args);
         launcher.launch();
     }

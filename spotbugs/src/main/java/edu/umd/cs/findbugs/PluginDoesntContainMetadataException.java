@@ -24,6 +24,8 @@ package edu.umd.cs.findbugs;
  */
 public class PluginDoesntContainMetadataException extends PluginException {
 
+    private static final long serialVersionUID = 1L;
+
     public PluginDoesntContainMetadataException(String msg) {
         super(msg);
     }

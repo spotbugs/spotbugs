@@ -103,6 +103,10 @@ public class FilterBugsTask extends AbstractFindBugsTask {
         return inputFile;
     }
 
+    /**
+     * @deprecated Use setOutputFile instead
+     */
+    @Deprecated
     public void setOutput(File output) {
         this.outputFile = output;
     }

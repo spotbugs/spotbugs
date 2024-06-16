@@ -86,7 +86,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
      * @return the ClassAnnotation
      */
     public static ClassAnnotation fromClassDescriptor(ClassDescriptor classDescriptor) {
-        return new ClassAnnotation(classDescriptor.toDottedClassName());
+        return new ClassAnnotation(classDescriptor.getDottedClassName());
     }
 
     @Override

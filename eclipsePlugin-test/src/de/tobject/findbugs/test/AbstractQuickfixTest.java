@@ -129,7 +129,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     }
 
     protected void sortMarkers(IMarker[] markers) {
-        Arrays.sort(markers, new Comparator<IMarker>() {
+        Arrays.sort(markers, new Comparator<>() {
 
             @Override
             public int compare(IMarker marker1, IMarker marker2) {
@@ -287,8 +287,8 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     public static class QuickFixTestPackage {
 
         public static final int LINE_NUMBER_NOT_SPECIFIED = -1; //TODO remove this after updating current tests
-        public String expectedPattern = null;
-        public List<String> expectedLabels = null;
+        public String expectedPattern;
+        public List<String> expectedLabels;
         public int lineNumber = LINE_NUMBER_NOT_SPECIFIED;
 
         @Override

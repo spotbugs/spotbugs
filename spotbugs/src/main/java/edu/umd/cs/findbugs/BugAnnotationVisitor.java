@@ -20,19 +20,19 @@
 package edu.umd.cs.findbugs;
 
 public interface BugAnnotationVisitor {
-    public void visitClassAnnotation(ClassAnnotation classAnnotation);
+    void visitClassAnnotation(ClassAnnotation classAnnotation);
 
-    public void visitFieldAnnotation(FieldAnnotation fieldAnnotation);
+    void visitFieldAnnotation(FieldAnnotation fieldAnnotation);
 
-    public void visitMethodAnnotation(MethodAnnotation methodAnnotation);
+    void visitMethodAnnotation(MethodAnnotation methodAnnotation);
 
-    public void visitIntAnnotation(IntAnnotation intAnnotation);
+    void visitIntAnnotation(IntAnnotation intAnnotation);
 
-    public void visitStringAnnotation(StringAnnotation stringAnnotation);
+    void visitStringAnnotation(StringAnnotation stringAnnotation);
 
-    public void visitLocalVariableAnnotation(LocalVariableAnnotation localVariableAnnotation);
+    void visitLocalVariableAnnotation(LocalVariableAnnotation localVariableAnnotation);
 
-    public void visitTypeAnnotation(TypeAnnotation typeAnnotation);
+    void visitTypeAnnotation(TypeAnnotation typeAnnotation);
 
-    public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation);
+    void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation);
 }

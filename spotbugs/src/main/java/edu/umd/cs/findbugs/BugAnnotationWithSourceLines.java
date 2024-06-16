@@ -24,6 +24,8 @@ package edu.umd.cs.findbugs;
  */
 public abstract class BugAnnotationWithSourceLines implements BugAnnotation {
 
+    private static final long serialVersionUID = 1L;
+
     protected String sourceFileName;
 
     protected SourceLineAnnotation sourceLines;
@@ -31,7 +33,7 @@ public abstract class BugAnnotationWithSourceLines implements BugAnnotation {
     /**
      *
      */
-    public BugAnnotationWithSourceLines() {
+    protected BugAnnotationWithSourceLines() {
         super();
     }
 

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-
 class Issue1867Test extends AbstractIntegrationTest {
 
     @Test

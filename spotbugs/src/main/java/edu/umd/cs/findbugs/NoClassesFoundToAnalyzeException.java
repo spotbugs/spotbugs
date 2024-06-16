@@ -35,7 +35,8 @@ import edu.umd.cs.findbugs.classfile.IClassPath;
  */
 public class NoClassesFoundToAnalyzeException extends IOException {
 
-    private final IClassPath f_classPath;
+    private static final long serialVersionUID = 1L;
+    private final IClassPath iclassPath;
 
     /**
      * Gets the classpath this exception is about.
@@ -43,7 +44,7 @@ public class NoClassesFoundToAnalyzeException extends IOException {
      * @return Gets the non-null classpath this exception is about.
      */
     public IClassPath getClassPath() {
-        return f_classPath;
+        return iclassPath;
     }
 
     /**
@@ -57,6 +58,6 @@ public class NoClassesFoundToAnalyzeException extends IOException {
         if (classPath == null) {
             throw new IllegalArgumentException("classpath must be non-null");
         }
-        f_classPath = classPath;
+        iclassPath = classPath;
     }
 }

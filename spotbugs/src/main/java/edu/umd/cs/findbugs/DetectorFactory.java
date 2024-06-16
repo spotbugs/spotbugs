@@ -51,67 +51,6 @@ public class DetectorFactory {
 
     private static final Class<?>[] constructorArgTypes = new Class<?>[] { BugReporter.class };
 
-    static class ReflectionDetectorCreator {
-        private final Class<?> detectorClass;
-
-        private Method setAnalysisContext;
-
-        ReflectionDetectorCreator(Class<?> detectorClass) {
-            this.detectorClass = detectorClass;
-            if (SUPPORT_OLD_DETECTOR_INTERFACE) {
-                try {
-                    setAnalysisContext = detectorClass.getDeclaredMethod("setAnalysisContext",
-                            new Class[] { AnalysisContext.class });
-                } catch (NoSuchMethodException e) {
-                    // Ignore
-                }
-            }
-        }
-
-        @Override
-        public String toString() {
-            return detectorClass.getSimpleName();
-        }
-
-        public Detector createDetector(BugReporter bugReporter) {
-            try {
-                Constructor<?> constructor = detectorClass.getConstructor(constructorArgTypes);
-                Detector detector = (Detector) constructor.newInstance(new Object[] { bugReporter });
-                if (setAnalysisContext != null) {
-                    setAnalysisContext.invoke(detector, new Object[] { AnalysisContext.currentAnalysisContext() });
-                }
-                return detector;
-            } catch (Exception e) {
-                throw new RuntimeException("Could not instantiate " + detectorClass.getName() + " as Detector", e);
-            }
-        }
-
-        public Detector2 createDetector2(BugReporter bugReporter) {
-            if (Detector2.class.isAssignableFrom(detectorClass)) {
-                try {
-                    Constructor<?> constructor = detectorClass.getConstructor(constructorArgTypes);
-                    return (Detector2) constructor.newInstance(new Object[] { bugReporter });
-                } catch (Exception e) {
-                    throw new RuntimeException("Could not instantiate " + detectorClass.getName() + " as Detector2", e);
-                }
-            }
-
-            if (Detector.class.isAssignableFrom(detectorClass)) {
-                if (NonReportingDetector.class.isAssignableFrom(detectorClass)) {
-                    return new NonReportingDetectorToDetector2Adapter(createDetector(bugReporter));
-                }
-                return new DetectorToDetector2Adapter(createDetector(bugReporter));
-
-            }
-
-            throw new RuntimeException("Class " + detectorClass.getName() + " is not a detector class");
-        }
-
-        public Class<?> getDetectorClass() {
-            return detectorClass;
-        }
-    }
-
     private final @Nonnull Plugin plugin;
 
     private final ReflectionDetectorCreator detectorCreator;
@@ -140,13 +79,74 @@ public class DetectorFactory {
 
     private boolean hidden;
 
+    static class ReflectionDetectorCreator {
+        private final Class<?> detectorClass;
+
+        private Method setAnalysisContext;
+
+        ReflectionDetectorCreator(Class<?> detectorClass) {
+            this.detectorClass = detectorClass;
+            if (SUPPORT_OLD_DETECTOR_INTERFACE) {
+                try {
+                    setAnalysisContext = detectorClass.getDeclaredMethod("setAnalysisContext",
+                            AnalysisContext.class);
+                } catch (NoSuchMethodException e) {
+                    // Ignore
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            return detectorClass.getSimpleName();
+        }
+
+        public Detector createDetector(BugReporter bugReporter) {
+            try {
+                Constructor<?> constructor = detectorClass.getConstructor(constructorArgTypes);
+                Detector detector = (Detector) constructor.newInstance(bugReporter);
+                if (setAnalysisContext != null) {
+                    setAnalysisContext.invoke(detector, AnalysisContext.currentAnalysisContext());
+                }
+                return detector;
+            } catch (Exception e) {
+                throw new RuntimeException("Could not instantiate " + detectorClass.getName() + " as Detector", e);
+            }
+        }
+
+        public Detector2 createDetector2(BugReporter bugReporter) {
+            if (Detector2.class.isAssignableFrom(detectorClass)) {
+                try {
+                    Constructor<?> constructor = detectorClass.getConstructor(constructorArgTypes);
+                    return (Detector2) constructor.newInstance(bugReporter);
+                } catch (Exception e) {
+                    throw new RuntimeException("Could not instantiate " + detectorClass.getName() + " as Detector2", e);
+                }
+            }
+
+            if (Detector.class.isAssignableFrom(detectorClass)) {
+                if (NonReportingDetector.class.isAssignableFrom(detectorClass)) {
+                    return new NonReportingDetectorToDetector2Adapter(createDetector(bugReporter));
+                }
+                return new DetectorToDetector2Adapter(createDetector(bugReporter));
+
+            }
+
+            throw new RuntimeException("Class " + detectorClass.getName() + " is not a detector class");
+        }
+
+        public Class<?> getDetectorClass() {
+            return detectorClass;
+        }
+    }
+
     /**
      * Constructor.
      *
      * @param plugin
      *            the Plugin the Detector is part of
      * @param className
-     *            TODO
+     *            the classname
      * @param detectorClass
      *            the Class object of the Detector
      * @param enabled

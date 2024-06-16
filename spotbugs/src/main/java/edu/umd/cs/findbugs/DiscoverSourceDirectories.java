@@ -56,6 +56,18 @@ import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 public class DiscoverSourceDirectories {
     private static boolean DEBUG = SystemProperties.getBoolean("findbugs.dsd.debug");
 
+    private Project project;
+
+    private String rootSourceDirectory;
+
+    private boolean scanForNestedArchives;
+
+    private IErrorLogger errorLogger;
+
+    private Progress progress;
+
+    private final List<String> discoveredSourceDirectoryList;
+
     /**
      * Progress callback interface for reporting the progress of source
      * directory discovery.
@@ -137,18 +149,6 @@ public class DiscoverSourceDirectories {
         }
 
     }
-
-    private Project project;
-
-    private String rootSourceDirectory;
-
-    private boolean scanForNestedArchives;
-
-    private IErrorLogger errorLogger;
-
-    private Progress progress;
-
-    private final List<String> discoveredSourceDirectoryList;
 
     /**
      * Constructor.
@@ -313,7 +313,7 @@ public class DiscoverSourceDirectories {
 
             return fullyQualifiedSourceFile;
         } catch (CheckedAnalysisException e) {
-            errorLogger.logError("Could scan class " + classDesc.toDottedClassName(), e);
+            errorLogger.logError("Could scan class " + classDesc.getDottedClassName(), e);
             throw e;
         } finally {
             progress.finishClass();
@@ -333,9 +333,9 @@ public class DiscoverSourceDirectories {
                 String fullyQualifiedSourceFileName = findFullyQualifiedSourceFileName(classPath, classDesc);
                 fullyQualifiedSourceFileNameList.add(fullyQualifiedSourceFileName);
             } catch (IOException e) {
-                errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
+                errorLogger.logError("Couldn't scan class " + classDesc.getDottedClassName(), e);
             } catch (CheckedAnalysisException e) {
-                errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
+                errorLogger.logError("Couldn't scan class " + classDesc.getDottedClassName(), e);
             }
         }
 
@@ -404,7 +404,7 @@ public class DiscoverSourceDirectories {
 
             @Override
             public void reportMissingClass(ClassDescriptor classDescriptor) {
-                logError("Missing class: " + classDescriptor.toDottedClassName());
+                logError("Missing class: " + classDescriptor.getDottedClassName());
             }
 
             @Override

@@ -9,7 +9,6 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-
 class Issue2558Test extends AbstractIntegrationTest {
     @Test
     void test() {

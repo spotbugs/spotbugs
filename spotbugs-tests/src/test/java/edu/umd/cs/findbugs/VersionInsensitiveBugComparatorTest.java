@@ -10,6 +10,7 @@ import java.util.List;
 
 class VersionInsensitiveBugComparatorTest {
     static class MyBugAnnotation implements BugAnnotation {
+        private static final long serialVersionUID = 1L;
         private String desc;
 
         public MyBugAnnotation(String desc) {

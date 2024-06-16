@@ -152,7 +152,7 @@ public class BugRanker {
                     continue;
                 }
 
-                String parts[] = s.split(" ");
+                String[] parts = s.split(" ");
                 if (parts.length != 3) {
                     AnalysisContext.logError("Can't parse bug rank line: '" + s + "'. "
                             + "Valid line must contain 3 parts separated by spaces.");
