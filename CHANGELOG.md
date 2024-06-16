@@ -6,6 +6,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2024-??-??
+### Cleanup
+- Rough pass through code cleaning up sonarlintt, initialization issues, and others including one deprecation and regex changes ([#3014](https://github.com/spotbugs/spotbugs/issues/3014))
 
 ## 4.8.6 - 2024-06-17
 ### Fixed
