@@ -997,15 +997,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
             if (Values.DOTTED_JAVA_LANG_STRING.equals(lhs) || Values.DOTTED_JAVA_LANG_STRING.equals(rhs)) {
                 handleStringComparison(jclass, method, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
-            } else if (reportAllRefComparisons()) {
-                handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
-                        (ReferenceType) lhsType, (ReferenceType) rhsType, Optional.of(Priorities.EXP_PRIORITY));
             } else if (suspiciousSet.contains(lhs)) {
                 handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
                         (ReferenceType) lhsType, (ReferenceType) rhsType, Optional.empty());
             } else if (suspiciousSet.contains(rhs)) {
                 handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, rhs,
                         (ReferenceType) lhsType, (ReferenceType) rhsType, Optional.empty());
+            } else if (reportAllRefComparisons()) {
+                handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
+                        (ReferenceType) lhsType, (ReferenceType) rhsType, Optional.of(Priorities.EXP_PRIORITY));
             }
         }
     }
