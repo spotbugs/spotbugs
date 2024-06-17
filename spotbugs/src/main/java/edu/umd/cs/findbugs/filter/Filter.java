@@ -20,11 +20,13 @@
 package edu.umd.cs.findbugs.filter;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
@@ -204,7 +206,8 @@ public class Filter extends OrMatcher {
      * @throws ParserConfigurationException
      */
     private void parse(String fileName) throws IOException, SAXException, ParserConfigurationException {
-        FileInputStream fileInputStream = new FileInputStream(new File(fileName));
+        Path path = FileSystems.getDefault().getPath(fileName);
+        InputStream fileInputStream = Files.newInputStream(path);
         parse(fileName, fileInputStream);
     }
 

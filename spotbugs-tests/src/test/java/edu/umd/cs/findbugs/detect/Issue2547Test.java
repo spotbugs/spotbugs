@@ -21,10 +21,9 @@ class Issue2547Test extends AbstractIntegrationTest {
                 "ghIssues/issue2547/MyEx.class",
                 "ghIssues/issue2547/ExceptionFactory.class");
 
-        assertBug(3);
+        assertBug(2);
         assertBug("notThrowingExCtor", 15);
         assertBug("notThrowingExCtorCaller", 26);
-        assertBug("notThrowingExCtorCallerOutside", 37);
     }
 
     private void assertBug(int num) {

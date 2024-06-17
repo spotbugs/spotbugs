@@ -6,7 +6,7 @@ tasks.withType(Test) {
     doFirst {
       // https://openjdk.org/jeps/223
       if (System.getProperty("java.specification.version") != "1.8") {
-        jvmArgs = [
+        jvmArgs += [
           '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
         ]
       }

@@ -719,6 +719,14 @@ cloneable classes. </p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.MultipleInstantiationsOfSingletons">
+    <Details>
+<![CDATA[
+<p> This detector looks for violations of the idioms for writing
+classes using singleton design pattern. </p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.ThrowingExceptions">
     <Details>
 <![CDATA[
@@ -1730,11 +1738,14 @@ factory pattern to create these objects.</p>
   <Detector class="edu.umd.cs.findbugs.detect.FindOverridableMethodCall">
     <Details>
       <![CDATA[
-            <p>Detector for patterns where a constructor or a clone() method calls an overridable
-               method.</p>
+            <p>
+               Detector for patterns where a constructor, a clone(), or a readObject() method
+               calls an overridable method.
+            </p>
             <p>
                Calling an overridable method from a constructor may result in the use of
-               uninitialized data. Calling such method from a clone() method is insecure.
+               uninitialized data. Calling such method from a clone(), or readObject() method
+               is insecure.
             </p>
       ]]>
     </Details>
@@ -1816,6 +1827,15 @@ factory pattern to create these objects.</p>
       <![CDATA[
             <p>Checks for reuse of public identifiers, public utility classes, interfaces, or
              packages in the Java Standard Library.</p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryEnvUsage">
+    <Details>
+      <![CDATA[
+            <p>Checks for calls of System.getenv(), where the variable has an equivalent
+              Java property too.
+            </p>
       ]]>
     </Details>
   </Detector>
@@ -2027,7 +2047,7 @@ While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the
     <LongDescription>HTTP cookie formed from untrusted input in {1}</LongDescription>
     <Details>
       <![CDATA[
-    <p>This code constructs an HTTP Cookie using an untrusted HTTP parameter. If this cookie is added to an HTTP response, it will allow a HTTP response splitting
+    <p>This code constructs an HTTP Cookie using an untrusted HTTP parameter. If this cookie is added to an HTTP response, it will allow an HTTP response splitting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
 for more information.</p>
 <p>SpotBugs looks only for the most blatant, obvious cases of HTTP response splitting.
@@ -2044,7 +2064,7 @@ consider using a commercial static analysis or pen-testing tool.
     <LongDescription>HTTP parameter directly written to HTTP header output in {1}</LongDescription>
     <Details>
             <![CDATA[
-    <p>This code directly writes an HTTP parameter to an HTTP header, which allows for a HTTP response splitting
+    <p>This code directly writes an HTTP parameter to an HTTP header, which allows for an HTTP response splitting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
 for more information.</p>
 <p>SpotBugs looks only for the most blatant, obvious cases of HTTP response splitting.
@@ -3770,7 +3790,7 @@ Thus, having a mutable instance field generally creates race conditions.
   <p> This code seems to be using non-short-circuit logic (e.g., &amp;
 or |)
 rather than short-circuit logic (&amp;&amp; or ||). In addition,
-it seem possible that, depending on the value of the left hand side, you might not
+it seems possible that, depending on the value of the left hand side, you might not
 want to evaluate the right hand side (because it would have side effects, could cause an exception
 or could be expensive.</p>
 <p>
@@ -3831,7 +3851,7 @@ Language Specification</a> for details.
   will only give up one lock and the notify will be unable to get both locks,
   and thus the notify will not succeed.
    &nbsp; If there is also a warning about a two lock wait, the
-   probably of a bug is quite high.
+   probability of a bug is quite high.
 </p>
 ]]>
     </Details>
@@ -4309,7 +4329,7 @@ could be changed by malicious code or
     <Details>
 <![CDATA[
   <p>
-An inner class is invoking a method that could be resolved to either a inherited method or a method defined in an outer class.
+An inner class is invoking a method that could be resolved to either an inherited method or a method defined in an outer class.
 For example, you invoke <code>foo(17)</code>, which is defined in both a superclass and in an outer method.
 By the Java semantics,
 it will be resolved to invoke the inherited method, but this may not be what
@@ -5090,7 +5110,7 @@ dereferencing this value will generate a null pointer exception.
 <![CDATA[
   <p> This field is never initialized within any constructor, and is therefore could be null after
 the object is constructed. Elsewhere, it is loaded and dereferenced without a null check.
-This could be a either an error or a questionable design, since
+This could be either an error or a questionable design, since
 it means a null pointer exception will be generated if that field is dereferenced
 before being initialized.
 </p>
@@ -5315,9 +5335,9 @@ is important or acceptable.
     <LongDescription>Return value of {2.givenClass} ignored, but method has no side effect</LongDescription>
     <Details>
 <![CDATA[
-<p>This code calls a method and ignores the return value. However our analysis shows that
+<p>This code calls a method and ignores the return value. However, our analysis shows that
 the method (including its implementations in subclasses if any) does not produce any effect
-other than return value. Thus this call can be removed.
+other than return value. Thus, this call can be removed.
 </p>
 <p>We are trying to reduce the false positives as much as possible, but in some cases this warning might be wrong.
 Common false-positive cases include:</p>
@@ -5918,7 +5938,7 @@ different types. The result of this comparison will always be false at runtime.
 <p> This method calls equals(Object) on two references of different
 class types and analysis suggests they will be to objects of different classes
 at runtime. Further, examination of the equals methods that would be invoked suggest that either
-this call will always return false, or else the equals method is not be symmetric (which is
+this call will always return false, or else the equals method is not symmetric (which is
 a property required by the contract
 for equals in class Object).
 </p>
@@ -6881,7 +6901,7 @@ less confusing to explicitly check pointer equality using <code>==</code>.
     <Details>
 <![CDATA[
 <p>
-This method invokes the .equals(Object o) to compare two arrays, but the arrays of
+This method invokes the .equals(Object o) to compare two arrays, but the arrays
 of incompatible types (e.g., String[] and StringBuffer[], or String[] and int[]).
 They will never be equal. In addition, when equals(...) is used to compare arrays it
 only checks to see if they are the same array, and ignores the contents of the arrays.
@@ -7317,7 +7337,7 @@ just use the constant. Methods detected are:
     reference). Client classes that use this class, may, in addition, use an instance of this class
     as a synchronizing object. Because two classes are using the same object for synchronization,
     Multithread correctness is suspect. You should not synchronize nor call semaphore methods on
-    a public reference. Consider using a internal private member variable to control synchronization.
+    a public reference. Consider using an internal private member variable to control synchronization.
     </p>
     ]]>
       </Details>
@@ -7471,6 +7491,13 @@ If the object is, indeed, non-serializable, an error will result.
 <p>
 This format string includes a newline character (\n). In format strings, it is generally
  preferable to use %n, which will produce the platform-specific line separator.
+ 
+ When using text blocks introduced in Java 15, use the <code>\</code> escape sequence:
+	 
+<code>String value = """
+                first line%n\
+                second line%n\
+                """;</code>
 </p>
 ]]>
      </Details>
@@ -7645,7 +7672,7 @@ better to do a null test rather than an instanceof test.
     <Details>
 <![CDATA[
 <p>
-This cast is unchecked, and not all instances of the type casted from can be cast to
+This cast is unchecked, and not all instances of the type cast from can be cast to
 the type it is being cast to. Check that your program logic ensures that this
 cast will not fail.
 </p>
@@ -8770,7 +8797,101 @@ object explicitly.</p>
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT">
+    <ShortDescription>An overridable method is called from the readObject method.</ShortDescription>
+    <LongDescription>Overridable method {2} is called from readObject.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      The readObject() method must not call any overridable methods. Invoking overridable methods from the readObject()
+      method can provide the overriding method with access to the object's state before it is fully initialized. This
+      premature access is possible because, in deserialization, readObject plays the role of object constructor and
+      therefore object initialization is not complete until readObject exits.</p>
+      <p>
+      <br/>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SER09-J.+Do+not+invoke+overridable+methods+from+the+readObject%28%29+method">
+      SER09-J. Do not invoke overridable methods from the readObject() method</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_IMPLEMENTS_CLONEABLE">
+    <ShortDescription>Class using singleton design pattern directly implements Cloneable interface.</ShortDescription>
+    <LongDescription>Class ({0}) using singleton design pattern directly implements Cloneable interface.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        If a class using singleton design pattern directly implements the Cloneable interface, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
+        Therefore, implementing the Cloneable interface should be avoided.<br><br>
 
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE">
+    <ShortDescription>Class using singleton design pattern indirectly implements Cloneable interface.</ShortDescription>
+    <LongDescription>Class ({0}) using singleton design pattern indirectly implements Cloneable interface.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        If a class using singleton design pattern indirectly implements the Cloneable interface, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
+        Therefore, implementing the Cloneable interface should be avoided. If that's not possible because of an extended super-class, the solution would be overriding the clone method to unconditionally throw CloneNotSupportedException.<br><br>
+
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_IMPLEMENTS_CLONE_METHOD">
+    <ShortDescription>Class using singleton design pattern implements clone() method without being an unconditional CloneNotSupportedException-thrower.</ShortDescription>
+    <LongDescription>Class ({0}) using singleton design pattern implements clone() method without being an unconditional CloneNotSupportedException-thrower.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        This class is using singleton design pattern and does not implement the Cloneable interface, but implements the clone() method without being an unconditional CloneNotSupportedException-thrower. 
+        With that, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
+        Therefore, implementing the clone method should be avoided, otherwise the solution would be overriding the clone method to unconditionally throw CloneNotSupportedException.<br><br>
+
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR">
+    <ShortDescription>Class using singleton design pattern has non-private constructor.</ShortDescription>
+    <LongDescription>Class ({0}) using singleton design pattern has non-private constructor.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        This class is using singleton design pattern and has non-private constructor (please note that a default constructor might exist which is not private). Given that, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
+        The easier solution would be making the constructor private.<br><br>
+
+        <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE">
+    <ShortDescription>Class using singleton design pattern directly or indirectly implements Serializable interface.</ShortDescription>
+    <LongDescription>Class ({0}) using singleton design pattern directly or indirectly implements Serializable interface.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        This class (using singleton design pattern) directly or indirectly implements the Serializable interface, which allows the class to be serialized.<br>
+        Deserialization makes multiple instantiation of a singleton class possible, and therefore should be avoided.<br><br>
+
+        <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED">
+    <ShortDescription>Instance-getter method of class using singleton design pattern is not synchronized.</ShortDescription>
+    <LongDescription>Instance-getter method of class using singleton design pattern ({0}) is not synchronized.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        Instance-getter method of class using singleton design pattern is not synchronized. When this method is invoked by two or more threads simultaneously, 
+        multiple instantiation of a singleton class becomes possible.<br><br>
+        
+        <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
+        </p>]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA">
     <ShortDescription>Instance level lock was used on a shared static data</ShortDescription>
     <LongDescription>Static field "{2}" is modified by an instance level {3}.</LongDescription>
@@ -8995,7 +9116,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     <LongDescription>Assertion validates method argument at {1}. If assertions are disabled, there won't be any argument validation.</LongDescription>
     <Details>
       <![CDATA[
-        <p>Asssertions must not be used to validate arguments of public methods because the validations are
+        <p>Assertions must not be used to validate arguments of public methods because the validations are
         not performed if assertions are disabled.</p>
 
         <p>
@@ -9007,10 +9128,10 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as class name</ShortDescription>
-        <LongDescription>Class name {1} in source file {2} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>The name of the class {0} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
-      It's essential to avoid reusing public identifiers from the Java Standard Library as class names.
+      It's a good practice to avoid reusing public identifiers from the Java Standard Library as class names.
       This is because the Java Standard Library is a part of the Java platform and is expected to be available in all Java environments.
       Doing so can lead to naming conflicts and confusion, making it harder to understand and maintain the code.
       It's best practice to choose unique and descriptive class names that accurately represent the purpose and functionality of your own code.
@@ -9031,7 +9152,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as field name</ShortDescription>
-        <LongDescription>The used identifier {2} as field name in class {1} in source file {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>Name of the field {1.name} in class {0} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
       It is a good practice to avoid reusing public identifiers from the Java Standard Library as field names in your code.
@@ -9057,7 +9178,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as method name</ShortDescription>
-        <LongDescription>The used identifier {2} as method name in class {1} at line {3} as a method name shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>The name of the method {1} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
 
@@ -9082,10 +9203,10 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as method name</ShortDescription>
-        <LongDescription>The used identifier {4} as variable name in the class {1} inside {2} method at line {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
+        <LongDescription>Variable name {2} in method {1} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
         <Details>
             <![CDATA[<p>
-      When declaring local variables in Java, it is crucial to refrain from reusing public identifiers from the Java Standard Library.
+      When declaring local variables in Java, it is a good practice to refrain from reusing public identifiers from the Java Standard Library.
       Reusing these identifiers as local variable names can lead to confusion, hinder code comprehension, and potentially cause conflicts
       with existing publicly available identifier names from the Java Standard Library.
       To maintain code clarity and avoid such issues, it is best practice to select unique and descriptive names for your local variables.
@@ -9104,29 +9225,49 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
         </Details>
   </BugPattern>
-  <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_INNER_CLASS_NAMES">
-        <ShortDescription>Do not reuse public identifiers from JSL as inner name</ShortDescription>
-        <LongDescription>Inner class name {2} of class {1} in source file {3} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
-        <Details>
-            <![CDATA[<p>
-      It's essential to avoid reusing public identifiers from the Java Standard Library as class names.
-      This is because the Java Standard Library is a part of the Java platform and is expected to be available in all Java environments.
-      Doing so can lead to naming conflicts and confusion, making it harder to understand and maintain the code.
-      It's best practice to choose unique and descriptive class names that accurately represent the purpose and functionality of your own code.
-      To provide an example, let's say you want to create an inner class for handling dates inside a specific Calendar class. Instead of using a common name like "Date",
-      which conflicts with the existing java.util.Date class, you could choose a more specific and unique name like or "CalendarDate" or "CalendarDisplayDate".
-
-      A few key points to keep in mind when choosing names as identifier:
-      <ul>
-        <li>Use meaningful prefixes or namespaces: Prepend a project-specific prefix or namespace to your class names to make them distinct. For example, if your project is named "MyApp", you could use "MyAppDate" as your class name.</li>
-        <li>Use descriptive names: Opt for descriptive class names that clearly indicate their purpose and functionality. This helps avoid shadowing existing Java Standard Library identifiers. For instance, instead of "List", consider using "CustomAppList".</li>
-        <li>Follow naming conventions: Adhere to Java's naming conventions, such as using camel case (e.g., MyClass) for class names. This promotes code readability and reduces the chances of conflicts.</li>
-      </ul>
-
+  <BugPattern type="ENV_USE_PROPERTY_INSTEAD_OF_ENV">
+    <ShortDescription>It is preferable to use portable Java property instead of environment variable.</ShortDescription>
+    <LongDescription>It is preferable to use portable Java property '{3}' instead of environment variable '{2}' in method {1}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Environment variables are not portable, the variable name itself (not only the value) may be different depending on the running OS.
+        Not only the names of the specific environment variables can differ (e.g. `USERNAME` in Windows and `USER` in Unix systems),
+        but even the semantics differ, e.g. the case sensitivity (Windows being case-insensitive and Unix case-sensitive).
+        Moreover, the Map of the environment variables returned by <code>java.lang.System.getenv()</code> and its collection views may not obey
+        the general contract of the <code>Object.equals(java.lang.Object)</code> and <code>Object.hashCode()</code> methods.
+        Consequently, using environment variables may have unintended side effects.
+        Also, the visibility of environment variables is less restricted compared to Java Properties: they are visible to all descendants
+        of the defining process, not just the immediate Java subprocess.
+        For these reasons, even the Java API of <code>java.lang.System</code> advises to use Java properties (<code>java.lang.System.getProperty(java.lang.String)</code>)
+        instead of environment variables (<code>java.lang.System.getenv(java.lang.String)</code>) where possible.
       </p>
-      <p>See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL01-J.+Do+not+reuse+public+identifiers+from+the+Java+Standard+Library">DCL01-J. Do not reuse public identifiers from the Java Standard Library</a>.</p>
-      ]]>
-        </Details>
+      <p>
+        If a value can be accessed through both System.getProperty() and System.getenv(), it should be accessed using the former.
+      </p>
+      <p>
+        Mapping of corresponding Java System properties:
+        <table>
+          <tr>
+             <th>Environment variable</th> <th>Property</th>
+          </tr>
+          <tr><td>JAVA_HOME</td> <td>java.home</td></tr>
+          <tr><td>JAVA_VERSION</td> <td>java.version</td></tr>
+          <tr><td>TEMP</td> <td>java.io.tmpdir</td></tr>
+          <tr><td>TMP</td> <td>java.io.tmpdir</td></tr>
+          <tr><td>PROCESSOR_ARCHITECTURE</td> <td>os.arch</td></tr>
+          <tr><td>OS</td> <td>os.name</td></tr>
+          <tr><td>USER</td> <td>user.name</td></tr>
+          <tr><td>USERNAME</td> <td>user.name</td></tr>
+          <tr><td>HOME</td> <td>user.home</td></tr>
+          <tr><td>HOMEPATH</td> <td>user.home</td></tr>
+          <tr><td>CD</td> <td>user.dir</td></tr>
+          <tr><td>PWD</td> <td>user.dir</td></tr>
+        </table>
+      </p>
+      <p>
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables">ENV02-J. Do not trust the values of environment variables</a>.
+      </p>]]>
+    </Details>
   </BugPattern>
   <!--
   **********************************************************************
@@ -9279,6 +9420,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
   <BugCode abbrev="CT">Constructor throws</BugCode>
   <BugCode abbrev="SSD">Do not use an instance lock to protect shared static data</BugCode>
+  <BugCode abbrev="SING">Singleton problems</BugCode>
   <BugCode abbrev="THROWS">Exception throwing related problems</BugCode>
   <BugCode abbrev="PERM">Custom class loader does not call its superclass's getPermissions()</BugCode>
   <BugCode abbrev="USC">Potential security check based on untrusted source</BugCode>
@@ -9287,4 +9429,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="VSC">Vulnerable security check performing methods</BugCode>
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
+  <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
 </MessageCollection>

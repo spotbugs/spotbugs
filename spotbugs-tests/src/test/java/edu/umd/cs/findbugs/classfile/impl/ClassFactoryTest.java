@@ -35,6 +35,9 @@ import java.util.zip.ZipOutputStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
 
 class ClassFactoryTest {
 
@@ -111,10 +114,11 @@ class ClassFactoryTest {
         assertTrue(codeBase.iterator().hasNext());
     }
 
-    @Test
-    void acceptConstantDynamic() throws Exception {
-        String fileName = "../spotbugsTestCases/src/classSamples/recordCompileWithBazel6.2/Foo.clazz";
-
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "../spotbugsTestCases/src/classSamples/recordCompileWithJaCoCo0.8.8/Foo.clazz",
+        "../spotbugsTestCases/src/classSamples/recordCompileWithJaCoCo0.8.8/FooWithMember.clazz" })
+    void acceptConstantDynamic(String fileName) throws Exception {
         try (SingleFileCodeBase codeBase = new SingleFileCodeBase(null, fileName)) {
             ClassDescriptor classDescriptor = codeBase.getClassDescriptor();
 

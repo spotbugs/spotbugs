@@ -210,6 +210,11 @@ public class LoadOfKnownNullValue implements Detector {
                     // System.out.println("Inverted line");
                     continue;
                 }
+
+                if (FindNullDeref.isGeneratedCodeInCatchBlock(method, location.getHandle().getPosition())) {
+                    continue;
+                }
+
                 int priority = NORMAL_PRIORITY;
                 if (!v.isChecked()) {
                     priority++;

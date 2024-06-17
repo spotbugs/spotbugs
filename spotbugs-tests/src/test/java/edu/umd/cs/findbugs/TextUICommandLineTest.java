@@ -11,24 +11,51 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class TextUICommandLineTest {
     @Test
-    void handleOutputFileReturnsRemainingPart() throws IOException {
+    void duplicateFilepathIsIgnored() throws IOException {
         Path file = Files.createTempFile("spotbugs", ".xml");
         TextUICommandLine commandLine = new TextUICommandLine();
-        SortingBugReporter reporter = new SortingBugReporter();
-        String result = commandLine.handleOutputFilePath(reporter, "withMessages=" + file.toFile().getAbsolutePath());
 
-        assertThat(result, is("withMessages"));
+        TextUIBugReporter call1 = commandLine.initializeReporter("withMessages=" + file.toFile().getAbsolutePath(),
+                () -> new SortingBugReporter(), (reporter, reporterOptions) -> {
+                });
+        TextUIBugReporter call2 = commandLine.initializeReporter("withMessages=" + file.toFile().getAbsolutePath(),
+                () -> new SortingBugReporter(), (reporter, reporterOptions) -> {
+                });
+
+        assertNotNull(call1);
+        assertNull(call2);
+    }
+
+    @Test
+    void differentFilepathsOnSameReporter_createsTwoReporters() throws IOException {
+        Path file = Files.createTempFile("spotbugs", ".xml");
+        Path file2 = Files.createTempFile("spotbugs", ".xml");
+        TextUICommandLine commandLine = new TextUICommandLine();
+
+        TextUIBugReporter call1 = commandLine.initializeReporter("withMessages=" + file.toFile().getAbsolutePath(),
+                () -> new SortingBugReporter(), (reporter, reporterOptions) -> {
+                });
+        TextUIBugReporter call2 = commandLine.initializeReporter("withMessages=" + file2.toFile().getAbsolutePath(),
+                () -> new SortingBugReporter(), (reporter, reporterOptions) -> {
+                });
+
+        assertNotNull(call1);
+        assertNotNull(call2);
     }
 
     @Test
     void handleOutputFilePathUsesGzip() throws IOException {
         Path file = Files.createTempFile("spotbugs", ".xml.gz");
         TextUICommandLine commandLine = new TextUICommandLine();
-        SortingBugReporter reporter = new SortingBugReporter();
-        commandLine.handleOutputFilePath(reporter, "withMessages=" + file.toFile().getAbsolutePath());
+        TextUIBugReporter reporter = commandLine.initializeReporter("withMessages=" + file.toFile().getAbsolutePath(),
+                () -> new SortingBugReporter(),
+                (constructed, reporterOptions) -> {
+                });
 
         reporter.finish();
         byte[] written = Files.readAllBytes(file);
@@ -41,8 +68,10 @@ class TextUICommandLineTest {
         Path file = Files.createTempFile("spotbugs", ".html");
         Files.writeString(file, "content");
         TextUICommandLine commandLine = new TextUICommandLine();
-        SortingBugReporter reporter = new SortingBugReporter();
-        commandLine.handleOutputFilePath(reporter, "withMessages=" + file.toFile().getAbsolutePath());
+        TextUIBugReporter reporter = commandLine.initializeReporter("withMessages=" + file.toFile().getAbsolutePath(),
+                () -> new SortingBugReporter(),
+                (constructed, reporterOptions) -> {
+                });
 
         reporter.finish();
         byte[] written = Files.readAllBytes(file);

@@ -47,7 +47,10 @@ class BugCounts {
     @OverridingMethodsMustInvokeSuper
     public void addError(BugInstance bug) {
         ensureNonnullBugCounts();
-        ++nBugs[bug.getPriority()];
+        // in 'relaxed' mode we might get bug with priority 5 = IGNORE_PRIORITY
+        int adjustedPriority = Math.min(bug.getPriority(), Priorities.IGNORE_PRIORITY - 1);
+
+        ++nBugs[adjustedPriority];
         ++nBugs[0];
     }
 

@@ -180,12 +180,13 @@ These options are only accepted by the Text User Interface.
   Report all bug instances except those matching the filter specified by filterFile.xml.
   See :doc:`filter`.
 
--onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.**:
+-onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.*,!com.foobar.mypkg.ExcludedClass*:
   Restrict analysis to find bugs to given comma-separated list of classes and packages.
   Unlike filtering, this option avoids running analysis on classes and packages that are not explicitly matched: for large projects, this may greatly reduce the amount of time needed to run the analysis.
   (However, some detectors may produce inaccurate results if they aren't run on the entire application.)
   Classes should be specified using their full classnames (including package), and packages should be specified in the same way they would in a Java import statement to import all classes in the package (i.e., add .* to the full name of the package).
-  Replace .* with .- to also analyze all subpackages.
+  Replace ``.*`` with ``.-`` to also analyze all subpackages.
+  Items starting with ``!`` are treated as exclusions, removing otherwise-included classes from analysis.
 
 -low:
   Report all bugs.

@@ -169,8 +169,8 @@ public class DumbMethods extends OpcodeStackDetector {
             }
 
             if (seen == Const.INVOKESTATIC && ("junit/framework/Assert".equals(getClassConstantOperand()) || "org/junit/Assert".equals(
-                    getClassConstantOperand()) || "org/junit/jupiter/api/Assertion".equals(getClassConstantOperand())
-                            && "assertNotNull".equals(getNameConstantOperand()))) {
+                    getClassConstantOperand()) || "org/junit/jupiter/api/Assertion".equals(getClassConstantOperand()))
+                    && "assertNotNull".equals(getNameConstantOperand())) {
 
                 OpcodeStack.Item item = stack.getStackItem(0);
                 Object o = item.getConstant();
@@ -1245,7 +1245,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 if (value instanceof String) {
                     String annotationClassName = (String) value;
                     boolean lacksClassfileRetention = AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase()
-                            .lacksRuntimeRetention(annotationClassName.replace('/', '.'));
+                            .lacksRuntimeRetention(ClassName.toDottedClassName(annotationClassName));
                     if (lacksClassfileRetention) {
                         ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptor(annotationClassName);
                         accumulator.accumulateBug(
