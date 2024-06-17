@@ -1839,6 +1839,14 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindIncreasedAccessibilityOfMethods">
+    <Details>
+      <![CDATA[
+            <p>Finds classes where the accessibility of the overridden or hidden method was increased.</p>
+      ]]>
+    </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns
@@ -9269,11 +9277,28 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY">
+    <ShortDescription>Accessibility of the overridden or hidden method was increased.</ShortDescription>
+    <LongDescription>Accessibility of the overridden or hidden method {1} was increased from {2} to {3}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+        Increasing the accessibility of overridden or hidden methods permits a malicious subclass to offer wider
+        access to the restricted method than was originally intended. Consequently, programs must override methods
+        only when necessary and must declare methods final whenever possible to prevent malicious subclassing. When
+        methods cannot be declared final, programs must refrain from increasing the accessibility of overridden methods.
+      </p>
+      <p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET04-J.+Do+not+increase+the+accessibility+of+overridden+or+hidden+methods">MET04-J. Do not increase the accessibility of overridden or hidden methods</a>.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
   **********************************************************************
    -->
+
   <BugCode abbrev="FS">Format string problem</BugCode>
   <BugCode abbrev="SKIPPED">Analysis skipped</BugCode>
   <BugCode abbrev="IL">Infinite Loop</BugCode>
@@ -9430,4 +9455,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
+  <BugCode abbrev="IAOM">Do not increase the accessibility of overridden or hidden methods</BugCode>
 </MessageCollection>
