@@ -18,17 +18,18 @@
  */
 package edu.umd.cs.findbugs.filter;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @since 3.1
  */
-public class NameMatchTest {
+class NameMatchTest {
+
     @Test
-    public void testExactMatch() {
+    void testExactMatch() {
         NameMatch match = new NameMatch(SignatureUtil.createMethodSignature("", "void"));
         assertTrue(match.match("()V"));
         assertFalse(match.match("(I)V"));
@@ -36,7 +37,7 @@ public class NameMatchTest {
     }
 
     @Test
-    public void testParameterPatternMatch() {
+    void testParameterPatternMatch() {
         NameMatch anyParamReturnVoid = new NameMatch(SignatureUtil.createMethodSignature(null, "void"));
         assertTrue(anyParamReturnVoid.match("()V"));
         assertTrue(anyParamReturnVoid.match("(I)V"));
@@ -45,7 +46,7 @@ public class NameMatchTest {
     }
 
     @Test
-    public void testReturnValuePatternMatch() {
+    void testReturnValuePatternMatch() {
         NameMatch anyParamReturnVoid = new NameMatch(SignatureUtil.createMethodSignature("", null));
         assertTrue(anyParamReturnVoid.match("()V"));
         assertTrue(anyParamReturnVoid.match("()I"));

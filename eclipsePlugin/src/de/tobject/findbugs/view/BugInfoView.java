@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import de.tobject.findbugs.util.SafeHtml;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -317,7 +318,7 @@ public class BugInfoView extends AbstractFindbugsView {
         text.append(getPatternDetails());
         addXmlOutput(text);
         addDetectorInfo(text);
-        String html = "<b>Bug</b>: " + toSafeHtml(bug.getMessageWithoutPrefix()) + "<br>\n" + text.toString();
+        String html = "<b>Bug</b>: " + SafeHtml.escape(bug.getMessageWithoutPrefix()) + "<br>\n" + text.toString();
         return html;
     }
 
@@ -337,7 +338,7 @@ public class BugInfoView extends AbstractFindbugsView {
         }
         text.append("<hr size=\"1\" /><p><b>XML output:</b>");
         text.append("<pre>");
-        text.append(toSafeHtml(stringWriter.toString()));
+        text.append(SafeHtml.escape(stringWriter.toString()));
         text.append("</pre></p><hr size=\"1\" />");
     }
 
@@ -392,16 +393,6 @@ public class BugInfoView extends AbstractFindbugsView {
                 text.append("</i></small>");
             }
         }
-    }
-
-    private static String toSafeHtml(String s) {
-        if (s.indexOf('>') >= 0) {
-            s = s.replace(">", "&gt;");
-        }
-        if (s.indexOf('<') >= 0) {
-            s = s.replace("<", "&lt;");
-        }
-        return s;
     }
 
     @Override
@@ -524,12 +515,12 @@ public class BugInfoView extends AbstractFindbugsView {
                         return;
                     } else if (theAnnotation instanceof TypeAnnotation) {
                         TypeAnnotation fa = (TypeAnnotation) theAnnotation;
-                        String className = ClassName.fromFieldSignature(fa.getTypeDescriptor());
+                        String className = ClassName.fromFieldSignatureToDottedClassName(fa.getTypeDescriptor());
                         if (className == null) {
                             break findLocation;
                         }
                         IJavaProject project = getIProject();
-                        IType type = project.findType(ClassName.toDottedClassName(className));
+                        IType type = project.findType(className);
                         if (type == null) {
                             break findLocation;
                         }

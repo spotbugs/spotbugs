@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -81,7 +81,7 @@ public abstract class AbstractIntegrationTest {
 
     private static Path getFindbugsTestCases() {
         final Path p = Paths.get(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
-        assertTrue("'spotbugsTestCases' directory not found", Files.exists(p));
+        assertTrue(Files.exists(p), "'spotbugsTestCases' directory not found");
         assertTrue(Files.isDirectory(p));
         assertTrue(Files.isReadable(p));
 
@@ -96,7 +96,7 @@ public abstract class AbstractIntegrationTest {
                 .findFirst()
                 .orElseThrow(() -> new AssertionError(path + " not found"));
 
-        assertTrue(p + " is not readable", Files.isReadable(p));
+        assertTrue(Files.isReadable(p), p + " is not readable");
         return p;
     }
 
@@ -117,6 +117,19 @@ public abstract class AbstractIntegrationTest {
             for (Path jar : ds) {
                 if (Files.isReadable(jar)) {
                     runner.addAuxClasspathEntry(jar);
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        final Path dependencies = getFindbugsTestCases().resolve("build/spotbugs/auxclasspath/spotbugsMain");
+        try {
+            final List<String> lines = Files.readAllLines(dependencies);
+            for (String line : lines) {
+                Path path = Paths.get(line);
+                if (Files.isReadable(path)) {
+                    runner.addAuxClasspathEntry(path);
                 }
             }
         } catch (IOException e) {

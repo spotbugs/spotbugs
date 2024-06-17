@@ -39,7 +39,7 @@ import org.apache.bcel.classfile.Method;
 
 public class FindPublicAttributes extends OpcodeStackDetector {
 
-    private static final Set<String> CONSTRUCTOR_LIKE_NAMES = new HashSet<String>(Arrays.asList(
+    private static final Set<String> CONSTRUCTOR_LIKE_NAMES = new HashSet<>(Arrays.asList(
             Const.CONSTRUCTOR_NAME, Const.STATIC_INITIALIZER_NAME,
             "clone", "init", "initialize", "dispose", "finalize", "this",
             "_jspInit", "jspDestroy"));
@@ -50,9 +50,9 @@ public class FindPublicAttributes extends OpcodeStackDetector {
 
     private final BugReporter bugReporter;
 
-    private final Set<XField> writtenFields = new HashSet<XField>();
+    private final Set<XField> writtenFields = new HashSet<>();
 
-    private final Map<XField, SourceLineAnnotation> fieldDefLineMap = new HashMap<XField, SourceLineAnnotation>();
+    private final Map<XField, SourceLineAnnotation> fieldDefLineMap = new HashMap<>();
 
     public FindPublicAttributes(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -116,7 +116,7 @@ public class FindPublicAttributes extends OpcodeStackDetector {
             bugReporter.reportBug(new BugInstance(this,
                     "PA_PUBLIC_PRIMITIVE_ATTRIBUTE",
                     NORMAL_PRIORITY)
-                            .addClass(this).addField(field).addSourceLine(sla));
+                    .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         } else if (seen == Const.AASTORE) {
             XField field = stack.getStackItem(2).getXField();
@@ -141,7 +141,7 @@ public class FindPublicAttributes extends OpcodeStackDetector {
             bugReporter.reportBug(new BugInstance(this,
                     "PA_PUBLIC_ARRAY_ATTRIBUTE",
                     NORMAL_PRIORITY)
-                            .addClass(this).addField(field).addSourceLine(sla));
+                    .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         } else if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             XMethod xmo = getXMethodOperand();
@@ -187,8 +187,8 @@ public class FindPublicAttributes extends OpcodeStackDetector {
 
             bugReporter.reportBug(new BugInstance(this,
                     "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE",
-                    NORMAL_PRIORITY)
-                            .addClass(this).addField(field).addSourceLine(sla));
+                    LOW_PRIORITY)
+                    .addClass(this).addField(field).addSourceLine(sla));
             writtenFields.add(field);
         }
     }

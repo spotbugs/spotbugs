@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTypeTable;
@@ -528,7 +529,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                             String c = valueNumberDataflow.getClassName(stackValue);
                             if (c != null) {
                                 if (c.charAt(0) != '[' && !c.endsWith(";")) {
-                                    c = "L" + c.replace('.', '/') + ";";
+                                    c = "L" + ClassName.toSlashedClassName(c) + ";";
                                 }
                                 Type type = Type.getType(c);
                                 if (type instanceof ReferenceType) {

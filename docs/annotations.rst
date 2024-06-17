@@ -2,7 +2,7 @@ Annotations
 ===========
 
 SpotBugs supports several annotations to express the developer's intent so that SpotBugs can issue warnings more appropriately.
-Annotations for SpotBugs (mostly deprecated except for SuppressFBWarnings).
+Annotations for SpotBugs.
 
 edu.umd.cs.findbugs.annotations.CheckForNull
 --------------------------------------------

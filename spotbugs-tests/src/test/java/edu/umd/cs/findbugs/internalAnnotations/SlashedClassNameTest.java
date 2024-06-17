@@ -19,26 +19,26 @@
 
 package edu.umd.cs.findbugs.internalAnnotations;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.regex.Matcher;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author pugh
  */
-public class SlashedClassNameTest {
+class SlashedClassNameTest {
 
     @Test
-    public void testFoo() {
+    void testFoo() {
         Matcher m = SlashedClassName.Checker.simplePattern.matcher("Foo");
         assertTrue(m.matches());
     }
 
     @Test
-    public void testFooBar() {
+    void testFooBar() {
         Matcher m = SlashedClassName.Checker.simplePattern.matcher("foo.Bar");
         assertFalse(m.matches());
         m = SlashedClassName.Checker.pattern.matcher("foo.Bar");
@@ -46,7 +46,7 @@ public class SlashedClassNameTest {
     }
 
     @Test
-    public void testFoo1Bar2() {
+    void testFoo1Bar2() {
         Matcher m = SlashedClassName.Checker.simplePattern.matcher("foo1.Bar2");
         assertFalse(m.matches());
         m = SlashedClassName.Checker.pattern.matcher("foo1.Bar2");

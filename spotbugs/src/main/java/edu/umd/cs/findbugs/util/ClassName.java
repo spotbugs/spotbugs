@@ -137,6 +137,24 @@ public abstract class ClassName {
     }
 
     /**
+     * Converts from signature to dotted class name
+     * (e.g., from Ljava/lang/String; to java.lang.String).
+     * Returns null if it is the signature for an array or primitive type.
+     *
+     * @param signature a class signature
+     * @return the class of the signature in dotted format
+     */
+    @DottedClassName
+    public static @CheckForNull String fromFieldSignatureToDottedClassName(String signature) {
+        String slashedClassName = ClassName.fromFieldSignature(signature);
+        if (slashedClassName == null) {
+            return null;
+        }
+
+        return toDottedClassName(slashedClassName);
+    }
+
+    /**
      * extract the package name from a dotted class name. Package names are
      * always in dotted format.
      *
@@ -338,7 +356,7 @@ public abstract class ClassName {
      * edits (insertions, deletions or substitutions). This limit also speeds up the computation.
      * <p>
      * For more information on the Levenshtein distance see
-     * <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Wikipedia</a> and the 
+     * <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Wikipedia</a> and the
      * <a href="https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/similarity/LevenshteinDistance.html">Apache Commons Text JavaDoc</a>.
      *
      * @param className    the full class name

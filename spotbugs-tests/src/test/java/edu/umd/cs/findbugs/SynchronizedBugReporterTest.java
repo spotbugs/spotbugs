@@ -18,16 +18,16 @@
  */
 package edu.umd.cs.findbugs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class SynchronizedBugReporterTest {
+class SynchronizedBugReporterTest {
     @Test
-    public void testSetErrorVerbosity() {
+    void testSetErrorVerbosity() {
         AtomicBoolean called = new AtomicBoolean();
         PrintingBugReporter inner = new PrintingBugReporter() {
             @Override

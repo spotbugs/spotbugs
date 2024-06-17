@@ -72,7 +72,7 @@ public class MutableClasses {
             return false;
         }
 
-        String dottedClassName = sig.substring(1, sig.length() - 1).replace('/', '.');
+        String dottedClassName = ClassName.fromFieldSignatureToDottedClassName(sig);
         int lastDot = dottedClassName.lastIndexOf('.');
 
         if (lastDot >= 0) {
@@ -166,7 +166,7 @@ public class MutableClasses {
         private String getSig() {
             String local = sig;
             if (local == null) {
-                sig = local = "L" + cls.getClassName().replace('.', '/') + ";";
+                sig = local = "L" + ClassName.toSlashedClassName(cls.getClassName()) + ";";
             }
             return local;
         }
@@ -180,6 +180,14 @@ public class MutableClasses {
         }
 
         private boolean computeByImmutableContract() {
+            if ("java.lang.Enum".equals(cls.getClassName())) {
+                return true;
+            }
+
+            if ("java.lang.Record".equals(cls.getClassName())) {
+                return true;
+            }
+
             for (AnnotationEntry entry : cls.getAnnotationEntries()) {
                 // Error-Prone's @Immutable annotation is @Inherited, hence it applies to subclasses as well
                 if (entry.getAnnotationType().equals("Lcom/google/errorprone/annotations/Immutable;")) {

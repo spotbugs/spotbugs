@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
@@ -10,9 +10,10 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class DontUseFloatsAsLoopCountersTest extends AbstractIntegrationTest {
+class DontUseFloatsAsLoopCountersTest extends AbstractIntegrationTest {
+
     @Test
-    public void testChecks() {
+    void testChecks() {
         performAnalysis("DontUseFloatsAsLoopCounters.class");
         assertNumOfEOSBugs(3);
         assertBug("test1", 8);

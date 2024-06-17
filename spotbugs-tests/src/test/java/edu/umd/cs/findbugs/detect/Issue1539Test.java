@@ -3,37 +3,36 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.ParameterizedTest;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.stream.Stream;
+
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/pull/1540">PR suggested this test case</a>
  */
-@RunWith(Parameterized.class)
-public class Issue1539Test extends AbstractIntegrationTest {
-    private final String target;
+class Issue1539Test extends AbstractIntegrationTest {
 
-    public Issue1539Test(String className) {
-        this.target = String.format("ghIssues/issue1539/%s.class", className);
+    private String classLocation(String className) {
+        return String.format("ghIssues/issue1539/%s.class", className);
     }
 
-    @Parameterized.Parameters
-    public static String[] data() {
-        return new String[] {
-            "Issue1539Instance",
-            "Issue1539Static",
-            "Issue1539ThreadLocal",
-            "Issue1539Argument"
-        };
+    private static Stream<Arguments> classes() {
+        return Stream.of(
+                Arguments.of("Issue1539Instance"),
+                Arguments.of("Issue1539Static"),
+                Arguments.of("Issue1539ThreadLocal"),
+                Arguments.of("Issue1539Argument"));
     }
 
-    @Test
-    public void testInstance() {
-        performAnalysis(target);
+    @ParameterizedTest
+    @MethodSource("classes")
+    void testInstance(String className) {
+        performAnalysis(classLocation(className));
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("DMI_RANDOM_USED_ONLY_ONCE")
                 .build();
