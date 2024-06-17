@@ -19,25 +19,25 @@
 
 package edu.umd.cs.findbugs;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author pugh
  */
-public class ObfuscateTest {
+class ObfuscateTest {
 
     @Test
-    public void testMethodSignature() {
+    void testMethodSignature() {
         String sig = "([Lcom.google.Search;I)Lcom.google.Money;";
         String result = Obfuscate.hashMethodSignature(sig);
-        assertEquals("hash of " + sig + " gives " + result, result.indexOf("google"), -1);
+        assertEquals(-1, result.indexOf("google"), "hash of " + sig + " gives " + result);
         System.out.println(result);
     }
 
     @Test
-    public void testMethodSignatureDoesntChangeForCoreTypes() {
+    void testMethodSignatureDoesntChangeForCoreTypes() {
         String sig = "([Ljava/lang/String;I)Ljava/util/Map;";
         String result = Obfuscate.hashMethodSignature(sig);
         assertEquals(sig, result);

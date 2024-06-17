@@ -25,7 +25,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import de.tobject.findbugs.view.explorer.BugGroup;
 import de.tobject.findbugs.view.explorer.GroupType;
@@ -35,7 +35,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
  *
  * @author Tomás Pollak
  */
-public class ExpectedViewBugGroup implements ExpectedViewElement {
+class ExpectedViewBugGroup implements ExpectedViewElement {
 
     private final GroupType groupType;
 
@@ -55,12 +55,12 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
 
     @Override
     public void assertEquals(Object actual, ITreeContentProvider contentProvider) throws CoreException {
-        Assert.assertTrue(actual instanceof BugGroup);
+        Assertions.assertTrue(actual instanceof BugGroup);
         BugGroup bugGroup = (BugGroup) actual;
-        Assert.assertEquals(groupType, bugGroup.getType());
-        Assert.assertEquals(markers.size(), bugGroup.getMarkersCount());
+        Assertions.assertEquals(groupType, bugGroup.getType());
+        Assertions.assertEquals(markers.size(), bugGroup.getMarkersCount());
         if (data != null) {
-            Assert.assertEquals(data, bugGroup.getData());
+            Assertions.assertEquals(data, bugGroup.getData());
         }
 
         // Assert on the children
@@ -84,7 +84,7 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
     private void assertChildren(ITreeContentProvider contentProvider, BugGroup bugGroup) throws CoreException {
         // Get the actual children
         Object[] bugGroupChildren = contentProvider.getChildren(bugGroup);
-        Assert.assertEquals(children.size(), bugGroupChildren.length);
+        Assertions.assertEquals(children.size(), bugGroupChildren.length);
 
         // For each expected child, find a match and assert on it
         for (Iterator<ExpectedViewElement> iChildren = children.iterator(); iChildren.hasNext();) {
@@ -118,7 +118,7 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
                 return bugGroupChildren[i];
             }
         }
-        Assert.fail("No match found for: " + child + " in " + Arrays.toString(bugGroupChildren));
+        Assertions.fail("No match found for: " + child + " in " + Arrays.toString(bugGroupChildren));
         return null;
     }
 }

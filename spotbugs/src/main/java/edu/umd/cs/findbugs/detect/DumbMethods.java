@@ -83,7 +83,7 @@ public class DumbMethods extends OpcodeStackDetector {
         abstract public void sawOpcode(int seen);
     }
 
-    private class InvalidMinMaxSubDetector extends SubDetector {
+    private final class InvalidMinMaxSubDetector extends SubDetector {
         Number lowerBound, upperBound;
 
         @Override
@@ -130,7 +130,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class NullMethodsSubDetector extends SubDetector {
+    private final class NullMethodsSubDetector extends SubDetector {
 
         @Override
         public void sawOpcode(int seen) {
@@ -169,7 +169,7 @@ public class DumbMethods extends OpcodeStackDetector {
             }
 
             if (seen == Const.INVOKESTATIC && ("junit/framework/Assert".equals(getClassConstantOperand()) || "org/junit/Assert".equals(
-                    getClassConstantOperand()))
+                    getClassConstantOperand()) || "org/junit/jupiter/api/Assertion".equals(getClassConstantOperand()))
                     && "assertNotNull".equals(getNameConstantOperand())) {
 
                 OpcodeStack.Item item = stack.getStackItem(0);
@@ -201,19 +201,19 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class FutilePoolSizeSubDetector extends SubDetector {
+    private final class FutilePoolSizeSubDetector extends SubDetector {
         @Override
         public void sawOpcode(int seen) {
             if (seen == Const.INVOKEVIRTUAL && "java/util/concurrent/ScheduledThreadPoolExecutor".equals(getClassConstantOperand())
                     && "setMaximumPoolSize".equals(getNameConstantOperand())) {
                 accumulator.accumulateBug(new BugInstance(DumbMethods.this,
                         "DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR", HIGH_PRIORITY)
-                                .addClassAndMethod(DumbMethods.this), DumbMethods.this);
+                        .addClassAndMethod(DumbMethods.this), DumbMethods.this);
             }
         }
     }
 
-    private class RangeCheckSubDetector extends SubDetector {
+    private final class RangeCheckSubDetector extends SubDetector {
 
 
 
@@ -373,7 +373,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class UrlCollectionSubDetector extends SubDetector {
+    private final class UrlCollectionSubDetector extends SubDetector {
         @Override
         public void sawOpcode(int seen) {
             if ((seen == Const.INVOKEVIRTUAL && "java/util/HashMap".equals(getClassConstantOperand()) && "get".equals(getNameConstantOperand()))
@@ -391,7 +391,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class VacuousComparisonSubDetector extends SubDetector {
+    private final class VacuousComparisonSubDetector extends SubDetector {
         @Override
         public void sawOpcode(int seen) {
             boolean foundVacuousComparison = false;
@@ -428,7 +428,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    private class BadCastInEqualsSubDetector extends SubDetector {
+    private final class BadCastInEqualsSubDetector extends SubDetector {
         private boolean isEqualsObject;
 
         private boolean sawInstanceofCheck;
@@ -482,7 +482,7 @@ public class DumbMethods extends OpcodeStackDetector {
     @SlashedClassName
     private static final String CLASS_NAME_RANDOM = "java/util/Random";
 
-    private class RandomOnceSubDetector extends SubDetector {
+    private final class RandomOnceSubDetector extends SubDetector {
         /**
          * True if a freshly created {@code Random} instance exists on ToS (Top op Stack)
          */
@@ -756,7 +756,7 @@ public class DumbMethods extends OpcodeStackDetector {
                                 primitiveType.equals("Z") ? LOW_PRIORITY
                                         : primitiveType.equals("B") ? NORMAL_PRIORITY
                                                 : HIGH_PRIORITY).addClassAndMethod(this).addCalledMethod(this).addMethod(shouldCall)
-                                                        .describe(MethodAnnotation.SHOULD_CALL);
+                                .describe(MethodAnnotation.SHOULD_CALL);
                         accumulator.accumulateBug(bug, this);
                     }
                 }
@@ -1245,7 +1245,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 if (value instanceof String) {
                     String annotationClassName = (String) value;
                     boolean lacksClassfileRetention = AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase()
-                            .lacksRuntimeRetention(annotationClassName.replace('/', '.'));
+                            .lacksRuntimeRetention(ClassName.toDottedClassName(annotationClassName));
                     if (lacksClassfileRetention) {
                         ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptor(annotationClassName);
                         accumulator.accumulateBug(
@@ -1264,7 +1264,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
                 accumulator.accumulateBug(new BugInstance(this, "DMI_CALLING_NEXT_FROM_HASNEXT", item.isInitialParameter()
                         && item.getRegisterNumber() == 0 ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this)
-                                .addCalledMethod(this), this);
+                        .addCalledMethod(this), this);
 
             }
 
@@ -1422,9 +1422,9 @@ public class DumbMethods extends OpcodeStackDetector {
                                 && dblString.toUpperCase().indexOf('E') == -1;
                         bugReporter.reportBug(new BugInstance(this, "DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE",
                                 scary ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this).addCalledMethod(this)
-                                        .addMethod("java.math.BigDecimal", "valueOf", "(D)Ljava/math/BigDecimal;", true)
-                                        .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addString(dblString)
-                                        .addString(bigDecimalString).addSourceLine(this));
+                                .addMethod("java.math.BigDecimal", "valueOf", "(D)Ljava/math/BigDecimal;", true)
+                                .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addString(dblString)
+                                .addString(bigDecimalString).addSourceLine(this));
                     }
                 }
 

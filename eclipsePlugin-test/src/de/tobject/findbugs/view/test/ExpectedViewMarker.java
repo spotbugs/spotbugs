@@ -21,7 +21,7 @@ package de.tobject.findbugs.view.test;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import de.tobject.findbugs.marker.FindBugsMarker;
 
@@ -40,10 +40,10 @@ public class ExpectedViewMarker implements ExpectedViewElement {
 
     @Override
     public void assertEquals(Object actual, ITreeContentProvider contentProvider) throws CoreException {
-        Assert.assertTrue(actual instanceof IMarker);
+        Assertions.assertTrue(actual instanceof IMarker);
         IMarker marker = (IMarker) actual;
         String actualBugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
-        Assert.assertEquals(expectedBugType, actualBugType);
+        Assertions.assertEquals(expectedBugType, actualBugType);
     }
 
     @Override

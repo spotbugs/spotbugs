@@ -282,8 +282,8 @@ public class PluginLoader implements AutoCloseable {
     /**
      * Creates a new {@link URLClassLoader} and adds it to the list of classloaders
      * we need to close if we close the corresponding plugin
-     * 
-     * @param 
+     *
+     * @param
      *            urls the URLs from which to load classes and resources
      * @return a new {@link URLClassLoader}
      */
@@ -297,10 +297,10 @@ public class PluginLoader implements AutoCloseable {
     /**
      * Creates a new {@link URLClassLoader} and adds it to the list of classloaders
      * we need to close if we close the corresponding plugin
-     * 
-     * @param 
+     *
+     * @param
      *            urls the URLs from which to load classes and resources
-     * @param 
+     * @param
      *            parent the parent class loader for delegation
      * @return a new {@link URLClassLoader}
      */

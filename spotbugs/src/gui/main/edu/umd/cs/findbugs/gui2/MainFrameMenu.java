@@ -9,8 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
@@ -53,9 +51,6 @@ public class MainFrameMenu {
 
     JMenuItem saveMenuItem = newJMenuItem("menu.save_item", "Save", KeyEvent.VK_S);
 
-    private Class<?> osxAdapter;
-
-    private Method osxPrefsEnableMethod;
     private JMenuItem saveAsMenuItem;
     private JMenuItem groupByMenuItem;
 
@@ -448,25 +443,6 @@ public class MainFrameMenu {
      */
     public void enablePreferencesMenuItem(boolean b) {
         getPreferencesMenuItem().setEnabled(b);
-        if (MainFrame.MAC_OS_X) {
-            if (osxPrefsEnableMethod != null) {
-                Object args[] = { b };
-                try {
-                    osxPrefsEnableMethod.invoke(osxAdapter, args);
-                } catch (Exception e) {
-                    System.err.println("Exception while enabling Preferences menu: " + e);
-                }
-            }
-        }
-    }
-
-    public void initOSX() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        osxAdapter = Class.forName("edu.umd.cs.findbugs.gui2.OSXAdapter");
-        Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", MainFrame.class);
-        if (registerMethod != null) {
-            registerMethod.invoke(osxAdapter, mainFrame);
-        }
-        osxPrefsEnableMethod = osxAdapter.getDeclaredMethod("enablePrefs", boolean.class);
     }
 
     public JMenuItem getCloseProjectItem() {

@@ -120,10 +120,10 @@ msgstr ""
 
 #: /documents/docs/migration.rst:53
 msgid ""
-"Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-"
-"annotations:1.0`` instead."
+"Please depend on both of ``spotbugs-annotations`` and ``com.github.stephenc.jcip:jcip-"
+"annotations:1.0-1`` instead."
 msgstr ""
-"代わりに ``spotbugs-annotations`` と ``net.jcip:jcip-annotations:1.0`` "
+"代わりに ``spotbugs-annotations`` と ``com.github.stephenc.jcip:jcip-annotations:1.0-1`` "
 "の両方に依存してください。"
 
 #: /documents/docs/migration.rst:62

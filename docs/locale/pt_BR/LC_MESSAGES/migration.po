@@ -119,11 +119,11 @@ msgstr ""
 
 #: ../../migration.rst:53
 msgid ""
-"Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-"
-"annotations:1.0`` instead."
+"Please depend on both of ``spotbugs-annotations`` and ``com.github.stephenc.jcip:jcip-"
+"annotations:1.0-1`` instead."
 msgstr ""
-"Em vez disso, use de ``spotbugs-annotations`` e ``net.jcip: jcip-"
-"annotations: 1.0``."
+"Em vez disso, use de ``spotbugs-annotations`` e ``com.github.stephenc.jcip:jcip-"
+"annotations: 1.0-1``."
 
 #: ../../migration.rst:62
 msgid "FindBugs Ant task"
