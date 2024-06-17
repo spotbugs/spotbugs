@@ -11,6 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not throw exception when inspecting empty switch statements ([#2995](https://github.com/spotbugs/spotbugs/issues/2995))
 - Adjust priority since relaxed mode reports even `IGNORED_PRIORITY` ([#2994](https://github.com/spotbugs/spotbugs/issues/2994))
 - Fix duplicated log4j2 jar in distribution ([#3001](https://github.com/spotbugs/spotbugs/issues/3001))
+- Fixed detector `FindReturnRef` not finding references exposed from nested and inner classes ([#2042](https://github.com/spotbugs/spotbugs/issues/2042))
 
 ## 4.8.5 - 2024-05-03
 ### Fixed
@@ -114,9 +115,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix deprecated GHA on '::set-output' by using GITHUB_OUTPUT ([#2651](https://github.com/spotbugs/spotbugs/pull/2651))
 
 ## 4.8.0 - 2023-10-11
-
-### Fixed
-- Fixed detector `FindReturnRef` not finding references exposed from nested and inner classes ([#2042](https://github.com/spotbugs/spotbugs/issues/2042))
 
 ### Changed
 - Bump up Apache Commons BCEL to the version 6.6.1 ([#2223](https://github.com/spotbugs/spotbugs/pull/2223))
