@@ -11,6 +11,7 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
@@ -33,7 +34,7 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
 
         performAnalysis("RefComparisons.class");
         assertNumOfRefCompBugs(1);
-        assertRefCompBug("integerBadComparison", 4);
+        assertRefCompBug("integerBadComparison", 4, Confidence.HIGH);
     }
 
     @Test
@@ -44,9 +45,9 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
         SystemProperties.removeProperty("findbugs.refcomp.reportAll");
         performAnalysis("RefComparisons.class");
         assertNumOfRefCompBugs(3);
-        assertRefCompBug("integerBadComparison", 4);
-        assertRefCompBug("myClass1BadComparison", 11);
-        assertRefCompBug("myClass2BadComparison", 18);
+        assertRefCompBug("integerBadComparison", 4, Confidence.HIGH);
+        assertRefCompBug("myClass1BadComparison", 11, Confidence.LOW);
+        assertRefCompBug("myClass2BadComparison", 18, Confidence.LOW);
     }
 
     @Test
@@ -56,7 +57,7 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
 
         performAnalysis("RefComparisons.class");
         assertNumOfRefCompBugs(1);
-        assertRefCompBug("integerBadComparison", 4);
+        assertRefCompBug("integerBadComparison", 4, Confidence.HIGH);
     }
 
     @Test
@@ -66,9 +67,9 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
 
         performAnalysis("RefComparisons.class");
         assertNumOfRefCompBugs(3);
-        assertRefCompBug("integerBadComparison", 4);
-        assertRefCompBug("myClass1BadComparison", 11);
-        assertRefCompBug("myClass2BadComparison", 18);
+        assertRefCompBug("integerBadComparison", 4, Confidence.HIGH);
+        assertRefCompBug("myClass1BadComparison", 11, Confidence.LOW);
+        assertRefCompBug("myClass2BadComparison", 18, Confidence.LOW);
     }
 
     private void assertNumOfRefCompBugs(int num) {
@@ -77,12 +78,13 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
     }
 
-    private void assertRefCompBug(String method, int line) {
+    private void assertRefCompBug(String method, int line, Confidence confidence) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType("RC_REF_COMPARISON")
                 .inClass("RefComparisons")
                 .inMethod(method)
                 .atLine(line)
+                .withConfidence(confidence)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
