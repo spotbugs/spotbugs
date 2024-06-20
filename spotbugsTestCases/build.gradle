@@ -42,7 +42,9 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
-  if (it.name == 'classesJava21') {
+  if (it.name == 'classesJava22') {
+    options.release = 22
+  } else if (it.name == 'classesJava21') {
     options.release = 21
   } else if (it.name == 'classesJava17') {
     options.release = 17
@@ -90,6 +92,12 @@ def classesJava21 = tasks.register('classesJava21', JavaCompile) {
   source = file('src/java21')
 }
 
+def classesJava22 = tasks.register('classesJava22', JavaCompile) {
+  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java22"))
+  classpath = sourceSets.main.compileClasspath
+  source = file('src/java22')
+}
+
 def jvmVersion = JavaVersion.current()
 tasks.named('classes').configure {
   dependsOn classesJava8
@@ -103,6 +111,11 @@ tasks.named('classes').configure {
     dependsOn classesJava21
   } else {
     println "skip tests for Java 21 features"
+  }
+  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_22)) {
+    dependsOn classesJava22
+  } else {
+    println "skip tests for Java 22 features"
   }
 }
 
