@@ -20,7 +20,7 @@ class Issue2736Test extends AbstractIntegrationTest {
         assertBugCount(0);
     }
 
-    private void assertBugCount(String type, int expectedCount) {
+    private void assertBugCount(int expectedCount) {
         BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder()
                 .build();
 
