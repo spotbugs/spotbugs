@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs.util;
 import java.util.*;
 import java.util.stream.Stream;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.JavaClass;
@@ -59,6 +60,11 @@ public class MutableClasses {
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
             "java.math", "java.time"));
 
+    private static final Set<String> CONSTRUCTOR_LIKE_NAMES = new HashSet<>(Arrays.asList(
+            Const.CONSTRUCTOR_NAME, Const.STATIC_INITIALIZER_NAME,
+            "clone", "init", "initialize", "dispose", "finalize", "this",
+            "_jspInit", "jspDestroy"));
+
     private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
             "enqueue", "dequeue", "write", "append", "replace");
@@ -100,12 +106,44 @@ public class MutableClasses {
         }
     }
 
+    /**
+     * Check if the method name looks like a constructor
+     *
+     * @param methodName
+     *            the method name
+     * @return true if the method name looks like a constructor
+     */
+    public static boolean isConstructorLikeMethod(String methodName) {
+        return CONSTRUCTOR_LIKE_NAMES.contains(methodName);
+    }
+
+    /**
+     * Check if the method name looks like a setter
+     *
+     * @param methodName
+     *            the method name
+     * @param classSig
+     *            the class signature
+     * @param retSig
+     *            the return type signature
+     * @return true if the method name looks like a setter
+     */
     public static boolean looksLikeASetter(String methodName, String classSig, String retSig) {
         if (Objects.equals(classSig, retSig)) {
             return false;
         }
+        return looksLikeASetter(methodName);
+    }
 
-        return SETTER_LIKE_PREFIXES.stream().anyMatch(name -> methodName.startsWith(name));
+    /**
+     * Check if the method name looks like a setter
+     *
+     * @param methodName
+     *            the method name
+     * @return true if the method name looks like a setter
+     */
+    public static boolean looksLikeASetter(String methodName) {
+        return SETTER_LIKE_PREFIXES.stream().anyMatch(methodName::startsWith);
     }
 
     /**
