@@ -26,6 +26,7 @@ dependencies {
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
   implementation 'org.springframework:spring-core:5.3.37'
   compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5'
+  implementation 'com.sun.xml.bind:jaxb-impl:2.3.3'
   implementation 'org.checkerframework:checker-qual:3.44.0'
 
   implementation 'org.junit.jupiter:junit-jupiter-engine:5.10.2'

@@ -21,15 +21,13 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
     void innerChildInstanceTest() {
         performAnalysis("singletons/InnerChildInstance.class",
-                "singletons/InnerChildInstance$Unknown.class",
-                "singletons/InnerChildInstance$1.class");
+                "singletons/InnerChildInstance$Unknown.class");
         assertNoBugs();
     }
 
     @Test
     void innerChildAndMoreInstanceTest() {
         performAnalysis("singletons/InnerChildAndMoreInstance.class",
-                "singletons/InnerChildAndMoreInstance$1.class",
                 "singletons/InnerChildAndMoreInstance$Unknown.class");
         assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
         assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "InnerChildAndMoreInstance");
@@ -44,7 +42,6 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
     void InnerChildAndMoreInstanceReorderedTest() {
         performAnalysis("singletons/InnerChildAndMoreInstanceReordered.class",
-                "singletons/InnerChildAndMoreInstanceReordered$1.class",
                 "singletons/InnerChildAndMoreInstanceReordered$Unknown.class");
         assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
         assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "InnerChildAndMoreInstanceReordered");
@@ -59,7 +56,6 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
     void InnerChildAndMoreInstanceNoGetterTest() {
         performAnalysis("singletons/InnerChildAndMoreInstanceNoGetter.class",
-                "singletons/InnerChildAndMoreInstanceNoGetter$1.class",
                 "singletons/InnerChildAndMoreInstanceNoGetter$Unknown.class");
         assertNoBugs();
     }
