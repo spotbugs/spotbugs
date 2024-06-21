@@ -3,23 +3,23 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class FindUnreleasedLockTest extends AbstractIntegrationTest {
+class FindUnreleasedLockTest extends AbstractIntegrationTest {
 
     @Test
-    public void doesNotFindSSDBug_ifLockIsClosedInAProperWay() {
+    void doesNotFindSSDBug_ifLockIsClosedInAProperWay() {
         performAnalysis("unreleasedLock/ProperlyClosedLock.class");
 
         assertAnalyzedClassHasNoBugs();
     }
 
     @Test
-    public void findPossibleUnlockCall_withoutLockCall() {
+    void findPossibleUnlockCall_withoutLockCall() {
         performAnalysis("unreleasedLock/ThrowExceptionAndUnlockBeforeLock.class");
 
         assertAnalyzedClassHasBug("CWO_CLOSED_WITHOUT_OPENED", 1);
@@ -27,7 +27,7 @@ public class FindUnreleasedLockTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void findUnresolvedLock_onExceptionalCondition() {
+    void findUnresolvedLock_onExceptionalCondition() {
         performAnalysis("unreleasedLock/UnreleasedLock.class");
 
         assertAnalyzedClassHasBug("UL_UNRELEASED_LOCK_EXCEPTION_PATH", 1);
