@@ -7,6 +7,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2024-??-??
 ### Fixed
+- Do not consider Records as Singletons ([#2981](https://github.com/spotbugs/spotbugs/issues/2981))
+
+## 4.8.6 - 2024-06-17
+### Fixed
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches when the switch instruction is TABLESWITCH ([#2782](https://github.com/spotbugs/spotbugs/issues/2782))
 - Do not throw exception when inspecting empty switch statements ([#2995](https://github.com/spotbugs/spotbugs/issues/2995))
 - Adjust priority since relaxed mode reports even `IGNORED_PRIORITY` ([#2994](https://github.com/spotbugs/spotbugs/issues/2994))
