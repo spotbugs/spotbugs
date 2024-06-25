@@ -431,7 +431,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (badFieldName(obj)) {
             bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", classIsPublicOrProtected
                     && (obj.isPublic() || obj.isProtected()) && !hasBadFieldNames ? NORMAL_PRIORITY : LOW_PRIORITY)
-                            .addClass(this).addVisitedField(this));
+                    .addClass(this).addVisitedField(this));
         }
     }
 
@@ -542,7 +542,7 @@ public class Naming extends PreorderVisitor implements Detector {
         } else if (badMethodName(mName)) {
             bugReporter.reportBug(new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", classIsPublicOrProtected
                     && (obj.isPublic() || obj.isProtected()) && !hasBadMethodNames ? NORMAL_PRIORITY : LOW_PRIORITY)
-                            .addClassAndMethod(this));
+                    .addClassAndMethod(this));
         }
 
         if (obj.isAbstract()) {

@@ -13,6 +13,8 @@ import java.util.Objects;
  * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317459">3.11 message object</a>
  */
 final class Message {
+    String text;
+
     @NonNull
     final List<String> arguments;
 
@@ -23,6 +25,10 @@ final class Message {
     JsonObject toJsonObject() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", "default");
+
+        if (text != null) {
+            jsonObject.addProperty("text", text);
+        }
 
         JsonArray jsonArray = new JsonArray();
         for (String arg : arguments) {

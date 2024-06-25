@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.apache.bcel.Const;
 
@@ -106,7 +107,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         this.methodName = methodName;
         if (methodSig.indexOf('.') >= 0) {
             assert false : "signatures should not be dotted: " + methodSig;
-            methodSig = methodSig.replace('.', '/');
+            methodSig = ClassName.toSlashedClassName(methodSig);
         }
         this.methodSig = methodSig;
         this.isStatic = isStatic;
@@ -456,7 +457,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     }
 
     private String getUglyMethod() {
-        return className + "." + methodName + " : " + methodSig.replace('/', '.');
+        return className + "." + methodName + " : " + ClassName.toDottedClassName(methodSig);
     }
 
     @Override
@@ -518,6 +519,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         String role = getDescription();
         if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
+        }
+
+        if (!getJavaAnnotationNames().isEmpty()) {
+            attributeList.addAttribute("classAnnotationNames",
+                    getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
         }
 
         if (sourceLines == null && !addMessages) {

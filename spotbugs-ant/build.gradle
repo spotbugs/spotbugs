@@ -1,10 +1,15 @@
+apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
   implementation project(':spotbugs')
-  compileOnly 'org.apache.ant:ant:1.10.11'
+  compileOnly 'org.apache.ant:ant:1.10.14'
+
+  testImplementation 'org.apache.ant:ant:1.10.14'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+  testImplementation 'org.hamcrest:hamcrest:2.2'
 }
 
 tasks.named('javadoc', Javadoc).configure {

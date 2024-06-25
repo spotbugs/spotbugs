@@ -3,8 +3,8 @@ apply plugin: "com.diffplug.spotless"
 spotless {
   java {
     removeUnusedImports()
+    trimTrailingWhitespace()
     eclipse().configFile "${rootProject.projectDir}/gradle/eclipse-formatter.xml"
     endWithNewline()
-    lineEndings 'UNIX'
   }
 }

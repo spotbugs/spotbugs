@@ -58,7 +58,7 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
     public ClassParserUsingBCEL(JavaClass javaClass, @CheckForNull ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.javaClass = javaClass;
-        this.slashedClassName = javaClass.getClassName().replace('.', '/');
+        this.slashedClassName = ClassName.toSlashedClassName(javaClass.getClassName());
         this.expectedClassDescriptor = expectedClassDescriptor;
         this.codeBaseEntry = codeBaseEntry;
 

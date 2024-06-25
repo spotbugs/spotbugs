@@ -3972,7 +3972,7 @@ Web サーバは，一般的にサーブレットや JSP クラスのインス�
   </BugPattern>
 
   <BugPattern type="MS_EXPOSE_REP">
-    <ShortDescription>配列を返すことによって内部表現を暴露するかもしれない public static メソッド</ShortDescription>
+    <ShortDescription>配列または可変オブジェクトを返すことによって内部表現を暴露するかもしれない public static メソッド</ShortDescription>
     <LongDescription>{1} は，{2.givenClass} を返すことによって，内部表現を暴露するかもしれません。</LongDescription>
     <Details>
 <![CDATA[
@@ -4474,7 +4474,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-<code>final</code> ではない <code>public static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
+<code>final</code> ではない <code>public static</code> または <code>protected static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドを <code>final</code> にします。
 しかしながら，スタティックイニシャライザには複数のフィールドへの書き込みがあるので，何らかのリファクタリングを必要とするでしょう。
 </p>
@@ -4488,7 +4488,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-<code>final</code> ではない <code>public static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
+<code>final</code> ではない <code>public static</code> または <code>protected static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドを <code>final</code> にします。
 </p>
 ]]>
@@ -7883,6 +7883,13 @@ double value2 = x / (double) y;
 <p>
 この書式文字列は改行文字 (<code>\n</code>) が含まれています。
 一般的に書式文字列には <code>%n</code> を使用することがより望ましいです。<code>%n</code> は，プラットフォーム特有の行セパレータを作り出します。
+
+Java 15 複数行テキスト ブロック
+
+<code>String value = """
+                first line%n\
+                second line%n\
+                """;</code>
 </p>
 ]]>
   </Details>
@@ -8272,7 +8279,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 <![CDATA[
 <p>
 このコードは <code>x % 2 == 1</code> を使用して値が負数なのか確かめていますが，負数 (たとえば， <code>(-5) % 2 == -1</code>) なので機能しません。
-奇数チェックを意図しているなら， <code>x &amp; 1 == 1</code> または <code>x % 2 != 0</code> を使用することを検討してください。
+奇数チェックを意図しているなら， <code>(x &amp; 1) == 1</code> または <code>x % 2 != 0</code> を使用することを検討してください。
 </p>
 ]]>
     </Details>

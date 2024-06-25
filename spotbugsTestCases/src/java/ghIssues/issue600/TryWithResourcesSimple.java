@@ -1,6 +1,12 @@
 package ghIssues.issue600;
 
 public class TryWithResourcesSimple {
+    public int nocatchInterface(IMyAutocloseable x) throws Exception {
+        try (IMyAutocloseable closeable = x) {
+            return closeable.hashCode();
+        }
+    }
+
     public void nocatch() throws Exception {
         try (MyAutocloseable closeable = MyAutocloseable.create()) {
             closeable.exampleMethod();

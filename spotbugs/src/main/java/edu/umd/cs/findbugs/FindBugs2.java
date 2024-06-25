@@ -153,8 +153,8 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
     /**
      * @param service
-     *            The non-null {@link ExecutorService} instance to execute analysis. Caller is responsible to shutdown
-     *            it.
+     *            The non-null {@link ExecutorService} instance to execute analysis. Caller is responsible for shutting
+     *            it down.
      * @since 4.0
      */
     public FindBugs2(@NonNull ExecutorService service) {
@@ -281,7 +281,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                         @Override
                         public void reportBug(@Nonnull BugInstance bugInstance) {
                             String className = bugInstance.getPrimaryClass().getClassName();
-                            String resourceName = className.replace('.', '/') + ".class";
+                            String resourceName = ClassName.toSlashedClassName(className) + ".class";
                             if (classScreener.matches(resourceName)) {
                                 this.getDelegate().reportBug(bugInstance);
                             }
@@ -351,7 +351,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
     /**
      * <p>
-     * To avoid cyclic cross-references and allow GC after engine is not more needed. (used by Eclipse plugin)
+     * To avoid cyclic cross-references and allow GC after engine is no longer needed. (used by Eclipse plugin)
      * </p>
      * <p>
      * Caller probably need to shutdown the {@link ExecutorService} instance provided at constructor.

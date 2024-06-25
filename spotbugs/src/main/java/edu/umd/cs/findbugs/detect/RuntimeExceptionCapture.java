@@ -226,7 +226,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                     if (signature.startsWith("L")) {
                         signature = SignatureConverter.convert(signature);
                     } else {
-                        signature = signature.replace('/', '.');
+                        signature = ClassName.toDottedClassName(signature);
                     }
                     throwList.add(new ExceptionThrown(signature, getPC()));
                 }

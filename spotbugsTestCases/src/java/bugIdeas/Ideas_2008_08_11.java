@@ -3,37 +3,36 @@ package bugIdeas;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
-import junit.framework.TestCase;
-
-public class Ideas_2008_08_11 extends TestCase {
+public class Ideas_2008_08_11 {
 
     @Test
     public void fooBar() throws Exception {
-        assertFalse(Boolean.TRUE.equals(5));
+        Assertions.assertFalse(Boolean.TRUE.equals(5));
         HashMap<String, Integer> map = new HashMap<String, Integer>();
         map.put("a", 1);
-        assertFalse(map.containsKey(1));
-        assertNull(map.get(1));
+        Assertions.assertFalse(map.containsKey(1));
+        Assertions.assertNull(map.get(1));
     }
 
     @Test
     public void fooBar2() throws Exception {
-        assertFalse(Boolean.TRUE.equals(5));
+        Assertions.assertFalse(Boolean.TRUE.equals(5));
         HashSet<String> set = new HashSet<String>();
         set.add("a");
-        assertFalse(set.contains(1));
-        assertFalse(set.remove(1));
+        Assertions.assertFalse(set.contains(1));
+        Assertions.assertFalse(set.remove(1));
     }
 
     public void testFoo() throws Exception {
-        assertFalse(Boolean.TRUE.equals(5));
+        Assertions.assertFalse(Boolean.TRUE.equals(5));
         HashMap<String, Integer> map = new HashMap<String, Integer>();
         map.put("a", 1);
-        assertFalse(map.containsKey(1));
-        assertNull(map.get(1));
-        assertNull(map.remove(1));
+        Assertions.assertFalse(map.containsKey(1));
+        Assertions.assertNull(map.get(1));
+        Assertions.assertNull(map.remove(1));
     }
 
 }

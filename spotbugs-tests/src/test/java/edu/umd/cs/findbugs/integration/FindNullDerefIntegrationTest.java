@@ -21,20 +21,20 @@ package edu.umd.cs.findbugs.integration;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
+class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
 
     @Test
-    public void testNullFromReturnOnLambda() {
+    void testNullFromReturnOnLambda() {
         performAnalysis("Elvis.class");
 
         // There should only be 1 issue of this type
@@ -52,7 +52,7 @@ public class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testLambdaIssue20() throws IOException, InterruptedException {
+    void testLambdaIssue20() throws IOException, InterruptedException {
         performAnalysis("lambdas/Issue20.class");
 
         // There should only be 1 issue of this type

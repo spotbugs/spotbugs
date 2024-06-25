@@ -37,6 +37,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import edu.umd.cs.findbugs.filter.AndMatcher;
+import edu.umd.cs.findbugs.filter.AnnotationMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
 import edu.umd.cs.findbugs.filter.CompoundMatcher;
@@ -507,6 +508,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             pushCompoundMatcherAsChild(matcher);
         } else if ("Source".equals(qName)) {
             addMatcher(new SourceMatcher(getRequiredAttribute(attributes, "name", qName)));
+        } else if ("Annotation".equals(qName)) {
+            addMatcher(new AnnotationMatcher(getRequiredAttribute(attributes, "name", qName)));
         }
         nextMatchedIsDisabled = false;
     }
@@ -516,7 +519,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         BugAnnotation bugAnnotation = null;
         if ("Class".equals(qName)) {
             String className = getRequiredAttribute(attributes, "classname", qName);
+            String classAnnotationNames = getOptionalAttribute(attributes, "classAnnotationNames");
             bugAnnotation = bugAnnotationWithSourceLines = new ClassAnnotation(className);
+            if (classAnnotationNames != null) {
+                ((PackageMemberAnnotation) bugAnnotation)
+                        .setJavaAnnotationNames(Arrays.asList(classAnnotationNames.split(",")));
+            }
         } else if ("Type".equals(qName)) {
             String typeDescriptor = getRequiredAttribute(attributes, "descriptor", qName);
             TypeAnnotation typeAnnotation;
@@ -530,6 +538,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             String classname = getRequiredAttribute(attributes, "classname", qName);
             String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
             String signature = getRequiredAttribute(attributes, "signature", qName);
+            String classAnnotationNames = getOptionalAttribute(attributes, "classAnnotationNames");
             if ("Method".equals(qName)) {
                 String isStatic = getOptionalAttribute(attributes, "isStatic");
                 if (isStatic == null) {
@@ -545,7 +554,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 bugAnnotation = bugAnnotationWithSourceLines = new FieldAnnotation(classname, fieldOrMethodName, signature,
                         sourceSignature, Boolean.valueOf(isStatic));
             }
-
+            if (classAnnotationNames != null) {
+                ((PackageMemberAnnotation) bugAnnotation)
+                        .setJavaAnnotationNames(Arrays.asList(classAnnotationNames.split(",")));
+            }
         } else if ("SourceLine".equals(qName)) {
             SourceLineAnnotation sourceAnnotation = createSourceLineAnnotation(qName, attributes);
             if (!sourceAnnotation.isSynthetic()) {
