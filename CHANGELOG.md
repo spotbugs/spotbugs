@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2024-??-??
 ### Fixed
 - Do not consider Records as Singletons ([#2981](https://github.com/spotbugs/spotbugs/issues/2981))
+- Keep a maximum of 10000 cached analysis entries for plugin's analysis engines ([#3025](https://github.com/spotbugs/spotbugs/pull/3025))
 
 ## 4.8.6 - 2024-06-17
 ### Fixed
