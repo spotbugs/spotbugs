@@ -225,7 +225,9 @@ def scripts = tasks.register('scripts', Copy) {
 
   into(layout.buildDirectory.dir("bin"))
   duplicatesStrategy DuplicatesStrategy.FAIL
-  fileMode 0755
+  filePermissions{
+    unix (755)
+  }
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
@@ -285,7 +287,9 @@ tasks.named('distTar', Tar) {
 }
 def distZip = tasks.named('distZip', Zip) {
   duplicatesStrategy = DuplicatesStrategy.FAIL
-  fileMode 0755
+  filePermissions{
+    unix (755)
+  }
 }
 tasks.named('jar') {
   dependsOn tasks.named('updateManifest')
