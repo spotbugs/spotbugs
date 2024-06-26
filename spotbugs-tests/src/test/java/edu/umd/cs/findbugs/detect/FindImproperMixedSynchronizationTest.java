@@ -9,7 +9,7 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class FindMixedSynchronizationTest extends AbstractIntegrationTest {
+public class FindImproperMixedSynchronizationTest extends AbstractIntegrationTest {
     private static final String OBJECT_BUG = "US_UNSAFE_OBJECT_SYNCHRONIZATION";
     private static final String ACCESSIBLE_OBJECT_BUG = "US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION";
     private static final String INHERITABLE_OBJECT_BUG = "US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION";
