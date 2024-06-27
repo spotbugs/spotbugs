@@ -226,7 +226,7 @@ def scripts = tasks.register('scripts', Copy) {
   into(layout.buildDirectory.dir("bin"))
   duplicatesStrategy DuplicatesStrategy.FAIL
   filePermissions{
-    unix (755)
+    unix (0755)
   }
 }
 
@@ -288,7 +288,7 @@ tasks.named('distTar', Tar) {
 def distZip = tasks.named('distZip', Zip) {
   duplicatesStrategy = DuplicatesStrategy.FAIL
   filePermissions{
-    unix (755)
+    unix (0755)
   }
 }
 tasks.named('jar') {
