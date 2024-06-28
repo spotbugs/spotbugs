@@ -23,18 +23,21 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
         setPriorityAdjustment(0); // reset priority
     }
 
+    private void performAnalysisForRefComp() {
+        performAnalysis("RefComparisons.class", "RefComparisons$MyClass1.class", "RefComparisons$MyClass2.class", "RefComparisons$MyClass3.class",
+                "RefComparisons$MyEnum.class");
+    }
+
     @Test
     void testComparisonsNotEnabled() {
-        /**
-        * When there is no priority adjustment, and we enable ref comparison for
-        * all, we only get an integer ref comparison bug.
-        */
+        // When there is no priority adjustment, and we enable ref comparison for
+        // all, we only get an integer ref comparison bug.
         setPriorityAdjustment(0); // reset priority
         SystemProperties.setProperty("findbugs.refcomp.reportAll", "true"); // enable ref comparison
 
-        performAnalysis("RefComparisons.class");
+        performAnalysisForRefComp();
         assertNumOfRefCompBugs(1);
-        assertRefCompBug("integerBadComparison", 4, Confidence.HIGH);
+        assertRefCompBug("RefComparisons", "integerBadComparison", 5, Confidence.HIGH);
     }
 
     @Test
@@ -43,11 +46,11 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
         setPriorityAdjustment(-1); // raise priority
 
         SystemProperties.removeProperty("findbugs.refcomp.reportAll");
-        performAnalysis("RefComparisons.class");
+        performAnalysisForRefComp();
         assertNumOfRefCompBugs(3);
-        assertRefCompBug("integerBadComparison", 4, Confidence.HIGH);
-        assertRefCompBug("myClass1BadComparison", 11, Confidence.LOW);
-        assertRefCompBug("myClass2BadComparison", 18, Confidence.LOW);
+        assertRefCompBug("RefComparisons", "integerBadComparison", 5, Confidence.HIGH);
+        assertRefCompBug("RefComparisons", "myClass1BadComparison", 13, Confidence.LOW);
+        assertRefCompBug("RefComparisons", "myClass2BadComparison", 21, Confidence.LOW);
     }
 
     @Test
@@ -57,7 +60,7 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
 
         performAnalysis("RefComparisons.class");
         assertNumOfRefCompBugs(1);
-        assertRefCompBug("integerBadComparison", 4, Confidence.HIGH);
+        assertRefCompBug("RefComparisons", "integerBadComparison", 5, Confidence.HIGH);
     }
 
     @Test
@@ -65,11 +68,11 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
         setPriorityAdjustment(-1); // raise priority
         SystemProperties.setProperty("findbugs.refcomp.reportAll", "true");
 
-        performAnalysis("RefComparisons.class");
+        performAnalysisForRefComp();
         assertNumOfRefCompBugs(3);
-        assertRefCompBug("integerBadComparison", 4, Confidence.HIGH);
-        assertRefCompBug("myClass1BadComparison", 11, Confidence.LOW);
-        assertRefCompBug("myClass2BadComparison", 18, Confidence.LOW);
+        assertRefCompBug("RefComparisons", "integerBadComparison", 5, Confidence.HIGH);
+        assertRefCompBug("RefComparisons", "myClass1BadComparison", 13, Confidence.LOW);
+        assertRefCompBug("RefComparisons", "myClass2BadComparison", 21, Confidence.LOW);
     }
 
     private void assertNumOfRefCompBugs(int num) {
@@ -78,10 +81,10 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
     }
 
-    private void assertRefCompBug(String method, int line, Confidence confidence) {
+    private void assertRefCompBug(String class_, String method, int line, Confidence confidence) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType("RC_REF_COMPARISON")
-                .inClass("RefComparisons")
+                .inClass(class_)
                 .inMethod(method)
                 .atLine(line)
                 .withConfidence(confidence)

@@ -923,7 +923,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
      * @param method: the method where the comparison is happening
      * @param lhsType: the type of the left hand side of the comparison
      * @param rhsType: the type of the right hand side of the comparison
-     * @return
+     * @return whether it's an acceptable comparison inside the equals method
      */
     private static boolean isComparisonInsideEqualsMethod(JavaClass jClass, Method method, Type lhsType, Type rhsType) {
         if (!method.getName().equals("equals")) {

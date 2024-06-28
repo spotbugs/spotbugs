@@ -1,5 +1,6 @@
 public class RefComparisons {
     
+    // This should trigger a warning in all cases
     public static boolean integerBadComparison(Integer a, Integer b) {
         return a == b;
     }
@@ -7,6 +8,7 @@ public class RefComparisons {
     public class MyClass1 {
     }
 
+    // This should trigger a warning when `findbugs.refcomp.reportAll` is set to true
     public static boolean myClass1BadComparison(MyClass1 a, MyClass1 b) {
         return a == b;
     }
@@ -14,6 +16,7 @@ public class RefComparisons {
     public class MyClass2 {
     }
 
+    // This should trigger a warning when `findbugs.refcomp.reportAll` is set to true
     public static boolean myClass2BadComparison(MyClass2 a, MyClass2 b) {
         return a == b;
     }
@@ -45,5 +48,14 @@ public class RefComparisons {
             }
             return this.x == other.x;
         }
+    }
+
+    enum MyEnum {
+        A, B, C;
+    }
+
+    // This should not trigger a warning as comparing enums is allowed
+    public boolean enumComparison(MyEnum a, MyEnum b) {
+        return a == b;
     }
 }
