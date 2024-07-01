@@ -233,6 +233,11 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
         testPass("FinalClassIndirectReadObject");
     }
 
+    @Test
+    void testOverridableMethodCallsInReadObjectCase1() {
+        testPass("OverridableMethodCallsInReadObjectCase1");
+    }
+
     void testCase(String className, int constructorLine, int cloneLine) {
         performAnalysis("overridableMethodCall/" + className + ".class");
 
