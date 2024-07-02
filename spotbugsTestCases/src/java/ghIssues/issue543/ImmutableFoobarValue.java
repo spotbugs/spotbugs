@@ -111,7 +111,7 @@ public final class ImmutableFoobarValue extends FoobarValue {
    * @return A modified copy of {@code this} object
    */
   public final ImmutableFoobarValue withBuz(Iterable<Integer> elements) {
-    if (this.buz == elements) return this;
+    if (this.buz.equals(elements)) return this;
     List<Integer> newValue = createUnmodifiableList(false, createSafeList(elements, true, false));
     return new ImmutableFoobarValue(this.foo, this.bar, newValue, this.crux);
   }
@@ -137,7 +137,7 @@ public final class ImmutableFoobarValue extends FoobarValue {
    * @return A modified copy of {@code this} object
    */
   public final ImmutableFoobarValue withCrux(Iterable<Long> elements) {
-    if (this.crux == elements) return this;
+    if (this.crux.equals(elements)) return this;
     Set<Long> newValue = createUnmodifiableSet(createSafeList(elements, true, false));
     return new ImmutableFoobarValue(this.foo, this.bar, this.buz, newValue);
   }

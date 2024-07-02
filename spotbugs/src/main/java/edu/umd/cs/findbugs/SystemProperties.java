@@ -230,6 +230,10 @@ public class SystemProperties {
         properties.setProperty(name, value);
     }
 
+    public static void removeProperty(String name) {
+        properties.remove(name);
+    }
+
     /**
      * @param name
      *            property name
