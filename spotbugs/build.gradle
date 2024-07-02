@@ -82,7 +82,7 @@ dependencies {
   api 'org.apache.commons:commons-lang3:3.14.0'
   api 'org.apache.commons:commons-text:1.10.0'
   api 'org.slf4j:slf4j-api:2.0.13'
-  implementation 'net.sf.saxon:Saxon-HE:12.4'
+  implementation 'net.sf.saxon:Saxon-HE:12.5'
   implementation libs.log4j.core
   logBinding (libs.log4j.slf4j2.impl) {
     exclude group: 'org.slf4j'
