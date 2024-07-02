@@ -240,7 +240,7 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
 
     @Test
     void testOverridableMethodCallsInReadObjectCase2() {
-        testReadObject("OverridableMethodCallsInReadObjectCase1", 10);
+        testReadObject("OverridableMethodCallsInReadObjectCase2", 11);
     }
 
     void testCase(String className, int constructorLine, int cloneLine) {
