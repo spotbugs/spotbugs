@@ -2,17 +2,11 @@ package edu.umd.cs.findbugs.detect;
 
 import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
 
-    public static final String OPERATIONS_ARE_NOT_ATOMIC = "AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC";
-    public static final String NEEDS_SYNCHRONIZATION = "AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION";
+    private static final String OPERATIONS_ARE_NOT_ATOMIC = "AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC";
+    private static final String NEEDS_SYNCHRONIZATION = "AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION";
 
     @Test
     void testSafeSynchronizedList() {
@@ -31,26 +25,26 @@ class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
     @Test
     void testUnsafeSynchronizedList() {
         performAnalysis("atomicMethods/UnsafeSynchronizedList.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 1);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedList", "addAndPrintNumbers", 13);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 1);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedList", "nums", 13);
     }
 
     @Test
     void testUnsafeSynchronizedListWithMultipleSync() {
         performAnalysis("atomicMethods/UnsafeSynchronizedListWithMultipleSync.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 1);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedListWithMultipleSync", "addAndPrintNumbers", 32);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 1);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedListWithMultipleSync", "nums", 32);
     }
 
     @Test
     void testUnsafeSynchronizedListWithMethodInit() {
         performAnalysis("atomicMethods/UnsafeSynchronizedListWithMethodInit.class");
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 1);
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 1);
-        assertBug(NEEDS_SYNCHRONIZATION, "UnsafeSynchronizedListWithMethodInit", "init", 12);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedListWithMethodInit", "addAndPrintNumbers", 17);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 1);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 1);
+        assertBugAtFieldAtLine(NEEDS_SYNCHRONIZATION, "UnsafeSynchronizedListWithMethodInit", "nums", 12);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedListWithMethodInit", "nums", 17);
     }
 
     @Test
@@ -68,19 +62,19 @@ class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
                 "atomicMethods/UnsafeSynchronizedSet.class",
                 "atomicMethods/UnsafeSynchronizedSortedSet.class",
                 "atomicMethods/UnsafeSynchronizedNavigableSet.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 3);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedSet", "addAndPrintNumbers", 13);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedSortedSet", "addAndPrintNumbers", 12);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedNavigableSet", "addAndPrintNumbers", 12);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 3);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedSet", "nums", 13);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedSortedSet", "nums", 12);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedNavigableSet", "nums", 12);
     }
 
     @Test
     void testUnsafeSynchronizedCollection() {
         performAnalysis("atomicMethods/UnsafeSynchronizedCollection.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 1);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedCollection", "addAndPrintNumbers", 12);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 1);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedCollection", "nums", 12);
     }
 
     @Test
@@ -89,11 +83,11 @@ class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
                 "atomicMethods/UnsafeSynchronizedMap.class",
                 "atomicMethods/UnsafeSynchronizedNavigableMap.class",
                 "atomicMethods/UnsafeSynchronizedSortedMap.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 3);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedMap", "addAndPrintNumbers", 13);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedNavigableMap", "addAndPrintNumbers", 12);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedSortedMap", "addAndPrintNumbers", 12);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 3);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedMap", "nums", 13);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedNavigableMap", "nums", 12);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedSortedMap", "nums", 12);
     }
 
     @Test
@@ -108,36 +102,36 @@ class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
     @Test
     void testUnsafeSynchronizedListAndSet() {
         performAnalysis("atomicMethods/UnsafeSynchronizedListAndSet.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 2);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedListAndSet", "addAndPrintNumbers", 16);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedListAndSet", "addAndPrintNumbers", 20);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 2);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedListAndSet", "nums", 16);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedListAndSet", "nums2", 20);
     }
 
     @Test
     void testPartialSynchronizedListAndSet() {
         performAnalysis("atomicMethods/PartialSynchronizedListAndSet.class", "atomicMethods/PartialSynchronizedListAndSet2.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 2);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "PartialSynchronizedListAndSet", "addAndPrintNumbers", 16);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "PartialSynchronizedListAndSet2", "addAndPrintNumbers", 22);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 2);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "PartialSynchronizedListAndSet", "nums", 16);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "PartialSynchronizedListAndSet2", "nums2", 22);
     }
 
     @Test
     void testUnsafeSynchronizedListWithPrivateMethods() {
         performAnalysis("atomicMethods/UnsafeSynchronizedListWithPrivateMethods.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 1);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedListWithPrivateMethods", "addAndPrintNumbers", 13);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 1);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedListWithPrivateMethods", "nums", 13);
     }
 
     @Test
     void testUnsafeSynchronizedSetInMultipleMethods() {
         performAnalysis("atomicMethods/UnsafeSynchronizedSetInMultipleMethods.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 2);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedSetInMultipleMethods", "addAndPrintNumbers", 13);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedSetInMultipleMethods", "removeAndPrintNumbers", 19);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 2);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedSetInMultipleMethods", "nums", 13);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedSetInMultipleMethods", "nums", 19);
     }
 
     @Test
@@ -149,10 +143,10 @@ class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
     @Test
     void testUnsafeSynchronizedMapIncrement() {
         performAnalysis("atomicMethods/UnsafeSynchronizedMapIncrement.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 1);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 1);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedMapIncrement", "increment", 17);
-        assertBug(NEEDS_SYNCHRONIZATION, "UnsafeSynchronizedMapIncrement", "getCount", 21);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 1);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 1);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeSynchronizedMapIncrement", "map", 17);
+        assertBugAtFieldAtLine(NEEDS_SYNCHRONIZATION, "UnsafeSynchronizedMapIncrement", "map", 21);
     }
 
     @Test
@@ -170,29 +164,31 @@ class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
                 "atomicMethods/UnsafeAtomicReference4.class",
                 "atomicMethods/UnsafeAtomicReference4$Inner.class",
                 "atomicMethods/UnsafeAtomicReference5.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 11);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 3);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference", "update", 17);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference", "add", 22);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference2", "incrementAtomicInteger", 18);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference2", "incrementAtomicInteger", 18);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference2", "incrementAtomicInteger2", 26);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference2", "incrementAtomicInteger2", 26);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference3", "preparation", 11);
-        assertBug(NEEDS_SYNCHRONIZATION, "UnsafeAtomicReference3", "run", 15);
-        assertBug(NEEDS_SYNCHRONIZATION, "UnsafeAtomicReference3", "after", 19);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference4", "initProcessing", 22);
-        assertBug(NEEDS_SYNCHRONIZATION, "UnsafeAtomicReference4", "finishProcessing", 33);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference5", "lambda$incrementAtomicInteger$0", 15);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 11);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 3);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference", "a", 17);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference", "b", 18);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference", "a", 22);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference", "b", 22);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference2", "atomicBoolean", 18);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference2", "atomicInteger", 18);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference2", "atomicBoolean2", 26);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference2", "atomicInteger2", 26);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference3", "hadException", 11);
+        assertBugAtFieldAtLine(NEEDS_SYNCHRONIZATION, "UnsafeAtomicReference3", "hadException", 15);
+        assertBugAtFieldAtLine(NEEDS_SYNCHRONIZATION, "UnsafeAtomicReference3", "hadException", 19);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference4", "ref", 22);
+        assertBugAtFieldAtLine(NEEDS_SYNCHRONIZATION, "UnsafeAtomicReference4", "ref", 33);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReference5", "atomicBoolean", 15);
     }
 
     @Test
     void testUnsafeAtomicReferenceValueSet() {
         performAnalysis("atomicMethods/UnsafeAtomicReferenceValueSet.class");
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 1);
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 1);
-        assertBug(NEEDS_SYNCHRONIZATION, "UnsafeAtomicReferenceValueSet", "init", 10);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReferenceValueSet", "update", 15);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 1);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 1);
+        assertBugAtFieldAtLine(NEEDS_SYNCHRONIZATION, "UnsafeAtomicReferenceValueSet", "atomicInteger", 10);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeAtomicReferenceValueSet", "atomicInteger", 15);
     }
 
     @Test
@@ -204,9 +200,9 @@ class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
     @Test
     void testUnsafeLocalAtomicInteger() {
         performAnalysis("atomicMethods/UnsafeLocalAtomicInteger.class");
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 1);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-        assertBug(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeLocalAtomicInteger", "increment", 23);
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 1);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugInMethodAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeLocalAtomicInteger", "increment", 23);
     }
 
     @Test
@@ -234,23 +230,7 @@ class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
     }
 
     private void assertZeroBugs() {
-        assertNumOfBugs(OPERATIONS_ARE_NOT_ATOMIC, 0);
-        assertNumOfBugs(NEEDS_SYNCHRONIZATION, 0);
-    }
-
-    private void assertNumOfBugs(String bugType, int num) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType).build();
-        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertBug(String bugType, String className, String methodName, int line) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .inClass(className)
-                .inMethod(methodName)
-                .atLine(line)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 0);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
     }
 }
