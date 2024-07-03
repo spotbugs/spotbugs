@@ -50,7 +50,6 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
@@ -152,12 +151,12 @@ public class AtomicOperationsCombinedDetector implements Detector {
         }
     }
 
-    private static boolean isAtomicField(ClassMember classMember) {
-        if (classMember == null) {
+    private static boolean isAtomicField(XMethod xMethod) {
+        if (xMethod == null) {
             return false;
         }
-        return CollectionAnalysis.isSynchronizedCollection(classMember)
-                || (classMember.getClassName().startsWith("java.util.concurrent.atomic") && classMember.getSignature().endsWith(")V"));
+        return CollectionAnalysis.isSynchronizedCollection(xMethod)
+                || (xMethod.getClassName().startsWith("java.util.concurrent.atomic") && xMethod.getSignature().endsWith(")V"));
     }
 
     private void analyzeFieldsForAtomicityViolations(ClassContext classContext, Method method) throws CheckedAnalysisException {
