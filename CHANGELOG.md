@@ -13,6 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Check the actual caught exceptions (instead of the their common type) when analyzing multi-catch blocks ([#2968](https://github.com/spotbugs/spotbugs/issues/2968))
 - System property `findbugs.refcomp.reportAll` is now being used. For some new conditions, it will emit an experimental warning ([#2988](https://github.com/spotbugs/spotbugs/pull/2988))
 - `-version` flag prints the version to the standard output ([#2797](https://github.com/spotbugs/spotbugs/issues/2797))
+- Revert the changes from ([#2894](https://github.com/spotbugs/spotbugs/pull/2894)) to get HTML stylesheets to work again ([#2969](https://github.com/spotbugs/spotbugs/issues/2969))
 
 ## 4.8.6 - 2024-06-17
 ### Fixed
