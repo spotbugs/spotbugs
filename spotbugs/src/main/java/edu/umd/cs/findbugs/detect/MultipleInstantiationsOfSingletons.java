@@ -70,6 +70,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     private final Set<XField> eagerlyInitializedFields = new HashSet<>();
     private final Map<XField, XMethod> instanceGetterMethods = new HashMap<>();
     private final List<XMethod> methodsUsingMonitor = new ArrayList<>();
+    private final Map<XMethod, List<XMethod>> calledMethodsByMethods = new HashMap<>();
 
     public MultipleInstantiationsOfSingletons(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -101,6 +102,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         eagerlyInitializedFields.clear();
         instanceGetterMethods.clear();
         methodsUsingMonitor.clear();
+        calledMethodsByMethods.clear();
 
         if (obj.getClassName().endsWith("Singleton")) {
             hasSingletonPostFix = true;
@@ -128,12 +130,6 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         }
 
         super.visit(obj);
-    }
-
-    @Override
-    public boolean beforeOpcode(int seen) {
-        return seen == Const.PUTSTATIC || seen == Const.ARETURN || seen == Const.MONITORENTER || seen == Const.IFNONNULL
-                || (seen == Const.ATHROW && "clone".equals(getMethodName()));
     }
 
     @Override
@@ -175,7 +171,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                     }
                 }
             }
-        } else if (seen == Const.ATHROW && stack.getStackDepth() > 0) {
+        } else if (seen == Const.ATHROW && "clone".equals(getMethodName()) && stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);
             if (item != null && "Ljava/lang/CloneNotSupportedException;".equals(item.getSignature()) && cloneOnlyThrowsException) {
                 cloneOnlyThrowsCloneNotSupportedException = true;
@@ -201,6 +197,11 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             }
         } else if (seen == Const.MONITORENTER) {
             methodsUsingMonitor.add(getXMethod());
+        } else if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL || seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE) {
+            if (!calledMethodsByMethods.containsKey(getXMethod())) {
+                calledMethodsByMethods.put(getXMethod(), new ArrayList<>());
+            }
+            calledMethodsByMethods.get(getXMethod()).add(getXMethodOperand());
         }
     }
 
@@ -242,10 +243,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             }
         }
 
-        boolean isGetterMethodUsingMonitor = methodsUsingMonitor.contains(instanceGetterMethod);
-
-        if (instanceGetterMethod != null && !instanceGetterMethod.isSynchronized() && !isGetterMethodUsingMonitor
-                && isInstanceFieldLazilyInitialized) {
+        if (instanceGetterMethod != null && !hasSynchronized(instanceGetterMethod) && isInstanceFieldLazilyInitialized) {
             bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", NORMAL_PRIORITY).addClass(this)
                     .addMethod(instanceGetterMethod));
         }
@@ -276,6 +274,23 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         }
 
         super.visitAfter(javaClass);
+    }
+
+    private boolean hasSynchronized(XMethod method) {
+        if (method.isSynchronized() || methodsUsingMonitor.contains(method)) {
+            return true;
+        }
+
+        if (calledMethodsByMethods.containsKey(method)) {
+            List<XMethod> calledMethods = calledMethodsByMethods.get(method);
+            for (XMethod cm : calledMethods) {
+                if (hasSynchronized(cm)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private int getNumberOfEnumValues(JavaClass javaClass) {

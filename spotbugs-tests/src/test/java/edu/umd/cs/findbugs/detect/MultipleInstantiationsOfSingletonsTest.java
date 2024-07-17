@@ -248,6 +248,18 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void doubleCheckedLockingIndirectTest() {
+        performAnalysis("singletons/DoubleCheckedLockingIndirect.class");
+        assertNoBugs();
+    }
+
+    @Test
+    void doubleCheckedLockingIndirect2Test() {
+        performAnalysis("singletons/DoubleCheckedLockingIndirect2.class");
+        assertNoBugs();
+    }
+
+    @Test
     void multiplePrivateConstructorsTest() {
         performAnalysis("singletons/MultiplePrivateConstructors.class");
         assertNoBugs();
