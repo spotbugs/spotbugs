@@ -1070,13 +1070,14 @@ Returning a zero length array is generally preferred in this context to returnin
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock">
     <Details>
-<![CDATA[
-<p> This detector looks for JSR-166 (<code>java.util.concurrent</code>)
-locks which are acquired, but not released on all paths out of the method.&nbsp;
-It is a moderately fast detector.&nbsp; Note that in order to use this
-detector, you need to have the <code>java.util.concurrent</code> package
-in the auxiliary classpath (or be analyzing the package itself).</p>
-]]>
+      <![CDATA[
+        <p> This detector looks for JSR-166 (<code>java.util.concurrent</code>)
+        locks which are acquired, but not released on all paths out of the method.&nbsp;
+        The detector also detects if a lock is released without even being opened in the first place.
+        It is a moderately fast detector.&nbsp; Note that in order to use this
+        detector, you need to have the <code>java.util.concurrent</code> package
+        in the auxiliary classpath (or be analyzing the package itself).</p>
+      ]]>
     </Details>
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison">
@@ -9007,7 +9008,6 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT">
     <ShortDescription>Expression in assertion may produce a side effect</ShortDescription>
     <LongDescription>The expression used in assertion at {1} may produce a side effect. If assertions are disabled, the expression won't get executed and the result of the method might change.</LongDescription>
@@ -9269,6 +9269,18 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="CWO_CLOSED_WITHOUT_OPENED">
+    <ShortDescription>Method releases lock without opening it</ShortDescription>
+    <LongDescription>{1} releases lock without acquiring it in the first place</LongDescription>
+    <Details>
+      <![CDATA[
+        <p> This method releases a JSR-166 (<code>java.util.concurrent</code>) lock,
+        but it is possible that the lock is not even acquired at this point,
+        due to an exception thrower method before the locking.
+        </p>
+      ]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -9430,4 +9442,5 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
+  <BugCode abbrev="CWO">Lock closed without being opened in the first place</BugCode>
 </MessageCollection>
