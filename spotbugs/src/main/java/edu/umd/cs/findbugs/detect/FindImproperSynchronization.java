@@ -240,9 +240,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
                         badBackingCollections.add(xField);
                     }
 
-                    if (xField.isProtected() && !getThisClass().isFinal()) {
-                        inheritableBackingCollections.add(xField);
-                    } else if (isPackagePrivate(xField)) {
+                    if (xField.isProtected() && !getThisClass().isFinal() || isPackagePrivate(xField)) {
                         inheritableBackingCollections.add(xField);
                     }
                 }
@@ -454,9 +452,8 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
      * the declaring class of the lock object is the same as the current class, the lock object is not inherited.
      * @param lockObject the lock object to check for inheritance
      * @return true if the lock object is inherited from the current class, false otherwise
-     * @throws ClassNotFoundException if the class of the lock object cannot be found
      */
-    private boolean isInherited(XField lockObject) throws ClassNotFoundException {
+    private boolean isInherited(XField lockObject) {
         return !getDottedClassName().equals(lockObject.getClassName().split("\\$")[0]);
     }
 
@@ -579,11 +576,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
         for (JavaClass declaringClass : getThisClass().getSuperClasses()) {
             for (Method possibleAccessorMethod : declaringClass.getMethods()) {
-                if (possibleAccessorMethod.getCode() == null) {
-                    continue;
-                }
-
-                if (Arrays.asList(ownMethods).contains(possibleAccessorMethod)
+                if (possibleAccessorMethod.getCode() == null || Arrays.asList(ownMethods).contains(possibleAccessorMethod)
                         || isInitializerMethod(possibleAccessorMethod.getName())) {
                     continue;
                 }
@@ -728,12 +721,12 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
             XField backingCollection,
             MultiMap<XField, XMethod> collectionAccessors) {
         if (collectionAccessors.containsKey(backingCollection)) {
-            String exposingMethods = buildMethodsMessage(collectionAccessors.get(backingCollection));
+            String exposingMethodsMessage = buildMethodsMessage(collectionAccessors.get(backingCollection));
             for (BugInfo bugInfo : possibleBugs.get(lock)) {
                 bugReporter.reportBug(bugInfo
                         .createBugInstance(this,
                                 "USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION",
-                                lock, backingCollection, exposingMethods));
+                                lock, backingCollection, exposingMethodsMessage));
             }
         }
     }

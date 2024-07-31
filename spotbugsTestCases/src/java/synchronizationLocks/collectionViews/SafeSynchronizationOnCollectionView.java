@@ -19,13 +19,6 @@ import java.util.TreeSet;
 
 
 public class SafeSynchronizationOnCollectionView {
-    private final Map<Integer, String> mapView = Collections.synchronizedMap(new HashMap<Integer, String>());
-    private final Set<Integer> setView = mapView.keySet();
-
-    public Map<Integer, String> getMap() {
-        return mapView;
-    }
-
     private final ArrayList<Object> collection1 = new ArrayList<>();
     private final Collection<Object> view1 = Collections.synchronizedCollection(collection1);
 
@@ -105,14 +98,6 @@ public class SafeSynchronizationOnCollectionView {
 
     private final Queue<Object> collection25 = new PriorityQueue<>();
     private final Queue<Object> view25 = Collections.checkedQueue(collection25, Object.class);
-
-    public void doSomething() {
-        synchronized (mapView) {  // Synchronize on map, rather than set
-            for (Integer k : setView) {
-                System.out.println(k);
-            }
-        }
-    }
 
     // Synchronizations
     public void doStuff1() {
