@@ -4,7 +4,7 @@ apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
   compileOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.3'
-  compileOnly 'org.hamcrest:hamcrest:2.2'
+  compileOnly 'org.hamcrest:hamcrest:3.0'
   testImplementation project(':spotbugs')
   api project(':test-harness-core')
 }
