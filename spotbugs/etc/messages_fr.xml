@@ -1512,11 +1512,11 @@ public int hashCode() {
   </Details>
  </BugPattern>
  <BugPattern type="MS_EXPOSE_REP">
-  <ShortDescription>Une méthode statique publique risque d'exposer une représentation interne en renvoyant un tableau</ShortDescription>
+  <ShortDescription>Une méthode statique publique risque d'exposer une représentation interne en renvoyant un objet modifiable ou un tableau</ShortDescription>
   <LongDescription>La méthode statique publique {1} peut exposer une représentation interne en renvoyant {2}</LongDescription>
   <Details>
 <![CDATA[
-<p>Une méthode statique publique renvoit une référence à un tableau faisant partie de l'état statique de la classe. Tout code appelant cette méthode peut librement modifier le tableau sous-jacent. Une correction possible serait de renvoyer une copie du tableau.</p>
+<p>Une méthode statique publique renvoit une référence à un objet modifiable ou à un tableau faisant partie de l'état statique de la classe. Tout code appelant cette méthode peut librement modifier le tableau sous-jacent. Une correction possible serait de renvoyer une copie du tableau.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1539,11 +1539,11 @@ public int hashCode() {
   </Details>
  </BugPattern>
  <BugPattern type="EI_EXPOSE_STATIC_REP2">
-  <ShortDescription>Une méthode peut exposer un état interne statique en stockant un objet modifiable dans un champs statique</ShortDescription>
+  <ShortDescription>Une méthode peut exposer un état interne statique en stockant un objet modifiable dans un champ statique</ShortDescription>
   <LongDescription>La méthode {1} peut exposer un état interne statique en stockant un objet modifiable dans le champs statique {2}</LongDescription>
   <Details>
 <![CDATA[
-<p>Ce code stocke une référence à un objet modifiable externe dans un champs statique. Si des modifications non vérifiées de l'objet modifiable peuvent compromettre la sécurité ou d'autres propriétés importantes, vous devez faire autre chose. Stocker une copie de l'objet est souvent une meilleur approche.</p>
+<p>Ce code stocke une référence à un objet modifiable externe dans un champ statique. Si des modifications non vérifiées de l'objet modifiable peuvent compromettre la sécurité ou d'autres propriétés importantes, vous devez faire autre chose. Stocker une copie de l'objet est souvent une meilleur approche.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1710,12 +1710,22 @@ synchronized() {}
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL">
+  <ShortDescription>Un champ n'est pas final alors qu'il devrait refactorisé pour l'être</ShortDescription>
+  <LongDescription>{1} n'est pas final mais devrait être refactorisé pour l'être</LongDescription>
+  <Details>
+<![CDATA[
+<p>Un champ <code>public static</code> ou <code>protected static</code> peut-être changé par accident ou par du code malveillant d'un autre paquetage. Le champ devrait être final pour éviter cette vulnérabilité.
+Cependant l'initialisation du champ comporte plusieurs écriture, ce qui requiererait donc un refactor.</p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="MS_SHOULD_BE_FINAL">
   <ShortDescription>Un champ n'est pas final alors qu'il devrait l'être</ShortDescription>
   <LongDescription>{1} n'est pas final mais devrait l'être</LongDescription>
   <Details>
 <![CDATA[
-<p>Un champ statique modifiable peut-être changé par accident ou par du code malveillant d'un autre paquetage. Le champ devrait être final pour éviter cette vulnérabilité.</p>
+<p>Un champ <code>public static</code> ou <code>protected static</code> peut-être changé par accident ou par du code malveillant d'un autre paquetage. Le champ devrait être final pour éviter cette vulnérabilité.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2551,8 +2561,8 @@ public vida foo() {
   </Details>
  </BugPattern>
  <BugPattern type="SA_FIELD_SELF_ASSIGNMENT">
-  <ShortDescription>Auto-alimentation d'un champs</ShortDescription>
-  <LongDescription>Auto-alimentation du champs {2} dans {1}</LongDescription>
+  <ShortDescription>Auto-alimentation d'un champ</ShortDescription>
+  <LongDescription>Auto-alimentation du champ {2} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Cette méthode contient un champ s'auto-alimentant; par exemple :</p>
@@ -3253,7 +3263,7 @@ double value2 =  x / (double) y;
   <LongDescription>Un test d'impaire ne fonctionnera pas avec les négatifs dans {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Le code utilise <code>x % 2 == 1</code> pour véifier si une valeur est impaire, mais cela ne fonctionera pas avec une valeur négative (Ex. : <code>(-5) % 2 == -1</code>). Si ce code doit tester si une valeur est impaire, envisagez d'utiliser <code>x & 1 == 1</code> ou <code>x % 2 != 0</code>.</p>
+<p>Le code utilise <code>x % 2 == 1</code> pour véifier si une valeur est impaire, mais cela ne fonctionera pas avec une valeur négative (Ex. : <code>(-5) % 2 == -1</code>). Si ce code doit tester si une valeur est impaire, envisagez d'utiliser <code>(x & 1) == 1</code> ou <code>x % 2 != 0</code>.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -3390,6 +3400,25 @@ double value2 =  x / (double) y;
 <p>Cette classe fait une référence à une classe ou une méthode qui ne peut pas être résolue dans l'ensemble des librairies qui ont été analysées en même temps.</p>
 ]]>
   </Details>
+ </BugPattern>
+ <BugPattern type="VA_FORMAT_STRING_USES_NEWLINE">
+    <ShortDescription>Format string should use %n rather than \n</ShortDescription>
+    <LongDescription>Format string should use %n rather than \n in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+Ce string utilisé dans un format contient le caractère newline (\n). Il est généralement préférable
+ d'utiliser %n qui produira un séparateur de ligne spécifique à la plateforme.
+ 
+ Pour les blocs de texte introduits avec Java 15, utiliser <code>\</code> pour échapper les fins de ligne:
+	 
+<code>String valeur = """
+                premiere ligne%n\
+                seconde ligne%n\
+                """;</code>
+</p>
+]]>
+    </Details>
  </BugPattern>
  <BugCode abbrev="IL">Boucle infinie</BugCode>
  <BugCode abbrev="VO">Utilisation de volatile</BugCode>

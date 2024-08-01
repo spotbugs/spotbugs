@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2021, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-22 15:35-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../links.rst:2
+msgid "SpotBugs Links"
+msgstr "Links para o SpotBugs"
+
+#: ../../links.rst:4
+msgid ""
+"This page contains links to related projects, including tools that are "
+"similar to SpotBugs."
+msgstr ""
+"Esta página contém links para projetos relacionados, incluindo ferramentas que são "
+"similares ao SpotBugs."
+
+#: ../../links.rst:7
+msgid "IDE Integration"
+msgstr "Integração com IDE"
+
+#: ../../links.rst:10
+msgid ""
+"`m2e-code-quality <https://github.com/m2e-code-quality/m2e-code-"
+"quality/>`_"
+msgstr ""
+""
+
+#: ../../links.rst:10
+msgid ""
+"An Eclipse plugin which configures the FindBugs/SpotBugs Eclipse plugin "
+"to match the FindBugs/SpotBugs Maven plugin."
+msgstr ""
+"Um plugin para o Eclipse que configura o plugin FindBugs/SpotBugs "
+"para corresponder ao plugin FindBugs/SpotBugs Maven."
+
+#: ../../links.rst:13
+msgid ""
+"`spotbugs-intellij-plugin <https://github.com/JetBrains/spotbugs-"
+"intellij-plugin>`_"
+msgstr ""
+""
+
+#: ../../links.rst:13
+msgid "The SpotBugs Plugin for IntelliJ IDEA."
+msgstr "O plugin SpotBugs para o IntelliJ IDEA"
+
+#: ../../links.rst:16
+msgid "SpotBugs Plugins"
+msgstr "Plugins para o SpotBugs"
+
+#: ../../links.rst:19
+msgid "`fb-contrib <http://fb-contrib.sourceforge.net/>`_"
+msgstr ""
+
+#: ../../links.rst:19
+msgid ""
+"A FindBugs/SpotBugs plugin for doing static code analysis on java byte "
+"code."
+msgstr "Um plugin para FindBugs/SpotBugs para realizar análise estática em "
+"Java bytecode."
+
+#: ../../links.rst:22
+msgid "`Find Security Bugs <https://find-sec-bugs.github.io/>`_"
+msgstr ""
+
+#: ../../links.rst:22
+msgid "A FindBugs/SpotBugs plugin for security audits of Java web applications."
+msgstr "Um pluign para o FindBugs/SpotBugs para auditoria de segurança para aplicações Java web."
+
+#: ../../links.rst:25
+msgid "`findbugs-slf4j <https://github.com/KengoTODA/findbugs-slf4j>`_"
+msgstr ""
+
+#: ../../links.rst:25
+msgid ""
+"A FindBugs/SpotBugs plugin to verify usage of `SLF4J "
+"<https://www.slf4j.org/>`_."
+msgstr "Um plugin para o FindBugs/SpotBugs para verificar o uso de `SLF4J "
+"<https://www.slf4j.org/>`_."
+
+#: ../../links.rst:28
+msgid "Similar/Related Tools"
+msgstr "Ferramentas similares ou relacionadas"
+
+#: ../../links.rst:31
+msgid "`sonar-findbugs <https://github.com/SonarQubeCommunity/sonar-findbugs>`_"
+msgstr ""
+
+#: ../../links.rst:31
+msgid ""
+"A `SonarQube <https://www.sonarqube.org/>`_ plugin which provides rules "
+"based on SpotBugs and its major plugins."
+msgstr ""
+"O `SonarQube <https://www.sonarqube.org/>`_ plugin provê regras "
+"baseadas no SpotBugs e seus principais plugins."
+
+#: ../../links.rst:34
+msgid "`Checkstyle <https://checkstyle.sourceforge.io/>`_"
+msgstr ""
+
+#: ../../links.rst:34
+msgid "A style checker for Java."
+msgstr "Um analisador de estilo para Java."
+
+#: ../../links.rst:37
+msgid "`PMD <https://pmd.github.io/>`_"
+msgstr ""
+
+#: ../../links.rst:37
+msgid "An extensible cross-language static code analyzer."
+msgstr "Um analisador de código estático extensível em várias linguagens."
+
+#: ../../links.rst:40
+msgid "`huntbugs <https://github.com/amaembo/huntbugs>`_"
+msgstr ""
+
+#: ../../links.rst:40
+msgid ""
+"New Java bytecode static analyzer tool based on `Procyon Compiler Tools "
+"<https://github.com/mstrobel/procyon>`_ aimed to supersede the FindBugs."
+msgstr ""
+"Nova ferramenta de análise estática de bytecode Java baseada em `Procyon Compiler Tools "
+"<https://github.com/mstrobel/procyon>`_ com o objetivo de substituir o FindBugs."
+
+#: ../../links.rst:43
+msgid "`Google Error Prone <http://errorprone.info/>`_"
+msgstr ""
+
+#: ../../links.rst:43
+msgid ""
+"A static analysis tool for Java that catches common programming mistakes "
+"at compile-time."
+msgstr ""
+"Uma ferramenta de análise estática para Java que detecta erros de programação comuns "
+"em tempo de compilação."
+
+#: ../../links.rst:46
+msgid "`Checker Framework <https://checkerframework.org/>`_"
+msgstr ""
+
+#: ../../links.rst:46
+msgid "A pluggable type-checking for Java."
+msgstr "Um framework que inclui analisadores de tipo para Java."
+
+#: ../../links.rst:48
+msgid ""
+"`FindBugs-IDEA <https://plugins.jetbrains.com/plugin/3847-findbugs-"
+"idea>`_ (outdated)"
+msgstr ""
+"`FindBugs-IDEA <https://plugins.jetbrains.com/plugin/3847-findbugs-"
+"idea>`_ (desatualisado)"
+
+#: ../../links.rst:49
+msgid ""
+"The FindBugs plugin for `IntelliJ IDEA "
+"<https://www.jetbrains.com/idea/>`_."
+msgstr "O plugin FindBugs para `IntelliJ IDEA "
+"<https://www.jetbrains.com/idea/>`_."

@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -144,11 +145,11 @@ public class FindReturnRef extends OpcodeStackDetector {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EI_EXPOSE_STATIC_" + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
                                 capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                        .addClassAndMethod(this)
-                                        .addReferencedField(this)
-                                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
-                                                top.getRegisterNumber(),
-                                                getPC(), getPC() - 1)), this);
+                                .addClassAndMethod(this)
+                                .addReferencedField(this)
+                                .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
+                                        top.getRegisterNumber(),
+                                        getPC(), getPC() - 1)), this);
             }
         }
         if (!staticMethod && seen == Const.PUTFIELD && nonPublicFieldOperand()
@@ -160,11 +161,11 @@ public class FindReturnRef extends OpcodeStackDetector {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EI_EXPOSE_" + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
                                 capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                        .addClassAndMethod(this)
-                                        .addReferencedField(this)
-                                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
-                                                top.getRegisterNumber(),
-                                                getPC(), getPC() - 1)), this);
+                                .addClassAndMethod(this)
+                                .addReferencedField(this)
+                                .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
+                                        top.getRegisterNumber(),
+                                        getPC(), getPC() - 1)), this);
             }
         }
 
@@ -196,14 +197,14 @@ public class FindReturnRef extends OpcodeStackDetector {
                     field.isPublic() ||
                     AnalysisContext.currentXFactory().isEmptyArrayField(field) ||
                     field.getName().indexOf("EMPTY") != -1 ||
-                    !MutableClasses.mutableSignature(field.getSignature())) {
+                    !MutableClasses.mutableSignature(TypeFrameModelingVisitor.getType(field).getSignature())) {
                 return;
             }
             bugAccumulator.accumulateBug(new BugInstance(this, (staticMethod ? "MS" : "EI") + "_EXPOSE_"
                     + (isBuf ? "BUF" : "REP"),
                     (isBuf || isArrayClone) ? LOW_PRIORITY : NORMAL_PRIORITY)
-                            .addClassAndMethod(this).addField(field.getClassName(), field.getName(),
-                                    field.getSignature(), field.isStatic()), this);
+                    .addClassAndMethod(this).addField(field.getClassName(), field.getName(),
+                            field.getSignature(), field.isStatic()), this);
 
         }
 
@@ -296,7 +297,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         }
 
-        if (seen == Const.CHECKCAST) {
+        if (seen == Const.CHECKCAST && !stack.isTop()) {
             OpcodeStack.Item item = stack.getStackItem(0);
             if (fieldCloneUnderCast != null) {
                 arrayFieldClones.put(item, fieldCloneUnderCast);

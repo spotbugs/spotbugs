@@ -15,21 +15,27 @@ tasks.named('compileJava', JavaCompile).configure {
 tasks.withType(AbstractArchiveTask).configureEach {
   preserveFileTimestamps = false
   reproducibleFileOrder = true
-  dirMode = 0775
-  fileMode = 0664
+  dirPermissions{
+    unix (0775)
+  }
+  filePermissions{
+    unix (0664)
+  }
 }
 
 def classLoader = plugins['com.github.spotbugs'].class.classLoader
 def SpotBugsTask = classLoader.findLoadedClass( 'com.github.spotbugs.snom.SpotBugsTask' )
+def SpotBugsEffort = classLoader.findLoadedClass( 'com.github.spotbugs.snom.Effort' )
+def SpotBugsConfidence = classLoader.findLoadedClass( 'com.github.spotbugs.snom.Confidence' )
 spotbugs {
-    effort = 'max'
-    reportLevel = 'high'
+    effort = SpotBugsEffort.MAX
+    reportLevel = SpotBugsConfidence.HIGH
     maxHeapSize = '1g'
 }
 tasks.withType(SpotBugsTask).configureEach {
     reports {
         html {
-            enabled = true
+            required = true
             stylesheet = 'fancy-hist.xsl'
         }
     }

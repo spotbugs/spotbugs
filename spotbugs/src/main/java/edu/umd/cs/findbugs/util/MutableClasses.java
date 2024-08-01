@@ -1,9 +1,6 @@
 package edu.umd.cs.findbugs.util;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.apache.bcel.Const;
@@ -41,10 +38,32 @@ public class MutableClasses {
             "com.google.common.collect.ImmutableSortedMap",
             "com.google.common.collect.ImmutableSortedMultiset",
             "com.google.common.collect.ImmutableSortedSet",
-            "com.google.common.collect.ImmutableTable"));
+            "com.google.common.collect.ImmutableTable",
+            "java.util.Collections$EmptyList",
+            "java.util.Collections$EmptyMap",
+            "java.util.Collections$EmptyNavigableMap",
+            "java.util.Collections$EmptySet",
+            "java.util.Collections$EmptyNavigableSet",
+            "java.util.Collections$SingletonList",
+            "java.util.Collections$SingletonMap",
+            "java.util.Collections$SingletonSet",
+            "java.util.Collections$UnmodifiableList",
+            "java.util.Collections$UnmodifiableMap",
+            "java.util.Collections$UnmodifiableNavigableMap",
+            "java.util.Collections$UnmodifiableSortedMap",
+            "java.util.Collections$UnmodifiableSet",
+            "java.util.Collections$UnmodifiableNavigableSet",
+            "java.util.Collections$UnmodifiableSortedSet",
+            "java.util.ImmutableCollections$AbstractImmutableList",
+            "java.util.ImmutableCollections$AbstractImmutableMap",
+            "java.util.ImmutableCollections$AbstractImmutableSet"));
 
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
             "java.math", "java.time"));
+
+    private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
+            "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
+            "enqueue", "dequeue", "write", "append", "replace");
 
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
@@ -55,7 +74,7 @@ public class MutableClasses {
             return false;
         }
 
-        String dottedClassName = sig.substring(1, sig.length() - 1).replace('/', '.');
+        String dottedClassName = ClassName.fromFieldSignatureToDottedClassName(sig);
         int lastDot = dottedClassName.lastIndexOf('.');
 
         if (lastDot >= 0) {
@@ -83,14 +102,18 @@ public class MutableClasses {
         }
     }
 
+    public static boolean looksLikeASetter(String methodName, String classSig, String retSig) {
+        if (Objects.equals(classSig, retSig)) {
+            return false;
+        }
+
+        return SETTER_LIKE_PREFIXES.stream().anyMatch(name -> methodName.startsWith(name));
+    }
+
     /**
      * Analytic information about a {@link JavaClass} relevant to determining its mutability properties.
      */
     private static final class ClassAnalysis {
-        private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
-                "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
-                "enqueue", "dequeue", "write", "append", "replace");
-
         /**
          * Class under analysis.
          */
@@ -139,6 +162,7 @@ public class MutableClasses {
         }
 
         private boolean looksLikeASetter(Method method) {
+            /*
             // Empty methods cannot set anything
             if (method.getCode() == null) {
                 return false;
@@ -158,6 +182,8 @@ public class MutableClasses {
                 }
             }
             return false;
+             */
+            return MutableClasses.looksLikeASetter(method.getName(), getSig(), method.getReturnType().getSignature());
         }
 
         private boolean isSingleLineUnsupportedOperationThrower(Method method) {
@@ -204,7 +230,7 @@ public class MutableClasses {
         private String getSig() {
             String local = sig;
             if (local == null) {
-                sig = local = "L" + cls.getClassName().replace('.', '/') + ";";
+                sig = local = "L" + ClassName.toSlashedClassName(cls.getClassName()) + ";";
             }
             return local;
         }
@@ -218,6 +244,14 @@ public class MutableClasses {
         }
 
         private boolean computeByImmutableContract() {
+            if ("java.lang.Enum".equals(cls.getClassName())) {
+                return true;
+            }
+
+            if ("java.lang.Record".equals(cls.getClassName())) {
+                return true;
+            }
+
             for (AnnotationEntry entry : cls.getAnnotationEntries()) {
                 // Error-Prone's @Immutable annotation is @Inherited, hence it applies to subclasses as well
                 if (entry.getAnnotationType().equals("Lcom/google/errorprone/annotations/Immutable;")) {

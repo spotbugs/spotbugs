@@ -1,0 +1,57 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2021, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-04 19:34+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../index.rst:7
+msgid "SpotBugs manual"
+msgstr ""
+
+#: ../../index.rst:9
+msgid ""
+"This manual is licensed under the Creative Commons Attribution-"
+"NonCommercial-ShareAlike License. To view a copy of this license, visit "
+"`creativecommons.org <https://creativecommons.org/licenses/by-nc-"
+"sa/1.0/>`_ or send a letter to Creative Commons, 559 Nathan Abbott Way, "
+"Stanford, California 94305, USA."
+msgstr ""
+"Este manual está licenciado pela Creative Commons Attribution-"
+"NonCommercial-ShareAlike. Para ver uma cópia desta licença, visite "
+"`creativecommons.org <https://creativecommons.org/licenses/by-nc-"
+"sa/1.0/>`_ ou envie uma carta para Creative Commons, 559 Nathan Abbott "
+"Way, Stanford, Califórnia 94305, EUA."
+
+#: ../../index.rst:12
+msgid ""
+"The name FindBugs and the FindBugs logo are trademarked by the University"
+" of Maryland."
+msgstr ""
+"O nome FindBugs e o logotipo FindBugs são marcas registradas da "
+"Universidade de Maryland."
+
+#: ../../index.rst:15
+msgid "Indices and tables"
+msgstr "Índices e tabelas"
+
+#: ../../index.rst:17
+msgid ":ref:`search`"
+msgstr ""
+
+#: ../../index.rst:20
+msgid "Contents"
+msgstr "Conteúdo"
+

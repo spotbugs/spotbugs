@@ -1,0 +1,281 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2021, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-22 15:35-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../eclipse.rst:2
+msgid "Using the SpotBugs Eclipse plugin"
+msgstr "Usando o SpotBugs como plugin do Eclipse"
+
+#: ../../eclipse.rst:4
+msgid ""
+"The SpotBugs Eclipse plugin allows SpotBugs to be used within the Eclipse"
+" IDE. The SpotBugs Eclipse plugin was generously contributed by Peter "
+"Friese. Phil Crosby and Andrey Loskutov contributed major improvements to"
+" the plugin."
+msgstr ""
+"O plugin do SpotBugs para o Eclipse permite que o SpotBugs seja usado dentro do IDE Eclipse. "
+"O plugin do SpotBugs para o Eclipse foi generosamente contribuído por Peter Friese. "
+"Phil Crosby e Andrey Loskutov contribuíram com grandes melhorias para o plugin."
+
+#: ../../eclipse.rst:9
+msgid "Requirements"
+msgstr "Requisitos"
+
+#: ../../eclipse.rst:11
+msgid ""
+"To use the SpotBugs Plugin for Eclipse, you need Eclipse Neon (4.6) or "
+"later."
+msgstr "Para usar o SpotBugs para o Eclipse, você precisa do Eclipse Neon (4.6) ou superior. "
+
+#: ../../eclipse.rst:14
+msgid "Installation"
+msgstr "Instalação"
+
+#: ../../eclipse.rst:16
+msgid ""
+"We provide update sites that allow you to automatically install SpotBugs "
+"into Eclipse and also query and install updates. There are three "
+"different update sites:"
+msgstr ""
+"Oferecemos sites de atualização que permitem instalar automaticamente SpotBugs no Eclipse "
+"e também consultar e instalar atualizações. Existem três sites de atualização diferentes: "
+
+#: ../../eclipse.rst:20
+msgid "https://spotbugs.github.io/eclipse/"
+msgstr ""
+
+#: ../../eclipse.rst:20
+msgid "Only provides official releases of SpotBugs Eclipse plugin."
+msgstr "Fornece apenas as versões oficiais do plugin SpotBugs para o Eclipse."
+
+#: ../../eclipse.rst:23
+msgid "https://spotbugs.github.io/eclipse-candidate/"
+msgstr ""
+
+#: ../../eclipse.rst:23
+msgid ""
+"Provides official releases and release candidates of SpotBugs Eclipse "
+"plugin."
+msgstr "Fornece as versões oficiais e candidatas do plugin SpotBugs para o Eclipse."
+
+#: ../../eclipse.rst:26
+msgid "https://spotbugs.github.io/eclipse-latest/"
+msgstr ""
+
+#: ../../eclipse.rst:26
+msgid "Provides latest SpotBugs Eclipse plugin built from master branch."
+msgstr "Fornece o latest do plugin SpotBugs para o Eclipse construído a partir da branch master."
+
+#: ../../eclipse.rst:29
+msgid "https://spotbugs.github.io/eclipse-stable-latest/"
+msgstr ""
+
+#: ../../eclipse.rst:29
+msgid "Provides latest SpotBugs Eclipse plugin built from release-3.1 branch."
+msgstr "Fornece o latest do plugin SpotBugs para o Eclipse construído a partir da branch release-3.1."
+
+#: ../../eclipse.rst:31
+msgid ""
+"Or just use `Eclipse marketplace <https://marketplace.eclipse.org/content"
+"/spotbugs-eclipse-plugin>`_ to install SpotBugs Eclipse plugin."
+msgstr ""
+"Ou apenas use o `Eclipse marketplace <https://marketplace.eclipse.org/content"
+"/spotbugs-eclipse-plugin>`_ para instalar o plugin do SpotBugs para o Eclipse. "
+
+#: ../../eclipse.rst:34
+msgid "Using the Plugin"
+msgstr "Usando o plugin"
+
+#: ../../eclipse.rst:36
+msgid ""
+"To get started, right click on a Java project in Package Explorer, and "
+"select the option labeled \"Spot Bugs\". SpotBugs will run, and problem "
+"markers (displayed in source windows, and also in the Eclipse Problems "
+"view) will point to locations in your code which have been identified as "
+"potential instances of bug patterns."
+msgstr ""
+"Para começar, clique com o botão direito em um projeto Java no explorador de pacotes (Package Explorer) "
+"e selecione a opção \"Spot Bugs\". O SpotBugs será executado e os marcadores de problemas "
+"(exibidos nas janelas de código-fonte e também na visualização de problemas do Eclipse) "
+"apontarão para os locais em seu código que foram identificados como instâncias potenciais de padrões de bug. "
+
+#: ../../eclipse.rst:39
+msgid ""
+"You can also run SpotBugs on existing java archives (jar, ear, zip, war "
+"etc). Simply create an empty Java project and attach archives to the "
+"project classpath. Having that, you can now right click the archive node "
+"in Package Explorer and select the option labeled \"Spot Bugs\". If you "
+"additionally configure the source code locations for the binaries, "
+"SpotBugs will also link the generated warnings to the right source files."
+msgstr ""
+"Você também pode executar SpotBugs em arquivos java existentes (jar, ear, zip, war etc.). "
+"Basta criar um projeto Java vazio e anexar arquivos ao classpath do projeto. Com isso, agora "
+"você pode clicar com o botão direito do mouse no nó do arquivo no Package Explorer e selecionar a opção rotulada \"Spot Bugs\". "
+"Se você configurar adicionalmente os locais do código-fonte para os binários, o SpotBugs também vinculará "
+"os avisos gerados aos arquivos-fonte corretos. "
+
+#: ../../eclipse.rst:44
+msgid ""
+"You may customize how SpotBugs runs by opening the Properties dialog for "
+"a Java project, and choosing the \"SpotBugs\" property page. Options you "
+"may choose include:"
+msgstr ""
+"Você pode personalizar a forma como os SpotBugs é executado abrindo a caixa de diálogo"
+" propriedades (Properties) de um projeto Java e escolhendo a página de propriedades \"SpotBugs\"."
+" As opções que você pode escolher incluem:"
+
+#: ../../eclipse.rst:47
+msgid ""
+"Enable or disable the \"Run SpotBugs Automatically\" checkbox. When "
+"enabled, SpotBugs will run every time you modify a Java class within the "
+"project."
+msgstr ""
+"Ative ou desative a caixa de seleção \"Executar SpotBugs automaticamente\". "
+"Quando ativada, o SpotBugs será executado sempre que você modificar uma classe Java dentro do projeto."
+
+#: ../../eclipse.rst:49
+msgid ""
+"Choose minimum warning priority and enabled bug categories. These options"
+" will choose which warnings are shown. For example, if you select the "
+"\"Medium\" warning priority, only Medium and High priority warnings will "
+"be shown. Similarly, if you uncheck the \"Style\" checkbox, no warnings "
+"in the Style category will be displayed."
+msgstr ""
+"Escolha a prioridade mínima de aviso e as categorias de bug. Essas opções"
+"definem os avisos que serão mostrados. Por exemplo, se você selecionar "
+"a prioridade de aviso média "\"Medium\", apenas avisos de prioridade média e alta"
+"serão mostrados. Da mesma forma, se você desmarcar a caixa de seleção \"Style\", nenhum aviso"
+"na categoria estilo será exibido." 
+
+#: ../../eclipse.rst:51
+msgid ""
+"Select detectors. The table allows you to select which detectors you want"
+" to enable for your project."
+msgstr "Selecione os detectores. A tabela permite que você selecione quais detectores deseja habilitar para o seu projeto."
+
+#: ../../eclipse.rst:54
+msgid "Extending the Eclipse Plugin (since 2.0.0)"
+msgstr "Estendendo o plugin do Eclipse (desde 2.0.0)"
+
+#: ../../eclipse.rst:56
+msgid ""
+"Eclipse plugin supports contribution of custom SpotBugs detectors (see "
+"also AddingDetectors.txt for more information). There are two ways to "
+"contribute custom plugins to the Eclipse:"
+msgstr ""
+"O plug-in do Eclipse suporta a contribuição de detectores do SpotBugs personalizados "
+"(consulte também AddedDetectors.txt para obter mais informações). Existem duas maneiras de "
+"contribuir com plug-ins personalizados para o Eclipse:"
+
+#: ../../eclipse.rst:58
+msgid ""
+"Existing standard SpotBugs detector packages can be configured via "
+"``Window → Preferences → Java → FindBugs → Misc. Settings → Custom "
+"Detectors``. Simply specify there locations of any additional plugin "
+"libraries. The benefit of this solution is that already existing detector"
+" packages can be used \"as is\", and that you can quickly verify the "
+"quality of third party detectors. The drawback is that you have to apply "
+"this settings in each new Eclipse workspace, and this settings can't be "
+"shared between team members."
+msgstr ""
+"Os detectores padrão do SpotBugs detector podem ser configurados via "
+"``Window → Preferences → Java → FindBugs → Misc. Settings → Custom "
+"Detectors``. Basta especificar os locais das bibliotecas de qualquer plugin adicional. "
+"O benefício desta solução é que os pacotes de detectores existentes podem ser utilizados "
+"\"as is\", e você pode rapidamente verificar a qualidade de detectores terceiros. "
+"A desvantagem é que você precisa aplicar as configurações em cada workspace do Eclipse, "
+"e as configurações não podem ser compartilhadas entre membros de um time."
+
+#: ../../eclipse.rst:61
+msgid ""
+"It is possible to contribute custom detectors via standard Eclipse "
+"extensions mechanism."
+msgstr ""
+"É possível contribuir com detectores customizados por meio do mecanismo de extensões padrão do Eclipse." 
+
+#: ../../eclipse.rst:63
+msgid ""
+"Please check the documentation of the "
+"``eclipsePlugin/schema/detectorPlugins.exsd`` extension point how to "
+"update the plugin.xml. Existing FindBugs detector plugins can be easily "
+"\"extended\" to be full featured SpotBugs AND Eclipse detector plugins. "
+"Usually you only need to add ``META-INF/MANIFEST.MF`` and ``plugin.xml`` "
+"to the jar and update your build scripts to not to override the "
+"``MANIFEST.MF`` during the build."
+msgstr ""
+"Por favor, verifique a documentação do ponto de extensão ``eclipsePlugin/schema/detectorPlugins.exsd`` para " 
+"saber como atualizar o plugin.xml. Os detectores do plugin FindBugs podem ser facilmente estendidos \"extended\" para "
+"serem detectores do SpotBugs. Você só precisa adicionar o ``META-INF/MANIFEST.MF`` e ``plugin.xml`` ao jar e "
+"atualizar seus scripts de construção para não substituir o ``MANIFEST.MF`` durante a construção. "
+
+#: ../../eclipse.rst:67
+msgid ""
+"The benefit of this solution is that for given (shared) Eclipse "
+"installation each team member has exactly same detectors set, and there "
+"is no need to configure anything anymore. The (really small) precondition"
+" is that you have to convert your existing detectors package to the valid"
+" Eclipse plugin. You can do this even for third-party detector packages. "
+"Another major differentiator is the ability to extend the default "
+"SpotBugs classpath at runtime with required third party libraries (see "
+"AddingDetectors.txt for more information)."
+msgstr ""
+"O benefício desta solução é que para determinada instalação (compartilhada) do Eclipse, "
+"cada membro da equipe tem exatamente o mesmo conjunto de detectores e não há necessidade "
+"de configurar mais nada. A pré-condição (muito pequena) é que você deve converter seu pacote "
+"de detectores existente para o plug-in do Eclipse. Você pode fazer isso até mesmo para pacotes "
+"de detectores de terceiros. Outro grande diferencial é a capacidade de estender o caminho de "
+"classes do SpotBugs padrão em tempo de execução com bibliotecas de terceiros (consulte "
+"AddedDetectors.txt para mais informações). "
+
+#: ../../eclipse.rst:72
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../eclipse.rst:74
+msgid ""
+"This section lists common problems with the plugin and (if known) how to "
+"resolve them."
+msgstr "Esta seção lista problemas comuns com o plugin e (se conhecido) como resolvê-los."
+
+#: ../../eclipse.rst:76
+msgid ""
+"If you see OutOfMemory error dialogs after starting SpotBugs analysis in "
+"Eclipse, please increase JVM available memory: change ``eclipse.ini`` and"
+" add the lines below to the end of the file:"
+msgstr ""
+"Se você vir caixas de diálogo de erro OutOfMemory após iniciar a análise do SpotBugs no Eclipse, "
+"aumente a memória disponível da JVM: altere o ``eclipse.ini`` e adicione as linhas abaixo ao final do arquivo:"
+
+#: ../../eclipse.rst:84
+msgid ""
+"Important: the configuration arguments starting with the line ``-vmargs``"
+" must be last lines in the ``eclipse.ini`` file, and only one argument "
+"per line is allowed!"
+msgstr ""
+"Importante: os argumentos de configuração começando com a linha ``-vmargs`` devem ser as últimas linhas no" 
+"arquivo ``eclipse.ini``, e é permitido apenas um argumento por linha."
+
+#: ../../eclipse.rst:86
+msgid ""
+"If you do not see any SpotBugs problem markers (in your source windows or"
+" in the Problems View), you may need to change your ``Problems View`` "
+"filter settings. See :ref:`Q6 at FAQ <faq6>` for more information."
+msgstr ""
+"Se você não vir nenhum marcador de problema do SpotBugs (em suas janelas de origem ou"
+"na Visualização de Problemas), você pode configurar os filtros da sua ``Visualização de Problemas``."
+" Veja :ref:`Q6 at FAQ <faq6>` para mais informações."

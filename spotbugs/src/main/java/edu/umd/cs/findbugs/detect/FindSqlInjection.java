@@ -27,12 +27,19 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.BootstrapMethod;
+import org.apache.bcel.classfile.BootstrapMethods;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.AALOAD;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -259,6 +266,11 @@ public class FindSqlInjection implements Detector {
         return false;
     }
 
+    private boolean isJava9AndAboveStringAppend(Instruction ins, ConstantPoolGen cpg) {
+        return ins instanceof INVOKEDYNAMIC
+                && "makeConcatWithConstants".equals(((INVOKEDYNAMIC) ins).getMethodName(cpg));
+    }
+
     private boolean isConstantStringLoad(Location location, ConstantPoolGen cpg) {
         Instruction ins = location.getHandle().getInstruction();
         if (ins instanceof LDC) {
@@ -307,7 +319,48 @@ public class FindSqlInjection implements Detector {
         return stringAppendState;
     }
 
-    private StringAppendState getStringAppendState(CFG cfg, ConstantPoolGen cpg) throws CFGBuilderException {
+    private StringAppendState updateJava9AndAboveStringAppendState(ClassContext ctx, Location location, ConstantPoolGen cpg,
+            StringAppendState stringAppendState) {
+        InstructionHandle handle = location.getHandle();
+        Instruction ins = handle.getInstruction();
+        if (!(ins instanceof INVOKEDYNAMIC)) {
+            throw new IllegalArgumentException("instruction must be INVOKEDYNAMIC");
+        }
+        INVOKEDYNAMIC invoke = (INVOKEDYNAMIC) ins;
+
+        ConstantPool cp = cpg.getConstantPool();
+        ConstantInvokeDynamic bmidx = (ConstantInvokeDynamic) cp.getConstant(invoke.getIndex());
+
+        JavaClass clazz = ctx.getJavaClass();
+        for (Attribute attr : clazz.getAttributes()) {
+            if (attr instanceof BootstrapMethods) {
+                BootstrapMethod bm = ((BootstrapMethods) attr).getBootstrapMethods()[bmidx.getBootstrapMethodAttrIndex()];
+                String concatArg = ((ConstantString) cp.getConstant(bm.getBootstrapArguments()[0])).getBytes(cp);
+                int u0001idx = concatArg.indexOf('\u0001');
+                if (u0001idx >= 0) {
+                    String before = concatArg.substring(0, u0001idx).trim();
+                    String after = concatArg.substring(u0001idx + 1).trim();
+                    if (before.startsWith(",") || before.endsWith(",") ||
+                            after.startsWith(",") || after.endsWith(",")) {
+                        stringAppendState.setSawComma(handle);
+                    }
+                    if (isOpenQuote(before)) {
+                        stringAppendState.setSawOpenQuote(handle);
+                    }
+
+                    if (isCloseQuote(after) && stringAppendState.getSawOpenQuote(handle)) {
+                        stringAppendState.setSawCloseQuote(handle);
+                    }
+                }
+                break;
+            }
+        }
+
+        return stringAppendState;
+    }
+
+    private StringAppendState getStringAppendState(ClassContext ctx, CFG cfg, ConstantPoolGen cpg)
+            throws CFGBuilderException {
         StringAppendState stringAppendState = new StringAppendState();
         String sig = method.getSignature();
         sig = sig.substring(0, sig.indexOf(')'));
@@ -328,7 +381,15 @@ public class FindSqlInjection implements Detector {
                 if (prevLocation != null && !isSafeValue(prevLocation, cpg)) {
                     stringAppendState.setSawUnsafeAppend(handle);
                 }
+            } else if (isJava9AndAboveStringAppend(ins, cpg)) {
+                stringAppendState.setSawAppend(handle);
 
+                Location prevLocation = getPreviousLocation(cfg, location, true);
+                if (prevLocation != null && !isSafeValue(prevLocation, cpg)) {
+                    stringAppendState.setSawUnsafeAppend(handle);
+                }
+
+                stringAppendState = updateJava9AndAboveStringAppendState(ctx, location, cpg, stringAppendState);
             } else if (ins instanceof InvokeInstruction) {
                 InvokeInstruction inv = (InvokeInstruction) ins;
                 String sig1 = inv.getSignature(cpg);
@@ -367,7 +428,7 @@ public class FindSqlInjection implements Detector {
                     } else if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8) {
                         // ignore it
                         assert true;
-                    } else if (className.startsWith("javax.servlet") && methodName.startsWith("get")) {
+                    } else if ((className.startsWith("javax.servlet") || className.startsWith("jakarta.servlet")) && methodName.startsWith("get")) {
                         stringAppendState.setSawTaint(handle);
                         stringAppendState.setSawSeriousTaint(handle);
                     } else {
@@ -502,7 +563,7 @@ public class FindSqlInjection implements Detector {
         ConstantPoolGen cpg = methodGen.getConstantPool();
         CFG cfg = classContext.getCFG(method);
 
-        StringAppendState stringAppendState = getStringAppendState(cfg, cpg);
+        StringAppendState stringAppendState = getStringAppendState(classContext, cfg, cpg);
 
         ConstantDataflow dataflow = classContext.getConstantDataflow(method);
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {

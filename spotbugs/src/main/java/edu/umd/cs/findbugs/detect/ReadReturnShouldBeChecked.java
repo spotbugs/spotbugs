@@ -154,8 +154,8 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
                 accumulator.accumulateBug(
                         new BugInstance(this, "SR_NOT_CHECKED", (wasBufferedInputStream ? HIGH_PRIORITY
                                 : recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY)).addClassAndMethod(this)
-                                        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false), SourceLineAnnotation
-                                                .fromVisitedInstruction(getClassContext(), this, locationOfCall));
+                                .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false), SourceLineAnnotation
+                                        .fromVisitedInstruction(getClassContext(), this, locationOfCall));
             }
         }
         sawRead = false;
