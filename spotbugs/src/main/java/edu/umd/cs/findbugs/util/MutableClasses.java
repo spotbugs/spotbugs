@@ -3,6 +3,9 @@ package edu.umd.cs.findbugs.util;
 import java.util.*;
 import java.util.stream.Stream;
 
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XMethod;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -102,12 +105,22 @@ public class MutableClasses {
         }
     }
 
-    public static boolean looksLikeASetter(String methodName, String classSig, String retSig) {
+    private static boolean looksLikeASetter(String methodName, String classSig, String retSig) {
         if (Objects.equals(classSig, retSig)) {
             return false;
         }
 
         return SETTER_LIKE_PREFIXES.stream().anyMatch(name -> methodName.startsWith(name));
+    }
+
+    public static boolean looksLikeASetter(XClass xClass, XMethod xmethod) {
+        // If the method throws an UnsupportedOperationException then we ignore it.
+        if (xmethod.isUnsupported()) {
+            return false;
+        }
+
+        return MutableClasses.looksLikeASetter(xmethod.getName(), xClass.getSourceSignature(), new SignatureParser(xmethod.getSignature())
+                .getReturnTypeSignature());
     }
 
     /**
@@ -162,27 +175,11 @@ public class MutableClasses {
         }
 
         private boolean looksLikeASetter(Method method) {
-            /*
-            // Empty methods cannot set anything
-            if (method.getCode() == null) {
-                return false;
-            }
-
             // If the method throws an UnsupportedOperationException then we ignore it.
-            if (isSingleLineUnsupportedOperationThrower(method)) {
+            if (method.getCode() != null && isSingleLineUnsupportedOperationThrower(method)) {
                 return false;
             }
 
-            final String methodName = method.getName();
-            for (String name : SETTER_LIKE_PREFIXES) {
-                if (methodName.startsWith(name)) {
-                    // If setter-like methods returns an object of the same type then we suppose that it
-                    // is not a setter but creates a new instance instead.
-                    return !getSig().equals(method.getReturnType().getSignature());
-                }
-            }
-            return false;
-             */
             return MutableClasses.looksLikeASetter(method.getName(), getSig(), method.getReturnType().getSignature());
         }
 
@@ -224,7 +221,7 @@ public class MutableClasses {
         }
 
         private boolean equalsConstant(byte high, byte low, String cnst, ConstantPool cp) {
-            return cnst.equals(cp.constantToString(cp.getConstant((high << 8) + low)));
+            return cnst.equals(cp.constantToString(cp.getConstant((high << 8) + Byte.toUnsignedInt(low))));
         }
 
         private String getSig() {

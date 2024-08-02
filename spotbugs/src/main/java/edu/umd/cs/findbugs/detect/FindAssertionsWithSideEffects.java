@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.detect;
 import org.apache.bcel.Const;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.util.MutableClasses;
 
 /**
@@ -62,10 +61,8 @@ public class FindAssertionsWithSideEffects extends AbstractAssertDetector {
     @Override
     protected void detect(int seen) {
         if (isMethodCall(seen) && getXClassOperand() != null && getXMethodOperand() != null) {
-            String retSig = new SignatureParser(getXMethodOperand().getSignature()).getReturnTypeSignature();
-            String classSig = getXClassOperand().getSourceSignature();
             if (MutableClasses.mutableSignature("L" + getClassConstantOperand() + ";") &&
-                    MutableClasses.looksLikeASetter(getNameConstantOperand(), classSig, retSig)) {
+                    MutableClasses.looksLikeASetter(getXClassOperand(), getXMethodOperand())) {
                 BugInstance bug = new BugInstance(this, "ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD", LOW_PRIORITY)
                         .addClassAndMethod(this)
                         .addSourceLine(this, getPC());
