@@ -3,15 +3,22 @@ apply from: "$rootDir/gradle/maven.gradle"
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
 
+tasks.named('compileJava', JavaCompile).configure {
+    options.release = 8
+}
+
+// Force Eclipse use Java 1.8, otherwise it will get Java 17 (!) from gradle
+eclipse {
+  jdt {
+    sourceCompatibility = 8
+    targetCompatibility = 8
+    javaRuntimeName = "JavaSE-1.8"
+  }
+}
+
 configurations {
   // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
   logBinding
-  // used to make sure Eclipse config can see apple library during compilation
-  appleExtensions
-}
-
-ext {
-  asmVersion = '9.2'
 }
 
 sourceSets {
@@ -37,6 +44,7 @@ sourceSets {
       exclude 'script.properties'
       include '*.xsl'
       include '**/*.db'
+      include 'CWE_4.10.json'
     }
   }
   gui {
@@ -49,27 +57,17 @@ sourceSets {
       include '**/*.png'
     }
   }
-  test {
-    java {
-      srcDirs = ['src/test/java']
-    }
-  }
-  guiTest {
-    java {
-      srcDirs = ['src/gui/test/java']
-    }
-  }
 }
 
 dependencies {
-  api "org.ow2.asm:asm:${asmVersion}"
-  api "org.ow2.asm:asm-analysis:${asmVersion}"
-  api "org.ow2.asm:asm-commons:${asmVersion}"
-  api "org.ow2.asm:asm-tree:${asmVersion}"
-  api "org.ow2.asm:asm-util:${asmVersion}"
-  api 'org.apache.bcel:bcel:6.5.0'
-  api 'net.jcip:jcip-annotations:1.0'
-  api('org.dom4j:dom4j:2.1.3') {
+  api libs.asm
+  api libs.asm.analysis
+  api libs.asm.commons
+  api libs.asm.tree
+  api libs.asm.util
+  api 'org.apache.bcel:bcel:6.10.0'
+  api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
+  api('org.dom4j:dom4j:2.1.4') {
     // exclude transitive dependencies to keep compatible with dom4j 2.1.1
     // https://github.com/dom4j/dom4j/issues/85
     // https://docs.gradle.org/current/userguide/dependency_downgrade_and_exclude.html#sec:excluding-transitive-deps
@@ -80,12 +78,13 @@ dependencies {
     exclude group: 'pull-parser',      module: 'pull-parser'
     exclude group: 'xpp3',             module: 'xpp3'
   }
-  implementation 'jaxen:jaxen:1.2.0' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
-  api 'org.apache.commons:commons-lang3:3.12.0'
-  api 'org.apache.commons:commons-text:1.9'
-  api 'org.slf4j:slf4j-api:1.8.0-beta4'
-  implementation 'net.sf.saxon:Saxon-HE:10.5'
-  logBinding ('org.apache.logging.log4j:log4j-slf4j18-impl:2.14.1') {
+  implementation 'jaxen:jaxen:2.0.0' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
+  api 'org.apache.commons:commons-lang3:3.15.0'
+  api 'org.apache.commons:commons-text:1.10.0'
+  api 'org.slf4j:slf4j-api:2.0.13'
+  implementation 'net.sf.saxon:Saxon-HE:12.5'
+  implementation libs.log4j.core
+  logBinding (libs.log4j.slf4j2.impl) {
     exclude group: 'org.slf4j'
   }
 
@@ -93,21 +92,10 @@ dependencies {
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   api project(':spotbugs-annotations')
 
-  api "com.google.code.gson:gson:2.8.8"
-  testImplementation 'junit:junit:4.13.1'
-  testImplementation 'org.apache.ant:ant:1.10.11'
-  testImplementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.14.0'
-  testImplementation 'com.google.errorprone:error_prone_annotations:2.9.0'
+  api "com.google.code.gson:gson:2.11.0"
 
   guiImplementation sourceSets.main.runtimeClasspath
-  guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
   guiCompileOnly project(':spotbugs-annotations')
-  guiTestImplementation sourceSets.gui.runtimeClasspath
-  guiTestImplementation 'junit:junit:4.13'
-  guiTestCompileOnly project(':spotbugs-annotations')
-
-  // for Eclipse compilation only
-  appleExtensions 'com.apple:AppleJavaExtensions:1.4'
 }
 
 clean {
@@ -124,14 +112,11 @@ tasks.withType(Jar).configureEach {
   //destinationDir = file("$projectDir/lib")
 }
 
-eclipse.classpath {
-  plusConfigurations += [ configurations.testRuntimeClasspath ]
-  plusConfigurations += [ configurations.appleExtensions ]
-}
-
 eclipse.classpath.file {
     whenMerged {
       classpath ->
+         classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('build/classes/')}
+         classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('build/resources/')}
          classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('xml-apis')}
          classpath.entries.forEach {
              entry ->
@@ -140,7 +125,22 @@ eclipse.classpath.file {
                    entry.path = ".libs/" + java.nio.file.Paths.get(entry.path).getFileName().toString()
                    entry.exported = true
                }
-      }
+         }
+         Map entryByPath = classpath.entries.groupBy { entry -> entry.path }
+         entryByPath.each { key, values ->
+          if (values.size() > 1) {
+            def entry = values.first()
+            if (entry.kind == 'src') {
+              entry.includes = []
+              entry.excludes = []
+            }
+            int index = classpath.entries.indexOf entry
+            logger.lifecycle "Removing ${values.collect { it.path }}"
+            classpath.entries.removeAll values
+            logger.lifecycle "Adding ${entry.path}"
+            classpath.entries.add index, entry
+          }
+        }
     }
 }
 
@@ -158,7 +158,7 @@ def updateManifest = tasks.register('updateManifest') {
   outputs.file "$projectDir/META-INF/MANIFEST.MF"
   dependsOn configurations.runtimeClasspath, copyLibsForEclipse
   doLast {
-    def manifestSpec = manifest {
+    def manifestSpec = java.manifest {
       from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version.replace('-', '.'),
@@ -184,6 +184,16 @@ def jar = tasks.named('jar', Jar) {
                'Class-Path': project.providers.provider { jarInClasspath.collect{it.getName()}.join(' ') + ' config/' }
   }
 }
+tasks.spotbugsMain.dependsOn(jar)
+tasks.spotbugsGui.dependsOn(jar)
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+  reports {
+    html {
+      // we use local spotbugs.jar, we cannot reference stylesheet from the published jar
+      stylesheet = resources.text.fromFile('src/xsl/fancy-hist.xsl')
+    }
+  }
+}
 
 // Populate bin folder with scripts
 def scripts = tasks.register('scripts', Copy) {
@@ -201,7 +211,6 @@ def scripts = tasks.register('scripts', Copy) {
         'WRAP_JAVA': props.getProperty('script.wrap.java'),
         'WRAP_JAR': props.getProperty('script.wrap.jar'),
         'DEFINE_ESCAPE_ARG': props.getProperty('script.define.escape_arg')])
-      fileMode 0755
     }
   }
 
@@ -214,8 +223,11 @@ def scripts = tasks.register('scripts', Copy) {
     into 'experimental'
   }
 
-  destinationDir file("$buildDir/bin")
+  into(layout.buildDirectory.dir("bin"))
   duplicatesStrategy DuplicatesStrategy.FAIL
+  filePermissions{
+    unix (0755)
+  }
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
@@ -275,6 +287,9 @@ tasks.named('distTar', Tar) {
 }
 def distZip = tasks.named('distZip', Zip) {
   duplicatesStrategy = DuplicatesStrategy.FAIL
+  filePermissions{
+    unix (0755)
+  }
 }
 tasks.named('jar') {
   dependsOn tasks.named('updateManifest')
@@ -295,11 +310,6 @@ def assembleDist = tasks.named('assembleDist') {
 }
 tasks.named('assemble') {
   dependsOn assembleDist
-}
-
-tasks.named('test').configure {
-  dependsOn ':spotbugsTestCases:build'
-  maxHeapSize = '1G'
 }
 
 def unzipDist = tasks.register('unzipDist', Copy) {
@@ -325,7 +335,7 @@ def smokeTest = tasks.register('smokeTest') {
               timeout:'1800000',
               outputFile:"${buildDir}/smoketest/findbugscheckAll.xml") {
       sourcePath(path:'src/main/java:src/gui/main:src/tools')
-      'class'(location:project.tasks['compileJava'].destinationDir)
+      'class'(location:project.tasks['compileJava'].destinationDirectory.get().asFile)
       configurations.compileClasspath.each { File file -> auxClasspath(path:file.path) }
     }
   }
@@ -345,21 +355,28 @@ publishing.publications.maven {
 ext.moduleName = 'com.github.spotbugs.spotbugs'
 apply from: "$rootDir/gradle/jigsaw.gradle"
 
-def guiTest = tasks.register('guiTest', Test) {
-  classpath = project.sourceSets.guiTest.runtimeClasspath
-  testClassesDirs = project.sourceSets.guiTest.output.classesDirs
-}
-
-tasks.named('jacocoTestReport', JacocoReport).configure {
-  dependsOn(test, guiTest)
-  executionData.setFrom files("$buildDir/jacoco/test.exec", "$buildDir/jacoco/guiTest.exec")
-  sourceDirectories.setFrom files(sourceSets.main.java.srcDirs, sourceSets.gui.java.srcDirs)
-  classDirectories.setFrom files(sourceSets.main.output, sourceSets.gui.output)
-}
-
 tasks.named('spotbugsTest').configure {
   ignoreFailures = true
 }
+
+dependencies {
+  constraints {
+    logBinding("org.apache.logging.log4j:log4j-core") {
+      version {
+        strictly("[2.17.1, 3[")
+      }
+      because("CVE-2021-44228, CVE-2021-45046, CVE-2021-45105, CVE-2021-44832: Log4j vulnerable to remote code execution and other critical security vulnerabilities")
+    }
+    logBinding("ch.qos.logback:logback-core") {
+      version {
+        strictly("[1.2.13, 2[")
+        prefer("1.4.14")
+      }
+      because("CVE-2021-42550: Logback vulnerable to remote code execution vulnerabilities and CVE-2023-6481, CVE-2023-6378: allows an attacker to mount a Denial-Of-Service attack by sending poisoned data")
+    }
+  }
+}
+
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual
 // TODO : bugdesc

@@ -2,17 +2,18 @@ package edu.umd.cs.findbugs.detect;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class FindBadEndOfStreamCheckTest extends AbstractIntegrationTest {
+class FindBadEndOfStreamCheckTest extends AbstractIntegrationTest {
+
     @Test
-    public void testBadEndOfFileChecks() {
+    void testBadEndOfFileChecks() {
         performAnalysis("endOfStreamCheck/BadEndOfStreamCheck.class");
 
         assertNumOfEOSBugs(16);
@@ -36,7 +37,7 @@ public class FindBadEndOfStreamCheckTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGoodEndOfFileChecks() {
+    void testGoodEndOfFileChecks() {
         performAnalysis("endOfStreamCheck/GoodEndOfStreamCheck.class");
 
         assertNumOfEOSBugs(0);

@@ -19,17 +19,17 @@
 package edu.umd.cs.findbugs.ba;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
-public class Issue758Test extends AbstractIntegrationTest {
+class Issue758Test extends AbstractIntegrationTest {
 
     @Test
-    public void test() {
+    void testIssue() {
         performAnalysis("ghIssues/Issue758.class");
         SortedBugCollection bugCollection = (SortedBugCollection) getBugCollection();
         assertThat(bugCollection.getErrors(), hasSize(0));

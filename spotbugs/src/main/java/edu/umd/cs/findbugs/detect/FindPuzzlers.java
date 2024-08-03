@@ -26,6 +26,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -324,8 +325,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
         }
 
-        if ((seen == Const.IFEQ || seen == Const.IFNE) && getPrevOpcode(1) == Const.IMUL
-                && (getPrevOpcode(2) == Const.SIPUSH || getPrevOpcode(2) == Const.BIPUSH) && getPrevOpcode(3) == Const.IREM) {
+        if (seen == Const.IMUL && (getPrevOpcode(1) == Const.SIPUSH || getPrevOpcode(1) == Const.BIPUSH) && getPrevOpcode(
+                2) == Const.IREM) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "IM_MULTIPLYING_RESULT_OF_IREM", LOW_PRIORITY).addClassAndMethod(this), this);
         }
@@ -391,9 +392,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
                                 valueOfConstantArgumentToShift < 0 ? LOW_PRIORITY
                                         : (valueOfConstantArgumentToShift == 32
                                                 && "hashCode".equals(getMethodName()) ? NORMAL_PRIORITY : HIGH_PRIORITY))
-                                                        .addClassAndMethod(this).addInt(valueOfConstantArgumentToShift).describe(
-                                                                IntAnnotation.INT_SHIFT)
-                                                        .addValueSource(stack.getStackItem(1), this), this);
+                                .addClassAndMethod(this).addInt(valueOfConstantArgumentToShift).describe(
+                                        IntAnnotation.INT_SHIFT)
+                                .addValueSource(stack.getStackItem(1), this), this);
                     }
                 }
                 if (leftHandSide instanceof Integer && ((Integer) leftHandSide) > 0) {
@@ -579,9 +580,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
         if (isTigerOrHigher) {
             if (previousMethodInvocation != null && prevOpCode == Const.INVOKEVIRTUAL && seen == Const.INVOKESTATIC) {
                 String classNameForPreviousMethod = previousMethodInvocation.getClassName();
-                String classNameForThisMethod = getClassConstantOperand();
+                String classNameForThisMethod = ClassName.toDottedClassName(getClassConstantOperand());
                 if (classNameForPreviousMethod.startsWith("java.lang.")
-                        && classNameForPreviousMethod.equals(classNameForThisMethod.replace('/', '.'))
+                        && classNameForPreviousMethod.equals(classNameForThisMethod)
                         && previousMethodInvocation.getName().endsWith("Value")
                         && previousMethodInvocation.getSignature().length() == 3
                         && "valueOf".equals(getNameConstantOperand())
@@ -596,9 +597,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
             if (previousMethodInvocation != null && prevOpCode == Const.INVOKESPECIAL && seen == Const.INVOKEVIRTUAL) {
                 String classNameForPreviousMethod = previousMethodInvocation.getClassName();
-                String classNameForThisMethod = getClassConstantOperand();
+                String classNameForThisMethod = ClassName.toDottedClassName(getClassConstantOperand());
                 if (classNameForPreviousMethod.startsWith("java.lang.")
-                        && classNameForPreviousMethod.equals(classNameForThisMethod.replace('/', '.'))
+                        && classNameForPreviousMethod.equals(classNameForThisMethod)
                         && getNameConstantOperand().endsWith("Value") && getSigConstantOperand().length() == 3) {
                     if (getSigConstantOperand().charAt(2) == previousMethodInvocation.getSignature().charAt(1)) {
                         bugAccumulator.accumulateBug(
@@ -649,7 +650,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
                         "java/lang/AssertionFailureError", getPC());
                 int size = Math.min(Math.min(size1, size2), size3);
                 if (size == Integer.MAX_VALUE) {
-                    String dottedClassName = getClassConstantOperand().replace('/', '.');
+                    String dottedClassName = ClassName.toDottedClassName(getClassConstantOperand());
                     if (!dottedClassName.startsWith("junit")) {
                         try {
                             JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(dottedClassName);

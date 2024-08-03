@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -54,7 +55,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         if ((seen == Const.INVOKESPECIAL) || (seen == Const.INVOKESTATIC) || (seen == Const.INVOKEVIRTUAL)) {
             String refClsName = getClassConstantOperand();
-            refClsName = refClsName.replace('/', '.');
+            refClsName = ClassName.toDottedClassName(refClsName);
             if (refClsName.startsWith("java")) {
                 return;
             }

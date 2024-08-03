@@ -20,10 +20,12 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +55,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  * @see PluginLoader
  * @author David Hovemeyer
  */
-public class Plugin {
+public class Plugin implements AutoCloseable {
 
 
     private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
@@ -696,4 +698,12 @@ public class Plugin {
         DetectorFactoryCollection.instance().unLoadPlugin(plugin);
     }
 
+    /**
+     * Closes the underlying {@link PluginLoader}, in turn this closes the {@link URLClassLoader}.
+     * When loading a custom plugin from a .jar file this method needs to be called to release the reference on that file.
+     */
+    @Override
+    public void close() throws IOException {
+        pluginLoader.close();
+    }
 }

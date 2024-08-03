@@ -578,7 +578,7 @@ public class FindInconsistentSync2 implements Detector {
             } else {
                 bugInstance = new BugInstance(this, guardedByThis ? "IS_FIELD_NOT_GUARDED" : "IS2_INCONSISTENT_SYNC",
                         Priorities.NORMAL_PRIORITY).addClass(xfield.getClassName()).addField(xfield).addInt(printFreq)
-                                .describe(IntAnnotation.INT_SYNC_PERCENT);
+                        .describe(IntAnnotation.INT_SYNC_PERCENT);
             }
 
             propertySet.decorateBugInstance(bugInstance);
@@ -802,7 +802,7 @@ public class FindInconsistentSync2 implements Detector {
     }
 
     /**
-     * Determine whether or not the the given method is a getter method. I.e.,
+     * Determine whether or not the given method is a getter method. I.e.,
      * if it just returns the value of an instance field.
      *
      * @param classContext

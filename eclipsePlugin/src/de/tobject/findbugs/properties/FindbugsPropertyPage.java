@@ -297,7 +297,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         Label effortLabel = new Label(prioGroup, SWT.NULL);
         effortLabel.setText(getMessage("property.effort"));
         effortViewer = new ComboViewer(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-        effortViewer.add(Effort.values());
+        effortViewer.add((Object[]) Effort.values());
 
         String effortLevel = currentUserPreferences.getEffort();
         effortViewer.setSelection(new StructuredSelection(Effort.getEffort(effortLevel)), true);

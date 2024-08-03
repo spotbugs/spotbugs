@@ -97,7 +97,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      * Get the name of the class in dotted format.
      *
      * @return the name of the class in dotted format
-     * 
+     *
      * @deprecated use {@link #getDottedClassName()} instead.
      */
     @Deprecated

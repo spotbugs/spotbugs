@@ -5,11 +5,11 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ThrottledProgressMonitorTest {
+class ThrottledProgressMonitorTest {
     @Test
-    public void testSetTaskName() {
+    void testSetTaskName() {
         Clock clock = new Clock();
         IProgressMonitor delegate = spy(IProgressMonitor.class);
         ThrottledProgressMonitor throttled = new ThrottledProgressMonitor(delegate, clock::getCurrentTime);
@@ -26,7 +26,7 @@ public class ThrottledProgressMonitorTest {
     }
 
     @Test
-    public void testWorked() {
+    void testWorked() {
         Clock clock = new Clock();
         IProgressMonitor delegate = spy(IProgressMonitor.class);
         ThrottledProgressMonitor throttled = new ThrottledProgressMonitor(delegate, clock::getCurrentTime);
@@ -42,7 +42,7 @@ public class ThrottledProgressMonitorTest {
         verify(delegate).worked(2 + 4);
     }
 
-    private static class Clock {
+    private static final class Clock {
         private long currentTime;
 
         protected long getCurrentTime() {

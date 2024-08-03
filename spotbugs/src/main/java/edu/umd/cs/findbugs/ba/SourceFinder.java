@@ -55,6 +55,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -358,7 +359,7 @@ public class SourceFinder implements AutoCloseable {
 
         public ZipSourceRepository(@WillCloseWhenClosed ZipFile zipFile) throws IOException {
             this.zipFile = zipFile;
-            this.zipFileSystem = FileSystems.newFileSystem(Paths.get(zipFile.getName()), null);
+            this.zipFileSystem = FileSystems.newFileSystem(Paths.get(zipFile.getName()), (ClassLoader) null);
         }
 
         @Override
@@ -549,7 +550,7 @@ public class SourceFinder implements AutoCloseable {
     }
 
     public static String getCanonicalName(String packageName, String fileName) {
-        String canonicalName = packageName.replace('.', '/') + (packageName.length() > 0 ? "/" : "") + fileName;
+        String canonicalName = ClassName.toSlashedClassName(packageName) + (packageName.length() > 0 ? "/" : "") + fileName;
         return canonicalName;
     }
 

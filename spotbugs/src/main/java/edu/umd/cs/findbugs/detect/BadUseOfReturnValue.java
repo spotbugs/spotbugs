@@ -62,8 +62,9 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
         }
 
         if (seen == Const.INVOKEVIRTUAL && "readLine".equals(getNameConstantOperand())
-                && "()Ljava/lang/String;".equals(getSigConstantOperand()) && getClassConstantOperand().startsWith("java/io")
-                && !"java/io/LineNumberReader".equals(getClassConstantOperand())) {
+                && "()Ljava/lang/String;".equals(getSigConstantOperand()) &&
+                ((getClassConstantOperand().startsWith("java/io") && !"java/io/LineNumberReader".equals(getClassConstantOperand())) ||
+                        (getClassConstantOperand().startsWith("javax/imageio/stream")))) {
             readLineOnTOS = true;
         } else if (readLineOnTOS) {
             if (seen == Const.IFNULL || seen == Const.IFNONNULL) {

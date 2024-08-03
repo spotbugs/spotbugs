@@ -541,7 +541,7 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:524
 msgid ""
-"  <p> This code negatives the return value of a compareTo or compare "
+"  <p> This code negates the return value of a compareTo or compare "
 "method.\n"
 "This is a questionable or bad programming practice, since if the return\n"
 "value is Integer.MIN_VALUE, negating the return value won't\n"
@@ -2729,7 +2729,13 @@ msgid ""
 "they are different objects.\n"
 "Examples of classes which should generally\n"
 "not be compared by reference are java.lang.Integer, java.lang.Float, "
-"etc.</p>"
+"etc. RC_REF_COMPARISON covers only wrapper types for primitives. \n"
+"Suspicious types list can be extended by adding frc.suspicious \n"
+"system property with comma-separated classes:</p>"
+"<pre><code>&lt;systemPropertyVariables&gt; \n"
+"              &lt;frc.suspicious&gt;java.time.LocalDate,java.util.List&lt;/frc.suspicious&gt;\n"
+"           &lt;/systemPropertyVariables&gt;\n"
+"</code></pre></p>"
 msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:2691

@@ -98,7 +98,7 @@ public final class MemberUtils {
     }
 
     /**
-     * Checks if the the given method was user-generated. This takes into
+     * Checks if the given method was user-generated. This takes into
      * account for instance lambda methods, that even though they are marked as
      * "synthetic", they are user-generated, and therefore interesting to
      * analysis.
@@ -111,7 +111,7 @@ public final class MemberUtils {
     }
 
     /**
-     * Checks if the the given method was user-generated. This takes into
+     * Checks if the given method was user-generated. This takes into
      * account for instance lambda methods, that even though they are marked as
      * "synthetic", they are user-generated, and therefore interesting to
      * analysis.
@@ -124,7 +124,7 @@ public final class MemberUtils {
     }
 
     /**
-     * Checks if the the given method was user-generated. This takes into
+     * Checks if the given method was user-generated. This takes into
      * account for instance lambda methods, that even though they are marked as
      * "synthetic", they are user-generated, and therefore interesting to
      * analysis.

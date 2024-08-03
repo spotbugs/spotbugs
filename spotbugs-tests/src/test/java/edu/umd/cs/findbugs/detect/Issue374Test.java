@@ -21,18 +21,19 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/374">GitHub issue</a>
  */
-public class Issue374Test extends AbstractIntegrationTest {
+class Issue374Test extends AbstractIntegrationTest {
+
     @Test
-    public void test() {
+    void testIssue() {
         performAnalysis(
                 "ghIssues/issue374/package-info.class",
                 "ghIssues/issue374/ClassLevel.class",

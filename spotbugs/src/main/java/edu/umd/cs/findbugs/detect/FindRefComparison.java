@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -33,6 +34,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -124,7 +126,9 @@ import edu.umd.cs.findbugs.util.Values;
 public class FindRefComparison implements Detector, ExtendedTypes {
     private static final boolean DEBUG = SystemProperties.getBoolean("frc.debug");
 
-    private static final boolean REPORT_ALL_REF_COMPARISONS = true /*|| SystemProperties.getBoolean("findbugs.refcomp.reportAll")*/;
+    private boolean reportAllRefComparisons() {
+        return SystemProperties.getBoolean("findbugs.refcomp.reportAll", true);
+    }
 
     private static final int BASE_ES_PRIORITY = SystemProperties.getInt("es.basePriority", NORMAL_PRIORITY);
 
@@ -504,15 +508,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                     return;
                 }
 
-                String slashedClassName = ClassName.fromFieldSignature(type.getSignature());
-                if (slashedClassName != null) {
-                    String dottedClassName = ClassName.toDottedClassName(slashedClassName);
-                    if (DEFAULT_SUSPICIOUS_SET.contains(dottedClassName)) {
-                        type = new FinalConstant(dottedClassName, xf);
-                        consumeStack(obj);
-                        pushValue(type);
-                        return;
-                    }
+                String dottedClassName = ClassName.fromFieldSignatureToDottedClassName(type.getSignature());
+                if (dottedClassName != null && DEFAULT_SUSPICIOUS_SET.contains(dottedClassName)) {
+                    type = new FinalConstant(dottedClassName, xf);
+                    consumeStack(obj);
+                    pushValue(type);
+                    return;
                 }
 
             }
@@ -539,15 +540,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                         return;
                     }
 
-                    String slashedClassName = ClassName.fromFieldSignature(type.getSignature());
-                    if (slashedClassName != null) {
-                        String dottedClassName = ClassName.toDottedClassName(slashedClassName);
-                        if (DEFAULT_SUSPICIOUS_SET.contains(dottedClassName)) {
-                            type = new FinalConstant(dottedClassName, xf);
-                            consumeStack(obj);
-                            pushValue(type);
-                            return;
-                        }
+                    String dottedClassName = ClassName.fromFieldSignatureToDottedClassName(type.getSignature());
+                    if (dottedClassName != null && DEFAULT_SUSPICIOUS_SET.contains(dottedClassName)) {
+                        type = new FinalConstant(dottedClassName, xf);
+                        consumeStack(obj);
+                        pushValue(type);
+                        return;
                     }
                 }
                 super.visitGETFIELD(obj);
@@ -884,7 +882,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
     private void reportBest(ClassContext classContext, Method method, LinkedList<WarningWithProperties> warningList,
             boolean relaxed) {
-        boolean reportAll = relaxed || REPORT_ALL_REF_COMPARISONS;
+        boolean reportAll = relaxed || reportAllRefComparisons();
 
         int bestPriority = Integer.MAX_VALUE;
         for (WarningWithProperties warn : warningList) {
@@ -915,6 +913,31 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
     }
 
+    /**
+     * Identifies if it's a comparison of two instances of the class inside
+     * its equals method or if it's a comparison of the class with Object.
+     *
+     * This should be OK as this is usually an optimization inside the equals
+     * method.
+     * @param jClass: the class where this check is running on
+     * @param method: the method where the comparison is happening
+     * @param lhsType: the type of the left hand side of the comparison
+     * @param rhsType: the type of the right hand side of the comparison
+     * @return whether it's an acceptable comparison inside the equals method
+     */
+    private static boolean isComparisonInsideEqualsMethod(JavaClass jClass, Method method, Type lhsType, Type rhsType) {
+        if (!method.getName().equals("equals")) {
+            return false;
+        }
+        String className = jClass.getClassName();
+        String left = lhsType.getClassName();
+        String right = rhsType.getClassName();
+        boolean comparingInstancesSameClass = className.equals(left) && className.equals(right);
+        boolean comparingLeftWithObject = className.equals(left) && right.equals(Object.class.getName());
+        boolean comparingRightWithObject = className.equals(right) && left.equals(Object.class.getName());
+        return comparingInstancesSameClass || comparingLeftWithObject || comparingRightWithObject;
+    }
+
     private void checkRefComparison(Location location, JavaClass jclass, Method method, MethodGen methodGen,
             RefComparisonTypeFrameModelingVisitor visitor, TypeDataflow typeDataflow,
             List<WarningWithProperties> stringComparisonList, List<WarningWithProperties> refComparisonList)
@@ -931,7 +954,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         Type lhsType = frame.getValue(numSlots - 2);
         Type rhsType = frame.getValue(numSlots - 1);
 
-        if (lhsType instanceof NullType || rhsType instanceof NullType) {
+        if (lhsType instanceof NullType
+                || rhsType instanceof NullType
+                // Comparing enum values should be OK
+                || comparingEnumsSameType(lhsType, rhsType)
+                // Assuming that comparing two classes is fine. e.g. `this.getClass() == obj.getClass()`
+                || comparingClasses(lhsType, rhsType)
+                // Class comparisons inside the equals method of the same class are fine
+                || isComparisonInsideEqualsMethod(jclass, method, lhsType, rhsType)) {
             return;
         }
         if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
@@ -969,12 +999,41 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 handleStringComparison(jclass, method, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
             } else if (suspiciousSet.contains(lhs)) {
                 handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
-                        (ReferenceType) lhsType, (ReferenceType) rhsType);
+                        (ReferenceType) lhsType, (ReferenceType) rhsType, Optional.empty());
             } else if (suspiciousSet.contains(rhs)) {
                 handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, rhs,
-                        (ReferenceType) lhsType, (ReferenceType) rhsType);
+                        (ReferenceType) lhsType, (ReferenceType) rhsType, Optional.empty());
+            } else if (reportAllRefComparisons()) {
+                handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
+                        (ReferenceType) lhsType, (ReferenceType) rhsType, Optional.of(Priorities.EXP_PRIORITY));
             }
         }
+    }
+
+    private static boolean comparingEnumsSameType(Type lhsType, Type rhsType) {
+        JavaClass lhsClass = resolveJavaClass(lhsType);
+        JavaClass rhsClass = resolveJavaClass(rhsType);
+        if (lhsClass != null && rhsClass != null) {
+            return lhsClass.isEnum() && rhsClass.isEnum() && lhsClass.equals(rhsClass);
+        }
+        return false;
+    }
+
+    private static JavaClass resolveJavaClass(Type type) {
+        try {
+            return Repository.lookupClass(type.getClassName());
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+            return null;
+        }
+    }
+
+    private static boolean comparingClasses(Type lhsType, Type rhsType) {
+        return isClassType(lhsType) && isClassType(rhsType);
+    }
+
+    private static boolean isClassType(Type type) {
+        return "java.lang.Class".equals(type.getClassName());
     }
 
     private void handleStringComparison(JavaClass jclass, Method method, MethodGen methodGen,
@@ -1034,7 +1093,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
     private void handleSuspiciousRefComparison(JavaClass jclass, Method method, MethodGen methodGen,
             List<WarningWithProperties> refComparisonList, Location location, String lhs, ReferenceType lhsType,
-            ReferenceType rhsType) {
+            ReferenceType rhsType, Optional<Integer> priorityOverride) {
         XField xf = null;
         if (lhsType instanceof FinalConstant) {
             xf = ((FinalConstant) lhsType).getXField();
@@ -1043,7 +1102,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
         String sourceFile = jclass.getSourceFileName();
         String bugPattern = "RC_REF_COMPARISON";
-        int priority = Priorities.HIGH_PRIORITY;
+        int priority = priorityOverride.orElse(Priorities.HIGH_PRIORITY);
         if ("java.lang.Boolean".equals(lhs)) {
             bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN";
             priority = Priorities.NORMAL_PRIORITY;
@@ -1053,8 +1112,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 priority = Priorities.NORMAL_PRIORITY;
             }
         }
+        String lhsTypeDescriptor = lhsType.getSignature();
         BugInstance instance = new BugInstance(this, bugPattern, priority).addClassAndMethod(methodGen, sourceFile)
-                .addType("L" + lhs.replace('.', '/') + ";").describe(TypeAnnotation.FOUND_ROLE);
+                .addType(lhsTypeDescriptor).describe(TypeAnnotation.FOUND_ROLE);
         if (xf != null) {
             instance.addField(xf).describe(FieldAnnotation.LOADED_FROM_ROLE);
         } else {

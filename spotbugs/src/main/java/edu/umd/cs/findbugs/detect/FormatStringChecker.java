@@ -105,12 +105,15 @@ public class FormatStringChecker extends OpcodeStackDetector {
             String sig = getSigConstantOperand();
             XMethod m = getXMethodOperand();
             if ((m == null || m.isVarArgs())
-                    && sig.indexOf("Ljava/lang/String;[Ljava/lang/Object;)") >= 0
-                    && ("java/util/Formatter".equals(cl) && "format".equals(nm) || "java/lang/String".equals(cl)
-                            && "format".equals(nm) || "java/io/PrintStream".equals(cl) && "format".equals(nm)
-                            || "java/io/PrintStream".equals(cl) && "printf".equals(nm) || cl.endsWith("Writer")
-                                    && "format".equals(nm) || cl.endsWith("Writer") && "printf".equals(nm)) || cl.endsWith("Logger")
-                                            && nm.endsWith("fmt")) {
+                    && sig.contains("Ljava/lang/String;[Ljava/lang/Object;)")
+                    && ("java/util/Formatter".equals(cl) && "format".equals(nm)
+                            || "java/lang/String".equals(cl) && "format".equals(nm)
+                            || "java/io/PrintStream".equals(cl) && "format".equals(nm)
+                            || "java/io/PrintStream".equals(cl) && "printf".equals(nm)
+                            || cl.endsWith("Writer") && "format".equals(nm)
+                            || cl.endsWith("Writer") && "printf".equals(nm))
+                    || cl.endsWith("Logger") && nm.endsWith("fmt")
+                    || "([Ljava/lang/Object;)Ljava/lang/String;".equals(sig) && "java/lang/String".equals(cl) && "formatted".equals(nm)) {
 
                 if (formatString.indexOf('\n') >= 0) {
                     bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_USES_NEWLINE", NORMAL_PRIORITY)
@@ -118,7 +121,6 @@ public class FormatStringChecker extends OpcodeStackDetector {
                             .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
                 }
             }
-
         }
     }
 

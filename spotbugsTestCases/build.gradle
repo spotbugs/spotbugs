@@ -1,43 +1,51 @@
+plugins {
+  id 'groovy'
+}
+
 sourceSets {
   main {
     java {
       srcDirs = ['src/java', 'src/fakeAnnotations', 'src/fakeLibraries']
     }
+    groovy {
+      srcDirs = ['src/groovy']
+    }
   }
 }
 
-ext {
-  guiceVersion = '5.0.1'
-}
-
 dependencies {
-  // TODO : Some of these can be extracted to actual dependencies
-  implementation fileTree(dir: 'lib', include: '*.jar')
+  implementation 'jakarta.servlet:jakarta.servlet-api:4.0.4'
+  implementation 'jakarta.ejb:jakarta.ejb-api:3.2.6'
+  implementation 'com.google.code.gson:gson:2.11.0'
+  implementation 'com.google.guava:guava:33.2.1-jre'
+  implementation libs.guice
+  implementation libs.guice.assistedinject
+  implementation libs.guice.servlet
+  implementation 'com.google.truth:truth:1.4.4'
+  implementation 'joda-time:joda-time:2.12.7'
+  api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
+  implementation 'org.springframework:spring-core:5.3.37'
+  compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5'
+  implementation 'org.checkerframework:checker-qual:3.46.0'
 
-  implementation 'com.google.code.gson:gson:2.8.8'
-  implementation 'com.google.guava:guava:30.1.1-jre'
-  implementation "com.google.inject:guice:${guiceVersion}"
-  implementation "com.google.inject.extensions:guice-assistedinject:${guiceVersion}"
-  implementation "com.google.inject.extensions:guice-servlet:${guiceVersion}"
-  implementation 'com.google.truth:truth:1.1.3'
-  implementation 'joda-time:joda-time:2.10.10'
-  api 'net.jcip:jcip-annotations:1.0'
-  implementation 'org.springframework:spring-core:5.3.9'
-  compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
-  implementation 'org.checkerframework:checker-qual:3.18.0'
-
-  implementation 'junit:junit:4.13.1'
-  implementation 'org.testng:testng:7.4.0'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.10.3'
+  implementation 'org.junit.jupiter:junit-jupiter-params:5.10.3'
+  implementation 'org.testng:testng:7.10.2'
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
+  implementation 'org.apache.groovy:groovy-all:4.0.22'
+  implementation 'org.apache.commons:commons-lang3:3.15.0'
+  implementation 'org.mockito:mockito-core:5.12.0'
 }
 
 tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
-  if (it.name == 'classesJava14') {
-    options.release = 16
+  if (it.name == 'classesJava21') {
+    options.release = 21
+  } else if (it.name == 'classesJava17') {
+    options.release = 17
   } else if (it.name == 'classesJava11') {
     options.release = 11
   } else if (it.name != 'compileJava') {
@@ -58,41 +66,47 @@ tasks.named('javadoc', Javadoc).configure {
   }
 }
 
-def jvmVersion = JavaVersion.current()
 def classesJava8 = tasks.register('classesJava8', JavaCompile) {
-  destinationDir = file("$buildDir/classes/java/java8")
+  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java8"))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java8')
 }
 
 def classesJava11 = tasks.register('classesJava11', JavaCompile) {
-  destinationDir = file("$buildDir/classes/java/java11")
+  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java11"))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java11')
 }
 
-def classesJava14 = tasks.register('classesJava14', JavaCompile) {
-  options.compilerArgs.add('--enable-preview')
-  destinationDir = file("$buildDir/classes/java/java14")
+def classesJava17 = tasks.register('classesJava17', JavaCompile) {
+  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java17"))
   classpath = sourceSets.main.compileClasspath
-  source = file('src/java14')
+  source = file('src/java17')
 }
 
+def classesJava21 = tasks.register('classesJava21', JavaCompile) {
+  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java21"))
+  classpath = sourceSets.main.compileClasspath
+  source = file('src/java21')
+}
+
+def jvmVersion = JavaVersion.current()
 tasks.named('classes').configure {
   dependsOn classesJava8
-  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_11)) {
-    dependsOn classesJava11
+  dependsOn classesJava11
+  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
+    dependsOn classesJava17
   } else {
-    println "skip tests for Java 11 features"
+    println "skip tests for Java 17 features"
   }
-  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_14)) {
-    dependsOn classesJava14
+  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_21)) {
+    dependsOn classesJava21
   } else {
-    println "skip tests for Java 14 features"
+    println "skip tests for Java 21 features"
   }
 }
 
-sonarqube {
+sonar {
   // this project should not be analyzed with sonarqube
   // as it is test data, not real code
   skipProject true
