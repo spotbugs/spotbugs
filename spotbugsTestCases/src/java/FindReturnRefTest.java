@@ -120,7 +120,7 @@ public class FindReturnRefTest {
         hm = values;
     }
 
-    public static void getStaticValues(HashMap<Integer, String>  values) {
+    public static void getStaticValues2(HashMap<Integer, String>  values) {
         shm = values;
     }
 
@@ -146,11 +146,11 @@ public class FindReturnRefTest {
         return sCharBuf.duplicate();
     }
 
-    public CharBuffer getBuferWrap() {
+    public CharBuffer getBufferWrap() {
         return CharBuffer.wrap(charArray);        
     }
 
-    public static CharBuffer getStaticBuferWrap() {
+    public static CharBuffer getStaticBufferWrap() {
         return CharBuffer.wrap(sCharArray);        
     }
 

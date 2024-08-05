@@ -11,6 +11,21 @@ import static org.hamcrest.Matchers.hasItem;
 
 class FindReturnRefTest extends AbstractIntegrationTest {
     @Test
+    void testFindReturnRefTestNegativeChecks() {
+        performAnalysis("FindReturnRefNegativeTest.class",
+                "FindReturnRefNegativeTest$Inner.class");
+
+        assertNumOfBugs("EI_EXPOSE_BUF", 0);
+        assertNumOfBugs("EI_EXPOSE_BUF2", 0);
+        assertNumOfBugs("EI_EXPOSE_REP", 0);
+        assertNumOfBugs("EI_EXPOSE_REP2", 0);
+        assertNumOfBugs("EI_EXPOSE_STATIC_BUF2", 0);
+        assertNumOfBugs("EI_EXPOSE_STATIC_REP2", 0);
+        assertNumOfBugs("MS_EXPOSE_BUF", 0);
+        assertNumOfBugs("MS_EXPOSE_REP", 0);
+    }
+
+    @Test
     void testFindReturnRefTestChecks() {
         performAnalysis("FindReturnRefTest.class");
 
@@ -23,7 +38,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertNumOfBugs("MS_EXPOSE_BUF", 2);
         assertNumOfBugs("MS_EXPOSE_REP", 6);
 
-        assertBug("EI_EXPOSE_BUF", "FindReturnRefTest", "getBuferWrap", "charArray");
+        assertBug("EI_EXPOSE_BUF", "FindReturnRefTest", "getBufferWrap", "charArray");
         assertBug("EI_EXPOSE_BUF", "FindReturnRefTest", "getBufferDuplicate", "charBuf");
 
         assertBug("EI_EXPOSE_BUF2", "FindReturnRefTest", "setBufferDuplicate", "charBuf");
@@ -46,14 +61,14 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBug("EI_EXPOSE_STATIC_BUF2", "FindReturnRefTest", "setStaticBufferDuplicate", "sCharBuf");
         assertBug("EI_EXPOSE_STATIC_BUF2", "FindReturnRefTest", "setStaticBufferWrap", "sCharBuf");
 
-        assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest", "getStaticValues", "shm");
+        assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest", "getStaticValues2", "shm");
         assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest", "setStaticBuffer", "sCharBuf");
         assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest", "setStaticDate", "sDate");
         assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest", "setStaticDate2", "sDate");
         assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest", "setStaticDateArray", "sDateArray");
         assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest", "setStaticDateArray2", "sDateArray");
 
-        assertBug("MS_EXPOSE_BUF", "FindReturnRefTest", "getStaticBuferWrap", "sCharArray");
+        assertBug("MS_EXPOSE_BUF", "FindReturnRefTest", "getStaticBufferWrap", "sCharArray");
         assertBug("MS_EXPOSE_BUF", "FindReturnRefTest", "getStaticBufferDuplicate", "sCharBuf");
 
         assertBug("MS_EXPOSE_REP", "FindReturnRefTest", "getStaticBuffer", "sCharBuf");
@@ -175,21 +190,6 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBug("MS_EXPOSE_REP", "FindReturnRefTest3$Nested", "getStaticDateArray", "sDateArray");
         assertBug("MS_EXPOSE_REP", "FindReturnRefTest3$Nested", "getStaticValues", "shm");
         assertBug("MS_EXPOSE_REP", "FindReturnRefTest3$Nested", "getStaticDateArray2", "sDateArray");
-    }
-
-    @Test
-    void testFindReturnRefTestNegativeChecks() {
-        performAnalysis("FindReturnRefNegativeTest.class",
-                "FindReturnRefNegativeTest$Inner.class");
-
-        assertNumOfBugs("EI_EXPOSE_BUF", 0);
-        assertNumOfBugs("EI_EXPOSE_BUF2", 0);
-        assertNumOfBugs("EI_EXPOSE_REP", 0);
-        assertNumOfBugs("EI_EXPOSE_REP2", 0);
-        assertNumOfBugs("EI_EXPOSE_STATIC_BUF2", 0);
-        assertNumOfBugs("EI_EXPOSE_STATIC_REP2", 0);
-        assertNumOfBugs("MS_EXPOSE_BUF", 0);
-        assertNumOfBugs("MS_EXPOSE_REP", 0);
     }
 
     private void assertNumOfBugs(String bugtype, int num) {

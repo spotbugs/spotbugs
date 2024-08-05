@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
@@ -246,6 +248,18 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void doubleCheckedLockingIndirectTest() {
+        performAnalysis("singletons/DoubleCheckedLockingIndirect.class");
+        assertNoBugs();
+    }
+
+    @Test
+    void doubleCheckedLockingIndirect2Test() {
+        performAnalysis("singletons/DoubleCheckedLockingIndirect2.class");
+        assertNoBugs();
+    }
+
+    @Test
     void multiplePrivateConstructorsTest() {
         performAnalysis("singletons/MultiplePrivateConstructors.class");
         assertNoBugs();
@@ -275,6 +289,13 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
         assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
         assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
         assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+    }
+
+    @Test
+    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
+    void recordNotSingletonTest() {
+        performAnalysis("../java17/Issue2981.class");
+        assertNoBugs();
     }
 
     private void assertNoBugs() {
