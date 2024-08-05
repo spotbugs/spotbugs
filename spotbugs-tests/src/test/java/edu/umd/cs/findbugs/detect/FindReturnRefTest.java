@@ -95,7 +95,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertNumOfBugs("MS_EXPOSE_BUF", 2);
         assertNumOfBugs("MS_EXPOSE_REP", 6);
 
-        assertBug("EI_EXPOSE_BUF", "FindReturnRefTest2$Inner", "getBuferWrap", "charArray");
+        assertBug("EI_EXPOSE_BUF", "FindReturnRefTest2$Inner", "getBufferWrap", "charArray");
         assertBug("EI_EXPOSE_BUF", "FindReturnRefTest2$Inner", "getBufferDuplicate", "charBuf");
 
         assertBug("EI_EXPOSE_BUF2", "FindReturnRefTest2$Inner", "setBufferDuplicate", "access$802");
@@ -125,7 +125,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticValues", "access$202");
         assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticDateArray2", "access$102");
 
-        assertBug("MS_EXPOSE_BUF", "FindReturnRefTest2$Nested", "getStaticBuferWrap", "sCharArray");
+        assertBug("MS_EXPOSE_BUF", "FindReturnRefTest2$Nested", "getStaticBufferWrap", "sCharArray");
         assertBug("MS_EXPOSE_BUF", "FindReturnRefTest2$Nested", "getStaticBufferDuplicate", "sCharBuf");
 
         assertBug("MS_EXPOSE_REP", "FindReturnRefTest2$Nested", "getStaticBuffer", "sCharBuf");
@@ -151,7 +151,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertNumOfBugs("MS_EXPOSE_BUF", 2);
         assertNumOfBugs("MS_EXPOSE_REP", 6);
 
-        assertBug("EI_EXPOSE_BUF", "FindReturnRefTest3$Nested", "getBuferWrap", "charArray");
+        assertBug("EI_EXPOSE_BUF", "FindReturnRefTest3$Nested", "getBufferWrap", "charArray");
         assertBug("EI_EXPOSE_BUF", "FindReturnRefTest3$Nested", "getBufferDuplicate", "charBuf");
 
         assertBug("EI_EXPOSE_BUF2", "FindReturnRefTest3$Nested", "setBufferDuplicate", "charBuf");
@@ -181,7 +181,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest3$Nested", "setStaticValues", "shm");
         assertBug("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest3$Nested", "setStaticDateArray2", "sDateArray");
 
-        assertBug("MS_EXPOSE_BUF", "FindReturnRefTest3$Nested", "getStaticBuferWrap", "sCharArray");
+        assertBug("MS_EXPOSE_BUF", "FindReturnRefTest3$Nested", "getStaticBufferWrap", "sCharArray");
         assertBug("MS_EXPOSE_BUF", "FindReturnRefTest3$Nested", "getStaticBufferDuplicate", "sCharBuf");
 
         assertBug("MS_EXPOSE_REP", "FindReturnRefTest3$Nested", "getStaticBuffer", "sCharBuf");

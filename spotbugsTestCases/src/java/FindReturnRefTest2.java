@@ -93,7 +93,7 @@ public class FindReturnRefTest2 {
             return sCharBuf.duplicate();
         }
 
-        public static CharBuffer getStaticBuferWrap() {
+        public static CharBuffer getStaticBufferWrap() {
             return CharBuffer.wrap(sCharArray);        
         }
 
@@ -169,7 +169,7 @@ public class FindReturnRefTest2 {
             return charBuf.duplicate();
         }
 
-        public CharBuffer getBuferWrap() {
+        public CharBuffer getBufferWrap() {
             return CharBuffer.wrap(charArray);        
         }
 
