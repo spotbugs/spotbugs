@@ -72,6 +72,11 @@ public class AnalysisCache implements IAnalysisCache {
      */
     private static final int MAX_CLASS_RESULTS_TO_CACHE = 5000;
 
+    /**
+     * Maximum number of results to cache. Plugins such as FindSecBugs are using the cache and using an unbounded map can lead to OOM errors on large projects
+     */
+    private static final int DEFAULT_RESULTS_TO_CACHE = 10000;
+
     //    private static final boolean ASSERTIONS_ENABLED = SystemProperties.ASSERTIONS_ENABLED;
 
     // Fields
@@ -442,7 +447,7 @@ public class AnalysisCache implements IAnalysisCache {
         } else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine<?>) engine).canRecompute()) {
             descriptorMap = new MapCache<>(MAX_CLASS_RESULTS_TO_CACHE);
         } else {
-            descriptorMap = new HashMap<>();
+            descriptorMap = new MapCache<>(DEFAULT_RESULTS_TO_CACHE);
         }
         return descriptorMap;
     }

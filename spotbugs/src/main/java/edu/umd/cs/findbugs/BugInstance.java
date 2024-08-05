@@ -660,6 +660,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             } else {
                 prev.setNext(cur.getNext());
             }
+            // needs an ignore on ref comparison
             if (cur == propertyListTail) {
                 propertyListTail = prev;
             }

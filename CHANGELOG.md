@@ -7,6 +7,18 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2024-??-??
 ### Fixed
+- Do not consider Records as Singletons ([#2981](https://github.com/spotbugs/spotbugs/issues/2981))
+- Keep a maximum of 10000 cached analysis entries for plugin's analysis engines ([#3025](https://github.com/spotbugs/spotbugs/pull/3025))
+- Only report `MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT` when calling own methods ([#2957](https://github.com/spotbugs/spotbugs/issues/2957))
+- Check the actual caught exceptions (instead of the their common type) when analyzing multi-catch blocks ([#2968](https://github.com/spotbugs/spotbugs/issues/2968))
+- System property `findbugs.refcomp.reportAll` is now being used. For some new conditions, it will emit an experimental warning ([#2988](https://github.com/spotbugs/spotbugs/pull/2988))
+- `-version` flag prints the version to the standard output ([#2797](https://github.com/spotbugs/spotbugs/issues/2797))
+- Revert the changes from ([#2894](https://github.com/spotbugs/spotbugs/pull/2894)) to get HTML stylesheets to work again ([#2969](https://github.com/spotbugs/spotbugs/issues/2969))
+- Fix FP `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` report when the synchronization is in a called method ([#3045](https://github.com/spotbugs/spotbugs/issues/3045))
+- Let `BetterCFGBuilder2.isPEI` handle `dup2` bytecode used by Spring AOT ([#3059](https://github.com/spotbugs/spotbugs/issues/3059))
+
+## 4.8.6 - 2024-06-17
+### Fixed
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches when the switch instruction is TABLESWITCH ([#2782](https://github.com/spotbugs/spotbugs/issues/2782))
 - Do not throw exception when inspecting empty switch statements ([#2995](https://github.com/spotbugs/spotbugs/issues/2995))
 - Adjust priority since relaxed mode reports even `IGNORED_PRIORITY` ([#2994](https://github.com/spotbugs/spotbugs/issues/2994))

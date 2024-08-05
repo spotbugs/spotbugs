@@ -999,6 +999,11 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                     depth = 1;
                 } else if (prevInst instanceof DUP_X1 && depth == 3) {
                     depth = 1;
+                } else if (prevInst instanceof DUP2 && depth == 2) {
+                    // DUP2 pops 2 and pushes 4 elements so when depth is 2 we would change it to 2 - 4 + 2 = 0
+                    // This means that the instructions preceding the PUTFIELD we have encountered so far have not pushed the reference of PUTFIELD
+                    // So we reset the depth to PUTFIELD.consumeStack(cpg) which is 2
+                    depth = ins.consumeStack(cpg);
                 } else {
                     depth = depth - prevInst.produceStack(cpg) + prevInst.consumeStack(cpg);
                 }
