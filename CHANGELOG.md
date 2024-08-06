@@ -15,6 +15,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - `-version` flag prints the version to the standard output ([#2797](https://github.com/spotbugs/spotbugs/issues/2797))
 - Revert the changes from ([#2894](https://github.com/spotbugs/spotbugs/pull/2894)) to get HTML stylesheets to work again ([#2969](https://github.com/spotbugs/spotbugs/issues/2969))
 - Fix FP `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` report when the synchronization is in a called method ([#3045](https://github.com/spotbugs/spotbugs/issues/3045))
+- Let `BetterCFGBuilder2.isPEI` handle `dup2` bytecode used by Spring AOT ([#3059](https://github.com/spotbugs/spotbugs/issues/3059))
 - Classes containing only private methods with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 
 ## 4.8.6 - 2024-06-17
