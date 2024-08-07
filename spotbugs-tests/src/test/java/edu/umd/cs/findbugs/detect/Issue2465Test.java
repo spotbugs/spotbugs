@@ -10,7 +10,7 @@ class Issue2465Test extends AbstractIntegrationTest {
 
     @Test
     void testIssue() {
-        Assertions.assertDoesNotThrow(() -> performAnalysis("ghIssues/Issue2465.class", "ghIssues/Issue2465$1.class",
+        Assertions.assertDoesNotThrow(() -> performAnalysis("ghIssues/Issue2465.class",
                 "ghIssues/Issue2465$Role.class"));
     }
 }
