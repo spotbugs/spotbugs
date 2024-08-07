@@ -229,6 +229,15 @@ applied to method parameters and uses of those method parameters. </p>
 ]]>
      </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.AtomicOperationsCombinedDetector">
+    <Details>
+      <![CDATA[
+<p> Finds sequences of operations on synchronized/atomic abstractions
+    like SynchronizedList or AtomicReference that are not in a synchronized block.
+    </p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant">
     <Details>
 <![CDATA[
@@ -8671,6 +8680,34 @@ after the call to initLogging, the logger configuration is lost
             These calls will not be executed atomically.
           ]]>
       </Details>
+  </BugPattern>
+  <BugPattern type="AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC">
+    <ShortDescription>Sequence of calls on a synchronized abstraction may not be atomic</ShortDescription>
+    <LongDescription>Sequence of calls to {3} may not be atomic in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>This code contains a sequence of calls to a synchronized/atomic abstraction
+            (such as a synchronized list or an AtomicReference) without synchronization.
+            These calls will not be executed atomically, so it's recommended to put these calls
+            into a synchronized block or method.</p>
+        <p>See SEI CERT rule
+            <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA03-J.+Do+not+assume+that+a+group+of+calls+to+independently+atomic+methods+is+atomic">
+            VNA03-J. Do not assume that a group of calls to independently atomic methods is atomic</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION">
+    <ShortDescription>Atomic operation needs synchronization</ShortDescription>
+    <LongDescription>Atomic operation {4} needs synchronization in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>This operation is atomic, but it needs to be executed in a synchronized block or method,
+            because in another method in this class, the object can be modified. To make both atomic, both need synchronization.</p>
+        <p>See SEI CERT rule
+          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA03-J.+Do+not+assume+that+a+group+of+calls+to+independently+atomic+methods+is+atomic">
+          VNA03-J. Do not assume that a group of calls to independently atomic methods is atomic</a>.
+        </p>]]>
+    </Details>
   </BugPattern>
   <BugPattern type="DM_DEFAULT_ENCODING">
     <ShortDescription>Reliance on default encoding</ShortDescription>

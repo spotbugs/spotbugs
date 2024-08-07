@@ -17,6 +17,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix FP `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` report when the synchronization is in a called method ([#3045](https://github.com/spotbugs/spotbugs/issues/3045))
 - Let `BetterCFGBuilder2.isPEI` handle `dup2` bytecode used by Spring AOT ([#3059](https://github.com/spotbugs/spotbugs/issues/3059))
 
+### Added
+- New detector `AtomicOperationsCombinedDetector` and introduced new bug types:
+  - `AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC` is reported in case of combined atomic operations are not synchronized.
+  - `AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION` is reported when an atomic operation is not synchronized, but should be because of thread safety.
+
 ## 4.8.6 - 2024-06-17
 ### Fixed
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches when the switch instruction is TABLESWITCH ([#2782](https://github.com/spotbugs/spotbugs/issues/2782))
