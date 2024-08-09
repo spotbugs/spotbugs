@@ -4,6 +4,8 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,14 +17,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         performAnalysis("FindReturnRefNegativeTest.class",
                 "FindReturnRefNegativeTest$Inner.class");
 
-        assertNumOfBugs("EI_EXPOSE_BUF", 0);
-        assertNumOfBugs("EI_EXPOSE_BUF2", 0);
-        assertNumOfBugs("EI_EXPOSE_REP", 0);
-        assertNumOfBugs("EI_EXPOSE_REP2", 0);
-        assertNumOfBugs("EI_EXPOSE_STATIC_BUF2", 0);
-        assertNumOfBugs("EI_EXPOSE_STATIC_REP2", 0);
-        assertNumOfBugs("MS_EXPOSE_BUF", 0);
-        assertNumOfBugs("MS_EXPOSE_REP", 0);
+        assertNoExposeBug();
     }
 
     @Test
@@ -78,6 +73,38 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBug("MS_EXPOSE_REP", "FindReturnRefTest", "getStaticValues", "shm");
         assertBug("MS_EXPOSE_REP", "FindReturnRefTest", "getStaticDateArray2", "sDateArray");
 
+    }
+
+    @Test
+    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
+    void testUnmodifiableClass() {
+        performAnalysis("../java17/exposemutable/UnmodifiableClass.class");
+        assertNoExposeBug();
+    }
+
+    @Test
+    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
+    void testUnmodifiableRecord() {
+        performAnalysis("../java17/exposemutable/UnmodifiableRecord.class");
+        assertNoExposeBug();
+    }
+
+    @Test
+    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
+    void testUnmodifiableRecordWithAllParamConstructor() {
+        performAnalysis("../java17/exposemutable/UnmodifiableRecordWithAllParamConstructor.class");
+        assertNoExposeBug();
+    }
+
+    private void assertNoExposeBug() {
+        assertNumOfBugs("EI_EXPOSE_BUF", 0);
+        assertNumOfBugs("EI_EXPOSE_BUF2", 0);
+        assertNumOfBugs("EI_EXPOSE_REP", 0);
+        assertNumOfBugs("EI_EXPOSE_REP2", 0);
+        assertNumOfBugs("EI_EXPOSE_STATIC_BUF2", 0);
+        assertNumOfBugs("EI_EXPOSE_STATIC_REP2", 0);
+        assertNumOfBugs("MS_EXPOSE_BUF", 0);
+        assertNumOfBugs("MS_EXPOSE_REP", 0);
     }
 
     private void assertNumOfBugs(String bugtype, int num) {
