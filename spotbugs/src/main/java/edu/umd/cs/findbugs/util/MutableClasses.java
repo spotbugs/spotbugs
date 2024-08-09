@@ -150,7 +150,8 @@ public class MutableClasses {
             }
 
             for (Method method : cls.getMethods()) {
-                if (!method.isStatic() && looksLikeASetter(method)) {
+                if (!method.isStatic() && (!method.isPrivate() || cls.isNested())
+                        && looksLikeASetter(method)) {
                     return true;
                 }
             }
