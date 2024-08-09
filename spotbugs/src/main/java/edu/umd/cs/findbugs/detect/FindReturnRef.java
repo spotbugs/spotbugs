@@ -19,13 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.HashMap;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -50,6 +51,8 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     private int parameterCount;
 
+    private boolean isFirstVisit = true;
+
     private XField fieldUnderClone = null;
     private OpcodeStack.Item paramUnderClone = null;
     private XField fieldCloneUnderCast = null;
@@ -65,6 +68,7 @@ public class FindReturnRef extends OpcodeStackDetector {
     private final Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamsWrappedToBuffers = new HashMap<>();
     private final Map<OpcodeStack.Item, XField> arrayFieldClones = new HashMap<>();
     private final Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamClones = new HashMap<>();
+    private final Map<XField, List<OpcodeStack.Item>> fieldValues = new HashMap<>();
 
     private final BugAccumulator bugAccumulator;
 
@@ -88,6 +92,16 @@ public class FindReturnRef extends OpcodeStackDetector {
     }
 
     @Override
+    public void visit(JavaClass obj) {
+        isFirstVisit = true;
+        for (Method m : obj.getMethods()) {
+            doVisitMethod(m);
+        }
+
+        isFirstVisit = false;
+    }
+
+    @Override
     public void visit(Method obj) {
         check = getThisClass().isPublic() && obj.isPublic();
         if (!check) {
@@ -104,15 +118,26 @@ public class FindReturnRef extends OpcodeStackDetector {
     }
 
     @Override
-    public void visit(Code obj) {
-        if (check) {
-            super.visit(obj);
+    public void sawOpcode(int seen) {
+        if (isFirstVisit) {
+            collectData(seen);
+        } else {
+            processData(seen);
         }
     }
 
-    @Override
-    public void sawOpcode(int seen) {
+    private void collectData(int seen) {
+        if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
+            XField field = getXFieldOperand();
+            if (field != null && !field.isPublic()) {
+                OpcodeStack.Item top = stack.getStackItem(0);
+                fieldValues.computeIfAbsent(field, k -> new ArrayList<>());
+                fieldValues.get(field).add(top);
+            }
+        }
+    }
 
+    private void processData(int seen) {
         if (!check) {
             return;
         }
@@ -189,6 +214,11 @@ public class FindReturnRef extends OpcodeStackDetector {
                     || !MutableClasses.mutableSignature(TypeFrameModelingVisitor.getType(field).getSignature())) {
                 return;
             }
+            if (fieldValues.containsKey(field) && fieldValues.get(field).stream()
+                    .anyMatch(it -> !MutableClasses.mutableSignature(it.getSignature()))) {
+                return;
+            }
+
             bugAccumulator.accumulateBug(
                     new BugInstance(this, (staticMethod ? "MS" : "EI") + "_EXPOSE_" + (isBuf ? "BUF" : "REP"),
                             (isBuf || isArrayClone) ? LOW_PRIORITY : NORMAL_PRIORITY)
@@ -257,40 +287,41 @@ public class FindReturnRef extends OpcodeStackDetector {
     @Override
     public void afterOpcode(int seen) {
         super.afterOpcode(seen);
-
-        if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
-            if (fieldUnderClone != null) {
-                arrayFieldClones.put(stack.getStackItem(0), fieldUnderClone);
-            }
-            if (paramUnderClone != null) {
-                arrayParamClones.put(stack.getStackItem(0), paramUnderClone);
-            }
-            if (seen == Const.INVOKEVIRTUAL) {
-                if (bufferFieldUnderDuplication != null) {
-                    bufferFieldDuplicates.put(stack.getStackItem(0), bufferFieldUnderDuplication);
+        if (!isFirstVisit) {
+            if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
+                if (fieldUnderClone != null) {
+                    arrayFieldClones.put(stack.getStackItem(0), fieldUnderClone);
                 }
-                if (bufferParamUnderDuplication != null) {
-                    bufferParamDuplicates.put(stack.getStackItem(0), bufferParamUnderDuplication);
+                if (paramUnderClone != null) {
+                    arrayParamClones.put(stack.getStackItem(0), paramUnderClone);
+                }
+                if (seen == Const.INVOKEVIRTUAL) {
+                    if (bufferFieldUnderDuplication != null) {
+                        bufferFieldDuplicates.put(stack.getStackItem(0), bufferFieldUnderDuplication);
+                    }
+                    if (bufferParamUnderDuplication != null) {
+                        bufferParamDuplicates.put(stack.getStackItem(0), bufferParamUnderDuplication);
+                    }
                 }
             }
-        }
 
-        if (seen == Const.INVOKESTATIC) {
-            if (fieldUnderWrapToBuffer != null) {
-                arrayFieldsWrappedToBuffers.put(stack.getStackItem(0), fieldUnderWrapToBuffer);
+            if (seen == Const.INVOKESTATIC) {
+                if (fieldUnderWrapToBuffer != null) {
+                    arrayFieldsWrappedToBuffers.put(stack.getStackItem(0), fieldUnderWrapToBuffer);
+                }
+                if (paramUnderWrapToBuffer != null) {
+                    arrayParamsWrappedToBuffers.put(stack.getStackItem(0), paramUnderWrapToBuffer);
+                }
             }
-            if (paramUnderWrapToBuffer != null) {
-                arrayParamsWrappedToBuffers.put(stack.getStackItem(0), paramUnderWrapToBuffer);
-            }
-        }
 
-        if (seen == Const.CHECKCAST && !stack.isTop()) {
-            OpcodeStack.Item item = stack.getStackItem(0);
-            if (fieldCloneUnderCast != null) {
-                arrayFieldClones.put(item, fieldCloneUnderCast);
-            }
-            if (paramCloneUnderCast != null) {
-                arrayParamClones.put(item, paramCloneUnderCast);
+            if (seen == Const.CHECKCAST && !stack.isTop()) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                if (fieldCloneUnderCast != null) {
+                    arrayFieldClones.put(item, fieldCloneUnderCast);
+                }
+                if (paramCloneUnderCast != null) {
+                    arrayParamClones.put(item, paramCloneUnderCast);
+                }
             }
         }
     }
