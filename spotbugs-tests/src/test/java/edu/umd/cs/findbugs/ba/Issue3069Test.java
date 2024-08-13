@@ -9,7 +9,7 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class Issue3069Test extends AbstractIntegrationTest {
+class Issue3069Test extends AbstractIntegrationTest {
 
     @Test
     void testIssue() {
