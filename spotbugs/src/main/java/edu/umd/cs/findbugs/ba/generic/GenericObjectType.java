@@ -88,7 +88,7 @@ public class GenericObjectType extends ObjectType {
         // Self referencing generics will cause a stack overflow when calling Objects.equals(parameters, that.parameters)
         // For instance: <C extends Map<X, C>, X extends Number>
         // Instead we compare the generic signature when we know it
-        if (genericSignature != null && genericSignature.endsWith(that.genericSignature)) {
+        if (genericSignature != null && genericSignature.equals(that.genericSignature)) {
             return true;
         }
         return Objects.equals(parameters, that.parameters)
