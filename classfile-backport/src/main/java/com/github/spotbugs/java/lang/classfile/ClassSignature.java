@@ -37,16 +37,16 @@ import static java.util.Objects.requireNonNull;
  */
 public interface ClassSignature {
 
-    /** {@return the type parameters of this class} */
+    /** @return the type parameters of this class */
     List<Signature.TypeParam> typeParameters();
 
-    /** {@return the instantiation of the superclass in this signature} */
+    /** @return the instantiation of the superclass in this signature */
     Signature.RefTypeSig superclassSignature();
 
-    /** {@return the instantiation of the interfaces in this signature} */
+    /** @return the instantiation of the interfaces in this signature */
     List<Signature.RefTypeSig> superinterfaceSignatures();
 
-    /** {@return the raw signature string} */
+    /** @return the raw signature string */
     String signatureString();
 
     /**

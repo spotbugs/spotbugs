@@ -38,7 +38,7 @@ import com.github.spotbugs.jdk.internal.classfile.impl.SignaturesImpl;
  */
 public interface Signature {
 
-    /** {@return the raw signature string} */
+    /** @return the raw signature string */
     String signatureString();
 
     /**
@@ -57,11 +57,11 @@ public interface Signature {
      */
     public interface BaseTypeSig extends Signature {
 
-        /** {@return the single-letter descriptor for the base type} */
+        /** @return the single-letter descriptor for the base type */
         char baseType();
 
         /**
-         * {@return the signature of a primitive type or void}
+         * @return the signature of a primitive type or void
          * @param baseType the single-letter descriptor for the base type
          */
         public static BaseTypeSig of(char baseType) {
@@ -89,13 +89,13 @@ public interface Signature {
     public interface ClassTypeSig
             extends RefTypeSig, ThrowableSig {
 
-        /** {@return the signature of the outer type, if any} */
+        /** @return the signature of the outer type, if any */
         Optional<ClassTypeSig> outerType();
 
-        /** {@return the class name} */
+        /** @return the class name */
         String className();
 
-        /** {@return the type arguments of the class} */
+        /** @return the type arguments of the class */
         List<TypeArg> typeArgs();
     }
 
@@ -135,14 +135,14 @@ public interface Signature {
             SUPER;
         }
 
-        /** {@return the wildcard indicator} */
+        /** @return the wildcard indicator */
         WildcardIndicator wildcardIndicator();
 
-        /** {@return the signature of the type bound, if any} */
+        /** @return the signature of the type bound, if any */
         Optional<RefTypeSig> boundType();
 
         /**
-         * {@return a bounded type arg}
+         * @return a bounded type arg
          * @param boundType the bound
          */
         public static TypeArg of(RefTypeSig boundType) {
@@ -151,14 +151,14 @@ public interface Signature {
         }
 
         /**
-         * {@return an unbounded type arg}
+         * @return an unbounded type arg
          */
         public static TypeArg unbounded() {
             return of(WildcardIndicator.UNBOUNDED, Optional.empty());
         }
 
         /**
-         * {@return an upper-bounded type arg}
+         * @return an upper-bounded type arg
          * @param boundType the upper bound
          */
         public static TypeArg extendsOf(RefTypeSig boundType) {
@@ -167,7 +167,7 @@ public interface Signature {
         }
 
         /**
-         * {@return a lower-bounded type arg}
+         * @return a lower-bounded type arg
          * @param boundType the lower bound
          */
         public static TypeArg superOf(RefTypeSig boundType) {
@@ -176,7 +176,7 @@ public interface Signature {
         }
 
         /**
-         * {@return a bounded type arg}
+         * @return a bounded type arg
          * @param wildcard the wild card
          * @param boundType optional bound type
          */
@@ -193,11 +193,11 @@ public interface Signature {
     public interface TypeVarSig
             extends RefTypeSig, ThrowableSig {
 
-        /** {@return the name of the type variable} */
+        /** @return the name of the type variable */
         String identifier();
 
         /**
-         * {@return a signature for a type variable}
+         * @return a signature for a type variable
          * @param identifier the name of the type variable
          */
         public static TypeVarSig of(String identifier) {
@@ -213,11 +213,11 @@ public interface Signature {
     public interface ArrayTypeSig
             extends RefTypeSig {
 
-        /** {@return the signature of the component type} */
+        /** @return the signature of the component type */
         Signature componentSignature();
 
         /**
-         * {@return a signature for an array type}
+         * @return a signature for an array type
          * @param componentSignature the component type
          */
         public static ArrayTypeSig of(Signature componentSignature) {
@@ -225,7 +225,7 @@ public interface Signature {
         }
 
         /**
-         * {@return a signature for an array type}
+         * @return a signature for an array type
          * @param dims the dimension of the array
          * @param componentSignature the component type
          */
@@ -248,13 +248,13 @@ public interface Signature {
      */
     public interface TypeParam {
 
-        /** {@return the name of the type parameter} */
+        /** @return the name of the type parameter */
         String identifier();
 
-        /** {@return the class bound of the type parameter} */
+        /** @return the class bound of the type parameter */
         Optional<RefTypeSig> classBound();
 
-        /** {@return the interface bounds of the type parameter} */
+        /** @return the interface bounds of the type parameter */
         List<RefTypeSig> interfaceBounds();
     }
 

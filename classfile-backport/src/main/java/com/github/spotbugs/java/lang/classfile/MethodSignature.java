@@ -37,19 +37,19 @@ import com.github.spotbugs.jdk.internal.classfile.impl.SignaturesImpl;
  */
 public interface MethodSignature {
 
-    /** {@return the type parameters of this method} */
+    /** @return the type parameters of this method */
     List<Signature.TypeParam> typeParameters();
 
-    /** {@return the signatures of the parameters of this method} */
+    /** @return the signatures of the parameters of this method */
     List<Signature> arguments();
 
-    /** {@return the signatures of the return value of this method} */
+    /** @return the signatures of the return value of this method */
     Signature result();
 
-    /** {@return the signatures of the exceptions thrown by this method} */
+    /** @return the signatures of the exceptions thrown by this method */
     List<Signature.ThrowableSig> throwableSignatures();
 
-    /** {@return the raw signature string} */
+    /** @return the raw signature string */
     String signatureString();
 
     /**
