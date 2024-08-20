@@ -32,9 +32,8 @@ import java.util.Optional;
 import com.github.spotbugs.jdk.internal.classfile.impl.SignaturesImpl;
 
 /**
- * Models generic Java type signatures, as defined in {@jvms 4.7.9.1}.
+ * Models generic Java type signatures, as defined in @jvms 4.7.9.1.
  *
- * @sealedGraph
  * @since 22
  */
 public interface Signature {
@@ -76,7 +75,6 @@ public interface Signature {
      * Models the signature of a reference type, which may be a class, interface,
      * type variable, or array type.
      *
-     * @sealedGraph
      * @since 22
      */
     public interface RefTypeSig
@@ -263,7 +261,6 @@ public interface Signature {
     /**
      * Models a signature for a throwable type.
      *
-     * @sealedGraph
      * @since 22
      */
     public interface ThrowableSig extends Signature {
