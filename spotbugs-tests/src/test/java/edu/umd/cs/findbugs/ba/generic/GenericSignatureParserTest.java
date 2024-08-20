@@ -25,7 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Iterator;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import com.github.spotbugs.java.lang.classfile.MethodSignature;
+import com.github.spotbugs.java.lang.classfile.Signature;
 
 /**
  * @author pugh
@@ -34,20 +38,20 @@ class GenericSignatureParserTest {
 
     @Test
     void testGenerics() {
-        GenericSignatureParser parser = new GenericSignatureParser(
+        MethodSignature signature = MethodSignature.parseFrom(
                 "(Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;)V");
-        assertEquals(1, parser.getNumParameters());
+        assertEquals(1, signature.arguments().size());
     }
 
     @Test
     void testThrowsGenerics() {
-        GenericSignatureParser parser = new GenericSignatureParser("(Ljava/lang/String;^TE1;^TE2;^TE3;)V");
-        assertEquals(1, parser.getNumParameters());
+        MethodSignature signature = MethodSignature.parseFrom("(Ljava/lang/String;)V^TE1;^TE2;^TE3;");
+        assertEquals(1, signature.arguments().size());
     }
 
     private void processTest(String genericSignature, String... substrings) {
-        GenericSignatureParser parser = new GenericSignatureParser(genericSignature);
-        Iterator<String> iter = parser.parameterSignatureIterator();
+        MethodSignature signature = MethodSignature.parseFrom(genericSignature);
+        Iterator<String> iter = signature.arguments().stream().map(Signature::signatureString).iterator();
 
         for (String s : substrings) {
             assertTrue(iter.hasNext());
@@ -60,16 +64,17 @@ class GenericSignatureParserTest {
     void testSignatures() {
         processTest("(Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;");
 
-        processTest("(Ljava/lang/Comparable;TE;**[Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;", "TE;", "*", "*",
+        processTest("(Ljava/lang/Comparable;TE;[Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;", "TE;",
                 "[Ljava/lang/Comparable;");
 
-        processTest("(TE;*+[Ljava/lang/Comparable;-TV;)V", "TE;", "*", "+[Ljava/lang/Comparable;", "-TV;");
+        processTest("(TE;[Ljava/lang/Comparable;TV;)V", "TE;", "[Ljava/lang/Comparable;", "TV;");
     }
 
     @Test
+    @Disabled("Invalid signature fixed in Eclipse JDT: https://bugs.eclipse.org/bugs/show_bug.cgi?id=494198")
     void testEclipseJDTInvalidSignature() {
-        GenericSignatureParser parser = new GenericSignatureParser("(!+LHasUniqueKey<Ljava/lang/Integer;>;)V");
-        assertEquals(1, parser.getNumParameters());
-        assertEquals("+LHasUniqueKey<Ljava/lang/Integer;>;", parser.parameterSignatureIterator().next());
+        MethodSignature signature = MethodSignature.parseFrom("(!+LHasUniqueKey<Ljava/lang/Integer;>;)V");
+        assertEquals(1, signature.arguments().size());
+        assertEquals("+LHasUniqueKey<Ljava/lang/Integer;>;", signature.arguments().get(0).signatureString());
     }
 }

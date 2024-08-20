@@ -96,6 +96,8 @@ dependencies {
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
+  
+  implementation project(":classfile-backport")
 }
 
 clean {

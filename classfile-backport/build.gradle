@@ -1,0 +1,33 @@
+apply from: "$rootDir/gradle/checkstyle.gradle"
+apply from: "$rootDir/gradle/javadoc.gradle"
+apply from: "$rootDir/gradle/maven.gradle"
+
+tasks.named('javadoc', Javadoc).configure {
+  options.with {
+    memberLevel = JavadocMemberLevel.PUBLIC
+    docTitle = 'SpotBugs Classfile API Backport Documentation'
+  }
+  doFirst {
+    // This is supposed to enable everything except "missing" but doesn't work with gradle
+    // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
+    options.addBooleanOption('Xdoclint:all,-missing', true)
+  }
+  doLast {
+    logger.warn('Javadoc: "missing" warnings are disabled, see #340!')
+  }
+}
+
+java {
+  withJavadocJar()
+  withSourcesJar()
+}
+
+publishing.publications.maven {
+  pom {
+    name = 'SpotBugs Classfile API Backport'
+    description = 'Backport of Java classfile API'
+  }
+}
+
+ext.moduleName = 'com.github.spotbugs.classfile-backport'
+apply from: "$rootDir/gradle/jigsaw.gradle"

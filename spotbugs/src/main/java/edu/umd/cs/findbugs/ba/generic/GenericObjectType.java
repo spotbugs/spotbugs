@@ -30,6 +30,8 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import com.github.spotbugs.java.lang.classfile.Signature.TypeArg.WildcardIndicator;
+
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -55,7 +57,11 @@ public class GenericObjectType extends ObjectType {
 
     final @CheckForNull String variable;
 
-    final @CheckForNull ReferenceType extension;
+    final @CheckForNull WildcardIndicator wildcardIndicator;
+
+    final List<? extends ReferenceType> extensions;
+
+    final String genericSignature;
 
     public ReferenceType produce() {
         return getTypeCategory().produce(this);
@@ -63,8 +69,11 @@ public class GenericObjectType extends ObjectType {
 
     @Override
     public int hashCode() {
-        return 13 * super.hashCode() + 9 * Objects.hashCode(parameters) + 7 * Objects.hashCode(variable)
-                + Objects.hashCode(extension);
+        return 13 * super.hashCode()
+                + 9 * Objects.hashCode(parameters)
+                + 7 * Objects.hashCode(variable)
+                + 7 * Objects.hashCode(wildcardIndicator)
+                + Objects.hashCode(extensions);
     }
 
     @Override
@@ -76,13 +85,21 @@ public class GenericObjectType extends ObjectType {
             return false;
         }
         GenericObjectType that = (GenericObjectType) o;
-        return Objects.equals(parameters, that.parameters) && Objects.equals(variable, that.variable)
-                && Objects.equals(extension, that.extension);
+        // Self referencing generics will cause a stack overflow when calling Objects.equals(parameters, that.parameters)
+        // For instance: <C extends Map<X, C>, X extends Number>
+        // Instead we compare the generic signature when we know it
+        if (genericSignature != null && genericSignature.endsWith(that.genericSignature)) {
+            return true;
+        }
+        return Objects.equals(parameters, that.parameters)
+                && Objects.equals(variable, that.variable)
+                && Objects.equals(wildcardIndicator, that.wildcardIndicator)
+                && Objects.equals(extensions, that.extensions);
     }
 
     public Type getUpperBound() {
-        if ("+".equals(variable)) {
-            return extension;
+        if (WildcardIndicator.EXTENDS == wildcardIndicator) {
+            return extensions.get(0);
         }
         return this;
     }
@@ -91,7 +108,11 @@ public class GenericObjectType extends ObjectType {
      * @return Returns the extension.
      */
     public Type getExtension() {
-        return extension;
+        if (extensions.isEmpty()) {
+            return null;
+        }
+
+        return extensions.get(0);
     }
 
     /**
@@ -101,26 +122,44 @@ public class GenericObjectType extends ObjectType {
         return variable;
     }
 
+    public WildcardIndicator getWildcardIndicator() {
+        return wildcardIndicator;
+    }
+
+    /**
+     * @return Returns the generic signature
+     */
+    public String getGenericSignature() {
+        return genericSignature;
+    }
+
     /**
      * Get the TypeCategory that represents this Object
      *
      * @see GenericUtilities.TypeCategory
      */
     public GenericUtilities.TypeCategory getTypeCategory() {
-        if (hasParameters() && variable == null && extension == null) {
+        if (hasParameters() && wildcardIndicator == null && extensions.isEmpty()) {
             return GenericUtilities.TypeCategory.PARAMETERIZED;
 
-        } else if (!hasParameters() && variable != null && extension == null) {
+        } else if (!hasParameters() && variable != null && extensions.isEmpty()) {
             if ("*".equals(variable)) {
                 return GenericUtilities.TypeCategory.WILDCARD;
             } else {
                 return GenericUtilities.TypeCategory.TYPE_VARIABLE;
             }
 
-        } else if (!hasParameters() && variable != null && extension != null) {
-            if ("+".equals(variable)) {
+        } else if (!hasParameters() && wildcardIndicator != null && extensions.isEmpty()) {
+            if (WildcardIndicator.UNBOUNDED == wildcardIndicator) {
+                return GenericUtilities.TypeCategory.WILDCARD;
+            } else {
+                return GenericUtilities.TypeCategory.TYPE_VARIABLE;
+            }
+
+        } else if (!hasParameters() && wildcardIndicator != null && !extensions.isEmpty()) {
+            if (WildcardIndicator.EXTENDS == wildcardIndicator) {
                 return GenericUtilities.TypeCategory.WILDCARD_EXTENDS;
-            } else if ("-".equals(variable)) {
+            } else if (WildcardIndicator.SUPER == wildcardIndicator) {
                 return GenericUtilities.TypeCategory.WILDCARD_SUPER;
             }
 
@@ -176,37 +215,75 @@ public class GenericObjectType extends ObjectType {
      *            the type variable e.g. <code>T</code>
      */
     GenericObjectType(@Nonnull String variable) {
-        this(variable, (ReferenceType) null);
+        super(Type.OBJECT.getClassName());
+        this.variable = variable;
+        this.wildcardIndicator = null;
+        this.extensions = Collections.emptyList();
+        this.parameters = null;
+        this.genericSignature = null;
     }
 
     /**
      * Create a GenericObjectType that represents a Wildcard with extensions
      *
      */
-    GenericObjectType(@Nonnull String wildcard, @CheckForNull ReferenceType extension) {
+    GenericObjectType(@Nonnull WildcardIndicator wildcardIndicator, @CheckForNull ReferenceType extension) {
         super(Type.OBJECT.getClassName());
-        this.variable = wildcard;
-        this.extension = extension;
-        parameters = null;
+        this.variable = null;
+        this.wildcardIndicator = wildcardIndicator;
+        this.extensions = extension != null ? Collections.singletonList(extension) : Collections.emptyList();
+        this.parameters = null;
+        this.genericSignature = null;
+    }
+
+    /**
+     * Create a GenericObjectType that represents a Wildcard with extensions
+     *
+     */
+    GenericObjectType(String variable, @Nonnull WildcardIndicator wildcardIndicator, List<? extends ReferenceType> extensions) {
+        super(Type.OBJECT.getClassName());
+        this.variable = variable;
+        this.wildcardIndicator = wildcardIndicator;
+        this.extensions = extensions;
+        this.parameters = null;
+        this.genericSignature = null;
     }
 
     /**
      * Create a GenericObjectType that represents a parameterized class
      *
-     * @param class_name
+     * @param className
      *            the class that is parameterized. e.g.
      *            <code>java.util.List</code>
      * @param parameters
-     *            the parameters of this class, must be at least 1 parameter
+     *            the parameters of this class
      */
-    GenericObjectType(@DottedClassName String class_name, List<? extends ReferenceType> parameters) {
-        super(class_name);
-        variable = null;
-        extension = null;
-        if (parameters == null || parameters.size() == 0) {
-            throw new IllegalStateException("argument 'parameters' must contain at least 1 parameter");
-        }
+    GenericObjectType(@DottedClassName String className, List<? extends ReferenceType> parameters, String genericSignature) {
+        super(className);
+        this.variable = null;
+        this.wildcardIndicator = null;
+        this.extensions = Collections.emptyList();
         this.parameters = parameters;
+        this.genericSignature = genericSignature;
+    }
+
+    /**
+     * Create a GenericObjectType that represents a parameterized class
+     *
+     * @param className
+     *            the class that is parameterized. e.g.
+     *            <code>java.util.List</code>
+     * @param parameters
+     *            the parameters of this class
+     */
+    GenericObjectType(@DottedClassName String className, WildcardIndicator wildcardIndicator, List<? extends ReferenceType> parameters,
+            String genericSignature) {
+        super(className);
+        this.variable = null;
+        this.wildcardIndicator = wildcardIndicator;
+        this.extensions = Collections.emptyList();
+        this.parameters = parameters;
+        this.genericSignature = genericSignature;
     }
 
     /**

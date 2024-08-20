@@ -29,6 +29,8 @@ import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 
+import com.github.spotbugs.java.lang.classfile.MethodSignature;
+
 import edu.umd.cs.findbugs.Analyze;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -49,7 +51,6 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -238,8 +239,8 @@ public class FindBadCast2 implements Detector {
                             && (sourceSignature.startsWith("<") || sourceSignature.indexOf("java/lang/Class") >= 0);
 
                     if (sourceSignature != null) {
-                        GenericSignatureParser signatureParser = new GenericSignatureParser(sourceSignature);
-                        String returnTypeSignature = signatureParser.getReturnTypeSignature();
+                        MethodSignature signature = MethodSignature.parseFrom(sourceSignature);
+                        String returnTypeSignature = signature.result().signatureString();
 
                         if (returnTypeSignature != null && returnTypeSignature.startsWith("T")) {
                             // The signature for variable types starts by a T (so <X> would have signature TX)

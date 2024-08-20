@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -82,6 +83,7 @@ class GenericUtilitiesTest {
     }
 
     @Test
+    @Disabled("Invalid signature fixed in Eclipse JDT: https://bugs.eclipse.org/bugs/show_bug.cgi?id=494198")
     void testEclipseJDTInvalidUpperBoundSignature() {
         final Type type = GenericUtilities.getType("!+LHasUniqueKey<Ljava/lang/Integer;>;");
         assertThat(type, instanceOf(GenericObjectType.class));
@@ -90,6 +92,7 @@ class GenericUtilitiesTest {
     }
 
     @Test
+    @Disabled("Invalid signature fixed in Eclipse JDT: https://bugs.eclipse.org/bugs/show_bug.cgi?id=494198")
     void testEclipseJDTInvalidLowerBoundSignature() {
         final Type type = GenericUtilities.getType("!-LHasUniqueKey<Ljava/lang/Integer;>;");
         assertThat(type, instanceOf(GenericObjectType.class));
@@ -98,6 +101,7 @@ class GenericUtilitiesTest {
     }
 
     @Test
+    @Disabled("Invalid signature fixed in Eclipse JDT: https://bugs.eclipse.org/bugs/show_bug.cgi?id=494198")
     void testEclipseJDTInvalidWildcardSignature() {
         final Type type = GenericUtilities.getType("!*");
         assertThat(type, instanceOf(GenericObjectType.class));

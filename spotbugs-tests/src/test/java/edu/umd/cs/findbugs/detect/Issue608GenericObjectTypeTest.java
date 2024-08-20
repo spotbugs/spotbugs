@@ -8,6 +8,6 @@ class Issue608GenericObjectTypeTest extends AbstractIntegrationTest {
 
     @Test
     void testIssue() {
-    	performAnalysis("ghIssues/Issue608GenericObjectType.class");
+        performAnalysis("ghIssues/Issue608GenericObjectType.class");
     }
 }

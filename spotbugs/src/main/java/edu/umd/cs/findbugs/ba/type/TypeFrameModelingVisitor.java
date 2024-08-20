@@ -30,11 +30,14 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
-import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.generic.*;
+
+import com.github.spotbugs.java.lang.classfile.ClassSignature;
+import com.github.spotbugs.java.lang.classfile.MethodSignature;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -60,6 +63,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Visitor to model the effects of bytecode instructions on the types of the
@@ -681,11 +685,12 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                     m = m2;
                 }
                 if (sourceSignature != null && !sourceSignature.equals(m.getSignature())) {
-                    GenericSignatureParser p = new GenericSignatureParser(sourceSignature);
-                    String rv = p.getReturnTypeSignature();
+                    ClassSignature classSignature = GenericSignatureParser.getSignature(Repository.lookupClass(m.getClassName()));
+                    MethodSignature p = MethodSignature.parseFrom(sourceSignature);
+                    String rv = p.result().signatureString();
                     if (rv.charAt(0) != 'T') {
                         try {
-                            Type t = GenericUtilities.getType(rv);
+                            Type t = GenericUtilities.getType(p.result(), p, classSignature);
                             if (t != null) {
                                 assert t.getType() != Const.T_VOID;
                                 result = merge(result, t);

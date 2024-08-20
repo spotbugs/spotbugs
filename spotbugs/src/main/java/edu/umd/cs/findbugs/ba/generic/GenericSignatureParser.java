@@ -25,6 +25,7 @@ import java.util.NoSuchElementException;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -32,6 +33,8 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import com.github.spotbugs.java.lang.classfile.ClassSignature;
+import com.github.spotbugs.java.lang.classfile.MethodSignature;
 
 /**
  * A simple class to parse method signatures that include generic information.
@@ -198,19 +201,18 @@ public class GenericSignatureParser {
      * @return int number of parameters
      */
     public static int getNumParametersForInvocation(InvokeInstruction inv, ConstantPoolGen cpg) {
-        GenericSignatureParser sigParser = new GenericSignatureParser(inv.getSignature(cpg));
-        return sigParser.getNumParameters();
+        MethodSignature signature = MethodSignature.parseFrom(inv.getSignature(cpg));
+        return signature.arguments().size();
     }
 
     /**
      * @param target
      *            the method whose signature is to be parsed
-     * @return an iterator over the parameters of the generic signature of
-     *         method. Returns null if the generic signature cannot be parsed
+     * @return the generic signature of the method. Returns null if the generic signature cannot be parsed
      */
-    public static @CheckForNull Iterator<String> getGenericSignatureIterator(Method target) {
+    public static @CheckForNull MethodSignature getSignature(Method target) {
         try {
-            GenericSignatureParser parser = null;
+            MethodSignature signature = null;
             String genericSignature = null;
             for (Attribute a : target.getAttributes()) {
                 if (a instanceof Signature) {
@@ -226,13 +228,44 @@ public class GenericSignatureParser {
 
                     genericSignature = sig.getSignature();
                     if (compareSignatures(target.getSignature(), genericSignature)) {
-                        parser = new GenericSignatureParser(genericSignature);
+                        signature = MethodSignature.parseFrom(genericSignature);
                     }
                 }
             }
-            Iterator<String> iter = parser == null ? null : parser.parameterSignatureIterator();
-            return iter;
+            return signature;
         } catch (RuntimeException e) {
+        } // degrade gracefully
+        return null;
+    }
+
+    /**
+     * @param target
+     *            the class whose signature is to be parsed
+     * @return the generic signature of the class. Returns null if the generic signature cannot be parsed
+     */
+    public static @CheckForNull ClassSignature getSignature(JavaClass target) {
+        try {
+            ClassSignature signature = null;
+            String genericSignature = null;
+            for (Attribute a : target.getAttributes()) {
+                if (a instanceof Signature) {
+
+                    Signature sig = (Signature) a;
+                    if (genericSignature != null) {
+                        if (!genericSignature.equals(sig.getSignature())) {
+                            // we've seen two inconsistent signatures
+                            return null;
+                        }
+                        continue;
+                    }
+
+                    genericSignature = sig.getSignature();
+                    signature = com.github.spotbugs.java.lang.classfile.ClassSignature.parseFrom(genericSignature);
+                }
+            }
+            return signature;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
         } // degrade gracefully
         return null;
     }
@@ -242,10 +275,10 @@ public class GenericSignatureParser {
      * return true if they match
      */
     public static boolean compareSignatures(String plainSignature, String genericSignature) {
-        GenericSignatureParser plainParser = new GenericSignatureParser(plainSignature);
-        GenericSignatureParser genericParser = new GenericSignatureParser(genericSignature);
+        MethodSignature plain = MethodSignature.parseFrom(plainSignature);
+        MethodSignature generic = MethodSignature.parseFrom(genericSignature);
 
-        return plainParser.getNumParameters() == genericParser.getNumParameters();
+        return plain.arguments().size() == generic.arguments().size();
     }
 
     public static void main(String[] args) {

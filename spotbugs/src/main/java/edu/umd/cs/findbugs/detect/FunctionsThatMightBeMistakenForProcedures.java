@@ -29,6 +29,9 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
+import com.github.spotbugs.java.lang.classfile.ClassSignature;
+import com.github.spotbugs.java.lang.classfile.MethodSignature;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.FirstPassDetector;
@@ -130,9 +133,9 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         XMethod m = getXMethod();
         String sourceSig = m.getSourceSignature();
         if (sourceSig != null) {
-            GenericSignatureParser sig = new GenericSignatureParser(sourceSig);
-            String genericReturnValue = sig.getReturnTypeSignature();
-            Type t = GenericUtilities.getType(genericReturnValue);
+            ClassSignature classSignature = GenericSignatureParser.getSignature(getThisClass());
+            MethodSignature sig = MethodSignature.parseFrom(sourceSig);
+            Type t = GenericUtilities.getType(sig.result(), sig, classSignature);
             if (t instanceof GenericObjectType) {
                 funky = true;
             }

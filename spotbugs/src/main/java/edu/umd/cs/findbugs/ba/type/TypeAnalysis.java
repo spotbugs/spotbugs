@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTypeTable;
@@ -42,6 +43,10 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+
+import com.github.spotbugs.java.lang.classfile.ClassSignature;
+import com.github.spotbugs.java.lang.classfile.MethodSignature;
+import com.github.spotbugs.java.lang.classfile.Signature;
 
 import edu.umd.cs.findbugs.Analyze;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -340,7 +345,17 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         // Get a parser that reads the generic signature of the method and
         // can be used to get the correct GenericObjectType if an argument
         // has a class type
-        Iterator<String> iter = GenericSignatureParser.getGenericSignatureIterator(method);
+        ClassSignature classSignature = null;
+        try {
+            classSignature = GenericSignatureParser.getSignature(Repository.lookupClass(methodGen.getClassName()));
+        } catch (ClassNotFoundException e) {
+            lookupFailureCallback.reportMissingClass(e);
+        }
+        MethodSignature methodSignature = GenericSignatureParser.getSignature(method);
+        Iterator<Signature> iter = null;
+        if (methodSignature != null) {
+            iter = methodSignature.arguments().iterator();
+        }
 
         // Add locals for parameters.
         // Note that long and double parameters need to be handled
@@ -356,12 +371,12 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
             }
 
             // [Added: Support for Generics]
-            String s = (iter == null || !iter.hasNext()) ? null : iter.next();
+            Signature s = (iter == null || !iter.hasNext()) ? null : iter.next();
             if (s != null && (argType instanceof ObjectType || argType instanceof ArrayType)
                     && !(argType instanceof ExceptionObjectType)) {
                 // replace with a generic version of the type
                 try {
-                    Type t = GenericUtilities.getType(s);
+                    Type t = GenericUtilities.getType(s, methodSignature, classSignature);
                     if (t != null) {
                         argType = t;
                     }

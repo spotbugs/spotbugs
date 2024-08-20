@@ -20,8 +20,12 @@
 package edu.umd.cs.findbugs.ba.generic;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
 
@@ -29,6 +33,16 @@ import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+
+import com.github.spotbugs.java.lang.classfile.ClassSignature;
+import com.github.spotbugs.java.lang.classfile.MethodSignature;
+import com.github.spotbugs.java.lang.classfile.Signature;
+import com.github.spotbugs.java.lang.classfile.Signature.ArrayTypeSig;
+import com.github.spotbugs.java.lang.classfile.Signature.ClassTypeSig;
+import com.github.spotbugs.java.lang.classfile.Signature.TypeArg;
+import com.github.spotbugs.java.lang.classfile.Signature.TypeArg.WildcardIndicator;
+import com.github.spotbugs.java.lang.classfile.Signature.TypeParam;
+import com.github.spotbugs.java.lang.classfile.Signature.TypeVarSig;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.type.NullType;
@@ -81,6 +95,13 @@ public class GenericUtilities {
 
             @Override
             public String asString(GenericObjectType obj) {
+                // Self referencing generics will cause a stack overflow
+                // For instance: <C extends Map<X, C>, X extends Number>
+                // Instead we return the generic signature
+                if (obj.getGenericSignature() != null) {
+                    return obj.getGenericSignature();
+                }
+
                 StringBuilder b = new StringBuilder(obj.toPlainString());
                 b.append("<");
                 boolean first = true;
@@ -137,12 +158,12 @@ public class GenericUtilities {
         WILDCARD_EXTENDS {
             @Override
             public ReferenceType produce(GenericObjectType obj) {
-                return obj.extension;
+                return obj.extensions.get(0);
             }
 
             @Override
             public String asString(GenericObjectType obj) {
-                Type extension = obj.extension;
+                Type extension = obj.extensions.get(0);
                 assert extension != null;
                 return "? extends " + GenericUtilities.getString(extension);
             }
@@ -162,7 +183,7 @@ public class GenericUtilities {
 
             @Override
             public String asString(GenericObjectType obj) {
-                Type extension = obj.extension;
+                Type extension = obj.extensions.get(0);
                 assert extension != null;
                 return "? super " + GenericUtilities.getString(extension);
             }
@@ -243,7 +264,7 @@ public class GenericUtilities {
     }
 
     public static GenericObjectType getType(String className, List<? extends ReferenceType> parameters) {
-        return new GenericObjectType(className, parameters);
+        return new GenericObjectType(className, parameters, null);
     }
 
     /**
@@ -281,7 +302,7 @@ public class GenericUtilities {
                     return null;
                 }
                 String baseType = removeMatchedAngleBrackets(signature.substring(1, index)).replace('.', '$');
-                return new GenericObjectType(baseType, parameters);
+                return new GenericObjectType(baseType, parameters, signature);
 
             } else if (signature.startsWith("T")) {
                 int i = signature.indexOf(';');
@@ -306,14 +327,26 @@ public class GenericUtilities {
                 return new ArrayType(componentType, index);
 
             } else if (signature.startsWith("*")) {
-                return new GenericObjectType("*");
+                return new GenericObjectType(WildcardIndicator.UNBOUNDED, null);
 
             } else if (signature.startsWith("+") || signature.startsWith("-")) {
                 Type baseType = getType(signature.substring(1));
                 if (baseType == null) {
                     return null;
                 }
-                return new GenericObjectType(signature.substring(0, 1), (ReferenceType) baseType);
+                WildcardIndicator wildcardIndicator;
+                switch (signature.substring(0, 1)) {
+                case "+":
+                    wildcardIndicator = WildcardIndicator.EXTENDS;
+                    break;
+                case "-":
+                    wildcardIndicator = WildcardIndicator.SUPER;
+                    break;
+                default:
+                    wildcardIndicator = null;// Shouldn't happen since signature starts with + or -
+                    break;
+                }
+                return new GenericObjectType(wildcardIndicator, (ReferenceType) baseType);
 
             } else {
                 // assert signature contains no generic information
@@ -322,6 +355,151 @@ public class GenericUtilities {
         } catch (IllegalStateException e) {
             AnalysisContext.logError("Error parsing signature " + signature, e);
             return null;
+        }
+    }
+
+
+
+    /**
+     * This method is analogous to <code>Type.getType(String)</code>, except
+     * that it also accepts signatures with generic information. e.g.
+     * <code>Ljava/util/ArrayList&lt;TT;&gt;;</code>
+     * <p>
+     *
+     * The signature should only contain one type. Use GenericSignatureParser to
+     * break up a signature with many types or call createTypes(String) to
+     * return a list of types
+     * @param wildcardIndicator
+     * @param resolvedTypes
+     * @param resolvedTypeVariables
+     */
+    public static @CheckForNull Type getType(Signature signature, MethodSignature methodSignature, ClassSignature classSignature) {
+        return getType(signature, methodSignature, classSignature, new HashMap<>(), new HashMap<>(), null);
+    }
+
+
+    public static @CheckForNull Type getType(Signature signature, MethodSignature methodSignature, ClassSignature classSignature,
+            Map<String, Type> resolvedTypeVariables, Map<String, Type> resolvedTypes, WildcardIndicator wildcardIndicator) {
+        if (resolvedTypes.containsKey(signature.signatureString())) {
+            return resolvedTypes.get(signature.signatureString());
+        }
+
+        try {
+            if (signature instanceof ClassTypeSig) {
+                ClassTypeSig classTypeSig = (ClassTypeSig) signature;
+                if (classTypeSig.outerType().isPresent()) {
+                    return getType(classTypeSig.outerType().get(), methodSignature, classSignature, resolvedTypeVariables, resolvedTypes, null);
+                }
+                if (classTypeSig.typeArgs().isEmpty()) {
+                    return Type.getType(classTypeSig.signatureString());
+                }
+
+                List<ReferenceType> parameters = new ArrayList<>();
+                String baseType = classTypeSig.className();
+                GenericObjectType genericObjectType = new GenericObjectType(baseType, wildcardIndicator, parameters, signature.signatureString());
+
+                resolvedTypes.put(signature.signatureString(), genericObjectType);
+
+                List<ReferenceType> typeParameters = GenericUtilities.getTypeParameters(classTypeSig.typeArgs(), methodSignature, classSignature,
+                        resolvedTypeVariables, resolvedTypes);
+                if (typeParameters == null) {
+                    return null;
+                }
+                parameters.addAll(typeParameters);
+
+                return genericObjectType;
+
+            } else if (signature instanceof TypeVarSig) {
+                TypeVarSig typeVarSig = (TypeVarSig) signature;
+                String identifier = typeVarSig.identifier();
+
+                if (resolvedTypeVariables.containsKey(identifier)) {
+                    return resolvedTypeVariables.get(identifier);
+                }
+
+                List<TypeParam> typeParameters = methodSignature.typeParameters();
+                if (classSignature != null) {
+                    // Search from the method type parameters, the from the class type parameters
+                    typeParameters = new ArrayList<>(methodSignature.typeParameters());
+                    typeParameters.addAll(classSignature.typeParameters());
+                }
+
+                for (TypeParam typeParam : typeParameters) {
+                    if (identifier.equals(typeParam.identifier())) {
+                        ReferenceType classBound = null;
+
+                        if (typeParam.classBound().isPresent()) {
+                            classBound = (ReferenceType) getType(typeParam.classBound().get(), methodSignature, classSignature, resolvedTypeVariables,
+                                    resolvedTypes, null);
+                        }
+
+                        Type type;
+                        if (typeParam.interfaceBounds().isEmpty() && classBound != null) {
+                            // Only a class bound
+                            type = getType(identifier, wildcardIndicator, classBound);
+                        } else if (typeParam.interfaceBounds().size() == 1 && classBound == null) {
+                            // Only an interface bound
+                            ReferenceType interfaceBound = (ReferenceType) getType(typeParam.interfaceBounds().get(0), methodSignature,
+                                    classSignature, resolvedTypeVariables, resolvedTypes, null);
+                            type = getType(identifier, wildcardIndicator, interfaceBound);
+                        } else {
+                            // Multiple bounds
+                            List<ReferenceType> interfaceBounds = typeParam
+                                    .interfaceBounds()
+                                    .stream()
+                                    .map(t -> (ReferenceType) getType(t, methodSignature, classSignature, resolvedTypeVariables, resolvedTypes, null))
+                                    .collect(Collectors.toList());
+
+                            List<ReferenceType> bounds;
+                            if (classBound != null) {
+                                bounds = new ArrayList<>();
+                                bounds.add(classBound);
+                                bounds.addAll(interfaceBounds);
+                            } else {
+                                bounds = interfaceBounds;
+                            }
+
+                            type = new GenericObjectType(identifier, wildcardIndicator, bounds);
+                        }
+
+                        resolvedTypeVariables.put(identifier, type);
+                        resolvedTypes.put(signature.signatureString(), type);
+
+                        return type;
+                    }
+                }
+                return null;
+
+            } else if (signature instanceof ArrayTypeSig) {
+                ArrayTypeSig arrayTypeSig = (ArrayTypeSig) signature;
+                int index = 1;
+                while (signature.signatureString().charAt(index) == '[') {
+                    index++;
+                }
+                Type componentType = getType(arrayTypeSig.componentSignature(), methodSignature, classSignature, resolvedTypeVariables, resolvedTypes,
+                        null);
+                if (componentType == null) {
+                    return null;
+                }
+                return new ArrayType(componentType, index);
+
+            } else {
+                // assert signature contains no generic information
+                return Type.getType(signature.signatureString());
+            }
+        } catch (IllegalStateException e) {
+            AnalysisContext.logError("Error parsing signature " + signature, e);
+            return null;
+        }
+    }
+
+    private static Type getType(String identifier, WildcardIndicator wildcardIndicator, ReferenceType bound) {
+        if (bound == null) {
+            return null;
+        } else if (wildcardIndicator == null || wildcardIndicator == WildcardIndicator.DEFAULT) {
+            return new ObjectType(bound.getClassName());
+        } else {
+            return new GenericObjectType(identifier, wildcardIndicator, Collections.singletonList(bound));
         }
     }
 
@@ -353,7 +531,7 @@ public class GenericUtilities {
         if (parameters == null) {
             return t2;
         }
-        return new GenericObjectType(t2.getClassName(), parameters);
+        return new GenericObjectType(t2.getClassName(), parameters, null);
     }
 
     public static String removeMatchedAngleBrackets(String s) {
@@ -438,6 +616,39 @@ public class GenericUtilities {
         while (iter.hasNext()) {
             String parameterString = iter.next();
             ReferenceType t = (ReferenceType) getType(parameterString);
+            if (t == null) {
+                return null;
+            }
+            types.add(t);
+        }
+        return types;
+    }
+
+    /**
+     * Parse a bytecode signature that has 1 or more (possibly generic) types
+     * and return a list of the Types.
+     * @param signature
+     *            bytecode signature e.g. e.g.
+     *            <code>Ljava/util/ArrayList&lt;Ljava/lang/String;&gt;;Ljava/util/ArrayList&lt;TT;&gt;;Ljava/util/ArrayList&lt;*&gt;;</code>
+     */
+    public static final @CheckForNull List<ReferenceType> getTypeParameters(List<TypeArg> parameters,
+            MethodSignature methodSignature,
+            ClassSignature classSignature,
+            Map<String, Type> resolvedTypeVariables,
+            Map<String, Type> resolvedTypes) {
+        List<ReferenceType> types = new ArrayList<>();
+
+        for (TypeArg typeArg : parameters) {
+            if (!typeArg.boundType().isPresent()) {
+                return null;
+            }
+            WildcardIndicator wildcardIndicator = typeArg.wildcardIndicator();
+            if (wildcardIndicator == WildcardIndicator.DEFAULT) {
+                wildcardIndicator = null;
+            }
+
+            ReferenceType t = (ReferenceType) getType(typeArg.boundType().get(), methodSignature, classSignature, resolvedTypeVariables,
+                    resolvedTypes, wildcardIndicator);
             if (t == null) {
                 return null;
             }

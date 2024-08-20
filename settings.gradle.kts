@@ -13,6 +13,7 @@ include(":spotbugsTestCases")
 include(":test-harness")
 include(":test-harness-core")
 include(":test-harness-jupiter")
+include(":classfile-backport")
 
 rootProject.name = "spotbugs"
 

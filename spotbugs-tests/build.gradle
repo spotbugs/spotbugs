@@ -11,6 +11,7 @@ dependencies {
   implementation project(':spotbugsTestCases')
   implementation project(':test-harness')
   implementation project(':test-harness-jupiter')
+  implementation project(':classfile-backport')
 
   implementation 'org.junit.jupiter:junit-jupiter-engine:5.10.3'
   implementation 'org.junit.jupiter:junit-jupiter-params:5.10.3'

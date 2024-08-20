@@ -34,6 +34,8 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.junit.jupiter.api.Test;
 
+import com.github.spotbugs.java.lang.classfile.Signature.TypeArg.WildcardIndicator;
+
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
 import edu.umd.cs.findbugs.util.Values;
 
@@ -54,26 +56,33 @@ class TestGenericObjectType {
     String variable;
 
     @Nullable
+    WildcardIndicator wildcardIndicator;
+
+    @Nullable
     Type extension;
 
     List<ReferenceType> parameters;
 
     private void initTest(String bytecodeSignature, String javaSignature, String underlyingClass,
             GenericUtilities.TypeCategory typeCategory,
-            @Nullable String variable, @Nullable Type extension, @Nullable List<ReferenceType> parameters) {
+            @Nullable String variable,
+            @Nullable WildcardIndicator wildcardIndicator,
+            @Nullable Type extension,
+            @Nullable List<ReferenceType> parameters) {
         this.obj = (GenericObjectType) GenericUtilities.getType(bytecodeSignature);
         this.javaSignature = javaSignature;
         this.underlyingClass = underlyingClass;
         this.typeCategory = typeCategory;
         this.variable = variable;
+        this.wildcardIndicator = wildcardIndicator;
         this.extension = extension;
         this.parameters = parameters;
     }
 
     private void processTest() {
-        assertEquals(obj.toString(true), javaSignature);
-        assertEquals(obj.getClassName(), underlyingClass);
-        assertEquals(obj.getTypeCategory(), typeCategory);
+        assertEquals(javaSignature, obj.toString(true));
+        assertEquals(underlyingClass, obj.getClassName());
+        assertEquals(typeCategory, obj.getTypeCategory());
 
         if (typeCategory == TypeCategory.PARAMETERIZED) {
             assertTrue(obj.hasParameters());
@@ -87,18 +96,18 @@ class TestGenericObjectType {
             assertFalse(obj.hasParameters());
             assertNull(obj.getExtension());
             assertNotNull(obj.getVariable());
-            assertEquals(obj.getVariable(), variable);
+            assertEquals(variable, obj.getVariable());
         } else if (typeCategory == TypeCategory.WILDCARD) {
             assertFalse(obj.hasParameters());
             assertNull(obj.getExtension());
-            assertNotNull(obj.getVariable());
-            assertEquals(obj.getVariable(), "*");
+            assertNotNull(obj.getWildcardIndicator());
+            assertEquals(WildcardIndicator.UNBOUNDED, obj.getWildcardIndicator());
         } else if (typeCategory == TypeCategory.WILDCARD_EXTENDS || typeCategory == TypeCategory.WILDCARD_SUPER) {
             assertFalse(obj.hasParameters());
             assertNotNull(obj.getExtension());
-            assertNotNull(obj.getVariable());
-            assertEquals(obj.getVariable(), variable);
-            compareTypes(obj.getExtension(), extension);
+            assertNotNull(obj.getWildcardIndicator());
+            assertEquals(wildcardIndicator, obj.getWildcardIndicator());
+            compareTypes(extension, obj.getExtension());
         }
     }
 
@@ -112,16 +121,16 @@ class TestGenericObjectType {
 
     @Test
     void testParameterizedList() {
-        initTest("Ljava/util/List<Ljava/lang/Comparable;>;", "java.util.List<java.lang.Comparable>", "java.util.List",
-                GenericUtilities.TypeCategory.PARAMETERIZED, null, null,
+        initTest("Ljava/util/List<Ljava/lang/Comparable;>;", "Ljava/util/List<Ljava/lang/Comparable;>;", "java.util.List",
+                GenericUtilities.TypeCategory.PARAMETERIZED, null, null, null,
                 GenericUtilities.getTypeParameters("Ljava/lang/Comparable;"));
         processTest();
     }
 
     @Test
     void testCreateTypes() {
-        initTest("LDummyClass<Ljava/lang/Comparable;TE;>;", "DummyClass<java.lang.Comparable,E>", "DummyClass",
-                GenericUtilities.TypeCategory.PARAMETERIZED, null, null, Arrays.asList(
+        initTest("LDummyClass<Ljava/lang/Comparable;TE;>;", "LDummyClass<Ljava/lang/Comparable;TE;>;", "DummyClass",
+                GenericUtilities.TypeCategory.PARAMETERIZED, null, null, null, Arrays.asList(
                         (ReferenceType) GenericUtilities.getType("Ljava/lang/Comparable;"),
                         (ReferenceType) GenericUtilities.getType("TE;")));
         processTest();
@@ -129,21 +138,22 @@ class TestGenericObjectType {
 
     @Test
     void testTypeVariables() {
-        initTest("TE;", "E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.TYPE_VARIABLE, "E", null, null);
+        initTest("TE;", "E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.TYPE_VARIABLE, "E", null, null, null);
         processTest();
 
-        initTest("*", "?", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD, "*", null, null);
+        initTest("*", "?", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD, null, WildcardIndicator.UNBOUNDED, null, null);
         processTest();
 
-        initTest("+TE;", "? extends E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_EXTENDS, "+",
+        initTest("+TE;", "? extends E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_EXTENDS, null,
+                WildcardIndicator.EXTENDS,
                 GenericUtilities.getType("TE;"), null);
         processTest();
 
-        initTest("-TE;", "? super E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
+        initTest("-TE;", "? super E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_SUPER, null, WildcardIndicator.SUPER,
                 GenericUtilities.getType("TE;"), null);
         processTest();
 
-        initTest("-[TE;", "? super E[]", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
+        initTest("-[TE;", "? super E[]", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_SUPER, null, WildcardIndicator.SUPER,
                 GenericUtilities.getType("[TE;"), null);
         processTest();
     }
