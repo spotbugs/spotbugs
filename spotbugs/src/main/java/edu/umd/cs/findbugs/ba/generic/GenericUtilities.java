@@ -364,14 +364,10 @@ public class GenericUtilities {
      * This method is analogous to <code>Type.getType(String)</code>, except
      * that it also accepts signatures with generic information. e.g.
      * <code>Ljava/util/ArrayList&lt;TT;&gt;;</code>
-     * <p>
      *
-     * The signature should only contain one type. Use GenericSignatureParser to
-     * break up a signature with many types or call createTypes(String) to
-     * return a list of types
-     * @param wildcardIndicator
-     * @param resolvedTypes
-     * @param resolvedTypeVariables
+     * @param signature The signature of the type
+     * @param methodSignature The signature of the enclosing method
+     * @param classSignature The signature of the enclosing class
      */
     public static @CheckForNull Type getType(Signature signature, MethodSignature methodSignature, ClassSignature classSignature) {
         return getType(signature, methodSignature, classSignature, new HashMap<>(), new HashMap<>(), null);
@@ -624,14 +620,7 @@ public class GenericUtilities {
         return types;
     }
 
-    /**
-     * Parse a bytecode signature that has 1 or more (possibly generic) types
-     * and return a list of the Types.
-     * @param signature
-     *            bytecode signature e.g. e.g.
-     *            <code>Ljava/util/ArrayList&lt;Ljava/lang/String;&gt;;Ljava/util/ArrayList&lt;TT;&gt;;Ljava/util/ArrayList&lt;*&gt;;</code>
-     */
-    public static final @CheckForNull List<ReferenceType> getTypeParameters(List<TypeArg> parameters,
+    private static final @CheckForNull List<ReferenceType> getTypeParameters(List<TypeArg> parameters,
             MethodSignature methodSignature,
             ClassSignature classSignature,
             Map<String, Type> resolvedTypeVariables,
