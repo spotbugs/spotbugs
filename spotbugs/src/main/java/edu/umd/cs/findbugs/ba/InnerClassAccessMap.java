@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -256,7 +257,7 @@ public class InnerClassAccessMap {
             ConstantFieldref fieldref = (ConstantFieldref) cp.getConstant(cpIndex);
 
             ConstantClass cls = (ConstantClass) cp.getConstant(fieldref.getClassIndex());
-            String className = cls.getBytes(cp).replace('/', '.');
+            String className = ClassName.toDottedClassName(cls.getBytes(cp));
 
             ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(fieldref.getNameAndTypeIndex());
             String fieldName = nameAndType.getName(cp);
@@ -297,7 +298,7 @@ public class InnerClassAccessMap {
             StringBuilder buf = new StringBuilder();
             buf.append('(');
             if (!field.isStatic()) {
-                String classSig = "L" + javaClass.getClassName().replace('.', '/') + ";";
+                String classSig = "L" + ClassName.toSlashedClassName(javaClass.getClassName()) + ";";
                 buf.append(classSig); // the OuterClass.this reference
             }
             if (!isLoad) {

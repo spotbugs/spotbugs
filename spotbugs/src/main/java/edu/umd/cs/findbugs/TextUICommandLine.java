@@ -27,6 +27,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -49,6 +54,8 @@ import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to parse the command line and configure the IFindBugsEngine
@@ -56,6 +63,8 @@ import edu.umd.cs.findbugs.util.Util;
  * enable and disable detectors as requested).
  */
 public class TextUICommandLine extends FindBugsCommandLine {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     /**
      * Handling callback for choose() method, used to implement the
      * -chooseVisitors and -choosePlugins options.
@@ -96,13 +105,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private boolean showProgress = false;
 
-    private boolean xmlMinimal = false;
-
-    private boolean xmlWithMessages = false;
-
     private boolean xmlWithAbridgedMessages = false;
-
-    private String stylesheet = null;
 
     private boolean quiet = false;
 
@@ -260,6 +263,35 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     Map<String, String> parsedOptions = new LinkedHashMap<>();
 
+    private List<TextUIBugReporter> reporters = new ArrayList<>();
+
+    /**
+     * Parse {@code optionExtraPart} and configure {@Link TextUIBugReporter} if it contains the
+     * output file path such as {@code ":withMessages=path/to/file.extension"} and {@code "=/absolute/path/to/file.extension"}.
+     *
+     * @param reporter the reporter to set a {@link PrintStream} based on the given file path
+     * @param optionExtraPart extra part of the specified commandline option
+     * @return Remaining part of {@code optionExtraPart}
+     */
+    /* visible for testing */ String handleOutputFilePath(TextUIBugReporter reporter, String optionExtraPart) {
+        int index = optionExtraPart.indexOf('=');
+        if (index >= 0) {
+            Path path = Paths.get(optionExtraPart.substring(index + 1));
+            try {
+                OutputStream oStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+                        StandardOpenOption.TRUNCATE_EXISTING);
+                if ("gz".equals(Util.getFileExtension(path.toFile()))) {
+                    oStream = new GZIPOutputStream(oStream);
+                }
+                reporter.setOutputStream(UTF8.printStream(oStream));
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+            optionExtraPart = optionExtraPart.substring(0, index);
+        }
+        return optionExtraPart;
+    }
+
     @SuppressFBWarnings("DM_EXIT")
     @Override
     protected void handleOption(String option, String optionExtraPart) {
@@ -311,8 +343,15 @@ public class TextUICommandLine extends FindBugsCommandLine {
             mergeSimilarWarnings = false;
         } else if ("-sortByClass".equals(option)) {
             bugReporterType = SORTING_REPORTER;
+            SortingBugReporter sortingBugReporter = new SortingBugReporter();
+            handleOutputFilePath(sortingBugReporter, optionExtraPart);
+            reporters.add(sortingBugReporter);
         } else if ("-xml".equals(option)) {
             bugReporterType = XML_REPORTER;
+            XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
+            optionExtraPart = handleOutputFilePath(xmlBugReporter, optionExtraPart);
+            boolean xmlWithMessages = false;
+            boolean xmlMinimal = false;
             if (!"".equals(optionExtraPart)) {
                 if ("withMessages".equals(optionExtraPart)) {
                     xmlWithMessages = true;
@@ -320,13 +359,18 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     xmlWithMessages = true;
                     xmlWithAbridgedMessages = true;
                 } else if ("minimal".equals(optionExtraPart)) {
-                    xmlWithMessages = false;
                     xmlMinimal = true;
                 } else {
                     throw new IllegalArgumentException("Unknown option: -xml:" + optionExtraPart);
                 }
             }
+            xmlBugReporter.setAddMessages(xmlWithMessages);
+            xmlBugReporter.setMinimalXML(xmlMinimal);
+            reporters.add(xmlBugReporter);
         } else if ("-emacs".equals(option)) {
+            EmacsBugReporter emacsBugReporter = new EmacsBugReporter();
+            handleOutputFilePath(emacsBugReporter, optionExtraPart);
+            reporters.add(emacsBugReporter);
             bugReporterType = EMACS_REPORTER;
         } else if ("-relaxed".equals(option)) {
             relaxedReportingMode = true;
@@ -336,15 +380,22 @@ public class TextUICommandLine extends FindBugsCommandLine {
             trainingInputDir = !"".equals(optionExtraPart) ? optionExtraPart : ".";
         } else if ("-html".equals(option)) {
             bugReporterType = HTML_REPORTER;
+            HTMLBugReporter htmlBugReporter = new HTMLBugReporter(project, "default.xsl");
+            optionExtraPart = handleOutputFilePath(htmlBugReporter, optionExtraPart);
             if (!"".equals(optionExtraPart)) {
-                stylesheet = optionExtraPart;
-            } else {
-                stylesheet = "default.xsl";
+                htmlBugReporter.setStylesheet(optionExtraPart);
             }
+            reporters.add(htmlBugReporter);
         } else if ("-xdocs".equals(option)) {
             bugReporterType = XDOCS_REPORTER;
+            XDocsBugReporter xDocsBugReporter = new XDocsBugReporter(project);
+            handleOutputFilePath(xDocsBugReporter, optionExtraPart);
+            reporters.add(xDocsBugReporter);
         } else if ("-sarif".equals(option)) {
             bugReporterType = SARIF_REPORTER;
+            SarifBugReporter sarifBugReporter = new SarifBugReporter(project);
+            handleOutputFilePath(sarifBugReporter, optionExtraPart);
+            reporters.add(sarifBugReporter);
         } else if ("-applySuppression".equals(option)) {
             applySuppression = true;
         } else if ("-quiet".equals(option)) {
@@ -622,38 +673,26 @@ public class TextUICommandLine extends FindBugsCommandLine {
             }
             project = bugs.getProject().duplicate();
         }
-        TextUIBugReporter textuiBugReporter;
         switch (bugReporterType) {
         case PRINTING_REPORTER:
-            textuiBugReporter = new PrintingBugReporter();
+            reporters.add(new PrintingBugReporter());
             break;
         case SORTING_REPORTER:
-            textuiBugReporter = new SortingBugReporter();
-            break;
-        case XML_REPORTER: {
-            XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
-            xmlBugReporter.setAddMessages(xmlWithMessages);
-            xmlBugReporter.setMinimalXML(xmlMinimal);
-
-            textuiBugReporter = xmlBugReporter;
-        }
-            break;
+        case XML_REPORTER:
         case EMACS_REPORTER:
-            textuiBugReporter = new EmacsBugReporter();
-            break;
         case HTML_REPORTER:
-            textuiBugReporter = new HTMLBugReporter(project, stylesheet);
-            break;
         case XDOCS_REPORTER:
-            textuiBugReporter = new XDocsBugReporter(project);
-            break;
         case SARIF_REPORTER:
-            textuiBugReporter = new SarifBugReporter(project);
+            // reporter has been created in the handleOperationWithArgument() method
             break;
         default:
             throw new IllegalStateException();
         }
 
+        if (reporters.isEmpty()) {
+            throw new IllegalStateException("No bug reporter configured");
+        }
+        ConfigurableBugReporter textuiBugReporter = reporters.size() == 1 ? reporters.get(0) : new BugReportDispatcher(reporters);
         if (quiet) {
             textuiBugReporter.setErrorVerbosity(BugReporter.SILENT);
         }
@@ -664,6 +703,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
         findBugs.setRankThreshold(rankThreshold);
         if (outputStream != null) {
+            logger.warn("-output option and -outputFile option are deprecated. Set file path to each option for reporter.");
             textuiBugReporter.setOutputStream(outputStream);
         }
 

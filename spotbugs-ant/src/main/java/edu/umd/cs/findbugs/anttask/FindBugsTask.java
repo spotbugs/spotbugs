@@ -850,7 +850,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
             addArg(adjustPriority);
         }
 
-        if (sorted) {
+        if (sorted && (outputFormat == null || "text".equalsIgnoreCase(outputFormat.trim()))) {
             addArg("-sortByClass");
         }
         if (timestampNow) {

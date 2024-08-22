@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -94,7 +95,7 @@ public class SignatureConverter {
             if (semi < 0) {
                 throw new IllegalStateException("missing semicolon in signature " + signature);
             }
-            result.append(signature.substring(1, semi).replace('/', '.'));
+            result.append(ClassName.toDottedClassName(signature.substring(1, semi)));
             signature = signature.substring(semi + 1);
         } else {
             switch (signature.charAt(0)) {

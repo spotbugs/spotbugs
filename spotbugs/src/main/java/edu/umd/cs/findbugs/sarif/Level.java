@@ -1,8 +1,10 @@
 package edu.umd.cs.findbugs.sarif;
 
 import com.google.gson.annotations.SerializedName;
+
 import edu.umd.cs.findbugs.BugRankCategory;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.cwe.WeaknessSeverity;
 
 /**
  * An enum representing {@code level} property.
@@ -51,4 +53,17 @@ enum Level {
         }
     }
 
+    @NonNull
+    static Level fromWeaknessSeverity(WeaknessSeverity severity) {
+        switch (severity) {
+        case HIGH:
+            return ERROR;
+        case MEDIUM:
+            return WARNING;
+        case LOW:
+            return NOTE;
+        default:
+            return NONE;
+        }
+    }
 }

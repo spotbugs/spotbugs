@@ -3,7 +3,8 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
-  compileOnly 'junit:junit:4.13.1'
+  compileOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
+  compileOnly 'org.hamcrest:hamcrest:3.0'
   testImplementation project(':spotbugs')
   api project(':test-harness-core')
 }
@@ -15,8 +16,8 @@ java {
 
 publishing.publications.maven {
   pom {
-    name = 'JUnit 4 Test Harness for SpotBugs Plugin'
-    description = 'A test harness library for SpotBugs plugin developers to test on JUnit4'
+    name = 'JUnit 5 Test Harness for SpotBugs Plugin'
+    description = 'A test harness library for SpotBugs plugin developers to test on JUnit5'
   }
 }
 

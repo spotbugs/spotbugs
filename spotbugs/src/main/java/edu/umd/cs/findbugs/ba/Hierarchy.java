@@ -853,7 +853,7 @@ public class Hierarchy {
                 if (false && subTypeSet.size() > 500) {
                     new RuntimeException(receiverClassName + " has " + subTypeSet.size() + " subclasses, " + result.size()
                             + " of which implement " + methodName + methodSig + " " + invokeInstruction)
-                                    .printStackTrace(System.out);
+                            .printStackTrace(System.out);
                 }
 
             }

@@ -227,7 +227,7 @@ public class ClassParser implements ClassParserInterface {
         null, // 14:
         "bi", // 15: CONSTANT_MethodHandle
         "i", // 16: CONSTANT_MethodType
-        null, // 17:
+        "ii", // 17: CONSTANT_Dynamic
         "ii", // 18: CONSTANT_InvokeDynamic
         "i", // 19: CONSTANT_Module
         "i", // 20: CONSTANT_Package
