@@ -10,7 +10,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DateFormatStringChecker extends OpcodeStackDetector {
@@ -161,9 +160,9 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
     private boolean runDateFormatRuleVerify(String str) {
         // standard time (x2), military time (x2), week-year flag (x1)
         DateFormatRule[] badCombinations = {
-                initRule("a", "h"), initRule("a", "K"),
-                initRule(null, "H", "a"), initRule(null, "k", "a"),
-                initRule("w", "Y", "M", "d")};
+            initRule("a", "h"), initRule("a", "K"),
+            initRule(null, "H", "a"), initRule(null, "k", "a"),
+            initRule("w", "Y", "M", "d") };
 
         for (DateFormatRule combination : badCombinations)
             if (combination.verify(str))
