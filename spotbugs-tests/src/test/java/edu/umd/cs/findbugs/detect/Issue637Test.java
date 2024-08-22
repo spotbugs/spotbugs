@@ -23,8 +23,8 @@ public class Issue637Test extends AbstractIntegrationTest {
      * Expects total of 25 errors that are:
      *  - of type defined in DESIRED_BUG_TYPE
      *  - inside the Issue637Errors class
-     *  - inside the specified function (parameter)
-     *  - on a proper line (parameter)
+     *  - was called in a specified function (parameter)
+     *  - and caught on a proper line (parameter)
      */
     @Test
     public void testClassWithErrors() {

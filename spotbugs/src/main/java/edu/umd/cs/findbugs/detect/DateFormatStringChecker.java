@@ -15,35 +15,7 @@ import java.util.List;
 
 public class DateFormatStringChecker extends OpcodeStackDetector {
 
-    /** List of bytecode instructions which could signal a method we should check. */
-    private static final List<Integer> CONST_ARRAY_LIST = new ArrayList<>(Arrays.asList((int) Const.INVOKESPECIAL,
-            (int) Const.INVOKEVIRTUAL, (int) Const.INVOKESTATIC, (int) Const.INVOKEINTERFACE));
-
-    /** List of operands matching target pattern. */
-    private static final String SIG_CONSTANT_OPERAND_1 = "Ljava/lang/String;)V";
-    private static final String SIG_CONSTANT_OPERAND_2 = "Ljava/lang/String;Ljava/util/Locale;)V";
-    private static final String SIG_CONSTANT_OPERAND_3 = "Ljava/lang/String;Ljava/text/DateFormatSymbols;)V";
-
-    private static final String CLASS_CONSTANT_OPERAND = "java/text/SimpleDateFormat";
-
-    private static final String NAME_CONSTANT_OPERAND_1 = "<init>";
-    private static final String NAME_CONSTANT_OPERAND_2 = "applyPattern";
-    private static final String NAME_CONSTANT_OPERAND_3 = "applyLocalizedPattern";
-
-    /** Creates DateFormatRule objects for different bad combinations of date format flags. */
-    private static final DateFormatStringChecker.DateFormatRule STANDARD_TIME_FLAG_1 =
-            new DateFormatStringChecker.DateFormatRule("a", Arrays.asList("h"));
-    private static final DateFormatStringChecker.DateFormatRule STANDARD_TIME_FLAG_2 =
-            new DateFormatStringChecker.DateFormatRule("a", Arrays.asList("K"));
-    private static final DateFormatStringChecker.DateFormatRule MILITARY_FLAG_1 =
-            new DateFormatStringChecker.DateFormatRule(null, Arrays.asList("H", "a"));
-    private static final DateFormatStringChecker.DateFormatRule MILITARY_FLAG_2 =
-            new DateFormatStringChecker.DateFormatRule(null, Arrays.asList("k", "a"));
-    private static final DateFormatStringChecker.DateFormatRule WEEK_YEAR_FLAG =
-            new DateFormatStringChecker.DateFormatRule("w", Arrays.asList("Y", "M", "d"));
-
-    private static final String BUG_TYPE = "FS_BAD_DATE_FORMAT_FLAG_COMBO";
-    final BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     /** Class for defining bad combinations of date format flags and checking for their presence. */
     private static final class DateFormatRule {
@@ -56,28 +28,35 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
         @NonNull
         List<String> requiredFlags;
 
+        /**
+         * DateFormatRule class constructor
+         * @param forbiddenFlag - forbidden flag
+         * @param requiredFlags - a list of required flags
+         * */
         DateFormatRule(String forbiddenFlag, List<String> requiredFlags) {
             this.forbiddenFlag = forbiddenFlag;
             this.requiredFlags = requiredFlags;
         }
 
-        /** @return {@code true} if given dateFormatString does not have forbiddenFlag and has all required flags. */
+        /**
+         * Checks if string does not contain a
+         * forbiddenFlag and has all requiredFlags
+         * @param dateFormatString - string to be checked
+         * @return {@code true} if code equals to one of the elements
+         * */
         boolean verify(String dateFormatString) {
-            if (this.forbiddenFlag != null && dateFormatString.contains(this.forbiddenFlag)) {
+            if (this.forbiddenFlag != null && dateFormatString.contains(this.forbiddenFlag))
                 return false;
-            }
-            for (String flag : requiredFlags) {
-                if (!dateFormatString.contains(flag)) {
+            for (String flag : requiredFlags)
+                if (!dateFormatString.contains(flag))
                     return false;
-                }
-            }
             return true;
         }
     }
 
     /**
      * DateFormatStringChecker class constructor.
-     * @param bugReporter
+     * @param bugReporter - bugReporter
      */
     public DateFormatStringChecker(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -86,62 +65,109 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
     /**
      * Analyzes opcode to find SimpleDateFormat instances calling bad combinations of format flags.
      * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-     * @param seen
+     * @param seen - seen
      */
     @Override
     public void sawOpcode(int seen) {
-        String dateFormatString = null;
-
-        List<DateFormatRule> badCombinations = new ArrayList<>(Arrays.asList(
-                STANDARD_TIME_FLAG_1, STANDARD_TIME_FLAG_2, MILITARY_FLAG_1, MILITARY_FLAG_2, WEEK_YEAR_FLAG));
-
-        if (!CONST_ARRAY_LIST.contains(seen) || stack.getStackDepth() == 0) {
+        int depth = stack.getStackDepth();
+        if (!seenVerify(seen) || depth == 0)
             return;
-        }
 
-        int i = 0;
-        while (i < stack.getStackDepth()) {
+        String dateFormatString = null;
+        for (int i = 0; i < depth; i++) {
             Object formatStr = stack.getStackItem(i).getConstant();
             if (formatStr instanceof String) {
                 dateFormatString = (String) formatStr;
                 break;
             }
-            i++;
         }
-
-        if (dateFormatString == null) {
+        if (dateFormatString == null)
             return;
-        }
 
         String cl = getClassConstantOperand();
         String nm = getNameConstantOperand();
         String sig = getSigConstantOperand();
+        if (!sigVerify(sig) || !nameVerify(nm) || !cl.equals("java/text/SimpleDateFormat"))
+            return;
+        if (!runDateFormatRuleVerify(dateFormatString))
+            return;
 
-        if ((sig.indexOf(SIG_CONSTANT_OPERAND_1) >= 0 || sig.indexOf(SIG_CONSTANT_OPERAND_2) >= 0 ||
-                sig.indexOf(SIG_CONSTANT_OPERAND_3) >= 0) && CLASS_CONSTANT_OPERAND.equals(cl) &&
-                (NAME_CONSTANT_OPERAND_1.equals(nm) || NAME_CONSTANT_OPERAND_2.equals(nm) ||
-                        NAME_CONSTANT_OPERAND_3.equals(nm))) {
-
-            if (runDateFormatRuleVerify(dateFormatString, badCombinations)) {
-                bugReporter.reportBug(new BugInstance(this, BUG_TYPE, NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
-                        .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
-            }
-        }
+        bugReporter.reportBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
+                .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
+                .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
     }
 
     /**
-     * Checks for presence of a list of bad combinations (DateFormatRule objects) in a given string.
-     * @param stringToCheck
-     * @param badCombinations
-     * @return {@code true} if given stringToCheck matches at least one of the given bad DateFormatRule objects.
-     */
-    private boolean runDateFormatRuleVerify(String stringToCheck, List<DateFormatRule> badCombinations) {
-        for (DateFormatRule combination : badCombinations) {
-            if (combination.verify(stringToCheck)) {
+     * Creates an instance of DateFormatRule using
+     * the provided parameters (shorter alias)
+     * @param ff - short for forbiddenFlag
+     * @param rf - short for requiredFlags
+     * @return DateFormat object with provided parameters
+     * */
+    private DateFormatRule initRule(String ff, String... rf) {
+        return new DateFormatRule(ff, Arrays.asList(rf));
+    }
+
+    /**
+     * Checks if seen code is equals to
+     * one of the required by bytecodes
+     * @param num - code to be checked
+     * @return {@code true} if code equals to one of the elements
+     * */
+    private boolean seenVerify(int num) {
+        /* List of bytecode instructions which could signal a method we should check. */
+        int[] bytecodes = { Const.INVOKESPECIAL, Const.INVOKEVIRTUAL, Const.INVOKESTATIC, Const.INVOKEINTERFACE };
+        for (int b : bytecodes)
+            if (num == b)
                 return true;
-            }
-        }
+        return false;
+    }
+
+    /**
+     * Checks if signal contains the element
+     * specified in the list with additional
+     * formatting (reuse, saving space)
+     * @param str - signal to be checked
+     * @return {@code true} if signal contains at least one of the elements
+     * */
+    private boolean sigVerify(String str) {
+        String[] operands = { "", "Ljava/util/Locale;", "Ljava/text/DateFormatSymbols;" };
+        for (String o : operands)
+            if (str.contains(String.format("Ljava/lang/String;%s)V", o)))
+                return true;
+        return false;
+    }
+
+    /**
+     * Checks if name has an exact match with
+     * elements specified inside the function
+     * @param str - name to be checked
+     * @return {@code true} if name equals to one of the elements
+     * */
+    private boolean nameVerify(String str) {
+        String[] operands = { "<init>", "applyPattern", "applyLocalizedPattern" };
+        for (String o : operands)
+            if (str.equals(o))
+                return true;
+        return false;
+    }
+
+    /**
+     * Runs the check per each bad combination
+     * (DateFormatRule objects) on the provided string.
+     * @param str - string to be checked
+     * @return {@code true} if given string any bad combination matches.
+     */
+    private boolean runDateFormatRuleVerify(String str) {
+        // standard time (x2), military time (x2), week-year flag (x1)
+        DateFormatRule[] badCombinations = {
+                initRule("a", "h"), initRule("a", "K"),
+                initRule(null, "H", "a"), initRule(null, "k", "a"),
+                initRule("w", "Y", "M", "d")};
+
+        for (DateFormatRule combination : badCombinations)
+            if (combination.verify(str))
+                return true;
         return false;
     }
 }
