@@ -572,6 +572,14 @@ This does not help the garbage collector in any way, the nulling out of fields h
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DateFormatStringChecker">
+    <Details>
+      <![CDATA[
+      <p> Checks for incorrect date format strings.
+      </p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis">
     <Details>
 <![CDATA[
@@ -7502,6 +7510,21 @@ This format string includes a newline character (\n). In format strings, it is g
 ]]>
      </Details>
   </BugPattern>
+  <BugPattern type="FS_BAD_DATE_FORMAT_FLAG_COMBO">
+    <ShortDescription>Certain SimpleDateFormat format strings may lead to unexpected behavior</ShortDescription>
+    <LongDescription>Certain SimpleDateFormat format strings may lead to unexpected behavior in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      This format string includes a bad combination of flags which may lead to unexpected behavior.
+      Potential bad combinations include the following: using a week year ("Y") with month in year
+      ("M") and day in month ("d") without specifying week in year ("w") ("y" may be preferable
+      here instead); using an AM/PM hour ("h" or "K") without specifying an AM/PM marker ("a");
+      and using a 24-hour format hour ("H" or "k") and also specifying an AM/PM marker.
+     </p>
+      ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
     <ShortDescription>Primitive array passed to function expecting a variable number of object arguments</ShortDescription>
     <LongDescription>{2} passed to varargs method {3} in {1}</LongDescription>
@@ -9431,3 +9454,4 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
 </MessageCollection>
+
