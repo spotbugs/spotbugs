@@ -16,7 +16,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/637">GitHub issue</a>
  * @since 4.4.2
  */
-public class Issue637Test extends AbstractIntegrationTest {
+class Issue637Test extends AbstractIntegrationTest {
     private static final String DESIRED_BUG_TYPE = "FS_BAD_DATE_FORMAT_FLAG_COMBO";
 
     /**
@@ -27,28 +27,46 @@ public class Issue637Test extends AbstractIntegrationTest {
      *  - and caught on a proper line (parameter)
      */
     @Test
-    public void testClassWithErrors() {
+    void testClassWithErrors() {
         performAnalysis("ghIssues/Issue637Errors.class");
         assertNumOfBug637(25);
 
-        int line;
-        for (line = 28; line <= 32; line++)
-            assertBug637("oneArgConstructorTest", line);
-        for (line = 47; line <= 51; line++)
-            assertBug637("twoArgLocaleConstructorTest", line);
-        for (line = 67; line <= 71; line++)
-            assertBug637("twoArgDateFormatSymbolConstructorTest", line);
-        for (line = 90; line <= 94; line++)
-            assertBug637("applyPatternTest", line);
-        for (line = 101; line <= 105; line++)
-            assertBug637("applyLocalizedPatternTest", line);
+        assertBug637("oneArgConstructorTest", 28);
+        assertBug637("oneArgConstructorTest", 29);
+        assertBug637("oneArgConstructorTest", 30);
+        assertBug637("oneArgConstructorTest", 31);
+        assertBug637("oneArgConstructorTest", 32);
+
+        assertBug637("twoArgLocaleConstructorTest", 47);
+        assertBug637("twoArgLocaleConstructorTest", 48);
+        assertBug637("twoArgLocaleConstructorTest", 49);
+        assertBug637("twoArgLocaleConstructorTest", 50);
+        assertBug637("twoArgLocaleConstructorTest", 51);
+
+        assertBug637("twoArgDateFormatSymbolConstructorTest", 67);
+        assertBug637("twoArgDateFormatSymbolConstructorTest", 68);
+        assertBug637("twoArgDateFormatSymbolConstructorTest", 69);
+        assertBug637("twoArgDateFormatSymbolConstructorTest", 70);
+        assertBug637("twoArgDateFormatSymbolConstructorTest", 71);
+
+        assertBug637("applyPatternTest", 90);
+        assertBug637("applyPatternTest", 91);
+        assertBug637("applyPatternTest", 92);
+        assertBug637("applyPatternTest", 93);
+        assertBug637("applyPatternTest", 94);
+
+        assertBug637("applyLocalizedPatternTest", 101);
+        assertBug637("applyLocalizedPatternTest", 102);
+        assertBug637("applyLocalizedPatternTest", 103);
+        assertBug637("applyLocalizedPatternTest", 104);
+        assertBug637("applyLocalizedPatternTest", 105);
     }
 
     /**
      * Expects no errors of type defined in DESIRED_BUG_TYPE
      */
     @Test
-    public void testClassWithoutErrors() {
+    void testClassWithoutErrors() {
         performAnalysis("ghIssues/Issue637NoErrors.class");
         assertNumOfBug637(0);
     }
