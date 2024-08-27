@@ -215,7 +215,7 @@ public class FindReturnRef extends OpcodeStackDetector {
                 return;
             }
             if (fieldValues.containsKey(field) && fieldValues.get(field).stream()
-                    .anyMatch(it -> !MutableClasses.mutableSignature(it.getSignature()))) {
+                    .noneMatch(it -> MutableClasses.mutableSignature(it.getSignature()))) {
                 return;
             }
 
