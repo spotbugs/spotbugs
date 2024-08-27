@@ -80,6 +80,13 @@ class FindReturnRefTest extends AbstractIntegrationTest {
     void testUnmodifiableClass() {
         performAnalysis("../java17/exposemutable/UnmodifiableClass.class");
 
+        assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getListWithTernary2", "listWithTernary2");
+        assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getSetWithTernary2", "setWithTernary2");
+        assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getMapWithTernary2", "mapWithTernary2");
+        assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getListWithTernary3", "listWithTernary3");
+        assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getSetWithTernary3", "setWithTernary3");
+        assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getMapWithTernary3", "mapWithTernary3");
+
         assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getListWithIf2", "listWithIf2");
         assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getSetWithIf2", "setWithIf2");
         assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getMapWithIf2", "mapWithIf2");
@@ -87,7 +94,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getSetWithIf3", "setWithIf3");
         assertBug("EI_EXPOSE_REP", "UnmodifiableClass", "getMapWithIf3", "mapWithIf3");
 
-        assertNumOfBugs("EI_EXPOSE_REP", 6);
+        assertNumOfBugs("EI_EXPOSE_REP", 12);
         assertNumOfBugs("EI_EXPOSE_BUF", 0);
         assertNumOfBugs("EI_EXPOSE_BUF2", 0);
         assertNumOfBugs("EI_EXPOSE_REP2", 0);
