@@ -14,7 +14,6 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  * SpotBugs should check for bad combinations of date format flags in SimpleDateFormat.
  *
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/637">GitHub issue</a>
- * @since 4.4.2
  */
 class Issue637Test extends AbstractIntegrationTest {
     private static final String DESIRED_BUG_TYPE = "FS_BAD_DATE_FORMAT_FLAG_COMBO";

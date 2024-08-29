@@ -17,6 +17,7 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -29,9 +30,6 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * This detector can find ...
- */
 public class DateFormatStringChecker extends OpcodeStackDetector {
     private final BugReporter bugReporter;
 
@@ -83,39 +81,24 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
         this.bugReporter = bugReporter;
     }
 
-    /**
-     * Checks whether the current element is a proper function (one of three specified)
-     * that has at least 1 parameter. Such methods would have 1st parameter to appear as
-     * dateFormat string, which will be tested for forbidden combinations.
-     */
     @Override
     public void sawOpcode(int seen) {
-        boolean isFunctionCall = seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL
-                || seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE;
-        if (!isFunctionCall || stack.getStackDepth() == 0) {
+        if (!(seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESTATIC
+                || seen == Const.INVOKEINTERFACE) || stack.getStackDepth() == 0) {
             return;
         }
 
-        String dateFormatString = null;
-        for (int i = 0; i < stack.getStackDepth(); i++) {
-            Object formatStr = stack.getStackItem(i).getConstant();
-            if (formatStr instanceof String) {
-                dateFormatString = (String) formatStr;
-                break;
+        if (Arrays.asList(Const.CONSTRUCTOR_NAME, "applyPattern", "applyLocalizedPattern")
+                .contains(getNameConstantOperand())
+                && getSigConstantOperand().contains("Ljava/lang/String;")
+                && "java/text/SimpleDateFormat".equals(getClassConstantOperand())) {
+
+            String dateFormatString = (String) stack.getStackItem(1).getConstant();
+            if (new SignatureParser(getSigConstantOperand()).getNumParameters() == 1) {
+                dateFormatString = (String) stack.getStackItem(0).getConstant();
             }
-        }
-        if (dateFormatString == null) {
-            return;
-        }
 
-        String sig = getSigConstantOperand();
-        boolean hasProperSignal = sig.contains("Ljava/lang/String;)V") || sig.contains("Ljava/lang/String;Ljava/util/Locale;)V")
-                || sig.contains("Ljava/lang/String;Ljava/text/DateFormatSymbols;)V");
-        boolean isProperFunction = Arrays.asList("<init>", "applyPattern", "applyLocalizedPattern")
-                .contains(getNameConstantOperand());
-
-        if (hasProperSignal && isProperFunction && getClassConstantOperand().equals("java/text/SimpleDateFormat")) {
-            if(runDateFormatRuleVerify(dateFormatString)) {
+            if(dateFormatString != null && runDateFormatRuleVerify(dateFormatString)) {
                 bugReporter.reportBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
                         .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
                         .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
@@ -127,7 +110,7 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
      * Runs the check per each bad combination (DateFormatRule objects) on the provided string.
      *
      * @param dateFormat - string to be checked
-     * @return {@code true} if given string any bad combination matches.
+     * @return {@code true} if given string matches any bad combination.
      */
     private boolean runDateFormatRuleVerify(String dateFormat) {
         // standard time (x2), military time (x2), week-year flag (x1)
