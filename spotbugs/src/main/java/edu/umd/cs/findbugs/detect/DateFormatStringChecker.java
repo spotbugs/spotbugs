@@ -93,12 +93,10 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
                 && getSigConstantOperand().contains("Ljava/lang/String;")
                 && "java/text/SimpleDateFormat".equals(getClassConstantOperand())) {
 
-            String dateFormatString = (String) stack.getStackItem(1).getConstant();
-            if (new SignatureParser(getSigConstantOperand()).getNumParameters() == 1) {
-                dateFormatString = (String) stack.getStackItem(0).getConstant();
-            }
+            int idx = new SignatureParser(getSigConstantOperand()).getNumParameters() - 1;
+            String dateFormatString = (String) stack.getStackItem(idx).getConstant();
 
-            if(dateFormatString != null && runDateFormatRuleVerify(dateFormatString)) {
+            if (dateFormatString != null && runDateFormatRuleVerify(dateFormatString)) {
                 bugReporter.reportBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
                         .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
                         .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));

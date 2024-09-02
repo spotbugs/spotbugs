@@ -1,4 +1,4 @@
-package ghIssues;
+package ghIssues.issue637;
 
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;

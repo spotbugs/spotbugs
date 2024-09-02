@@ -27,7 +27,7 @@ class Issue637Test extends AbstractIntegrationTest {
      */
     @Test
     void testClassWithErrors() {
-        performAnalysis("ghIssues/Issue637Errors.class");
+        performAnalysis("ghIssues/issue637/Issue637Errors.class");
         assertNumOfBug637(25);
 
         assertBug637("oneArgConstructorTest", 28);
@@ -54,11 +54,11 @@ class Issue637Test extends AbstractIntegrationTest {
         assertBug637("applyPatternTest", 93);
         assertBug637("applyPatternTest", 94);
 
-        assertBug637("applyLocalizedPatternTest", 101);
-        assertBug637("applyLocalizedPatternTest", 102);
-        assertBug637("applyLocalizedPatternTest", 103);
-        assertBug637("applyLocalizedPatternTest", 104);
-        assertBug637("applyLocalizedPatternTest", 105);
+        assertBug637("applyLocalizedPatternTest", 107);
+        assertBug637("applyLocalizedPatternTest", 108);
+        assertBug637("applyLocalizedPatternTest", 109);
+        assertBug637("applyLocalizedPatternTest", 110);
+        assertBug637("applyLocalizedPatternTest", 111);
     }
 
     /**
@@ -66,7 +66,7 @@ class Issue637Test extends AbstractIntegrationTest {
      */
     @Test
     void testClassWithoutErrors() {
-        performAnalysis("ghIssues/Issue637NoErrors.class");
+        performAnalysis("ghIssues/issue637/Issue637NoErrors.class");
         assertNumOfBug637(0);
     }
 

@@ -1,3 +1,4 @@
+
 # Changelog
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http://keepachangelog.com/en/1.0.0/).
@@ -7,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2024-??-??
 ### Added
 - Add SimpleDateFormat string check for bad combinations of format flags ([#637](https://github.com/spotbugs/spotbugs/issues/637))
+
 ### Fixed
 - Do not consider Records as Singletons ([#2981](https://github.com/spotbugs/spotbugs/issues/2981))
 - Keep a maximum of 10000 cached analysis entries for plugin's analysis engines ([#3025](https://github.com/spotbugs/spotbugs/pull/3025))
@@ -17,6 +19,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Revert the changes from ([#2894](https://github.com/spotbugs/spotbugs/pull/2894)) to get HTML stylesheets to work again ([#2969](https://github.com/spotbugs/spotbugs/issues/2969))
 - Fix FP `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` report when the synchronization is in a called method ([#3045](https://github.com/spotbugs/spotbugs/issues/3045))
 - Let `BetterCFGBuilder2.isPEI` handle `dup2` bytecode used by Spring AOT ([#3059](https://github.com/spotbugs/spotbugs/issues/3059))
+- Detect failure to close RocksDB's ReadOptions ([#3069](https://github.com/spotbugs/spotbugs/issues/3069))
 
 ## 4.8.6 - 2024-06-17
 ### Fixed
@@ -82,9 +85,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fix FP in CT_CONSTRUCTOR_THROW when the finalizer does not run, since the exception is thrown before java.lang.Object's constructor exits for checked exceptions ([#2710](https://github.com/spotbugs/spotbugs/issues/2710))
 - Applied changes for bcel 6.8.0 with adjustments to constant pool ([#2756](https://github.com/spotbugs/spotbugs/pull/2756))
-  - More information bcel changes can be found on ([#2757](https://github.com/spotbugs/spotbugs/pull/2757))
+    - More information bcel changes can be found on ([#2757](https://github.com/spotbugs/spotbugs/pull/2757))
 - Fix FN in CT_CONSTRUCTOR_THROW when the return value of the called method is not void or primitive type.
-- Fix FP in CT_CONSTRUCTOR_THROW when exception throwing lambda is created, but not called in constructor ([#2695](https://github.com/spotbugs/spotbugs/issues/2695))
+- Fix FP in CT_CONSTRUCTOR_THROW when exception throwing lambda is created, but not called in constructor ([#2695](https://github.com/spotbugs/spotbugs/issues/2695)) 
 
 ### Changed
 - Improved Matcher checks for empty strings ([#2755](https://github.com/spotbugs/spotbugs/pull/2755))
@@ -187,22 +190,22 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Prefer logback 1.4.11 ([#2580](https://github.com/spotbugs/spotbugs/pull/2580))
 - Switch junit 4 for junit 5 vintage engine ([#2483](https://github.com/spotbugs/spotbugs/pull/2483))
 - LineEndings and Spotless ([#2343](https://github.com/spotbugs/spotbugs/pull/2343))
-  - Cleanup gitattributes switching text to auto.  For developers using windows, run 'git add . --renormalize' and see https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings if needed.
-  - Rework spotless setup from plugin to build file plugin matching that of gradle plugin and thus allowing spotless to be updated to 6.22.0
-  - Remove customized line endings for spotless so it uses git attributes as suggested by spotless
-  - Add trimTrailingWhitespace for spotless
-  - Fix deprecated usage of eclipse version from 4.13.0 to 4.13 per spotless requirements
+    - Cleanup gitattributes switching text to auto.  For developers using windows, run 'git add . --renormalize' and see https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings if needed.
+    - Rework spotless setup from plugin to build file plugin matching that of gradle plugin and thus allowing spotless to be updated to 6.22.0
+    - Remove customized line endings for spotless so it uses git attributes as suggested by spotless
+    - Add trimTrailingWhitespace for spotless
+    - Fix deprecated usage of eclipse version from 4.13.0 to 4.13 per spotless requirements
 - Bump spotbugs gradle plugin to 6.0.0-beta.3 demonstrating breaking changes for 6.0.0 in gradle/java.gradle build file ([#2582](https://github.com/spotbugs/spotbugs/pull/2582))
 - Delete checked in j2ee jar and instead use servlet/ejb apis from jakarta (javax standard) ([#2585](https://github.com/spotbugs/spotbugs/pull/2585))
 - Bump Eclipse from 4.14 to 4.29 (latest) ([#2589](https://github.com/spotbugs/spotbugs/pull/2589))
 - Cleanup hamcrest imports / used library ([#2600](https://github.com/spotbugs/spotbugs/pull/2600))
 - Migrate entirely to junit 5 ([#2605](https://github.com/spotbugs/spotbugs/pull/2605))
-  - Some parts of codebase were junit 3
-  - Delete the SpotbugsRule
-  - Replace custom java determination on build with Junit 5 usage
-  - Various 'public' methods in tests fixed to 'private'
-  - Junit 5 styling applied throughout
-  - Add missing code to the SpotBugsRunner and now use the Extension as replacement of SpotbugsRule
+    - Some parts of codebase were junit 3
+    - Delete the SpotbugsRule
+    - Replace custom java determination on build with Junit 5 usage
+    - Various 'public' methods in tests fixed to 'private'
+    - Junit 5 styling applied throughout
+    - Add missing code to the SpotBugsRunner and now use the Extension as replacement of SpotbugsRule
 
 ## 4.7.3 - 2022-10-15
 ### Fixed
@@ -255,8 +258,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Added
 * New detector `ThrowingExceptions` and introduced new bug types:
-  * `THROWS_METHOD_THROWS_RUNTIMEEXCEPTION` is reported in case of a method throwing RuntimeException,
-  * `THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION` is reported when a method has Exception in its throws clause and
+  * `THROWS_METHOD_THROWS_RUNTIMEEXCEPTION` is reported in case of a method throwing RuntimeException, 
+  * `THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION` is reported when a method has Exception in its throws clause and 
   * `THROWS_METHOD_THROWS_CLAUSE_THROWABLE` is reported when a method has Throwable in its throws clause (See [SEI CERT ERR07-J](https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable))
 * New rule `PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS` to warn for custom class loaders who do not call their superclasses' `getPermissions()` in their `getPermissions()` method. This rule based on the SEI CERT rule *SEC07-J Call the superclass's getPermissions() method when writing a custom class loader*. ([#SEC07-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC07-J.+Call+the+superclass%27s+getPermissions%28%29+method+when+writing+a+custom+class+loader))
 * New rule `USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE` to detect cases where a non-final method of a non-final class is called from public methods of public classes and then the same method is called on the same object inside a doPrivileged block. Since the called method may have been overridden to behave differently on the first and second invocations this is a possible security check based on an unreliable source. This rule is based on *SEC02-J. Do not base security checks on untrusted sources*. ([#SEC02-J](https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources))
@@ -328,7 +331,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fixed immutable java.lang.Class as being flagged as EI ([#1695](https://github.com/spotbugs/spotbugs/pull/1695))
 - Agree verb with plural subject in the description of
-  `SW_SWING_METHODS_INVOKED_IN_SWING_THREAD` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
+`SW_SWING_METHODS_INVOKED_IN_SWING_THREAD` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
 - Wrong description of the `SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
 - Fixed java.util.Locale as being flagged as EI  ([#1702](https://github.com/spotbugs/spotbugs/pull/1702))
 - Fixed reference to java.awt.Cursor which caused it to be flagged as EI ([#1702](https://github.com/spotbugs/spotbugs/pull/1702))
