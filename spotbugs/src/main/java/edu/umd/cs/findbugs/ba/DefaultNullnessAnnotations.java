@@ -435,15 +435,20 @@ public class DefaultNullnessAnnotations {
                 true, 0, NullnessAnnotation.NONNULL);
         database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkNotNull", "(Ljava/lang/Object;Ljava/lang/String;)V",
                 true, 0, NullnessAnnotation.NONNULL);
-        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkExpressionValueIsNotNull", "(Ljava/lang/Object;Ljava/lang/String;)V",
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkExpressionValueIsNotNull",
+                "(Ljava/lang/Object;Ljava/lang/String;)V",
                 true, 0, NullnessAnnotation.NONNULL);
-        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkNotNullExpressionValue", "(Ljava/lang/Object;Ljava/lang/String;)V",
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkNotNullExpressionValue",
+                "(Ljava/lang/Object;Ljava/lang/String;)V",
                 true, 0, NullnessAnnotation.NONNULL);
-        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkReturnedValueIsNotNull", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V",
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkReturnedValueIsNotNull",
+                "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V",
                 true, 0, NullnessAnnotation.NONNULL);
-        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkReturnedValueIsNotNull", "(Ljava/lang/Object;Ljava/lang/String;)V",
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkReturnedValueIsNotNull",
+                "(Ljava/lang/Object;Ljava/lang/String;)V",
                 true, 0, NullnessAnnotation.NONNULL);
-        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkFieldIsNotNull", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V",
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkFieldIsNotNull",
+                "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V",
                 true, 0, NullnessAnnotation.NONNULL);
         database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkFieldIsNotNull", "(Ljava/lang/Object;Ljava/lang/String;)V",
                 true, 0, NullnessAnnotation.NONNULL);
