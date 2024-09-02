@@ -51,23 +51,23 @@ class RegressionIdeas20110722Test extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(0, bugInstanceMatcher));
     }
 
-    private void assertRCNBug(String method, String var, int line) {
+    private void assertRCNBug(String method, String variable, int line) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
                 .inClass("Ideas_2011_07_22")
                 .inMethod(method)
-                .atVariable(var)
+                .atVariable(variable)
                 .atLine(line)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 
-    private void assertNpParamBug(String method, String var) {
+    private void assertNpParamBug(String method, String variable) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
                 .inClass("Ideas_2011_07_22")
                 .inMethod(method)
-                .atVariable(var)
+                .atVariable(variable)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
