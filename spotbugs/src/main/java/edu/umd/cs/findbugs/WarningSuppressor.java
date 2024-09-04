@@ -1,7 +1,9 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -9,10 +11,18 @@ abstract public class WarningSuppressor implements Matcher {
 
     final static boolean DEBUG = SystemProperties.getBoolean("warning.suppressor");
 
-    String bugPattern;
+    protected final String bugPattern;
+    protected final SuppressMatchType matchType;
 
-    public WarningSuppressor(String bugPattern) {
+    protected WarningSuppressor(String bugPattern, SuppressMatchType matchType) {
         this.bugPattern = bugPattern;
+
+        if (matchType == null) {
+            this.matchType = SuppressMatchType.DEFAULT;
+        } else {
+            this.matchType = matchType;
+        }
+
         if (DEBUG) {
             System.out.println("Suppressing " + bugPattern);
         }
@@ -27,10 +37,29 @@ abstract public class WarningSuppressor implements Matcher {
             System.out.println(" against: " + bugPattern);
 
         }
-        if (!(bugPattern == null || bugInstance.getType().startsWith(bugPattern)
-                || bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern) || bugInstance.getBugPattern()
-                        .getAbbrev().equalsIgnoreCase(bugPattern))) {
-            return false;
+
+        if (bugPattern != null) {
+            switch (matchType) {
+            case DEFAULT:
+                if (!bugInstance.getType().startsWith(bugPattern)
+                        && !bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern)
+                        && !bugInstance.getBugPattern().getAbbrev().equalsIgnoreCase(bugPattern)) {
+                    return false;
+                }
+                break;
+            case EXACT:
+                if (!bugInstance.getType().equals(bugPattern)) {
+                    return false;
+                }
+                break;
+            case REGEX:
+                if (!Pattern.matches(bugPattern, bugInstance.getType())) {
+                    return false;
+                }
+                break;
+            default:
+                break;
+            }
         }
         if (DEBUG) {
             System.out.println(" pattern matches");

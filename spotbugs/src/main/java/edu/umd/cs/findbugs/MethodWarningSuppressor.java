@@ -1,11 +1,13 @@
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.annotations.SuppressMatchType;
+
 public class MethodWarningSuppressor extends ClassWarningSuppressor {
 
     MethodAnnotation method;
 
-    public MethodWarningSuppressor(String bugPattern, ClassAnnotation clazz, MethodAnnotation method) {
-        super(bugPattern, clazz);
+    public MethodWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, MethodAnnotation method) {
+        super(bugPattern, matchType, clazz);
         this.method = method;
     }
 
