@@ -48,12 +48,17 @@ abstract public class WarningSuppressor implements Matcher {
                 }
                 break;
             case EXACT:
-                if (!bugInstance.getType().equals(bugPattern)) {
+                if (!bugInstance.getType().equals(bugPattern)
+                        && !bugInstance.getBugPattern().getCategory().equals(bugPattern)
+                        && !bugInstance.getBugPattern().getAbbrev().equals(bugPattern)) {
                     return false;
                 }
                 break;
             case REGEX:
-                if (!Pattern.matches(bugPattern, bugInstance.getType())) {
+                Pattern pattern = Pattern.compile(bugPattern);
+                if (!pattern.matcher(bugInstance.getType()).matches()
+                        && !pattern.matcher(bugInstance.getBugPattern().getCategory()).matches()
+                        && !pattern.matcher(bugInstance.getBugPattern().getAbbrev()).matches()) {
                     return false;
                 }
                 break;

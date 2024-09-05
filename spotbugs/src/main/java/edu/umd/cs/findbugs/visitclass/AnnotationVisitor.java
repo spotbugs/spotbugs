@@ -107,7 +107,7 @@ public class AnnotationVisitor extends PreorderVisitor {
         if (ev instanceof EnumElementValue) {
             String enumValueString = ((EnumElementValue) ev).getEnumValueString();
 
-            return Enum.valueOf(null, enumValueString);
+            return Enum.valueOf(type, enumValueString);
         }
 
         return null;

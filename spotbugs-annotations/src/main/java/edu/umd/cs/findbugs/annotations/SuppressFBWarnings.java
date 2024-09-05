@@ -49,7 +49,7 @@ public @interface SuppressFBWarnings {
      * for instance <code> @SuppressFBWarnings(value = "EI_EXPO", justification = "It's OK")</code>
      * will suppress bugs of type <code>EI_EXPOSE_REP</code> and <code>EI_EXPOSE_REP2</code>.
      *
-     * <p>You might use <code>@SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "It's OK" matchType=EXACT)</code>
+     * <p>You might use <code>@SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "It's OK", matchType=EXACT)</code>
      * to suppress <code>EI_EXPOSE_REP</code> but not EI_EXPOSE_REP2</code>
      *
      * <p>Regular expressions are also supported with <code>matchType=REGEX</code>

@@ -16,7 +16,7 @@ public enum SuppressMatchType {
     EXACT,
 
     /**
-     * Suppress bug whose type match the given regular expression.
+     * Suppress bugs whose type match the given regular expression.
      */
     REGEX;
 }
