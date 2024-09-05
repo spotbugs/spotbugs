@@ -3,20 +3,25 @@ package edu.umd.cs.findbugs.annotations;
 public enum SuppressMatchType {
 
     /**
+     * Default bug suppression using a mixed prefixed / case insensitive match depending on the criterion.
      * Suppress bugs matching any of:
-     * <li/> the given bug type {@link String#startsWith(String)}
-     * <li/> the given bug category {@link String#equalsIgnoreCase(String)}
-     * <li/> the given bug abbreviation {@link String#equalsIgnoreCase(String)}
+     * <li> the given bug type with: {@link String#startsWith(String)}
+     * <li> the given bug category with: {@link String#equalsIgnoreCase(String)}
+     * <li> the given bug abbreviation with: {@link String#equalsIgnoreCase(String)}
      */
     DEFAULT,
 
     /**
-     * Suppress bugs matching the exact (case sensitive) given type.
+     * Exact (case sensitive match).
+     * Suppress bugs matching any of:
+     * <li> the given bug type with: {@link String#equals(Object)}
+     * <li> the given bug category with: {@link String#equals(Object)}
+     * <li> the given bug abbreviation with: {@link String#equals(Object)}
      */
     EXACT,
 
     /**
-     * Suppress bugs whose type match the given regular expression.
+     * Suppress bugs whose type, category or abbreviation match the given regular expression.
      */
     REGEX;
 }
