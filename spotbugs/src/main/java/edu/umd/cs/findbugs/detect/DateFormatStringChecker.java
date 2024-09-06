@@ -17,7 +17,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -84,23 +83,28 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (!(seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESTATIC
-                || seen == Const.INVOKEINTERFACE) || stack.getStackDepth() == 0) {
+                || seen == Const.INVOKEINTERFACE) || stack.getStackDepth() == 0
+                || !"java/text/SimpleDateFormat".equals(getClassConstantOperand())
+                || !Arrays.asList(Const.CONSTRUCTOR_NAME, "applyPattern", "applyLocalizedPattern")
+                .contains(getNameConstantOperand())) {
             return;
         }
 
-        if (Arrays.asList(Const.CONSTRUCTOR_NAME, "applyPattern", "applyLocalizedPattern")
-                .contains(getNameConstantOperand())
-                && getSigConstantOperand().contains("Ljava/lang/String;")
-                && "java/text/SimpleDateFormat".equals(getClassConstantOperand())) {
+        int idx;
+        switch (getSigConstantOperand()) {
+            case "(Ljava/lang/String;)V":
+                idx = 0; break;
+            case "(Ljava/lang/String;Ljava/util/Locale;)V":
+            case "(Ljava/lang/String;Ljava/text/DateFormatSymbols;)V":
+                idx = 1; break;
+            default: return;
+        }
 
-            int idx = new SignatureParser(getSigConstantOperand()).getNumParameters() - 1;
-            String dateFormatString = (String) stack.getStackItem(idx).getConstant();
-
-            if (dateFormatString != null && runDateFormatRuleVerify(dateFormatString)) {
-                bugReporter.reportBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
-                        .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
-            }
+        String dateFormatString = (String) stack.getStackItem(idx).getConstant();
+        if (dateFormatString != null && runDateFormatRuleVerify(dateFormatString)) {
+            bugReporter.reportBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
+                    .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
+                    .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
         }
     }
 
