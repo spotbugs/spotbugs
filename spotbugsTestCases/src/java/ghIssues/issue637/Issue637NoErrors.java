@@ -98,22 +98,16 @@ public final class Issue637NoErrors {
      * Expects no errors when proper format flag combinations are used in "applyLocalizedPattern" function
      */
     public static void applyLocalizedPatternTest(){
-        SimpleDateFormat hour12format1 = new SimpleDateFormat(AM_PM_HOUR_1_12_CORRECT);
-        SimpleDateFormat hour12format2 = new SimpleDateFormat(AM_PM_HOUR_0_11_CORRECT);
-        SimpleDateFormat hour24format1 = new SimpleDateFormat(MILITARY_HOUR_0_23_CORRECT);
-        SimpleDateFormat hour24format2 = new SimpleDateFormat(MILITARY_HOUR_1_24_CORRECT);
-        SimpleDateFormat weekYear = new SimpleDateFormat(WEEK_YEAR_CORRECT);
+        SimpleDateFormat hour12format1 = new SimpleDateFormat();
+        SimpleDateFormat hour12format2 = new SimpleDateFormat();
+        SimpleDateFormat hour24format1 = new SimpleDateFormat();
+        SimpleDateFormat hour24format2 = new SimpleDateFormat();
+        SimpleDateFormat weekYear = new SimpleDateFormat();
 
-        String localizedHour12format1 = hour12format1.toLocalizedPattern();
-        String localizedHour12format2 = hour12format2.toLocalizedPattern();
-        String localizedHour24format1 = hour24format1.toLocalizedPattern();
-        String localizedHour24format2 = hour24format2.toLocalizedPattern();
-        String localizedWeekYear = weekYear.toLocalizedPattern();
-
-        hour12format1.applyLocalizedPattern(localizedHour12format1);
-        hour12format2.applyLocalizedPattern(localizedHour12format2);
-        hour24format1.applyLocalizedPattern(localizedHour24format1);
-        hour24format2.applyLocalizedPattern(localizedHour24format2);
-        weekYear.applyLocalizedPattern(localizedWeekYear);
+        hour12format1.applyLocalizedPattern(AM_PM_HOUR_1_12_CORRECT);
+        hour12format2.applyLocalizedPattern(AM_PM_HOUR_0_11_CORRECT);
+        hour24format1.applyLocalizedPattern(MILITARY_HOUR_0_23_CORRECT);
+        hour24format2.applyLocalizedPattern(MILITARY_HOUR_1_24_CORRECT);
+        weekYear.applyLocalizedPattern(WEEK_YEAR_CORRECT);
     }
 }
