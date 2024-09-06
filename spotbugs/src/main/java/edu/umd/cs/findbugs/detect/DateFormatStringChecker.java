@@ -86,18 +86,21 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
                 || seen == Const.INVOKEINTERFACE) || stack.getStackDepth() == 0
                 || !"java/text/SimpleDateFormat".equals(getClassConstantOperand())
                 || !Arrays.asList(Const.CONSTRUCTOR_NAME, "applyPattern", "applyLocalizedPattern")
-                .contains(getNameConstantOperand())) {
+                        .contains(getNameConstantOperand())) {
             return;
         }
 
         int idx;
         switch (getSigConstantOperand()) {
-            case "(Ljava/lang/String;)V":
-                idx = 0; break;
-            case "(Ljava/lang/String;Ljava/util/Locale;)V":
-            case "(Ljava/lang/String;Ljava/text/DateFormatSymbols;)V":
-                idx = 1; break;
-            default: return;
+        case "(Ljava/lang/String;)V":
+            idx = 0;
+            break;
+        case "(Ljava/lang/String;Ljava/util/Locale;)V":
+        case "(Ljava/lang/String;Ljava/text/DateFormatSymbols;)V":
+            idx = 1;
+            break;
+        default:
+            return;
         }
 
         String dateFormatString = (String) stack.getStackItem(idx).getConstant();
