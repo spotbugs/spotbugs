@@ -28,37 +28,67 @@ class Issue637Test extends AbstractIntegrationTest {
     @Test
     void testClassWithErrors() {
         performAnalysis("ghIssues/issue637/Issue637Errors.class");
-        assertNumOfBug637(25);
+        assertNumOfBug637(50);
 
-        assertBug637("oneArgConstructorTest", 28);
-        assertBug637("oneArgConstructorTest", 29);
-        assertBug637("oneArgConstructorTest", 30);
         assertBug637("oneArgConstructorTest", 31);
         assertBug637("oneArgConstructorTest", 32);
+        assertBug637("oneArgConstructorTest", 33);
+        assertBug637("oneArgConstructorTest", 34);
+        assertBug637("oneArgConstructorTest", 35);
 
-        assertBug637("twoArgLocaleConstructorTest", 47);
-        assertBug637("twoArgLocaleConstructorTest", 48);
-        assertBug637("twoArgLocaleConstructorTest", 49);
         assertBug637("twoArgLocaleConstructorTest", 50);
         assertBug637("twoArgLocaleConstructorTest", 51);
+        assertBug637("twoArgLocaleConstructorTest", 52);
+        assertBug637("twoArgLocaleConstructorTest", 53);
+        assertBug637("twoArgLocaleConstructorTest", 54);
 
-        assertBug637("twoArgDateFormatSymbolConstructorTest", 67);
-        assertBug637("twoArgDateFormatSymbolConstructorTest", 68);
-        assertBug637("twoArgDateFormatSymbolConstructorTest", 69);
         assertBug637("twoArgDateFormatSymbolConstructorTest", 70);
         assertBug637("twoArgDateFormatSymbolConstructorTest", 71);
+        assertBug637("twoArgDateFormatSymbolConstructorTest", 72);
+        assertBug637("twoArgDateFormatSymbolConstructorTest", 73);
+        assertBug637("twoArgDateFormatSymbolConstructorTest", 74);
 
-        assertBug637("applyPatternTest", 90);
-        assertBug637("applyPatternTest", 91);
-        assertBug637("applyPatternTest", 92);
         assertBug637("applyPatternTest", 93);
         assertBug637("applyPatternTest", 94);
+        assertBug637("applyPatternTest", 95);
+        assertBug637("applyPatternTest", 96);
+        assertBug637("applyPatternTest", 97);
 
-        assertBug637("applyLocalizedPatternTest", 107);
-        assertBug637("applyLocalizedPatternTest", 108);
-        assertBug637("applyLocalizedPatternTest", 109);
         assertBug637("applyLocalizedPatternTest", 110);
         assertBug637("applyLocalizedPatternTest", 111);
+        assertBug637("applyLocalizedPatternTest", 112);
+        assertBug637("applyLocalizedPatternTest", 113);
+        assertBug637("applyLocalizedPatternTest", 114);
+
+        assertBug637("ofPatternTest", 118);
+        assertBug637("ofPatternTest", 119);
+        assertBug637("ofPatternTest", 120);
+        assertBug637("ofPatternTest", 121);
+        assertBug637("ofPatternTest", 121);
+
+        assertBug637("ofPatternLocaleTest", 128);
+        assertBug637("ofPatternLocaleTest", 129);
+        assertBug637("ofPatternLocaleTest", 130);
+        assertBug637("ofPatternLocaleTest", 131);
+        assertBug637("ofPatternLocaleTest", 132);
+
+        assertBug637("getInstanceTest", 136);
+        assertBug637("getInstanceTest", 137);
+        assertBug637("getInstanceTest", 138);
+        assertBug637("getInstanceTest", 139);
+        assertBug637("getInstanceTest", 140);
+
+        assertBug637("getInstanceLocaleTest", 146);
+        assertBug637("getInstanceLocaleTest", 147);
+        assertBug637("getInstanceLocaleTest", 148);
+        assertBug637("getInstanceLocaleTest", 149);
+        assertBug637("getInstanceLocaleTest", 150);
+
+        assertBug637("getInstanceTimezoneTest", 156);
+        assertBug637("getInstanceTimezoneTest", 157);
+        assertBug637("getInstanceTimezoneTest", 158);
+        assertBug637("getInstanceTimezoneTest", 159);
+        assertBug637("getInstanceTimezoneTest", 160);
     }
 
     /**

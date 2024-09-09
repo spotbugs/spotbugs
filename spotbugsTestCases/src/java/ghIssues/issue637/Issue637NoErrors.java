@@ -1,9 +1,13 @@
 package ghIssues.issue637;
 
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 
 /**
@@ -109,5 +113,51 @@ public final class Issue637NoErrors {
         hour24format1.applyLocalizedPattern(MILITARY_HOUR_0_23_CORRECT);
         hour24format2.applyLocalizedPattern(MILITARY_HOUR_1_24_CORRECT);
         weekYear.applyLocalizedPattern(WEEK_YEAR_CORRECT);
+    }
+
+    public static void ofPatternTest(){
+        DateTimeFormatter.ofPattern(AM_PM_HOUR_1_12_CORRECT);
+        DateTimeFormatter.ofPattern(AM_PM_HOUR_0_11_CORRECT);
+        DateTimeFormatter.ofPattern(MILITARY_HOUR_0_23_CORRECT);
+        DateTimeFormatter.ofPattern(MILITARY_HOUR_1_24_CORRECT);
+        DateTimeFormatter.ofPattern(WEEK_YEAR_CORRECT);
+    }
+
+    public static void ofPatternLocaleTest(){
+        Locale defaultLocale = new Locale("en", "US");
+
+        DateTimeFormatter.ofPattern(AM_PM_HOUR_1_12_CORRECT, defaultLocale);
+        DateTimeFormatter.ofPattern(AM_PM_HOUR_0_11_CORRECT, defaultLocale);
+        DateTimeFormatter.ofPattern(MILITARY_HOUR_0_23_CORRECT, defaultLocale);
+        DateTimeFormatter.ofPattern(MILITARY_HOUR_1_24_CORRECT, defaultLocale);
+        DateTimeFormatter.ofPattern(WEEK_YEAR_CORRECT, defaultLocale);
+    }
+
+    public static void getInstanceTest() {
+        FastDateFormat.getInstance(AM_PM_HOUR_1_12_CORRECT);
+        FastDateFormat.getInstance(AM_PM_HOUR_0_11_CORRECT);
+        FastDateFormat.getInstance(MILITARY_HOUR_0_23_CORRECT);
+        FastDateFormat.getInstance(MILITARY_HOUR_1_24_CORRECT);
+        FastDateFormat.getInstance(WEEK_YEAR_CORRECT);
+    }
+
+    public static void getInstanceLocaleTest() {
+        Locale defaultLocale = new Locale("en", "US");
+
+        FastDateFormat.getInstance(AM_PM_HOUR_1_12_CORRECT, defaultLocale);
+        FastDateFormat.getInstance(AM_PM_HOUR_0_11_CORRECT, defaultLocale);
+        FastDateFormat.getInstance(MILITARY_HOUR_0_23_CORRECT, defaultLocale);
+        FastDateFormat.getInstance(MILITARY_HOUR_1_24_CORRECT, defaultLocale);
+        FastDateFormat.getInstance(WEEK_YEAR_CORRECT, defaultLocale);
+    }
+
+    public static void getInstanceTimezoneTest() {
+        TimeZone tz = TimeZone.getDefault();
+
+        FastDateFormat.getInstance(AM_PM_HOUR_1_12_CORRECT, tz);
+        FastDateFormat.getInstance(AM_PM_HOUR_0_11_CORRECT, tz);
+        FastDateFormat.getInstance(MILITARY_HOUR_0_23_CORRECT, tz);
+        FastDateFormat.getInstance(MILITARY_HOUR_1_24_CORRECT, tz);
+        FastDateFormat.getInstance(WEEK_YEAR_CORRECT, tz);
     }
 }

@@ -83,23 +83,47 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (!(seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESTATIC
-                || seen == Const.INVOKEINTERFACE) || stack.getStackDepth() == 0
-                || !"java/text/SimpleDateFormat".equals(getClassConstantOperand())
-                || !Arrays.asList(Const.CONSTRUCTOR_NAME, "applyPattern", "applyLocalizedPattern")
-                        .contains(getNameConstantOperand())) {
+                || seen == Const.INVOKEINTERFACE) || stack.getStackDepth() == 0) {
             return;
         }
 
-        int idx;
-        switch (getSigConstantOperand()) {
-        case "(Ljava/lang/String;)V":
-            idx = 0;
-            break;
-        case "(Ljava/lang/String;Ljava/util/Locale;)V":
-        case "(Ljava/lang/String;Ljava/text/DateFormatSymbols;)V":
-            idx = 1;
-            break;
-        default:
+        int idx = -1;
+        String cl = getClassConstantOperand();
+        String nm = getNameConstantOperand();
+        String si = getSigConstantOperand();
+        if ("java/text/SimpleDateFormat".equals(cl)
+                && contains(nm, Const.CONSTRUCTOR_NAME, "applyPattern", "applyLocalizedPattern")) {
+            switch (si) {
+            case "(Ljava/lang/String;)V":
+                idx = 0;
+                break;
+            case "(Ljava/lang/String;Ljava/util/Locale;)V":
+            case "(Ljava/lang/String;Ljava/text/DateFormatSymbols;)V":
+                idx = 1;
+                break;
+            }
+        } else if ("java/time/format/DateTimeFormatter".equals(cl) && "ofPattern".equals(nm)) {
+            switch (si) {
+            case "(Ljava/lang/String;)Ljava/time/format/DateTimeFormatter;":
+                idx = 0;
+                break;
+            case "(Ljava/lang/String;Ljava/util/Locale;)Ljava/time/format/DateTimeFormatter;":
+                idx = 1;
+                break;
+            }
+        } else if ("org/apache/commons/lang3/time/FastDateFormat".equals(cl) && "getInstance".equals(nm)) {
+            switch (si) {
+            case "(Ljava/lang/String;)Lorg/apache/commons/lang3/time/FastDateFormat;":
+                idx = 0;
+                break;
+            case "(Ljava/lang/String;Ljava/util/Locale;)Lorg/apache/commons/lang3/time/FastDateFormat;":
+            case "(Ljava/lang/String;Ljava/util/TimeZone;)Lorg/apache/commons/lang3/time/FastDateFormat;":
+                idx = 1;
+                break;
+            }
+        }
+
+        if (idx == -1) {
             return;
         }
 
@@ -109,6 +133,10 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
                     .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
                     .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
         }
+    }
+
+    private boolean contains(String item, String... items) {
+        return Arrays.asList(items).contains(item);
     }
 
     /**
