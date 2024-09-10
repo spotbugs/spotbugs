@@ -14,11 +14,11 @@ class RegressionIdeas20091007Test extends AbstractIntegrationTest {
     void test() {
         performAnalysis("bugIdeas/Ideas_2009_10_07.class");
         assertBug("NP_GUARANTEED_DEREF", 2);
-        assertBug("NP_GUARANTEED_DEREF", 1);
+        assertBug("NP_LOAD_OF_KNOWN_NULL_VALUE", 1);
 
-        assertExactBug("NP_GUARANTEED_DEREF", "f", 17);
-        assertExactBug("NP_GUARANTEED_DEREF", "f", 30);
-        assertExactBug("NP_LOAD_OF_KNOWN_NULL_VALUE", "f", 10);
+        assertExactBug("NP_GUARANTEED_DEREF", "f"); // line 16 or 17 non deterministic
+        assertExactBug("NP_GUARANTEED_DEREF", "f"); // line 29 or 30 non deterministic
+        assertExactBugWithLine("NP_LOAD_OF_KNOWN_NULL_VALUE", "f", 10);
     }
 
     private void assertBug(String bugtype, int num) {
@@ -28,12 +28,21 @@ class RegressionIdeas20091007Test extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(num, matcher));
     }
 
-    private void assertExactBug(String bugtype, String method, int line) {
+    private void assertExactBugWithLine(String bugtype, String method, int line) {
         BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugtype)
                 .inClass("Ideas_2009_10_07")
                 .inMethod(method)
                 .atLine(line)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    private void assertExactBug(String bugtype, String method) {
+        BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugtype)
+                .inClass("Ideas_2009_10_07")
+                .inMethod(method)
                 .build();
         assertThat(getBugCollection(), hasItem(matcher));
     }
