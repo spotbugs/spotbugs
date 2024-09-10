@@ -18,14 +18,14 @@ class RegressionIdeas20081114Test extends AbstractIntegrationTest {
         assertBugNum("GC_UNRELATED_TYPES", 3, 9);
         assertExactBugNum("EC_UNRELATED_CLASS_AND_INTERFACE", 1);
         assertExactBugNum("EC_UNRELATED_TYPES", 2);
-        
-        assertBug("GC_UNRELATED_TYPES","Ideas_2008_11_14","foo",32);
-        assertBug("GC_UNRELATED_TYPES","Ideas_2008_11_14","foo",33);
-        assertBug("GC_UNRELATED_TYPES","Ideas_2008_11_14","foo",34);
+
+        assertBug("GC_UNRELATED_TYPES", "Ideas_2008_11_14", "foo", 32);
+        assertBug("GC_UNRELATED_TYPES", "Ideas_2008_11_14", "foo", 33);
+        assertBug("GC_UNRELATED_TYPES", "Ideas_2008_11_14", "foo", 34);
         assertBug("EC_UNRELATED_CLASS_AND_INTERFACE", "Ideas_2008_11_14", "foo", 36);
         // assertBug("GC_UNRELATED_TYPES", "Ideas_2008_11_14", "foo", 37); // FN
-        assertBug("EC_UNRELATED_TYPES","Ideas_2008_11_14","foo", 38);
-        assertBug("EC_UNRELATED_TYPES","Ideas_2008_11_14","foo",39);
+        assertBug("EC_UNRELATED_TYPES", "Ideas_2008_11_14", "foo", 38);
+        assertBug("EC_UNRELATED_TYPES", "Ideas_2008_11_14", "foo", 39);
 
         // assertBug("GC_UNRELATED_TYPES", "Ideas_2008_11_14", "testOne", 17); // FN
         // assertBug("GC_UNRELATED_TYPES", "Ideas_2008_11_14", "testOne", 18); // FN
@@ -49,7 +49,7 @@ class RegressionIdeas20081114Test extends AbstractIntegrationTest {
         assertTrue(exactMatches >= min);
         assertTrue(exactMatches <= max);
     }
-    
+
     private void assertBug(String bugtype, String className, String method, int line) {
         BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugtype)
