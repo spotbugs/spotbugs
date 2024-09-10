@@ -192,16 +192,16 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
             synchronizedMethods.add(xMethod);
         }
 
-        SignatureParser signature = new SignatureParser(xMethod.getSignature());
+        if (!(xMethod.isStatic() || xMethod.isPublic())) {
+            return;
+        }
+
         if ("readResolve".equals(obj.getName()) && "()Ljava/lang/Object;".equals(obj.getSignature())
                 && Subtypes2.instanceOf(getThisClass(), "java.io.Serializable")) {
             return;
         }
 
-        if (!(xMethod.isStatic() || xMethod.isPublic())) {
-            return;
-        }
-
+        SignatureParser signature = new SignatureParser(xMethod.getSignature());
         String returnType = signature.getReturnTypeSignature();
         String javaStyleClassType = "L" + getClassName() + ";";
         if (returnType.equals(javaStyleClassType)) {
@@ -227,25 +227,23 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
     public void visit(Field obj) {
         XField xField = getXField();
         if (isCollection(xField)) {
-            try {
-                if (isInherited(xField)) {
-                    if (!xField.isPrivate()) {
-                        badBackingCollections.add(xField);
-                    }
-
-                    findExposureInHierarchy(xField)
-                            .forEach(method -> collectionAccessorsInHierarchy.add(xField, method));
-                } else {
-                    if (xField.isPublic()) {
-                        badBackingCollections.add(xField);
-                    }
-
-                    if (xField.isProtected() && !getThisClass().isFinal() || isPackagePrivate(xField)) {
-                        inheritableBackingCollections.add(xField);
-                    }
+            if (isInherited(xField)) {
+                if (!xField.isPrivate()) {
+                    badBackingCollections.add(xField);
                 }
-            } catch (ClassNotFoundException e) {
-                AnalysisContext.reportMissingClass(e);
+                try {
+                    findExposureInHierarchy(xField).forEach(method -> collectionAccessorsInHierarchy.add(xField,
+                            method));
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
+                }
+            } else {
+                if (xField.isPublic()) {
+                    badBackingCollections.add(xField);
+                }
+                if (xField.isProtected() && !getThisClass().isFinal() || isPackagePrivate(xField)) {
+                    inheritableBackingCollections.add(xField);
+                }
             }
         }
     }
@@ -257,42 +255,35 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
             if (lock != null) {
                 XMethod xMethod = getXMethod();
-                try {
-                    if (isInherited(lock)) {
-                        inheritedLockObjects.put(lock, xMethod);
-                        if (isCollection(lock)) {
-                            inheritedCollectionLockObjects.add(lock, new BugInfo(this));
-                            try {
-                                analyzeAssignmentsInHierarchy(lock);
-                            } catch (CFGBuilderException e) {
-                                AnalysisContext.logError("Error building CFG", e);
-                            } catch (ClassNotFoundException e) {
-                                AnalysisContext.reportMissingClass(e);
-                            }
-                        }
-
-                        findExposureInHierarchy(lock)
-                                .forEach(method -> lockAccessorsInHierarchy.add(lock, method));
-
-                        if (lock.isProtected() || lock.isPublic() || !lock.isPrivate()) {
-                            potentialObjectBugContainingMethods.add(lock, xMethod);
-                        }
-                    } else {
-                        declaredLockObjects.put(lock, xMethod);
-                        if (isCollection(lock)) {
-                            declaredCollectionLockObjects.add(lock, new BugInfo(this));
-                        }
-
-                        if (lock.isPublic()) {
-                            potentialObjectBugContainingMethods.add(lock, xMethod);
-                        }
-
-                        if (lock.isProtected() && !getThisClass().isFinal() || isPackagePrivate(lock)) {
-                            potentialInheritedBugContainingMethods.add(lock, xMethod);
-                        }
+                if (isInherited(lock)) {
+                    inheritedLockObjects.put(lock, xMethod);
+                    if (isCollection(lock)) {
+                        inheritedCollectionLockObjects.add(lock, new BugInfo(this));
+                        analyzeAssignmentsInHierarchy(lock);
                     }
-                } catch (ClassNotFoundException e) {
-                    AnalysisContext.reportMissingClass(e);
+
+                    try {
+                        findExposureInHierarchy(lock).forEach(method -> lockAccessorsInHierarchy.add(lock, method));
+                    } catch (ClassNotFoundException e) {
+                        AnalysisContext.reportMissingClass(e);
+                    }
+
+                    if (lock.isProtected() || lock.isPublic() || !lock.isPrivate()) {
+                        potentialObjectBugContainingMethods.add(lock, xMethod);
+                    }
+                } else {
+                    declaredLockObjects.put(lock, xMethod);
+                    if (isCollection(lock)) {
+                        declaredCollectionLockObjects.add(lock, new BugInfo(this));
+                    }
+
+                    if (lock.isPublic()) {
+                        potentialObjectBugContainingMethods.add(lock, xMethod);
+                    }
+
+                    if (lock.isProtected() && !getThisClass().isFinal() || isPackagePrivate(lock)) {
+                        potentialInheritedBugContainingMethods.add(lock, xMethod);
+                    }
                 }
             }
         }
@@ -447,9 +438,11 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     /**
      * Check if the lock object is inherited from the current class.
-     * To ensure no false positives, we compare only the outer class name if the lock object is contained in an inner class.
+     * To ensure no false positives, we compare only the outer class name if the lock object is contained in an inner
+     * class.
      * Only checking equality is enough, since the lock object is a field declared in a class. That means if
      * the declaring class of the lock object is the same as the current class, the lock object is not inherited.
+     *
      * @param lockObject the lock object to check for inheritance
      * @return true if the lock object is inherited from the current class, false otherwise
      */
@@ -462,6 +455,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
      * There are specific methods that use their parameters to create a new collections,
      * but they maintain a reference to the original collection.
      * When a collection is wrapped by such a method and the result is assigned to a field, the wrapped collections becomes a backing collection.
+     *
      * @param currentMethod the method in which the wrapping method call is located
      * @param classContext the class context of the currently analyzed class, in which the wrapping method call is located
      * @param location the location of the wrapping method call
@@ -536,12 +530,19 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
         }
     }
 
-    private void analyzeAssignmentsInHierarchy(XField collectionLockObject) throws ClassNotFoundException,
-            CFGBuilderException {
+    private void analyzeAssignmentsInHierarchy(XField collectionLockObject) {
         String lockDeclaringClassName = collectionLockObject.getClassName();
         Method[] ownMethods = getThisClass().getMethods();
+        JavaClass[] superClasses;
 
-        for (JavaClass declaringClass : getThisClass().getSuperClasses()) {
+        try {
+            superClasses = getThisClass().getSuperClasses();
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+            return;
+        }
+
+        for (JavaClass declaringClass : superClasses) {
             if (!lockDeclaringClassName.equals(ClassName.toDottedClassName(declaringClass.getClassName()))) {
                 continue;
             }
@@ -552,21 +553,25 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
                 }
 
                 ClassContext classContext = new ClassContext(declaringClass, AnalysisContext.currentAnalysisContext());
-                analyzeAssignments(method, classContext, collectionLockObject);
+                try {
+                    analyzeAssignments(method, classContext, collectionLockObject);
+                } catch (CFGBuilderException e) {
+                    AnalysisContext.logError("Error building CFG", e);
+                }
             }
         }
     }
 
     private void checkLockUsageInHierarchy(XField field, XMethod exposingMethod) {
-        try {
-            if (isInherited(field)) {
-                if (declaredInheritedFieldAccessingMethods.get(field).isEmpty()) {
+        if (isInherited(field)) {
+            if (declaredInheritedFieldAccessingMethods.get(field).isEmpty()) {
+                try {
                     findLockUsageInHierarchy(field).forEach(m -> lockUsingMethodsInHierarchy.add(field, m));
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
                 }
                 declaredInheritedFieldAccessingMethods.add(field, exposingMethod);
             }
-        } catch (ClassNotFoundException e) {
-            AnalysisContext.reportMissingClass(e);
         }
     }
 
@@ -627,11 +632,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
         for (JavaClass declaringClass : getThisClass().getSuperClasses()) {
             for (Method possibleAccessorMethod : declaringClass.getMethods()) {
 
-                if (possibleAccessorMethod.getCode() == null) {
-                    continue;
-                }
-
-                if (isInitializerMethod(possibleAccessorMethod.getName())) {
+                if (possibleAccessorMethod.getCode() == null || isInitializerMethod(possibleAccessorMethod.getName())) {
                     continue;
                 }
 

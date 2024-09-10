@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends AbstractIntegrationTest {
     private static final String METHOD_BUG = "US_UNSAFE_METHOD_SYNCHRONIZATION";
@@ -172,7 +171,7 @@ class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends Ab
                 "view16"); /* bc: view15 -> collection10, exp: getView15 */
 
         /* Complex case */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugMultipleTimes(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff20",
                 "view20", 2); /* bc: view19 -> collection12, exp: getCollection12 */
 
@@ -233,25 +232,17 @@ class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends Ab
     }
 
     @Test
-    public void testSafeSynchronizationOnCollectionView() {
+    void testSafeSynchronizationOnCollectionView() {
         performAnalysis("synchronizationLocks/collectionViews/SafeSynchronizationOnCollectionView.class");
 
         assertZeroBadSyncBugs();
     }
 
     private void assertBugExactly(String bugType, String clazz, String method, String view) {
-        BugInstanceMatcher bugInstance =
-                new BugInstanceMatcherBuilder()
-                        .bugType(bugType)
-                        .inClass(clazz)
-                        .inMethod(method)
-                        .atField(view)
-                        .build();
-
-        assertThat(getBugCollection(), hasItem(bugInstance));
+        assertBugMultipleTimes(bugType, clazz, method, view, 1);
     }
 
-    private void assertBugExactly(String bugType, String clazz, String method, String view, int numberOfBugs) {
+    private void assertBugMultipleTimes(String bugType, String clazz, String method, String view, int times) {
         BugInstanceMatcher bugInstance =
                 new BugInstanceMatcherBuilder()
                         .bugType(bugType)
@@ -260,7 +251,7 @@ class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends Ab
                         .atField(view)
                         .build();
 
-        assertThat(getBugCollection(), containsExactly(numberOfBugs, bugInstance));
+        assertThat(getBugCollection(), containsExactly(times, bugInstance));
     }
 
     private void assertNumOfBugs(int number, String bugType) {

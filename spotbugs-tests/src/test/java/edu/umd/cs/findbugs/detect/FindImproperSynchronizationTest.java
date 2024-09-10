@@ -43,12 +43,13 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertNumOfBugs(0, ACCESSIBLE_BACKING_COLLECTION);
         assertNumOfBugs(0, INHERITABLE_BACKING_COLLECTION);
 
-        assertBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff");
-        assertBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff2");
-        assertBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingACollectionOfItself",
+        assertMethodBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff");
+        assertMethodBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff2");
+        assertMethodBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingACollectionOfItself",
                 "doStuff");
-        assertBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingAMapOfItself", "doStuff");
-        assertBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingMixedGenericOfItself",
+        assertMethodBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingAMapOfItself",
+                "doStuff");
+        assertMethodBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingMixedGenericOfItself",
                 "doStuff");
     }
 
@@ -66,7 +67,8 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertNumOfBugs(0, ACCESSIBLE_BACKING_COLLECTION);
         assertNumOfBugs(0, INHERITABLE_BACKING_COLLECTION);
 
-        this.assertBugExactly(STATIC_METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithPublicStaticSynchronization",
+        this.assertMethodBugExactly(STATIC_METHOD_BUG,
+                "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithPublicStaticSynchronization",
                 "doStuff");
     }
 
@@ -84,8 +86,8 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertNumOfBugs(0, ACCESSIBLE_BACKING_COLLECTION);
         assertNumOfBugs(0, INHERITABLE_BACKING_COLLECTION);
 
-        assertBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMixedMethodSynchronization", "doStuff");
-        this.assertBugExactly(STATIC_METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMixedMethodSynchronization", "doStuff");
+        assertMethodBugExactly(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMixedMethodSynchronization", "doStuff");
+        this.assertMethodBugExactly(STATIC_METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMixedMethodSynchronization", "doStuff");
     }
 
     @Test
@@ -429,7 +431,7 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(number, bugInstance));
     }
 
-    private void assertBugExactly(String bugType, String clazz, String method) {
+    private void assertMethodBugExactly(String bugType, String clazz, String method) {
         final BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
                 .inClass(clazz)
