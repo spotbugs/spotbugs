@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class WarningSuppressorTest extends AbstractIntegrationTest {
+class WarningSuppressorTest extends AbstractIntegrationTest {
 
     @Test
     void testIssue() {
@@ -19,6 +19,7 @@ public class WarningSuppressorTest extends AbstractIntegrationTest {
 
         assertMethodBugsCount("suppressedNpeExact", 0);
         assertMethodBugsCount("nonSuppressedNpeExact", 2);
+        assertMethodBugsCount("nonSuppressedNpeExactDifferentCase", 2);
 
         assertMethodBugsCount("suppressedNpeRegex", 0);
         assertMethodBugsCount("nonSuppressedNpeRegex", 2);

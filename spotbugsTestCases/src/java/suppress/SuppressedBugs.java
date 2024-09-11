@@ -33,6 +33,14 @@ public class SuppressedBugs {
 		return x.length();
 	}
 
+	// Exact match is case sensitive, this won't suppress anything
+	@SuppressFBWarnings(value = {"np_always_null", "np_load_of_known_null_value"}, matchType = SuppressMatchType.EXACT)
+	public int nonSuppressedNpeExactDifferentCase() {
+		// NP_ALWAYS_NULL and NP_LOAD_OF_KNOWN_NULL_VALUE
+		String x = null;
+		return x.length();
+	}
+
 	@SuppressFBWarnings(value = "NP.*", matchType = SuppressMatchType.REGEX)
 	public int suppressedNpeRegex() {
 		// NP_ALWAYS_NULL and NP_LOAD_OF_KNOWN_NULL_VALUE

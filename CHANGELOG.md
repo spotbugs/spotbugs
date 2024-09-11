@@ -6,6 +6,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2024-??-??
+### Added
+- Updated the `SuppressFBWarnings` annotation to support finer grained bug suppressions ([#3102](https://github.com/spotbugs/spotbugs/pull/3102))
+
 ### Fixed
 - Do not consider Records as Singletons ([#2981](https://github.com/spotbugs/spotbugs/issues/2981))
 - Keep a maximum of 10000 cached analysis entries for plugin's analysis engines ([#3025](https://github.com/spotbugs/spotbugs/pull/3025))
