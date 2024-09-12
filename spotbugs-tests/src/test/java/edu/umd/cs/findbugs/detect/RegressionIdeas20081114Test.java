@@ -5,10 +5,10 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
 
+import static edu.umd.cs.findbugs.test.CountMatcher.containsBetween;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RegressionIdeas20081114Test extends AbstractIntegrationTest {
     @Test
@@ -45,9 +45,7 @@ class RegressionIdeas20081114Test extends AbstractIntegrationTest {
         BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugtype)
                 .build();
-        long exactMatches = getBugCollection().getCollection().stream().filter(matcher::matches).count();
-        assertTrue(exactMatches >= min);
-        assertTrue(exactMatches <= max);
+        assertThat(getBugCollection(), containsBetween(min, max, matcher));
     }
 
     private void assertBug(String bugtype, String className, String method, int line) {
