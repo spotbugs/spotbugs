@@ -69,7 +69,7 @@ public class MutableClasses {
 
     private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
-            "enqueue", "dequeue", "write", "append", "replace", "prepend", "reset", "update");
+            "enqueue", "dequeue", "write", "append", "replace");
 
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
