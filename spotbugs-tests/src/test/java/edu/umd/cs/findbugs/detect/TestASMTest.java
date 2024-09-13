@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,6 @@ class TestASMTest extends AbstractIntegrationTest {
                 .inClass("TestASM")
                 .atField(field)
                 .build();
-        BugCollection bc = getBugCollection();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 

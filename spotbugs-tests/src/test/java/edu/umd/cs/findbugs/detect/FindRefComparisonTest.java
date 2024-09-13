@@ -15,7 +15,7 @@ import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class FindRefComparisonTest extends AbstractIntegrationTest {
+class FindRefComparisonTest extends AbstractIntegrationTest {
 
     @AfterAll
     static void tearDown() {
@@ -81,10 +81,10 @@ public class FindRefComparisonTest extends AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
     }
 
-    private void assertRefCompBug(String class_, String method, int line, Confidence confidence) {
+    private void assertRefCompBug(String className, String method, int line, Confidence confidence) {
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
                 .bugType("RC_REF_COMPARISON")
-                .inClass(class_)
+                .inClass(className)
                 .inMethod(method)
                 .atLine(line)
                 .withConfidence(confidence)

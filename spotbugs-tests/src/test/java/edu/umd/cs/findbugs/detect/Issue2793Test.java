@@ -36,11 +36,4 @@ class Issue2793Test extends AbstractIntegrationTest {
 
         assertThat(getBugCollection(), containsExactly(expectedCount, bugMatcher));
     }
-
-    private void assertBugCount(int expectedCount) {
-        BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder()
-                .build();
-
-        assertThat(getBugCollection(), containsExactly(expectedCount, bugMatcher));
-    }
 }

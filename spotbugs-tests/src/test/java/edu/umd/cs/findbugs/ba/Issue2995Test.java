@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class Issue2995Test extends AbstractIntegrationTest {
+class Issue2995Test extends AbstractIntegrationTest {
 
     @Test
     void testIssue() {

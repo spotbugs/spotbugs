@@ -131,7 +131,6 @@ class SarifBugReporterTest {
     void testRuleWithArguments() {
         // given
         final String EXPECTED_BUG_TYPE = "BUG_TYPE";
-        final int EXPECTED_PRIORITY = Priorities.NORMAL_PRIORITY;
         final String EXPECTED_DESCRIPTION = "describing about this bug type...";
         BugPattern bugPattern = new BugPattern(EXPECTED_BUG_TYPE, "abbrev", "category", false, EXPECTED_DESCRIPTION,
                 "describing about this bug type with value {0}...", "detailText", null, 0);
@@ -170,7 +169,6 @@ class SarifBugReporterTest {
     void testRuleWithInvalidArguments() {
         // given
         final String EXPECTED_BUG_TYPE = "BUG_TYPE";
-        final int EXPECTED_PRIORITY = Priorities.NORMAL_PRIORITY;
         final String EXPECTED_DESCRIPTION = "describing about this bug type...";
         BugPattern bugPattern = new BugPattern(EXPECTED_BUG_TYPE, "abbrev", "category", false, EXPECTED_DESCRIPTION,
                 "describing about this bug type with value {1234}...", "detailText", null, 0);
