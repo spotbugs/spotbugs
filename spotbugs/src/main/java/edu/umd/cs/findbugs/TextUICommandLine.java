@@ -276,7 +276,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
     /* visible for testing */ String handleOutputFilePath(TextUIBugReporter reporter, String optionExtraPart) {
         int index = optionExtraPart.indexOf('=');
         if (index >= 0) {
-            Path path = Paths.get(optionExtraPart.substring(index + 1));
+            String reportTarget = optionExtraPart.substring(index + 1);
+            reporter.setDeduplicationKey(reportTarget);
+            Path path = Paths.get(reportTarget);
             try {
                 OutputStream oStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
                         StandardOpenOption.TRUNCATE_EXISTING);
@@ -345,7 +347,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
             bugReporterType = SORTING_REPORTER;
             SortingBugReporter sortingBugReporter = new SortingBugReporter();
             handleOutputFilePath(sortingBugReporter, optionExtraPart);
-            reporters.add(sortingBugReporter);
+            addDistinctBugReporter(sortingBugReporter);
         } else if ("-xml".equals(option)) {
             bugReporterType = XML_REPORTER;
             XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
@@ -366,11 +368,11 @@ public class TextUICommandLine extends FindBugsCommandLine {
             }
             xmlBugReporter.setAddMessages(xmlWithMessages);
             xmlBugReporter.setMinimalXML(xmlMinimal);
-            reporters.add(xmlBugReporter);
+            addDistinctBugReporter(xmlBugReporter);
         } else if ("-emacs".equals(option)) {
             EmacsBugReporter emacsBugReporter = new EmacsBugReporter();
             handleOutputFilePath(emacsBugReporter, optionExtraPart);
-            reporters.add(emacsBugReporter);
+            addDistinctBugReporter(emacsBugReporter);
             bugReporterType = EMACS_REPORTER;
         } else if ("-relaxed".equals(option)) {
             relaxedReportingMode = true;
@@ -385,17 +387,17 @@ public class TextUICommandLine extends FindBugsCommandLine {
             if (!"".equals(optionExtraPart)) {
                 htmlBugReporter.setStylesheet(optionExtraPart);
             }
-            reporters.add(htmlBugReporter);
+            addDistinctBugReporter(htmlBugReporter);
         } else if ("-xdocs".equals(option)) {
             bugReporterType = XDOCS_REPORTER;
             XDocsBugReporter xDocsBugReporter = new XDocsBugReporter(project);
             handleOutputFilePath(xDocsBugReporter, optionExtraPart);
-            reporters.add(xDocsBugReporter);
+            addDistinctBugReporter(xDocsBugReporter);
         } else if ("-sarif".equals(option)) {
             bugReporterType = SARIF_REPORTER;
             SarifBugReporter sarifBugReporter = new SarifBugReporter(project);
             handleOutputFilePath(sarifBugReporter, optionExtraPart);
-            reporters.add(sarifBugReporter);
+            addDistinctBugReporter(sarifBugReporter);
         } else if ("-applySuppression".equals(option)) {
             applySuppression = true;
         } else if ("-quiet".equals(option)) {
@@ -675,7 +677,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         }
         switch (bugReporterType) {
         case PRINTING_REPORTER:
-            reporters.add(new PrintingBugReporter());
+            addDistinctBugReporter(new PrintingBugReporter());
             break;
         case SORTING_REPORTER:
         case XML_REPORTER:
@@ -815,5 +817,20 @@ public class TextUICommandLine extends FindBugsCommandLine {
      */
     private UserPreferences getUserPreferences() {
         return project.getConfiguration();
+    }
+
+    /**
+     * Adds a reporter to the aggregating list of reporters, assuming it does not duplicate a known reporter.
+     *
+     * @param reporter The reporter to add to the list of known reporters.
+     */
+    private void addDistinctBugReporter(TextUIBugReporter reporter) {
+        for (TextUIBugReporter known : reporters) {
+            if (known.isDuplicateOf(reporter)) {
+                logger.warn("Attempted to add multiple reporters writing to the same file at {}. First reporter wins.", known.getDeduplicationKey());
+                return;
+            }
+        }
+        reporters.add(reporter);
     }
 }
