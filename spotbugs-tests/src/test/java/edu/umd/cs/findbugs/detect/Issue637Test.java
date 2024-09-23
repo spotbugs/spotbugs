@@ -19,7 +19,7 @@ class Issue637Test extends AbstractIntegrationTest {
     private static final String DESIRED_BUG_TYPE = "FS_BAD_DATE_FORMAT_FLAG_COMBO";
 
     /**
-     * Expects total of 25 errors that are:
+     * Expects total of 80 errors that are:
      *  - of type defined in DESIRED_BUG_TYPE
      *  - inside the Issue637Errors class
      *  - was called in a specified function (parameter)
@@ -28,7 +28,7 @@ class Issue637Test extends AbstractIntegrationTest {
     @Test
     void testClassWithErrors() {
         performAnalysis("ghIssues/issue637/Issue637Errors.class");
-        assertNumOfBug637(50);
+        assertNumOfBug637(80);
 
         assertBug637("oneArgConstructorTest", 31);
         assertBug637("oneArgConstructorTest", 32);
@@ -60,35 +60,65 @@ class Issue637Test extends AbstractIntegrationTest {
         assertBug637("applyLocalizedPatternTest", 113);
         assertBug637("applyLocalizedPatternTest", 114);
 
-        assertBug637("ofPatternTest", 118);
-        assertBug637("ofPatternTest", 119);
-        assertBug637("ofPatternTest", 120);
-        assertBug637("ofPatternTest", 121);
-        assertBug637("ofPatternTest", 121);
+        assertBug637("ofPatternLocaleTest", 120);
+        assertBug637("ofPatternLocaleTest", 121);
+        assertBug637("ofPatternLocaleTest", 122);
+        assertBug637("ofPatternLocaleTest", 123);
+        assertBug637("ofPatternLocaleTest", 124);
 
-        assertBug637("ofPatternLocaleTest", 128);
-        assertBug637("ofPatternLocaleTest", 129);
-        assertBug637("ofPatternLocaleTest", 130);
-        assertBug637("ofPatternLocaleTest", 131);
-        assertBug637("ofPatternLocaleTest", 132);
+        assertBug637("getInstanceTest", 128);
+        assertBug637("getInstanceTest", 129);
+        assertBug637("getInstanceTest", 130);
+        assertBug637("getInstanceTest", 131);
+        assertBug637("getInstanceTest", 132);
 
-        assertBug637("getInstanceTest", 136);
-        assertBug637("getInstanceTest", 137);
-        assertBug637("getInstanceTest", 138);
-        assertBug637("getInstanceTest", 139);
-        assertBug637("getInstanceTest", 140);
+        assertBug637("getInstanceLocaleTest", 138);
+        assertBug637("getInstanceLocaleTest", 139);
+        assertBug637("getInstanceLocaleTest", 140);
+        assertBug637("getInstanceLocaleTest", 141);
+        assertBug637("getInstanceLocaleTest", 142);
 
-        assertBug637("getInstanceLocaleTest", 146);
-        assertBug637("getInstanceLocaleTest", 147);
-        assertBug637("getInstanceLocaleTest", 148);
-        assertBug637("getInstanceLocaleTest", 149);
-        assertBug637("getInstanceLocaleTest", 150);
+        assertBug637("getInstanceTimezoneTest", 148);
+        assertBug637("getInstanceTimezoneTest", 149);
+        assertBug637("getInstanceTimezoneTest", 150);
+        assertBug637("getInstanceTimezoneTest", 151);
+        assertBug637("getInstanceTimezoneTest", 152);
 
-        assertBug637("getInstanceTimezoneTest", 156);
-        assertBug637("getInstanceTimezoneTest", 157);
-        assertBug637("getInstanceTimezoneTest", 158);
-        assertBug637("getInstanceTimezoneTest", 159);
-        assertBug637("getInstanceTimezoneTest", 160);
+        assertBug637("dateTimeFormatterTest", 158);
+        assertBug637("dateTimeFormatterTest", 159);
+        assertBug637("dateTimeFormatterTest", 162);
+        assertBug637("dateTimeFormatterTest", 163);
+        assertBug637("dateTimeFormatterTest", 164);
+        assertBug637("dateTimeFormatterTest", 165);
+        assertBug637("dateTimeFormatterTest", 168);
+        assertBug637("dateTimeFormatterTest", 171);
+        assertBug637("dateTimeFormatterTest", 172);
+        assertBug637("dateTimeFormatterTest", 173);
+        assertBug637("dateTimeFormatterTest", 174);
+        assertBug637("dateTimeFormatterTest", 175);
+        assertBug637("dateTimeFormatterTest", 176);
+        assertBug637("dateTimeFormatterTest", 177);
+        assertBug637("dateTimeFormatterTest", 178);
+        assertBug637("dateTimeFormatterTest", 179);
+        assertBug637("dateTimeFormatterTest", 180);
+        assertBug637("dateTimeFormatterTest", 181);
+        assertBug637("dateTimeFormatterTest", 182);
+        assertBug637("dateTimeFormatterTest", 183);
+        assertBug637("dateTimeFormatterTest", 184);
+        assertBug637("dateTimeFormatterTest", 185);
+        assertBug637("dateTimeFormatterTest", 186);
+        assertBug637("dateTimeFormatterTest", 189);
+        assertBug637("dateTimeFormatterTest", 190);
+        assertBug637("dateTimeFormatterTest", 193);
+        assertBug637("dateTimeFormatterTest", 194);
+        assertBug637("dateTimeFormatterTest", 197);
+        assertBug637("dateTimeFormatterTest", 198);
+        assertBug637("dateTimeFormatterTest", 199);
+        assertBug637("dateTimeFormatterTest", 200);
+        assertBug637("dateTimeFormatterTest", 201);
+        assertBug637("dateTimeFormatterTest", 202);
+        assertBug637("dateTimeFormatterTest", 205);
+        assertBug637("dateTimeFormatterTest", 206);
     }
 
     /**

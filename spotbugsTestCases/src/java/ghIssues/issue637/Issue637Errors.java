@@ -114,14 +114,6 @@ public final class Issue637Errors {
         weekYear.applyLocalizedPattern(WEEK_YEAR_INCORRECT);
     }
 
-    public static void ofPatternTest(){
-        DateTimeFormatter.ofPattern(AM_PM_HOUR_1_12_INCORRECT);
-        DateTimeFormatter.ofPattern(AM_PM_HOUR_0_11_INCORRECT);
-        DateTimeFormatter.ofPattern(MILITARY_HOUR_0_23_INCORRECT);
-        DateTimeFormatter.ofPattern(MILITARY_HOUR_1_24_INCORRECT);
-        DateTimeFormatter.ofPattern(WEEK_YEAR_INCORRECT);
-    }
-
     public static void ofPatternLocaleTest(){
         Locale defaultLocale = new Locale("en", "US");
 
@@ -158,5 +150,59 @@ public final class Issue637Errors {
         FastDateFormat.getInstance(MILITARY_HOUR_0_23_INCORRECT, tz);
         FastDateFormat.getInstance(MILITARY_HOUR_1_24_INCORRECT, tz);
         FastDateFormat.getInstance(WEEK_YEAR_INCORRECT, tz);
+    }
+
+    /* 35 testcases */
+    public static void dateTimeFormatterTest() {
+        // when "h" or "K" flags found, make sure that it ALSO CONTAINS "a" or "B"
+        DateTimeFormatter.ofPattern(AM_PM_HOUR_1_12_INCORRECT);
+        DateTimeFormatter.ofPattern(AM_PM_HOUR_0_11_INCORRECT);
+
+        // when "H" or "k" flags found, make sure that it DOES NOT CONTAIN "a" or "B"
+        DateTimeFormatter.ofPattern(MILITARY_HOUR_0_23_INCORRECT);
+        DateTimeFormatter.ofPattern(MILITARY_HOUR_1_24_INCORRECT);
+        DateTimeFormatter.ofPattern("HH:mm B");
+        DateTimeFormatter.ofPattern("kk:mm B");
+
+        // when "M" or "d" flags found, make sure that it DOES NOT CONTAIN "Y" (unless "w" is provided)
+        DateTimeFormatter.ofPattern(WEEK_YEAR_INCORRECT);
+
+        // milli-of-day cannot be used together with Hours, Minutes, Seconds
+        DateTimeFormatter.ofPattern("h:mm:ss a A");
+        DateTimeFormatter.ofPattern("K:mm:ss a A");
+        DateTimeFormatter.ofPattern("HH:mm:ss a A");
+        DateTimeFormatter.ofPattern("kk:mm:ss a A");
+        DateTimeFormatter.ofPattern("h:mm:ss a N");
+        DateTimeFormatter.ofPattern("K:mm:ss a N");
+        DateTimeFormatter.ofPattern("HH:mm:ss a N");
+        DateTimeFormatter.ofPattern("kk:mm a N");
+        DateTimeFormatter.ofPattern("h:mm a A");
+        DateTimeFormatter.ofPattern("K:mm a A");
+        DateTimeFormatter.ofPattern("HH:mm a A");
+        DateTimeFormatter.ofPattern("kk:mm a A");
+        DateTimeFormatter.ofPattern("h:mm a N");
+        DateTimeFormatter.ofPattern("K:mm a N");
+        DateTimeFormatter.ofPattern("HH:mm a N");
+        DateTimeFormatter.ofPattern("kk:mm a N");
+
+        // milli-of-day and nano-of-day cannot be used together
+        DateTimeFormatter.ofPattern("A N");
+        DateTimeFormatter.ofPattern("N A");
+
+        // fraction-of-second and nano-of-second cannot be used together
+        DateTimeFormatter.ofPattern("S n");
+        DateTimeFormatter.ofPattern("n S");
+
+        // am-pm marker and period-of-day cannot be used together
+        DateTimeFormatter.ofPattern("h:mm a B");
+        DateTimeFormatter.ofPattern("K:mm a B");
+        DateTimeFormatter.ofPattern("h:mm B a");
+        DateTimeFormatter.ofPattern("K:mm B a");
+        DateTimeFormatter.ofPattern("a B");
+        DateTimeFormatter.ofPattern("B a");
+
+        // year and year-of-era cannot be used together
+        DateTimeFormatter.ofPattern("y u");
+        DateTimeFormatter.ofPattern("u y");
     }
 }

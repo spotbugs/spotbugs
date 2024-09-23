@@ -1,13 +1,12 @@
 package ghIssues.issue637;
 
+import edu.umd.cs.findbugs.detect.DateFormatStringChecker;
 import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 
 /**
@@ -159,5 +158,36 @@ public final class Issue637NoErrors {
         FastDateFormat.getInstance(MILITARY_HOUR_0_23_CORRECT, tz);
         FastDateFormat.getInstance(MILITARY_HOUR_1_24_CORRECT, tz);
         FastDateFormat.getInstance(WEEK_YEAR_CORRECT, tz);
+    }
+
+    public static void periodTest() {
+        // when "h" or "K" flags found, make sure that it ALSO CONTAINS "a" or "B"
+        DateTimeFormatter.ofPattern(AM_PM_HOUR_1_12_CORRECT);
+        DateTimeFormatter.ofPattern(AM_PM_HOUR_0_11_CORRECT);
+        DateTimeFormatter.ofPattern("h:mm B");
+        DateTimeFormatter.ofPattern("K:mm B");
+
+        // when "H" or "k" flags found, make sure that it DOES NOT CONTAIN "a" or "B"
+        DateTimeFormatter.ofPattern(MILITARY_HOUR_0_23_CORRECT);
+        DateTimeFormatter.ofPattern(MILITARY_HOUR_1_24_CORRECT);
+
+        // when "M" or "d" flags found, make sure that it DOES NOT CONTAIN "Y" (unless "w" is provided)
+        DateTimeFormatter.ofPattern(WEEK_YEAR_CORRECT);
+
+        // milli-of-day cannot be used together with Hours, Minutes, Seconds
+        DateTimeFormatter.ofPattern("A");
+        DateTimeFormatter.ofPattern("N");
+
+        // fraction-of-second and nano-of-second cannot be used together
+        DateTimeFormatter.ofPattern("S");
+        DateTimeFormatter.ofPattern("n");
+
+        // am-pm marker and period-of-day cannot be used together
+        DateTimeFormatter.ofPattern("a");
+        DateTimeFormatter.ofPattern("B");
+
+        // year and year-of-era cannot be used together
+        DateTimeFormatter.ofPattern("u");
+        DateTimeFormatter.ofPattern("y");
     }
 }
