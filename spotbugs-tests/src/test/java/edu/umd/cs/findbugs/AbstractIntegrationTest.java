@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -30,8 +33,10 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.test.AnalysisRunner;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
@@ -141,5 +146,134 @@ public abstract class AbstractIntegrationTest {
                 .map(AbstractIntegrationTest::getFindbugsTestCasesFile)
                 .toArray(Path[]::new);
         bugReporter = runner.run(paths);
+    }
+
+    final protected void assertNoBugType(String bugType) {
+        assertBugTypeCount(bugType, 0);
+    }
+
+    final protected void assertBugTypeCount(String bugType, int count) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .build();
+        assertThat(getBugCollection(), containsExactly(count, matcher));
+    }
+
+    final protected void assertNoBugInClass(String bugType, String className) {
+        assertBugInClassCount(bugType, className, 0);
+    }
+
+    final protected void assertBugInClassCount(String bugType, String className, int count) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .build();
+        assertThat(getBugCollection(), containsExactly(count, matcher));
+    }
+
+    final protected void assertBugInClass(String bugType, String className) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    final protected void assertNoBugInMethod(String bugType, String className, String method) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .inMethod(method)
+                .build();
+
+        assertThat(getBugCollection(), containsExactly(0, matcher));
+    }
+
+    final protected void assertBugInMethod(String bugType, String className, String method) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .inMethod(method)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    final protected void assertBugInMethodAtLine(String bugType, String className, String method, int line) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .inMethod(method)
+                .atLine(line)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    final protected void assertBugInMethodAtLineWithConfidence(String bugType, String className, String method, int line, Confidence confidence) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .inMethod(method)
+                .atLine(line)
+                .withConfidence(confidence)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    final protected void assertBugInMethodAtField(String bugType, String className, String method, String fieldName) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .inMethod(method)
+                .atField(fieldName)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    final protected void assertBugAtField(String bugType, String className, String fieldName) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .atField(fieldName)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    final protected void assertBugAtFieldAtLine(String bugType, String className, String fieldName, int line) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .atField(fieldName)
+                .atLine(line)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    final protected void assertBugAtVar(String bugType, String className, String method, String variableName, int line) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .inMethod(method)
+                .atVariable(variableName)
+                .atLine(line)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    final protected void assertBugInMethodAtVariable(String bugType, String className, String methodName, String variableName) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .inMethod(methodName)
+                .atVariable(variableName)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    final protected void assertBugAtLine(String bugType, int line) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .atLine(line)
+                .build();
+        assertThat(getBugCollection(), hasItem(matcher));
     }
 }
