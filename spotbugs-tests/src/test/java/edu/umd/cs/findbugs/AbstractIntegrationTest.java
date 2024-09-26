@@ -148,10 +148,23 @@ public abstract class AbstractIntegrationTest {
         bugReporter = runner.run(paths);
     }
 
+    /**
+     * Asserts that there are exactly zero bug instances with the given bug type.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     */
     final protected void assertNoBugType(String bugType) {
         assertBugTypeCount(bugType, 0);
     }
 
+    /**
+     * Asserts that there are exactly the given number of bug instances with the given bug type.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param count the expected number of matches
+     */
     final protected void assertBugTypeCount(String bugType, int count) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -159,10 +172,25 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(count, matcher));
     }
 
+    /**
+     * Asserts that there are exactly zero bug instances with the given bug type in the given class.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     */
     final protected void assertNoBugInClass(String bugType, String className) {
         assertBugInClassCount(bugType, className, 0);
     }
 
+    /**
+     * Asserts that there are exactly the given number of bug instances with the given bug type in the given class.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param count the expected number of matches
+     */
     final protected void assertBugInClassCount(String bugType, String className, int count) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -171,6 +199,13 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(count, matcher));
     }
 
+    /**
+     * Asserts that there is a bug instance with the given bug type in the given class.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     */
     final protected void assertBugInClass(String bugType, String className) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -179,6 +214,14 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(matcher));
     }
 
+    /**
+     * Asserts that there are exactly zero bug instances with the given bug type in the given class in the given method.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param method the expected method's name
+     */
     final protected void assertNoBugInMethod(String bugType, String className, String method) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -189,6 +232,14 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), containsExactly(0, matcher));
     }
 
+    /**
+     * Asserts that there is a bug instance with the given bug type in the given class in the given method.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param method the expected method's name
+     */
     final protected void assertBugInMethod(String bugType, String className, String method) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -198,6 +249,15 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(matcher));
     }
 
+    /**
+     * Asserts that there is a bug instance with the given bug type in the given class in the given method at the given line.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param method the expected method's name
+     * @param line the expected line
+     */
     final protected void assertBugInMethodAtLine(String bugType, String className, String method, int line) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -208,6 +268,16 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(matcher));
     }
 
+    /**
+     * Asserts that there is a bug instance with the given bug type in the given class in the given method at the given line with the given confidence.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param method the expected method's name
+     * @param line the expected line
+     * @param confidence the expected confidence
+     */
     final protected void assertBugInMethodAtLineWithConfidence(String bugType, String className, String method, int line, Confidence confidence) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -219,6 +289,15 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(matcher));
     }
 
+    /**
+     * Asserts that there is a bug instance with the given bug type in the given class in the given method at the given field.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param method the expected method's name
+     * @param fieldName the expected field's name
+     */
     final protected void assertBugInMethodAtField(String bugType, String className, String method, String fieldName) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -229,6 +308,14 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(matcher));
     }
 
+    /**
+     * Asserts that there is a bug instance with the given bug type in the given class at the given field.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param fieldName the expected field's name
+     */
     final protected void assertBugAtField(String bugType, String className, String fieldName) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -238,6 +325,15 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(matcher));
     }
 
+    /**
+     * Asserts that there is a bug instance with the given bug type in the given class at the given field at the given line.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param fieldName the expected field's name
+     * @param line the expected line
+     */
     final protected void assertBugAtFieldAtLine(String bugType, String className, String fieldName, int line) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -248,6 +344,16 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(matcher));
     }
 
+    /**
+     * Asserts that there is a bug instance with the given bug type in the given class in the given method at the given variable at the given line.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param method the expected method's name
+     * @param variableName the expected variable name
+     * @param line the expected line
+     */
     final protected void assertBugAtVar(String bugType, String className, String method, String variableName, int line) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
@@ -259,16 +365,32 @@ public abstract class AbstractIntegrationTest {
         assertThat(getBugCollection(), hasItem(matcher));
     }
 
-    final protected void assertBugInMethodAtVariable(String bugType, String className, String methodName, String variableName) {
+    /**
+     * Asserts that there is a bug instance with the given bug type in the given class in the given method at the given variable.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param method the expected method's name
+     * @param variableName the expected variable name
+     */
+    final protected void assertBugInMethodAtVariable(String bugType, String className, String method, String variableName) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
                 .inClass(className)
-                .inMethod(methodName)
+                .inMethod(method)
                 .atVariable(variableName)
                 .build();
         assertThat(getBugCollection(), hasItem(matcher));
     }
 
+    /**
+     * Asserts that there is a bug instance with the given bug type at the given line.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param line the expected line
+     */
     final protected void assertBugAtLine(String bugType, int line) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType(bugType)
