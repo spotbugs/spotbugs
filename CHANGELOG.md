@@ -19,6 +19,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Detect failure to close RocksDB's ReadOptions ([#3069](https://github.com/spotbugs/spotbugs/issues/3069))
 - Fix FP `EI_EXPOSE_REP` when there are multiple immutable assignments ([#3023](https://github.com/spotbugs/spotbugs/issues/3023))
 - Fixed false positive `NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` for Kotlin, handle Kotlin's `Intrinsics.checkNotNullParameter()` ([#3094](https://github.com/spotbugs/spotbugs/issues/3094))
+- Fixed some CWE mappings ([#3124](https://github.com/spotbugs/spotbugs/pull/3124))
 
 ## 4.8.6 - 2024-06-17
 ### Fixed

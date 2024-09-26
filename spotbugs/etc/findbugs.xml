@@ -705,7 +705,7 @@
           <BugCode abbrev="AM" cweid="227"/>
           <BugCode abbrev="J2EE" cweid="4"/>
           <BugCode abbrev="RE" cweid="185"/>
-          <BugCode abbrev="MS" cweid="218"/>
+          <BugCode abbrev="MS" cweid="493"/>
           <BugCode abbrev="DE" cweid="391"/>
           <BugCode abbrev="XSS" cweid="79"/>
           <BugCode abbrev="HRS" cweid="113"/>
@@ -858,7 +858,7 @@
           <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE"
                     cweid="583"/>
           <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE" cweid="568"/>
           <BugPattern abbrev="FI" type="FI_USELESS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE"/>
           <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="BAD_PRACTICE" cweid="586"/>
