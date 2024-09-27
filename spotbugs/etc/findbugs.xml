@@ -860,7 +860,7 @@
           <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE"/>
           <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE" cweid="568"/>
           <BugPattern abbrev="FI" type="FI_USELESS" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE" cweid="568"/>
           <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="BAD_PRACTICE" cweid="586"/>
           <BugPattern abbrev="Eq" type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"
                     category="BAD_PRACTICE"/>
