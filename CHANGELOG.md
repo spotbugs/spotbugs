@@ -24,6 +24,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed false positive `NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` for Kotlin, handle Kotlin's `Intrinsics.checkNotNullParameter()` ([#3094](https://github.com/spotbugs/spotbugs/issues/3094))
 - Fixed some CWE mappings ([#3124](https://github.com/spotbugs/spotbugs/pull/3124))
 
+### Cleanup
+- Cleaup thread issue and regex issue in test-harness
+
 ## 4.8.6 - 2024-06-17
 ### Fixed
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches when the switch instruction is TABLESWITCH ([#2782](https://github.com/spotbugs/spotbugs/issues/2782))
