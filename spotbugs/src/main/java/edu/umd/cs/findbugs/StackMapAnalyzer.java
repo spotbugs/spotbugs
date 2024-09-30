@@ -127,7 +127,8 @@ public class StackMapAnalyzer {
         return locals;
     }
 
-    static private @CheckForNull JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
+    @CheckForNull
+    private static JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
         Method method;
         try {
             method = analysisCache.getMethodAnalysis(Method.class, descriptor);
@@ -216,7 +217,7 @@ public class StackMapAnalyzer {
 
     }
 
-    static private Item getItem(StackMapType t) {
+    private static Item getItem(StackMapType t) {
 
         switch (t.getType()) {
 
@@ -251,7 +252,7 @@ public class StackMapAnalyzer {
         }
     }
 
-    static private void addLocals(List<Item> lst, StackMapType[] typesOfStackItems) {
+    private static void addLocals(List<Item> lst, StackMapType[] typesOfStackItems) {
         for (StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
@@ -262,7 +263,7 @@ public class StackMapAnalyzer {
 
     }
 
-    static private void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
+    private static void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
         for (StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
