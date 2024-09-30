@@ -52,7 +52,7 @@ public class SystemProperties {
         RUNNING_AS_IDE_PLUGIN = RUNNING_IN_ECLIPSE || name.startsWith("com.intellij.ide.");
     }
 
-    final static String OS_NAME;
+    static final String OS_NAME;
     static {
         boolean tmp = false;
         assert tmp = true; // set tmp to true if assertions are enabled
