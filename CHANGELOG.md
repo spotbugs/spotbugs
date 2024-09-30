@@ -25,7 +25,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed some CWE mappings ([#3124](https://github.com/spotbugs/spotbugs/pull/3124))
 
 ### Cleanup
-- Cleaup thread issue and regex issue in test-harness
+- Cleaup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
 
 ## 4.8.6 - 2024-06-17
 ### Fixed
