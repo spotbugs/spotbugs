@@ -1,39 +1,17 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 class RegressionIdeas20090317Test extends AbstractIntegrationTest {
     @Test
     void test() {
         performAnalysis("bugIdeas/Ideas_2009_03_17.class");
-        assertBug("RC_REF_COMPARISON");
-        assertBug("RC_REF_COMPARISON_BAD_PRACTICE");
+        assertBugTypeCount("RC_REF_COMPARISON", 1);
+        assertBugTypeCount("RC_REF_COMPARISON_BAD_PRACTICE", 1);
 
-        assertExactBug("RC_REF_COMPARISON", "areEqual", 12);
-        assertExactBug("RC_REF_COMPARISON_BAD_PRACTICE", "isSpecial", 8);
-    }
-
-    private void assertBug(String bugtype) {
-        BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType(bugtype)
-                .build();
-        assertThat(getBugCollection(), containsExactly(1, matcher));
-    }
-
-    private void assertExactBug(String bugtype, String method, int line) {
-        BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType(bugtype)
-                .inClass("Ideas_2009_03_17")
-                .inMethod(method)
-                .atLine(line)
-                .build();
-        assertThat(getBugCollection(), hasItem(matcher));
+        assertBugInMethodAtLine("RC_REF_COMPARISON", "Ideas_2009_03_17", "areEqual", 12);
+        assertBugInMethodAtLine("RC_REF_COMPARISON_BAD_PRACTICE", "Ideas_2009_03_17", "isSpecial", 8);
     }
 }

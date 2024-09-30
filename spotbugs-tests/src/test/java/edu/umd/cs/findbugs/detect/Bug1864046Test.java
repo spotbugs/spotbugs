@@ -19,12 +19,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 class Bug1864046Test extends AbstractIntegrationTest {
     @Test
@@ -36,12 +32,5 @@ class Bug1864046Test extends AbstractIntegrationTest {
         assertNoBugType("DLS_DEAD_STORE_OF_CLASS_LITERAL");
         assertNoBugType("DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD");
         assertNoBugType("DLS_DEAD_LOCAL_INCREMENT_IN_RETURN");
-    }
-
-    private void assertNoBugType(String bugtype) {
-        BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType(bugtype)
-                .build();
-        assertThat(getBugCollection(), containsExactly(0, matcher));
     }
 }

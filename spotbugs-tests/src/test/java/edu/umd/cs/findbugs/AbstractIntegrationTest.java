@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import static edu.umd.cs.findbugs.test.CountMatcher.containsBetween;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -170,6 +171,21 @@ public abstract class AbstractIntegrationTest {
                 .bugType(bugType)
                 .build();
         assertThat(getBugCollection(), containsExactly(count, matcher));
+    }
+
+    /**
+     * Asserts that there are at least <code>min</code> and at most <code>max</code> number of bug instances with the given bug type.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param min the expected minimal number of matches
+     * @param max the expected maximal number of matches
+     */
+    final protected void assertBugTypeCountBetween(String bugType, int min, int max) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .build();
+        assertThat(getBugCollection(), containsBetween(min, max, matcher));
     }
 
     /**
