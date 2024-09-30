@@ -756,8 +756,7 @@ public class Project implements XMLWriteable, AutoCloseable {
             try {
                 return Project.readXML(projectFile);
             } catch (SAXException | ParserConfigurationException e) {
-                IOException ioe = new IOException("Couldn't read saved FindBugs project", e);
-                throw ioe;
+                throw new IOException("Couldn't read saved FindBugs project", e);
             }
         }
         throw new IllegalArgumentException("Can't read project from " + argument);

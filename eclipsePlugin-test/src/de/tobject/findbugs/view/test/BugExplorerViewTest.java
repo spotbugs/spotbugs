@@ -114,9 +114,8 @@ class BugExplorerViewTest extends AbstractBugExplorerViewTest {
                 setOf(expectedMarker1));
         ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(GroupType.Pattern, null, setOf(expectedMarker2),
                 setOf(expectedMarker2));
-        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
+        return new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
                 expectedPattern2), setOf(expectedMarker1, expectedMarker2));
-        return expectedProject;
     }
 
     private ExpectedViewElement createProjectPatternPackageMarkerExpectedContents() throws JavaModelException {
@@ -138,8 +137,7 @@ class BugExplorerViewTest extends AbstractBugExplorerViewTest {
                 setOf(expectedMarker1));
         ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(GroupType.Pattern, null, setOf(expectedPackage2),
                 setOf(expectedMarker2));
-        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
+        return new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
                 expectedPattern2), setOf(expectedMarker1, expectedMarker2));
-        return expectedProject;
     }
 }
