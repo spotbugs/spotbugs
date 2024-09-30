@@ -36,15 +36,15 @@ public interface IGuiCallback {
 
     void showMessageDialog(String message);
 
-    public final static int YES_OPTION = 0;
+    static final int YES_OPTION = 0;
 
-    public final static int NO_OPTION = 1;
+    static final int NO_OPTION = 1;
 
-    public final static int CANCEL_OPTION = 2;
+    static final int CANCEL_OPTION = 2;
 
-    public static final int YES_NO_OPTION = 0;
+    static final int YES_NO_OPTION = 0;
 
-    public static final int YES_NO_CANCEL_OPTION = 1;
+    static final int YES_NO_CANCEL_OPTION = 1;
 
     public static final int OK_CANCEL_OPTION = 2;
 

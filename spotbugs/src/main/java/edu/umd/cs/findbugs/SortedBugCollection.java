@@ -461,7 +461,6 @@ public class SortedBugCollection implements BugCollection {
         XMLOutput xmlOutput;
         // if (project == null) throw new NullPointerException("No project");
 
-
         xmlOutput = new OutputStreamXMLOutput(out);
 
         writeXML(xmlOutput);

@@ -32,7 +32,6 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
  */
 public abstract class FindBugsAnalysisFeatures {
 
-
     /**
      * "Relaxed" warning reporting mode. Rather than using hard-coded heuristics
      * to decide when to suppress a warning, report warnings freely and encode

@@ -49,8 +49,6 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  */
 public class StackMapAnalyzer {
 
-
-
     public static class StackMapAnalysisFactory extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfoFromStackMap> {
         public StackMapAnalysisFactory() {
             super("Jump info for opcode stack from stack map analysis", JumpInfoFromStackMap.class);
@@ -61,12 +59,10 @@ public class StackMapAnalyzer {
 
             return getFromStackMap(analysisCache, descriptor);
 
-
         }
     }
 
     static class JumpInfoFromStackMap extends JumpInfo {
-
 
         JumpInfoFromStackMap(Map<Integer, List<Item>> jumpEntries, Map<Integer, List<Item>> jumpStackEntries, BitSet jumpEntryLocations) {
             super(jumpEntries, jumpStackEntries, jumpEntryLocations);
