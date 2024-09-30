@@ -288,8 +288,7 @@ public class SystemProperties {
         if (!m.matches() || m.groupCount() == 0) {
             return u;
         }
-        String result = String.format(URL_REWRITE_FORMAT, m.group(1));
-        return result;
+        return String.format(URL_REWRITE_FORMAT, m.group(1));
     }
 
 }

@@ -948,8 +948,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         if (classname.indexOf('.') > 0) {
             packageName = classname.substring(0, 1 + classname.lastIndexOf('.'));
         }
-        String sourcePath = packageName.replace('.', CANONICAL_PACKAGE_SEPARATOR) + sourceFile;
-        return sourcePath;
+        return packageName.replace('.', CANONICAL_PACKAGE_SEPARATOR) + sourceFile;
     }
 
     /**

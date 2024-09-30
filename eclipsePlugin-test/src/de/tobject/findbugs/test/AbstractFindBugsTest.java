@@ -52,19 +52,16 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
     }
 
     protected ICompilationUnit getClassA() throws JavaModelException {
-        ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject().findElement(new Path("A.java"));
-        return compilationUnit;
+        return (ICompilationUnit) getJavaProject().findElement(new Path("A.java"));
     }
 
     protected ICompilationUnit getClassB() throws JavaModelException {
-        ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject().findElement(new Path("B.java"));
-        return compilationUnit;
+        return (ICompilationUnit) getJavaProject().findElement(new Path("B.java"));
     }
 
     protected IPackageFragment getDefaultPackageInSrc() throws JavaModelException {
-        IPackageFragment fragment = getJavaProject().findPackageFragment(
+        return getJavaProject().findPackageFragment(
                 new Path("/" + AbstractPluginTest.TEST_PROJECT + "/" + AbstractPluginTest.SRC));
-        return fragment;
     }
 
     /**
