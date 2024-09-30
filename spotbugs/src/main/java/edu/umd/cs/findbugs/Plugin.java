@@ -57,7 +57,6 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  */
 public class Plugin implements AutoCloseable {
 
-
     private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
     static Map<URI, Plugin> allPlugins = new LinkedHashMap<>();
     private final String pluginId;

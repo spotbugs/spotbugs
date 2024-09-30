@@ -31,19 +31,19 @@ public interface ExitCodes {
     /**
      * Serious analysis errors occurred.
      */
-    public static final int ERROR_FLAG = 4;
+    static final int ERROR_FLAG = 4;
 
     /**
      * Classes needed for analysis were missing.
      */
-    public static final int MISSING_CLASS_FLAG = 2;
+    static final int MISSING_CLASS_FLAG = 2;
 
     /**
      * Bugs were reported.
      */
-    public static final int BUGS_FOUND_FLAG = 1;
+    static final int BUGS_FOUND_FLAG = 1;
 
-    public static int from(int errors, int missingClasses, int bugs) {
+    static int from(int errors, int missingClasses, int bugs) {
         Logger logger = LoggerFactory.getLogger(ExitCodes.class);
         int exitCode = 0;
         logger.debug("Calculating exit code...");

@@ -31,15 +31,15 @@ public interface InstructionScanner {
     /**
      * Traverse an edge.
      */
-    public void traverseEdge(Edge edge);
+    void traverseEdge(Edge edge);
 
     /**
      * Traverse an instruction.
      */
-    public void scanInstruction(InstructionHandle handle);
+    void scanInstruction(InstructionHandle handle);
 
     /**
      * Return true if this scanner has completed, false otherwise.
      */
-    public boolean isDone();
+    boolean isDone();
 }
