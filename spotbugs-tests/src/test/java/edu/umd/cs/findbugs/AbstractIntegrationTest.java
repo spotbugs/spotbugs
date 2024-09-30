@@ -174,12 +174,12 @@ public abstract class AbstractIntegrationTest {
     }
 
     /**
-     * Asserts that there are at least <code>min</code> and at most <code>max</code> number of bug instances with the given bug type.
+     * Asserts that there are at least {@code min} and at most {@code max} number of bug instances (both inclusive) with the given bug type.
      * The match is checked according to {@link BugInstanceMatcher}.
      *
      * @param bugType the expected bug type
-     * @param min the expected minimal number of matches
-     * @param max the expected maximal number of matches
+     * @param min the expected minimal number of matches (inclusive)
+     * @param max the expected maximal number of matches (inclusive)
      */
     final protected void assertBugTypeCountBetween(String bugType, int min, int max) {
         final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()

@@ -40,16 +40,16 @@ public final class CountMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
 
     /**
      * Creates a matcher for {@link Iterable}s that only matches if at least {@code minCount} and at most {@code maxCount}
-     * items match the specified {@code matcher}.
+     * items (both inclusive) match the specified {@code matcher}.
      *
      * @param matcher
      *            A non-{@code null} matcher that must match at least {@code minCount} and at most {@code maxCount} times.
      * @param <T>
      *            matcher item type
      * @param minCount
-     *            How many times the {@code matcher} must match at least.
+     *            How many times the {@code matcher} must match at least (inclusive).
      * @param maxCount
-     *            How many times the {@code matcher} must match at most.
+     *            How many times the {@code matcher} must match at most (inclusive).
      * @return new matcher instance
      */
     public static <T> Matcher<Iterable<T>> containsBetween(final int minCount, final int maxCount, final Matcher<T> matcher) {
