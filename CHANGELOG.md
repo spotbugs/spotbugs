@@ -7,7 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2024-??-??
 ### Added
-- Add SimpleDateFormat string check for bad combinations of format flags ([#637](https://github.com/spotbugs/spotbugs/issues/637))
+- Updated the `SuppressFBWarnings` annotation to support finer grained bug suppressions ([#3102](https://github.com/spotbugs/spotbugs/pull/3102))
 
 ### Fixed
 - Do not consider Records as Singletons ([#2981](https://github.com/spotbugs/spotbugs/issues/2981))

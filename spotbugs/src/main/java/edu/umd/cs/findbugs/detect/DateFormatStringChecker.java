@@ -27,47 +27,51 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class DateFormatStringChecker extends OpcodeStackDetector {
     private final BugReporter bugReporter;
 
     /**
-     * Contains special flags that can trigger check (keywords); property of the rule
-     * (isRequired - whether flag should contain or be absent); flags to be checked
-     * and a bypassing flag (whether a rule can be skipped if such flag is included)
+     * Contains special flags that can trigger check (triggers); property of the rule
+     * (isRequired - whether flag should be contained or be absent); flags to be checked
+     * (checkItems) and a bypassing flag (ignoreFlag - whether a rule can be skipped if
+     * such flag is included)
      */
     private static final class Rule {
-        boolean isRequired;
-        String ignore;
-        List<String> flags;
-        List<String> keywords;
+        private final boolean isRequired;
+        private final String ignoreFlag;
+        private final List<String> checkItems;
+        private final List<String> triggers;
 
-        Rule(List<String> flags, String ignore, boolean isRequired, List<String> keywords) {
-            this.flags = flags;
-            this.ignore = ignore;
+        Rule(List<String> checkItems, String ignoreFlag, boolean isRequired, List<String> triggers) {
+            this.checkItems = checkItems;
+            this.ignoreFlag = ignoreFlag;
             this.isRequired = isRequired;
-            this.keywords = keywords;
+            this.triggers = triggers;
         }
 
-        boolean containsAny(String target, List<String> list) {
-            if (list == null) {
-                return false;
-            }
-            for (String item : list) {
-                if (target.contains(item)) {
-                    return true;
-                }
-            }
-            return false;
+        /**
+         *  dateFormat is being checked for existence of any element from listOfFlags
+         */
+        boolean containsAny(String dateFormat, List<String> listOfFlags) {
+            return listOfFlags != null && listOfFlags.stream().anyMatch(dateFormat::contains);
         }
 
+        /**
+         *  dateFormat is being checked for existence of any keywords (triggering flags)
+         *  to start the check (if ignoreFlag flag was found - further checking is skipped);
+         *  if isRequired property is:
+         *      - true:  dateFormat is checked for existence of flags (this.flags)
+         *      - false: dateFormat is checked for absence of flags (this.flags)
+         */
         boolean verify(String dateFormat) {
-            if (!containsAny(dateFormat, this.keywords)
-                    || (this.ignore != null && dateFormat.contains(this.ignore))) {
+            if ((this.ignoreFlag != null && dateFormat.contains(this.ignoreFlag))
+                    || !containsAny(dateFormat, this.triggers)) {
                 return false;
             }
 
-            boolean cond = containsAny(dateFormat, this.flags);
+            boolean cond = containsAny(dateFormat, this.checkItems);
             if (this.isRequired) {
                 return !cond;
             }
@@ -86,42 +90,35 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
             return;
         }
 
-        int idx = -1;
         String cl = getClassConstantOperand();
         String nm = getNameConstantOperand();
         String si = getSigConstantOperand();
-        if ("java/text/SimpleDateFormat".equals(cl)
-                && contains(nm, Const.CONSTRUCTOR_NAME, "applyPattern", "applyLocalizedPattern")) {
-            switch (si) {
-            case "(Ljava/lang/String;)V":
-                idx = 0;
-                break;
-            case "(Ljava/lang/String;Ljava/util/Locale;)V":
-            case "(Ljava/lang/String;Ljava/text/DateFormatSymbols;)V":
-                idx = 1;
-                break;
-            }
-        } else if ("java/time/format/DateTimeFormatter".equals(cl) && "ofPattern".equals(nm)) {
-            switch (si) {
-            case "(Ljava/lang/String;)Ljava/time/format/DateTimeFormatter;":
-                idx = 0;
-                break;
-            case "(Ljava/lang/String;Ljava/util/Locale;)Ljava/time/format/DateTimeFormatter;":
-                idx = 1;
-                break;
-            }
-        } else if ("org/apache/commons/lang3/time/FastDateFormat".equals(cl) && "getInstance".equals(nm)) {
-            switch (si) {
-            case "(Ljava/lang/String;)Lorg/apache/commons/lang3/time/FastDateFormat;":
-                idx = 0;
-                break;
-            case "(Ljava/lang/String;Ljava/util/Locale;)Lorg/apache/commons/lang3/time/FastDateFormat;":
-            case "(Ljava/lang/String;Ljava/util/TimeZone;)Lorg/apache/commons/lang3/time/FastDateFormat;":
-                idx = 1;
-                break;
-            }
-        }
 
+        int idx = -1;
+        /*  idx represents the position of the string in the stack,
+            the value is
+                0 in cases when it has only 1 parameter provided;
+                1 in cases when there are multiple parameters given;
+               -1 when no method found, or has different number of parameters
+            within the specified functions (given in switch and if) */
+        if (("java/text/SimpleDateFormat".equals(cl) && Arrays.asList(Const.CONSTRUCTOR_NAME,
+                    "applyPattern", "applyLocalizedPattern").contains(nm)
+                    && "(Ljava/lang/String;)V".equals(si))
+                || ("java/time/format/DateTimeFormatter".equals(cl) && "ofPattern".equals(nm)
+                    && "(Ljava/lang/String;)Ljava/time/format/DateTimeFormatter;".equals(si))
+                || ("org/apache/commons/lang3/time/FastDateFormat".equals(cl) && "getInstance".equals(nm)
+                    && "(Ljava/lang/String;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si))) {
+            idx = 0;
+        } else if (("java/text/SimpleDateFormat".equals(cl) && Const.CONSTRUCTOR_NAME.equals(nm)
+                    && ("(Ljava/lang/String;Ljava/util/Locale;)V".equals(si)
+                    || "(Ljava/lang/String;Ljava/text/DateFormatSymbols;)V".equals(si)))
+                || ("java/time/format/DateTimeFormatter".equals(cl) && "ofPattern".equals(nm)
+                    && "(Ljava/lang/String;Ljava/util/Locale;)Ljava/time/format/DateTimeFormatter;".equals(si))
+                || ("org/apache/commons/lang3/time/FastDateFormat".equals(cl) && "getInstance".equals(nm)
+                    && ("(Ljava/lang/String;Ljava/util/Locale;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si)
+                    || "(Ljava/lang/String;Ljava/util/TimeZone;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si)))) {
+            idx = 1;
+        }
         if (idx == -1) {
             return;
         }
@@ -129,13 +126,11 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
         String dateFormatString = (String) stack.getStackItem(idx).getConstant();
         if (dateFormatString != null && runDateFormatRuleVerify(dateFormatString)) {
             bugReporter.reportBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
-                    .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
+                    .addClassAndMethod(this)
+                    .addCalledMethod(this)
+                    .addString(dateFormatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
+                    .addSourceLine(this));
         }
-    }
-
-    private boolean contains(String item, String... items) {
-        return Arrays.asList(items).contains(item);
     }
 
     /**
@@ -145,12 +140,14 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
      * @return {@code true} if given string matches any bad combination.
      */
     private boolean runDateFormatRuleVerify(String dateFormat) {
-        for (Rule rule : new Rule[] {
+        return Stream.of(
             // when "h" or "K" flags found, make sure that it ALSO CONTAINS "a" or "B"
             new Rule(Arrays.asList("a", "B"), null, true, Arrays.asList("h", "K")),
+            // 5:00 pm (5:00 in the evening)
 
             // when "H" or "k" flags found, make sure that it DOES NOT CONTAIN "a" or "B"
             new Rule(Arrays.asList("a", "B"), null, false, Arrays.asList("H", "k")),
+            // 17:00 (am/pm)
 
             // when "M" or "d" flags found, make sure that it DOES NOT CONTAIN "Y" (unless "w" is provided)
             new Rule(Collections.singletonList("Y"), "w", false, Arrays.asList("M", "d")),
@@ -173,11 +170,6 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
             // year and year-of-era cannot be used together
             new Rule(Collections.singletonList("u"), null, false, Collections.singletonList("y")),
             new Rule(Collections.singletonList("y"), null, false, Collections.singletonList("u"))
-        }) {
-            if (rule.verify(dateFormat)) {
-                return true;
-            }
-        }
-        return false;
+        ).anyMatch(rule -> rule.verify(dateFormat));
     }
 }
