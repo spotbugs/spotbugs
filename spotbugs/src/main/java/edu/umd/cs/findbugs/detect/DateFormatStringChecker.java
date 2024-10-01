@@ -102,21 +102,21 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
                -1 when no method found, or has different number of parameters
             within the specified functions (given in switch and if) */
         if (("java/text/SimpleDateFormat".equals(cl) && Arrays.asList(Const.CONSTRUCTOR_NAME,
-                    "applyPattern", "applyLocalizedPattern").contains(nm)
-                    && "(Ljava/lang/String;)V".equals(si))
+                "applyPattern", "applyLocalizedPattern").contains(nm)
+                && "(Ljava/lang/String;)V".equals(si))
                 || ("java/time/format/DateTimeFormatter".equals(cl) && "ofPattern".equals(nm)
-                    && "(Ljava/lang/String;)Ljava/time/format/DateTimeFormatter;".equals(si))
+                        && "(Ljava/lang/String;)Ljava/time/format/DateTimeFormatter;".equals(si))
                 || ("org/apache/commons/lang3/time/FastDateFormat".equals(cl) && "getInstance".equals(nm)
-                    && "(Ljava/lang/String;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si))) {
+                        && "(Ljava/lang/String;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si))) {
             idx = 0;
         } else if (("java/text/SimpleDateFormat".equals(cl) && Const.CONSTRUCTOR_NAME.equals(nm)
-                    && ("(Ljava/lang/String;Ljava/util/Locale;)V".equals(si)
-                    || "(Ljava/lang/String;Ljava/text/DateFormatSymbols;)V".equals(si)))
+                && ("(Ljava/lang/String;Ljava/util/Locale;)V".equals(si)
+                        || "(Ljava/lang/String;Ljava/text/DateFormatSymbols;)V".equals(si)))
                 || ("java/time/format/DateTimeFormatter".equals(cl) && "ofPattern".equals(nm)
-                    && "(Ljava/lang/String;Ljava/util/Locale;)Ljava/time/format/DateTimeFormatter;".equals(si))
+                        && "(Ljava/lang/String;Ljava/util/Locale;)Ljava/time/format/DateTimeFormatter;".equals(si))
                 || ("org/apache/commons/lang3/time/FastDateFormat".equals(cl) && "getInstance".equals(nm)
-                    && ("(Ljava/lang/String;Ljava/util/Locale;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si)
-                    || "(Ljava/lang/String;Ljava/util/TimeZone;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si)))) {
+                        && ("(Ljava/lang/String;Ljava/util/Locale;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si)
+                                || "(Ljava/lang/String;Ljava/util/TimeZone;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si)))) {
             idx = 1;
         }
         if (idx == -1) {
@@ -141,35 +141,34 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
      */
     private boolean runDateFormatRuleVerify(String dateFormat) {
         return Stream.of(
-            // when "h" or "K" flags found, make sure that it ALSO CONTAINS "a" or "B"
-            new Rule(Arrays.asList("a", "B"), null, true, Arrays.asList("h", "K")),
-            // 5:00 pm (5:00 in the evening)
+                // when "h" or "K" flags found, make sure that it ALSO CONTAINS "a" or "B"
+                new Rule(Arrays.asList("a", "B"), null, true, Arrays.asList("h", "K")),
+                // 5:00 pm (5:00 in the evening)
 
-            // when "H" or "k" flags found, make sure that it DOES NOT CONTAIN "a" or "B"
-            new Rule(Arrays.asList("a", "B"), null, false, Arrays.asList("H", "k")),
-            // 17:00 (am/pm)
+                // when "H" or "k" flags found, make sure that it DOES NOT CONTAIN "a" or "B"
+                new Rule(Arrays.asList("a", "B"), null, false, Arrays.asList("H", "k")),
+                // 17:00 (am/pm)
 
-            // when "M" or "d" flags found, make sure that it DOES NOT CONTAIN "Y" (unless "w" is provided)
-            new Rule(Collections.singletonList("Y"), "w", false, Arrays.asList("M", "d")),
+                // when "M" or "d" flags found, make sure that it DOES NOT CONTAIN "Y" (unless "w" is provided)
+                new Rule(Collections.singletonList("Y"), "w", false, Arrays.asList("M", "d")),
 
-            // milli-of-day cannot be used together with Hours, Minutes, Seconds
-            new Rule(Arrays.asList("H", "h", "K", "k", "m", "s"), null, false, Arrays.asList("A", "N")),
+                // milli-of-day cannot be used together with Hours, Minutes, Seconds
+                new Rule(Arrays.asList("H", "h", "K", "k", "m", "s"), null, false, Arrays.asList("A", "N")),
 
-            // milli-of-day and nano-of-day cannot be used together
-            new Rule(Collections.singletonList("A"), null, false, Collections.singletonList("N")),
-            new Rule(Collections.singletonList("N"), null, false, Collections.singletonList("A")),
+                // milli-of-day and nano-of-day cannot be used together
+                new Rule(Collections.singletonList("A"), null, false, Collections.singletonList("N")),
+                new Rule(Collections.singletonList("N"), null, false, Collections.singletonList("A")),
 
-            // fraction-of-second and nano-of-second cannot be used together
-            new Rule(Collections.singletonList("S"), null, false, Collections.singletonList("n")),
-            new Rule(Collections.singletonList("n"), null, false, Collections.singletonList("S")),
+                // fraction-of-second and nano-of-second cannot be used together
+                new Rule(Collections.singletonList("S"), null, false, Collections.singletonList("n")),
+                new Rule(Collections.singletonList("n"), null, false, Collections.singletonList("S")),
 
-            // am-pm marker and period-of-day cannot be used together
-            new Rule(Collections.singletonList("a"), null, false, Collections.singletonList("B")),
-            new Rule(Collections.singletonList("B"), null, false, Collections.singletonList("a")),
+                // am-pm marker and period-of-day cannot be used together
+                new Rule(Collections.singletonList("a"), null, false, Collections.singletonList("B")),
+                new Rule(Collections.singletonList("B"), null, false, Collections.singletonList("a")),
 
-            // year and year-of-era cannot be used together
-            new Rule(Collections.singletonList("u"), null, false, Collections.singletonList("y")),
-            new Rule(Collections.singletonList("y"), null, false, Collections.singletonList("u"))
-        ).anyMatch(rule -> rule.verify(dateFormat));
+                // year and year-of-era cannot be used together
+                new Rule(Collections.singletonList("u"), null, false, Collections.singletonList("y")),
+                new Rule(Collections.singletonList("y"), null, false, Collections.singletonList("u"))).anyMatch(rule -> rule.verify(dateFormat));
     }
 }
