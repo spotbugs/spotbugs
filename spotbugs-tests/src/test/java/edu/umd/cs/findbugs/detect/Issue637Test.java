@@ -25,7 +25,6 @@ class Issue637Test extends AbstractIntegrationTest {
         assertBugTypeCount(DESIRED_BUG_TYPE, 80);
 
         assertBugInMethodAtLine(DESIRED_BUG_TYPE, className, "oneArgConstructorTest", 31);
-        assertBugInMethodAtLine(DESIRED_BUG_TYPE, className, "oneArgConstructorTest", 31);
         assertBugInMethodAtLine(DESIRED_BUG_TYPE, className, "oneArgConstructorTest", 32);
         assertBugInMethodAtLine(DESIRED_BUG_TYPE, className, "oneArgConstructorTest", 33);
         assertBugInMethodAtLine(DESIRED_BUG_TYPE, className, "oneArgConstructorTest", 34);
