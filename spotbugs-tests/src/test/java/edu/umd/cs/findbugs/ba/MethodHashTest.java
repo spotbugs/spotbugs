@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,13 +62,13 @@ class MethodHashTest {
     @Test
     void testStringToHash() {
         byte[] hash2 = ClassHash.stringToHash(s);
-        Assertions.assertTrue(Arrays.equals(hash, hash2));
+        Assertions.assertArrayEquals(hash, hash2);
     }
 
     @Test
     void testSame() {
-        Assertions.assertTrue(MethodHash.compareHashes(hash, sameHash) == 0);
-        Assertions.assertTrue(MethodHash.compareHashes(sameHash, hash) == 0);
+        Assertions.assertEquals(0, MethodHash.compareHashes(hash, sameHash));
+        Assertions.assertEquals(0, MethodHash.compareHashes(sameHash, hash));
     }
 
     @Test

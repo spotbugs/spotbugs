@@ -18,14 +18,8 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.jupiter.api.Test;
-
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/603">GitHub issue</a>
@@ -35,9 +29,6 @@ class Issue603Test extends AbstractIntegrationTest {
     @Test
     void testIssue() {
         performAnalysis("ghIssues/Issue603.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("EI_EXPOSE_REP2")
-                .build();
-        assertThat(getBugCollection(), containsExactly(3, bugTypeMatcher));
+        assertBugTypeCount("EI_EXPOSE_REP2", 3);
     }
 }

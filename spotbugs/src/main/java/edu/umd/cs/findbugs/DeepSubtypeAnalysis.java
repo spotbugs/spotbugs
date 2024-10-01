@@ -19,17 +19,17 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Values;
 
 public class DeepSubtypeAnalysis {
-    static private JavaClass serializable;
+    private static JavaClass serializable;
 
-    static private JavaClass collection;
+    private static JavaClass collection;
 
-    static private JavaClass comparator;
+    private static JavaClass comparator;
 
-    static private JavaClass map;
+    private static JavaClass map;
 
-    static private JavaClass remote;
+    private static JavaClass remote;
 
-    static private ClassNotFoundException storedException;
+    private static ClassNotFoundException storedException;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("dsa.debug");
 

@@ -1865,7 +1865,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     @Nonnull
     public String getMessageWithoutPrefix() {
         BugPattern bugPattern = getBugPattern();
-        String pattern, shortPattern;
+        String pattern;
+        String shortPattern;
 
         pattern = getLongDescription();
         shortPattern = bugPattern.getShortDescription();

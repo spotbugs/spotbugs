@@ -5,10 +5,10 @@ apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
   implementation project(':spotbugs')
-  compileOnly 'org.apache.ant:ant:1.10.14'
+  compileOnly 'org.apache.ant:ant:1.10.15'
 
-  testImplementation 'org.apache.ant:ant:1.10.14'
-  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
+  testImplementation 'org.apache.ant:ant:1.10.15'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.1'
   testImplementation 'org.hamcrest:hamcrest:3.0'
 }
 

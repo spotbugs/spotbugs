@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.generic;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -75,10 +76,10 @@ class GenericUtilitiesTest {
 
     @Test
     void testOKSignaturesThatHaveCausedProblems() {
-        GenericUtilities.getType("[Ljava/util/Map$Entry<Ljava/lang/String;[B>;");
-        GenericUtilities.getType("[Ljava/util/Map<Ljava/lang/String;[Ljava/lang/String;>;");
-        GenericUtilities.getType(
-                "Lcom/palantir/finance/commons/service/calculator/Call<-Ljava/util/List<!*>;+Ljava/util/List<Ljava/lang/String;>;>;");
+        assertDoesNotThrow(() -> GenericUtilities.getType("[Ljava/util/Map$Entry<Ljava/lang/String;[B>;"));
+        assertDoesNotThrow(() -> GenericUtilities.getType("[Ljava/util/Map<Ljava/lang/String;[Ljava/lang/String;>;"));
+        assertDoesNotThrow(() -> GenericUtilities.getType(
+                "Lcom/palantir/finance/commons/service/calculator/Call<-Ljava/util/List<!*>;+Ljava/util/List<Ljava/lang/String;>;>;"));
     }
 
     @Test

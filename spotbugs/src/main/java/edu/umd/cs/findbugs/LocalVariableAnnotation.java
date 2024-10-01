@@ -89,9 +89,11 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
     public static final String VALUE_OF_ROLE = "LOCAL_VARIABLE_VALUE_OF";
 
-    final private String name;
+    private final String name;
 
-    final int register, pc;
+    final int register;
+
+    final int pc;
 
     final int line;
 

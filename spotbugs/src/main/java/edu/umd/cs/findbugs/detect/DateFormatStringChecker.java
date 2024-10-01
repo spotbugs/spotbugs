@@ -1,3 +1,20 @@
+/*
+ * SpotBugs - Find bugs in Java programs
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.Const;
@@ -5,168 +22,152 @@ import org.apache.bcel.Const;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.StringAnnotation;
-import edu.umd.cs.findbugs.annotations.Nullable;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class DateFormatStringChecker extends OpcodeStackDetector {
-
     private final BugReporter bugReporter;
 
-    /** Class for defining bad combinations of date format flags and checking for their presence. */
-    private static final class DateFormatRule {
-        /** forbiddenFlag must be missing to match given DateFormatRule. If this field is {@code null}, rule does
-         * not have a forbiddenFlag and the associated check will be bypassed. */
-        @Nullable
-        String forbiddenFlag;
+    /**
+     * Contains special flags that can trigger check (triggers); property of the rule
+     * (isRequired - whether flag should be contained or be absent); flags to be checked
+     * (checkItems) and a bypassing flag (ignoreFlag - whether a rule can be skipped if
+     * such flag is included)
+     */
+    private static final class Rule {
+        private final boolean isRequired;
+        private final String ignoreFlag;
+        private final List<String> checkItems;
+        private final List<String> triggers;
 
-        /** List of flags required in a pattern to match given DateFormatRule. */
-        @NonNull
-        List<String> requiredFlags;
-
-        /**
-         * DateFormatRule class constructor
-         * @param forbiddenFlag - forbidden flag
-         * @param requiredFlags - a list of required flags
-         * */
-        DateFormatRule(String forbiddenFlag, List<String> requiredFlags) {
-            this.forbiddenFlag = forbiddenFlag;
-            this.requiredFlags = requiredFlags;
+        Rule(List<String> checkItems, String ignoreFlag, boolean isRequired, List<String> triggers) {
+            this.checkItems = checkItems;
+            this.ignoreFlag = ignoreFlag;
+            this.isRequired = isRequired;
+            this.triggers = triggers;
         }
 
         /**
-         * Checks if string does not contain a
-         * forbiddenFlag and has all requiredFlags
-         * @param dateFormatString - string to be checked
-         * @return {@code true} if code equals to one of the elements
-         * */
-        boolean verify(String dateFormatString) {
-            if (this.forbiddenFlag != null && dateFormatString.contains(this.forbiddenFlag))
+         *  dateFormat is being checked for existence of any element from listOfFlags
+         */
+        boolean containsAny(String dateFormat, List<String> listOfFlags) {
+            return listOfFlags != null && listOfFlags.stream().anyMatch(dateFormat::contains);
+        }
+
+        /**
+         *  dateFormat is being checked for existence of any keywords (triggering flags)
+         *  to start the check (if ignoreFlag flag was found - further checking is skipped);
+         *  if isRequired property is:
+         *      - true:  dateFormat is checked for existence of flags (this.flags)
+         *      - false: dateFormat is checked for absence of flags (this.flags)
+         */
+        boolean verify(String dateFormat) {
+            if ((this.ignoreFlag != null && dateFormat.contains(this.ignoreFlag))
+                    || !containsAny(dateFormat, this.triggers)) {
                 return false;
-            for (String flag : requiredFlags)
-                if (!dateFormatString.contains(flag))
-                    return false;
-            return true;
+            }
+
+            boolean cond = containsAny(dateFormat, this.checkItems);
+            if (this.isRequired) {
+                return !cond;
+            }
+            return cond;
         }
     }
 
-    /**
-     * DateFormatStringChecker class constructor.
-     * @param bugReporter - bugReporter
-     */
     public DateFormatStringChecker(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-    /**
-     * Analyzes opcode to find SimpleDateFormat instances calling bad combinations of format flags.
-     * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-     * @param seen - seen
-     */
     @Override
     public void sawOpcode(int seen) {
-        int depth = stack.getStackDepth();
-        if (!seenVerify(seen) || depth == 0)
+        if (!(seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESTATIC
+                || seen == Const.INVOKEINTERFACE) || stack.getStackDepth() == 0) {
             return;
-
-        String dateFormatString = null;
-        for (int i = 0; i < depth; i++) {
-            Object formatStr = stack.getStackItem(i).getConstant();
-            if (formatStr instanceof String) {
-                dateFormatString = (String) formatStr;
-                break;
-            }
         }
-        if (dateFormatString == null)
-            return;
 
         String cl = getClassConstantOperand();
         String nm = getNameConstantOperand();
-        String sig = getSigConstantOperand();
-        if (!sigVerify(sig) || !nameVerify(nm) || !cl.equals("java/text/SimpleDateFormat"))
+        String si = getSigConstantOperand();
+
+        int idx = -1;
+        /*  idx represents the position of the string in the stack,
+            the value is
+                0 in cases when it has only 1 parameter provided;
+                1 in cases when there are multiple parameters given;
+               -1 when no method found, or has different number of parameters
+            within the specified functions (given in switch and if) */
+        if (("java/text/SimpleDateFormat".equals(cl) && "(Ljava/lang/String;)V".equals(si)
+                && (Const.CONSTRUCTOR_NAME.equals(nm) || "applyPattern".equals(nm) || "applyLocalizedPattern".equals(nm)))
+                || ("java/time/format/DateTimeFormatter".equals(cl) && "ofPattern".equals(nm)
+                        && "(Ljava/lang/String;)Ljava/time/format/DateTimeFormatter;".equals(si))
+                || ("org/apache/commons/lang3/time/FastDateFormat".equals(cl) && "getInstance".equals(nm)
+                        && "(Ljava/lang/String;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si))) {
+            idx = 0;
+        } else if (("java/text/SimpleDateFormat".equals(cl) && Const.CONSTRUCTOR_NAME.equals(nm)
+                && ("(Ljava/lang/String;Ljava/util/Locale;)V".equals(si)
+                        || "(Ljava/lang/String;Ljava/text/DateFormatSymbols;)V".equals(si)))
+                || ("java/time/format/DateTimeFormatter".equals(cl) && "ofPattern".equals(nm)
+                        && "(Ljava/lang/String;Ljava/util/Locale;)Ljava/time/format/DateTimeFormatter;".equals(si))
+                || ("org/apache/commons/lang3/time/FastDateFormat".equals(cl) && "getInstance".equals(nm)
+                        && ("(Ljava/lang/String;Ljava/util/Locale;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si)
+                                || "(Ljava/lang/String;Ljava/util/TimeZone;)Lorg/apache/commons/lang3/time/FastDateFormat;".equals(si)))) {
+            idx = 1;
+        }
+        if (idx == -1) {
             return;
-        if (!runDateFormatRuleVerify(dateFormatString))
-            return;
+        }
 
-        bugReporter.reportBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
-                .addClassAndMethod(this).addCalledMethod(this).addString(dateFormatString)
-                .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
+        String dateFormatString = (String) stack.getStackItem(idx).getConstant();
+        if (dateFormatString != null && runDateFormatRuleVerify(dateFormatString)) {
+            bugReporter.reportBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
+                    .addClassAndMethod(this)
+                    .addCalledMethod(this)
+                    .addString(dateFormatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
+                    .addSourceLine(this));
+        }
     }
 
     /**
-     * Creates an instance of DateFormatRule using
-     * the provided parameters (shorter alias)
-     * @param ff - short for forbiddenFlag
-     * @param rf - short for requiredFlags
-     * @return DateFormat object with provided parameters
-     * */
-    private DateFormatRule initRule(String ff, String... rf) {
-        return new DateFormatRule(ff, Arrays.asList(rf));
-    }
-
-    /**
-     * Checks if seen code is equals to
-     * one of the required by bytecodes
-     * @param num - code to be checked
-     * @return {@code true} if code equals to one of the elements
-     * */
-    private boolean seenVerify(int num) {
-        /* List of bytecode instructions which could signal a method we should check. */
-        int[] bytecodes = { Const.INVOKESPECIAL, Const.INVOKEVIRTUAL, Const.INVOKESTATIC, Const.INVOKEINTERFACE };
-        for (int b : bytecodes)
-            if (num == b)
-                return true;
-        return false;
-    }
-
-    /**
-     * Checks if signal contains the element
-     * specified in the list with additional
-     * formatting (reuse, saving space)
-     * @param str - signal to be checked
-     * @return {@code true} if signal contains at least one of the elements
-     * */
-    private boolean sigVerify(String str) {
-        String[] operands = { "", "Ljava/util/Locale;", "Ljava/text/DateFormatSymbols;" };
-        for (String o : operands)
-            if (str.contains(String.format("Ljava/lang/String;%s)V", o)))
-                return true;
-        return false;
-    }
-
-    /**
-     * Checks if name has an exact match with
-     * elements specified inside the function
-     * @param str - name to be checked
-     * @return {@code true} if name equals to one of the elements
-     * */
-    private boolean nameVerify(String str) {
-        String[] operands = { "<init>", "applyPattern", "applyLocalizedPattern" };
-        for (String o : operands)
-            if (str.equals(o))
-                return true;
-        return false;
-    }
-
-    /**
-     * Runs the check per each bad combination
-     * (DateFormatRule objects) on the provided string.
-     * @param str - string to be checked
-     * @return {@code true} if given string any bad combination matches.
+     * Runs the check per each bad combination (Rule objects) on the provided string.
+     *
+     * @param dateFormat - string to be checked
+     * @return {@code true} if given string matches any bad combination.
      */
-    private boolean runDateFormatRuleVerify(String str) {
-        // standard time (x2), military time (x2), week-year flag (x1)
-        DateFormatRule[] badCombinations = {
-            initRule("a", "h"), initRule("a", "K"),
-            initRule(null, "H", "a"), initRule(null, "k", "a"),
-            initRule("w", "Y", "M", "d") };
+    private boolean runDateFormatRuleVerify(String dateFormat) {
+        return Stream.of(
+                // when "h" or "K" flags found, make sure that it ALSO CONTAINS "a" or "B"
+                new Rule(Arrays.asList("a", "B"), null, true, Arrays.asList("h", "K")),
+                // 5:00 pm (5:00 in the evening)
 
-        for (DateFormatRule combination : badCombinations)
-            if (combination.verify(str))
-                return true;
-        return false;
+                // when "H" or "k" flags found, make sure that it DOES NOT CONTAIN "a" or "B"
+                new Rule(Arrays.asList("a", "B"), null, false, Arrays.asList("H", "k")),
+                // 17:00 (am/pm)
+
+                // when "M" or "d" flags found, make sure that it DOES NOT CONTAIN "Y" (unless "w" is provided)
+                new Rule(Collections.singletonList("Y"), "w", false, Arrays.asList("M", "d")),
+
+                // milli-of-day cannot be used together with Hours, Minutes, Seconds
+                new Rule(Arrays.asList("H", "h", "K", "k", "m", "s"), null, false, Arrays.asList("A", "N")),
+
+                // milli-of-day and nano-of-day cannot be used together
+                new Rule(Collections.singletonList("A"), null, false, Collections.singletonList("N")),
+                new Rule(Collections.singletonList("N"), null, false, Collections.singletonList("A")),
+
+                // fraction-of-second and nano-of-second cannot be used together
+                new Rule(Collections.singletonList("S"), null, false, Collections.singletonList("n")),
+                new Rule(Collections.singletonList("n"), null, false, Collections.singletonList("S")),
+
+                // am-pm marker and period-of-day cannot be used together
+                new Rule(Collections.singletonList("a"), null, false, Collections.singletonList("B")),
+                new Rule(Collections.singletonList("B"), null, false, Collections.singletonList("a")),
+
+                // year and year-of-era cannot be used together
+                new Rule(Collections.singletonList("u"), null, false, Collections.singletonList("y")),
+                new Rule(Collections.singletonList("y"), null, false, Collections.singletonList("u"))).anyMatch(rule -> rule.verify(dateFormat));
     }
 }

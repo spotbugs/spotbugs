@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
@@ -34,6 +35,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
@@ -133,12 +135,16 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
 
         switch (seen) {
         case Const.INVOKESPECIAL:
-            if (!getMethod().isStatic() && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && isSelfOperation()) {
-                OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
-                if (invokedOn.isInitialParameter() && invokedOn.getRegisterNumber() == 0) {
+            if (!getMethod().isStatic() && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
+                if (isSelfOperation()) {
+                    OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
+                    if (invokedOn.isInitialParameter() && invokedOn.getRegisterNumber() == 0) {
+                        secondaryConstructor = true;
+                    }
+                } else if (isKotlinGeneratedConstructor()) {
+                    // Calling a Kotlin generated super class constructor
                     secondaryConstructor = true;
                 }
-                break;
             }
             break;
         case Const.PUTFIELD:
@@ -192,4 +198,18 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
         return getClassConstantOperand().equals(getClassName());
     }
 
+    /**
+     * @return <code>true</code> if the last parameter of the invoked method is a <code>kotlin.jvm.internal.DefaultConstructorMarker</code>
+     */
+    private boolean isKotlinGeneratedConstructor() {
+        GenericSignatureParser signatureParser = new GenericSignatureParser(getMethodDescriptorOperand().getSignature());
+        Iterator<String> parameterSignatureIterator = signatureParser.parameterSignatureIterator();
+
+        String lastParameter = null;
+        while (parameterSignatureIterator.hasNext()) {
+            lastParameter = parameterSignatureIterator.next();
+        }
+
+        return "Lkotlin/jvm/internal/DefaultConstructorMarker;".equals(lastParameter);
+    }
 }

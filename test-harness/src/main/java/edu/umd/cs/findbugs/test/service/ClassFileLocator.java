@@ -46,7 +46,7 @@ public class ClassFileLocator {
         ClassLoader cl = getClass().getClassLoader();
 
         //This is subject to change base on the JSP compiler implementation
-        String generatedClassName = path.replaceAll("_", "_005f").replace(".jsp", "_jsp");
+        String generatedClassName = path.replace("_", "_005f").replace(".jsp", "_jsp");
         URL url = cl.getResource("jsp/" + generatedClassName + ".class");
         if (url == null) {
             url = cl.getResource("org/apache/jsp/" + generatedClassName + ".class");

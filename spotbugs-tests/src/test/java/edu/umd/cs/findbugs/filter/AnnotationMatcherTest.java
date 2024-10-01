@@ -124,8 +124,7 @@ class AnnotationMatcherTest {
                 + "\n</Match>"
                 + "\n</FindBugsFilter>\n";
 
-        Filter filter = new Filter(new StringInputStream(filterXml));
-        return filter;
+        return new Filter(new StringInputStream(filterXml));
     }
 
     @Test
