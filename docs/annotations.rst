@@ -5,6 +5,7 @@ SpotBugs supports several annotations to express the developer's intent so that 
 Annotations for SpotBugs.
 
 Adding the annotations library to a Maven project:
+
 .. code-block:: xml
 	
   <dependency>
@@ -14,6 +15,7 @@ Adding the annotations library to a Maven project:
   </dependency>
 
 Adding the annotations library to a Gradle project:
+
 .. code-block:: none
 
   implementation group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '\ |release|\ '
