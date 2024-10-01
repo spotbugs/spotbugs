@@ -7511,8 +7511,8 @@ This format string includes a newline character (\n). In format strings, it is g
      </Details>
   </BugPattern>
   <BugPattern type="FS_BAD_DATE_FORMAT_FLAG_COMBO">
-    <ShortDescription>{0} format strings may lead to unexpected behavior</ShortDescription>
-    <LongDescription>{0} format strings may lead to unexpected behavior in {3}</LongDescription>
+    <ShortDescription>Date-format strings may lead to unexpected behavior</ShortDescription>
+    <LongDescription>The '{3}' date format string may lead to unexpected behavior used in {1.nameAndSignature}</LongDescription>
     <Details>
       <![CDATA[
       <p>
