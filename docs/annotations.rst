@@ -6,7 +6,7 @@ Annotations for SpotBugs.
 
 Adding the annotations library to a Maven project:
 
-.. code-block:: xml
+.. parsed-literal::
 	
   <dependency>
     <groupId>com.github.spotbugs</groupId>
@@ -16,7 +16,7 @@ Adding the annotations library to a Maven project:
 
 Adding the annotations library to a Gradle project:
 
-.. code-block:: none
+.. parsed-literal::
 
   implementation group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '\ |release|\ '
 
