@@ -101,9 +101,8 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
                 1 in cases when there are multiple parameters given;
                -1 when no method found, or has different number of parameters
             within the specified functions (given in switch and if) */
-        if (("java/text/SimpleDateFormat".equals(cl) && Arrays.asList(Const.CONSTRUCTOR_NAME,
-                "applyPattern", "applyLocalizedPattern").contains(nm)
-                && "(Ljava/lang/String;)V".equals(si))
+        if (("java/text/SimpleDateFormat".equals(cl) && "(Ljava/lang/String;)V".equals(si)
+                && (Const.CONSTRUCTOR_NAME.equals(nm) || "applyPattern".equals(nm) || "applyLocalizedPattern".equals(nm)))
                 || ("java/time/format/DateTimeFormatter".equals(cl) && "ofPattern".equals(nm)
                         && "(Ljava/lang/String;)Ljava/time/format/DateTimeFormatter;".equals(si))
                 || ("org/apache/commons/lang3/time/FastDateFormat".equals(cl) && "getInstance".equals(nm)
