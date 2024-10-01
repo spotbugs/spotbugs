@@ -23,6 +23,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix FP `EI_EXPOSE_REP` when there are multiple immutable assignments ([#3023](https://github.com/spotbugs/spotbugs/issues/3023))
 - Fixed false positive `NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` for Kotlin, handle Kotlin's `Intrinsics.checkNotNullParameter()` ([#3094](https://github.com/spotbugs/spotbugs/issues/3094))
 - Fixed some CWE mappings ([#3124](https://github.com/spotbugs/spotbugs/pull/3124))
+- Recognize some classes as immutable, fixing EI_EXPOSE and MS_EXPOSE FPs ([#3137](https://github.com/spotbugs/spotbugs/pull/3137))
 
 ### Cleanup
 - Cleaup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
@@ -339,7 +340,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Bump Saxon-HE from 10.5 to 10.6 ([#1715](https://github.com/spotbugs/spotbugs/pull/1715))
 
 ### Fixed
-- Fixed some other immutable classes as being flagged as EI ([#1727](https://github.com/spotbugs/spotbugs/pull/1727))
 - Fixed immutable java.lang.Class as being flagged as EI ([#1695](https://github.com/spotbugs/spotbugs/pull/1695))
 - Agree verb with plural subject in the description of
 `SW_SWING_METHODS_INVOKED_IN_SWING_THREAD` ([#1664](https://github.com/spotbugs/spotbugs/pull/1664))
