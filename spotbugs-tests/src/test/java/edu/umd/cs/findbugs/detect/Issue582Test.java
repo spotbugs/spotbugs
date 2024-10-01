@@ -1,13 +1,8 @@
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
  * SpotBugs should support both of {@code javax.annotation.CheckReturnValue} and
@@ -21,16 +16,12 @@ class Issue582Test extends AbstractIntegrationTest {
     @Test
     void testAnnnotatedClass() {
         performAnalysis("ghIssues/Issue582.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("RV_RETURN_VALUE_IGNORED")
-                .atLine(35).build();
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+        assertBugAtLine("RV_RETURN_VALUE_IGNORED", 35);
     }
 
     @Test
     void testAnnotatedPackage() {
         performAnalysis("ghIssues/issue582/Issue582.class", "ghIssues/issue582/package-info.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("RV_RETURN_VALUE_IGNORED")
-                .atLine(34).build();
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+        assertBugAtLine("RV_RETURN_VALUE_IGNORED", 34);
     }
 }

@@ -1,14 +1,9 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.ParameterizedTest;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.stream.Stream;
 
@@ -33,9 +28,6 @@ class Issue1539Test extends AbstractIntegrationTest {
     @MethodSource("classes")
     void testInstance(String className) {
         performAnalysis(classLocation(className));
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("DMI_RANDOM_USED_ONLY_ONCE")
-                .build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertNoBugType("DMI_RANDOM_USED_ONLY_ONCE");
     }
 }

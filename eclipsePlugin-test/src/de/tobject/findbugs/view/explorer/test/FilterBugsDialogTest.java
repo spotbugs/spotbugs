@@ -47,6 +47,8 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
  */
 class FilterBugsDialogTest extends AbstractFindBugsTest {
 
+    private String originalFilteredIds;
+
     @BeforeAll
     static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
@@ -56,8 +58,6 @@ class FilterBugsDialogTest extends AbstractFindBugsTest {
     static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
-
-    private String originalFilteredIds;
 
     @Override
     public void setUp() throws Exception {
@@ -170,8 +170,7 @@ class FilterBugsDialogTest extends AbstractFindBugsTest {
     }
 
     private Shell getParentShell() {
-        Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        return shell;
+        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
     }
 
     private FilterBugsDialogTestSubclass openFilterBugsDialog(Set<BugPattern> filteredPatterns, Set<BugCode> filteredTypes) {

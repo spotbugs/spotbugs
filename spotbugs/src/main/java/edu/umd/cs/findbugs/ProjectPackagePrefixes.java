@@ -42,6 +42,16 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class ProjectPackagePrefixes {
 
+    Map<String, PrefixFilter> map = new HashMap<>();
+
+    Map<Set<String>, Integer> count = new HashMap<>();
+
+    Map<String, Integer> missingProjectCount = new TreeMap<>();
+
+    Map<String, Integer> rawPackageCount = new TreeMap<>();
+
+    int totalCount = 0;
+
     public static class PrefixFilter {
         final String[] parts;
 
@@ -77,16 +87,6 @@ public class ProjectPackagePrefixes {
     public int size() {
         return map.size();
     }
-
-    Map<String, PrefixFilter> map = new HashMap<>();
-
-    Map<Set<String>, Integer> count = new HashMap<>();
-
-    Map<String, Integer> missingProjectCount = new TreeMap<>();
-
-    Map<String, Integer> rawPackageCount = new TreeMap<>();
-
-    int totalCount = 0;
 
     public void countBug(BugInstance b) {
         String packageName = b.getPrimaryClass().getPackageName();

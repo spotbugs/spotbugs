@@ -119,8 +119,6 @@ public class UnionResults {
         for (AnalysisError error : from.getErrors()) {
             into.addError(error);
         }
-
-        return;
     }
 
     public static void main(String[] argv) throws IOException {

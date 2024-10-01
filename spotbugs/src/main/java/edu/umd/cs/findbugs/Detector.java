@@ -33,12 +33,12 @@ public interface Detector extends Priorities {
      * @param classContext
      *            the ClassContext
      */
-    public void visitClassContext(ClassContext classContext);
+    void visitClassContext(ClassContext classContext);
 
     /**
      * This method is called after all classes to be visited. It should be used
      * by any detectors which accumulate information over all visited classes to
      * generate results.
      */
-    public void report();
+    void report();
 }

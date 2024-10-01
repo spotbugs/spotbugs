@@ -1,14 +1,8 @@
 package edu.umd.cs.findbugs.ba;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import edu.umd.cs.findbugs.SortedBugCollection;
 
 class Issue2402Test extends AbstractIntegrationTest {
 
@@ -23,10 +17,6 @@ class Issue2402Test extends AbstractIntegrationTest {
                 "ghIssues/issue2402/TestD.class",
                 "ghIssues/issue2402/TestD$UMap.class");
 
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS").build();
-
-        SortedBugCollection bugCollection = (SortedBugCollection) getBugCollection();
-        assertThat(bugCollection, containsExactly(4, bugTypeMatcher));
+        assertBugTypeCount("HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS", 4);
     }
-
 }

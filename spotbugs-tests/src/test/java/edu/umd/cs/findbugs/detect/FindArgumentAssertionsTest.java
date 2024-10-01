@@ -1,23 +1,19 @@
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.annotations.Confidence;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 class FindArgumentAssertionsTest extends AbstractIntegrationTest {
+
+    private static final String BUG_TYPE = "AA_ASSERTION_OF_ARGUMENTS";
 
     @Test
     void testArgumentAssertions() {
         performAnalysis("ArgumentAssertions.class");
 
-        assertNumOfDABugs(23);
+        assertBugTypeCount(BUG_TYPE, 23);
 
         assertDABug("getAbsAdd", 4);
         assertDABug("getAbsAdd", 5);
@@ -42,40 +38,18 @@ class FindArgumentAssertionsTest extends AbstractIntegrationTest {
         assertDABug("compDouble", 129);
         assertDABug("indirect", 136);
         // assertDABug("indirect2", 143); -- indirect assertions of arguments are not supported yet (except copies)
-        assertNoDABug("literal");
-        assertNoDABug("literalAndMessage");
-        assertNoDABug("literalAndMessageStr");
-        assertNoDABug("conditionallyInMessage");
-        assertNoDABug("privateMethod");
-        assertNoDABug("privateFinalMethod");
-        assertNoDABug("privateStaticMethod");
+        assertNoBugInMethod(BUG_TYPE, "ArgumentAssertions", "literal");
+        assertNoBugInMethod(BUG_TYPE, "ArgumentAssertions", "literalAndMessage");
+        assertNoBugInMethod(BUG_TYPE, "ArgumentAssertions", "literalAndMessageStr");
+        assertNoBugInMethod(BUG_TYPE, "ArgumentAssertions", "conditionallyInMessage");
+        assertNoBugInMethod(BUG_TYPE, "ArgumentAssertions", "privateMethod");
+        assertNoBugInMethod(BUG_TYPE, "ArgumentAssertions", "privateFinalMethod");
+        assertNoBugInMethod(BUG_TYPE, "ArgumentAssertions", "privateStaticMethod");
         assertDABug("assertingArgInFor", 198);
         // assertDABug("lambda$assertingArgInStream$0", 206); // assertations inside streams are not supported yet
     }
 
-    private void assertNumOfDABugs(int num) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("AA_ASSERTION_OF_ARGUMENTS").build();
-        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertNoDABug(String method) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("AA_ASSERTION_OF_ARGUMENTS")
-                .inClass("ArgumentAssertions")
-                .inMethod(method)
-                .build();
-        assertThat(getBugCollection(), containsExactly(0, bugInstanceMatcher));
-    }
-
     private void assertDABug(String method, int line) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("AA_ASSERTION_OF_ARGUMENTS")
-                .inClass("ArgumentAssertions")
-                .inMethod(method)
-                .atLine(line)
-                .withConfidence(Confidence.LOW)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+        assertBugInMethodAtLineWithConfidence(BUG_TYPE, "ArgumentAssertions", method, line, Confidence.LOW);
     }
 }

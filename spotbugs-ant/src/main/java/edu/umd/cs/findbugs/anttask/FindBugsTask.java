@@ -181,7 +181,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     // define the inner class to store class locations
     public static class ClassLocation {
-        File classLocation = null;
+        File classLocation;
 
         public void setLocation(File location) {
             classLocation = location;
