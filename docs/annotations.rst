@@ -4,21 +4,11 @@ Annotations
 SpotBugs supports several annotations to express the developer's intent so that SpotBugs can issue warnings more appropriately.
 Annotations for SpotBugs.
 
-Adding the annotations library to a Maven project:
+.. literalinclude:: generated/migration-findbugs-annotations-maven.template.inc
+    :language: xml
 
-.. parsed-literal::
-	
-  <dependency>
-    <groupId>com.github.spotbugs</groupId>
-    <artifactId>spotbugs-annotations</artifactId>
-    <version>\ |release|\ </version>
-  </dependency>
-
-Adding the annotations library to a Gradle project:
-
-.. parsed-literal::
-
-  implementation group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '\ |release|\ '
+.. literalinclude:: generated/migration-findbugs-annotations-gradle.template.inc
+    :language: groovy
 
 edu.umd.cs.findbugs.annotations.CheckForNull
 --------------------------------------------
