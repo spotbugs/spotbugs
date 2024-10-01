@@ -4,6 +4,20 @@ Annotations
 SpotBugs supports several annotations to express the developer's intent so that SpotBugs can issue warnings more appropriately.
 Annotations for SpotBugs.
 
+Adding the annotations library to a Maven project:
+.. code-block:: xml
+	
+  <dependency>
+    <groupId>com.github.spotbugs</groupId>
+    <artifactId>spotbugs-annotations</artifactId>
+    <version>\ |release|\ </version>
+  </dependency>
+
+Adding the annotations library to a Gradle project:
+.. code-block:: none
+
+  implementation group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '\ |release|\ '
+
 edu.umd.cs.findbugs.annotations.CheckForNull
 --------------------------------------------
 The annotated element might be null, and uses of the element should check for null.
