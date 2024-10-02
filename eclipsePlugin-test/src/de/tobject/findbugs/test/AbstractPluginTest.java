@@ -340,14 +340,12 @@ public abstract class AbstractPluginTest {
     }
 
     protected FindBugsWorker createFindBugsWorker() throws CoreException {
-        FindBugsWorker worker = new FindBugsWorker(getProject(), new NullProgressMonitor());
-        return worker;
+        return new FindBugsWorker(getProject(), new NullProgressMonitor());
     }
 
     protected BugContentProvider getBugContentProvider() throws PartInitException {
         BugExplorerView navigator = (BugExplorerView) showBugExplorerView();
-        BugContentProvider bugContentProvider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
-        return bugContentProvider;
+        return BugContentProvider.getProvider(navigator.getNavigatorContentService());
     }
 
     protected Set<String> getExpectedBugPatterns() {

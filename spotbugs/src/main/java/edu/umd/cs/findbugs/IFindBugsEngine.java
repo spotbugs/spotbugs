@@ -43,7 +43,7 @@ public interface IFindBugsEngine {
      *
      * @return the BugReporter
      */
-    public BugReporter getBugReporter();
+    BugReporter getBugReporter();
 
     /**
      * Set the BugReporter.
@@ -51,7 +51,7 @@ public interface IFindBugsEngine {
      * @param bugReporter
      *            The BugReporter to set
      */
-    public void setBugReporter(BugReporter bugReporter);
+    void setBugReporter(BugReporter bugReporter);
 
     /**
      * Set the Project.
@@ -59,14 +59,14 @@ public interface IFindBugsEngine {
      * @param project
      *            The Project to set
      */
-    public void setProject(Project project);
+    void setProject(Project project);
 
     /**
      * Get the Project.
      *
      * @return the Project
      */
-    public Project getProject();
+    Project getProject();
 
     /**
      * Set the progress callback that will be used to keep track of the progress
@@ -75,7 +75,7 @@ public interface IFindBugsEngine {
      * @param progressCallback
      *            the progress callback
      */
-    public void setProgressCallback(FindBugsProgress progressCallback);
+    void setProgressCallback(FindBugsProgress progressCallback);
 
     /**
      * Set filter of bug instances to include or exclude.
@@ -86,7 +86,7 @@ public interface IFindBugsEngine {
      *            true if the filter specifies bug instances to include, false
      *            if it specifies bug instances to exclude
      */
-    public void addFilter(String filterFileName, boolean include) throws IOException, FilterException;
+    void addFilter(String filterFileName, boolean include) throws IOException, FilterException;
 
     /**
      * Provide baseline of bugs not to report
@@ -95,7 +95,7 @@ public interface IFindBugsEngine {
      *            the name of the xml bug baseline file
      * @throws DocumentException
      */
-    public void excludeBaselineBugs(String baselineBugs) throws IOException, DocumentException;
+    void excludeBaselineBugs(String baselineBugs) throws IOException, DocumentException;
 
     /**
      * Set the UserPreferences representing which Detectors should be used. If
@@ -105,7 +105,7 @@ public interface IFindBugsEngine {
      * @param userPreferences
      *            the UserPreferences
      */
-    public void setUserPreferences(UserPreferences userPreferences);
+    void setUserPreferences(UserPreferences userPreferences);
 
     /**
      * Add an IClassObserver.
@@ -113,7 +113,7 @@ public interface IFindBugsEngine {
      * @param classObserver
      *            the IClassObserver
      */
-    public void addClassObserver(IClassObserver classObserver);
+    void addClassObserver(IClassObserver classObserver);
 
     /**
      * Set the ClassScreener. This object chooses which individual classes to
@@ -122,7 +122,7 @@ public interface IFindBugsEngine {
      * @param classScreener
      *            the ClassScreener to use
      */
-    public void setClassScreener(IClassScreener classScreener);
+    void setClassScreener(IClassScreener classScreener);
 
     /**
      * Set relaxed reporting mode.
@@ -130,7 +130,7 @@ public interface IFindBugsEngine {
      * @param relaxedReportingMode
      *            true if relaxed reporting mode should be enabled, false if not
      */
-    public void setRelaxedReportingMode(boolean relaxedReportingMode);
+    void setRelaxedReportingMode(boolean relaxedReportingMode);
 
     /**
      * Set whether or not training output should be emitted.
@@ -138,7 +138,7 @@ public interface IFindBugsEngine {
      * @param trainingOutputDir
      *            directory to save training output in
      */
-    public void enableTrainingOutput(String trainingOutputDir);
+    void enableTrainingOutput(String trainingOutputDir);
 
     /**
      * Set whether or not training input should be used to make the analysis
@@ -147,7 +147,7 @@ public interface IFindBugsEngine {
      * @param trainingInputDir
      *            directory to load training input from
      */
-    public void enableTrainingInput(String trainingInputDir);
+    void enableTrainingInput(String trainingInputDir);
 
     /**
      * Set analysis feature settings.
@@ -155,29 +155,29 @@ public interface IFindBugsEngine {
      * @param settingList
      *            list of analysis feature settings
      */
-    public void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList);
+    void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList);
 
     /**
      * @return Returns the releaseName.
      */
-    public String getReleaseName();
+    String getReleaseName();
 
     /**
      * @param releaseName
      *            The releaseName to set.
      */
-    public void setReleaseName(String releaseName);
+    void setReleaseName(String releaseName);
 
     /**
      * @return Returns the projectName.
      */
-    public String getProjectName();
+    String getProjectName();
 
     /**
      * @param projectName
      *            The project name to set.
      */
-    public void setProjectName(String projectName);
+    void setProjectName(String projectName);
 
     /**
      * Set the filename of the source info file containing line numbers for
@@ -186,7 +186,7 @@ public interface IFindBugsEngine {
      * @param sourceInfoFile
      *            the source info filename
      */
-    public void setSourceInfoFile(String sourceInfoFile);
+    void setSourceInfoFile(String sourceInfoFile);
 
     /**
      * Execute FindBugs on the Project. All bugs found are reported to the
@@ -197,36 +197,36 @@ public interface IFindBugsEngine {
      * @throws InterruptedException
      *             if the thread is interrupted while conducting the analysis
      */
-    public void execute() throws IOException, InterruptedException;
+    void execute() throws IOException, InterruptedException;
 
     /**
      * Get the name of the most recent class to be analyzed. This is useful for
      * diagnosing an unexpected exception. Returns null if no class has been
      * analyzed.
      */
-    public String getCurrentClass();
+    String getCurrentClass();
 
     /**
      * Get the number of bug instances that were reported during analysis.
      */
-    public int getBugCount();
+    int getBugCount();
 
     /**
      * Get the number of errors that occurred during analysis.
      */
-    public int getErrorCount();
+    int getErrorCount();
 
     /**
      * Get the number of time missing classes were reported during analysis.
      */
-    public int getMissingClassCount();
+    int getMissingClassCount();
 
     /**
      * Get the UserPreferences.
      *
      * @return the UserPreferences
      */
-    public UserPreferences getUserPreferences();
+    UserPreferences getUserPreferences();
 
     /**
      * Return whether or not training output should be emitted after analysis
@@ -234,28 +234,28 @@ public interface IFindBugsEngine {
      *
      * @return true if training output should be emitted, false if not
      */
-    public boolean emitTrainingOutput();
+    boolean emitTrainingOutput();
 
     /**
      * Get the training output directory.
      *
      * @return the training output directory
      */
-    public String getTrainingOutputDir();
+    String getTrainingOutputDir();
 
     /**
      * Return whether or not we should make use of training data.
      *
      * @return true if training data should be used, false if not
      */
-    public boolean useTrainingInput();
+    boolean useTrainingInput();
 
     /**
      * Get the training input database directory.
      *
      * @return the training input database directory
      */
-    public String getTrainingInputDir();
+    String getTrainingInputDir();
 
     /**
      * Set whether or not nested archives should be scanned.
@@ -263,7 +263,7 @@ public interface IFindBugsEngine {
      * @param scanNestedArchives
      *            true if nested archives should be scanned, false if not
      */
-    public void setScanNestedArchives(boolean scanNestedArchives);
+    void setScanNestedArchives(boolean scanNestedArchives);
 
     /**
      * Set whether or not to generate an empty output file if there were no
@@ -272,7 +272,7 @@ public interface IFindBugsEngine {
      * @param noClassOk
      *            true if FindBugs should generate empty output file
      */
-    public void setNoClassOk(boolean noClassOk);
+    void setNoClassOk(boolean noClassOk);
 
     /**
      * Set the DetectorFactoryCollection from which plugins/detectors may be
@@ -281,18 +281,18 @@ public interface IFindBugsEngine {
      * @param detectorFactoryCollection
      *            the DetectorFactoryCollection
      */
-    public void setDetectorFactoryCollection(DetectorFactoryCollection detectorFactoryCollection);
+    void setDetectorFactoryCollection(DetectorFactoryCollection detectorFactoryCollection);
 
     /**
      * @param xmlWithAbridgedMessages
      */
-    public void setAbridgedMessages(boolean xmlWithAbridgedMessages);
+    void setAbridgedMessages(boolean xmlWithAbridgedMessages);
 
-    public void setMergeSimilarWarnings(boolean mergeSimilarWarnings);
+    void setMergeSimilarWarnings(boolean mergeSimilarWarnings);
 
-    public void setApplySuppression(boolean applySuppression);
+    void setApplySuppression(boolean applySuppression);
 
-    public void finishSettings();
+    void finishSettings();
 
     void setRankThreshold(int rankThreshold);
 

@@ -29,15 +29,15 @@ dependencies {
   implementation 'org.checkerframework:checker-qual:3.47.0'
   implementation 'com.sun.xml.bind:jaxb-impl:2.3.3'
 
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
-  implementation 'org.junit.jupiter:junit-jupiter-params:5.11.0'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.11.1'
+  implementation 'org.junit.jupiter:junit-jupiter-params:5.11.1'
   implementation 'org.testng:testng:7.10.2'
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
   implementation 'org.apache.groovy:groovy-all:4.0.23'
   implementation 'org.apache.commons:commons-lang3:3.17.0'
-  implementation 'org.mockito:mockito-core:5.13.0'
+  implementation 'org.mockito:mockito-core:5.14.1'
 }
 
 tasks.withType(JavaCompile).configureEach {

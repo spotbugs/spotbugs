@@ -20,5 +20,5 @@
 package edu.umd.cs.findbugs;
 
 public interface RunnableWithExceptions {
-    public void run() throws Throwable;
+    void run() throws Throwable;
 }

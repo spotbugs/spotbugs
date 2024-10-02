@@ -5,11 +5,6 @@ import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 class Issue2114Test extends AbstractIntegrationTest {
 
@@ -18,19 +13,10 @@ class Issue2114Test extends AbstractIntegrationTest {
     void testIssue() {
         performAnalysis("../java11/Issue2114.class");
 
-        assertDidNotFindDefaultEncodingRelianceInMethod("filesReadString");
-        assertDidNotFindDefaultEncodingRelianceInMethod("filesReadAllLines");
-        assertDidNotFindDefaultEncodingRelianceInMethod("filesWriteString");
-        assertDidNotFindDefaultEncodingRelianceInMethod("filesNewBufferedReader");
-        assertDidNotFindDefaultEncodingRelianceInMethod("filesNewBufferedWriter");
-    }
-
-    private void assertDidNotFindDefaultEncodingRelianceInMethod(String methodName) {
-        BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("DM_DEFAULT_ENCODING")
-                .inMethod(methodName)
-                .build();
-
-        assertThat(getBugCollection(), containsExactly(0, matcher));
+        assertNoBugInMethod("DM_DEFAULT_ENCODING", "Issue2114", "filesReadString");
+        assertNoBugInMethod("DM_DEFAULT_ENCODING", "Issue2114", "filesReadAllLines");
+        assertNoBugInMethod("DM_DEFAULT_ENCODING", "Issue2114", "filesWriteString");
+        assertNoBugInMethod("DM_DEFAULT_ENCODING", "Issue2114", "filesNewBufferedReader");
+        assertNoBugInMethod("DM_DEFAULT_ENCODING", "Issue2114", "filesNewBufferedWriter");
     }
 }
