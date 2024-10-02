@@ -64,8 +64,7 @@ public class MutableClasses {
             "java.util.ImmutableCollections$AbstractImmutableSet"));
 
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
-            "java.math", "java.time", "java.util.function",
-            "java.lang.invoke", "java.lang.reflect", "java.lang.constant"));
+            "java.math", "java.time", "java.util.function", "java.lang.constant"));
 
     private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
