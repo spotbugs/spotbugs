@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 class ConstructorThrowTest extends AbstractIntegrationTest {
 
-    private final String CT_THROW = "CT_CONSTRUCTOR_THROW";
+    private static final String CT_THROW = "CT_CONSTRUCTOR_THROW";
 
     @Test
     void testConstructorThrowCheck1() {
