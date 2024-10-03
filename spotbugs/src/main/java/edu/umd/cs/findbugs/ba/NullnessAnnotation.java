@@ -44,6 +44,7 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
                     || "org.jetbrains.annotations.Nullable".equals(className)
                     || "org.checkerframework.checker.nullness.qual.Nullable".equals(className)
                     || "org.checkerframework.checker.nullness.compatqual.NullableDecl".equals(className)
+                    || "org.jspecify.annotations.Nullable".equals(className)
                     || className.endsWith("PossiblyNull")
                     || super.match(className);
         }
