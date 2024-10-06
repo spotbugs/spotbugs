@@ -4,6 +4,12 @@ Annotations
 SpotBugs supports several annotations to express the developer's intent so that SpotBugs can issue warnings more appropriately.
 Annotations for SpotBugs.
 
+.. literalinclude:: generated/migration-findbugs-annotations-maven.template.inc
+    :language: xml
+
+.. literalinclude:: generated/migration-findbugs-annotations-gradle.template.inc
+    :language: groovy
+
 edu.umd.cs.findbugs.annotations.CheckForNull
 --------------------------------------------
 The annotated element might be null, and uses of the element should check for null.
