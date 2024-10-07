@@ -1,15 +1,7 @@
 package edu.umd.cs.findbugs.nullness;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.BugCollection;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
-
 
 /**
  * Unit test to reproduce <a href="https://github.com/spotbugs/spotbugs/issues/456">#456</a>.
@@ -34,29 +26,10 @@ class IssueRequireNotNullTest extends AbstractIntegrationTest {
     void testIssue() {
         performAnalysis("nullnessAnnotations/TestNonNull7.class");
 
-        assertHasNoNpBug(getBugCollection());
-        assertBugNum(getBugCollection(), "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", 1);
-        assertBug(getBugCollection(), "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "objectsrequireNonNullFalse");
-    }
-
-    private void assertHasNoNpBug(BugCollection bugCollection) {
         for (String bugtype : bugtypes) {
-            assertBugNum(bugCollection, bugtype, 0);
+            assertNoBugType(bugtype);
         }
-    }
-
-    private void assertBugNum(BugCollection bugCollection, String bugType, int bugNum) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .build();
-        assertThat(bugCollection, containsExactly(bugNum, bugInstanceMatcher));
-    }
-
-    private void assertBug(BugCollection bugCollection, String bugType, String method) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .inMethod(method)
-                .build();
-        assertThat(bugCollection, containsExactly(1, bugInstanceMatcher));
+        assertBugTypeCount("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", 1);
+        assertBugInMethod("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "TestNonNull7", "objectsrequireNonNullFalse");
     }
 }

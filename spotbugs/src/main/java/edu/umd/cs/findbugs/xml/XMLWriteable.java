@@ -34,5 +34,5 @@ public interface XMLWriteable {
      * @param xmlOutput
      *            the XMLOutput for the document
      */
-    public void writeXML(XMLOutput xmlOutput) throws IOException;
+    void writeXML(XMLOutput xmlOutput) throws IOException;
 }

@@ -572,6 +572,14 @@ This does not help the garbage collector in any way, the nulling out of fields h
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DateFormatStringChecker">
+    <Details>
+      <![CDATA[
+      <p> Checks for incorrect date format strings.
+      </p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis">
     <Details>
 <![CDATA[
@@ -7502,6 +7510,39 @@ This format string includes a newline character (\n). In format strings, it is g
 ]]>
      </Details>
   </BugPattern>
+  <BugPattern type="FS_BAD_DATE_FORMAT_FLAG_COMBO">
+    <ShortDescription>Date-format strings may lead to unexpected behavior</ShortDescription>
+    <LongDescription>The '{3}' date format string may lead to unexpected behavior used in {1.nameAndSignature}</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      This format string includes a bad combination of flags which may lead to unexpected behavior.
+      Potential bad combinations include the following:
+      <ul>
+        <li>
+          using a week year ("Y") with month in year ("M") and day in month ("d") without
+          specifying week in year ("w"). Flag ("y") may be preferable here instead
+        </li>
+        <li>
+          using an AM/PM hour ("h" or "K") without specifying an AM/PM marker ("a") or
+          period of day marker ("B")
+        </li>
+        <li>
+          using a 24-hour format hour ("H" or "k") with specifying AM/PM or period of day markers
+        </li>
+        <li>
+          using a milli of day ("A") together with hours ("H", "h", "K", "k") and/or
+          minutes ("m") and/or seconds ("s")
+        </li>
+        <li>use of milli of day ("A") and nano of day ("N") together</li>
+        <li>use of fraction of second ("S") nano of second together ("n")</li>
+        <li>use of AM/PM markers ("a") and period of day ("B") together</li>
+        <li>use of year ("y") and year of era ("u") together</li>
+      </ul>
+     </p>
+      ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
     <ShortDescription>Primitive array passed to function expecting a variable number of object arguments</ShortDescription>
     <LongDescription>{2} passed to varargs method {3} in {1}</LongDescription>
@@ -9431,3 +9472,4 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
 </MessageCollection>
+

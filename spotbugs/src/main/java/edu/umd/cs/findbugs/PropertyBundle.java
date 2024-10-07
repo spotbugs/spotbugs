@@ -231,8 +231,7 @@ public class PropertyBundle {
         if (!m.matches()) {
             return u;
         }
-        String result = String.format(getRewriter().urlRewriteFormat, m.group(1));
-        return result;
+        return String.format(getRewriter().urlRewriteFormat, m.group(1));
     }
 
 }
