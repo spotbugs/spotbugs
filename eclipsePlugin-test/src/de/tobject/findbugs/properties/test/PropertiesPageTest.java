@@ -49,6 +49,11 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @author Tomás Pollak
  */
 class PropertiesPageTest extends AbstractFindBugsTest {
+
+    private UserPreferences originalProjectPreferences;
+
+    private UserPreferences originalWorkspacePreferences;
+
     @BeforeAll
     static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
@@ -58,10 +63,6 @@ class PropertiesPageTest extends AbstractFindBugsTest {
     static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
-
-    private UserPreferences originalProjectPreferences;
-
-    private UserPreferences originalWorkspacePreferences;
 
     @Override
     public void setUp() throws Exception {

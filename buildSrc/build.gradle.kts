@@ -7,6 +7,6 @@ repositories {
     gradlePluginPortal()
 }
 dependencies {
-    implementation("com.diffplug.gradle:goomph:4.0.1")
+    implementation("com.diffplug.gradle:goomph:4.1.0")
     implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
 }

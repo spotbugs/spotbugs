@@ -36,6 +36,9 @@ import de.tobject.findbugs.test.TestScenario;
  * @author Tomás Pollak
  */
 class LabelDecoratorTest extends AbstractFindBugsTest {
+
+    private static final String SOME_LABEL = "label";
+
     @BeforeAll
     static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
@@ -45,8 +48,6 @@ class LabelDecoratorTest extends AbstractFindBugsTest {
     static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
-
-    private static final String SOME_LABEL = "label";
 
     @Test
     void testDecorateResourcesWithBugs() throws CoreException {

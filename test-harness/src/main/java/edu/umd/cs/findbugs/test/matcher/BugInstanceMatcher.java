@@ -54,7 +54,7 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
      * @param bugType
      *            Expected bug type
      * @param className
-     *            Class name
+     *            Class name, matches to any of the following: fully dotted class name, simple name, in case of inner classes the simple name with the container class separated by $.
      * @param methodName
      *            Method name
      * @param fieldName
