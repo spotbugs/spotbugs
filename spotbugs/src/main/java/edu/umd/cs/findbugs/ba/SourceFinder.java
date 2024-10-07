@@ -55,6 +55,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -535,9 +536,8 @@ public class SourceFinder implements AutoCloseable {
     }
 
     public static String getPlatformName(String packageName, String fileName) {
-        String platformName = packageName.replace('.', File.separatorChar) + (packageName.length() > 0 ? File.separator : "")
+        return packageName.replace('.', File.separatorChar) + (packageName.isEmpty() ? "" : File.separator)
                 + fileName;
-        return platformName;
     }
 
     public static String getPlatformName(SourceLineAnnotation source) {
@@ -549,8 +549,7 @@ public class SourceFinder implements AutoCloseable {
     }
 
     public static String getCanonicalName(String packageName, String fileName) {
-        String canonicalName = packageName.replace('.', '/') + (packageName.length() > 0 ? "/" : "") + fileName;
-        return canonicalName;
+        return ClassName.toSlashedClassName(packageName) + (packageName.isEmpty() ? "" : "/") + fileName;
     }
 
     public static String getOrGuessSourceFile(SourceLineAnnotation source) {

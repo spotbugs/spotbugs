@@ -35,17 +35,28 @@ import java.util.regex.Pattern;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * @author pwilliam
  */
 public class ProjectPackagePrefixes {
 
+    Map<String, PrefixFilter> map = new HashMap<>();
+
+    Map<Set<String>, Integer> count = new HashMap<>();
+
+    Map<String, Integer> missingProjectCount = new TreeMap<>();
+
+    Map<String, Integer> rawPackageCount = new TreeMap<>();
+
+    int totalCount = 0;
+
     public static class PrefixFilter {
         final String[] parts;
 
         PrefixFilter(String prefixes) {
-            prefixes = prefixes.replace('/', '.').trim();
+            prefixes = ClassName.toDottedClassName(prefixes).trim();
             if (prefixes.length() == 0) {
                 parts = new String[0];
             } else {
@@ -76,16 +87,6 @@ public class ProjectPackagePrefixes {
     public int size() {
         return map.size();
     }
-
-    Map<String, PrefixFilter> map = new HashMap<>();
-
-    Map<Set<String>, Integer> count = new HashMap<>();
-
-    Map<String, Integer> missingProjectCount = new TreeMap<>();
-
-    Map<String, Integer> rawPackageCount = new TreeMap<>();
-
-    int totalCount = 0;
 
     public void countBug(BugInstance b) {
         String packageName = b.getPrimaryClass().getPackageName();

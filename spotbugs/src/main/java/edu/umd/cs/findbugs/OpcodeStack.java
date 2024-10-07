@@ -52,10 +52,12 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantDynamic;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantInteger;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantLong;
+import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.ConstantUtf8;
@@ -130,6 +132,7 @@ public class OpcodeStack {
     }
 
     private static final String JAVA_UTIL_ARRAYS_ARRAY_LIST = "Ljava/util/Arrays$ArrayList;";
+    private static final String JAVA_UTIL_COLLECTIONS = "java/util/Collections";
 
     private static final boolean DEBUG = SystemProperties.getBoolean("ocstack.debug");
 
@@ -137,34 +140,34 @@ public class OpcodeStack {
 
     private static final Map<Pair<String, String>, String> IMMUTABLE_RETURNER_MAP = new HashMap<>();
     static {
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyList"), "Ljava/util/Collections$EmptyList;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyMap"), "Ljava/util/Collections$EmptyMap;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyNavigableMap"), "Ljava/util/Collections$EmptyNavigableMap;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptySortedMap"), "Ljava/util/Collections$EmptyNavigableMap;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptySet"), "Ljava/util/Collections$EmptySet;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptyNavigableSet"), "Ljava/util/Collections$EmptyNavigableSet;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "emptySortedSet"), "Ljava/util/Collections$EmptyNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyList"), "Ljava/util/Collections$EmptyList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyMap"), "Ljava/util/Collections$EmptyMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyNavigableMap"), "Ljava/util/Collections$EmptyNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptySortedMap"), "Ljava/util/Collections$EmptyNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptySet"), "Ljava/util/Collections$EmptySet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyNavigableSet"), "Ljava/util/Collections$EmptyNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptySortedSet"), "Ljava/util/Collections$EmptyNavigableSet;");
 
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "singletonList"), "Ljava/util/Collections$SingletonList;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "singletonMap"), "Ljava/util/Collections$SingletonMap;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "singleton"), "Ljava/util/Collections$SingletonSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "singletonList"), "Ljava/util/Collections$SingletonList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "singletonMap"), "Ljava/util/Collections$SingletonMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "singleton"), "Ljava/util/Collections$SingletonSet;");
 
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableList"), "Ljava/util/Collections$UnmodifiableList;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableMap"), "Ljava/util/Collections$UnmodifiableMap;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableNavigableMap"), "Ljava/util/Collections$UnmodifiableNavigableMap;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableSortedMap"), "Ljava/util/Collections$UnmodifiableSortedMap;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableSet"), "Ljava/util/Collections$UnmodifiableSet;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableNavigableSet"), "Ljava/util/Collections$UnmodifiableNavigableSet;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Collections", "unmodifiableSortedSet"), "Ljava/util/Collections$UnmodifiableSortedSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableList"), "Ljava/util/Collections$UnmodifiableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableMap"), "Ljava/util/Collections$UnmodifiableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableNavigableMap"), "Ljava/util/Collections$UnmodifiableNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableSortedMap"), "Ljava/util/Collections$UnmodifiableSortedMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableSet"), "Ljava/util/Collections$UnmodifiableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableNavigableSet"), "Ljava/util/Collections$UnmodifiableNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableSortedSet"), "Ljava/util/Collections$UnmodifiableSortedSet;");
 
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/List", "of"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/List", "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_LIST, "of"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_LIST, "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
 
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Map", "of"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Map", "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_MAP, "of"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_MAP, "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
 
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Set", "of"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
-        IMMUTABLE_RETURNER_MAP.put(Pair.of("java/util/Set", "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_SET, "of"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_SET, "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
     }
 
     @StaticConstant
@@ -806,7 +809,7 @@ public class OpcodeStack {
                 return null;
             }
             baseSig = baseSig.substring(1, baseSig.length() - 1);
-            baseSig = baseSig.replace('/', '.');
+            baseSig = ClassName.toDottedClassName(baseSig);
             return Repository.lookupClass(baseSig);
         }
 
@@ -2666,7 +2669,7 @@ public class OpcodeStack {
         } else if (seen == Const.INVOKESTATIC) {
             Item requestParameter = null;
             if ("(Ljava/util/List;)Ljava/util/List;".equals(signature)
-                    && "java/util/Collections".equals(clsName)) {
+                    && JAVA_UTIL_COLLECTIONS.equals(clsName)) {
                 requestParameter = top();
             }
             String returnTypeName = IMMUTABLE_RETURNER_MAP.get(Pair.of(clsName, methodName));
@@ -2806,7 +2809,6 @@ public class OpcodeStack {
     }
 
     private void processInvokeDynamic(DismantleBytecode dbc) {
-        String methodName = dbc.getNameConstantOperand();
         String appenderValue = null;
         boolean servletRequestParameterTainted = false;
         Item topItem = null;
@@ -2816,7 +2818,7 @@ public class OpcodeStack {
 
         String signature = dbc.getSigConstantOperand();
 
-        if ("makeConcatWithConstants".equals(methodName)) {
+        if ("makeConcatWithConstants".equals(dbc.getNameConstantOperand())) {
             String[] args = new SignatureParser(signature).getArguments();
             if (args.length == 1) {
                 Item i = getStackItem(0);
@@ -2861,9 +2863,7 @@ public class OpcodeStack {
                 i.injection = topItem.injection;
                 i.setServletParameterTainted();
             }
-            return;
         }
-
     }
 
     private BootstrapMethod getBootstrapMethod(Attribute[] attribs, Constant index) {
@@ -3341,6 +3341,12 @@ public class OpcodeStack {
             push(new Item("D", Double.valueOf(((ConstantDouble) c).getBytes())));
         } else if (c instanceof ConstantLong) {
             push(new Item("J", Long.valueOf(((ConstantLong) c).getBytes())));
+        } else if (c instanceof ConstantDynamic) {
+            ConstantPool cp = dbc.getConstantPool();
+            ConstantNameAndType sig = cp.getConstant(((ConstantDynamic) c).getNameAndTypeIndex());
+            String nameConstantOperand = ((ConstantUtf8) cp.getConstant(sig.getNameIndex())).getBytes();
+            String sigConstantOperand = ((ConstantUtf8) cp.getConstant(sig.getSignatureIndex())).getBytes();
+            push(new Item(sigConstantOperand, nameConstantOperand));
         } else {
             throw new UnsupportedOperationException("StaticConstant type not expected");
         }

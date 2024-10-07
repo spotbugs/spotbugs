@@ -37,16 +37,16 @@ public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWi
     /**
      * XML tag for a formatted text message describing the annotation.
      */
-    public static final String MESSAGE_TAG = "Message";
+    static final String MESSAGE_TAG = "Message";
 
-    public Object clone();
+    Object clone();
 
     /**
      * Accept a BugAnnotationVisitor.
      *
      * @param visitor the visitor to accept
      */
-    public void accept(BugAnnotationVisitor visitor);
+    void accept(BugAnnotationVisitor visitor);
 
     /**
      * Format the annotation as a String. The given key specifies additional
@@ -57,19 +57,19 @@ public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWi
      * @param primaryClass The primary class for the bug; some bug annotation format msgs
      *                     are simplified in relation to that class.
      */
-    public String format(String key, ClassAnnotation primaryClass);
+    String format(String key, ClassAnnotation primaryClass);
 
     /**
      * Get a description of this bug annotation. The description is a key for
      * the FindBugsAnnotationDescriptions resource bundle.
      */
-    public String getDescription();
+    String getDescription();
 
     /**
      * Set a description of this bug annotation. The description is a key for
      * the FindBugsAnnotationDescriptions resource bundle.
      */
-    public void setDescription(String description);
+    void setDescription(String description);
 
     /**
      * Is this annotation used to compute instance hashes or match bug instances
@@ -77,7 +77,7 @@ public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWi
      *
      * @return true if significant
      */
-    public boolean isSignificant();
+    boolean isSignificant();
 
-    public String toString(ClassAnnotation primaryClass);
+    String toString(ClassAnnotation primaryClass);
 }

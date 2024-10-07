@@ -65,8 +65,6 @@ public class I18N {
      *
      * @param key
      *            which message to retrieve
-     *
-     *
      */
     @Deprecated
     public @Nonnull String getMessage(String key) {

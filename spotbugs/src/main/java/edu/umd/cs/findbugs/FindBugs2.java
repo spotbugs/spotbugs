@@ -281,7 +281,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                         @Override
                         public void reportBug(@Nonnull BugInstance bugInstance) {
                             String className = bugInstance.getPrimaryClass().getClassName();
-                            String resourceName = className.replace('.', '/') + ".class";
+                            String resourceName = ClassName.toSlashedClassName(className) + ".class";
                             if (classScreener.matches(resourceName)) {
                                 this.getDelegate().reportBug(bugInstance);
                             }

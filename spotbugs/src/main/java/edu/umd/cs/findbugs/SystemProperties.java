@@ -52,7 +52,7 @@ public class SystemProperties {
         RUNNING_AS_IDE_PLUGIN = RUNNING_IN_ECLIPSE || name.startsWith("com.intellij.ide.");
     }
 
-    final static String OS_NAME;
+    static final String OS_NAME;
     static {
         boolean tmp = false;
         assert tmp = true; // set tmp to true if assertions are enabled
@@ -230,6 +230,10 @@ public class SystemProperties {
         properties.setProperty(name, value);
     }
 
+    public static void removeProperty(String name) {
+        properties.remove(name);
+    }
+
     /**
      * @param name
      *            property name
@@ -284,8 +288,7 @@ public class SystemProperties {
         if (!m.matches() || m.groupCount() == 0) {
             return u;
         }
-        String result = String.format(URL_REWRITE_FORMAT, m.group(1));
-        return result;
+        return String.format(URL_REWRITE_FORMAT, m.group(1));
     }
 
 }

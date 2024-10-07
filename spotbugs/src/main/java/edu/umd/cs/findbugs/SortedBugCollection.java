@@ -98,13 +98,13 @@ public class SortedBugCollection implements BugCollection {
 
     boolean earlyStats = SystemProperties.getBoolean("findbugs.report.summaryFirst");
 
-    boolean bugsPopulated = false;
+    boolean bugsPopulated;
 
-    private boolean withMessages = false;
+    private boolean withMessages;
 
-    private boolean minimalXML = false;
+    private boolean minimalXML;
 
-    private boolean applySuppressions = false;
+    private boolean applySuppressions;
 
     long timeStartedLoading, timeFinishedLoading;
 
@@ -129,7 +129,7 @@ public class SortedBugCollection implements BugCollection {
 
     private final List<AppVersion> appVersionList;
 
-    private boolean preciseHashOccurrenceNumbersAvailable = false;
+    private boolean preciseHashOccurrenceNumbersAvailable;
 
     /**
      * Sequence number of the most-recently analyzed version of the code.
@@ -461,7 +461,6 @@ public class SortedBugCollection implements BugCollection {
         XMLOutput xmlOutput;
         // if (project == null) throw new NullPointerException("No project");
 
-
         xmlOutput = new OutputStreamXMLOutput(out);
 
         writeXML(xmlOutput);
@@ -615,7 +614,7 @@ public class SortedBugCollection implements BugCollection {
         // Summary HTML
         if (REPORT_SUMMARY_HTML) {
             String html = getSummaryHTML();
-            if (html != null && !"".equals(html)) {
+            if (html != null && !html.isEmpty()) {
                 xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
                 xmlOutput.writeCDATA(html);
                 xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);

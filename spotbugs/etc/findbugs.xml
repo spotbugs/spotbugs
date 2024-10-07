@@ -375,6 +375,8 @@
                     disabled="true" reports="DMI_UNSUPPORTED_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker" speed="fast"
                     reports="VA_FORMAT_STRING_USES_NEWLINE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DateFormatStringChecker" speed="fast"
+                    reports="FS_BAD_DATE_FORMAT_FLAG_COMBO"/>
           <Detector class="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference" speed="fast"
                     reports="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"/>
           <Detector class="edu.umd.cs.findbugs.detect.TestingGround" speed="fast" reports="TESTING"
@@ -658,7 +660,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.ReflectionIncreaseAccessibility"
                     reports="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS,REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindOverridableMethodCall"
-                    reports="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR,MC_OVERRIDABLE_METHOD_CALL_IN_CLONE"/>
+                    reports="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR,MC_OVERRIDABLE_METHOD_CALL_IN_CLONE,MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT"/>
           <Detector class="edu.umd.cs.findbugs.detect.ConstructorThrow" speed="fast"
                     reports="CT_CONSTRUCTOR_THROW"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindInstanceLockOnSharedStaticData" speed="fast"
@@ -682,7 +684,11 @@
           <Detector class="edu.umd.cs.findbugs.detect.DontReusePublicIdentifiers" speed="fast"
                     reports="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES,PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES"
                     disabled="true"/>
-          <!-- Bug Categories -->
+          <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryEnvUsage" speed="fast"
+                    reports="ENV_USE_PROPERTY_INSTEAD_OF_ENV"/>
+          <Detector class="edu.umd.cs.findbugs.detect.MultipleInstantiationsOfSingletons" speed="fast"
+                    reports="SING_SINGLETON_IMPLEMENTS_CLONEABLE,SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE,SING_SINGLETON_IMPLEMENTS_CLONE_METHOD,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR,SING_SINGLETON_IMPLEMENTS_SERIALIZABLE,SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" />
+    <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
@@ -701,7 +707,7 @@
           <BugCode abbrev="AM" cweid="227"/>
           <BugCode abbrev="J2EE" cweid="4"/>
           <BugCode abbrev="RE" cweid="185"/>
-          <BugCode abbrev="MS" cweid="218"/>
+          <BugCode abbrev="MS" cweid="493"/>
           <BugCode abbrev="DE" cweid="391"/>
           <BugCode abbrev="XSS" cweid="79"/>
           <BugCode abbrev="HRS" cweid="113"/>
@@ -854,9 +860,9 @@
           <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE"
                     cweid="583"/>
           <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE" cweid="568"/>
           <BugPattern abbrev="FI" type="FI_USELESS" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE" cweid="568"/>
           <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="BAD_PRACTICE" cweid="586"/>
           <BugPattern abbrev="Eq" type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"
                     category="BAD_PRACTICE"/>
@@ -1077,6 +1083,7 @@
           <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="VA_FORMAT_STRING_USES_NEWLINE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FS" type="FS_BAD_DATE_FORMAT_FLAG_COMBO" category="BAD_PRACTICE" experimental="true"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
@@ -1300,6 +1307,7 @@
           <BugPattern abbrev="REFLF" type="REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD" category="MALICIOUS_CODE" />
           <BugPattern abbrev="MC" type="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR" category="MALICIOUS_CODE" />
           <BugPattern abbrev="MC" type="MC_OVERRIDABLE_METHOD_CALL_IN_CLONE" category="MALICIOUS_CODE" />
+          <BugPattern abbrev="MC" type="MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT" category="MALICIOUS_CODE" />
           <BugPattern abbrev="SSD" type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA" category="MT_CORRECTNESS" />
           <BugPattern abbrev="FL" type="FL_FLOATS_AS_LOOP_COUNTERS" category="CORRECTNESS" />
           <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION" category="BAD_PRACTICE" />
@@ -1319,5 +1327,11 @@
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES" category="BAD_PRACTICE"/>
-
+          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_CLONEABLE" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_CLONE_METHOD" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" category="CORRECTNESS" />
+          <BugPattern abbrev="ENV" type="ENV_USE_PROPERTY_INSTEAD_OF_ENV" category="BAD_PRACTICE" />
 </FindbugsPlugin>

@@ -83,11 +83,11 @@ public class Update {
     int maxRank = BugRanker.VISIBLE_RANK_MAX;
 
     class UpdateCommandLine extends CommandLine {
-        boolean overrideRevisionNames = false;
+        boolean overrideRevisionNames;
 
         String outputFilename;
 
-        boolean withMessages = false;
+        boolean withMessages;
 
         UpdateCommandLine() {
             addSwitch("-overrideRevisionNames", "override revision names for each version with names computed filenames");

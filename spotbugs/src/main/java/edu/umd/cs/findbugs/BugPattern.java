@@ -36,21 +36,21 @@ import edu.umd.cs.findbugs.util.HTML;
  * @see BugInstance
  */
 public class BugPattern implements Comparable<BugPattern> {
-    final private String type;
+    private final String type;
 
-    final private String abbrev;
+    private final String abbrev;
 
-    final private String category;
+    private final String category;
 
-    final private boolean experimental;
+    private final boolean experimental;
 
-    final private String shortDescription;
+    private final String shortDescription;
 
-    final private String longDescription;
+    private final String longDescription;
 
-    final private String detailText;
+    private final String detailText;
 
-    final private String url;
+    private final String url;
 
     final int cweid;
 
