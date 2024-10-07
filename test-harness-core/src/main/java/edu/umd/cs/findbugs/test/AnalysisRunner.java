@@ -86,7 +86,7 @@ public class AnalysisRunner {
 
     @Nonnull
     public BugCollectionBugReporter run(Path... files) {
-        return this.run((engine) -> {
+        return this.run(engine -> {
         }, files);
     }
 
@@ -113,7 +113,10 @@ public class AnalysisRunner {
             engineCustomization.accept(engine);
             try {
                 engine.execute();
-            } catch (final IOException | InterruptedException e) {
+            } catch (final IOException e) {
+                throw new AssertionError("Analysis failed with exception", e);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new AssertionError("Analysis failed with exception", e);
             }
             if (!bugReporter.getQueuedErrors().isEmpty()) {

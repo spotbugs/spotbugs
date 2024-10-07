@@ -36,7 +36,6 @@ import edu.umd.cs.findbugs.xml.XMLUtil;
 
 /**
  * @author gtoison
- *
  */
 class LoadMessagesTest {
 

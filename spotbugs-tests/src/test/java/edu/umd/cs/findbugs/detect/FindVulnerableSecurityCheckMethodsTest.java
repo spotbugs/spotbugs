@@ -1,35 +1,27 @@
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-
 import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 class FindVulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest {
 
-    static String bugType = "VSC_VULNERABLE_SECURITY_CHECK_METHODS";
+    private static final String BUG_TYPE = "VSC_VULNERABLE_SECURITY_CHECK_METHODS";
 
     @Test
     void testingBadCases() {
         performAnalysis("vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class",
                 "vulnerablesecuritycheckmethodstest/SecurityManager.class");
 
-        BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .build();
-        assertThat(getBugCollection(), containsExactly(7, bugInstanceMatcher));
+        assertBugTypeCount(BUG_TYPE, 7);
+        String className = "FindVulnerableSecurityCheckMethodsTest";
 
-        assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck", 23);
-        assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck2", 37);
-        assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck3", 53);
-        assertVSCBug("badCalled", 77);
-        assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck4", 94);
-        assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck5", 111);
-        assertVSCBug("badFindVulnerableSecurityCheckMethodsCheck6", 128);
+        assertBugInMethodAtLine(BUG_TYPE, className, "badFindVulnerableSecurityCheckMethodsCheck", 23);
+        assertBugInMethodAtLine(BUG_TYPE, className, "badFindVulnerableSecurityCheckMethodsCheck2", 37);
+        assertBugInMethodAtLine(BUG_TYPE, className, "badFindVulnerableSecurityCheckMethodsCheck3", 53);
+        assertBugInMethodAtLine(BUG_TYPE, className, "badCalled", 77);
+        assertBugInMethodAtLine(BUG_TYPE, className, "badFindVulnerableSecurityCheckMethodsCheck4", 94);
+        assertBugInMethodAtLine(BUG_TYPE, className, "badFindVulnerableSecurityCheckMethodsCheck5", 111);
+        assertBugInMethodAtLine(BUG_TYPE, className, "badFindVulnerableSecurityCheckMethodsCheck6", 128);
 
     }
 
@@ -38,35 +30,13 @@ class FindVulnerableSecurityCheckMethodsTest extends AbstractIntegrationTest {
         performAnalysis("vulnerablesecuritycheckmethodstest/GoodVulnerableSecurityCheckMethodsTest.class",
                 "vulnerablesecuritycheckmethodstest/FindVulnerableSecurityCheckMethodsTest.class",
                 "vulnerablesecuritycheckmethodstest/SecurityManager.class");
-        assertNoVSCBug("goodvulnerablesecuritycheckmethodstestCheck");
-        assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck2");
-        assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck4");
-        assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck5");
-        assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck6");
-        assertNoVSCBug("goodVulnerableSecurityCheckMethodsTestCheck7");
+        assertNoBugInMethod(BUG_TYPE, "FindVulnerableSecurityCheckMethodsTest", "goodvulnerablesecuritycheckmethodstestCheck");
+        assertNoBugInMethod(BUG_TYPE, "FindVulnerableSecurityCheckMethodsTest", "goodVulnerableSecurityCheckMethodsTestCheck2");
+        assertNoBugInMethod(BUG_TYPE, "FindVulnerableSecurityCheckMethodsTest", "goodVulnerableSecurityCheckMethodsTestCheck4");
+        assertNoBugInMethod(BUG_TYPE, "FindVulnerableSecurityCheckMethodsTest", "goodVulnerableSecurityCheckMethodsTestCheck5");
+        assertNoBugInMethod(BUG_TYPE, "FindVulnerableSecurityCheckMethodsTest", "goodVulnerableSecurityCheckMethodsTestCheck6");
+        assertNoBugInMethod(BUG_TYPE, "FindVulnerableSecurityCheckMethodsTest", "goodVulnerableSecurityCheckMethodsTestCheck7");
 
-        BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .inClass("GoodVulnerableSecurityCheckMethodsTest")
-                .build();
-        assertThat(getBugCollection(), containsExactly(0, bugInstanceMatcher));
-    }
-
-    private void assertNoVSCBug(String methodName) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .inClass("FindVulnerableSecurityCheckMethodsTest")
-                .inMethod(methodName)
-                .build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
-    }
-
-    private void assertVSCBug(String methodName, int lineNumber) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .inMethod(methodName)
-                .atLine(lineNumber)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugTypeMatcher));
+        assertNoBugInClass(BUG_TYPE, "GoodVulnerableSecurityCheckMethodsTest");
     }
 }

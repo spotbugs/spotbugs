@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs.ba;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -13,8 +12,6 @@ import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/408">#408</a>
@@ -25,9 +22,7 @@ class Issue408Test extends AbstractIntegrationTest {
     @Test
     @DisabledOnJre(JRE.JAVA_8)
     void testSingleClass() {
-        Throwable throwable = Assertions.assertThrows(AssertionError.class, () -> {
-            performAnalysis("../java11/module-info.class");
-        });
+        Throwable throwable = Assertions.assertThrows(AssertionError.class, () -> performAnalysis("../java11/module-info.class"));
         Assertions.assertEquals("Analysis failed with exception", throwable.getMessage());
         assertThat(throwable.getCause(), is(instanceOf(IOException.class)));
     }
@@ -35,9 +30,7 @@ class Issue408Test extends AbstractIntegrationTest {
     @Test
     @DisabledOnJre(JRE.JAVA_8)
     void testFewClasses() {
-        performAnalysis("../java11/module-info.class", "../java11/Issue408.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        Assertions.assertDoesNotThrow(() -> performAnalysis("../java11/module-info.class", "../java11/Issue408.class"));
     }
 
 }

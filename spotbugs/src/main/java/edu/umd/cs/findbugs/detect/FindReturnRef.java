@@ -19,16 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.HashMap;
-
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -36,14 +26,37 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.MutableClasses;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.PUTFIELD;
+import org.apache.bcel.generic.PUTSTATIC;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FindReturnRef extends OpcodeStackDetector {
     private boolean check = false;
@@ -68,6 +81,7 @@ public class FindReturnRef extends OpcodeStackDetector {
     private final Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamsWrappedToBuffers = new HashMap<>();
     private final Map<OpcodeStack.Item, XField> arrayFieldClones = new HashMap<>();
     private final Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamClones = new HashMap<>();
+    private final Map<XField, List<OpcodeStack.Item>> fieldValues = new HashMap<>();
 
     private final Map<String, XField> accessMethodFields = new HashMap<>();
 
@@ -94,6 +108,46 @@ public class FindReturnRef extends OpcodeStackDetector {
     }
 
     @Override
+    public void visit(JavaClass obj) {
+        for (Method m : obj.getMethods()) {
+            collectData(obj, m);
+        }
+    }
+
+    private void collectData(JavaClass javaClass, Method m) {
+        try {
+            CFG cfg = getClassContext().getCFG(m);
+            ConstantPoolGen cpg = getClassContext().getConstantPoolGen();
+            for (Iterator<Location> loci = cfg.locationIterator(); loci.hasNext();) {
+                Location loc = loci.next();
+                InstructionHandle ih = loc.getHandle();
+                Instruction ins = ih.getInstruction();
+                if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
+                    int pc = ih.getPosition();
+                    OpcodeStack currentStack = OpcodeStackScanner.getStackAt(javaClass, m, pc);
+                    XField field = XFactory.createXField((FieldInstruction) ins, cpg);
+                    fieldValues.computeIfAbsent(field, k -> new ArrayList<>());
+                    fieldValues.get(field).add(currentStack.getStackItem(0));
+                    if (currentStack.hasIncomingBranches(pc)) {
+                        for (Iterator<BasicBlock> bi = cfg.predecessorIterator(loc.getBasicBlock()); bi.hasNext();) {
+                            BasicBlock previousBlock = bi.next();
+                            InstructionHandle lastInstruction = previousBlock.getLastInstruction();
+                            if (lastInstruction != null) {
+                                OpcodeStack prevStack = OpcodeStackScanner.getStackAt(javaClass, m, lastInstruction.getPosition());
+                                if (prevStack.getStackDepth() > 1) {
+                                    fieldValues.get(field).add(prevStack.getStackItem(0));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (CFGBuilderException e) {
+            AnalysisContext.logError(String.format("Error happened while analyzing %s", javaClass.getClassName()), e);
+        }
+    }
+
+    @Override
     public void visit(Method obj) {
         isRecord = getThisClass().isPublic() && ACCESS_METHOD_MATCHER.reset(obj.getName()).matches();
         check = getThisClass().isPublic() && obj.isPublic();
@@ -108,13 +162,6 @@ public class FindReturnRef extends OpcodeStackDetector {
         }
 
         super.visit(obj);
-    }
-
-    @Override
-    public void visit(Code obj) {
-        if (check || isRecord) {
-            super.visit(obj);
-        }
     }
 
     @Override
@@ -216,6 +263,11 @@ public class FindReturnRef extends OpcodeStackDetector {
                     || !MutableClasses.mutableSignature(TypeFrameModelingVisitor.getType(field).getSignature())) {
                 return;
             }
+            if (fieldValues.containsKey(field) && fieldValues.get(field).stream()
+                    .noneMatch(it -> MutableClasses.mutableSignature(it.getSignature()))) {
+                return;
+            }
+
             bugAccumulator.accumulateBug(
                     new BugInstance(this, (staticMethod ? "MS" : "EI") + "_EXPOSE_" + (isBuf ? "BUF" : "REP"),
                             (isBuf || isArrayClone) ? LOW_PRIORITY : NORMAL_PRIORITY)
@@ -320,7 +372,6 @@ public class FindReturnRef extends OpcodeStackDetector {
     @Override
     public void afterOpcode(int seen) {
         super.afterOpcode(seen);
-
         if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             if (fieldUnderClone != null) {
                 arrayFieldClones.put(stack.getStackItem(0), fieldUnderClone);

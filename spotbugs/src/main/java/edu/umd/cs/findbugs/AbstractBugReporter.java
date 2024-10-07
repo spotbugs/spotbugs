@@ -118,7 +118,9 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     private int rankThreshold;
 
-    private boolean relaxedSet, relaxed;
+    private boolean relaxedSet;
+
+    private boolean relaxed;
 
     private int errorCount;
 

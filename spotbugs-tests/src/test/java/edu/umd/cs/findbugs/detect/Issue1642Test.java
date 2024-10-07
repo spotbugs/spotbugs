@@ -16,19 +16,16 @@ class Issue1642Test extends AbstractIntegrationTest {
     @Test
     void testIssue() {
         performAnalysis("ghIssues/Issue1642.class");
-        BugInstanceMatcherBuilder builder = new BugInstanceMatcherBuilder()
-                .bugType("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR");
+        assertBugTypeCount("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", 6);
 
-        BugInstanceMatcher fieldBMatcher = builder.atField("b").build();
-        BugInstanceMatcher fieldCMatcher = builder.atField("c").build();
-        BugInstanceMatcher fieldDMatcher = builder.atField("d").build();
-        BugInstanceMatcher fieldXMatcher = builder.atField("x").build();
-        BugInstanceMatcher fieldYMatcher = builder.atField("y").build();
+        assertBugAtField("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", "Issue1642", "b");
+        assertBugAtField("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", "Issue1642", "c");
+        assertBugAtField("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", "Issue1642", "d");
+        assertBugAtField("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", "Issue1642", "x");
 
-        assertThat(getBugCollection(), containsExactly(1, fieldBMatcher));
-        assertThat(getBugCollection(), containsExactly(1, fieldCMatcher));
-        assertThat(getBugCollection(), containsExactly(1, fieldDMatcher));
-        assertThat(getBugCollection(), containsExactly(1, fieldXMatcher));
+        BugInstanceMatcher fieldYMatcher = new BugInstanceMatcherBuilder()
+                .bugType("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
+                .atField("y").build();
         // y is matched twice, once on the field and once in the constructor
         assertThat(getBugCollection(), containsExactly(2, fieldYMatcher));
     }
