@@ -25,6 +25,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed false positive `NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` for Kotlin, handle Kotlin's `Intrinsics.checkNotNullParameter()` ([#3094](https://github.com/spotbugs/spotbugs/issues/3094))
 - Fixed some CWE mappings ([#3124](https://github.com/spotbugs/spotbugs/pull/3124))
 - Recognize some classes as immutable, fixing EI_EXPOSE and MS_EXPOSE FPs ([#3137](https://github.com/spotbugs/spotbugs/pull/3137))
+- Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 
 ### Cleanup
 - Cleaup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
