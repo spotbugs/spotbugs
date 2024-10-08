@@ -340,7 +340,7 @@ public class FilterBugsDialog extends SelectionDialog {
             // allow to specify filters using text area (no validation checks
             // yet)
             // TODO validate text entered by user and throw away
-            // invalide/duplicated entries
+            // invalid/duplicated entries
             selectedAsText = text;
         } else {
             selectedAsText = computed;
@@ -492,7 +492,7 @@ public class FilterBugsDialog extends SelectionDialog {
         final ContainerCheckedTreeViewer viewer = new ContainerCheckedTreeViewer(parent, style | SWT.SINGLE | SWT.BORDER
                 | SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE) {
             /**
-             * Overriden to re-set checked state of elements after filter change
+             * Overridden to re-set checked state of elements after filter change
              */
             @Override
             public void refresh(boolean updateLabels) {
