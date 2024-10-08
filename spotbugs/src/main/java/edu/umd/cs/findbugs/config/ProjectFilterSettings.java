@@ -223,7 +223,7 @@ public class ProjectFilterSettings implements Cloneable {
     }
 
     /**
-     * set the hidden bug categories on the specifed ProjectFilterSettings from
+     * set the hidden bug categories on the specified ProjectFilterSettings from
      * an encoded string
      *
      * @param result
@@ -378,7 +378,7 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * Return set of active (enabled) bug categories.
      *
-     * Note that bug categories that are not explicity hidden will appear active
+     * Note that bug categories that are not explicitly hidden will appear active
      * even if they are not members of this set.
      *
      * @return the set of active categories
