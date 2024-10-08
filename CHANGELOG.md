@@ -33,6 +33,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Return objects directly instead of creating more garbage collection by defining them ([#3133](https://github.com/spotbugs/spotbugs/issues/3133))
 - Cleanup double initization and fix comments referring to findbugs instead of spotbugs([#3134](https://github.com/spotbugs/spotbugs/issues/3134))
 
+### Changed
+- Bump up Java version to 11
+
 ## 4.8.6 - 2024-06-17
 ### Fixed
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches when the switch instruction is TABLESWITCH ([#2782](https://github.com/spotbugs/spotbugs/issues/2782))
