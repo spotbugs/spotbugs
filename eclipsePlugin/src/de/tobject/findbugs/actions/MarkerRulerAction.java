@@ -84,7 +84,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     @Override
     public void setActiveEditor(IAction callerAction, IEditorPart targetEditor) {
         Control control;
-        // See if we're already listenting to an editor; if so, stop listening
+        // See if we're already listening to an editor; if so, stop listening
         if (editor != null) {
             if (ruler != null) {
                 control = ruler.getControl();

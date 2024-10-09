@@ -486,7 +486,7 @@ public class PluginLoader implements AutoCloseable {
                 u = u.substring(0, u.indexOf(findBugsClassFile));
                 from = new URL(u);
             } else {
-                throw new IllegalArgumentException("Unknown url shema: " + u);
+                throw new IllegalArgumentException("Unknown url schema: " + u);
             }
 
         } catch (MalformedURLException e) {

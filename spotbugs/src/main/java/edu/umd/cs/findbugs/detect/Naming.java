@@ -391,7 +391,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (name.endsWith("Exception")) {
             // Does it ultimately inherit from Throwable?
             if (!mightInheritFromException(DescriptorFactory.createClassDescriptor(obj))) {
-                // It doens't, so the name is misleading
+                // It doesn't, so the name is misleading
                 bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
             }
         }
