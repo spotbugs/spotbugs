@@ -33,6 +33,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Return objects directly instead of creating more garbage collection by defining them ([#3133](https://github.com/spotbugs/spotbugs/issues/3133))
 - Cleanup double initization and fix comments referring to findbugs instead of spotbugs([#3134](https://github.com/spotbugs/spotbugs/issues/3134))
 
+### Added
+- New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
+  - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
+
 ### Changed
 - Bump up Java version to 11
 
