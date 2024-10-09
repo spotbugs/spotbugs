@@ -27,7 +27,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Recognize some classes as immutable, fixing EI_EXPOSE and MS_EXPOSE FPs ([#3137](https://github.com/spotbugs/spotbugs/pull/3137))
 
 ### Cleanup
-- Cleaup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
+- Cleanup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
 - Remove extra blank lines and remove public from interface objects as inherently already public ([#3131](https://github.com/spotbugs/spotbugs/issues/3131))
 - Fix order of modifiers on properties/methods and ensure correct location in file ([#3132](https://github.com/spotbugs/spotbugs/issues/3132))
 - Return objects directly instead of creating more garbage collection by defining them ([#3133](https://github.com/spotbugs/spotbugs/issues/3133))
@@ -599,7 +599,7 @@ This version contains no change, except for the solution for [a deployment probl
 * Replace to try-with-resources
 * Reset DataAnalysis.DEBUG back when analysis reaches MAX_ITER
 * Remove unused methods in `BCELUtil`
-* Remove unused methods and deperecated methods in `edu.umd.cs.findbugs.util.Util`
+* Remove unused methods and deprecated methods in `edu.umd.cs.findbugs.util.Util`
 * Change to removeIf from Iterator and Iterator.remove
 * Use Map.computeIfAbsent instead of Map.get and Map.put
 * Use for-each instead of for-loop and while-loop
@@ -664,7 +664,7 @@ This version contains no change, except for the solution for [a deployment probl
 * edu.umd.cs.findbugs.util.ClassName#assertIsSlashed return type is changed to void
 
 ### Deprecated
-* edu.umd.cs.findbugs.classfile.ClassDescriptor#toDottedClassName() is depricated and getDottedClassName() can be used instead.
+* edu.umd.cs.findbugs.classfile.ClassDescriptor#toDottedClassName() is deprecated and getDottedClassName() can be used instead.
 
 ## 3.1.9 - 2018-11-20
 

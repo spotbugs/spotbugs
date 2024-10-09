@@ -692,7 +692,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @param name
      *            name of the property to get
      * @param defaultValue
-     *            default value to return if propery is not set
+     *            default value to return if property is not set
      * @return the value of the named property, or the default value if the
      *         property has not been set
      */

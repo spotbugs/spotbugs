@@ -508,7 +508,7 @@ public class BugContentProvider implements ICommonContentProvider {
                 break;
             default:
                 FindbugsPlugin.getDefault()
-                        .logWarning("UKNOWN delta change kind" + delta.changeKind);
+                        .logWarning("UNKNOWN delta change kind" + delta.changeKind);
 
             }
         }
