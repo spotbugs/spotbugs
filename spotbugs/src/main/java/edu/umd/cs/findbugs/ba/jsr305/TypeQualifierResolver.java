@@ -72,6 +72,7 @@ public class TypeQualifierResolver {
         DescriptorFactory.createClassDescriptor("android/support/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("androidx/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable"),
+        DescriptorFactory.createClassDescriptor("jakarta/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("org/apache/avro/reflect/Nullable"),
         DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable"),
         DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/Nullable"),
