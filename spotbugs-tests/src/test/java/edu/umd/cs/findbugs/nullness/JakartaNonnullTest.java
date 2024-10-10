@@ -29,8 +29,6 @@ class JakartaNonnullTest {
     }
 
     private BugInstanceMatcher bug() {
-        // 'NP_NONNULL_RETURN_VIOLATION' is a hypothetical bug type that would represent a violation of @Nonnull
-        // If SpotBugs has a different type for this rule, adjust accordingly.
         return new BugInstanceMatcherBuilder().bugType("NP_NONNULL_RETURN_VIOLATION").build();
     }
 }
