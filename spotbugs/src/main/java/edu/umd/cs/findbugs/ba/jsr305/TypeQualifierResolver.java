@@ -58,6 +58,7 @@ public class TypeQualifierResolver {
         DescriptorFactory.createClassDescriptor("edu/umd/cs/findbugs/annotations/NonNull"),
         DescriptorFactory.createClassDescriptor("android/support/annotation/NonNull"),
         DescriptorFactory.createClassDescriptor("androidx/annotation/NonNull"),
+        DescriptorFactory.createClassDescriptor("jakarta/annotation/Nonnull"),
         DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/NotNull"),
         DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNull"),
         eclipseNonNullByDefault,
