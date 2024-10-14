@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.util.MultiMap;
 public class SelfMethodCalls {
 
     static private boolean interestingSignature(String signature) {
-        return !"()V".equals(signature);
+        return true;
     }
 
     public static <T> MultiMap<T, T> getSelfCalls(final ClassDescriptor classDescriptor, final Map<String, T> methods) {
