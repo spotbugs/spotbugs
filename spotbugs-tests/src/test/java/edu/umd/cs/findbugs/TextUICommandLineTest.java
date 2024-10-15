@@ -8,7 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -77,5 +79,29 @@ class TextUICommandLineTest {
         assertTrue(emacsFile.toFile().isFile());
         assertTrue(xdocsFile.toFile().isFile());
         assertTrue(textFile.toFile().isFile());
+    }
+
+    @Test
+    void sharedOutputFilesAreNotDuplicated() throws Exception {
+        Path file = Files.createTempFile("spotbugs", ".xml");
+        TextUICommandLine commandLine = new TextUICommandLine();
+        try (FindBugs2 findbugs = new FindBugs2()) {
+            commandLine.handleOption("-html", "fancy-hist.xsl=" + file.toFile().getAbsolutePath());
+            commandLine.handleOption("-xml", "withMessages=" + file.toFile().getAbsolutePath());
+            commandLine.handleOption("-xml", "=" + file.toFile().getAbsolutePath());
+            commandLine.handleOption("-sarif", "=" + file.toFile().getAbsolutePath());
+            commandLine.handleOption("-emacs", "=" + file.toFile().getAbsolutePath());
+            commandLine.handleOption("-xdocs", "=" + file.toFile().getAbsolutePath());
+            commandLine.handleOption("-sortByClass", "=" + file.toFile().getAbsolutePath());
+
+            commandLine.configureEngine(findbugs);
+            var configuredReporter = findbugs.getBugReporter();
+            // this is a horrible hack: This would be a BugReportDispatcher if there was more than one reporter
+            assertThat(configuredReporter, not(isA(BugReportDispatcher.class)));
+            configuredReporter.finish();
+        }
+        // we don't even *really* need to finish analysis, but it's better to explicitly check
+        String html = Files.readString(file, StandardCharsets.UTF_8);
+        assertThat(html, containsString("#historyTab"));
     }
 }
