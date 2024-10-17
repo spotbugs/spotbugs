@@ -563,15 +563,13 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
     }
 
     private void checkLockUsageInHierarchy(XField field, XMethod exposingMethod) {
-        if (isInherited(field)) {
-            if (declaredInheritedFieldAccessingMethods.get(field).isEmpty()) {
-                try {
-                    findLockUsageInHierarchy(field).forEach(m -> lockUsingMethodsInHierarchy.add(field, m));
-                } catch (ClassNotFoundException e) {
-                    AnalysisContext.reportMissingClass(e);
-                }
-                declaredInheritedFieldAccessingMethods.add(field, exposingMethod);
+        if (isInherited(field) && declaredInheritedFieldAccessingMethods.get(field).isEmpty()) {
+            try {
+                findLockUsageInHierarchy(field).forEach(m -> lockUsingMethodsInHierarchy.add(field, m));
+            } catch (ClassNotFoundException e) {
+                AnalysisContext.reportMissingClass(e);
             }
+            declaredInheritedFieldAccessingMethods.add(field, exposingMethod);
         }
     }
 
