@@ -61,7 +61,7 @@ public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase impl
      */
     @Override
     public void report() {
-        // TODO: FIX for new version of annnotations
+        // TODO: FIX for new version of annotations
         // AnalysisContext.currentAnalysisContext().storePropertyDatabase(
         // getNonNullDatabase(),
         // AnalysisContext.DEFAULT_NONNULL_PARAM_DATABASE_FILENAME,

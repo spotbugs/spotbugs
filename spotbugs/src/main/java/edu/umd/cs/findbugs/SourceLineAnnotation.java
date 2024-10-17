@@ -429,7 +429,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @param methodDescriptor
      *            MethodDescriptor identifying analyzed method
      * @param location
-     *            Location of instruction within analyed method
+     *            Location of instruction within analyzed method
      * @return SourceLineAnnotation describing visited instruction
      */
     public static SourceLineAnnotation fromVisitedInstruction(MethodDescriptor methodDescriptor, Location location) {

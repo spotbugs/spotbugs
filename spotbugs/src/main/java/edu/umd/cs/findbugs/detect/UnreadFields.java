@@ -99,6 +99,7 @@ public class UnreadFields extends OpcodeStackDetector {
     private static final List<String> INITIALIZER_ANNOTATIONS = Arrays.asList(
             "Ljakarta/annotation/PostConstruct;",
             "Ljavax/annotation/PostConstruct;",
+            "Lorg/testng/annotations/BeforeClass;",
             "Lorg/junit/jupiter/api/BeforeAll;",
             "Lorg/junit/jupiter/api/BeforeEach;",
             "Lorg/junit/Before;",

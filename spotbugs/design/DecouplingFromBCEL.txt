@@ -23,7 +23,7 @@ Issues:
 - We are reliant on BCEL's Constants and Visitor classes
 
 - The bytecode analysis (ba) package makes heavy use of
-  BCEL tree-based reprentation (generic package) and also
+  BCEL tree-based representation (generic package) and also
   the BCEL Repository and type classes (both of which have
   significant shortcomings).  The detectors which use
   the bytecode analysis package are also tightly coupled

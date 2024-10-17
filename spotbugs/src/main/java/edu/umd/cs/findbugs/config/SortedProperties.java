@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public final class SortedProperties extends Properties {
     /**
-     * Overriden to be able to write properties sorted by keys to the disk
+     * Overridden to be able to write properties sorted by keys to the disk
      *
      * @see java.util.Hashtable#keys()
      */

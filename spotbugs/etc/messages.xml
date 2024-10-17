@@ -229,6 +229,14 @@ applied to method parameters and uses of those method parameters. </p>
 ]]>
      </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ResourceInMultipleThreadsDetector">
+    <Details>
+      <![CDATA[
+<p> Finds non-atomic typed resources that are used in multiple threads without proper synchronization.
+    </p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant">
     <Details>
 <![CDATA[
@@ -8713,6 +8721,21 @@ after the call to initLogging, the logger configuration is lost
           ]]>
       </Details>
   </BugPattern>
+  <BugPattern type="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD">
+    <ShortDescription>Operation on resource is not safe in a multithreaded context</ShortDescription>
+    <LongDescription>Operation on resource {3} is not safe in a multithreaded context in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>This code contains an operation on a resource that is not safe in a multithreaded context.
+            The resource may be accessed by multiple threads concurrently without proper synchronization.
+            This may lead to data corruption. Use synchronization or other
+            concurrency control mechanisms to ensure that the resource is accessed safely.</p>
+        <p>See the related SEI CERT rule, but the detector is not restricted to chained methods:
+          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA04-J.+Ensure+that+calls+to+chained+methods+are+atomic">
+          VNA04-J. Ensure that calls to chained methods are atomic</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DM_DEFAULT_ENCODING">
     <ShortDescription>Reliance on default encoding</ShortDescription>
     <LongDescription>Found reliance on default encoding in {1}: {2}</LongDescription>
@@ -9141,7 +9164,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="VSC_VULNERABLE_SECURITY_CHECK_METHODS">
     <ShortDescription>Non-Private and non-final security check methods are vulnerable</ShortDescription>
-    <LongDescription>The method '{1}' performs security check by using '{2}' method of Security Manager Class, but is overrideable. Declare the method final or private in order to resolve the issue. </LongDescription>
+    <LongDescription>The method '{1}' performs security check by using '{2}' method of Security Manager Class, but is overridable. Declare the method final or private in order to resolve the issue. </LongDescription>
     <Details>
       <![CDATA[<p>
         Methods that perform security checks should be prevented from being overridden, so they must be declared as

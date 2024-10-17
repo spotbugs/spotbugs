@@ -385,7 +385,7 @@ public class Profiler implements IProfiler, XMLWriteable {
 
     /**
      * Default implementation uses {@link TotalTimeComparator} and prints out
-     * class statistics based on total time spent fot a class
+     * class statistics based on total time spent for a class
      * @deprecated use {@link ProfileSummary#report} instead.
      */
     @Deprecated
@@ -431,7 +431,7 @@ public class Profiler implements IProfiler, XMLWriteable {
 
     /**
      * Clears the previously accumulated data. This method is public because it
-     * can be accessed explicitely from clients (like Eclipse).
+     * can be accessed explicitly from clients (like Eclipse).
      * <p>
      * There is no need to clear profiler data after each run, because a new
      * profiler instance is used for each analysis run (see

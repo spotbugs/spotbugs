@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 
 /**
  * A class to abstractly represent values in stack slots, indicating whether
- * thoses values can be null, non-null, null on some incoming path, or unknown.
+ * those values can be null, non-null, null on some incoming path, or unknown.
  *
  * @author David Hovemeyer
  * @see IsNullValueFrame
