@@ -94,7 +94,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         default: {
 
             FindbugsPlugin.getDefault()
-                    .logWarning("UKNOWN BUILD kind" + kind);
+                    .logWarning("UNKNOWN BUILD kind" + kind);
             doBuild(args, monitor, kind);
             break;
         }

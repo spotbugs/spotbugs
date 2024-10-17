@@ -1,11 +1,13 @@
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.annotations.SuppressMatchType;
+
 public class PackageWarningSuppressor extends WarningSuppressor {
 
     String packageName;
 
-    public PackageWarningSuppressor(String bugPattern, String packageName) {
-        super(bugPattern);
+    public PackageWarningSuppressor(String bugPattern, SuppressMatchType matchType, String packageName) {
+        super(bugPattern, matchType);
         this.packageName = packageName;
     }
 

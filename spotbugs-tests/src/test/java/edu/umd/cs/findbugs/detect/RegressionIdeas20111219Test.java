@@ -1,13 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 class RegressionIdeas20111219Test extends AbstractIntegrationTest {
     @Test
@@ -15,16 +9,16 @@ class RegressionIdeas20111219Test extends AbstractIntegrationTest {
         performAnalysis("bugIdeas/Ideas_2011_12_19.class");
 
         assertNoNpBugInMethod("f");
-        assertBugInMethod("NP_ALWAYS_NULL", "f2", 21);
-        assertBugInMethod("NP_LOAD_OF_KNOWN_NULL_VALUE", "f2", 21);
+        assertBugInMethodAtLine("NP_ALWAYS_NULL", "Ideas_2011_12_19", "f2", 21);
+        assertBugInMethodAtLine("NP_LOAD_OF_KNOWN_NULL_VALUE", "Ideas_2011_12_19", "f2", 21);
         assertNoNpBugInMethod("f3");
         assertNoNpBugInMethod("f4");
-        assertBugInMethod("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "f5a", 48);
+        assertBugInMethodAtLine("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "Ideas_2011_12_19", "f5a", 48);
         assertNoNpBugInMethod("f5b");
         assertNoNpBugInMethod("f5c");
         assertNoNpBugInMethod("f5e");
         assertNoNpBugInMethod("f5f");
-        assertBugInMethod("NP_NULL_ON_SOME_PATH", "f5g", 81);
+        assertBugInMethodAtLine("NP_NULL_ON_SOME_PATH", "Ideas_2011_12_19", "f5g", 81);
     }
 
     private void assertNoNpBugInMethod(String method) {
@@ -44,22 +38,7 @@ class RegressionIdeas20111219Test extends AbstractIntegrationTest {
             "NP_METHOD_PARAMETER_RELAXING_ANNOTATION",
         };
         for (String bugtype : bugtypes) {
-            final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                    .bugType(bugtype)
-                    .inClass("Bug3277814")
-                    .inMethod(method)
-                    .build();
-            assertThat(getBugCollection(), containsExactly(0, bugInstanceMatcher));
+            assertNoBugInMethod(bugtype, "Bug3277814", method);
         }
-    }
-
-    private void assertBugInMethod(String bugtype, String method, int line) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugtype)
-                .inClass("Ideas_2011_12_19")
-                .inMethod(method)
-                .atLine(line)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 }

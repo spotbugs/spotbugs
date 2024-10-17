@@ -643,7 +643,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                             throw new IllegalStateException(String.format("bad wide bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
                         }
                     } else {
-                        throw new IllegalStateException(String.format("bad unpredicatable bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
+                        throw new IllegalStateException(String.format("bad unpredictable bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
                     }
                 } else {
                     if (byteStreamArgCount < 0) {

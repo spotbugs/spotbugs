@@ -54,7 +54,7 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
      * @param bugType
      *            Expected bug type
      * @param className
-     *            Class name
+     *            Class name, matches to any of the following: fully dotted class name, simple name, in case of inner classes the simple name with the container class separated by $.
      * @param methodName
      *            Method name
      * @param fieldName
@@ -215,6 +215,9 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
         if (lineNumber != null) {
             description.appendText("lineNumber=").appendValue(lineNumber);
         }
+        if (confidence != null) {
+            description.appendText("confidence=").appendValue(confidence);
+        }
     }
 
     @Override
@@ -252,6 +255,9 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
             if (lineNumber != null || !hasCriteria) {
                 SourceLineAnnotation srcAnn = extractBugAnnotation(bugInstance, SourceLineAnnotation.class);
                 description.appendText("lineNumber=").appendValue(srcAnn);
+            }
+            if (confidence != null || !hasCriteria) {
+                description.appendText("confidence=").appendValue(bugInstance.getPriority());
             }
         } else {
             description.appendValue(item);

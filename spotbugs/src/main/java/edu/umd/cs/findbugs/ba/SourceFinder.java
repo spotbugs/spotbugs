@@ -536,9 +536,8 @@ public class SourceFinder implements AutoCloseable {
     }
 
     public static String getPlatformName(String packageName, String fileName) {
-        String platformName = packageName.replace('.', File.separatorChar) + (packageName.length() > 0 ? File.separator : "")
+        return packageName.replace('.', File.separatorChar) + (packageName.isEmpty() ? "" : File.separator)
                 + fileName;
-        return platformName;
     }
 
     public static String getPlatformName(SourceLineAnnotation source) {
@@ -550,8 +549,7 @@ public class SourceFinder implements AutoCloseable {
     }
 
     public static String getCanonicalName(String packageName, String fileName) {
-        String canonicalName = ClassName.toSlashedClassName(packageName) + (packageName.length() > 0 ? "/" : "") + fileName;
-        return canonicalName;
+        return ClassName.toSlashedClassName(packageName) + (packageName.isEmpty() ? "" : "/") + fileName;
     }
 
     public static String getOrGuessSourceFile(SourceLineAnnotation source) {

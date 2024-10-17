@@ -69,16 +69,14 @@ public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
         types.add(GroupType.Project);
         types.add(GroupType.Pattern);
         types.add(GroupType.Marker);
-        Grouping grouping = Grouping.createFrom(types);
-        return grouping;
+        return Grouping.createFrom(types);
     }
 
     protected ITreeContentProvider getNavigatorContentProvider() throws PartInitException {
         BugExplorerView view = (BugExplorerView) showBugExplorerView();
         assertNotNull(view);
 
-        ITreeContentProvider contentProvider = (ITreeContentProvider) view.getCommonViewer().getContentProvider();
-        return contentProvider;
+        return (ITreeContentProvider) view.getCommonViewer().getContentProvider();
     }
 
     protected Grouping getProjectPatternPackageMarkerGrouping() {
@@ -87,8 +85,7 @@ public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
         types.add(GroupType.Pattern);
         types.add(GroupType.Package);
         types.add(GroupType.Marker);
-        Grouping grouping = Grouping.createFrom(types);
-        return grouping;
+        return Grouping.createFrom(types);
     }
 
     protected Object getSingleElement(ITreeContentProvider contentProvider) {

@@ -49,8 +49,6 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  */
 public class StackMapAnalyzer {
 
-
-
     public static class StackMapAnalysisFactory extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfoFromStackMap> {
         public StackMapAnalysisFactory() {
             super("Jump info for opcode stack from stack map analysis", JumpInfoFromStackMap.class);
@@ -61,12 +59,10 @@ public class StackMapAnalyzer {
 
             return getFromStackMap(analysisCache, descriptor);
 
-
         }
     }
 
     static class JumpInfoFromStackMap extends JumpInfo {
-
 
         JumpInfoFromStackMap(Map<Integer, List<Item>> jumpEntries, Map<Integer, List<Item>> jumpStackEntries, BitSet jumpEntryLocations) {
             super(jumpEntries, jumpStackEntries, jumpEntryLocations);
@@ -131,7 +127,8 @@ public class StackMapAnalyzer {
         return locals;
     }
 
-    static private @CheckForNull JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
+    @CheckForNull
+    private static JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
         Method method;
         try {
             method = analysisCache.getMethodAnalysis(Method.class, descriptor);
@@ -220,7 +217,7 @@ public class StackMapAnalyzer {
 
     }
 
-    static private Item getItem(StackMapType t) {
+    private static Item getItem(StackMapType t) {
 
         switch (t.getType()) {
 
@@ -255,7 +252,7 @@ public class StackMapAnalyzer {
         }
     }
 
-    static private void addLocals(List<Item> lst, StackMapType[] typesOfStackItems) {
+    private static void addLocals(List<Item> lst, StackMapType[] typesOfStackItems) {
         for (StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
@@ -266,7 +263,7 @@ public class StackMapAnalyzer {
 
     }
 
-    static private void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
+    private static void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
         for (StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
