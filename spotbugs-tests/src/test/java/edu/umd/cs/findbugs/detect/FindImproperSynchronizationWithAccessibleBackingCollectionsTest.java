@@ -23,15 +23,15 @@ class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends Ab
     void testUnsafeSynWithAccessiblePublicBackingCollectionInPlace() {
         performAnalysis("synchronizationLocks/collectionViews/UnsafeSyncWithAccessiblePublicBackingCollectionInPlace.class");
 
-        assertNumOfBugs(0, METHOD_BUG);
-        assertNumOfBugs(0, STATIC_METHOD_BUG);
-        assertNumOfBugs(0, OBJECT_BUG);
-        assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
-        assertNumOfBugs(26, BAD_BACKING_COLLECTION);
-        assertNumOfBugs(0, ACCESSIBLE_BACKING_COLLECTION);
-        assertNumOfBugs(0, INHERITABLE_BACKING_COLLECTION);
+        assertBugTypeCount(METHOD_BUG, 0);
+        assertBugTypeCount(STATIC_METHOD_BUG, 0);
+        assertBugTypeCount(OBJECT_BUG, 0);
+        assertBugTypeCount(ACCESSIBLE_OBJECT_BUG, 0);
+        assertBugTypeCount(INHERITABLE_OBJECT_BUG, 0);
+        assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 0);
+        assertBugTypeCount(BAD_BACKING_COLLECTION, 26);
+        assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
+        assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
         assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff1",
@@ -117,15 +117,15 @@ class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends Ab
     void testUnsafeSynWithBackingCollectionExposedInPlace() {
         performAnalysis("synchronizationLocks/collectionViews/UnsafeSyncWithBackingCollectionExposedInPlace.class");
 
-        assertNumOfBugs(0, METHOD_BUG);
-        assertNumOfBugs(0, STATIC_METHOD_BUG);
-        assertNumOfBugs(0, OBJECT_BUG);
-        assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
-        assertNumOfBugs(0, BAD_BACKING_COLLECTION);
-        assertNumOfBugs(17, ACCESSIBLE_BACKING_COLLECTION);
-        assertNumOfBugs(0, INHERITABLE_BACKING_COLLECTION);
+        assertBugTypeCount(METHOD_BUG, 0);
+        assertBugTypeCount(STATIC_METHOD_BUG, 0);
+        assertBugTypeCount(OBJECT_BUG, 0);
+        assertBugTypeCount(ACCESSIBLE_OBJECT_BUG, 0);
+        assertBugTypeCount(INHERITABLE_OBJECT_BUG, 0);
+        assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 0);
+        assertBugTypeCount(BAD_BACKING_COLLECTION, 0);
+        assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 17);
+        assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
         assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff1",
@@ -186,15 +186,15 @@ class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends Ab
         performAnalysis("synchronizationLocks/collectionViews/UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections.class",
                 "synchronizationLocks/collectionViews/UnsafeSyncWithExposedPackagePrivateBackingCollections.class");
 
-        assertNumOfBugs(0, METHOD_BUG);
-        assertNumOfBugs(0, STATIC_METHOD_BUG);
-        assertNumOfBugs(0, OBJECT_BUG);
-        assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
-        assertNumOfBugs(0, BAD_BACKING_COLLECTION);
-        assertNumOfBugs(0, ACCESSIBLE_BACKING_COLLECTION);
-        assertNumOfBugs(10, INHERITABLE_BACKING_COLLECTION);
+        assertBugTypeCount(METHOD_BUG, 0);
+        assertBugTypeCount(STATIC_METHOD_BUG, 0);
+        assertBugTypeCount(OBJECT_BUG, 0);
+        assertBugTypeCount(ACCESSIBLE_OBJECT_BUG, 0);
+        assertBugTypeCount(INHERITABLE_OBJECT_BUG, 0);
+        assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 0);
+        assertBugTypeCount(BAD_BACKING_COLLECTION, 0);
+        assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
+        assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 10);
 
         /* Protected bugs */
         assertBugExactly(
@@ -254,20 +254,15 @@ class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends Ab
         assertThat(getBugCollection(), containsExactly(times, bugInstance));
     }
 
-    private void assertNumOfBugs(int number, String bugType) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType(bugType).build();
-        assertThat(getBugCollection(), containsExactly(number, bugTypeMatcher));
-    }
-
     private void assertZeroBadSyncBugs() {
-        assertNumOfBugs(0, METHOD_BUG);
-        assertNumOfBugs(0, STATIC_METHOD_BUG);
-        assertNumOfBugs(0, OBJECT_BUG);
-        assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
-        assertNumOfBugs(0, BAD_BACKING_COLLECTION);
-        assertNumOfBugs(0, ACCESSIBLE_BACKING_COLLECTION);
-        assertNumOfBugs(0, INHERITABLE_BACKING_COLLECTION);
+        assertBugTypeCount(METHOD_BUG, 0);
+        assertBugTypeCount(STATIC_METHOD_BUG, 0);
+        assertBugTypeCount(OBJECT_BUG, 0);
+        assertBugTypeCount(ACCESSIBLE_OBJECT_BUG, 0);
+        assertBugTypeCount(INHERITABLE_OBJECT_BUG, 0);
+        assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 0);
+        assertBugTypeCount(BAD_BACKING_COLLECTION, 0);
+        assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
+        assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
     }
 }

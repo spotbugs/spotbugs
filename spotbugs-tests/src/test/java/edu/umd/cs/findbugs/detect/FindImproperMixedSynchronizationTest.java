@@ -28,69 +28,53 @@ class FindImproperMixedSynchronizationTest extends AbstractIntegrationTest {
         performAnalysis("synchronizationLocks/MixedBadSynchronization.class", "synchronizationLocks" +
                 "/MixedSynchronizationFromParent.class");
 
-        assertNumOfBugs(0, METHOD_BUG);
-        assertNumOfBugs(0, STATIC_METHOD_BUG);
-        assertNumOfBugs(1, OBJECT_BUG);
-        assertNumOfBugs(2, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(3, INHERITABLE_OBJECT_BUG);
-        assertNumOfBugs(1, EXPOSED_LOCK_OBJECT_BUG);
-        assertNumOfBugs(3, BAD_BACKING_COLLECTION);
-        assertNumOfBugs(1, ACCESSIBLE_BACKING_COLLECTION);
-        assertNumOfBugs(1, INHERITABLE_BACKING_COLLECTION);
+        assertBugTypeCount(METHOD_BUG, 0);
+        assertBugTypeCount(STATIC_METHOD_BUG, 0);
+        assertBugTypeCount(OBJECT_BUG, 1);
+        assertBugTypeCount(ACCESSIBLE_OBJECT_BUG, 2);
+        assertBugTypeCount(INHERITABLE_OBJECT_BUG, 3);
+        assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 1);
+        assertBugTypeCount(BAD_BACKING_COLLECTION, 3);
+        assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 1);
+        assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 1);
 
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff1",
+        assertBugInMethodAtField(BAD_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff1",
                 "view1"); /* Backed by: view1 -> collection1 */
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff2",
+        assertBugInMethodAtField(BAD_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff2",
                 "view2"); /* Backed by: view1 -> collection1 */
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff3",
+        assertBugInMethodAtField(BAD_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff3",
                 "view3"); /* Backed by: view1 -> collection1 */
-        assertBugExactly(OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff1", "view1"); /* public
+        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff1", "view1"); /* public
                                                                                                            lock */
-        assertBugExactly(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff2", "view2"); /* protected lock */
-        assertBugExactly(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff3", "view3"); /* package-private lock */
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff2", "view2"); /* protected lock */
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff3", "view3"); /* package-private lock */
 
-        assertBugExactly(INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff4",
+        assertBugInMethodAtField(INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff4",
                 "view4"); /* Backed by: view4 -> collection2 */
-        assertBugExactly(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff4", "view4"); /* protected lock */
-        assertBugExactly(EXPOSED_LOCK_OBJECT_BUG, "synchronizationLocks.MixedSynchronizationFromParent", "doStuff4",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff4", "view4"); /* protected lock */
+        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG, "synchronizationLocks.MixedSynchronizationFromParent", "doStuff4",
                 "view4"); /* Exposed by getView4 */
 
-        assertBugExactly(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.MixedSynchronizationFromParent", "doStuff5",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.MixedSynchronizationFromParent", "doStuff5",
                 "view5"); /* Exposed by getView5 in parent */
 
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff6",
+        assertBugInMethodAtField(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff6",
                 "view6"); /* Backed by: view6 -> collection4, Exposed: getCollection4 */
-        assertBugExactly(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff6", "view6"); /* Exposed by: getView6() */
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff6", "view6"); /* Exposed by: getView6() */
     }
 
     @Test
     void testGoodSynchronization() {
         performAnalysis("synchronizationLocks/GoodSynchronization.class");
 
-        assertNumOfBugs(0, METHOD_BUG);
-        assertNumOfBugs(0, STATIC_METHOD_BUG);
-        assertNumOfBugs(0, OBJECT_BUG);
-        assertNumOfBugs(0, ACCESSIBLE_OBJECT_BUG);
-        assertNumOfBugs(0, INHERITABLE_OBJECT_BUG);
-        assertNumOfBugs(0, EXPOSED_LOCK_OBJECT_BUG);
-        assertNumOfBugs(0, BAD_BACKING_COLLECTION);
-        assertNumOfBugs(0, ACCESSIBLE_BACKING_COLLECTION);
-        assertNumOfBugs(0, INHERITABLE_BACKING_COLLECTION);
-    }
-
-
-    private void assertNumOfBugs(int number, String bugType) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType(bugType).build();
-        assertThat(getBugCollection(), containsExactly(number, bugTypeMatcher));
-    }
-
-    private void assertBugExactly(String bugtype, String clazz, String method, String field) {
-        BugInstanceMatcher bugInstance = new BugInstanceMatcherBuilder()
-                .bugType(bugtype)
-                .inClass(clazz)
-                .inMethod(method)
-                .atField(field)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstance));
+        assertBugTypeCount(METHOD_BUG, 0);
+        assertBugTypeCount(STATIC_METHOD_BUG, 0);
+        assertBugTypeCount(OBJECT_BUG, 0);
+        assertBugTypeCount(ACCESSIBLE_OBJECT_BUG, 0);
+        assertBugTypeCount(INHERITABLE_OBJECT_BUG, 0);
+        assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 0);
+        assertBugTypeCount( BAD_BACKING_COLLECTION, 0);
+        assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
+        assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
     }
 }
