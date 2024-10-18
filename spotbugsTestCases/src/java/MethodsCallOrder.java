@@ -48,4 +48,27 @@ public class MethodsCallOrder {
 			System.out.println("HERE WE GO!");
 		}
 	}
+
+	static class ShortcutPathTest {
+		public ShortcutPathTest() {
+			methodA();
+		}
+
+		public void methodA(){
+			if (System.currentTimeMillis() % 2 == 1) {
+				methodB();
+			} else {
+				methodC();
+			}
+		}
+
+		public void methodB(){
+			methodC();
+		}
+
+		public void methodC(){
+			System.out.println("HERE WE GO!");
+		}
+	}
+
 }
