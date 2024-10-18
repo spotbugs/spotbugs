@@ -88,4 +88,35 @@ class MethodsCallOrderTest {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    void testShortcutPathTest() {
+        try {
+            load("../spotbugsTestCases/build/classes/java/main/MethodsCallOrder$ShortcutPathTest.class");
+        } catch (CheckedAnalysisException | IOException | InterruptedException e) {
+            fail("Unable to add MethodsCallOrder$SimpleTest.class to the build: " + e.getMessage(), e);
+        }
+
+        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor("MethodsCallOrder$ShortcutPathTest");
+
+        List<String> actual = new ArrayList<>();
+
+        try {
+            ClassContext classContext = Global.getAnalysisCache().getClassAnalysis(ClassContext.class, classDescriptor);
+            for (Method method : classContext.getMethodsInCallOrder()) {
+                actual.add(method.getName() + method.getSignature());
+            }
+        } catch (CheckedAnalysisException e) {
+            fail("Unable to get ClassContext analysis for MethodsCallOrder: " + e.getMessage(), e);
+        }
+
+        List<String> expected = Arrays.asList(new String[] {
+            "methodC()V",
+            "methodB()V",
+            "methodA()V",
+            "<init>()V"
+        });
+
+        assertEquals(expected, actual);
+    }
 }
