@@ -35,7 +35,8 @@ class MethodsCallOrderTest {
         AnalysisContext.setCurrentAnalysisContext(analysisContext);
 
         IClassPathBuilder builder = classFactory.createClassPathBuilder(bugReporter);
-        builder.addCodeBase(classFactory.createFilesystemCodeBaseLocator("../spotbugsTestCases/build/classes/java/main/MethodsCallOrder.class"),
+        builder.addCodeBase(classFactory.createFilesystemCodeBaseLocator(
+                "../spotbugsTestCases/build/classes/java/main/MethodsCallOrder$SimpleTest.class"),
                 true);
         try {
             builder.build(classPath, new NoOpFindBugsProgress());
@@ -43,7 +44,7 @@ class MethodsCallOrderTest {
             fail("Unable to add MethodsCallOrder.class to the build: " + e.getMessage(), e);
         }
 
-        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor("MethodsCallOrder");
+        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor("MethodsCallOrder$SimpleTest");
 
         List<String> actual = new ArrayList<>();
 
