@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * @author Tomas Polesovsky
  */
-public class MethodsCallOrderTest {
+class MethodsCallOrderTest {
 
     @Test
     void testSimpleName() {
