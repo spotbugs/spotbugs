@@ -5,6 +5,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import org.apache.bcel.classfile.Method;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -20,11 +22,15 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class MethodsCallOrderTest {
 
-    @Test
-    void testSimpleName() {
-        PrintingBugReporter bugReporter = new PrintingBugReporter();
-        IClassFactory classFactory = ClassFactory.instance();
-        IClassPath classPath = classFactory.createClassPath();
+    private PrintingBugReporter bugReporter;
+    private IClassFactory classFactory;
+    private IClassPath classPath;
+
+    @BeforeEach
+    void setUp() {
+        bugReporter = new PrintingBugReporter();
+        classFactory = ClassFactory.instance();
+        classPath = classFactory.createClassPath();
 
         IAnalysisCache analysisCache = classFactory.createAnalysisCache(classPath, bugReporter);
         Global.setAnalysisCacheForCurrentThread(analysisCache);
@@ -33,15 +39,25 @@ class MethodsCallOrderTest {
         Project project = new Project();
         AnalysisContext analysisContext = new AnalysisContext(project);
         AnalysisContext.setCurrentAnalysisContext(analysisContext);
+    }
 
+    @AfterEach
+    void tearDown() {
+        Global.setAnalysisCacheForCurrentThread(null);
+    }
+
+    void load(String codeBaseLocation) throws CheckedAnalysisException, IOException, InterruptedException {
         IClassPathBuilder builder = classFactory.createClassPathBuilder(bugReporter);
-        builder.addCodeBase(classFactory.createFilesystemCodeBaseLocator(
-                "../spotbugsTestCases/build/classes/java/main/MethodsCallOrder$SimpleTest.class"),
-                true);
+        builder.addCodeBase(classFactory.createFilesystemCodeBaseLocator(codeBaseLocation), true);
+        builder.build(classPath, new NoOpFindBugsProgress());
+    }
+
+    @Test
+    void testSimpleTest() {
         try {
-            builder.build(classPath, new NoOpFindBugsProgress());
+            load("../spotbugsTestCases/build/classes/java/main/MethodsCallOrder$SimpleTest.class");
         } catch (CheckedAnalysisException | IOException | InterruptedException e) {
-            fail("Unable to add MethodsCallOrder.class to the build: " + e.getMessage(), e);
+            fail("Unable to add MethodsCallOrder$SimpleTest.class to the build: " + e.getMessage(), e);
         }
 
         ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor("MethodsCallOrder$SimpleTest");
@@ -49,7 +65,7 @@ class MethodsCallOrderTest {
         List<String> actual = new ArrayList<>();
 
         try {
-            ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
+            ClassContext classContext = Global.getAnalysisCache().getClassAnalysis(ClassContext.class, classDescriptor);
             for (Method method : classContext.getMethodsInCallOrder()) {
                 actual.add(method.getName() + method.getSignature());
             }
