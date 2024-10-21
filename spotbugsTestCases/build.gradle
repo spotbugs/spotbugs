@@ -30,7 +30,7 @@ dependencies {
   implementation 'com.sun.xml.bind:jaxb-impl:4.0.5'
 
   implementation 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
-  implementation 'org.junit.jupiter:junit-jupiter-params:5.11.2'
+  implementation 'org.junit.jupiter:junit-jupiter-params:5.11.3'
   implementation 'org.testng:testng:7.10.2'
 
   implementation project(':spotbugs')
