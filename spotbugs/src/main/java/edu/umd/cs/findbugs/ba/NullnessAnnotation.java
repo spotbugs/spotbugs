@@ -55,6 +55,8 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
         boolean match(@DottedClassName String className) {
             // Unfortunately there are mixed case Nonnull and NonNull annotations (JSR305, FB and JDT)
             return "org.jetbrains.annotations.NotNull".equals(className)
+                    // TODO: Need to be support transitive as per https://github.com/jspecify/jspecify/blob/main/src/main/java/org/jspecify/annotations/NullUnmarked.java#L29
+                    || "org.jspecify.annotations.NullMarked".equals(className)
                     || className.endsWith("Nonnull")
                     || super.match(className);
         }
@@ -62,7 +64,14 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
 
     public final static NullnessAnnotation NULLABLE = new NullnessAnnotation("Nullable", 2);
 
-    public final static NullnessAnnotation UNKNOWN_NULLNESS = new NullnessAnnotation("UnknownNullness", 0);
+    public final static NullnessAnnotation UNKNOWN_NULLNESS = new NullnessAnnotation("UnknownNullness", 0) {
+        @Override
+        boolean match(@DottedClassName String className) {
+            // TODO: This should be supported transitively as per https://github.com/jspecify/jspecify/blob/main/src/main/java/org/jspecify/annotations/NullUnmarked.java#L29
+            return "org.jspecify.annotations.NullUnmarked".equals(className)
+                    || super.match(className);
+        }
+    };
 
     private final static NullnessAnnotation[] myValues = { UNKNOWN_NULLNESS, NONNULL, NULLABLE, CHECK_FOR_NULL };
 

@@ -11,7 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - SimpleDateFormat, DateTimeFormatter, FastDateFormat string check for bad combinations of flag formatting ([#637](https://github.com/spotbugs/spotbugs/issues/637))
 - New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
   - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
-
+- Added `org.jspecify.annotations.Nullable`, `org.jspecify.annotations.NonNull`, `org.jspecify.annotations.NullUnmarked` and `org.jspecify.annotations.Nullmarked` to supported `NullnessAnnotation`s.
 ### Fixed
 - Do not consider Records as Singletons ([#2981](https://github.com/spotbugs/spotbugs/issues/2981))
 - Keep a maximum of 10000 cached analysis entries for plugin's analysis engines ([#3025](https://github.com/spotbugs/spotbugs/pull/3025))
