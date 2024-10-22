@@ -19,7 +19,7 @@ public class Bug1663624 {
     public void show(SomeInterface reference) {
         Object object = reference.condition1() ? reference.get() : null;
         if (reference.condition2()) {
-            foo(object); // (*) object may bu null!
+            foo(object); // (*) object may be null!
         }
     }
 

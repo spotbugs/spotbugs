@@ -68,7 +68,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
     }
 
     /**
-     * Additional constuctor just as hack for decoupling the core package from
+     * Additional constructor just as hack for decoupling the core package from
      * gui2 package
      *
      * @param modernGui

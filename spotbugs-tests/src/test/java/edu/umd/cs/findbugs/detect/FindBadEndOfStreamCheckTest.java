@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 
 class FindBadEndOfStreamCheckTest extends AbstractIntegrationTest {
-    private final static String EOS_BUG_TYPE = "EOS_BAD_END_OF_STREAM_CHECK";
+    private static final String EOS_BUG_TYPE = "EOS_BAD_END_OF_STREAM_CHECK";
 
 
     @Test

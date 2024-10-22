@@ -46,7 +46,6 @@ class DontReusePublicIdentifiersTest extends AbstractIntegrationTest {
 
         // check good public identifiers as inner classes
         performAnalysis("publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames.class",
-                "publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames$1.class",
                 "publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames$MyBuffer.class",
                 "publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames$MyFile.class",
                 "publicIdentifiers/inner/GoodPublicIdentifiersInnerClassNames$MyBigInteger.class");
