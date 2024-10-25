@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyIterable;
 
 /**
  * Check if annotation from https://jspecify.dev/ is detected.
@@ -25,7 +24,7 @@ class JSpecifyNullabilityTest {
     void checkedJSpecifyNullableReturn_isOk(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/CheckedJSpecifyNullableReturn.class"));
-        assertThat(bugCollection, emptyIterable());
+        assertThat(bugCollection, containsExactly(0, bug()));
     }
 
     @Test

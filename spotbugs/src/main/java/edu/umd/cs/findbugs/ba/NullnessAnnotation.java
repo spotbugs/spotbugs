@@ -55,7 +55,7 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
         boolean match(@DottedClassName String className) {
             // Unfortunately there are mixed case Nonnull and NonNull annotations (JSR305, FB and JDT)
             return "org.jetbrains.annotations.NotNull".equals(className)
-                    // TODO: Need to be support transitive as per https://github.com/jspecify/jspecify/blob/main/src/main/java/org/jspecify/annotations/NullUnmarked.java#L29
+                    // TODO: Need to be support transitive as per https://github.com/jspecify/jspecify/blob/main/src/main/java/org/jspecify/annotations/NullMarked.java#L29
                     || "org.jspecify.annotations.NullMarked".equals(className)
                     || className.endsWith("Nonnull")
                     || super.match(className);
