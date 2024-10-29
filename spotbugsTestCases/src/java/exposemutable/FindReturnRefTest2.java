@@ -1,3 +1,5 @@
+package exposemutable;
+
 import java.nio.CharBuffer;
 import java.util.Date;
 import java.util.HashMap;

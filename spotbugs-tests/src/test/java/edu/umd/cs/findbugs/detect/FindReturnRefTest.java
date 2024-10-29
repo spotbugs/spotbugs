@@ -9,15 +9,15 @@ import org.junit.jupiter.api.condition.JRE;
 class FindReturnRefTest extends AbstractIntegrationTest {
     @Test
     void testFindReturnRefTestNegativeChecks() {
-        performAnalysis("FindReturnRefNegativeTest.class",
-                "FindReturnRefNegativeTest$Inner.class");
+        performAnalysis("exposemutable/FindReturnRefNegativeTest.class",
+                "exposemutable/FindReturnRefNegativeTest$Inner.class");
 
         assertNoExposeBug();
     }
 
     @Test
     void testFindReturnRefTestChecks() {
-        performAnalysis("FindReturnRefTest.class");
+        performAnalysis("exposemutable/FindReturnRefTest.class");
 
         assertBugTypeCount("EI_EXPOSE_BUF", 2);
         assertBugTypeCount("EI_EXPOSE_BUF2", 2);
@@ -71,9 +71,9 @@ class FindReturnRefTest extends AbstractIntegrationTest {
 
     @Test
     void testFindReturnRefTest2Checks() {
-        performAnalysis("FindReturnRefTest2.class",
-                "FindReturnRefTest2$Nested.class",
-                "FindReturnRefTest2$Inner.class");
+        performAnalysis("exposemutable/FindReturnRefTest2.class",
+                "exposemutable/FindReturnRefTest2$Nested.class",
+                "exposemutable/FindReturnRefTest2$Inner.class");
 
         assertBugTypeCount("EI_EXPOSE_BUF", 2);
         assertBugTypeCount("EI_EXPOSE_BUF2", 2);
@@ -127,8 +127,8 @@ class FindReturnRefTest extends AbstractIntegrationTest {
 
     @Test
     void testFindReturnRefTest3Checks() {
-        performAnalysis("FindReturnRefTest3.class",
-                "FindReturnRefTest3$Nested.class");
+        performAnalysis("exposemutable/FindReturnRefTest3.class",
+                "exposemutable/FindReturnRefTest3$Nested.class");
 
         assertBugTypeCount("EI_EXPOSE_BUF", 2);
         assertBugTypeCount("EI_EXPOSE_BUF2", 2);
@@ -183,11 +183,11 @@ class FindReturnRefTest extends AbstractIntegrationTest {
 
     @Test
     void testFindReturnRefTest4Checks() {
-        performAnalysis("FindReturnRefTest4.class",
-                "FindReturnRefTest4$MiddleStatic.class",
-                "FindReturnRefTest4$Middle.class",
-                "FindReturnRefTest4$MiddleStatic$Nested.class",
-                "FindReturnRefTest4$Middle$Inner.class");
+        performAnalysis("exposemutable/FindReturnRefTest4.class",
+                "exposemutable/FindReturnRefTest4$MiddleStatic.class",
+                "exposemutable/FindReturnRefTest4$Middle.class",
+                "exposemutable/FindReturnRefTest4$MiddleStatic$Nested.class",
+                "exposemutable/FindReturnRefTest4$Middle$Inner.class");
 
         assertBugTypeCount("EI_EXPOSE_BUF", 2);
         assertBugTypeCount("EI_EXPOSE_BUF2", 2);

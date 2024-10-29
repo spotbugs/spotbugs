@@ -1,3 +1,5 @@
+package exposemutable;
+
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 import java.nio.CharBuffer;
