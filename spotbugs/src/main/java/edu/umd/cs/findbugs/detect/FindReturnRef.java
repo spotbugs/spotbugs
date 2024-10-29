@@ -310,7 +310,8 @@ public class FindReturnRef extends OpcodeStackDetector {
         if (getThisClass().isNested() && field.getName().startsWith("this$")) {
             try {
                 List<JavaClass> hostClasses = NestedAccessUtil.getHostClasses(getThisClass());
-                return hostClasses.stream().anyMatch(t -> t.getClassName().equals(ClassName.fromFieldSignature(field.getSignature())));
+                String fieldType = ClassName.fromFieldSignatureToDottedClassName(field.getSignature());
+                return hostClasses.stream().anyMatch(t -> t.getClassName().equals(fieldType));
             } catch (ClassNotFoundException e) {
                 AnalysisContext.logError("Error looking for class", e);
             }
