@@ -107,8 +107,7 @@ public class StringAnnotation implements BugAnnotation {
 
     @Override
     public String format(String key, ClassAnnotation primaryClass) {
-        String txt = value;
-        return txt;
+        return value;
     }
 
     @Override

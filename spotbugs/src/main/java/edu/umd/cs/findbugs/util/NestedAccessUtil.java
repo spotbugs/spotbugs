@@ -149,8 +149,7 @@ public class NestedAccessUtil {
         for (Attribute sourceAttribute : sourceAttributes) {
             if (sourceAttribute instanceof NestMembers) {
                 NestMembers nestMembersAttribute = (NestMembers) sourceAttribute;
-                String[] nestMemberClassNames = nestMembersAttribute.getClassNames();
-                return nestMemberClassNames;
+                return nestMembersAttribute.getClassNames();
             }
         }
         return null;
@@ -173,8 +172,7 @@ public class NestedAccessUtil {
                 NestHost nestHostAttribute = (NestHost) attribute;
                 int targetHostClassIndex = nestHostAttribute.getHostClassIndex();
                 ConstantPool constantPool = nestHostAttribute.getConstantPool();
-                String nestHostClassName = constantPool.getConstantString(targetHostClassIndex, Const.CONSTANT_Class);
-                return nestHostClassName;
+                return constantPool.getConstantString(targetHostClassIndex, Const.CONSTANT_Class);
             }
         }
         return null;

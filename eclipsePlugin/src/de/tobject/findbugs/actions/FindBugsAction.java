@@ -147,8 +147,7 @@ public class FindBugsAction implements IObjectActionDelegate {
         if (resource == null) {
             return null;
         }
-        IProject project = resource.getProject();
-        return project;
+        return resource.getProject();
     }
 
     protected String getDialogSettingsId() {

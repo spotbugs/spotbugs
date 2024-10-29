@@ -647,8 +647,7 @@ public class XFactory {
     public static XMethod createXMethod(PreorderVisitor visitor) {
         JavaClass javaClass = visitor.getThisClass();
         Method method = visitor.getMethod();
-        XMethod m = createXMethod(javaClass, method);
-        return m;
+        return createXMethod(javaClass, method);
     }
 
     /**
@@ -662,8 +661,7 @@ public class XFactory {
     public static XField createXField(PreorderVisitor visitor) {
         JavaClass javaClass = visitor.getThisClass();
         Field field = visitor.getField();
-        XField f = createXField(javaClass, field);
-        return f;
+        return createXField(javaClass, field);
     }
 
     public static XMethod createXMethod(MethodGen methodGen) {

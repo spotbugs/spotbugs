@@ -544,8 +544,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
         File dir = new File(extDir);
         File[] fileList = dir.listFiles((FileFilter) pathname -> {
             String path = pathname.getPath();
-            boolean isArchive = Archive.isArchiveFileName(path);
-            return isArchive;
+            return Archive.isArchiveFileName(path);
         });
         if (fileList == null) {
             return;

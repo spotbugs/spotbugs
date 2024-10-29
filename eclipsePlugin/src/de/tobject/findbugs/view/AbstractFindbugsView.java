@@ -216,9 +216,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
      * @return IWorkbenchSiteProgressService or <code>null</code>.
      */
     protected IWorkbenchSiteProgressService getProgressService() {
-        IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) getSite().getAdapter(
-                IWorkbenchSiteProgressService.class);
-        return service;
+        return getSite().getAdapter(IWorkbenchSiteProgressService.class);
     }
 
     /**
