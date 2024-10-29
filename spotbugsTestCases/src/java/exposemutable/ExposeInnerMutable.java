@@ -4,7 +4,7 @@ import java.nio.CharBuffer;
 import java.util.Date;
 import java.util.HashMap;
 
-public class FindReturnRefTest3 {
+public class ExposeInnerMutable {
 
     public static class Nested {
         private Date date;

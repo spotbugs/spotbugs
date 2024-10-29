@@ -4,7 +4,7 @@ import java.nio.CharBuffer;
 import java.util.Date;
 import java.util.HashMap;
 
-public class FindReturnRefTest2 {
+public class ExposeMutableFromInner {
     private Date date;
     private Date[] dateArray;
     private HashMap<Integer, String> hm = new HashMap<Integer, String>();
@@ -27,7 +27,7 @@ public class FindReturnRefTest2 {
     private static CharBuffer sCharBuf;
     private static char[] sCharArray;
 
-    public FindReturnRefTest2() {
+    public ExposeMutableFromInner() {
         date = new Date();
         dateArray = new Date[20];
         hm.put(1, "123-45-6789");

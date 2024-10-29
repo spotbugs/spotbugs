@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FindReturnRefTest4 {
+public class ExposeMutableFromMutilevelInner {
     private Date date;
     private Date[] dateArray;
     private Map<Integer, String> hm = new HashMap<>();
@@ -28,7 +28,7 @@ public class FindReturnRefTest4 {
     private static CharBuffer sCharBuf;
     private static char[] sCharArray;
 
-    public FindReturnRefTest4() {
+    public ExposeMutableFromMutilevelInner() {
         date = new Date();
         dateArray = new Date[20];
         hm.put(1, "123-45-6789");
