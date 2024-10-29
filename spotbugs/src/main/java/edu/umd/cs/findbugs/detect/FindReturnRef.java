@@ -259,7 +259,7 @@ public class FindReturnRef extends OpcodeStackDetector {
 
             if ("clone".equals(method.getName()) && item.isArray()
                     && MutableClasses.mutableSignature(item.getSignature().substring(1))) {
-                if (field != null && !field.isPublic() && field.getClassDescriptor().equals(getClassDescriptor())) {
+                if (field != null && !field.isPublic() && isFieldOf(field, getClassDescriptor())) {
                     fieldUnderClone = field;
                 } else if (item.isInitialParameter()) {
                     paramUnderClone = item;
@@ -269,7 +269,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             if (seen == Const.INVOKEVIRTUAL && "duplicate".equals(method.getName())
                     && DUPLICATE_METHODS_SIGNATURE_PATTERN.matcher(method.getSignature()).matches()
                     && BUFFER_CLASS_PATTERN.matcher(method.getClassDescriptor().getSignature()).matches()) {
-                if (field != null && !field.isPublic() && field.getClassDescriptor().equals(getClassDescriptor())) {
+                if (field != null && !field.isPublic() && isFieldOf(field, getClassDescriptor())) {
                     bufferFieldUnderDuplication = field;
                 } else if (item.isInitialParameter()) {
                     bufferParamUnderDuplication = item;
@@ -286,7 +286,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
             OpcodeStack.Item arg = stack.getStackItem(0);
             XField fieldArg = arg.getXField();
-            if (fieldArg != null && !fieldArg.isPublic() && fieldArg.getClassDescriptor().equals(getClassDescriptor())) {
+            if (fieldArg != null && !fieldArg.isPublic() && isFieldOf(fieldArg, getClassDescriptor())) {
                 fieldUnderWrapToBuffer = fieldArg;
             } else if (arg.isInitialParameter()) {
                 paramUnderWrapToBuffer = arg;

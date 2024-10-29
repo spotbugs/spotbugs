@@ -87,8 +87,8 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBugInMethodAtField("EI_EXPOSE_BUF", "FindReturnRefTest2$Inner", "getBufferWrap", "charArray");
         assertBugInMethodAtField("EI_EXPOSE_BUF", "FindReturnRefTest2$Inner", "getBufferDuplicate", "charBuf");
 
-        assertBugInMethodAtField("EI_EXPOSE_BUF2", "FindReturnRefTest2$Inner", "setBufferDuplicate", "access$802");
-        assertBugInMethodAtField("EI_EXPOSE_BUF2", "FindReturnRefTest2$Inner", "setBufferWrap", "access$802");
+        assertBugInMethodAtField("EI_EXPOSE_BUF2", "FindReturnRefTest2$Inner", "setBufferDuplicate", "charBuf");
+        assertBugInMethodAtField("EI_EXPOSE_BUF2", "FindReturnRefTest2$Inner", "setBufferWrap", "charBuf");
 
         assertBugInMethodAtField("EI_EXPOSE_REP", "FindReturnRefTest2$Inner", "getBuffer", "charBuf");
         assertBugInMethodAtField("EI_EXPOSE_REP", "FindReturnRefTest2$Inner", "getDate", "date");
@@ -97,22 +97,22 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBugInMethodAtField("EI_EXPOSE_REP", "FindReturnRefTest2$Inner", "getValues", "hm");
         assertBugInMethodAtField("EI_EXPOSE_REP", "FindReturnRefTest2$Inner", "getDateArray2", "dateArray");
 
-        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setBuffer", "access$802");
-        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setDate", "access$502");
-        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setDate2", "access$502");
-        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setDateArray", "access$602");
-        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setValues", "access$702");
-        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setDateArray2", "access$602");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setBuffer", "charBuf");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setDate", "date");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setDate2", "date");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setDateArray", "dateArray");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setValues", "hm");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest2$Inner", "setDateArray2", "dateArray");
 
-        assertBugInMethodAtField("EI_EXPOSE_STATIC_BUF2", "FindReturnRefTest2$Nested", "setStaticBufferDuplicate", "access$302");
-        assertBugInMethodAtField("EI_EXPOSE_STATIC_BUF2", "FindReturnRefTest2$Nested", "setStaticBufferWrap", "access$302");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_BUF2", "FindReturnRefTest2$Nested", "setStaticBufferDuplicate", "sCharBuf");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_BUF2", "FindReturnRefTest2$Nested", "setStaticBufferWrap", "sCharBuf");
 
-        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticBuffer", "access$302");
-        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticDate", "access$002");
-        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticDate2", "access$002");
-        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticDateArray", "access$102");
-        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticValues", "access$202");
-        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticDateArray2", "access$102");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticBuffer", "sCharBuf");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticDate", "sDate");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticDate2", "sDate");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticDateArray", "sDateArray");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticValues", "shm");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest2$Nested", "setStaticDateArray2", "sDateArray");
 
         assertBugInMethodAtField("MS_EXPOSE_BUF", "FindReturnRefTest2$Nested", "getStaticBufferWrap", "sCharArray");
         assertBugInMethodAtField("MS_EXPOSE_BUF", "FindReturnRefTest2$Nested", "getStaticBufferDuplicate", "sCharBuf");
@@ -123,7 +123,6 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBugInMethodAtField("MS_EXPOSE_REP", "FindReturnRefTest2$Nested", "getStaticDateArray", "sDateArray");
         assertBugInMethodAtField("MS_EXPOSE_REP", "FindReturnRefTest2$Nested", "getStaticValues", "shm");
         assertBugInMethodAtField("MS_EXPOSE_REP", "FindReturnRefTest2$Nested", "getStaticDateArray2", "sDateArray");
-
     }
 
     @Test
