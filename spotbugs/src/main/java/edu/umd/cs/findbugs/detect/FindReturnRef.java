@@ -37,7 +37,9 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MutableClasses;
+import edu.umd.cs.findbugs.util.NestedAccessUtil;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -53,7 +55,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FindReturnRef extends OpcodeStackDetector {
@@ -82,11 +83,11 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     private final BugAccumulator bugAccumulator;
 
-    private static final Matcher BUFFER_CLASS_MATCHER = Pattern.compile("Ljava/nio/[A-Za-z]+Buffer;").matcher("");
-    private static final Matcher DUPLICATE_METHODS_SIGNATURE_MATCHER =
-            Pattern.compile("\\(\\)Ljava/nio/[A-Za-z]+Buffer;").matcher("");
-    private static final Matcher WRAP_METHOD_SIGNATURE_MATCHER =
-            Pattern.compile("\\(\\[.\\)Ljava/nio/[A-Za-z]+Buffer;").matcher("");
+    private static final Pattern BUFFER_CLASS_PATTERN = Pattern.compile("Ljava/nio/[A-Za-z]+Buffer;");
+    private static final Pattern DUPLICATE_METHODS_SIGNATURE_PATTERN =
+            Pattern.compile("\\(\\)Ljava/nio/[A-Za-z]+Buffer;");
+    private static final Pattern WRAP_METHOD_SIGNATURE_PATTERN =
+            Pattern.compile("\\(\\[.\\)Ljava/nio/[A-Za-z]+Buffer;");
 
     private enum CaptureKind {
         NONE, REP, ARRAY_CLONE, BUF
@@ -192,7 +193,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item target = stack.getStackItem(1);
             CaptureKind capture = getPotentialCapture(top);
-            if (capture != CaptureKind.NONE && target.getRegisterNumber() == 0) {
+            if (capture != CaptureKind.NONE && (target.getRegisterNumber() == 0 || isNestedField(target.getXField()))) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EI_EXPOSE_" + (capture == CaptureKind.BUF ? "BUF2" : "REP2"),
                                 capture == CaptureKind.REP ? NORMAL_PRIORITY : LOW_PRIORITY)
@@ -266,8 +267,8 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
 
             if (seen == Const.INVOKEVIRTUAL && "duplicate".equals(method.getName())
-                    && DUPLICATE_METHODS_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
-                    && BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
+                    && DUPLICATE_METHODS_SIGNATURE_PATTERN.matcher(method.getSignature()).matches()
+                    && BUFFER_CLASS_PATTERN.matcher(method.getClassDescriptor().getSignature()).matches()) {
                 if (field != null && !field.isPublic() && field.getClassDescriptor().equals(getClassDescriptor())) {
                     bufferFieldUnderDuplication = field;
                 } else if (item.isInitialParameter()) {
@@ -279,8 +280,8 @@ public class FindReturnRef extends OpcodeStackDetector {
         if (seen == Const.INVOKESTATIC) {
             MethodDescriptor method = getMethodDescriptorOperand();
             if (method == null || !"wrap".equals(method.getName())
-                    || !WRAP_METHOD_SIGNATURE_MATCHER.reset(method.getSignature()).matches()
-                    || !BUFFER_CLASS_MATCHER.reset(method.getClassDescriptor().getSignature()).matches()) {
+                    || !WRAP_METHOD_SIGNATURE_PATTERN.matcher(method.getSignature()).matches()
+                    || !BUFFER_CLASS_PATTERN.matcher(method.getClassDescriptor().getSignature()).matches()) {
                 return;
             }
             OpcodeStack.Item arg = stack.getStackItem(0);
@@ -303,6 +304,18 @@ public class FindReturnRef extends OpcodeStackDetector {
                 paramCloneUnderCast = param;
             }
         }
+    }
+
+    private boolean isNestedField(XField field) {
+        if (getThisClass().isNested() && field.getName().startsWith("this$")) {
+            try {
+                List<JavaClass> hostClasses = NestedAccessUtil.getHostClasses(getThisClass());
+                return hostClasses.stream().anyMatch(t -> t.getClassName().equals(ClassName.fromFieldSignature(field.getSignature())));
+            } catch (ClassNotFoundException e) {
+                AnalysisContext.logError("Error looking for class", e);
+            }
+        }
+        return false;
     }
 
     @Override
