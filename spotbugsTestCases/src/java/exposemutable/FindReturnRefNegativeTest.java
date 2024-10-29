@@ -1,7 +1,5 @@
 package exposemutable;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
-
 import java.nio.CharBuffer;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,7 +7,7 @@ import java.util.HashMap;
 public class FindReturnRefNegativeTest {
     private Date date;
     private Date[] dateArray;
-    private HashMap<Integer, String> hm = new HashMap<Integer, String>();
+    private HashMap<Integer, String> hm = new HashMap<>();
 
     private static Date sDate = new Date();
     private static Date[] sDateArray = new Date[20];
@@ -18,14 +16,14 @@ public class FindReturnRefNegativeTest {
             sDateArray[i] = new Date();
         }
     }
-    private static HashMap<Integer, String> shm = new HashMap<Integer, String>();
+    private static HashMap<Integer, String> shm = new HashMap<>();
     static {
         shm.put(1, "123-45-6789");
     }
 
     public Date pubDate;
     public Date[] pubDateArray;
-    public HashMap<Integer, String> puhm = new HashMap<Integer, String>();
+    public HashMap<Integer, String> puhm = new HashMap<>();
 
     public static Date pubSDate;
     public static Date[] pubSDateArray;
@@ -34,7 +32,7 @@ public class FindReturnRefNegativeTest {
             pubSDateArray[i] = new Date();
         }
     }
-    public static HashMap<Integer, String> pushm = new HashMap<Integer, String>();
+    public static HashMap<Integer, String> pushm = new HashMap<>();
     static {
         pushm.put(1, "123-45-6789");
     }

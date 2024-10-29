@@ -180,7 +180,6 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBugInMethodAtField("MS_EXPOSE_REP", "ExposeInnerMutable$Nested", "getStaticDateArray2", "sDateArray");
     }
 
-
     @Test
     void testExposeMutableFromMutilevelInnerChecks() {
         performAnalysis("exposemutable/ExposeMutableFromMutilevelInner.class",
@@ -218,7 +217,8 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBugInMethodAtField("EI_EXPOSE_REP2", "ExposeMutableFromMutilevelInner$Middle$Inner", "setValues", "hm");
         assertBugInMethodAtField("EI_EXPOSE_REP2", "ExposeMutableFromMutilevelInner$Middle$Inner", "setDateArray2", "dateArray");
 
-        assertBugInMethodAtField("EI_EXPOSE_STATIC_BUF2", "ExposeMutableFromMutilevelInner$MiddleStatic$Nested", "setStaticBufferDuplicate", "sCharBuf");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_BUF2", "ExposeMutableFromMutilevelInner$MiddleStatic$Nested", "setStaticBufferDuplicate",
+                "sCharBuf");
         assertBugInMethodAtField("EI_EXPOSE_STATIC_BUF2", "ExposeMutableFromMutilevelInner$MiddleStatic$Nested", "setStaticBufferWrap", "sCharBuf");
 
         assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "ExposeMutableFromMutilevelInner$MiddleStatic$Nested", "setStaticBuffer", "sCharBuf");

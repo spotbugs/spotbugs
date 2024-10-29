@@ -3,13 +3,14 @@ package exposemutable;
 import java.nio.CharBuffer;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ExposeInnerMutable {
 
     public static class Nested {
         private Date date;
         private Date[] dateArray;
-        private HashMap<Integer, String> hm = new HashMap<Integer, String>();
+        private Map<Integer, String> hm = new HashMap<>();
     
         private static Date sDate = new Date();
         private static Date[] sDateArray = new Date[20];
@@ -18,7 +19,7 @@ public class ExposeInnerMutable {
                 sDateArray[i] = new Date();
             }
         }
-        private static HashMap<Integer, String> shm = new HashMap<Integer, String>();
+        private static Map<Integer, String> shm = new HashMap<>();
         static {
             shm.put(1, "123-45-6789");
         }
@@ -59,7 +60,7 @@ public class ExposeInnerMutable {
             return sDateArray.clone();
         }
 
-        public static HashMap<Integer, String> getStaticValues() {
+        public static Map<Integer, String> getStaticValues() {
             return shm;
         }
 
@@ -72,7 +73,7 @@ public class ExposeInnerMutable {
         // Indirect way of storing reference
         public static void setStaticDate2(Date d) {
             Date d2 = d;
-            sDate = d;
+            sDate = d2;
         }
 
         public static void setStaticDateArray(Date[] da) {
@@ -84,7 +85,7 @@ public class ExposeInnerMutable {
             sDateArray = da.clone();
         }
 
-        public static void setStaticValues(HashMap<Integer, String>  values) {
+        public static void setStaticValues(Map<Integer, String>  values) {
             shm = values;
         }
 
@@ -131,7 +132,7 @@ public class ExposeInnerMutable {
             return dateArray.clone();
         }
 
-        public HashMap<Integer, String> getValues() {
+        public Map<Integer, String> getValues() {
             return hm;
         }
 
@@ -156,7 +157,7 @@ public class ExposeInnerMutable {
             dateArray = da.clone();
         }
 
-        public void setValues(HashMap<Integer, String> values) {
+        public void setValues(Map<Integer, String> values) {
             hm = values;
         }
 
