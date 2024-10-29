@@ -180,6 +180,65 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBugInMethodAtField("MS_EXPOSE_REP", "FindReturnRefTest3$Nested", "getStaticDateArray2", "sDateArray");
     }
 
+
+    @Test
+    void testFindReturnRefTest4Checks() {
+        performAnalysis("FindReturnRefTest4.class",
+                "FindReturnRefTest4$MiddleStatic.class",
+                "FindReturnRefTest4$Middle.class",
+                "FindReturnRefTest4$MiddleStatic$Nested.class",
+                "FindReturnRefTest4$Middle$Inner.class");
+
+        assertBugTypeCount("EI_EXPOSE_BUF", 2);
+        assertBugTypeCount("EI_EXPOSE_BUF2", 2);
+        assertBugTypeCount("EI_EXPOSE_REP", 6);
+        assertBugTypeCount("EI_EXPOSE_REP2", 6);
+        assertBugTypeCount("EI_EXPOSE_STATIC_BUF2", 2);
+        assertBugTypeCount("EI_EXPOSE_STATIC_REP2", 6);
+        assertBugTypeCount("MS_EXPOSE_BUF", 2);
+        assertBugTypeCount("MS_EXPOSE_REP", 6);
+
+        assertBugInMethodAtField("EI_EXPOSE_BUF", "FindReturnRefTest4$Middle$Inner", "getBufferWrap", "charArray");
+        assertBugInMethodAtField("EI_EXPOSE_BUF", "FindReturnRefTest4$Middle$Inner", "getBufferDuplicate", "charBuf");
+
+        assertBugInMethodAtField("EI_EXPOSE_BUF2", "FindReturnRefTest4$Middle$Inner", "setBufferDuplicate", "charBuf");
+        assertBugInMethodAtField("EI_EXPOSE_BUF2", "FindReturnRefTest4$Middle$Inner", "setBufferWrap", "charBuf");
+
+        assertBugInMethodAtField("EI_EXPOSE_REP", "FindReturnRefTest4$Middle$Inner", "getBuffer", "charBuf");
+        assertBugInMethodAtField("EI_EXPOSE_REP", "FindReturnRefTest4$Middle$Inner", "getDate", "date");
+        assertBugInMethodAtField("EI_EXPOSE_REP", "FindReturnRefTest4$Middle$Inner", "getDate2", "date");
+        assertBugInMethodAtField("EI_EXPOSE_REP", "FindReturnRefTest4$Middle$Inner", "getDateArray", "dateArray");
+        assertBugInMethodAtField("EI_EXPOSE_REP", "FindReturnRefTest4$Middle$Inner", "getValues", "hm");
+        assertBugInMethodAtField("EI_EXPOSE_REP", "FindReturnRefTest4$Middle$Inner", "getDateArray2", "dateArray");
+
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest4$Middle$Inner", "setBuffer", "charBuf");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest4$Middle$Inner", "setDate", "date");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest4$Middle$Inner", "setDate2", "date");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest4$Middle$Inner", "setDateArray", "dateArray");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest4$Middle$Inner", "setValues", "hm");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "FindReturnRefTest4$Middle$Inner", "setDateArray2", "dateArray");
+
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_BUF2", "FindReturnRefTest4$MiddleStatic$Nested", "setStaticBufferDuplicate", "sCharBuf");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_BUF2", "FindReturnRefTest4$MiddleStatic$Nested", "setStaticBufferWrap", "sCharBuf");
+
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest4$MiddleStatic$Nested", "setStaticBuffer", "sCharBuf");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest4$MiddleStatic$Nested", "setStaticDate", "sDate");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest4$MiddleStatic$Nested", "setStaticDate2", "sDate");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest4$MiddleStatic$Nested", "setStaticDateArray", "sDateArray");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest4$MiddleStatic$Nested", "setStaticValues", "shm");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "FindReturnRefTest4$MiddleStatic$Nested", "setStaticDateArray2", "sDateArray");
+
+        assertBugInMethodAtField("MS_EXPOSE_BUF", "FindReturnRefTest4$MiddleStatic$Nested", "getStaticBufferWrap", "sCharArray");
+        assertBugInMethodAtField("MS_EXPOSE_BUF", "FindReturnRefTest4$MiddleStatic$Nested", "getStaticBufferDuplicate", "sCharBuf");
+
+        assertBugInMethodAtField("MS_EXPOSE_REP", "FindReturnRefTest4$MiddleStatic$Nested", "getStaticBuffer", "sCharBuf");
+        assertBugInMethodAtField("MS_EXPOSE_REP", "FindReturnRefTest4$MiddleStatic$Nested", "getStaticDate", "sDate");
+        assertBugInMethodAtField("MS_EXPOSE_REP", "FindReturnRefTest4$MiddleStatic$Nested", "getStaticDate2", "sDate");
+        assertBugInMethodAtField("MS_EXPOSE_REP", "FindReturnRefTest4$MiddleStatic$Nested", "getStaticDateArray", "sDateArray");
+        assertBugInMethodAtField("MS_EXPOSE_REP", "FindReturnRefTest4$MiddleStatic$Nested", "getStaticValues", "shm");
+        assertBugInMethodAtField("MS_EXPOSE_REP", "FindReturnRefTest4$MiddleStatic$Nested", "getStaticDateArray2", "sDateArray");
+    }
+
     @Test
     @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
     void testUnmodifiableClass() {
