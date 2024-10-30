@@ -32,7 +32,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Cleanup
 - Cleanup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
 - Remove extra blank lines and remove public from interface objects as inherently already public ([#3131](https://github.com/spotbugs/spotbugs/issues/3131))
-- Fix order of modifiers on properties/methods and ensure correct location in file ([#3132](https://github.com/spotbugs/spotbugs/issues/3132))
+- Fix order of modifiers on properties/methods and ensure correct location in file ([#3132](https://github.com/spotbugs/spotbugs/issues/3132), [#3177](https://github.com/spotbugs/spotbugs/pull/3177))
 - Return objects directly instead of creating more garbage collection by defining them ([#3133](https://github.com/spotbugs/spotbugs/pull/3133), [#3175](https://github.com/spotbugs/spotbugs/pull/3175))
 - Cleanup double initization and fix comments referring to findbugs instead of spotbugs([#3134](https://github.com/spotbugs/spotbugs/issues/3134))
 
