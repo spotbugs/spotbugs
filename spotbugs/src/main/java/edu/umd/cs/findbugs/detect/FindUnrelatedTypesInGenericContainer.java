@@ -304,7 +304,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     }
 
     @StaticConstant
-    final static Set<String> baseGenericTypes = new LinkedHashSet<>();
+    static final Set<String> baseGenericTypes = new LinkedHashSet<>();
     static {
         baseGenericTypes.addAll(Arrays.asList(new String[] { "java.util.Map", "java.util.Collection", "java.lang.Iterable",
             "java.util.Iterator", "com.google.common.collect.Multimap", "com.google.common.collect.Multiset",

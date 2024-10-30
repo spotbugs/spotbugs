@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.util.MultiMap;
  */
 public class SelfMethodCalls {
 
-    static private boolean interestingSignature(String signature) {
+    private static boolean interestingSignature(String signature) {
         return !"()V".equals(signature);
     }
 

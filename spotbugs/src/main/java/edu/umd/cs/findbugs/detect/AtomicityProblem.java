@@ -47,7 +47,7 @@ public class AtomicityProblem extends OpcodeStackDetector {
 
     private final BugReporter bugReporter;
 
-    final static boolean DEBUG = false;
+    static final boolean DEBUG = false;
 
     public AtomicityProblem(BugReporter bugReporter) {
         this.bugReporter = bugReporter;

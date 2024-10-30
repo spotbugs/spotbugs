@@ -128,7 +128,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
         }
     }
 
-    final static boolean DEBUG = false;
+    static final boolean DEBUG = false;
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
     static HashSet<String> immutableClassNames = new HashSet<>();

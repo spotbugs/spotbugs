@@ -330,7 +330,7 @@ public class Util {
         return s;
     }
 
-    static public @Nonnull MessageDigest getMD5Digest() {
+    public static @Nonnull MessageDigest getMD5Digest() {
         try {
             return MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {

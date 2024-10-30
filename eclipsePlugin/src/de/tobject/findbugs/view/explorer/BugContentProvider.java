@@ -68,7 +68,7 @@ public class BugContentProvider implements ICommonContentProvider {
 
     public static boolean DEBUG;
 
-    private final static IMarker[] EMPTY = new IMarker[0];
+    private static final IMarker[] EMPTY = new IMarker[0];
 
     private final RefreshJob refreshJob;
 
