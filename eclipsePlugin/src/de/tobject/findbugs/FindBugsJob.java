@@ -73,7 +73,7 @@ public abstract class FindBugsJob extends Job {
         }
     }
 
-    public FindBugsJob(String name, IResource resource) {
+    protected FindBugsJob(String name, IResource resource) {
         super(name);
         this.resource = resource;
         setRule(new MutexSchedulingRule(resource));

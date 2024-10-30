@@ -35,7 +35,7 @@ import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
 
 public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameModelingVisitor<ResourceValue, ResourceValueFrame> {
-    public ResourceValueFrameModelingVisitor(ConstantPoolGen cpg) {
+    protected ResourceValueFrameModelingVisitor(ConstantPoolGen cpg) {
         super(cpg);
     }
 

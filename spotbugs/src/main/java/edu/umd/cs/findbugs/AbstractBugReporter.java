@@ -132,7 +132,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     private final ProjectStats projectStats;
 
-    public AbstractBugReporter() {
+    protected AbstractBugReporter() {
         super();
         verbosityLevel = NORMAL;
         missingClassMessageList = new LinkedHashSet<>();

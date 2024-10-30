@@ -65,7 +65,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 
     private Action actionShowPerspective;
 
-    public AbstractFindbugsView() {
+    protected AbstractFindbugsView() {
         super();
     }
 

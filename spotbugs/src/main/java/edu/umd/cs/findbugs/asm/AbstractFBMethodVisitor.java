@@ -25,7 +25,7 @@ package edu.umd.cs.findbugs.asm;
  */
 public abstract class AbstractFBMethodVisitor extends FBMethodVisitor {
 
-    public AbstractFBMethodVisitor() {
+    protected AbstractFBMethodVisitor() {
         super();
     }
 

@@ -72,7 +72,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
 
     abstract protected void reportBug(BugInstance bug);
 
-    public BuildUnconditionalParamDerefDatabase() {
+    protected BuildUnconditionalParamDerefDatabase() {
         this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(javax.annotation.Nonnull.class, null);
     }
 

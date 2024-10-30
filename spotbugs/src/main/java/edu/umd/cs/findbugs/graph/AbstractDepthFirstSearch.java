@@ -92,7 +92,7 @@ public abstract class AbstractDepthFirstSearch<GraphType extends Graph<EdgeType,
      * @throws IllegalArgumentException
      *             if the graph has not had edge ids assigned yet
      */
-    public AbstractDepthFirstSearch(GraphType graph) {
+    protected AbstractDepthFirstSearch(GraphType graph) {
         this.graph = graph;
 
         int numBlocks = graph.getNumVertexLabels();

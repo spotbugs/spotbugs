@@ -55,11 +55,11 @@ public abstract class MergeMap<K, V> {
 
     protected abstract V mergeValues(V oldValue, V newValue);
 
-    public MergeMap() {
+    protected MergeMap() {
         map = new HashMap<>();
     }
 
-    public MergeMap(Map<K, V> map) {
+    protected MergeMap(Map<K, V> map) {
         this.map = map;
     }
 
