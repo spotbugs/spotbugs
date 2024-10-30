@@ -35,6 +35,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix order of modifiers on properties/methods and ensure correct location in file ([#3132](https://github.com/spotbugs/spotbugs/issues/3132))
 - Return objects directly instead of creating more garbage collection by defining them ([#3133](https://github.com/spotbugs/spotbugs/pull/3133), [#3175](https://github.com/spotbugs/spotbugs/pull/3175))
 - Cleanup double initization and fix comments referring to findbugs instead of spotbugs([#3134](https://github.com/spotbugs/spotbugs/issues/3134))
+- Use `Collection.isEmpty()` to test for emptiness ([#3180](https://github.com/spotbugs/spotbugs/pull/3180))
 
 ### Changed
 - Bump up Java version to 11
