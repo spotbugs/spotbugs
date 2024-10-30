@@ -168,10 +168,7 @@ public abstract class ValueNumberSourceInfo {
         if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
             return null;
         }
-        BugAnnotation variableAnnotation = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, "VALUE_OF");
-
-        return variableAnnotation;
-
+        return findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, "VALUE_OF");
     }
 
 }

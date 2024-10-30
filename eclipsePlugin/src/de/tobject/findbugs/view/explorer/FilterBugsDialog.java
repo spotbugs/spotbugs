@@ -201,8 +201,7 @@ public class FilterBugsDialog extends SelectionDialog {
 
         public boolean isFiltering() {
             String filterString = getFilterString();
-            boolean yes = filterString != null && filterString.length() > 0 && !filterString.equals(getInitialText());
-            return yes;
+            return filterString != null && filterString.length() > 0 && !filterString.equals(getInitialText());
         }
     }
 

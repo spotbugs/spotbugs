@@ -309,9 +309,7 @@ public class DiscoverSourceDirectories {
                 packageName += "/";
             }
 
-            String fullyQualifiedSourceFile = packageName + sourceFile;
-
-            return fullyQualifiedSourceFile;
+            return packageName + sourceFile;
         } catch (CheckedAnalysisException e) {
             errorLogger.logError("Could scan class " + classDesc.toDottedClassName(), e);
             throw e;

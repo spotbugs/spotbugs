@@ -1319,10 +1319,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         String invoked = inv.getClassName(cpg);
         String methodName = inv.getMethodName(cpg);
         String methodSig = inv.getSignature(cpg);
-        MethodDescriptor invokedMethod =
-                DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(invoked), methodName, methodSig,
-                        inv instanceof INVOKESTATIC);
-        return invokedMethod;
+        return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(invoked), methodName, methodSig,
+                inv instanceof INVOKESTATIC);
     }
 
     private boolean checkForWeirdEquals(String lhsSig, String rhsSig, Set<XMethod> targets) {

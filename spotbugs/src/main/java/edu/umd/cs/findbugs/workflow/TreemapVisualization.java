@@ -54,8 +54,7 @@ public class TreemapVisualization {
         if (i == -1) {
             return "";
         }
-        String p = packageName.substring(0, i);
-        return p;
+        return packageName.substring(0, i);
     }
 
     public boolean isInteriorPackage(String packageName) {

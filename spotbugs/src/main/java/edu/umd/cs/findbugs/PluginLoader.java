@@ -1268,8 +1268,7 @@ public class PluginLoader implements AutoCloseable {
         }
         try {
             SimpleDateFormat releaseDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aa z", Locale.ENGLISH);
-            Date result = releaseDateFormat.parse(releaseDate);
-            return result;
+            return releaseDateFormat.parse(releaseDate);
         } catch (ParseException e) {
             AnalysisContext.logError("unable to parse date " + releaseDate, e);
             return null;
@@ -1630,8 +1629,7 @@ public class PluginLoader implements AutoCloseable {
         Reader r = UTF8.bufferedReader(in);
         try {
             SAXReader reader = XMLUtil.buildSAXReader();
-            Document d = reader.read(r);
-            return d;
+            return reader.read(r);
         } finally {
             Util.closeSilently(r);
         }

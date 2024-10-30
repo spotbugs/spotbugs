@@ -1134,8 +1134,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugCode> getKnownPatternTypes() {
-        Set<BugCode> patterns = new TreeSet<>(DetectorFactoryCollection.instance().getBugCodes());
-        return patterns;
+        return new TreeSet<>(DetectorFactoryCollection.instance().getBugCodes());
     }
 
     public static Set<String> getFilteredIds() {
