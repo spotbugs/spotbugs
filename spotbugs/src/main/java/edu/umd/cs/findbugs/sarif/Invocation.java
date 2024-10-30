@@ -41,7 +41,7 @@ class Invocation {
         JsonArray execNotificationArray = new JsonArray();
         toolExecutionNotifications.stream()
                 .map(Notification::toJsonObject)
-                .forEach(json -> execNotificationArray.add(json));
+                .forEach(execNotificationArray::add);
         if (execNotificationArray.size() > 0) {
             result.add("toolExecutionNotifications", execNotificationArray);
         }
@@ -49,7 +49,7 @@ class Invocation {
         JsonArray configNotificationArray = new JsonArray();
         toolConfigurationNotifications.stream()
                 .map(Notification::toJsonObject)
-                .forEach(json -> configNotificationArray.add(json));
+                .forEach(configNotificationArray::add);
         if (configNotificationArray.size() > 0) {
             result.add("toolConfigurationNotifications", configNotificationArray);
         }
