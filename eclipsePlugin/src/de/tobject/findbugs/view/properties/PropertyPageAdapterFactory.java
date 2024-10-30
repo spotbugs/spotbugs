@@ -211,7 +211,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
             List<IPropertyDescriptor> props = new ArrayList<>();
             try {
                 Map<?, ?> attributes = marker.getAttributes();
-                Set<?> keySet = new TreeSet<Object>(attributes.keySet());
+                Set<?> keySet = new TreeSet<>(attributes.keySet());
                 for (Object object : keySet) {
                     props.add(new PropertyDescriptor(object, "" + object));
                 }

@@ -1250,7 +1250,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) {
             String lhsSig = lhsType_.getSignature();
             String rhsSig = rhsType_.getSignature();
-            boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, new HashSet<XMethod>());
+            boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, new HashSet<>());
             if (allOk) {
                 priorityModifier += 2;
             }

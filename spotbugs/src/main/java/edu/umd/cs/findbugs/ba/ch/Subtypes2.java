@@ -1021,7 +1021,7 @@ public class Subtypes2 {
      *             if the start vertex cannot be resolved
      */
     public void traverseSupertypesDepthFirst(ClassDescriptor start, SupertypeTraversalVisitor visitor) throws ClassNotFoundException {
-        this.traverseSupertypesDepthFirstHelper(start, visitor, new HashSet<ClassDescriptor>());
+        this.traverseSupertypesDepthFirstHelper(start, visitor, new HashSet<>());
     }
 
     private void traverseSupertypesDepthFirstHelper(ClassDescriptor cur, SupertypeTraversalVisitor visitor,
