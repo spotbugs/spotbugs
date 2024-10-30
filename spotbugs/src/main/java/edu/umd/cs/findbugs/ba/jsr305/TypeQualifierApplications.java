@@ -155,7 +155,7 @@ public class TypeQualifierApplications {
             return Collections.<AnnotationValue>emptyList();
         }
         result = TypeQualifierResolver.resolveTypeQualifiers(m.getAnnotations());
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result = Collections.<AnnotationValue>emptyList();
         }
         getDirectObjectAnnotations().put(m, result);

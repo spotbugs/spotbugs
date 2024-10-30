@@ -3094,7 +3094,7 @@ public class OpcodeStack {
             setJumpInfoChangedByNewTarget();
             jumpEntries.put(Integer.valueOf(target), new ArrayList<>(lvValues));
             jumpEntryLocations.set(target);
-            if (stack.size() > 0) {
+            if (!stack.isEmpty()) {
                 jumpStackEntries.put(Integer.valueOf(target), new ArrayList<>(stack));
             }
         } else {

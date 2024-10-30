@@ -1333,7 +1333,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
             targets.addAll(Hierarchy2.resolveVirtualMethodCallTargets(expectedClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
                     false, false));
-            allOk = targets.size() > 0;
+            allOk = !targets.isEmpty();
             for (XMethod m2 : targets) {
                 if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), actualClassDescriptor)) {
                     allOk = false;

@@ -116,7 +116,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             AnalysisContext context = AnalysisContext.currentAnalysisContext();
             FieldInfo fields[];
             MethodInfo methods[];
-            if (fieldInfoList.size() == 0) {
+            if (fieldInfoList.isEmpty()) {
                 fields = FieldInfo.EMPTY_ARRAY;
             } else {
                 fields = fieldInfoList.toArray(new FieldInfo[0]);
@@ -170,7 +170,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
             } // end for
 
-            if (methodInfoList.size() == 0) {
+            if (methodInfoList.isEmpty()) {
                 methods = MethodInfo.EMPTY_ARRAY;
             } else {
                 methods = methodInfoList.toArray(new MethodInfo[0]);

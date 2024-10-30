@@ -234,7 +234,7 @@ public class Profiler implements IProfiler, XMLWriteable {
     }
 
     private Object getContext() {
-        if (context.size() == 0) {
+        if (context.isEmpty()) {
             return "";
         }
         try {
