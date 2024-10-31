@@ -98,7 +98,7 @@ import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 public final class MarkerUtil {
     // group 1 matches class name for all except anonymous classes,
     // group 2 matches the number part of the anonymous class
-    final static Pattern fullName = Pattern.compile("^(.+?)(([$+][0-9].*)?)");
+    static final Pattern fullName = Pattern.compile("^(.+?)(([$+][0-9].*)?)");
 
     private static final IMarker[] EMPTY = new IMarker[0];
 

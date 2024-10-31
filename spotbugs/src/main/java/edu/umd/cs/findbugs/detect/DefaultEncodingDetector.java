@@ -51,9 +51,9 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
      * platform encoding.
      */
     static class DefaultEncodingAnnotation extends AnnotationEnumeration<DefaultEncodingAnnotation> {
-        public final static DefaultEncodingAnnotation DEFAULT_ENCODING = new DefaultEncodingAnnotation("DefaultEncoding", 1);
+        public static final DefaultEncodingAnnotation DEFAULT_ENCODING = new DefaultEncodingAnnotation("DefaultEncoding", 1);
 
-        private final static DefaultEncodingAnnotation[] myValues = { DEFAULT_ENCODING };
+        private static final DefaultEncodingAnnotation[] myValues = { DEFAULT_ENCODING };
 
         public static DefaultEncodingAnnotation[] values() {
             return myValues.clone();

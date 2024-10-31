@@ -473,7 +473,7 @@ public class XFactory {
         return createXField(fieldDesc);
     }
 
-    public final static boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
+    public static final boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
 
     public static XField createXField(FieldInstruction fieldInstruction, ConstantPoolGen cpg) {
         String className = fieldInstruction.getClassName(cpg);

@@ -2467,7 +2467,7 @@ public class OpcodeStack {
         }
     }
 
-    static private void addBoxedType(Class<?>... clss) {
+    private static void addBoxedType(Class<?>... clss) {
         for (Class<?> c : clss) {
             Class<?> primitiveType;
             try {

@@ -132,16 +132,16 @@ public class Subtypes2 {
         return graph;
     }
 
-    final static ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance(Collection.class);
-    final static ObjectType MAP_TYPE = ObjectTypeFactory.getInstance(Map.class);
+    static final ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance(Collection.class);
+    static final ObjectType MAP_TYPE = ObjectTypeFactory.getInstance(Map.class);
 
-    static public boolean isCollection(ReferenceType target) throws ClassNotFoundException {
+    public static boolean isCollection(ReferenceType target) throws ClassNotFoundException {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         return subtypes2.isSubtype(target, COLLECTION_TYPE);
     }
 
     /** A collection, a map, or some other container */
-    static public boolean isContainer(ReferenceType target) throws ClassNotFoundException {
+    public static boolean isContainer(ReferenceType target) throws ClassNotFoundException {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         return subtypes2.isSubtype(target, COLLECTION_TYPE)
                 || subtypes2.isSubtype(target, MAP_TYPE);
@@ -1021,7 +1021,7 @@ public class Subtypes2 {
      *             if the start vertex cannot be resolved
      */
     public void traverseSupertypesDepthFirst(ClassDescriptor start, SupertypeTraversalVisitor visitor) throws ClassNotFoundException {
-        this.traverseSupertypesDepthFirstHelper(start, visitor, new HashSet<ClassDescriptor>());
+        this.traverseSupertypesDepthFirstHelper(start, visitor, new HashSet<>());
     }
 
     private void traverseSupertypesDepthFirstHelper(ClassDescriptor cur, SupertypeTraversalVisitor visitor,
