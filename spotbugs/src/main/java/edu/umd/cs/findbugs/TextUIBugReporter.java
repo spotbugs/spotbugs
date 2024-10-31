@@ -51,7 +51,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
 
     protected PrintWriter outputStream = UTF8.printWriter(System.out, true);
 
-    public TextUIBugReporter() {
+    protected TextUIBugReporter() {
         reportStackTrace = true;
     }
 

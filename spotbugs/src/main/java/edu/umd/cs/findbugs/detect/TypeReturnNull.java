@@ -42,7 +42,7 @@ public abstract class TypeReturnNull extends OpcodeStackDetector {
 
     protected final BugAccumulator bugAccumulator;
 
-    public TypeReturnNull(BugReporter bugReporter) {
+    protected TypeReturnNull(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 

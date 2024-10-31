@@ -51,7 +51,7 @@ public abstract class BugReporterDecorator extends DelegatingBugReporter {
 
     final ComponentPlugin<BugReporterDecorator> plugin;
 
-    public BugReporterDecorator(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
+    protected BugReporterDecorator(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
         super(delegate);
         this.plugin = plugin;
 

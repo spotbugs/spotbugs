@@ -45,7 +45,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
     /**
      * Constructor.
      */
-    public BasicAbstractDataflowAnalysis() {
+    protected BasicAbstractDataflowAnalysis() {
         this.startFactMap = new IdentityHashMap<>();
         this.resultFactMap = new IdentityHashMap<>();
     }

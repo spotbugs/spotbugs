@@ -33,7 +33,7 @@ import javax.annotation.CheckForNull;
  */
 public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<ValueType>> extends
         ForwardDataflowAnalysis<FrameType> {
-    public FrameDataflowAnalysis(DepthFirstSearch dfs) {
+    protected FrameDataflowAnalysis(DepthFirstSearch dfs) {
         super(dfs);
     }
 
