@@ -87,7 +87,7 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
         // here
         FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
         UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
-        HashMap<String, Boolean> map = new HashMap<String, Boolean>();
+        HashMap<String, Boolean> map = new HashMap<>();
         if (on) {
             map.put(getBugsFileLocation(), Boolean.TRUE);
             preferences.setExcludeBugsFiles(map);
@@ -105,12 +105,12 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
         // here
         FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
         UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
-        HashMap<String, Boolean> map = new HashMap<String, Boolean>();
+        HashMap<String, Boolean> map = new HashMap<>();
         if (on) {
             map.put(getFilterFileLocation(), Boolean.TRUE);
             preferences.setExcludeFilterFiles(map);
         } else {
-            preferences.setExcludeFilterFiles(new HashMap<String, Boolean>());
+            preferences.setExcludeFilterFiles(new HashMap<>());
         }
         FindbugsPlugin.saveUserPreferences(getProject(), preferences);
     }

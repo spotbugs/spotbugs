@@ -53,7 +53,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     public static final FieldInfo[] EMPTY_ARRAY = new FieldInfo[0];
 
-    static public class Builder {
+    public static class Builder {
         final int accessFlags;
 
         final String className, fieldName, fieldSignature;
@@ -309,7 +309,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
                 // we don't know
                 // if it has a
                 // generic type
-                isStatic ? Const.ACC_STATIC : 0, new HashMap<ClassDescriptor, AnnotationValue>(), false);
+                isStatic ? Const.ACC_STATIC : 0, new HashMap<>(), false);
     }
 
     @Override

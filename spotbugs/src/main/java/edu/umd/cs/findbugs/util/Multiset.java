@@ -109,7 +109,7 @@ public class Multiset<K> {
 
     @SuppressFBWarnings("DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS")
     public Iterable<Map.Entry<K, Integer>> entriesInDecreasingFrequency() {
-        TreeSet<Map.Entry<K, Integer>> result = new TreeSet<>(new EntryComparator<K>());
+        TreeSet<Map.Entry<K, Integer>> result = new TreeSet<>(new EntryComparator<>());
         result.addAll(map.entrySet());
         if (result.size() != map.size()) {
             throw new IllegalStateException("Map " + map.getClass().getSimpleName()

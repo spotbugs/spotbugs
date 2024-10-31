@@ -321,9 +321,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
      */
     @Override
     public int compareTo(ClassHash other) {
-        int cmp = MethodHash.compareHashes(this.classHash, other.classHash);
-        // System.out.println(this + " <=> " + other + ": compareTo=" + cmp);
-        return cmp;
+        return MethodHash.compareHashes(this.classHash, other.classHash);
     }
 
     /*

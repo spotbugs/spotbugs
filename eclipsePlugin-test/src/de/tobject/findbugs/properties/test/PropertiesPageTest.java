@@ -491,8 +491,7 @@ class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     private FindbugsPropertyPageTestSubclass createWorkspacePropertiesPage() {
-        FindbugsPropertyPageTestSubclass page = new FindbugsPropertyPageTestSubclass();
-        return page;
+        return new FindbugsPropertyPageTestSubclass();
     }
 
     private String getBugsFileProjectRelativePath() {
@@ -504,8 +503,7 @@ class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     private Shell getParentShell() {
-        Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        return shell;
+        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
     }
 
     private UserPreferences getWorkspacePreferences() {

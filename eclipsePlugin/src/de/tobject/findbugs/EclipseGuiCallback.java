@@ -149,7 +149,7 @@ public class EclipseGuiCallback implements IGuiCallback {
         });
     }
 
-    private final static class EclipseDisplayThreadExecutor extends AbstractExecutorService {
+    private static final class EclipseDisplayThreadExecutor extends AbstractExecutorService {
         @Override
         public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
             return false;

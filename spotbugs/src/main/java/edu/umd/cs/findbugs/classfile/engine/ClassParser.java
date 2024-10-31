@@ -302,9 +302,7 @@ public class ClassParser implements ClassParserInterface {
         checkConstantTag(constant, IClassConstants.CONSTANT_Class);
 
         int refIndex = ((Integer) constant.data[0]).intValue();
-        String stringValue = getUtf8String(refIndex);
-
-        return stringValue;
+        return getUtf8String(refIndex);
     }
 
     /**

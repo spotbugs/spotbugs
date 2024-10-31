@@ -47,7 +47,7 @@ import de.tobject.findbugs.view.explorer.Grouping;
 public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
 
     protected static <T> Set<T> setOf(T... a) {
-        return new HashSet<T>(Arrays.asList(a));
+        return new HashSet<>(Arrays.asList(a));
     }
 
     @Override
@@ -65,7 +65,7 @@ public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
     }
 
     protected Grouping getDefaultGrouping() {
-        List<GroupType> types = new ArrayList<GroupType>();
+        List<GroupType> types = new ArrayList<>();
         types.add(GroupType.Project);
         types.add(GroupType.Pattern);
         types.add(GroupType.Marker);
@@ -80,7 +80,7 @@ public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
     }
 
     protected Grouping getProjectPatternPackageMarkerGrouping() {
-        List<GroupType> types = new ArrayList<GroupType>();
+        List<GroupType> types = new ArrayList<>();
         types.add(GroupType.Project);
         types.add(GroupType.Pattern);
         types.add(GroupType.Package);

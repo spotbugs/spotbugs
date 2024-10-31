@@ -32,7 +32,7 @@ public abstract class BackwardDataflowAnalysis<Fact> extends AbstractDataflowAna
 
     private final DepthFirstSearch dfs;
 
-    public BackwardDataflowAnalysis(ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
+    protected BackwardDataflowAnalysis(ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
         if (rdfs == null || dfs == null) {
             throw new IllegalArgumentException();
         }

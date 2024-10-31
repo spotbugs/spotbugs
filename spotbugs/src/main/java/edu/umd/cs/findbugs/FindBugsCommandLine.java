@@ -54,7 +54,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
     /**
      * Constructor. Adds shared options/switches.
      */
-    public FindBugsCommandLine() {
+    protected FindBugsCommandLine() {
         super();
         project = new Project();
         startOptionGroup("General FindBugs options:");
@@ -74,7 +74,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
      * @param modernGui
      *            ignored. In any case, gui2 options are added here.
      */
-    public FindBugsCommandLine(boolean modernGui) {
+    protected FindBugsCommandLine(boolean modernGui) {
         this();
         addOption("-f", "font size", "set font size");
         addSwitch("-clear", "clear saved GUI settings and exit");

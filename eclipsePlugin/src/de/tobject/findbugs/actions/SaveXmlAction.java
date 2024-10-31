@@ -131,9 +131,8 @@ public class SaveXmlAction extends FindBugsAction {
                 try {
                     bugCollection.writeXML(fileName);
                 } catch (IOException e) {
-                    CoreException ex = new CoreException(FindbugsPlugin.createErrorStatus(
+                    throw new CoreException(FindbugsPlugin.createErrorStatus(
                             "Can't write SpotBugs bug collection from project " + project + " to file " + fileName, e));
-                    throw ex;
                 }
             }
         };

@@ -2080,8 +2080,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         if (age < 0) {
             age = 0;
         }
-        int ageInDays = (int) (age / 1000 / 3600 / 24);
-        return ageInDays;
+        return (int) (age / 1000 / 3600 / 24);
     }
 
     /*
