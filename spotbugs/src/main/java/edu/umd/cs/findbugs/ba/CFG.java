@@ -321,7 +321,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      * Get an Iterator over the Locations in the control flow graph.
      */
     public Iterable<Location> locations() {
-        return () -> locationIterator();
+        return this::locationIterator;
     }
 
     /**

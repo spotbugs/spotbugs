@@ -67,7 +67,7 @@ final class Rule {
         }
         if (!tags.isEmpty()) {
             JsonArray propertyArray = new JsonArray();
-            tags.forEach((prop) -> propertyArray.add(prop));
+            tags.forEach(propertyArray::add);
             JsonObject propertyBag = new JsonObject();
             propertyBag.add("tags", propertyArray);
             result.add("properties", propertyBag);
