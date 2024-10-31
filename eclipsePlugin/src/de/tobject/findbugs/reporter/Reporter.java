@@ -141,7 +141,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     public void reportQueuedErrors() {
         // Report unique errors in order of their sequence
         List<Error> errorList = new ArrayList<>(getQueuedErrors());
-        if (errorList.size() > 0) {
+        if (!errorList.isEmpty()) {
             Collections.sort(errorList, new Comparator<Error>() {
                 @Override
                 public int compare(Error o1, Error o2) {
@@ -159,7 +159,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         }
 
         Set<String> missingClasses = getMissingClasses();
-        if (missingClasses.size() > 0) {
+        if (!missingClasses.isEmpty()) {
             FindBugs2Eclipse.cleanClassClache(project.getProject());
             MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.WARNING,
                     "The following classes needed for SpotBugs analysis on project " + project.getElementName()

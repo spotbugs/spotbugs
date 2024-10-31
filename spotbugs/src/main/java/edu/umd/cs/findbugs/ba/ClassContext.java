@@ -484,7 +484,7 @@ public class ClassContext {
                 result.add(i);
             }
         }
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result = Collections.<Integer>emptySet();
         }
 

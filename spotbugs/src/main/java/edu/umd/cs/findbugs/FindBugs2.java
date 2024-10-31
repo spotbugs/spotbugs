@@ -294,7 +294,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     bugReporter = new FilterBugReporter(bugReporter, m, false);
                 }
 
-                if (appClassList.size() == 0) {
+                if (appClassList.isEmpty()) {
                     Map<String, ICodeBaseEntry> codebase = classPath.getApplicationCodebaseEntries();
                     if (analysisOptions.noClassOk) {
                         System.err.println("No classfiles specified; output will have no warnings");
