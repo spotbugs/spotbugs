@@ -43,7 +43,7 @@ import javax.annotation.CheckForNull;
  */
 public class NameMatch {
 
-    private @CheckForNull final String spec;
+    private final @CheckForNull String spec;
 
     private @CheckForNull String exact;
 

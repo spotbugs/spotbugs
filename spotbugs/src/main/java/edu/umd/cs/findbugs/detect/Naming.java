@@ -442,7 +442,7 @@ public class Naming extends PreorderVisitor implements Detector {
                 && Character.isLowerCase(fieldName.charAt(1));
     }
 
-    private final static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
+    private static final Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 
 
 

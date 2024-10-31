@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
-    private final static boolean DEBUG = SystemProperties.getBoolean("ci.debug");
+    private static final boolean DEBUG = SystemProperties.getBoolean("ci.debug");
     private final FieldInfo[] xFields;
 
     private final MethodInfo[] xMethods;
@@ -68,9 +68,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
     /* final */Map<ClassDescriptor, AnnotationValue> classAnnotations;
 
-    final private String classSourceSignature;
+    private final String classSourceSignature;
 
-    final private String source;
+    private final String source;
 
     private final boolean usesConcurrency;
 

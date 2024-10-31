@@ -191,7 +191,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     /**
      * @author pugh
      */
-    private final static class SpecialTypeAnalysis extends TypeAnalysis {
+    private static final class SpecialTypeAnalysis extends TypeAnalysis {
 
         private SpecialTypeAnalysis(Method method, MethodGen methodGen, CFG cfg, DepthFirstSearch dfs, TypeMerger typeMerger,
                 TypeFrameModelingVisitor visitor, RepositoryLookupFailureCallback lookupFailureCallback,

@@ -63,7 +63,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("se.debug");
 
-    final static boolean reportTransientFieldOfNonSerializableClass = SystemProperties
+    static final boolean reportTransientFieldOfNonSerializableClass = SystemProperties
             .getBoolean("reportTransientFieldOfNonSerializableClass");
 
     boolean sawSerialVersionUID;

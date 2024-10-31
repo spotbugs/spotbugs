@@ -53,7 +53,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     public static final FieldInfo[] EMPTY_ARRAY = new FieldInfo[0];
 
-    static public class Builder {
+    public static class Builder {
         final int accessFlags;
 
         final String className, fieldName, fieldSignature;

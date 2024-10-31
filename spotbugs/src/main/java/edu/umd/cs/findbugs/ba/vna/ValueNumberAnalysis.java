@@ -56,7 +56,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, ValueNumberFrame> {
 
-    private final static boolean TRACE = SystemProperties.getBoolean("vna.trace");
+    private static final boolean TRACE = SystemProperties.getBoolean("vna.trace");
 
     public static final boolean DEBUG = TRACE || SystemProperties.getBoolean("vna.debug");
 

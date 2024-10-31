@@ -53,7 +53,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     private final boolean testingEnabled;
 
-    final static boolean REPORT_INFERRED_METHODS = SystemProperties.getBoolean("mrc.inferred.report");
+    static final boolean REPORT_INFERRED_METHODS = SystemProperties.getBoolean("mrc.inferred.report");
 
     public FunctionsThatMightBeMistakenForProcedures(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
