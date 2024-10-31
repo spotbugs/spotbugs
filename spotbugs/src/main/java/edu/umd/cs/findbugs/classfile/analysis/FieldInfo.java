@@ -309,7 +309,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
                 // we don't know
                 // if it has a
                 // generic type
-                isStatic ? Const.ACC_STATIC : 0, new HashMap<ClassDescriptor, AnnotationValue>(), false);
+                isStatic ? Const.ACC_STATIC : 0, new HashMap<>(), false);
     }
 
     @Override

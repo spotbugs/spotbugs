@@ -259,7 +259,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         @Override
         public Iterator<LongRangeSet> iterator() {
             final Iterator<Entry<Long, Long>> iterator = map.entrySet().iterator();
-            return new Iterator<ValueRangeAnalysisFactory.LongRangeSet>() {
+            return new Iterator<>() {
                 @Override
                 public boolean hasNext() {
                     return iterator.hasNext();

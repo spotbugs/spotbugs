@@ -385,7 +385,7 @@ public class BugContentProvider implements ICommonContentProvider {
                 continue;
             }
             if (!groupIds.containsKey(id)) {
-                groupIds.put(id, new HashSet<IMarker>());
+                groupIds.put(id, new HashSet<>());
             }
             groupIds.get(id).add(marker);
         }

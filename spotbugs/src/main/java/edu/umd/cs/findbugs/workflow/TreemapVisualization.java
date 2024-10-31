@@ -37,9 +37,9 @@ public class TreemapVisualization {
 
     HashSet<String> interiorPackages = new HashSet<>();
 
-    Bag<String> goodCodeSize = new Bag<>(new TreeMap<String, Integer>());
+    Bag<String> goodCodeSize = new Bag<>(new TreeMap<>());
 
-    Bag<String> goodCodeCount = new Bag<>(new TreeMap<String, Integer>());
+    Bag<String> goodCodeCount = new Bag<>(new TreeMap<>());
 
     public void addInteriorPackages(String packageName) {
         String p = superpackage(packageName);
