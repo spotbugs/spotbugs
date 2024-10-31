@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
  */
 public abstract class FindBugsJob extends Job {
 
-    private final static Semaphore analysisSem;
+    private static final Semaphore analysisSem;
 
     private static final boolean DEBUG = false;
     static {
@@ -113,7 +113,7 @@ public abstract class FindBugsJob extends Job {
         return getName() + " failed";
     }
 
-    abstract protected void runWithProgress(IProgressMonitor monitor) throws CoreException;
+    protected abstract void runWithProgress(IProgressMonitor monitor) throws CoreException;
 
     protected boolean supportsMulticore() {
         return false;

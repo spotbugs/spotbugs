@@ -1560,7 +1560,7 @@ public class PluginLoader implements AutoCloseable {
         return String.format("PluginLoader(%s, %s)", plugin.getPluginId(), loadedFrom);
     }
 
-    static public class Summary {
+    public static class Summary {
         public final String id;
         public final String description;
         public final String provider;

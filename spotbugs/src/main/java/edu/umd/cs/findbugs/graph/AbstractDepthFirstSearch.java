@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public abstract class AbstractDepthFirstSearch<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>>
         implements DFSEdgeTypes {
 
-    public final static boolean DEBUG = false;
+    public static final boolean DEBUG = false;
 
     private final GraphType graph;
 

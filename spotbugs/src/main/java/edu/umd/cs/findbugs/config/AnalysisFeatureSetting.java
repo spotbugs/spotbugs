@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
  * @author David Hovemeyer
  */
 public class AnalysisFeatureSetting {
-    private @AnalysisFeature final int property;
+    private final @AnalysisFeature int property;
 
     private final boolean enabled;
 

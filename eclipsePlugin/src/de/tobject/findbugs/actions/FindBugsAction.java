@@ -248,7 +248,7 @@ public class FindBugsAction implements IObjectActionDelegate {
         }
     }
 
-    private final static class StartedFromViewJob extends FindBugsJob {
+    private static final class StartedFromViewJob extends FindBugsJob {
         private final List<WorkItem> resources;
 
         private final IResource resource;

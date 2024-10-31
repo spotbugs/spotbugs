@@ -396,8 +396,8 @@ public class ExecutionPlan {
         for (DetectorOrderingConstraint constraint : constraintList) {
             // Does this constraint specify any detectors in this pass?
             // If so, add it to the pass constraints
-            if (selectDetectors(constraint.getEarlier(), detectorSet).size() > 0
-                    || selectDetectors(constraint.getLater(), detectorSet).size() > 0) {
+            if (!selectDetectors(constraint.getEarlier(), detectorSet).isEmpty()
+                    || !selectDetectors(constraint.getLater(), detectorSet).isEmpty()) {
                 passConstraintList.add(constraint);
             }
         }

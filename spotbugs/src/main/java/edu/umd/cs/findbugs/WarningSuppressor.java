@@ -7,9 +7,9 @@ import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
-abstract public class WarningSuppressor implements Matcher {
+public abstract class WarningSuppressor implements Matcher {
 
-    final static boolean DEBUG = SystemProperties.getBoolean("warning.suppressor");
+    static final boolean DEBUG = SystemProperties.getBoolean("warning.suppressor");
 
     protected final String bugPattern;
     protected final SuppressMatchType matchType;
