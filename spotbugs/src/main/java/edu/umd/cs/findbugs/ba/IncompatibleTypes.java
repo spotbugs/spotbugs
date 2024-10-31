@@ -114,7 +114,7 @@ public class IncompatibleTypes {
     public static final IncompatibleTypes UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER = new IncompatibleTypes(
             "Unrelated types but one type matches type parameter of the other", Priorities.HIGH_PRIORITY);
 
-    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(GenericObjectType genericType, Type plainType) {
+    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(GenericObjectType genericType, Type plainType) {
         IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(genericType.getObjectType(), plainType);
         List<? extends ReferenceType> parameters = genericType.getParameters();
         if (result.getPriority() == Priorities.NORMAL_PRIORITY && parameters != null && parameters.contains(plainType)) {
@@ -124,11 +124,11 @@ public class IncompatibleTypes {
 
     }
 
-    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(Type lhsType, Type rhsType) {
+    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(Type lhsType, Type rhsType) {
         return getPriorityForAssumingCompatible(lhsType, rhsType, false);
     }
 
-    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
+    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
         if (expectedType.equals(actualType)) {
             return SEEMS_OK;
         }
@@ -204,7 +204,7 @@ public class IncompatibleTypes {
 
     }
 
-    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(ObjectType expectedType, ObjectType actualType,
+    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(ObjectType expectedType, ObjectType actualType,
             boolean pointerEquality) {
         if (expectedType.equals(actualType)) {
             return SEEMS_OK;

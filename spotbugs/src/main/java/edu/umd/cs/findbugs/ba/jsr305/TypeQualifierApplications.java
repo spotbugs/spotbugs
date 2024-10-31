@@ -155,7 +155,7 @@ public class TypeQualifierApplications {
             return Collections.<AnnotationValue>emptyList();
         }
         result = TypeQualifierResolver.resolveTypeQualifiers(m.getAnnotations());
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result = Collections.<AnnotationValue>emptyList();
         }
         getDirectObjectAnnotations().put(m, result);
@@ -254,8 +254,7 @@ public class TypeQualifierApplications {
         When when = whenValue == null ? When.ALWAYS : When.valueOf(whenValue.value);
         ClassDescriptor annotationClass = v.getAnnotationClass();
         TypeQualifierValue<?> tqv = TypeQualifierValue.getValue(annotationClass, v.getValue("value"));
-        TypeQualifierAnnotation tqa = TypeQualifierAnnotation.getValue(tqv, when);
-        return tqa;
+        return TypeQualifierAnnotation.getValue(tqv, when);
     }
 
     /**

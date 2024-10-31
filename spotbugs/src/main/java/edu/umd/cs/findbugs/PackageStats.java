@@ -234,8 +234,7 @@ public class PackageStats extends BugCounts implements XMLWriteable {
     }
 
     public @CheckForNull ClassStats getClassStatsOrNull(String name) {
-        ClassStats result = packageMembers.get(name);
-        return result;
+        return packageMembers.get(name);
     }
 
     @Override

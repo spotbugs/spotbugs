@@ -54,7 +54,7 @@ public class BugByIdFilter extends ViewerFilter {
 
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
-        if (lastUsedFilter.size() == 0) {
+        if (lastUsedFilter.isEmpty()) {
             return true;
         }
         if (element instanceof IMarker) {

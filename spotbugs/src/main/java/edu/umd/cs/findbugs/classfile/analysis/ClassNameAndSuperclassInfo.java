@@ -123,7 +123,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
          *            The referencedClassDescriptorList to set.
          */
         public void setReferencedClassDescriptors(Collection<ClassDescriptor> referencedClassDescriptorList) {
-            if (referencedClassDescriptorList.size() == 0) {
+            if (referencedClassDescriptorList.isEmpty()) {
                 this.referencedClassDescriptorList = Collections.emptyList();
             } else {
                 this.referencedClassDescriptorList = new ArrayList<>(referencedClassDescriptorList);
@@ -131,7 +131,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
         }
 
         public void setCalledClassDescriptors(Collection<ClassDescriptor> calledClassDescriptorList) {
-            if (calledClassDescriptorList.size() == 0) {
+            if (calledClassDescriptorList.isEmpty()) {
                 this.calledClassDescriptors = Collections.emptySet();
             } else {
                 this.calledClassDescriptors = new HashSet<>(calledClassDescriptorList);

@@ -502,10 +502,7 @@ public class Hierarchy {
         for (Method method : methodList) {
             if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)
                     && accessFlagsAreConcrete(method.getAccessFlags())) {
-                JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
-
-                return m;
-
+                return new JavaClassAndMethod(javaClass, method);
             }
         }
         if (DEBUG_METHOD_LOOKUP) {
