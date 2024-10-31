@@ -181,7 +181,7 @@ public class SignatureParser {
     }
 
     public Iterable<String> parameterSignatures() {
-        return () -> new ParameterSignatureIterator();
+        return ParameterSignatureIterator::new;
 
     }
 

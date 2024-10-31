@@ -60,7 +60,7 @@ public class Grouping {
 
     @Nonnull
     public GroupType getFirstType() {
-        return groupOrder.size() > 0 ? groupOrder.getFirst() : GroupType.Undefined;
+        return groupOrder.isEmpty() ? GroupType.Undefined : groupOrder.getFirst();
     }
 
     @Nonnull
@@ -90,7 +90,7 @@ public class Grouping {
     }
 
     static Grouping restoreFrom(String saved) {
-        if (saved == null || saved.length() == 0) {
+        if (saved == null || saved.isEmpty()) {
             return createDefault();
         }
         StringTokenizer st = new StringTokenizer(saved, "[] ,", false);

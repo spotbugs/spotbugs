@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
  *
  * @author pugh
  */
-abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
+public abstract class ClassNodeDetector extends ClassNode implements Detector2 {
 
     protected final BugReporter bugReporter;
 

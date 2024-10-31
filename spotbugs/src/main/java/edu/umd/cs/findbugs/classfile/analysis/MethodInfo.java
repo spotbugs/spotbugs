@@ -64,7 +64,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return new MethodInfo[sz];
     }
 
-    static public class Builder {
+    public static class Builder {
         int accessFlags;
 
         long variableHasName;
@@ -276,7 +276,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return getDatabase().identityMethods;
     }
 
-    static public IdentityHashMap<MethodInfo, Void> getInvokeDynamicMethods() {
+    public static IdentityHashMap<MethodInfo, Void> getInvokeDynamicMethods() {
         return getDatabase().invokeDynamicMethods;
     }
 

@@ -288,7 +288,7 @@ public class FindInconsistentSync2 implements Detector {
                 return;
             }
 
-            if (!servletField && !isLocked && syncAccessList.size() == 0 && unsyncAccessList.size() > 6) {
+            if (!servletField && !isLocked && syncAccessList.isEmpty() && unsyncAccessList.size() > 6) {
                 interesting = false;
                 syncAccessList = null;
                 unsyncAccessList = null;

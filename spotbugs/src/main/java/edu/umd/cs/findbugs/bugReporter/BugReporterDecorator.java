@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.DelegatingBugReporter;
  */
 public abstract class BugReporterDecorator extends DelegatingBugReporter {
 
-    static public BugReporterDecorator construct(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
+    public static BugReporterDecorator construct(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
 
         Class<? extends BugReporterDecorator> pluginClass = plugin.getComponentClass();
 

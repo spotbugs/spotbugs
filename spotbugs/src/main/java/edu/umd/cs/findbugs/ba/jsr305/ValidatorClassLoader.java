@@ -33,7 +33,7 @@ class ValidatorClassLoader extends ClassLoader {
         }
 
     }
-    final static ValidatorClassLoader INSTANCE = new ValidatorClassLoader();
+    static final ValidatorClassLoader INSTANCE = new ValidatorClassLoader();
 
     ValidatorClassLoader() {
         super(ClassLoader.getSystemClassLoader().getParent());

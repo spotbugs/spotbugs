@@ -91,7 +91,7 @@ public class TypeQualifierResolver {
      */
     public static Collection<AnnotationValue> resolveTypeQualifiers(AnnotationValue value) {
         LinkedList<AnnotationValue> result = new LinkedList<>();
-        resolveTypeQualifierNicknames(value, result, new LinkedList<ClassDescriptor>());
+        resolveTypeQualifierNicknames(value, result, new LinkedList<>());
         return result;
     }
 
@@ -233,7 +233,7 @@ public class TypeQualifierResolver {
                     if (e.desc.equals(elementTypeDescriptor) && e.value.equals(defaultFor.name())) {
                         for (ClassDescriptor d : c.getAnnotationDescriptors()) {
                             if (!d.equals(typeQualifierDefault)) {
-                                resolveTypeQualifierNicknames(c.getAnnotation(d), result, new LinkedList<ClassDescriptor>());
+                                resolveTypeQualifierNicknames(c.getAnnotation(d), result, new LinkedList<>());
                             }
                         }
                         break;

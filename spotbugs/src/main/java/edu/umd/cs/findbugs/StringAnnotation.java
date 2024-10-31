@@ -57,7 +57,7 @@ public class StringAnnotation implements BugAnnotation {
 
     public static final String FORMAT_SPECIFIER_ROLE = "STRING_FORMAT_SPECIFIER";
 
-    final private String value;
+    private final String value;
 
     private String description;
 

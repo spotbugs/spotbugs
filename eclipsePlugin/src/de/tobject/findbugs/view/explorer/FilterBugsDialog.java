@@ -140,7 +140,7 @@ public class FilterBugsDialog extends SelectionDialog {
         }
     }
 
-    private final static class TreeLabelProvider implements ILabelProvider {
+    private static final class TreeLabelProvider implements ILabelProvider {
         @Override
         public Image getImage(Object element) {
             return null;
