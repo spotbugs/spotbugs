@@ -2467,7 +2467,7 @@ public class OpcodeStack {
         }
     }
 
-    static private void addBoxedType(Class<?>... clss) {
+    private static void addBoxedType(Class<?>... clss) {
         for (Class<?> c : clss) {
             Class<?> primitiveType;
             try {
@@ -3094,7 +3094,7 @@ public class OpcodeStack {
             setJumpInfoChangedByNewTarget();
             jumpEntries.put(Integer.valueOf(target), new ArrayList<>(lvValues));
             jumpEntryLocations.set(target);
-            if (stack.size() > 0) {
+            if (!stack.isEmpty()) {
                 jumpStackEntries.put(Integer.valueOf(target), new ArrayList<>(stack));
             }
         } else {

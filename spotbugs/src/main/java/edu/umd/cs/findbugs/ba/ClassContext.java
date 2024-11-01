@@ -424,7 +424,7 @@ public class ClassContext {
      *         null if the method has no code
      */
     @CheckForNull
-    static public BitSet getBytecodeSet(JavaClass clazz, Method method) {
+    public static BitSet getBytecodeSet(JavaClass clazz, Method method) {
 
         XMethod xmethod = XFactory.createXMethod(clazz, method);
         if (cachedBitsets().containsKey(xmethod)) {
@@ -484,7 +484,7 @@ public class ClassContext {
                 result.add(i);
             }
         }
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result = Collections.<Integer>emptySet();
         }
 

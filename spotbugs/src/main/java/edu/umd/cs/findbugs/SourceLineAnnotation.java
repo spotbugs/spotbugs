@@ -213,9 +213,8 @@ public class SourceLineAnnotation implements BugAnnotation {
      */
     @Nonnull
     public static SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile, int startBytecode, int endBytecode) {
-        SourceLineAnnotation result = new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
+        return new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
         // result.setDescription("SOURCE_LINE_UNKNOWN");
-        return result;
     }
 
     /**
@@ -227,10 +226,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @return the SourceLineAnnotation
      */
     public static SourceLineAnnotation fromVisitedMethod(PreorderVisitor visitor) {
-
-        SourceLineAnnotation sourceLines = getSourceAnnotationForMethod(visitor.getDottedClassName(), visitor.getMethodName(),
-                visitor.getMethodSig());
-        return sourceLines;
+        return getSourceAnnotationForMethod(visitor.getDottedClassName(), visitor.getMethodName(), visitor.getMethodSig());
     }
 
     /**

@@ -43,7 +43,7 @@ public abstract class QuoteMetaCharacters {
      * @param map
      *            the MetaCharacterMap
      */
-    public QuoteMetaCharacters(@Nonnull String text, @Nonnull MetaCharacterMap map) {
+    protected QuoteMetaCharacters(@Nonnull String text, @Nonnull MetaCharacterMap map) {
         if (text == null) {
             throw new NullPointerException("text must be nonnull");
         }

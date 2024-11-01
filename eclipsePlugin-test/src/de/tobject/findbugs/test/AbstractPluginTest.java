@@ -214,7 +214,7 @@ public abstract class AbstractPluginTest {
         }
     }
 
-    public AbstractPluginTest() {
+    protected AbstractPluginTest() {
         super();
     }
 

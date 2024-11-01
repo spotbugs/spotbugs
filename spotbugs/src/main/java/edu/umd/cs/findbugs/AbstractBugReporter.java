@@ -132,7 +132,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     private final ProjectStats projectStats;
 
-    public AbstractBugReporter() {
+    protected AbstractBugReporter() {
         super();
         verbosityLevel = NORMAL;
         missingClassMessageList = new LinkedHashSet<>();
@@ -233,7 +233,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         logMissingClass(getMissingClassName(ex));
     }
 
-    static final protected boolean isValidMissingClassMessage(String message) {
+    protected static final boolean isValidMissingClassMessage(String message) {
         if (message == null) {
             return false;
         }

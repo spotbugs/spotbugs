@@ -55,8 +55,8 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 @NotThreadSafe
 public class Profiler implements IProfiler, XMLWriteable {
 
-    final static boolean REPORT = SystemProperties.getBoolean("profiler.report");
-    final static boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
+    static final boolean REPORT = SystemProperties.getBoolean("profiler.report");
+    static final boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
 
     private final Stack<Clock> startTimes = new Stack<>();
 
@@ -234,7 +234,7 @@ public class Profiler implements IProfiler, XMLWriteable {
     }
 
     private Object getContext() {
-        if (context.size() == 0) {
+        if (context.isEmpty()) {
             return "";
         }
         try {
@@ -296,7 +296,7 @@ public class Profiler implements IProfiler, XMLWriteable {
     }
 
     public static class ClassNameComparator implements Comparator<Class<?>> {
-        final protected IProfiler profiler;
+        protected final IProfiler profiler;
 
         public ClassNameComparator(IProfiler p) {
             this.profiler = p;

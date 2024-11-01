@@ -285,7 +285,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     }
 
     private void killAvailableLoads(HashSet<AvailableLoad> killMe) {
-        if (killMe.size() > 0) {
+        if (!killMe.isEmpty()) {
             removeAllKeys(getUpdateableAvailableLoadMap(), killMe);
         }
     }

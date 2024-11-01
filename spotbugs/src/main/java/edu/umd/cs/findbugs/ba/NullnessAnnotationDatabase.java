@@ -112,8 +112,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                     return NullnessAnnotation.NONNULL;
                 }
             }
-            NullnessAnnotation result = super.getResolvedAnnotation(o, getMinimal);
-            return result;
+            return super.getResolvedAnnotation(o, getMinimal);
         } finally {
             profiler.end(this.getClass());
         }

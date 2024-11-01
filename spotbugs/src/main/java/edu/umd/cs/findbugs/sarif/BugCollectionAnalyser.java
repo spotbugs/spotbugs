@@ -55,13 +55,13 @@ class BugCollectionAnalyser {
 
     JsonArray getRules() {
         JsonArray array = new JsonArray();
-        rules.stream().map(Rule::toJsonObject).forEach((jsonObject) -> array.add(jsonObject));
+        rules.stream().map(Rule::toJsonObject).forEach(array::add);
         return array;
     }
 
     JsonArray getResults() {
         JsonArray array = new JsonArray();
-        results.stream().map(Result::toJsonObject).forEach((jsonObject) -> array.add(jsonObject));
+        results.stream().map(Result::toJsonObject).forEach(array::add);
         return array;
     }
 
@@ -98,7 +98,7 @@ class BugCollectionAnalyser {
 
         JsonArray taxaJson = new JsonArray();
 
-        taxa.stream().map(Taxon::toJsonObject).forEach((taxonJson) -> taxaJson.add(taxonJson));
+        taxa.stream().map(Taxon::toJsonObject).forEach(taxaJson::add);
 
         JsonObject shortDescriptionJson = new JsonObject();
         shortDescriptionJson.addProperty("text", "The MITRE Common Weakness Enumeration");

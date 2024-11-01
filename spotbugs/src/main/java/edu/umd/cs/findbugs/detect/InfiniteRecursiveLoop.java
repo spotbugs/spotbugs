@@ -47,7 +47,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
 
     private int largestBranchTarget;
 
-    private final static boolean DEBUG = SystemProperties.getBoolean("irl.debug");
+    private static final boolean DEBUG = SystemProperties.getBoolean("irl.debug");
 
     public InfiniteRecursiveLoop(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
