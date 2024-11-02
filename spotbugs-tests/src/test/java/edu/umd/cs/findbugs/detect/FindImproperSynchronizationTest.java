@@ -1,13 +1,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 class FindImproperSynchronizationTest extends AbstractIntegrationTest {
 
@@ -155,7 +150,8 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant2",
                 "doStuff6" /* in parent */,
                 "lock6"); /* Exposed by getLock6 */
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant", "doStuff6", "lock6");
+        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant", "doStuff6",
+                "lock6");
     }
 
     @Test
@@ -174,16 +170,20 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
         /* Protected bugs */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
                 "doStuff1",
                 "lock1");
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
                 "doStuff2",
                 "lock2");
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
                 "doStuff3",
                 "lock3");
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
                 "doStuff4",
                 "lock4");
 
@@ -301,15 +301,20 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy", "doStuff1",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy",
+                "doStuff1",
                 "lock1"); /* Exposed by getLock1 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy", "doStuff2",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy",
+                "doStuff2",
                 "lock2"); /* Exposed by getLock1 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy", "doStuff3",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy",
+                "doStuff3",
                 "lock3"); /* Exposed by updateLock3 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy", "doStuff4",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy",
+                "doStuff4",
                 "lock4"); /* Exposed by updateLock4 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy", "doStuff5",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy",
+                "doStuff5",
                 "lock5"); /* Exposed by updateLock5 */
     }
 
@@ -327,12 +332,18 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff1", "lock1");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff1Again", "lock1");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff2", "lock2");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff3", "lock3");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff4", "lock4");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff5", "lock5");
+        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff1",
+                "lock1");
+        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff1Again",
+                "lock1");
+        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff2",
+                "lock2");
+        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff3",
+                "lock3");
+        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff4",
+                "lock4");
+        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff5",
+                "lock5");
     }
 
     @Test
@@ -353,7 +364,8 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         // Public locks
         assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff1",
                 "lock1");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff1Again",
+        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff1Again",
                 "lock1");
         assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff2",
                 "lock2");

@@ -1,13 +1,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 class FindImproperMixedSynchronizationTest extends AbstractIntegrationTest {
     private static final String METHOD_BUG = "US_UNSAFE_METHOD_SYNCHRONIZATION";
@@ -45,9 +40,10 @@ class FindImproperMixedSynchronizationTest extends AbstractIntegrationTest {
         assertBugInMethodAtField(BAD_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff3",
                 "view3"); /* Backed by: view1 -> collection1 */
         assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff1", "view1"); /* public
-                                                                                                           lock */
+                                                                                                                   lock */
         assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff2", "view2"); /* protected lock */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff3", "view3"); /* package-private lock */
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff3",
+                "view3"); /* package-private lock */
 
         assertBugInMethodAtField(INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff4",
                 "view4"); /* Backed by: view4 -> collection2 */
@@ -60,7 +56,8 @@ class FindImproperMixedSynchronizationTest extends AbstractIntegrationTest {
 
         assertBugInMethodAtField(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff6",
                 "view6"); /* Backed by: view6 -> collection4, Exposed: getCollection4 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff6", "view6"); /* Exposed by: getView6() */
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff6",
+                "view6"); /* Exposed by: getView6() */
     }
 
     @Test
@@ -73,7 +70,7 @@ class FindImproperMixedSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_OBJECT_BUG, 0);
         assertBugTypeCount(INHERITABLE_OBJECT_BUG, 0);
         assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 0);
-        assertBugTypeCount( BAD_BACKING_COLLECTION, 0);
+        assertBugTypeCount(BAD_BACKING_COLLECTION, 0);
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
     }
