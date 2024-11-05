@@ -14,7 +14,7 @@ Installation
 ------------
 
 We provide update sites that allow you to automatically install SpotBugs into Eclipse and also query and install updates.
-There are three different update sites:
+There are four different update sites:
 
 https://spotbugs.github.io/eclipse/
   Only provides official releases of SpotBugs Eclipse plugin.

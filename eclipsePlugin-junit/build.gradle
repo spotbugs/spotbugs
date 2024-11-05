@@ -11,8 +11,8 @@ tasks.named('compileJava', JavaCompile).configure {
 
 dependencies {
   implementation project(':eclipsePlugin')
-  testImplementation 'junit:junit:4.13.2'
-  testImplementation 'org.mockito:mockito-core:5.3.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
+  testImplementation 'org.mockito:mockito-core:5.14.2'
 }
 
 tasks.named('jacocoTestReport', JacocoReport).configure {

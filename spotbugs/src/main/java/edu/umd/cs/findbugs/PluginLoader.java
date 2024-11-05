@@ -282,8 +282,8 @@ public class PluginLoader implements AutoCloseable {
     /**
      * Creates a new {@link URLClassLoader} and adds it to the list of classloaders
      * we need to close if we close the corresponding plugin
-     * 
-     * @param 
+     *
+     * @param
      *            urls the URLs from which to load classes and resources
      * @return a new {@link URLClassLoader}
      */
@@ -297,10 +297,10 @@ public class PluginLoader implements AutoCloseable {
     /**
      * Creates a new {@link URLClassLoader} and adds it to the list of classloaders
      * we need to close if we close the corresponding plugin
-     * 
-     * @param 
+     *
+     * @param
      *            urls the URLs from which to load classes and resources
-     * @param 
+     * @param
      *            parent the parent class loader for delegation
      * @return a new {@link URLClassLoader}
      */
@@ -486,7 +486,7 @@ public class PluginLoader implements AutoCloseable {
                 u = u.substring(0, u.indexOf(findBugsClassFile));
                 from = new URL(u);
             } else {
-                throw new IllegalArgumentException("Unknown url shema: " + u);
+                throw new IllegalArgumentException("Unknown url schema: " + u);
             }
 
         } catch (MalformedURLException e) {
@@ -1268,8 +1268,7 @@ public class PluginLoader implements AutoCloseable {
         }
         try {
             SimpleDateFormat releaseDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aa z", Locale.ENGLISH);
-            Date result = releaseDateFormat.parse(releaseDate);
-            return result;
+            return releaseDateFormat.parse(releaseDate);
         } catch (ParseException e) {
             AnalysisContext.logError("unable to parse date " + releaseDate, e);
             return null;
@@ -1561,7 +1560,7 @@ public class PluginLoader implements AutoCloseable {
         return String.format("PluginLoader(%s, %s)", plugin.getPluginId(), loadedFrom);
     }
 
-    static public class Summary {
+    public static class Summary {
         public final String id;
         public final String description;
         public final String provider;
@@ -1630,8 +1629,7 @@ public class PluginLoader implements AutoCloseable {
         Reader r = UTF8.bufferedReader(in);
         try {
             SAXReader reader = XMLUtil.buildSAXReader();
-            Document d = reader.read(r);
-            return d;
+            return reader.read(r);
         } finally {
             Util.closeSilently(r);
         }

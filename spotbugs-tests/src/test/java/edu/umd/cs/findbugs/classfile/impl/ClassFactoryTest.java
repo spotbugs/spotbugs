@@ -19,11 +19,12 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import java.io.File;
@@ -31,24 +32,27 @@ import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-public class ClassFactoryTest {
 
-    @Before
-    public void setUp() {
+class ClassFactoryTest {
+
+    @BeforeEach
+    void setUp() {
         Global.setAnalysisCacheForCurrentThread(new NoopAnalysisCache());
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         Global.setAnalysisCacheForCurrentThread(null);
     }
 
     @Test
-    public void ignoreNonExistentFile() throws Exception {
+    void ignoreNonExistentFile() throws Exception {
         File file = tempFile();
         file.delete();
         FilesystemCodeBaseLocator locator = buildLocator(file);
@@ -56,23 +60,23 @@ public class ClassFactoryTest {
     }
 
     @Test
-    public void ignoreUnreadableFile() throws Exception {
+    void ignoreUnreadableFile() throws Exception {
         File file = createZipFile();
         file.deleteOnExit();
         file.setReadable(false);
-        assumeFalse("File cannot be marked as unreadable, skipping test.", file.canRead());
+        assumeFalse(file.canRead(), "File cannot be marked as unreadable, skipping test.");
         FilesystemCodeBaseLocator locator = buildLocator(file);
         assertHasNoCodeBase(ClassFactory.createFilesystemCodeBase(locator));
     }
 
     @Test
-    public void ignoreUnknownNonClassFileFormat() throws Exception {
+    void ignoreUnknownNonClassFileFormat() throws Exception {
         FilesystemCodeBaseLocator locator = buildLocator(tempFile());
         assertHasNoCodeBase(ClassFactory.createFilesystemCodeBase(locator));
     }
 
     @Test
-    public void acceptZipFile() throws Exception {
+    void acceptZipFile() throws Exception {
         File zipFile = createZipFile();
         zipFile.deleteOnExit();
         FilesystemCodeBaseLocator locator = buildLocator(zipFile);
@@ -108,5 +112,17 @@ public class ClassFactoryTest {
     private void assertHasCodeBase(IScannableCodeBase codeBase) throws Exception {
         assertNotNull(codeBase);
         assertTrue(codeBase.iterator().hasNext());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "../spotbugsTestCases/src/classSamples/recordCompileWithJaCoCo0.8.8/Foo.clazz",
+        "../spotbugsTestCases/src/classSamples/recordCompileWithJaCoCo0.8.8/FooWithMember.clazz" })
+    void acceptConstantDynamic(String fileName) throws Exception {
+        try (SingleFileCodeBase codeBase = new SingleFileCodeBase(null, fileName)) {
+            ClassDescriptor classDescriptor = codeBase.getClassDescriptor();
+
+            assertNotNull(classDescriptor);
+        }
     }
 }

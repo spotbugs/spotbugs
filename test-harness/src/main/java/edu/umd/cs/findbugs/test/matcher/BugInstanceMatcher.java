@@ -54,7 +54,7 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
      * @param bugType
      *            Expected bug type
      * @param className
-     *            Class name
+     *            Class name, matches to any of the following: fully dotted class name, simple name, in case of inner classes the simple name with the container class separated by $.
      * @param methodName
      *            Method name
      * @param fieldName
@@ -214,6 +214,53 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
         }
         if (lineNumber != null) {
             description.appendText("lineNumber=").appendValue(lineNumber);
+        }
+        if (confidence != null) {
+            description.appendText("confidence=").appendValue(confidence);
+        }
+    }
+
+    @Override
+    public void describeMismatch(Object item, Description description) {
+        description.appendText("was ");
+
+        if (item instanceof BugInstance) {
+            BugInstance bugInstance = (BugInstance) item;
+            boolean hasCriteria = bugType != null
+                    && className != null
+                    && methodName != null
+                    && fieldName != null
+                    && variableName != null
+                    && lineNumber != null;
+
+            if (bugType != null || !hasCriteria) {
+                description.appendText("bugType=").appendValue(bugInstance.getType()).appendText(",");
+            }
+            if (className != null || !hasCriteria) {
+                ClassAnnotation classAnn = extractBugAnnotation(bugInstance, ClassAnnotation.class);
+                description.appendText("className=").appendValue(classAnn).appendText(",");
+            }
+            if (methodName != null || !hasCriteria) {
+                MethodAnnotation methodAnn = extractBugAnnotation(bugInstance, MethodAnnotation.class);
+                description.appendText("methodName=").appendValue(methodAnn).appendText(",");
+            }
+            if (fieldName != null || !hasCriteria) {
+                FieldAnnotation fieldAnn = extractBugAnnotation(bugInstance, FieldAnnotation.class);
+                description.appendText("fieldName=").appendValue(fieldAnn).appendText(",");
+            }
+            if (variableName != null || !hasCriteria) {
+                LocalVariableAnnotation localVarAnn = extractBugAnnotation(bugInstance, LocalVariableAnnotation.class);
+                description.appendText("variableName=").appendValue(localVarAnn).appendText(",");
+            }
+            if (lineNumber != null || !hasCriteria) {
+                SourceLineAnnotation srcAnn = extractBugAnnotation(bugInstance, SourceLineAnnotation.class);
+                description.appendText("lineNumber=").appendValue(srcAnn);
+            }
+            if (confidence != null || !hasCriteria) {
+                description.appendText("confidence=").appendValue(bugInstance.getPriority());
+            }
+        } else {
+            description.appendValue(item);
         }
     }
 }

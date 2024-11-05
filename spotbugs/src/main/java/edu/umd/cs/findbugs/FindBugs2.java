@@ -281,7 +281,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                         @Override
                         public void reportBug(@Nonnull BugInstance bugInstance) {
                             String className = bugInstance.getPrimaryClass().getClassName();
-                            String resourceName = className.replace('.', '/') + ".class";
+                            String resourceName = ClassName.toSlashedClassName(className) + ".class";
                             if (classScreener.matches(resourceName)) {
                                 this.getDelegate().reportBug(bugInstance);
                             }
@@ -294,7 +294,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     bugReporter = new FilterBugReporter(bugReporter, m, false);
                 }
 
-                if (appClassList.size() == 0) {
+                if (appClassList.isEmpty()) {
                     Map<String, ICodeBaseEntry> codebase = classPath.getApplicationCodebaseEntries();
                     if (analysisOptions.noClassOk) {
                         System.err.println("No classfiles specified; output will have no warnings");
@@ -1122,7 +1122,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                                 LOG.warn("Thread interrupted during analysis", e);
                                 Thread.currentThread().interrupt();
                             } catch (ExecutionException e) {
-                                throw new AnalysisException("Exeption was thrown during analysis", e);
+                                throw new AnalysisException("Exception was thrown during analysis", e);
                             }
                         });
                         if (Thread.interrupted()) {

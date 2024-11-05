@@ -1,60 +1,42 @@
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class FindBadEndOfStreamCheckTest extends AbstractIntegrationTest {
+class FindBadEndOfStreamCheckTest extends AbstractIntegrationTest {
+    private static final String EOS_BUG_TYPE = "EOS_BAD_END_OF_STREAM_CHECK";
+
+
     @Test
-    public void testBadEndOfFileChecks() {
+    void testBadEndOfFileChecks() {
         performAnalysis("endOfStreamCheck/BadEndOfStreamCheck.class");
 
-        assertNumOfEOSBugs(16);
+        assertBugTypeCount(EOS_BUG_TYPE, 16);
 
-        assertEOSBug("badFileInputStream1", 12);
-        assertEOSBug("badFileInputStream2", 25);
-        assertEOSBug("badFileInputStream3", 39);
-        assertEOSBug("badFileInputStream4", 55);
-        assertEOSBug("badFileInputStream5", 70);
-        assertEOSBug("badFileInputStream6", 83);
-        assertEOSBug("badFileInputStream7", 97);
-        assertEOSBug("badFileInputStream8", 113);
-        assertEOSBug("badFileReader1", 128);
-        assertEOSBug("badFileReader2", 141);
-        assertEOSBug("badFileReader3", 155);
-        assertEOSBug("badFileReader4", 171);
-        assertEOSBug("badFileReader5", 186);
-        assertEOSBug("badFileReader6", 199);
-        assertEOSBug("badFileReader7", 213);
-        assertEOSBug("badFileReader8", 229);
+        final String className = "BadEndOfStreamCheck";
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileInputStream1", 12);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileInputStream2", 25);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileInputStream3", 39);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileInputStream4", 55);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileInputStream5", 70);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileInputStream6", 83);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileInputStream7", 97);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileInputStream8", 113);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileReader1", 128);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileReader2", 141);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileReader3", 155);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileReader4", 171);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileReader5", 186);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileReader6", 199);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileReader7", 213);
+        assertBugInMethodAtLine(EOS_BUG_TYPE, className, "badFileReader8", 229);
     }
 
     @Test
-    public void testGoodEndOfFileChecks() {
+    void testGoodEndOfFileChecks() {
         performAnalysis("endOfStreamCheck/GoodEndOfStreamCheck.class");
 
-        assertNumOfEOSBugs(0);
-    }
-
-    private void assertNumOfEOSBugs(int num) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("EOS_BAD_END_OF_STREAM_CHECK").build();
-        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertEOSBug(String method, int line) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("EOS_BAD_END_OF_STREAM_CHECK")
-                .inClass("BadEndOfStreamCheck")
-                .inMethod(method)
-                .atLine(line)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+        assertNoBugType(EOS_BUG_TYPE);
     }
 }

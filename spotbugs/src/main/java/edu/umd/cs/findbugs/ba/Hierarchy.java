@@ -502,10 +502,7 @@ public class Hierarchy {
         for (Method method : methodList) {
             if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)
                     && accessFlagsAreConcrete(method.getAccessFlags())) {
-                JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
-
-                return m;
-
+                return new JavaClassAndMethod(javaClass, method);
             }
         }
         if (DEBUG_METHOD_LOOKUP) {
@@ -853,7 +850,7 @@ public class Hierarchy {
                 if (false && subTypeSet.size() > 500) {
                     new RuntimeException(receiverClassName + " has " + subTypeSet.size() + " subclasses, " + result.size()
                             + " of which implement " + methodName + methodSig + " " + invokeInstruction)
-                                    .printStackTrace(System.out);
+                            .printStackTrace(System.out);
                 }
 
             }

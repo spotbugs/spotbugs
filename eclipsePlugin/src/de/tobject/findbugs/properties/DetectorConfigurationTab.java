@@ -367,7 +367,7 @@ public class DetectorConfigurationTab extends Composite {
         GridData layoutData2 = new GridData(GridData.FILL_BOTH);
         text.setLayoutData(layoutData2);
         text.setBackground(getShell().getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-        sash.setWeights(new int[] { 3, 1 });
+        sash.setWeights(3, 1);
 
         availableRulesTable.addSelectionListener(new SelectionListener() {
             @Override

@@ -2,36 +2,36 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class SignatureParserTest {
+class SignatureParserTest {
 
     @Test
-    public void testNoParams() {
+    void testNoParams() {
         SignatureParser sut = new SignatureParser("()V");
         Iterator<String> i = sut.parameterSignatureIterator();
-        Assert.assertFalse(i.hasNext());
+        Assertions.assertFalse(i.hasNext());
     }
 
     @Test
-    public void testManyParams() {
+    void testManyParams() {
         SignatureParser sut = new SignatureParser("(IJFDZLjava/lang/String;B)Ljava/lang/Object;");
         Iterator<String> i = sut.parameterSignatureIterator();
-        Assert.assertTrue(i.hasNext());
-        Assert.assertEquals(i.next(), "I");
-        Assert.assertTrue(i.hasNext());
-        Assert.assertEquals(i.next(), "J");
-        Assert.assertTrue(i.hasNext());
-        Assert.assertEquals(i.next(), "F");
-        Assert.assertTrue(i.hasNext());
-        Assert.assertEquals(i.next(), "D");
-        Assert.assertTrue(i.hasNext());
-        Assert.assertEquals(i.next(), "Z");
-        Assert.assertTrue(i.hasNext());
-        Assert.assertEquals(i.next(), "Ljava/lang/String;");
-        Assert.assertTrue(i.hasNext());
-        Assert.assertEquals(i.next(), "B");
-        Assert.assertFalse(i.hasNext());
+        Assertions.assertTrue(i.hasNext());
+        Assertions.assertEquals(i.next(), "I");
+        Assertions.assertTrue(i.hasNext());
+        Assertions.assertEquals(i.next(), "J");
+        Assertions.assertTrue(i.hasNext());
+        Assertions.assertEquals(i.next(), "F");
+        Assertions.assertTrue(i.hasNext());
+        Assertions.assertEquals(i.next(), "D");
+        Assertions.assertTrue(i.hasNext());
+        Assertions.assertEquals(i.next(), "Z");
+        Assertions.assertTrue(i.hasNext());
+        Assertions.assertEquals(i.next(), "Ljava/lang/String;");
+        Assertions.assertTrue(i.hasNext());
+        Assertions.assertEquals(i.next(), "B");
+        Assertions.assertFalse(i.hasNext());
     }
 }

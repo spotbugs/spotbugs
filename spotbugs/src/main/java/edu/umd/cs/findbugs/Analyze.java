@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -17,17 +18,17 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Values;
 
 public class Analyze {
-    static private JavaClass serializable;
+    private static JavaClass serializable;
 
-    static private JavaClass collection;
+    private static JavaClass collection;
 
-    static private JavaClass comparator;
+    private static JavaClass comparator;
 
-    static private JavaClass map;
+    private static JavaClass map;
 
-    static private JavaClass remote;
+    private static JavaClass remote;
 
-    static private ClassNotFoundException storedException;
+    private static ClassNotFoundException storedException;
 
     static {
         try {
@@ -116,7 +117,7 @@ public class Analyze {
 
         // TODO: This method now returns primitive type signatures, is this ok?
         if (refSig.charAt(0) == 'L') {
-            return refSig.substring(1, refSig.length() - 1).replace('/', '.');
+            return ClassName.fromFieldSignatureToDottedClassName(refSig);
         }
         return refSig;
     }
@@ -154,7 +155,7 @@ public class Analyze {
      *            Known type of object
      * @param y
      *            Type queried about
-     * @return 0 - 1 value indicating probablility
+     * @return 0 - 1 value indicating probability
      */
 
     public static double deepInstanceOf(@DottedClassName String x, @DottedClassName String y) throws ClassNotFoundException {

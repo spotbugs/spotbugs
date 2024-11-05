@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.log.Profiler;
  * @author pugh
  */
 public class TopologicalSort {
-    final static boolean DEBUG = SystemProperties.getBoolean("tsort.debug");
+    static final boolean DEBUG = SystemProperties.getBoolean("tsort.debug");
 
     public interface OutEdges<E> {
         Collection<E> getOutEdges(E e);

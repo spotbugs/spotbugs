@@ -43,4 +43,18 @@ public @interface SuppressFBWarnings {
      * Optional documentation of the reason why the warning is suppressed
      */
     String justification() default "";
+
+    /**
+     * <p>By default <code>SuppressFBWarnings</code> annotations suppress bugs by prefix,
+     * for instance <code> @SuppressFBWarnings(value = "EI_EXPO", justification = "It's OK")</code>
+     * will suppress bugs of type <code>EI_EXPOSE_REP</code> and <code>EI_EXPOSE_REP2</code>.
+     *
+     * <p>You might use <code>@SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "It's OK", matchType=EXACT)</code>
+     * to suppress <code>EI_EXPOSE_REP</code>, but not <code>EI_EXPOSE_REP2</code>.
+     *
+     * <p>Regular expressions are also supported with <code>matchType=REGEX</code>.
+     *
+     * @see SuppressMatchType
+     */
+    SuppressMatchType matchType() default SuppressMatchType.DEFAULT;
 }

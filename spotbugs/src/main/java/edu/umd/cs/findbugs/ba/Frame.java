@@ -108,7 +108,7 @@ public abstract class Frame<ValueType> {
      * @param numLocals
      *            number of local variable slots in the method
      */
-    public Frame(int numLocals) {
+    protected Frame(int numLocals) {
         this.numLocals = numLocals;
         this.slotList = new ArrayList<>(numLocals + DEFAULT_STACK_CAPACITY);
         for (int i = 0; i < numLocals; ++i) {

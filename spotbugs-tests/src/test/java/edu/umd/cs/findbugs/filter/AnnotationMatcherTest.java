@@ -18,11 +18,9 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,40 +29,39 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.apache.tools.ant.filters.StringInputStream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.test.SpotBugsRule;
+import edu.umd.cs.findbugs.test.SpotBugsExtension;
+import edu.umd.cs.findbugs.test.SpotBugsRunner;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
-public class AnnotationMatcherTest {
-
-    @Rule
-    public SpotBugsRule spotbugs = new SpotBugsRule();
+@ExtendWith(SpotBugsExtension.class)
+class AnnotationMatcherTest {
 
     private String annotationName;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         annotationName = "org.immutables.value.Generated";
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         // Some other test cases fail in case the context is not correctly
         // cleaned up here.
         AnalysisContext.removeCurrentAnalysisContext();
     }
 
     @Test
-    public void writeXML() throws Exception {
+    void writeXML() throws Exception {
         AnnotationMatcher sm = new AnnotationMatcher(annotationName);
 
         String xmlOutput = writeXMLAndGetStringOutput(sm, false);
@@ -76,7 +73,7 @@ public class AnnotationMatcherTest {
     }
 
     @Test
-    public void testMatchMissingPrimaryAnnotationIsFalse() throws Exception {
+    void testMatchMissingPrimaryAnnotationIsFalse() throws Exception {
         Filter filter = readFilterFromXML();
         // no primary annotation; should not match
         BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
@@ -84,7 +81,7 @@ public class AnnotationMatcherTest {
     }
 
     @Test
-    public void testMatchMissingJavaAnnotationIsFalse() throws Exception {
+    void testMatchMissingJavaAnnotationIsFalse() throws Exception {
         Filter filter = readFilterFromXML();
         // added primary class annotation; should not match b.c. missing java annotation
         BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
@@ -94,7 +91,7 @@ public class AnnotationMatcherTest {
     }
 
     @Test
-    public void testMatchOtherJavaAnnotationIsFalse() throws Exception {
+    void testMatchOtherJavaAnnotationIsFalse() throws Exception {
         Filter filter = readFilterFromXML();
         // added primary class annotation; should not match b.c. other java annotation
         BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
@@ -105,7 +102,7 @@ public class AnnotationMatcherTest {
     }
 
     @Test
-    public void testMatchJavaAnnotationIsTrue() throws Exception {
+    void testMatchJavaAnnotationIsTrue() throws Exception {
         Filter filter = readFilterFromXML();
         // added primary class annotation; should match b.c. has java annotation
         BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
@@ -127,12 +124,11 @@ public class AnnotationMatcherTest {
                 + "\n</Match>"
                 + "\n</FindBugsFilter>\n";
 
-        Filter filter = new Filter(new StringInputStream(filterXml));
-        return filter;
+        return new Filter(new StringInputStream(filterXml));
     }
 
     @Test
-    public void testPerformAnalysis() throws Exception {
+    void testPerformAnalysis(SpotBugsRunner spotbugs) throws Exception {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
@@ -144,12 +140,12 @@ public class AnnotationMatcherTest {
                 Paths.get(
                         "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
 
-        assertThat(bugCollection.getCollection(), hasSize(3));
-
         AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher(annotationName);
-        for (BugInstance bugInstance : bugCollection) {
-            assertTrue(bugInstanceMatcher.match(bugInstance));
-        }
+        long numberOfMatchedBugs = bugCollection.getCollection().stream()
+                .filter(bugInstanceMatcher::match)
+                .count();
+
+        assertEquals(4, numberOfMatchedBugs);
     }
 
     private String writeXMLAndGetStringOutput(AnnotationMatcher matcher, boolean disabled) throws IOException {

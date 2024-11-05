@@ -71,7 +71,7 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements State
                         .reportBug(new BugInstance(this,
                                 "java/util/zip/ZipOutputStream".equals(streamType) ? "AM_CREATES_EMPTY_ZIP_FILE_ENTRY"
                                         : "AM_CREATES_EMPTY_JAR_FILE_ENTRY", NORMAL_PRIORITY).addClassAndMethod(this)
-                                                .addSourceLine(this));
+                                .addSourceLine(this));
             }
 
         }

@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import de.tobject.findbugs.util.SafeHtml;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -50,9 +51,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorInput;
@@ -160,8 +159,7 @@ public class BugInfoView extends AbstractFindbugsView {
         //        initScrolledComposite(parent);
         createBrowser(rootComposite);
 
-        // Add selection listener to detect click in problems view or bug tree
-        // view
+        // Add selection listener to detect click in problems view or bug tree view
         ISelectionService theService = getSite().getWorkbenchWindow().getSelectionService();
 
         selectionListener = new MarkerSelectionListener(this);
@@ -261,18 +259,8 @@ public class BugInfoView extends AbstractFindbugsView {
         final MenuItem item = new MenuItem(menu, SWT.PUSH);
         item.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_COPY));
         item.setText("Copy To Clipboard");
-        item.addListener(SWT.Selection, new Listener() {
-            @Override
-            public void handleEvent(Event e) {
-                copyInfoToClipboard();
-            }
-        });
-        menu.addListener(SWT.Show, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                item.setEnabled(bug != null);
-            }
-        });
+        item.addListener(SWT.Selection, e -> copyInfoToClipboard());
+        menu.addListener(SWT.Show, event -> item.setEnabled(bug != null));
         annotationList.setToolTipText("Click on lines or methods to go to them");
         annotationList.setMenu(menu);
         annotationList.pack(true);
@@ -317,8 +305,7 @@ public class BugInfoView extends AbstractFindbugsView {
         text.append(getPatternDetails());
         addXmlOutput(text);
         addDetectorInfo(text);
-        String html = "<b>Bug</b>: " + toSafeHtml(bug.getMessageWithoutPrefix()) + "<br>\n" + text.toString();
-        return html;
+        return "<b>Bug</b>: " + SafeHtml.escape(bug.getMessageWithoutPrefix()) + "<br>\n" + text.toString();
     }
 
     private void addXmlOutput(StringBuilder text) {
@@ -337,7 +324,7 @@ public class BugInfoView extends AbstractFindbugsView {
         }
         text.append("<hr size=\"1\" /><p><b>XML output:</b>");
         text.append("<pre>");
-        text.append(toSafeHtml(stringWriter.toString()));
+        text.append(SafeHtml.escape(stringWriter.toString()));
         text.append("</pre></p><hr size=\"1\" />");
     }
 
@@ -385,23 +372,13 @@ public class BugInfoView extends AbstractFindbugsView {
                 text.append("<br>Contributed by plugin: ").append(plugin.getPluginId());
                 text.append("<br>Provider: ").append(plugin.getProvider());
                 String website = plugin.getWebsite();
-                if (website != null && website.length() > 0) {
+                if (website != null && !website.isEmpty()) {
                     text.append(" (<a href=\"").append(website).append("\">");
                     text.append(website).append("</a>)");
                 }
                 text.append("</i></small>");
             }
         }
-    }
-
-    private static String toSafeHtml(String s) {
-        if (s.indexOf('>') >= 0) {
-            s = s.replace(">", "&gt;");
-        }
-        if (s.indexOf('<') >= 0) {
-            s = s.replace("<", "&lt;");
-        }
-        return s;
     }
 
     @Override
@@ -428,7 +405,6 @@ public class BugInfoView extends AbstractFindbugsView {
             IWebBrowser newBrowser = support.createBrowser(browserId);
             browserId = newBrowser.getId();
             newBrowser.openURL(url);
-            return;
         } catch (PartInitException e) {
             FindbugsPlugin.getDefault().logException(e, "Can't open external browser");
         }
@@ -524,12 +500,12 @@ public class BugInfoView extends AbstractFindbugsView {
                         return;
                     } else if (theAnnotation instanceof TypeAnnotation) {
                         TypeAnnotation fa = (TypeAnnotation) theAnnotation;
-                        String className = ClassName.fromFieldSignature(fa.getTypeDescriptor());
+                        String className = ClassName.fromFieldSignatureToDottedClassName(fa.getTypeDescriptor());
                         if (className == null) {
                             break findLocation;
                         }
                         IJavaProject project = getIProject();
-                        IType type = project.findType(ClassName.toDottedClassName(className));
+                        IType type = project.findType(className);
                         if (type == null) {
                             break findLocation;
                         }
@@ -547,9 +523,7 @@ public class BugInfoView extends AbstractFindbugsView {
                         JavaUI.openInEditor(type, true, true);
                         return;
                     }
-                } catch (JavaModelException e) {
-                    FindbugsPlugin.getDefault().logException(e, "Could not open editor for " + theAnnotation);
-                } catch (PartInitException e) {
+                } catch (JavaModelException | PartInitException e) {
                     FindbugsPlugin.getDefault().logException(e, "Could not open editor for " + theAnnotation);
                 }
             }
@@ -632,10 +606,10 @@ public class BugInfoView extends AbstractFindbugsView {
         html = html.replaceAll("</[a-zA-Z]+>", "");
         // convert some of the entities which are used in current FB
         // messages.xml
-        html = html.replaceAll("&nbsp;", "");
-        html = html.replaceAll("&lt;", "<");
-        html = html.replaceAll("&gt;", ">");
-        html = html.replaceAll("&amp;", "&");
+        html = html.replace("&nbsp;", "");
+        html = html.replace("&lt;", "<");
+        html = html.replace("&gt;", ">");
+        html = html.replace("&amp;", "&");
         return html.trim();
     }
 
@@ -657,8 +631,6 @@ public class BugInfoView extends AbstractFindbugsView {
                 if (activeEditor != null) {
                     input = activeEditor.getEditorInput();
                 }
-            } catch (PartInitException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not open editor for " + bug.getMessage());
             } catch (CoreException e) {
                 FindbugsPlugin.getDefault().logException(e, "Could not open editor for " + bug.getMessage());
             }

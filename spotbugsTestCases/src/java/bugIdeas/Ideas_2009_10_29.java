@@ -2,9 +2,7 @@ package bugIdeas;
 
 import java.util.Random;
 
-import junit.framework.TestCase;
-
-public class Ideas_2009_10_29 extends TestCase {
+public class Ideas_2009_10_29 {
 
     Random r = new Random();
 

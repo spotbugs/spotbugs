@@ -2,23 +2,22 @@ package edu.umd.cs.findbugs.classfile.impl;
 
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.test.SpotBugsRule;
-import org.junit.Rule;
-import org.junit.Test;
+import edu.umd.cs.findbugs.test.SpotBugsExtension;
+import edu.umd.cs.findbugs.test.SpotBugsRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.nio.file.Paths;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class ClassPathBuilderTest {
-
-    @Rule
-    public SpotBugsRule analyzer = new SpotBugsRule();
+@ExtendWith(SpotBugsExtension.class)
+class ClassPathBuilderTest {
 
     @Test
-    public void nestedTraversalDisabled() {
-        BugCollection results = analyzer.performAnalysis((engine) -> {
+    void nestedTraversalDisabled(SpotBugsRunner spotbugs) {
+        BugCollection results = spotbugs.performAnalysis(engine -> {
             engine.setScanNestedArchives(false);
             engine.setNoClassOk(true);
         }, Paths.get("../spotbugsTestCases/archives/nestedArchive.jar"));
@@ -27,8 +26,8 @@ public class ClassPathBuilderTest {
     }
 
     @Test
-    public void nestedTraversalEnabled() {
-        BugCollection results = analyzer.performAnalysis((engine) -> engine.setScanNestedArchives(true),
+    void nestedTraversalEnabled(SpotBugsRunner spotbugs) {
+        BugCollection results = spotbugs.performAnalysis(engine -> engine.setScanNestedArchives(true),
                 Paths.get("../spotbugsTestCases/archives/nestedArchive.jar"));
         AppVersion appInformation = results.getCurrentAppVersion();
         assertThat(appInformation.getNumClasses(), equalTo(5));

@@ -10,6 +10,7 @@ import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantDynamic;
 import org.apache.bcel.classfile.ConstantFieldref;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantLong;
@@ -104,7 +105,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
     private String getClassName(JavaClass c, int classIndex) {
         String name = c.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
-        return ClassName.extractClassName(name).replace('/', '.');
+        return ClassName.toDottedClassName(ClassName.extractClassName(name));
     }
 
     private String getMemberName(JavaClass c, String className, int memberNameIndex, int signatureIndex) {
@@ -113,7 +114,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
     }
 
     private String getMemberName(String className, String memberName, String signature) {
-        return className.replace('/', '.') + "." + memberName + " : " + signature;
+        return ClassName.toDottedClassName(className) + "." + memberName + " : " + signature;
     }
 
     private boolean find(JavaClass target, String name, String signature) throws ClassNotFoundException {
@@ -158,6 +159,8 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
             } else if (co instanceof ConstantInvokeDynamic) {
                 // ignore. BCEL puts garbage data into ConstantInvokeDynamic
+            } else if (co instanceof ConstantDynamic) {
+                // ignore.
             } else if (co instanceof ConstantCP) {
                 ConstantCP co2 = (ConstantCP) co;
                 String className = getClassName(obj, co2.getClassIndex());

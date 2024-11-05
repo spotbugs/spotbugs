@@ -35,14 +35,14 @@ import org.apache.bcel.classfile.Method;
 
 /**
  * Utility methods for working with bootstrap methods
- * 
+ *
  * @author Ádám Balogh
  */
 public class BootstrapMethodsUtil {
 
     /**
      * Returns the method representation of a bootstrap method from a Java class.
-     * 
+     *
      * @param bms
      *      the BootstrapMethods attribute of a java class
      * @param index

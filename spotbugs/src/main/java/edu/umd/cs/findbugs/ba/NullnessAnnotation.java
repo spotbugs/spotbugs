@@ -33,12 +33,13 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 @ParametersAreNonnullByDefault
 public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation> {
-    public final static NullnessAnnotation CHECK_FOR_NULL = new NullnessAnnotation("CheckForNull", 3) {
+    public static final NullnessAnnotation CHECK_FOR_NULL = new NullnessAnnotation("CheckForNull", 3) {
         @Override
         boolean match(@DottedClassName String className) {
             return "android.support.annotation.Nullable".equals(className)
                     || "androidx.annotation.Nullable".equals(className)
                     || "com.google.common.base.Nullable".equals(className)
+                    || "org.apache.avro.reflect.Nullable".equals(className)
                     || "org.eclipse.jdt.annotation.Nullable".equals(className)
                     || "org.jetbrains.annotations.Nullable".equals(className)
                     || "org.checkerframework.checker.nullness.qual.Nullable".equals(className)
@@ -48,7 +49,7 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
         }
     };
 
-    public final static NullnessAnnotation NONNULL = new NullnessAnnotation("NonNull", 1) {
+    public static final NullnessAnnotation NONNULL = new NullnessAnnotation("NonNull", 1) {
         @Override
         boolean match(@DottedClassName String className) {
             // Unfortunately there are mixed case Nonnull and NonNull annotations (JSR305, FB and JDT)
@@ -58,11 +59,11 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
         }
     };
 
-    public final static NullnessAnnotation NULLABLE = new NullnessAnnotation("Nullable", 2);
+    public static final NullnessAnnotation NULLABLE = new NullnessAnnotation("Nullable", 2);
 
-    public final static NullnessAnnotation UNKNOWN_NULLNESS = new NullnessAnnotation("UnknownNullness", 0);
+    public static final NullnessAnnotation UNKNOWN_NULLNESS = new NullnessAnnotation("UnknownNullness", 0);
 
-    private final static NullnessAnnotation[] myValues = { UNKNOWN_NULLNESS, NONNULL, NULLABLE, CHECK_FOR_NULL };
+    private static final NullnessAnnotation[] myValues = { UNKNOWN_NULLNESS, NONNULL, NULLABLE, CHECK_FOR_NULL };
 
     public static class Parser {
         @CheckForNull

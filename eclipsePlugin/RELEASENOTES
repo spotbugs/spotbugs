@@ -40,7 +40,7 @@ Release 1.3.8 - Andrey Loskutov
 - feature: added FindBugs perspective link to all Java perspectives
 - feature 2022229: have workspace level preferences for FindBugs
     per default, workspace settings are used for new plugins
-    plugins with existing .fbprefs files are assumed to have custom preferences until they explicitely disable project prefs
+    plugins with existing .fbprefs files are assumed to have custom preferences until they explicitly disable project prefs
     per default, Eclipse will not enable categories EXPERIMENTAL,I18N,MALICIOUS_CODE,SECURITY for new projects
     FilterFiles tab: now dialog will disallow invalid selection of filter files
 - internal rework of job scheduling: use same rule for all FB jobs.
@@ -50,7 +50,7 @@ Release 1.3.8 - Andrey Loskutov
 - feature: property view shows bug counts info for elements selected in bug explorer
 - feature: added "navigate - Show In - Bug Explorer" menu entry in all Java perspectives
 - feature: added "Show Bug Details" action to Java editor ruler
-- feature: replaced bug details view with standart properties view, supporting Java editor
+- feature: replaced bug details view with standard properties view, supporting Java editor
     bug details view exists no more, perspective definition changed
 - bugfix: fixed bug explorer (common navigator) errors with Eclipse 3.5
 - feature: filtering by specific pattern from bug explorer
@@ -142,14 +142,14 @@ Release 1.3.0 - FindBugs team
 - Include/Exclude filter-file selector now sanity-checks selection
 
 Release 1.2.2 - major code cleanup and refactoring by Andrey Loskutov
-- fixed non-Eclipse-like behavoir of view selection/activation/opening (work in progress)
+- fixed non-Eclipse-like behavior of view selection/activation/opening (work in progress)
 - bud tree view monitors resource changes now
 - refactoring of all FindBugs views
 - created new icons for findbugs action and views
 - created new FindBugs perspective
 - fixed popup contribution for the problems view (was never functional)
-- no system.out.println callls without if(DEBUG) flag
-- no printStackTrace() callls without if(DEBUG) flag
+- no system.out.println calls without if(DEBUG) flag
+- no printStackTrace() calls without if(DEBUG) flag
 - other code cleanup
 
 Release 0.1.0 - some enhancements by Peter Friese

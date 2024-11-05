@@ -421,14 +421,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      */
     public static IWorkbenchWindow getActiveWorkbenchWindow() {
         if (Display.getCurrent() != null) {
-            return getDefault().getWorkbench().getActiveWorkbenchWindow();
+            return PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         }
         // need to call from UI thread
         final IWorkbenchWindow[] window = new IWorkbenchWindow[1];
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                window[0] = getDefault().getWorkbench().getActiveWorkbenchWindow();
+                window[0] = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
             }
         });
         return window[0];
@@ -1134,8 +1134,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugCode> getKnownPatternTypes() {
-        Set<BugCode> patterns = new TreeSet<>(DetectorFactoryCollection.instance().getBugCodes());
-        return patterns;
+        return new TreeSet<>(DetectorFactoryCollection.instance().getBugCodes());
     }
 
     public static Set<String> getFilteredIds() {

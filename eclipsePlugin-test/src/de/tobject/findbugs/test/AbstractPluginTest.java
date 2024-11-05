@@ -25,8 +25,8 @@ import static org.eclipse.jdt.testplugin.JavaProjectHelper.createJavaProject;
 import static org.eclipse.jdt.testplugin.JavaProjectHelper.delete;
 import static org.eclipse.jdt.testplugin.JavaProjectHelper.importResources;
 import static org.eclipse.jdt.testplugin.JavaProjectHelper.performDummySearch;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Set;
@@ -53,8 +53,8 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.osgi.framework.Bundle;
 
 import de.tobject.findbugs.FindbugsPlugin;
@@ -214,11 +214,11 @@ public abstract class AbstractPluginTest {
         }
     }
 
-    public AbstractPluginTest() {
+    protected AbstractPluginTest() {
         super();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         // Start with a clean FindBugs state
         clearBugsState();
@@ -233,7 +233,7 @@ public abstract class AbstractPluginTest {
         processUiEvents();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws CoreException {
         // Clean the FindBugs state
         clearBugsState();
@@ -298,8 +298,8 @@ public abstract class AbstractPluginTest {
                 seenBugTypeCount++;
             }
         }
-        assertEquals("Expected " + expectedBugTypeCount + " of markers " + expectedBugType + " but seen " + seenBugTypeCount,
-                expectedBugTypeCount, seenBugTypeCount);
+        assertEquals(expectedBugTypeCount, seenBugTypeCount,
+                "Expected " + expectedBugTypeCount + " of markers " + expectedBugType + " but seen " + seenBugTypeCount);
     }
 
     protected void assertNoBugs() throws CoreException {
@@ -330,8 +330,8 @@ public abstract class AbstractPluginTest {
                 seenBugCount++;
             }
         }
-        assertEquals("Expected " + expectedBugCount + " of bugs " + expectedBugType + " but seen " + seenBugCount,
-                expectedBugCount, seenBugCount);
+        assertEquals(expectedBugCount, seenBugCount,
+                "Expected " + expectedBugCount + " of bugs " + expectedBugType + " but seen " + seenBugCount);
     }
 
     protected void clearBugsState() throws CoreException {
@@ -340,14 +340,12 @@ public abstract class AbstractPluginTest {
     }
 
     protected FindBugsWorker createFindBugsWorker() throws CoreException {
-        FindBugsWorker worker = new FindBugsWorker(getProject(), new NullProgressMonitor());
-        return worker;
+        return new FindBugsWorker(getProject(), new NullProgressMonitor());
     }
 
     protected BugContentProvider getBugContentProvider() throws PartInitException {
         BugExplorerView navigator = (BugExplorerView) showBugExplorerView();
-        BugContentProvider bugContentProvider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
-        return bugContentProvider;
+        return BugContentProvider.getProvider(navigator.getNavigatorContentService());
     }
 
     protected Set<String> getExpectedBugPatterns() {

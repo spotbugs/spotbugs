@@ -67,7 +67,7 @@ public class BadResultSetAccess extends OpcodeStackDetector {
         }
     };
 
-    final private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public BadResultSetAccess(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -100,7 +100,7 @@ public class BadResultSetAccess extends OpcodeStackDetector {
                         bugReporter.reportBug(new BugInstance(this,
                                 "java/sql/PreparedStatement".equals(clsConstant) ? "SQL_BAD_PREPARED_STATEMENT_ACCESS"
                                         : "SQL_BAD_RESULTSET_ACCESS", item.mustBeZero() ? HIGH_PRIORITY : NORMAL_PRIORITY)
-                                                .addClassAndMethod(this).addSourceLine(this));
+                                .addClassAndMethod(this).addSourceLine(this));
                     }
                 }
             }

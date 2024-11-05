@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs;
 import java.util.List;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ArrayType;
@@ -18,17 +19,17 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Values;
 
 public class DeepSubtypeAnalysis {
-    static private JavaClass serializable;
+    private static JavaClass serializable;
 
-    static private JavaClass collection;
+    private static JavaClass collection;
 
-    static private JavaClass comparator;
+    private static JavaClass comparator;
 
-    static private JavaClass map;
+    private static JavaClass map;
 
-    static private JavaClass remote;
+    private static JavaClass remote;
 
-    static private ClassNotFoundException storedException;
+    private static ClassNotFoundException storedException;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("dsa.debug");
 
@@ -179,7 +180,7 @@ public class DeepSubtypeAnalysis {
 
         // TODO: This method now returns primitive type signatures, is this ok?
         if (refSig.charAt(0) == 'L') {
-            return refSig.substring(1, refSig.length() - 1).replace('/', '.');
+            return ClassName.fromFieldSignatureToDottedClassName(refSig);
         }
         return refSig;
     }

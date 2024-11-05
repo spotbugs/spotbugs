@@ -51,7 +51,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
 
     protected PrintWriter outputStream = UTF8.printWriter(System.out, true);
 
-    public TextUIBugReporter() {
+    protected TextUIBugReporter() {
         reportStackTrace = true;
     }
 
@@ -144,7 +144,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
 
     @Override
     public void reportQueuedErrors() {
-        boolean errors = analysisErrors || missingClasses || getQueuedErrors().size() > 0;
+        boolean errors = analysisErrors || missingClasses || !getQueuedErrors().isEmpty();
         analysisErrors = missingClasses = false;
         super.reportQueuedErrors();
         if (errors) {

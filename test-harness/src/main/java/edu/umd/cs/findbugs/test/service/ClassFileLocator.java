@@ -17,8 +17,8 @@
  */
 package edu.umd.cs.findbugs.test.service;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -38,7 +38,7 @@ public class ClassFileLocator {
             return getFilenameFromUrl(url);
         }
         url = cl.getResource(path);
-        assertNotNull("No class found for the path = " + path, url);
+        assertNotNull(url, "No class found for the path = " + path);
         return getFilenameFromUrl(url);
     }
 
@@ -46,20 +46,20 @@ public class ClassFileLocator {
         ClassLoader cl = getClass().getClassLoader();
 
         //This is subject to change base on the JSP compiler implementation
-        String generatedClassName = path.replaceAll("_", "_005f").replace(".jsp", "_jsp");
+        String generatedClassName = path.replace("_", "_005f").replace(".jsp", "_jsp");
         URL url = cl.getResource("jsp/" + generatedClassName + ".class");
         if (url == null) {
             url = cl.getResource("org/apache/jsp/" + generatedClassName + ".class");
         }
 
-        assertNotNull("No jsp file found for the path = " + path, url);
+        assertNotNull(url, "No jsp file found for the path = " + path);
         return getFilenameFromUrl(url);
     }
 
     public String getJarFilePath(String path) {
         ClassLoader cl = getClass().getClassLoader();
         URL url = cl.getResource(path);
-        assertNotNull("No jar found for the path = " + path, url);
+        assertNotNull(url, "No jar found for the path = " + path);
         return getFilenameFromUrl(url);
     }
 

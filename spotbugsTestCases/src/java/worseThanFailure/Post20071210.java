@@ -11,7 +11,7 @@ public class Post20071210 {
         // security reasones to burn away any remains of the key from
         // memory.
         // For maximum security the memory previous allocated for the
-        // key should be zeroed for atleast a few seconds, else it is
+        // key should be zeroed for at least a few seconds, else it is
         // possible to extract the key with some technology.
         // If the key is stored to disk, it shall after it is used be
         // overwritten by random data several times, at least 7 but 32

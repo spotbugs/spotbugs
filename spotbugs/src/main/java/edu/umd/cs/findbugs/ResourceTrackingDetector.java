@@ -60,7 +60,7 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
     protected BugReporter bugReporter;
 
-    public ResourceTrackingDetector(BugReporter bugReporter) {
+    protected ResourceTrackingDetector(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
