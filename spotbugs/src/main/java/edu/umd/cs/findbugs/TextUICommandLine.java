@@ -276,9 +276,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
     /* visible for testing */ String handleOutputFilePath(TextUIBugReporter reporter, String optionExtraPart) {
         int index = optionExtraPart.indexOf('=');
         if (index >= 0) {
-            String reportTarget = optionExtraPart.substring(index + 1);
-            reporter.setDeduplicationKey(reportTarget);
-            Path path = Paths.get(reportTarget);
+            Path path = Paths.get(optionExtraPart.substring(index + 1)).normalize().toAbsolutePath();
+            reporter.setOutputTarget(path.toString());
             try {
                 OutputStream oStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
                         StandardOpenOption.TRUNCATE_EXISTING);
@@ -820,14 +819,14 @@ public class TextUICommandLine extends FindBugsCommandLine {
     }
 
     /**
-     * Adds a reporter to the aggregating list of reporters, assuming it does not duplicate a known reporter.
+     * Adds a reporter to the aggregating list of reporters, skipping the operation if a duplicate reporter is already present.
      *
      * @param reporter The reporter to add to the list of known reporters.
      */
     private void addDistinctBugReporter(TextUIBugReporter reporter) {
         for (TextUIBugReporter known : reporters) {
             if (known.isDuplicateOf(reporter)) {
-                logger.warn("Attempted to add multiple reporters writing to the same file at {}. First reporter wins.", known.getDeduplicationKey());
+                logger.warn("Attempted to add multiple reporters writing to the same file at {}. First reporter wins.", known.getOutputTarget());
                 return;
             }
         }

@@ -47,7 +47,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
 
     private boolean applySuppressions = false;
 
-    private String deduplicationKey = null;
+    private String outputTarget = null;
 
     static final String OTHER_CATEGORY_ABBREV = "X";
 
@@ -242,18 +242,18 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
         }
     }
 
-    public String getDeduplicationKey() {
-        return this.deduplicationKey;
+    public String getOutputTarget() {
+        return this.outputTarget;
     }
 
-    public void setDeduplicationKey(String key) {
-        this.deduplicationKey = key;
+    public void setOutputTarget(String key) {
+        this.outputTarget = key;
     }
 
     public boolean isDuplicateOf(TextUIBugReporter other) {
-        return this.deduplicationKey != null
-                && other.deduplicationKey != null
-                && this.deduplicationKey.equals(other.deduplicationKey);
+        return this.outputTarget != null
+                && other.outputTarget != null
+                && this.outputTarget.equals(other.outputTarget);
     }
 
 
