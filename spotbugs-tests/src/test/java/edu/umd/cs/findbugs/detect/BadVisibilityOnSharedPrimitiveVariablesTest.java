@@ -19,83 +19,60 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-
 class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegrationTest {
+    private static final String BUG_TYPE = "SPV_BAD_VISIBILITY_ON_SHARED_PRIMITIVE_VARIABLES";
 
     @Test
     void failurePath_fieldWithBadVisibility_whenOtherMethodHasSynchronizedBlock() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockAndBadVisibilityOnField.class");
-        assertSPVNumOfBugs(1);
-        assertSPVBug("SynchronizedBlockAndBadVisibilityOnField", "shutdown", 35);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "SynchronizedBlockAndBadVisibilityOnField", "shutdown", 35);
     }
 
     @Test
     void failurePath_fieldWithBadVisibility_whenOtherMethodIsSynchronized() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethodAndBadVisibilityOnField.class");
-        assertSPVNumOfBugs(1);
-        assertSPVBug("SynchronizedMethodAndBadVisibilityOnField", "shutdown", 35);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "SynchronizedMethodAndBadVisibilityOnField", "shutdown", 35);
     }
 
     @Test
     void failurePath_fieldWithBadVisibility_whenClassExtendsThread() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityThread.class");
-        assertSPVNumOfBugs(1);
-        assertSPVBug("FieldWithBadVisibilityThread", "shutdown", 36);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "FieldWithBadVisibilityThread", "shutdown", 36);
     }
 
     @Test
     void failurePath_fieldWithBadVisibility_whenClassImplementsRunnable() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityRunnable.class");
-        assertSPVNumOfBugs(1);
-        assertSPVBug("FieldWithBadVisibilityRunnable", "shutdown", 36);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "FieldWithBadVisibilityRunnable", "shutdown", 36);
     }
 
     @Test
     void happyPath_atomicField() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/AtomicField.class");
-        assertSPVNumOfBugs(0);
+        assertBugTypeCount(BUG_TYPE, 0);
     }
 
     @Test
     void happyPath_volatileField() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/VolatileField.class");
-        assertSPVNumOfBugs(0);
+        assertBugTypeCount(BUG_TYPE, 0);
     }
 
     @Test
     void happyPath_synchronizedBlock() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlock.class");
-        assertSPVNumOfBugs(0);
+        assertBugTypeCount(BUG_TYPE, 0);
     }
 
     @Test
     void happyPath_synchronizedMethod() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethod.class");
-        assertSPVNumOfBugs(0);
+        assertBugTypeCount(BUG_TYPE, 0);
     }
-
-    private void assertSPVNumOfBugs(int num) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("SPV_BAD_VISIBILITY_ON_SHARED_PRIMITIVE_VARIABLES")
-                .build();
-        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertSPVBug(String className, String methodName, int line) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("SPV_BAD_VISIBILITY_ON_SHARED_PRIMITIVE_VARIABLES")
-                .inClass(className)
-                .inMethod(methodName)
-                .atLine(line)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
-    }
-
 }

@@ -19,136 +19,131 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-
 class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTest {
+    private static final String BUG_TYPE = "COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES";
 
     @Test
     void happyPath_compoundOperation_onSharedAtomicVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundOperationOnSharedAtomicVariable.class");
-        assertCOSVNumOfBugs(0);
+        assertBugTypeCount(BUG_TYPE, 0);
     }
 
     @Test
     void happyPath_compoundOperationInsideSynchronizedBlock_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/SynchronizedBlockCompoundOperationOnSharedVariable.class");
-        assertCOSVNumOfBugs(0);
+        assertBugTypeCount(BUG_TYPE, 0);
     }
 
     @Test
     void happyPath_compoundOperationInsideSynchronizedMethod_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/SynchronizedMethodCompoundOperationOnSharedVariable.class");
-        assertCOSVNumOfBugs(0);
+        assertBugTypeCount(BUG_TYPE, 0);
     }
 
     // --num
     @Test
     void reportsBugFor_compoundPreDecrementation_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPreDecrementationOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundPreDecrementationOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundPreDecrementationOnSharedVariable", "getNum", 29);
     }
 
     // num--
     @Test
     void reportsBugFor_compoundPostDecrementation_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostDecrementationOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundPostDecrementationOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundPostDecrementationOnSharedVariable", "getNum", 29);
     }
 
     // ++num
     @Test
     void reportsBugFor_compoundPreIncrementation_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPreIncrementationOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundPreIncrementationOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundPreIncrementationOnSharedVariable", "getNum", 29);
     }
 
     // num++
     @Test
     void reportsBugFor_compoundPostIncrementation_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostIncrementationOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundPostIncrementationOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundPostIncrementationOnSharedVariable", "getNum", 29);
     }
 
     // &=
     @Test
     void reportsBugFor_compoundIAND_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIANDOperationOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundIANDOperationOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundIANDOperationOnSharedVariable", "getNum", 29);
     }
 
     // |=
     @Test
     void reportsBugFor_compoundIOR_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIOROperationOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundIOROperationOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundIOROperationOnSharedVariable", "getNum", 29);
     }
 
     // >>>=
     @Test
     void reportsBugFor_compoundLogicalRightShifting_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLogicalRightShiftingOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundLogicalRightShiftingOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundLogicalRightShiftingOnSharedVariable", "getNum", 29);
     }
 
     // >>=
     @Test
     void reportsBugFor_compoundRightShifting_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundRightShiftingOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundRightShiftingOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundRightShiftingOnSharedVariable", "getNum", 29);
     }
 
     // <<=
     @Test
     void reportsBugFor_compoundLeftShifting_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLeftShiftingOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundLeftShiftingOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundLeftShiftingOnSharedVariable", "getNum", 29);
     }
 
     // %=
     @Test
     void reportsBugFor_compoundModulo_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundModuloOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundModuloOnSharedVariable", "getNum", 30);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundModuloOnSharedVariable", "getNum", 30);
     }
 
     // *=
     @Test
     void reportsBugFor_compoundMultiplication_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundMultiplicationOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundMultiplicationOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundMultiplicationOnSharedVariable", "getNum", 29);
     }
 
     // /=
     @Test
     void reportsBugFor_compoundDivision_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivisionOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundDivisionOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundDivisionOnSharedVariable", "getNum", 29);
     }
 
     // -=
     @Test
     void reportsBugFor_compoundSubtraction_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubtractionOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundSubtractionOnSharedVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundSubtractionOnSharedVariable", "getNum", 29);
     }
 
 
@@ -156,32 +151,15 @@ class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTes
     @Test
     void reportsBugFor_compoundAddition_onSharedVolatileVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionOnSharedVolatileVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundAdditionOnSharedVolatileVariable", "getNum", 29);
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundAdditionOnSharedVolatileVariable", "getNum", 29);
     }
 
     // ^=
     @Test
     void reportsBugFor_compoundXOROperation_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundXOROperationOnSharedVariable.class");
-        assertCOSVNumOfBugs(1);
-        assertCOSVBug("CompoundXOROperationOnSharedVariable", "getFlag", 29);
-    }
-
-    private void assertCOSVNumOfBugs(int num) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES")
-                .build();
-        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertCOSVBug(String className, String methodName, int line) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES")
-                .inClass(className)
-                .inMethod(methodName)
-                .atLine(line)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundXOROperationOnSharedVariable", "getFlag", 29);
     }
 }
