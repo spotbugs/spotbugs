@@ -1866,7 +1866,7 @@ factory pattern to create these objects.</p>
         ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.CompoundOperationsOnSharedVariables">
+  <Detector class="edu.umd.cs.findbugs.detect.FindCompoundOperationsOnSharedVariables">
     <Details>
       <![CDATA[
               <p>
@@ -9094,7 +9094,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="SPV_BAD_VISIBILITY_ON_SHARED_PRIMITIVE_VARIABLES">
     <ShortDescription>Bad visibility on shared primitive variables</ShortDescription>
-    <LongDescription>Shared primitive variable "{4}" in one thread may not yield the value of the most recent write to the variable from another thread.</LongDescription>
+    <LongDescription>Shared primitive variable "{2.name}" in one thread may not yield the value of the most recent write to the variable from another thread.</LongDescription>
     <Details>
       <![CDATA[
         <p>

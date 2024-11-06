@@ -692,7 +692,7 @@
                     reports="SING_SINGLETON_IMPLEMENTS_CLONEABLE,SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE,SING_SINGLETON_IMPLEMENTS_CLONE_METHOD,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR,SING_SINGLETON_IMPLEMENTS_SERIALIZABLE,SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" />
           <Detector class="edu.umd.cs.findbugs.detect.BadVisibilityOnSharedPrimitiveVariables"
                     reports="SPV_BAD_VISIBILITY_ON_SHARED_PRIMITIVE_VARIABLES"/>
-          <Detector class="edu.umd.cs.findbugs.detect.CompoundOperationsOnSharedVariables"
+          <Detector class="edu.umd.cs.findbugs.detect.FindCompoundOperationsOnSharedVariables"
                     reports="COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
