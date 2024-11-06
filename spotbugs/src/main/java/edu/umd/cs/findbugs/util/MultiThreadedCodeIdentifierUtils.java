@@ -35,9 +35,13 @@ import org.apache.bcel.generic.MONITORENTER;
 import org.apache.bcel.generic.MethodGen;
 
 /**
- * Utility class with methods to identify multi threaded code
+ * Utility class with methods to identify multithreaded code
  */
 public class MultiThreadedCodeIdentifierUtils {
+
+    private MultiThreadedCodeIdentifierUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     private static final String RUNNABLE_SIGNATURE = "java.lang.Runnable";
     private static final String ATOMIC_PACKAGE = "java.util.concurrent.atomic";
@@ -52,10 +56,10 @@ public class MultiThreadedCodeIdentifierUtils {
         return Stream.of(classToCheck.getMethods()).anyMatch(method -> isMethodMultiThreaded(method, classContext));
     }
 
-    public static boolean implementsRunnable(JavaClass javaClass) {
+    private static boolean implementsRunnable(JavaClass javaClass) {
         try {
             return Stream.of(javaClass.getAllInterfaces())
-                    .anyMatch(ifc -> ifc.getClassName().equals(RUNNABLE_SIGNATURE));
+                    .anyMatch(ifc -> RUNNABLE_SIGNATURE.equals(ifc.getClassName()));
         } catch (ClassNotFoundException e) {
             return false;
         }
@@ -73,7 +77,7 @@ public class MultiThreadedCodeIdentifierUtils {
         }
 
         Optional<MethodGen> maybeMethodGen = Optional.ofNullable(classContext.getMethodGen(method));
-        if (!maybeMethodGen.isPresent()) {
+        if (maybeMethodGen.isEmpty()) {
             return false;
         }
 
@@ -81,7 +85,7 @@ public class MultiThreadedCodeIdentifierUtils {
         return hasMultiThreadedInstruction(methodGen);
     }
 
-    public static boolean hasMultiThreadedInstruction(MethodGen methodGen) {
+    private static boolean hasMultiThreadedInstruction(MethodGen methodGen) {
         ConstantPoolGen cpg = methodGen.getConstantPool();
         InstructionHandle handle = methodGen.getInstructionList().getStart();
         while (handle != null) {
@@ -100,14 +104,14 @@ public class MultiThreadedCodeIdentifierUtils {
         return false;
     }
 
-    public static boolean isConcurrentLockInterfaceCall(String methodName) {
+    private static boolean isConcurrentLockInterfaceCall(String methodName) {
         return "lock".equals(methodName)
                 || "unlock".equals(methodName)
                 || "tryLock".equals(methodName)
                 || "lockInterruptibly".equals(methodName);
     }
 
-    public static boolean isFieldMultiThreaded(Field field) {
+    private static boolean isFieldMultiThreaded(Field field) {
         return field.isVolatile() || signatureIsFromAtomicPackage(field.getSignature());
     }
 
