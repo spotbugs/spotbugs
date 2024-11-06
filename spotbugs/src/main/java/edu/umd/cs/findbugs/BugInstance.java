@@ -1669,7 +1669,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @return this object
      */
     @Nonnull
-    public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, InstructionHandle start, InstructionHandle end) {
+    public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, InstructionHandle start,
+            InstructionHandle end) {
         // Make sure start and end are really in the right order.
         if (start.getPosition() > end.getPosition()) {
             InstructionHandle tmp = start;
@@ -1750,7 +1751,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     @Nonnull
     public BugInstance addSourceLineRange(BytecodeScanningDetector visitor, int startPC, int endPC) {
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(visitor.getClassContext(), visitor, startPC, endPC);
+        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(visitor.getClassContext(), visitor, startPC,
+                endPC);
         requireNonNull(sourceLineAnnotation);
         add(sourceLineAnnotation);
         return this;
