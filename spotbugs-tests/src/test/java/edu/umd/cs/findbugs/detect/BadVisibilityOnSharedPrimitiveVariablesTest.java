@@ -10,28 +10,28 @@ class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegrationTes
     void failurePath_fieldWithBadVisibility_whenOtherMethodHasSynchronizedBlock() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockAndBadVisibilityOnField.class");
         assertBugTypeCount(BUG_TYPE, 1);
-        assertBugInMethodAtLine(BUG_TYPE, "SynchronizedBlockAndBadVisibilityOnField", "shutdown", 35);
+        assertBugInMethodAtLine(BUG_TYPE, "SynchronizedBlockAndBadVisibilityOnField", "shutdown", 17);
     }
 
     @Test
     void failurePath_fieldWithBadVisibility_whenOtherMethodIsSynchronized() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethodAndBadVisibilityOnField.class");
         assertBugTypeCount(BUG_TYPE, 1);
-        assertBugInMethodAtLine(BUG_TYPE, "SynchronizedMethodAndBadVisibilityOnField", "shutdown", 35);
+        assertBugInMethodAtLine(BUG_TYPE, "SynchronizedMethodAndBadVisibilityOnField", "shutdown", 17);
     }
 
     @Test
     void failurePath_fieldWithBadVisibility_whenClassExtendsThread() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityThread.class");
         assertBugTypeCount(BUG_TYPE, 1);
-        assertBugInMethodAtLine(BUG_TYPE, "FieldWithBadVisibilityThread", "shutdown", 36);
+        assertBugInMethodAtLine(BUG_TYPE, "FieldWithBadVisibilityThread", "shutdown", 18);
     }
 
     @Test
     void failurePath_fieldWithBadVisibility_whenClassImplementsRunnable() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityRunnable.class");
         assertBugTypeCount(BUG_TYPE, 1);
-        assertBugInMethodAtLine(BUG_TYPE, "FieldWithBadVisibilityRunnable", "shutdown", 36);
+        assertBugInMethodAtLine(BUG_TYPE, "FieldWithBadVisibilityRunnable", "shutdown", 18);
     }
 
     @Test
