@@ -515,6 +515,20 @@ public class UnreadFields extends OpcodeStackDetector {
 
         }
 
+        if (seen == Const.INVOKEVIRTUAL && "java/lang/invoke/MethodHandles$Lookup".equals(getClassConstantOperand())) {
+            String methodName = getNameConstantOperand();
+            if ("findGetter".equals(methodName) || "findSetter".equals(methodName) || "findVarHandle".equals(methodName)) {
+                String fieldSignature = (String) stack.getStackItem(0).getConstant();
+                String fieldName = (String) stack.getStackItem(1).getConstant();
+                String fieldClass = (String) stack.getStackItem(2).getConstant();
+                if (fieldName != null && fieldSignature != null && fieldClass != null) {
+                    XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, ClassName.toSignature(fieldSignature),
+                            false);
+                    data.reflectiveFields.add(f);
+                }
+            }
+        }
+
         if (seen == Const.GETSTATIC) {
             XField f = XFactory.createReferencedXField(this);
             data.staticFieldsReadInThisMethod.add(f);
