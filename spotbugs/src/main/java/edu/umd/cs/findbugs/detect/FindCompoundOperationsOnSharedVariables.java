@@ -156,7 +156,7 @@ public class FindCompoundOperationsOnSharedVariables extends OpcodeStackDetector
 
     private void lookForUnsecuredOperationsOnFieldInOtherMethods(XField field, XMethod operatingMethod,
             Map<XMethod, List<XField>> checkAgainstMap, Map<XMethod, List<XField>> putInMap) {
-        if (field != null && !field.isFinal() && !MultiThreadedCodeIdentifierUtils.signatureIsFromAtomicPackage(field.getSignature())) {
+        if (field != null && !field.isFinal() && !MultiThreadedCodeIdentifierUtils.isFromAtomicPackage(field.getSignature())) {
             boolean fieldIsDangerouslyUsedByOtherMethod = checkAgainstMap.entrySet().stream()
                     .anyMatch(entry -> entry.getValue().contains(field) && entry.getKey() != operatingMethod);
             if (fieldIsDangerouslyUsedByOtherMethod) {
@@ -173,14 +173,14 @@ public class FindCompoundOperationsOnSharedVariables extends OpcodeStackDetector
     }
 
     private boolean isReadOpCode(int opCode) {
-        return readOpCodes.contains(Integer.valueOf(opCode).shortValue());
+        return readOpCodes.contains((short) opCode);
     }
 
     private boolean isPushConstant(int opCode) {
-        return pushOpCodes.contains(Integer.valueOf(opCode).shortValue());
+        return pushOpCodes.contains((short) opCode);
     }
 
     private boolean isPossibleCompoundOperation(int opCode) {
-        return possibleCompoundOperationOpCodes.contains(Integer.valueOf(opCode).shortValue());
+        return possibleCompoundOperationOpCodes.contains((short) opCode);
     }
 }
