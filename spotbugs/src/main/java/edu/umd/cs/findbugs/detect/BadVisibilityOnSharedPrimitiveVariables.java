@@ -25,33 +25,17 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiThreadedCodeIdentifierUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Utility;
 
 public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector {
-
-    private static final Set<String> PRIMITIVE_TYPES = new HashSet<>();
-
-    static {
-        PRIMITIVE_TYPES.add("boolean");
-        PRIMITIVE_TYPES.add("byte");
-        PRIMITIVE_TYPES.add("char");
-        PRIMITIVE_TYPES.add("double");
-        PRIMITIVE_TYPES.add("float");
-        PRIMITIVE_TYPES.add("int");
-        PRIMITIVE_TYPES.add("long");
-        PRIMITIVE_TYPES.add("short");
-    }
-
     private final BugAccumulator bugAccumulator;
     private final Map<XMethod, List<XField>> modifiedNotSecuredFieldsByMethods = new HashMap<>();
     private final Map<XMethod, List<XField>> comparedNotSecuredFieldsByMethods = new HashMap<>();
@@ -86,10 +70,10 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
     public void sawOpcode(int seen) {
         if (!isInsideSynchronizedOrLockingMethod) {
             if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
-                XMethod modificationMethod = getXMethod();
-                if (!Const.CONSTRUCTOR_NAME.equals(modificationMethod.getName())) {
+                XMethod modifyingMethod = getXMethod();
+                if (!Const.CONSTRUCTOR_NAME.equals(modifyingMethod.getName()) && !Const.STATIC_INITIALIZER_NAME.equals(modifyingMethod.getName())) {
                     lookForUnsecuredOperationsOnFieldInOtherMethods(
-                            getXFieldOperand(), modificationMethod, comparedNotSecuredFieldsByMethods, modifiedNotSecuredFieldsByMethods);
+                            getXFieldOperand(), modifyingMethod, comparedNotSecuredFieldsByMethods, modifiedNotSecuredFieldsByMethods);
                 }
             } else if (seen == Const.IFGE || seen == Const.IFGT || seen == Const.IFLT || seen == Const.IFLE || seen == Const.IFNE
                     || seen == Const.IFEQ) {
@@ -106,7 +90,7 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
 
     private void lookForUnsecuredOperationsOnFieldInOtherMethods(XField field, XMethod operatingMethod,
             Map<XMethod, List<XField>> checkAgainstMap, Map<XMethod, List<XField>> putInMap) {
-        if (field != null && isPrimitive(field.getSignature()) && !field.isFinal() && !MultiThreadedCodeIdentifierUtils.isFieldMultiThreaded(field)) {
+        if (field != null && !field.isFinal() && !field.isVolatile() && ClassName.isValidBaseTypeFieldDescriptor(field.getSignature())) {
             boolean fieldGotOperatedInAnyOtherMethod = checkAgainstMap.entrySet().stream()
                     .anyMatch(entry -> entry.getValue().contains(field) && entry.getKey() != operatingMethod);
             if (fieldGotOperatedInAnyOtherMethod) {
@@ -120,9 +104,5 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
                 putInMap.computeIfAbsent(operatingMethod, k -> new ArrayList<>()).add(field);
             }
         }
-    }
-
-    private boolean isPrimitive(String signature) {
-        return PRIMITIVE_TYPES.contains(Utility.signatureToString(signature));
     }
 }

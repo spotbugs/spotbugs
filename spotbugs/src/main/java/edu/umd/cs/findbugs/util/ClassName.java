@@ -243,7 +243,16 @@ public abstract class ClassName {
                 isValidBinaryClassName(className.substring(1, className.length() - 1));
     }
 
-    private static boolean isValidBaseTypeFieldDescriptor(String className) {
+    /**
+     * Determines whether a class name is a valid array field descriptor as per
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.2">
+     * JVMS (Java SE 8 Edition) 4.3.2</a>
+     *
+     * @param className a class name to test for validity - must be non-{@code null} and non-empty.
+     * @return {@code true} if {@code className} is a valid basetype field descriptor as
+     *          per JVMS 4.3.2, otherwise {@code false}
+     */
+    public static boolean isValidBaseTypeFieldDescriptor(String className) {
         return "B".equals(className) ||
                 "C".equals(className) ||
                 "D".equals(className) ||

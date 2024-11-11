@@ -19,7 +19,6 @@
 package edu.umd.cs.findbugs.util;
 
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XField;
 import java.util.stream.Stream;
 
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -43,12 +42,12 @@ public class MultiThreadedCodeIdentifierUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    private static final String RUNNABLE_SIGNATURE = "java.lang.Runnable";
+    private static final String JAVA_LANG_RUNNABLE = "java.lang.Runnable";
     private static final String ATOMIC_PACKAGE = "java/util/concurrent/atomic";
 
     public static boolean isPartOfMultiThreadedCode(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
-        if (Subtypes2.instanceOf(javaClass, RUNNABLE_SIGNATURE) ||
+        if (Subtypes2.instanceOf(javaClass, JAVA_LANG_RUNNABLE) ||
                 Stream.of(javaClass.getFields()).anyMatch(MultiThreadedCodeIdentifierUtils::isFieldMultiThreaded)) {
             return true;
         }
@@ -105,10 +104,6 @@ public class MultiThreadedCodeIdentifierUtils {
     }
 
     private static boolean isFieldMultiThreaded(Field field) {
-        return field.isVolatile() || isFromAtomicPackage(field.getSignature());
-    }
-
-    public static boolean isFieldMultiThreaded(XField field) {
         return field.isVolatile() || isFromAtomicPackage(field.getSignature());
     }
 
