@@ -1,6 +1,9 @@
 package multithreaded.compoundOperationOnSharedVariables;
 
-public class CompoundIOROperationOnSharedVariable extends Thread {
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class CompoundIOROperationOnSharedVariable {
+    private AtomicInteger atomicInteger; // just to signal that its multithreaded
     private int num = 1;
 
     public void toggle() {

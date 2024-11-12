@@ -22,14 +22,16 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import java.util.stream.Stream;
 
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MONITORENTER;
 import org.apache.bcel.generic.MethodGen;
 
@@ -48,7 +50,7 @@ public class MultiThreadedCodeIdentifierUtils {
     public static boolean isPartOfMultiThreadedCode(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
         if (Subtypes2.instanceOf(javaClass, JAVA_LANG_RUNNABLE) ||
-                Stream.of(javaClass.getFields()).anyMatch(MultiThreadedCodeIdentifierUtils::isFieldMultiThreaded)) {
+                Stream.of(javaClass.getFields()).anyMatch(MultiThreadedCodeIdentifierUtils::isFieldIndicatingMultiThreadedContainer)) {
             return true;
         }
 
@@ -81,11 +83,11 @@ public class MultiThreadedCodeIdentifierUtils {
             Instruction ins = handle.getInstruction();
             if (ins instanceof MONITORENTER) {
                 return true;
-            } else if (ins instanceof INVOKEVIRTUAL) {
-                INVOKEVIRTUAL invokevirtual = ((INVOKEVIRTUAL) ins);
-                String className = invokevirtual.getClassName(cpg);
-                String methodName = invokevirtual.getMethodName(cpg);
-                if (isConcurrentLockInterfaceCall(className, methodName)) {
+            } else if (ins instanceof InvokeInstruction && !(ins instanceof INVOKEDYNAMIC)) {
+                InvokeInstruction iins = (InvokeInstruction) ins;
+                String className = iins.getClassName(cpg);
+                String methodName = iins.getMethodName(cpg);
+                if (isConcurrentLockInterfaceCall(className, methodName) || CollectionAnalysis.isSynchronizedCollection(className, methodName)) {
                     return true;
                 }
             }
@@ -95,16 +97,21 @@ public class MultiThreadedCodeIdentifierUtils {
         return false;
     }
 
-    private static boolean isConcurrentLockInterfaceCall(String className, String methodName) {
-        return Subtypes2.instanceOf(className, "java.util.concurrent.locks.Lock")
+    private static boolean isConcurrentLockInterfaceCall(@DottedClassName String className, String methodName) {
+        return isInstanceOfLock(className)
                 && ("lock".equals(methodName)
                         || "unlock".equals(methodName)
                         || "tryLock".equals(methodName)
                         || "lockInterruptibly".equals(methodName));
     }
 
-    private static boolean isFieldMultiThreaded(Field field) {
-        return field.isVolatile() || isFromAtomicPackage(field.getSignature());
+    private static boolean isInstanceOfLock(@DottedClassName String className) {
+        return className != null && Subtypes2.instanceOf(className, "java.util.concurrent.locks.Lock");
+    }
+
+    private static boolean isFieldIndicatingMultiThreadedContainer(Field field) {
+        return field.isVolatile() || isFromAtomicPackage(field.getSignature())
+                || isInstanceOfLock(ClassName.fromFieldSignatureToDottedClassName(field.getSignature()));
     }
 
     public static boolean isFromAtomicPackage(String signature) {

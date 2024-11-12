@@ -9110,8 +9110,8 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES">
-    <ShortDescription>Compound operation on shared variables</ShortDescription>
-    <LongDescription>A compound operation was used on a shared variable in a multithreaded class</LongDescription>
+    <ShortDescription>Operations on shared variable is not atomic</ShortDescription>
+    <LongDescription>Operations on the "{2.name}" shared variable in "{0.simpleName}" class is not atomic</LongDescription>
     <Details>
       <![CDATA[
         <p>

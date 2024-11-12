@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.util.MultiThreadedCodeIdentifierUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,9 +71,16 @@ public class FindCompoundOperationsOnSharedVariables extends OpcodeStackDetector
     private final BugAccumulator bugAccumulator;
     private final Map<XMethod, List<XField>> compoundlyWrittenNotSecuredFieldsByMethods = new HashMap<>();
     private final Map<XMethod, List<XField>> readNotSecuredFieldsByMethods = new HashMap<>();
+    private final Set<XField> possiblyRelevantFields = new HashSet<>();
     private boolean isInsideSynchronizedOrLockingMethod = false;
-    private XField maybeCompoundlyOperatedField;
-    private int stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
+    private State detectionState = State.START;
+
+    private enum State {
+        START,
+        SEEN_FIRST_OP_GET,
+        SEEN_OPERAND_GET_OR_PUSH,
+        SEEN_OPERATION
+    }
 
     public FindCompoundOperationsOnSharedVariables(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -80,8 +88,9 @@ public class FindCompoundOperationsOnSharedVariables extends OpcodeStackDetector
 
     @Override
     public void visit(Method method) {
-        ClassContext currentClassContext = getClassContext();
-        isInsideSynchronizedOrLockingMethod = MultiThreadedCodeIdentifierUtils.isMethodMultiThreaded(method, currentClassContext);
+        isInsideSynchronizedOrLockingMethod = MultiThreadedCodeIdentifierUtils.isMethodMultiThreaded(method, getClassContext());
+        possiblyRelevantFields.clear();
+        detectionState = State.START;
     }
 
     @Override
@@ -89,14 +98,15 @@ public class FindCompoundOperationsOnSharedVariables extends OpcodeStackDetector
         bugAccumulator.reportAccumulatedBugs();
         compoundlyWrittenNotSecuredFieldsByMethods.clear();
         readNotSecuredFieldsByMethods.clear();
+        possiblyRelevantFields.clear();
     }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
         if (MultiThreadedCodeIdentifierUtils.isPartOfMultiThreadedCode(classContext)) {
             isInsideSynchronizedOrLockingMethod = false;
-            maybeCompoundlyOperatedField = null;
-            stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
+            possiblyRelevantFields.clear();
+            detectionState = State.START;
 
             super.visitClassContext(classContext);
         }
@@ -104,53 +114,52 @@ public class FindCompoundOperationsOnSharedVariables extends OpcodeStackDetector
 
     @Override
     public void sawOpcode(int seen) {
-        if (!isInsideSynchronizedOrLockingMethod) {
-            if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
-                XField maybeFieldToRead = getXFieldOperand();
-                lookForUnsecuredOperationsOnFieldInOtherMethods(maybeFieldToRead, getXMethod(),
-                        compoundlyWrittenNotSecuredFieldsByMethods, readNotSecuredFieldsByMethods);
-                maybeCompoundlyOperatedField = maybeFieldToRead;
-                stepsMadeInCompoundOperationProcess = 1;
-                return;
+        if (isInsideSynchronizedOrLockingMethod) {
+            return;
+        }
+
+        if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
+            XField readField = getXFieldOperand();
+            lookForUnsecuredOperationsOnFieldInOtherMethods(readField, getXMethod(),
+                    compoundlyWrittenNotSecuredFieldsByMethods, readNotSecuredFieldsByMethods);
+            possiblyRelevantFields.add(readField);
+            detectionState = State.SEEN_FIRST_OP_GET;
+            return;
+        }
+
+        // Possible invoke virtual first if it is a wrapper type
+        if (detectionState == State.SEEN_FIRST_OP_GET && seen == Const.INVOKEVIRTUAL) {
+            return;
+        }
+
+        if (detectionState == State.SEEN_FIRST_OP_GET && (isReadOpCode(seen) || isPushConstant(seen))) {
+            detectionState = State.SEEN_OPERAND_GET_OR_PUSH;
+            return;
+        }
+
+        // In case of the field's type is a wrapper type
+        if (detectionState == State.SEEN_OPERAND_GET_OR_PUSH && seen == Const.INVOKEVIRTUAL) {
+            return;
+        }
+
+        if (detectionState == State.SEEN_OPERAND_GET_OR_PUSH && isPossibleCompoundOperation(seen)) {
+            detectionState = State.SEEN_OPERATION;
+            return;
+        }
+
+        // In case of wrapper types valueOf() method
+        if (detectionState == State.SEEN_OPERATION && seen == Const.INVOKESTATIC) {
+            return;
+        }
+
+        if (detectionState == State.SEEN_OPERATION && (seen == Const.PUTFIELD || seen == Const.PUTSTATIC)) {
+            if (!possiblyRelevantFields.isEmpty() && possiblyRelevantFields.contains(getXFieldOperand())) {
+                lookForUnsecuredOperationsOnFieldInOtherMethods(getXFieldOperand(), getXMethod(),
+                        readNotSecuredFieldsByMethods, compoundlyWrittenNotSecuredFieldsByMethods);
             }
 
-            // Possible invoke virtual first if it is a wrapper type
-            if (stepsMadeInCompoundOperationProcess == 1 && seen == Const.INVOKEVIRTUAL) {
-                return;
-            }
-
-            if (stepsMadeInCompoundOperationProcess == 1 && (isReadOpCode(seen) || isPushConstant(seen))) {
-                stepsMadeInCompoundOperationProcess = 2;
-                return;
-            }
-
-            // In case of the field's type is a wrapper type
-            if (stepsMadeInCompoundOperationProcess == 2 && seen == Const.INVOKEVIRTUAL) {
-                return;
-            }
-
-            if (stepsMadeInCompoundOperationProcess == 2 && isPossibleCompoundOperation(seen)) {
-                stepsMadeInCompoundOperationProcess = 3;
-                return;
-            }
-
-            // In case of wrapper types valueOf() method
-            if (stepsMadeInCompoundOperationProcess == 3 && seen == Const.INVOKESTATIC) {
-                return;
-            }
-
-            if (stepsMadeInCompoundOperationProcess == 3 && (seen == Const.PUTFIELD || seen == Const.PUTSTATIC)) {
-                if (maybeCompoundlyOperatedField != null && maybeCompoundlyOperatedField.equals(getXFieldOperand())) {
-                    lookForUnsecuredOperationsOnFieldInOtherMethods(getXFieldOperand(), getXMethod(),
-                            readNotSecuredFieldsByMethods, compoundlyWrittenNotSecuredFieldsByMethods);
-                }
-
-                maybeCompoundlyOperatedField = null;
-                stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
-            }
-        } else {
-            maybeCompoundlyOperatedField = null;
-            stepsMadeInCompoundOperationProcess = Const.UNDEFINED;
+            possiblyRelevantFields.clear();
+            detectionState = State.START;
         }
     }
 

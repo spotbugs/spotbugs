@@ -59,22 +59,25 @@ class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTes
     // &=
     @Test
     void reportsBugFor_compoundIAND_onSharedVariable() {
+        // considered multithreaded because it has a volatile field (not the problematic)
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIANDOperationOnSharedVariable.class");
         assertBugTypeCount(BUG_TYPE, 1);
-        assertBugInMethodAtLine(BUG_TYPE, "CompoundIANDOperationOnSharedVariable", "getNum", 11);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundIANDOperationOnSharedVariable", "getNum", 12);
     }
 
     // |=
     @Test
     void reportsBugFor_compoundIOR_onSharedVariable() {
+        // considered multithreaded because it has a field (not the problematic) from the java.util.concurrent.atomic package
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIOROperationOnSharedVariable.class");
         assertBugTypeCount(BUG_TYPE, 1);
-        assertBugInMethodAtLine(BUG_TYPE, "CompoundIOROperationOnSharedVariable", "getNum", 11);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundIOROperationOnSharedVariable", "getNum", 14);
     }
 
     // >>>=
     @Test
     void reportsBugFor_compoundLogicalRightShifting_onSharedVariable() {
+        // considered multithreaded because it extends Thread
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLogicalRightShiftingOnSharedVariable.class");
         assertBugTypeCount(BUG_TYPE, 1);
         assertBugInMethodAtLine(BUG_TYPE, "CompoundLogicalRightShiftingOnSharedVariable", "getNum", 11);
@@ -83,6 +86,7 @@ class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTes
     // >>=
     @Test
     void reportsBugFor_compoundRightShifting_onSharedVariable() {
+        // considered multithreaded because it has a method with synchronized block
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundRightShiftingOnSharedVariable.class");
         assertBugTypeCount(BUG_TYPE, 1);
         assertBugInMethodAtLine(BUG_TYPE, "CompoundRightShiftingOnSharedVariable", "getNum", 11);
@@ -91,6 +95,7 @@ class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTes
     // <<=
     @Test
     void reportsBugFor_compoundLeftShifting_onSharedVariable() {
+        // considered multithreaded because it has synchronized method
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLeftShiftingOnSharedVariable.class");
         assertBugTypeCount(BUG_TYPE, 1);
         assertBugInMethodAtLine(BUG_TYPE, "CompoundLeftShiftingOnSharedVariable", "getNum", 11);
@@ -99,6 +104,7 @@ class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTes
     // %=
     @Test
     void reportsBugFor_compoundModulo_onSharedVariable() {
+        // considered multithreaded because it implements Runnable
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundModuloOnSharedVariable.class");
         assertBugTypeCount(BUG_TYPE, 1);
         assertBugInMethodAtLine(BUG_TYPE, "CompoundModuloOnSharedVariable", "getNum", 12);
@@ -132,6 +138,7 @@ class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTes
     // +=
     @Test
     void reportsBugFor_compoundAddition_onSharedVolatileVariable() {
+        // simply defining the field as volatile is not enough
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionOnSharedVolatileVariable.class");
         assertBugTypeCount(BUG_TYPE, 1);
         assertBugInMethodAtLine(BUG_TYPE, "CompoundAdditionOnSharedVolatileVariable", "getNum", 11);
@@ -140,8 +147,9 @@ class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTes
     // ^=
     @Test
     void reportsBugFor_compoundXOROperation_onSharedVariable() {
+        // considered multithreaded because it has a field (not the problematic) with synchronized assignment
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundXOROperationOnSharedVariable.class");
         assertBugTypeCount(BUG_TYPE, 1);
-        assertBugInMethodAtLine(BUG_TYPE, "CompoundXOROperationOnSharedVariable", "getFlag", 11);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundXOROperationOnSharedVariable", "getFlag", 16);
     }
 }
