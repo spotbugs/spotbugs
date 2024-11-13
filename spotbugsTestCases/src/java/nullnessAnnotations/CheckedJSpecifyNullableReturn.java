@@ -1,3 +1,4 @@
+package nullnessAnnotations;
 import org.jspecify.annotations.Nullable;
 
 public class CheckedJSpecifyNullableReturn {
