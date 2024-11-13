@@ -164,14 +164,13 @@ public class PDEClassPathGenerator {
             }
             // extra cleanup for some directories on classpath
             String bundleLocation = bd.getLocation();
-            if (bundleLocation != null && !"jar".equals(location.getFileExtension()) &&
-                    new File(bundleLocation).isDirectory()) {
-                if (bd.getSymbolicName().equals(location.lastSegment())) {
-                    // ignore badly resolved plugin directories inside workspace
-                    // ("." as classpath is resolved as plugin root directory)
-                    // which is, if under workspace, NOT a part of the classpath
-                    continue;
-                }
+            if (bundleLocation != null && !"jar".equals(location.getFileExtension())
+                    && new File(bundleLocation).isDirectory()
+                    && bd.getSymbolicName().equals(location.lastSegment())) {
+                // ignore badly resolved plugin directories inside workspace
+                // ("." as classpath is resolved as plugin root directory)
+                // which is, if under workspace, NOT a part of the classpath
+                continue;
             }
             if (!location.isAbsolute()) {
                 location = ResourceUtils.relativeToAbsolute(location);

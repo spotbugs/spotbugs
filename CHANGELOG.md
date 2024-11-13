@@ -6,21 +6,59 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2024-??-??
+### Added
+- Updated the `SuppressFBWarnings` annotation to support finer grained bug suppressions ([#3102](https://github.com/spotbugs/spotbugs/pull/3102))
+- SimpleDateFormat, DateTimeFormatter, FastDateFormat string check for bad combinations of flag formatting ([#637](https://github.com/spotbugs/spotbugs/issues/637))
+- New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
+  - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
+- New detector `FindHiddenMethod` for bug type `HSM_HIDING_METHOD`. This bug is reported whenever a subclass method hides the static method of super class. (See [SEI CERT MET07-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface)).
+
+### Fixed
+- Do not consider Records as Singletons ([#2981](https://github.com/spotbugs/spotbugs/issues/2981))
+- Keep a maximum of 10000 cached analysis entries for plugin's analysis engines ([#3025](https://github.com/spotbugs/spotbugs/pull/3025))
+- Only report `MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT` when calling own methods ([#2957](https://github.com/spotbugs/spotbugs/issues/2957))
+- Check the actual caught exceptions (instead of their common type) when analyzing multi-catch blocks ([#2968](https://github.com/spotbugs/spotbugs/issues/2968))
+- System property `findbugs.refcomp.reportAll` is now being used. For some new conditions, it will emit an experimental warning ([#2988](https://github.com/spotbugs/spotbugs/pull/2988))
+- `-version` flag prints the version to the standard output ([#2797](https://github.com/spotbugs/spotbugs/issues/2797))
+- Revert the changes from ([#2894](https://github.com/spotbugs/spotbugs/pull/2894)) to get HTML stylesheets to work again ([#2969](https://github.com/spotbugs/spotbugs/issues/2969))
+- Fix FP `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` report when the synchronization is in a called method ([#3045](https://github.com/spotbugs/spotbugs/issues/3045))
+- Let `BetterCFGBuilder2.isPEI` handle `dup2` bytecode used by Spring AOT ([#3059](https://github.com/spotbugs/spotbugs/issues/3059))
+- Detect failure to close RocksDB's ReadOptions ([#3069](https://github.com/spotbugs/spotbugs/issues/3069))
+- Fix FP `EI_EXPOSE_REP` when there are multiple immutable assignments ([#3023](https://github.com/spotbugs/spotbugs/issues/3023))
+- Fixed false positive `NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` for Kotlin, handle Kotlin's `Intrinsics.checkNotNullParameter()` ([#3094](https://github.com/spotbugs/spotbugs/issues/3094))
+- Fixed some CWE mappings ([#3124](https://github.com/spotbugs/spotbugs/pull/3124))
+- Recognize some classes as immutable, fixing EI_EXPOSE and MS_EXPOSE FPs ([#3137](https://github.com/spotbugs/spotbugs/pull/3137))
+- Do not report UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR for fields initialized in method annotated with TestNG's @BeforeClass. ([#3152](https://github.com/spotbugs/spotbugs/issues/3152))
+- Fixed detector `FindReturnRef` not finding references exposed from nested and inner classes ([#2042](https://github.com/spotbugs/spotbugs/issues/2042))
+- Fix call graph, include non-parametric void methods ([#3160](https://github.com/spotbugs/spotbugs/pull/3160))
+
+### Cleanup
+- Cleanup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
+- Remove extra blank lines and remove public from interface objects as inherently already public ([#3131](https://github.com/spotbugs/spotbugs/issues/3131))
+- Fix order of modifiers on properties/methods and ensure correct location in file ([#3132](https://github.com/spotbugs/spotbugs/issues/3132), [#3177](https://github.com/spotbugs/spotbugs/pull/3177))
+- Return objects directly instead of creating more garbage collection by defining them ([#3133](https://github.com/spotbugs/spotbugs/pull/3133), [#3175](https://github.com/spotbugs/spotbugs/pull/3175))
+- Restrict the constructor of abstract classes visibility to protected ([#3178](https://github.com/spotbugs/spotbugs/pull/3178)) 
+- Cleanup double initialization and fix comments referring to findbugs instead of spotbugs([#3134](https://github.com/spotbugs/spotbugs/issues/3134))
+- Use diamond operator in constructor calls of Collections ([#3176](https://github.com/spotbugs/spotbugs/pull/3176))
+- Use `Collection.isEmpty()` to test for emptiness ([#3180](https://github.com/spotbugs/spotbugs/pull/3180))
+- Use method references instead of lambdas where possible ([#3179](https://github.com/spotbugs/spotbugs/pull/3179))
+
+### Changed
+- Bump up Java version to 11
+
+## 4.8.6 - 2024-06-17
 ### Fixed
 - Do not report BC_UNCONFIRMED_CAST for Java 21's type switches when the switch instruction is TABLESWITCH ([#2782](https://github.com/spotbugs/spotbugs/issues/2782))
 - Do not throw exception when inspecting empty switch statements ([#2995](https://github.com/spotbugs/spotbugs/issues/2995))
-- Adjust priority since relaxed mode reports even `IGNORED_PRIORITY` ([#2994]https://github.com/spotbugs/spotbugs/issues/2994)
-- 
-### Added
-- New detector `FindHiddenMethod` for bug type `HSM_HIDING_METHOD`. This bug is reported whenever a subclass method hides the static method of super class. (See [SEI CERT MET07-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface)).
+- Adjust priority since relaxed mode reports even `IGNORED_PRIORITY` ([#2994](https://github.com/spotbugs/spotbugs/issues/2994))
+- Fix duplicated log4j2 jar in distribution ([#3001](https://github.com/spotbugs/spotbugs/issues/3001))
 
 ## 4.8.5 - 2024-05-03
 ### Fixed
 - Fix FP `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` with eager instances ([#2932](https://github.com/spotbugs/spotbugs/issues/2932))
 - Fix FPs when looking for multiple initialization of Singletons ([#2934](https://github.com/spotbugs/spotbugs/issues/2934))
 - Do not report DLS_DEAD_LOCAL_STORE for Java 21's type switches when switch instruction is TABLESWITCH([#2736](https://github.com/spotbugs/spotbugs/issues/2736))
-- Fix FP `SE_BAD_FIELD` for record fields ([#2935]https://github.com/spotbugs/spotbugs/issues/2935)
-- Fix duplicated log4j2 jar in distribution ([#3001]https://github.com/spotbugs/spotbugs/issues/3001)
+- Fix FP `SE_BAD_FIELD` for record fields ([#2935](https://github.com/spotbugs/spotbugs/issues/2935))
 
 ## 4.8.4 - 2024-04-07
 ### Fixed
@@ -571,7 +609,7 @@ This version contains no change, except for the solution for [a deployment probl
 * Replace to try-with-resources
 * Reset DataAnalysis.DEBUG back when analysis reaches MAX_ITER
 * Remove unused methods in `BCELUtil`
-* Remove unused methods and deperecated methods in `edu.umd.cs.findbugs.util.Util`
+* Remove unused methods and deprecated methods in `edu.umd.cs.findbugs.util.Util`
 * Change to removeIf from Iterator and Iterator.remove
 * Use Map.computeIfAbsent instead of Map.get and Map.put
 * Use for-each instead of for-loop and while-loop
@@ -636,7 +674,7 @@ This version contains no change, except for the solution for [a deployment probl
 * edu.umd.cs.findbugs.util.ClassName#assertIsSlashed return type is changed to void
 
 ### Deprecated
-* edu.umd.cs.findbugs.classfile.ClassDescriptor#toDottedClassName() is depricated and getDottedClassName() can be used instead.
+* edu.umd.cs.findbugs.classfile.ClassDescriptor#toDottedClassName() is deprecated and getDottedClassName() can be used instead.
 
 ## 3.1.9 - 2018-11-20
 

@@ -124,8 +124,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             }
             int filtered = getFilteredMarkersCount(group);
             String filterCount = filtered > 0 ? "/" + filtered + " filtered" : "";
-            String str = group.getShortDescription() + " (" + (group.getMarkersCount() - filtered) + filterCount + ")";
-            return str;
+            return group.getShortDescription() + " (" + (group.getMarkersCount() - filtered) + filterCount + ")";
         }
         if (element instanceof IMarker) {
             IMarker marker = (IMarker) element;

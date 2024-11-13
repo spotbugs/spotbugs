@@ -67,7 +67,7 @@ public class BadResultSetAccess extends OpcodeStackDetector {
         }
     };
 
-    final private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public BadResultSetAccess(BugReporter bugReporter) {
         this.bugReporter = bugReporter;

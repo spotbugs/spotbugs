@@ -143,7 +143,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
                     }
                 }
             }
-            if (edgesToRemove.size() > 0) {
+            if (!edgesToRemove.isEmpty()) {
                 changed = true;
                 for (Edge e : edgesToRemove) {
                     cfg.removeEdge(e);

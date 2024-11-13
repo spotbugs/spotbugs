@@ -19,13 +19,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/374">GitHub issue</a>
@@ -39,9 +33,6 @@ class Issue374Test extends AbstractIntegrationTest {
                 "ghIssues/issue374/ClassLevel.class",
                 "ghIssues/issue374/MethodLevel.class",
                 "ghIssues/issue374/PackageLevel.class");
-        BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
-                .build();
-        assertThat(getBugCollection(), containsExactly(3, matcher));
+        assertBugTypeCount("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE", 3);
     }
 }

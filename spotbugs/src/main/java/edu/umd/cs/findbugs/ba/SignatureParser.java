@@ -77,8 +77,7 @@ public class SignatureParser {
 
     public int getSlotsFromTopOfStackForParameter(int paramNum) {
         int offset = getParameterOffset()[paramNum];
-        int result = totalArgumentSize - offset;
-        return result;
+        return totalArgumentSize - offset;
     }
 
     private class ParameterSignatureIterator implements Iterator<String> {
@@ -182,7 +181,7 @@ public class SignatureParser {
     }
 
     public Iterable<String> parameterSignatures() {
-        return () -> new ParameterSignatureIterator();
+        return ParameterSignatureIterator::new;
 
     }
 

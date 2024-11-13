@@ -660,6 +660,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             } else {
                 prev.setNext(cur.getNext());
             }
+            // needs an ignore on ref comparison
             if (cur == propertyListTail) {
                 propertyListTail = prev;
             }
@@ -691,7 +692,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @param name
      *            name of the property to get
      * @param defaultValue
-     *            default value to return if propery is not set
+     *            default value to return if property is not set
      * @return the value of the named property, or the default value if the
      *         property has not been set
      */
@@ -1864,7 +1865,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     @Nonnull
     public String getMessageWithoutPrefix() {
         BugPattern bugPattern = getBugPattern();
-        String pattern, shortPattern;
+        String pattern;
+        String shortPattern;
 
         pattern = getLongDescription();
         shortPattern = bugPattern.getShortDescription();
@@ -2078,8 +2080,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         if (age < 0) {
             age = 0;
         }
-        int ageInDays = (int) (age / 1000 / 3600 / 24);
-        return ageInDays;
+        return (int) (age / 1000 / 3600 / 24);
     }
 
     /*

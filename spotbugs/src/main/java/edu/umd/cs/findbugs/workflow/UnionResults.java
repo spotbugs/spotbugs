@@ -23,7 +23,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -95,13 +95,13 @@ public class UnionResults {
         // detector plugins
     }
 
-    static public SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
+    public static SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
         SortedBugCollection result = origCollection.duplicate();
         merge(null, result, newCollection);
         return result;
     }
 
-    static public void merge(HashSet<String> hashes, SortedBugCollection into, SortedBugCollection from) {
+    public static void merge(HashSet<String> hashes, SortedBugCollection into, SortedBugCollection from) {
 
         for (BugInstance bugInstance : from.getCollection()) {
             if (hashes == null || hashes.add(bugInstance.getInstanceHash())) {
@@ -119,8 +119,6 @@ public class UnionResults {
         for (AnalysisError error : from.getErrors()) {
             into.addError(error);
         }
-
-        return;
     }
 
     public static void main(String[] argv) throws IOException {
@@ -178,7 +176,7 @@ public class UnionResults {
 
     private static List<String> readWrappedArguments(String fileName) throws IOException {
         List<String> wrappedArguments = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), Charset.forName("UTF-8")))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
             String next;
             while ((next = reader.readLine()) != null) {
                 wrappedArguments.add(next);

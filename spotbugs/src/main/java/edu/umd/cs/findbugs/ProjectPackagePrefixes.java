@@ -42,12 +42,22 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class ProjectPackagePrefixes {
 
+    Map<String, PrefixFilter> map = new HashMap<>();
+
+    Map<Set<String>, Integer> count = new HashMap<>();
+
+    Map<String, Integer> missingProjectCount = new TreeMap<>();
+
+    Map<String, Integer> rawPackageCount = new TreeMap<>();
+
+    int totalCount = 0;
+
     public static class PrefixFilter {
         final String[] parts;
 
         PrefixFilter(String prefixes) {
             prefixes = ClassName.toDottedClassName(prefixes).trim();
-            if (prefixes.length() == 0) {
+            if (prefixes.isEmpty()) {
                 parts = new String[0];
             } else {
                 parts = prefixes.split("[ ,:]+");
@@ -59,7 +69,7 @@ public class ProjectPackagePrefixes {
                 return true;
             }
             for (String p : parts) {
-                if (p.length() > 0 && className.startsWith(p)) {
+                if (!p.isEmpty() && className.startsWith(p)) {
                     return true;
                 }
             }
@@ -78,16 +88,6 @@ public class ProjectPackagePrefixes {
         return map.size();
     }
 
-    Map<String, PrefixFilter> map = new HashMap<>();
-
-    Map<Set<String>, Integer> count = new HashMap<>();
-
-    Map<String, Integer> missingProjectCount = new TreeMap<>();
-
-    Map<String, Integer> rawPackageCount = new TreeMap<>();
-
-    int totalCount = 0;
-
     public void countBug(BugInstance b) {
         String packageName = b.getPrimaryClass().getPackageName();
 
@@ -102,7 +102,7 @@ public class ProjectPackagePrefixes {
         TreeSet<String> results = getProjects(packageName);
         incrementCount(count, results);
         incrementCount(rawPackageCount, packageName);
-        if (results.size() == 0) {
+        if (results.isEmpty()) {
             incrementCount(missingProjectCount, packageName);
         }
     }

@@ -83,11 +83,11 @@ public class Update {
     int maxRank = BugRanker.VISIBLE_RANK_MAX;
 
     class UpdateCommandLine extends CommandLine {
-        boolean overrideRevisionNames = false;
+        boolean overrideRevisionNames;
 
         String outputFilename;
 
-        boolean withMessages = false;
+        boolean withMessages;
 
         UpdateCommandLine() {
             addSwitch("-overrideRevisionNames", "override revision names for each version with names computed filenames");
@@ -101,7 +101,7 @@ public class Update {
             addOption("-output", "output file", "explicit filename for merged results (standard out used if not specified)");
             addOption("-maxRank", "max rank", "maximum rank for issues to store");
 
-            addSwitch("-quiet", "don't generate any outout to standard out unless there is an error");
+            addSwitch("-quiet", "don't generate any output to standard out unless there is an error");
             addSwitch("-useAnalysisTimes", "use analysis timestamp rather than code timestamp in history");
             addSwitch("-withMessages", "Add bug description");
             addOption("-onlyMostRecent", "number", "only use the last # input files");

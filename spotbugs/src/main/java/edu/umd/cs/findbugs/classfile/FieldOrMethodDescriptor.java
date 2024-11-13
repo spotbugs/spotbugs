@@ -42,7 +42,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 
     private final int nameSigHashCode;
 
-    public FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
+    protected FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
         assert slashedClassName.indexOf('.') == -1 : "class name not in VM format: " + slashedClassName;
 
         this.slashedClassName = slashedClassName;

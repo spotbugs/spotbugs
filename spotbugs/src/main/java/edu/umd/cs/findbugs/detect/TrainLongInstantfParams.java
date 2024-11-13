@@ -43,8 +43,7 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
         protected ParameterProperty decodeProperty(String propStr) throws PropertyDatabaseFormatException {
             try {
                 int longInstants = Integer.parseInt(propStr);
-                ParameterProperty prop = new ParameterProperty(longInstants);
-                return prop;
+                return new ParameterProperty(longInstants);
             } catch (NumberFormatException e) {
                 throw new PropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
             }

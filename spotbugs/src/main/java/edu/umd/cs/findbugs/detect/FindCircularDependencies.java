@@ -124,7 +124,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
                         changed = true;
                     }
                 }
-                if (dependencies.size() == 0) {
+                if (dependencies.isEmpty()) {
                     it.remove();
                     changed = true;
                 }
@@ -149,7 +149,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
         while (cIt.hasNext()) {
             String clsName = cIt.next();
             dependencies = dependencyGraph.get(clsName);
-            if (dependencies.size() == 0) {
+            if (dependencies.isEmpty()) {
                 cIt.remove();
                 removedClass = true;
             }
