@@ -2512,12 +2512,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         }
 
         for (BugAnnotation b : getAnnotations()) {
-            if (primaryAnnotations.contains(b)
-                    || (b instanceof LocalVariableAnnotation && !((LocalVariableAnnotation) b).isNamed())
-                    || (b instanceof SourceLineAnnotation && ((SourceLineAnnotation) b).isUnknown())) {
-                continue;
+            if (!primaryAnnotations.contains(b)
+                    && !(b instanceof LocalVariableAnnotation && !((LocalVariableAnnotation) b).isNamed())
+                    && !(b instanceof SourceLineAnnotation && ((SourceLineAnnotation) b).isUnknown())) {
+                result.add(b);
             }
-            result.add(b);
         }
         return result;
     }
