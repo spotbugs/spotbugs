@@ -19,6 +19,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -83,9 +84,9 @@ public class FindHiddenMethod implements Detector {
                 // I check whether the subclass method is hiding the superclass method. If yes I report the bug.
                 if (Arrays.asList(superMethods).contains(method)) {
                     bugReporter.reportBug(new BugInstance(this, "HSM_HIDING_METHOD", NORMAL_PRIORITY)
-                            .addClass(subClass.getClassName())
+                            .addClass(subClass)
                             .addMethod(subClass, method)
-                            .addClass(superClass.getClassName())
+                            .addClass(superClass).describe(ClassAnnotation.SUPERCLASS_ROLE)
                             .addSourceLine(SourceLineAnnotation.fromVisitedInstruction(subClass, method, 0)));
                 }
             }
