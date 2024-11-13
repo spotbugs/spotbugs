@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+
 /**
  * Check if annotation from https://jspecify.dev/ is detected.
  *
@@ -23,14 +24,21 @@ class JSpecifyNullabilityTest {
     @Test
     void checkedJSpecifyNullableReturn_isOk(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/CheckedJSpecifyNullableReturn.class"));
+                Paths.get("../spotbugsTestCases/build/classes/java/main/nullnessAnnotations/CheckedJSpecifyNullableReturn.class"));
+        assertThat(bugCollection, containsExactly(0, bug()));
+    }
+
+    @Test
+    void checkedJSpecifyNullUnmarkedReturn_isOk(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Paths.get("../spotbugsTestCases/build/classes/java/main/nullnessAnnotations/CheckedJSpecifyNullUnmarkedReturn.class"));
         assertThat(bugCollection, containsExactly(0, bug()));
     }
 
     @Test
     void uncheckedJSpecifyNullableReturn_isDetected(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/UncheckedJSpecifyNullableReturn.class"));
+                Paths.get("../spotbugsTestCases/build/classes/java/main/nullnessAnnotations/UncheckedJSpecifyNullableReturn.class"));
 
         assertThat(bugCollection, containsExactly(1, bug()));
     }
