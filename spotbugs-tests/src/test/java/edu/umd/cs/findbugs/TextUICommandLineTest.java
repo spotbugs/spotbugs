@@ -114,8 +114,8 @@ class TextUICommandLineTest {
         Path altFile = tmpdir.resolve("sibling2").resolve("..").resolve(file.getFileName());
         TextUICommandLine commandLine = new TextUICommandLine();
         try (FindBugs2 findbugs = new FindBugs2()) {
-            commandLine.handleOption("-xml", "=" + file.toString());
-            commandLine.handleOption("-xml", "=" + altFile.toString());
+            commandLine.handleOption("-xml", "=" + file);
+            commandLine.handleOption("-xml", "=" + altFile);
 
             commandLine.configureEngine(findbugs);
             var configuredReporter = findbugs.getBugReporter();
