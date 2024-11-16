@@ -133,8 +133,7 @@ public class UnionBugs extends Task {
             parts.add(f.getAbsolutePath());
         }
 
-        String[] args = parts.toArray(new String[parts.size()]);
-        return args;
+        return parts.toArray(new String[parts.size()]);
     }
 
     /**

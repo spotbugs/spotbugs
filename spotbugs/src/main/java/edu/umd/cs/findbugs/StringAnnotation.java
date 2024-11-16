@@ -57,7 +57,7 @@ public class StringAnnotation implements BugAnnotation {
 
     public static final String FORMAT_SPECIFIER_ROLE = "STRING_FORMAT_SPECIFIER";
 
-    final private String value;
+    private final String value;
 
     private String description;
 
@@ -107,8 +107,7 @@ public class StringAnnotation implements BugAnnotation {
 
     @Override
     public String format(String key, ClassAnnotation primaryClass) {
-        String txt = value;
-        return txt;
+        return value;
     }
 
     @Override

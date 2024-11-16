@@ -238,7 +238,7 @@ public class DiscoverSourceDirectories {
 
         // Find all directories underneath the root source directory
         progress.startRecursiveDirectorySearch();
-        RecursiveFileSearch rfs = new RecursiveFileSearch(rootSourceDirectory, pathname -> pathname.isDirectory());
+        RecursiveFileSearch rfs = new RecursiveFileSearch(rootSourceDirectory, File::isDirectory);
         rfs.search();
         progress.doneRecursiveDirectorySearch();
         List<String> candidateSourceDirList = rfs.getDirectoriesScanned();
@@ -309,9 +309,7 @@ public class DiscoverSourceDirectories {
                 packageName += "/";
             }
 
-            String fullyQualifiedSourceFile = packageName + sourceFile;
-
-            return fullyQualifiedSourceFile;
+            return packageName + sourceFile;
         } catch (CheckedAnalysisException e) {
             errorLogger.logError("Could scan class " + classDesc.toDottedClassName(), e);
             throw e;

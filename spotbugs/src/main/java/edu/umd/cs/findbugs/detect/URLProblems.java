@@ -43,7 +43,7 @@ public class URLProblems extends OpcodeStackDetector {
     private static final MethodDescriptor URL_EQUALS = new MethodDescriptor("java/net/URL", "equals", "(Ljava/lang/Object;)Z");
     private static final MethodDescriptor URL_HASHCODE = new MethodDescriptor("java/net/URL", "hashCode", "()I");
 
-    final static String[] BAD_SIGNATURES = { "Hashtable<Ljava/net/URL", "Map<Ljava/net/URL", "Set<Ljava/net/URL" };
+    static final String[] BAD_SIGNATURES = { "Hashtable<Ljava/net/URL", "Map<Ljava/net/URL", "Set<Ljava/net/URL" };
 
     // Must be sorted
     private static final String[] HASHSET_KEY_METHODS = { "add", "contains", "remove" };
@@ -59,9 +59,9 @@ public class URLProblems extends OpcodeStackDetector {
             new MethodDescriptor("", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"),
             new MethodDescriptor("", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"));
 
-    final private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
-    final private BugAccumulator accumulator;
+    private final BugAccumulator accumulator;
 
     private boolean hasInterestingMethodCalls;
 

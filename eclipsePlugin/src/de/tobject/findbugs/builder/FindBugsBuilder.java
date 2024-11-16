@@ -200,7 +200,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
                 && resourceDelta.findMember(FindbugsPlugin.DEFAULT_PREFS_PATH) == null;
     }
 
-    private final static class StartedFromBuilderJob extends FindBugsJob {
+    private static final class StartedFromBuilderJob extends FindBugsJob {
         private final List<WorkItem> resources;
 
         private StartedFromBuilderJob(String name, IResource resource, List<WorkItem> resources) {

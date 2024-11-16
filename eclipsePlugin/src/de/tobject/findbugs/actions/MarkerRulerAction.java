@@ -122,7 +122,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     public void run(IAction action1) {
         this.action = action1;
         obtainFindBugsMarkers();
-        if (markers.size() == 0 && editor != null) {
+        if (markers.isEmpty() && editor != null) {
             MessageDialog.openError(editor.getSite().getShell(), "Error Showing Bug Details",
                     "You must first select a FindBugs marker to view bug details.");
         } else {
@@ -169,7 +169,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
     @Override
     public void update() {
-        if (markers.size() > 0) {
+        if (!markers.isEmpty()) {
             IMarker marker = markers.get(0);
             if (action.getId().endsWith("showBugInfo")) {
                 FindbugsPlugin.showMarker(marker, FindbugsPlugin.DETAILS_VIEW_ID, editor);
@@ -239,7 +239,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     public void menuAboutToShow(IMenuManager manager) {
         if (action != null) {
             obtainFindBugsMarkers();
-            action.setEnabled(markers.size() > 0);
+            action.setEnabled(!markers.isEmpty());
         }
     }
 
@@ -253,7 +253,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         // Only capture left clicks.
         if (e.button == 1) {
             obtainFindBugsMarkers();
-            if (markers.size() > 0) {
+            if (!markers.isEmpty()) {
                 update();
             }
         }

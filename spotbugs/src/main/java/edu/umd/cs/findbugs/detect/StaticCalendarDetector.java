@@ -76,9 +76,9 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
     private static final String PROP_SKIP_SYNCHRONIZED_CHECK = "staticcal.skipsynccheck";
 
     /** The reporter to report to */
-    final private BugReporter reporter;
+    private final BugReporter reporter;
 
-    final private BugAccumulator bugAccumulator;
+    private final BugAccumulator bugAccumulator;
 
     /** Name of the class being inspected */
     private String currentClass;

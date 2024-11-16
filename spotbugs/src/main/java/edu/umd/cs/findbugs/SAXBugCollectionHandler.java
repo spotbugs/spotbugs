@@ -746,7 +746,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     analysisError.setMessage(getTextContents());
                     bugCollection.addError(analysisError);
                 } else if (BugCollection.ERROR_ELEMENT_NAME.equals(qName)) {
-                    if (stackTrace.size() > 0) {
+                    if (!stackTrace.isEmpty()) {
                         analysisError.setStackTrace(stackTrace.toArray(new String[0]));
                     }
                     bugCollection.addError(analysisError);

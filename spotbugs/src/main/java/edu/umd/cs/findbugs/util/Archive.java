@@ -67,8 +67,7 @@ public class Archive {
         if (lastDot < 0) {
             return fileName;
         }
-        String extension = fileName.substring(lastDot).toLowerCase(Locale.ENGLISH);
-        return extension;
+        return fileName.substring(lastDot).toLowerCase(Locale.ENGLISH);
     }
 
     @Deprecated

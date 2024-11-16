@@ -44,7 +44,7 @@ import org.dom4j.io.SAXReader;
 public abstract class XPathFind {
     private final Document document;
 
-    public XPathFind(Document document) {
+    protected XPathFind(Document document) {
         this.document = document;
     }
 

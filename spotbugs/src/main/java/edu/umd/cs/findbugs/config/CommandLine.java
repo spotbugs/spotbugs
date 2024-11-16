@@ -64,7 +64,7 @@ public abstract class CommandLine {
 
     int maxWidth;
 
-    public CommandLine() {
+    protected CommandLine() {
         this.unlistedOptions = new HashSet<>();
         this.optionList = new LinkedList<>();
         this.optionGroups = new HashMap<>();

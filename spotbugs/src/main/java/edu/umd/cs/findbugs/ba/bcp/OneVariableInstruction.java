@@ -34,7 +34,7 @@ public abstract class OneVariableInstruction extends SingleInstruction {
      * @param varName
      *            the name of the Variable used in this instruction
      */
-    public OneVariableInstruction(String varName) {
+    protected OneVariableInstruction(String varName) {
         this.varName = varName;
     }
 
