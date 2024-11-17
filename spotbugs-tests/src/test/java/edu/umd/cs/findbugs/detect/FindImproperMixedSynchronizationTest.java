@@ -20,8 +20,7 @@ class FindImproperMixedSynchronizationTest extends AbstractIntegrationTest {
 
     @Test
     void testMixedSynchronizations() {
-        performAnalysis("synchronizationLocks/MixedBadSynchronization.class", "synchronizationLocks" +
-                "/MixedSynchronizationFromParent.class");
+        performAnalysis("synchronizationLocks/MixedBadSynchronization.class", "synchronizationLocks/MixedSynchronizationFromParent.class");
 
         assertBugTypeCount(METHOD_BUG, 0);
         assertBugTypeCount(STATIC_METHOD_BUG, 0);
@@ -33,30 +32,56 @@ class FindImproperMixedSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 1);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 1);
 
-        assertBugInMethodAtField(BAD_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff1",
+        assertBugInMethodAtField(BAD_BACKING_COLLECTION,
+                "MixedBadSynchronization",
+                "doStuff1",
                 "view1"); /* Backed by: view1 -> collection1 */
-        assertBugInMethodAtField(BAD_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff2",
+        assertBugInMethodAtField(BAD_BACKING_COLLECTION,
+                "MixedBadSynchronization",
+                "doStuff2",
                 "view2"); /* Backed by: view1 -> collection1 */
-        assertBugInMethodAtField(BAD_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff3",
+        assertBugInMethodAtField(BAD_BACKING_COLLECTION,
+                "MixedBadSynchronization",
+                "doStuff3",
                 "view3"); /* Backed by: view1 -> collection1 */
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff1", "view1"); /* public
-                                                                                                                   lock */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff2", "view2"); /* protected lock */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff3",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "MixedBadSynchronization",
+                "doStuff1",
+                "view1"); /* public lock */
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "MixedBadSynchronization",
+                "doStuff2",
+                "view2"); /* protected lock */
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "MixedBadSynchronization",
+                "doStuff3",
                 "view3"); /* package-private lock */
 
-        assertBugInMethodAtField(INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff4",
+        assertBugInMethodAtField(INHERITABLE_BACKING_COLLECTION,
+                "MixedBadSynchronization",
+                "doStuff4",
                 "view4"); /* Backed by: view4 -> collection2 */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff4", "view4"); /* protected lock */
-        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG, "synchronizationLocks.MixedSynchronizationFromParent", "doStuff4",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "MixedBadSynchronization",
+                "doStuff4",
+                "view4"); /* protected lock */
+        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG,
+                "MixedSynchronizationFromParent",
+                "doStuff4",
                 "view4"); /* Exposed by getView4 */
 
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.MixedSynchronizationFromParent", "doStuff5",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "MixedSynchronizationFromParent",
+                "doStuff5",
                 "view5"); /* Exposed by getView5 in parent */
 
-        assertBugInMethodAtField(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.MixedBadSynchronization", "doStuff6",
+        assertBugInMethodAtField(ACCESSIBLE_BACKING_COLLECTION,
+                "MixedBadSynchronization",
+                "doStuff6",
                 "view6"); /* Backed by: view6 -> collection4, Exposed: getCollection4 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.MixedBadSynchronization", "doStuff6",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "MixedBadSynchronization",
+                "doStuff6",
                 "view6"); /* Exposed by: getView6() */
     }
 

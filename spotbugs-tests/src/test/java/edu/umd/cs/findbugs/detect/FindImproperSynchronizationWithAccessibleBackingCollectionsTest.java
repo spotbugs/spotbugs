@@ -33,82 +33,108 @@ class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends Ab
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff1",
                 "view1");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff1Again",
                 "view1");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff2",
                 "view2");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff3",
                 "view3");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff4",
                 "view4");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff5",
                 "view5");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff6",
                 "view6");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff7",
                 "view7");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff8",
                 "view8");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff9",
                 "view9");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff10",
                 "view10");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff11",
                 "view11");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff12",
                 "view12");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff13",
                 "view13");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff14",
                 "view14");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff15",
                 "view15");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff16",
                 "view16");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff17",
                 "view17");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff18",
                 "view18");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff19",
                 "view19");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff20",
                 "view20");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff21",
                 "view21");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff22",
                 "view22");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff23",
                 "view23");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff24",
                 "view24");
-        assertBugExactly(BAD_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
+        assertBugExactly(BAD_BACKING_COLLECTION,
+                "UnsafeSyncWithAccessiblePublicBackingCollectionInPlace",
                 "doStuff25",
                 "view25");
     }
@@ -127,55 +153,71 @@ class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends Ab
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 17);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff1",
                 "view1"); /* bc: collection1, exp: getCollection1 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff2",
                 "view2"); /* bc: collection1, exp: getCollection1 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff3",
                 "view3"); /* bc: collection1, exp: getCollection1 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff4",
                 "view4"); /* bc: collection2, exp: getCollection2 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff5",
                 "view5"); /* bc: collection3, exp: setCollection3 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff6",
                 "view6"); /* bc: collection4, exp: setCollection4 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff8",
                 "view8"); /* bc: view7 -> collection5, exp: getView7 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff9",
                 "view9"); /* bc: collection6, exp: getCollection6 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff10",
                 "view10"); /* bc: collection6, exp: getCollection6 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff11",
                 "view11"); /* bc: collection6, exp: getCollection6 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff12",
                 "view12"); /* bc: collection7, exp: getCollection7 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff13",
                 "view13"); /* bc: collection8, exp: setCollection8 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff14",
                 "view14"); /* bc: collection9, exp: getCollection9 */
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff16",
                 "view16"); /* bc: view15 -> collection10, exp: getView15 */
 
         /* Complex case */
-        assertBugMultipleTimes(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugMultipleTimes(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff20",
                 "view20", 2); /* bc: view19 -> collection12, exp: getCollection12 */
 
-        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithBackingCollectionExposedInPlace",
+        assertBugExactly(ACCESSIBLE_BACKING_COLLECTION,
+                "UnsafeSyncWithBackingCollectionExposedInPlace",
                 "doStuff18",
                 "view18"); /* bc: view17 -> collection11, exp: getCollection11 */
     }
@@ -197,38 +239,48 @@ class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends Ab
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 10);
 
         /* Protected bugs */
-        assertBugExactly(
-                INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections",
+        assertBugExactly(INHERITABLE_BACKING_COLLECTION,
+                "UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections",
                 "doStuff1",
                 "view1"); /* Backed by: view1 -> collection1 */
-        assertBugExactly(
-                INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections",
+        assertBugExactly(INHERITABLE_BACKING_COLLECTION,
+                "UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections",
                 "doStuff2",
                 "view2"); /* Backed by: view1 -> collection1 */
-        assertBugExactly(
-                INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections",
+        assertBugExactly(INHERITABLE_BACKING_COLLECTION,
+                "UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections",
                 "doStuff3",
                 "view3"); /* Backed by: view1 -> collection1 */
-        assertBugExactly(
-                INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections",
+        assertBugExactly(INHERITABLE_BACKING_COLLECTION,
+                "UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections",
                 "doStuff4",
                 "view4"); /* Backed by: view4 -> collection2 */
-        assertBugExactly(
-                INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections",
+        assertBugExactly(INHERITABLE_BACKING_COLLECTION,
+                "UnsafeSyncWithPotentiallyInheritedProtectedBackingCollections",
                 "doStuff5",
                 "view5"); /* Backed by: view5 -> collection3 */
 
         /* Package private bugs */
-        assertBugExactly(INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithExposedPackagePrivateBackingCollections",
-                "doStuff1", "view1"); /* Backed by: view1 -> collection1 */
-        assertBugExactly(INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithExposedPackagePrivateBackingCollections",
-                "doStuff2", "view2"); /* Backed by: view1 -> collection1 */
-        assertBugExactly(INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithExposedPackagePrivateBackingCollections",
-                "doStuff3", "view3"); /* Backed by: view1 -> collection1 */
-        assertBugExactly(INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithExposedPackagePrivateBackingCollections",
-                "doStuff4", "view4"); /* Backed by: view4 -> collection2 */
-        assertBugExactly(INHERITABLE_BACKING_COLLECTION, "synchronizationLocks.collectionViews.UnsafeSyncWithExposedPackagePrivateBackingCollections",
-                "doStuff5", "view5"); /* Backed by: view5 -> collection3 */
+        assertBugExactly(INHERITABLE_BACKING_COLLECTION,
+                "UnsafeSyncWithExposedPackagePrivateBackingCollections",
+                "doStuff1",
+                "view1"); /* Backed by: view1 -> collection1 */
+        assertBugExactly(INHERITABLE_BACKING_COLLECTION,
+                "UnsafeSyncWithExposedPackagePrivateBackingCollections",
+                "doStuff2",
+                "view2"); /* Backed by: view1 -> collection1 */
+        assertBugExactly(INHERITABLE_BACKING_COLLECTION,
+                "UnsafeSyncWithExposedPackagePrivateBackingCollections",
+                "doStuff3",
+                "view3"); /* Backed by: view1 -> collection1 */
+        assertBugExactly(INHERITABLE_BACKING_COLLECTION,
+                "UnsafeSyncWithExposedPackagePrivateBackingCollections",
+                "doStuff4",
+                "view4"); /* Backed by: view4 -> collection2 */
+        assertBugExactly(INHERITABLE_BACKING_COLLECTION,
+                "UnsafeSyncWithExposedPackagePrivateBackingCollections",
+                "doStuff5",
+                "view5"); /* Backed by: view5 -> collection3 */
     }
 
     @Test

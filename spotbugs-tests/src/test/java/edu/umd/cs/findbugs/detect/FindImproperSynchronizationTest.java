@@ -38,14 +38,11 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        assertBugInMethod(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff");
-        assertBugInMethod(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff2");
-        assertBugInMethod(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingACollectionOfItself",
-                "doStuff");
-        assertBugInMethod(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingAMapOfItself",
-                "doStuff");
-        assertBugInMethod(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithClassExposingMixedGenericOfItself",
-                "doStuff");
+        assertBugInMethod(METHOD_BUG, "UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff");
+        assertBugInMethod(METHOD_BUG, "UnsafeMethodSynchronizationWithClassExposingItSelf", "doStuff2");
+        assertBugInMethod(METHOD_BUG, "UnsafeMethodSynchronizationWithClassExposingACollectionOfItself", "doStuff");
+        assertBugInMethod(METHOD_BUG, "UnsafeMethodSynchronizationWithClassExposingAMapOfItself", "doStuff");
+        assertBugInMethod(METHOD_BUG, "UnsafeMethodSynchronizationWithClassExposingMixedGenericOfItself", "doStuff");
     }
 
     @Test
@@ -62,9 +59,7 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        this.assertBugInMethod(STATIC_METHOD_BUG,
-                "synchronizationLocks.privateFinalLocks.UnsafeMethodSynchronizationWithPublicStaticSynchronization",
-                "doStuff");
+        this.assertBugInMethod(STATIC_METHOD_BUG, "UnsafeMethodSynchronizationWithPublicStaticSynchronization", "doStuff");
     }
 
     @Test
@@ -81,8 +76,8 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        assertBugInMethod(METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMixedMethodSynchronization", "doStuff");
-        this.assertBugInMethod(STATIC_METHOD_BUG, "synchronizationLocks.privateFinalLocks.UnsafeMixedMethodSynchronization", "doStuff");
+        assertBugInMethod(METHOD_BUG, "UnsafeMixedMethodSynchronization", "doStuff");
+        assertBugInMethod(STATIC_METHOD_BUG, "UnsafeMixedMethodSynchronization", "doStuff");
     }
 
     @Test
@@ -111,46 +106,59 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant",
+        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposingLockInDescendant",
                 "doStuff1" /* in base */,
                 "lock1"); /* Exposed by getLock1 */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposedLockInDescendant",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposedLockInDescendant",
                 "doStuff1",
                 "lock1");
 
-        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant",
+        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposingLockInDescendant",
                 "doStuff2" /* in base */,
                 "lock2"); /* Exposed by getLock2 */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposedLockInDescendant",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposedLockInDescendant",
                 "doStuff2",
                 "lock2");
 
-        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant",
+        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposingLockInDescendant",
                 "doStuff3" /* in base */,
                 "lock3"); /* Exposed by updateLock3 */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposedLockInDescendant",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposedLockInDescendant",
                 "doStuff3",
                 "lock3");
 
-        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant",
+        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposingLockInDescendant",
                 "doStuff4" /* in base */,
                 "lock4"); /* Exposed by updateLock4 */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposedLockInDescendant",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposedLockInDescendant",
                 "doStuff4",
                 "lock4");
 
-        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant",
+        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposingLockInDescendant",
                 "doStuff5" /* in base */,
                 "lock5"); /* Exposed by updateLock5 */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposedLockInDescendant",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposedLockInDescendant",
                 "doStuff5",
                 "lock5");
 
         // More complex cases involving longer chains of inheritance
-        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant2",
+        assertBugInMethodAtField(EXPOSED_LOCK_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposingLockInDescendant2",
                 "doStuff6" /* in parent */,
                 "lock6"); /* Exposed by getLock6 */
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposingLockInDescendant", "doStuff6",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithExposingLockInDescendant",
+                "doStuff6",
                 "lock6");
     }
 
@@ -171,33 +179,37 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
 
         /* Protected bugs */
         assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
-                "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
+                "UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
                 "doStuff1",
                 "lock1");
         assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
-                "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
+                "UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
                 "doStuff2",
                 "lock2");
         assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
-                "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
+                "UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
                 "doStuff3",
                 "lock3");
         assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
-                "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
+                "UnsafeSynchronizationWithPotentiallyInheritedProtectedLocks",
                 "doStuff4",
                 "lock4");
 
         /* Package private bugs */
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposedPackagePrivateLocks",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposedPackagePrivateLocks",
                 "doStuff1",
                 "lock1");
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposedPackagePrivateLocks",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposedPackagePrivateLocks",
                 "doStuff2",
                 "lock2");
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposedPackagePrivateLocks",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposedPackagePrivateLocks",
                 "doStuff3",
                 "lock3");
-        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithExposedPackagePrivateLocks",
+        assertBugInMethodAtField(INHERITABLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithExposedPackagePrivateLocks",
                 "doStuff4",
                 "lock4");
     }
@@ -217,33 +229,42 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
         /* Protected lock bugs */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithLockExposedInDeclaringClass",
                 "doStuff1",
                 "lock1"); /* Exposed by getLock1 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithLockExposedInDeclaringClass",
                 "doStuff2",
                 "lock2"); /* Exposed by getLock2 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithLockExposedInDeclaringClass",
                 "doStuff3",
                 "lock3"); /* Exposed by updateLock3 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithLockExposedInDeclaringClass",
                 "doStuff4",
                 "lock4"); /* Exposed by updateLock4 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithLockExposedInDeclaringClass",
                 "doStuff5",
                 "lock5"); /* Exposed by updateLock5 */
 
         /* Private lock bugs */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithLockExposedInDeclaringClass",
                 "doStuff6",
                 "lock6"); /* Exposed by getLock6 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithLockExposedInDeclaringClass",
                 "doStuff7",
                 "lock7"); /* Exposed by updateLock7 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithLockExposedInDeclaringClass",
                 "doStuff8",
                 "lock8"); /* Exposed by updateLock8 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithLockExposedInDeclaringClass",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithLockExposedInDeclaringClass",
                 "doStuff9",
                 "lock9"); /* Exposed by updateLock9 */
     }
@@ -264,24 +285,30 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationUsingExposedLockFromHierarchy",
                 "doStuff1",
                 "lock1"); /* Exposed by getLock1 in parent */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationUsingExposedLockFromHierarchy",
                 "doStuff2",
                 "lock2"); /* Exposed by getLock2 in parent */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationUsingExposedLockFromHierarchy",
                 "doStuff3",
                 "lock3"); /* Exposed by updateLock3 in parent */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationUsingExposedLockFromHierarchy",
                 "doStuff4",
                 "lock4"); /* Exposed by updateLock4 in parent */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationUsingExposedLockFromHierarchy",
                 "doStuff5",
                 "lock5"); /* Exposed by updateLock5 in parent */
 
         // More complex cases involving longer chains of inheritance
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationUsingExposedLockFromHierarchy2",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationUsingExposedLockFromHierarchy2",
                 "doStuff6",
                 "lock6"); /* Exposed by getLock6 in parent */
     }
@@ -301,19 +328,24 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationByExposingLockFromHierarchy",
                 "doStuff1",
                 "lock1"); /* Exposed by getLock1 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationByExposingLockFromHierarchy",
                 "doStuff2",
                 "lock2"); /* Exposed by getLock1 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationByExposingLockFromHierarchy",
                 "doStuff3",
                 "lock3"); /* Exposed by updateLock3 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationByExposingLockFromHierarchy",
                 "doStuff4",
                 "lock4"); /* Exposed by updateLock4 */
-        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationByExposingLockFromHierarchy",
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationByExposingLockFromHierarchy",
                 "doStuff5",
                 "lock5"); /* Exposed by updateLock5 */
     }
@@ -332,17 +364,29 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff1",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithPublicLocksInPlace",
+                "doStuff1",
                 "lock1");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff1Again",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithPublicLocksInPlace",
+                "doStuff1Again",
                 "lock1");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff2",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithPublicLocksInPlace",
+                "doStuff2",
                 "lock2");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff3",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithPublicLocksInPlace",
+                "doStuff3",
                 "lock3");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff4",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithPublicLocksInPlace",
+                "doStuff4",
                 "lock4");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithPublicLocksInPlace", "doStuff5",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithPublicLocksInPlace",
+                "doStuff5",
                 "lock5");
     }
 
@@ -362,38 +406,65 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
 
         // Public locks
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff1",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff1",
                 "lock1");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
                 "doStuff1Again",
                 "lock1");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff2",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff2",
                 "lock2");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff3",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff3",
                 "lock3");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff4",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff4",
                 "lock4");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff5",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff5",
                 "lock5");
 
         // Protected locks - it is important that the declaring class is NOT final
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff6",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff6",
                 "lock6");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff7",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff7",
                 "lock7");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff8",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff8",
                 "lock8");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff9",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff9",
                 "lock9");
 
         // Package private locks
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff10",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff10",
                 "lock10");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff11",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff11",
                 "lock11");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff12",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff12",
                 "lock12");
-        assertBugInMethodAtField(OBJECT_BUG, "synchronizationLocks.privateFinalLocks.UnsafeSynchronizationWithVisibleLocksFromHierarchy", "doStuff13",
+        assertBugInMethodAtField(OBJECT_BUG,
+                "UnsafeSynchronizationWithVisibleLocksFromHierarchy",
+                "doStuff13",
                 "lock13");
     }
 
