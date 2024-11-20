@@ -13,6 +13,24 @@ class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTes
     }
 
     @Test
+    void happyPath_compoundOperation_onSharedVariable_volatileReadSyncWrite() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionOnSharedVolatileReadSyncWrite.class");
+        assertBugTypeCount(BUG_TYPE, 0);
+    }
+
+    @Test
+    void happyPath_compoundOperation_readWriteLock() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundNegateReadWriteLock.class");
+        assertBugTypeCount(BUG_TYPE, 0);
+    }
+
+    @Test
+    void happyPath_compoundOperation_onNotSharedVariable() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivisionOnVariable.class");
+        assertBugTypeCount(BUG_TYPE, 0);
+    }
+
+    @Test
     void happyPath_compoundOperationInsideSynchronizedBlock_onSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/SynchronizedBlockCompoundOperationOnSharedVariable.class");
         assertBugTypeCount(BUG_TYPE, 0);
@@ -51,9 +69,10 @@ class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTes
     // num++
     @Test
     void reportsBugFor_compoundPostIncrementation_onSharedVariable() {
+        // The order of the functions is reversed
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostIncrementationOnSharedVariable.class");
         assertBugTypeCount(BUG_TYPE, 1);
-        assertBugInMethodAtLine(BUG_TYPE, "CompoundPostIncrementationOnSharedVariable", "getNum", 11);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundPostIncrementationOnSharedVariable", "toggle", 11);
     }
 
     // &=
@@ -151,5 +170,68 @@ class FindCompoundOperationsOnSharedVariablesTest extends AbstractIntegrationTes
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundXOROperationOnSharedVariable.class");
         assertBugTypeCount(BUG_TYPE, 1);
         assertBugInMethodAtLine(BUG_TYPE, "CompoundXOROperationOnSharedVariable", "getFlag", 16);
+    }
+
+    // num = num + 2
+    @Test
+    void reportsBugFor_simpleAddition_onSharedVariable() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/AdditionOnSharedVariable.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "AdditionOnSharedVariable", "getNum", 11);
+    }
+
+    // num = -num
+    @Test
+    void reportsBugFor_negate_onSharedVariable() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/NegateSharedVariable.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "NegateSharedVariable", "getNum", 11);
+    }
+
+    // num -= num + 2
+    @Test
+    void reportsBugFor_compoundSubtraction_onSharedVariable_complex() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubstractComplexExpression.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundSubstractComplexExpression", "getNum", 11);
+    }
+
+    // num += num2 + 5
+    @Test
+    void reportsBugFor_compoundAddition_onSharedVariable_complex_withAnotherVar() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionComplexExpressionWithAnotherVar.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundAdditionComplexExpressionWithAnotherVar", "getNum", 12);
+    }
+
+    // num2 = num; num += 1
+    @Test
+    void reportsBugFor_compoundAddition_onSharedVariable_withAnotherVar() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionWithAnotherVar.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundAdditionWithAnotherVar", "getNum", 13);
+    }
+
+    // num += param
+    @Test
+    void reportsBugFor_compoundSubstractionOfArg_onSharedVariable() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubstractionOfArg.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundSubstractionOfArg", "getNum", 11);
+    }
+
+    // num += getOne()
+    @Test
+    void reportsBugFor_compoundSubstractionOfFunCall_onSharedVariable() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubstractionOfMethodReturnValue.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundSubstractionOfMethodReturnValue", "getNum", 11);
+    }
+
+    @Test
+    void reportsBugFor_twoCompoundOperations_onSharedVariable() {
+        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivideMultiplyOnVariable.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "CompoundDivideMultiplyOnVariable", "multiply", 11);
     }
 }
