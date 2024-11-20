@@ -47,7 +47,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
 
     private boolean applySuppressions = false;
 
-    private String outputTarget = null;
+    private String outputTarget;
 
     static final String OTHER_CATEGORY_ABBREV = "X";
 
@@ -251,9 +251,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
     }
 
     public boolean isDuplicateOf(TextUIBugReporter other) {
-        return this.outputTarget != null
-                && other.outputTarget != null
-                && this.outputTarget.equals(other.outputTarget);
+        return outputTarget != null && outputTarget.equals(other.outputTarget);
     }
 
 

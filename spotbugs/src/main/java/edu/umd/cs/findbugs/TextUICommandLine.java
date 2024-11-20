@@ -276,7 +276,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     /* visible for testing */ String handleOutputFilePath(TextUIBugReporter reporter, String optionExtraPart) {
         int index = optionExtraPart.indexOf('=');
         if (index >= 0) {
-            Path path = Paths.get(optionExtraPart.substring(index + 1)).normalize().toAbsolutePath();
+            Path path = Path.of(optionExtraPart.substring(index + 1)).normalize().toAbsolutePath();
             reporter.setOutputTarget(path.toString());
             try {
                 OutputStream oStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
