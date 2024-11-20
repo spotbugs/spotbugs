@@ -181,7 +181,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     // define the inner class to store class locations
     public static class ClassLocation {
-        File classLocation = null;
+        File classLocation;
 
         public void setLocation(File location) {
             classLocation = location;
@@ -753,7 +753,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
     protected void checkParameters() {
         super.checkParameters();
 
-        if (projectFile == null && classLocations.size() == 0 && filesets.size() == 0 && dirsets.size() == 0 && auxAnalyzepath == null) {
+        if (projectFile == null && classLocations.isEmpty() && filesets.isEmpty() && dirsets.isEmpty() && auxAnalyzepath == null) {
             throw new BuildException("either projectfile, <class/>, <fileset/> or <auxAnalyzepath/> child "
                     + "elements must be defined for task <" + getTaskName() + "/>", getLocation());
         }

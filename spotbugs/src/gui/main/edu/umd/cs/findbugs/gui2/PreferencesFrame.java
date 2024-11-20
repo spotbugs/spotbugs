@@ -526,7 +526,7 @@ public class PreferencesFrame extends FBDialog {
 
         if (tabSize < TAB_MIN || tabSize > TAB_MAX) {
             JOptionPane.showMessageDialog(instance, "Tab size exceedes range (" + TAB_MIN + " - " + TAB_MAX + ").",
-                    "Tab Size Excedes Range", JOptionPane.INFORMATION_MESSAGE);
+                    "Tab Size Exceeds Range", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 

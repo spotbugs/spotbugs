@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.jaif;
 
 /**
- * Callbacks for parsing an extenal annotation file.
+ * Callbacks for parsing an external annotation file.
  *
  * @author David Hovemeyer
  * @see <a

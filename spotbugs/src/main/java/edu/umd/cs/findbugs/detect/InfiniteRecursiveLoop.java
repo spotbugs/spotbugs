@@ -47,7 +47,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
 
     private int largestBranchTarget;
 
-    private final static boolean DEBUG = SystemProperties.getBoolean("irl.debug");
+    private static final boolean DEBUG = SystemProperties.getBoolean("irl.debug");
 
     public InfiniteRecursiveLoop(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -152,7 +152,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
 
                 boolean sameMethod = seen == Const.INVOKESTATIC || Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
                 if (!sameMethod) {
-                    // Have to check if first parmeter is the same
+                    // Have to check if first parameter is the same
                     // know there must be a this argument
                     if (DEBUG) {
                         System.out.println("Stack is " + stack);

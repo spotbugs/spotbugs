@@ -85,8 +85,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
         }
         NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
                 .getResolvedAnnotation(f, false);
-        boolean isNonnull = annotation == NullnessAnnotation.NONNULL;
-        return isNonnull;
+        return annotation == NullnessAnnotation.NONNULL;
     }
 
     @Override

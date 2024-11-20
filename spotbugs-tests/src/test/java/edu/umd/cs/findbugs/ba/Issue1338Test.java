@@ -1,15 +1,10 @@
 package edu.umd.cs.findbugs.ba;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/1338">GitHub issue</a>
@@ -26,8 +21,6 @@ class Issue1338Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testMethodCallInTryWithResource() {
         performAnalysis(CLASS_LIST);
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
-                .build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertNoBugType("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE");
     }
 }

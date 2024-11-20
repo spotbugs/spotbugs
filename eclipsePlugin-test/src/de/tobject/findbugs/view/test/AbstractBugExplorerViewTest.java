@@ -47,7 +47,7 @@ import de.tobject.findbugs.view.explorer.Grouping;
 public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
 
     protected static <T> Set<T> setOf(T... a) {
-        return new HashSet<T>(Arrays.asList(a));
+        return new HashSet<>(Arrays.asList(a));
     }
 
     @Override
@@ -65,30 +65,27 @@ public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
     }
 
     protected Grouping getDefaultGrouping() {
-        List<GroupType> types = new ArrayList<GroupType>();
+        List<GroupType> types = new ArrayList<>();
         types.add(GroupType.Project);
         types.add(GroupType.Pattern);
         types.add(GroupType.Marker);
-        Grouping grouping = Grouping.createFrom(types);
-        return grouping;
+        return Grouping.createFrom(types);
     }
 
     protected ITreeContentProvider getNavigatorContentProvider() throws PartInitException {
         BugExplorerView view = (BugExplorerView) showBugExplorerView();
         assertNotNull(view);
 
-        ITreeContentProvider contentProvider = (ITreeContentProvider) view.getCommonViewer().getContentProvider();
-        return contentProvider;
+        return (ITreeContentProvider) view.getCommonViewer().getContentProvider();
     }
 
     protected Grouping getProjectPatternPackageMarkerGrouping() {
-        List<GroupType> types = new ArrayList<GroupType>();
+        List<GroupType> types = new ArrayList<>();
         types.add(GroupType.Project);
         types.add(GroupType.Pattern);
         types.add(GroupType.Package);
         types.add(GroupType.Marker);
-        Grouping grouping = Grouping.createFrom(types);
-        return grouping;
+        return Grouping.createFrom(types);
     }
 
     protected Object getSingleElement(ITreeContentProvider contentProvider) {

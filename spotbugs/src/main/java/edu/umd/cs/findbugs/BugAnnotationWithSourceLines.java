@@ -31,7 +31,7 @@ public abstract class BugAnnotationWithSourceLines implements BugAnnotation {
     /**
      *
      */
-    public BugAnnotationWithSourceLines() {
+    protected BugAnnotationWithSourceLines() {
         super();
     }
 

@@ -1,13 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 class Bug3277814Test extends AbstractIntegrationTest {
     @Test
@@ -15,7 +9,7 @@ class Bug3277814Test extends AbstractIntegrationTest {
         performAnalysis("sfBugs/Bug3277814.class");
 
         assertNoNpBugInMethod("test");
-        assertNpBugInMethod("test2", 44);
+        assertBugInMethodAtLine("NP_NULL_ON_SOME_PATH", "Bug3277814", "test2", 44);
     }
 
     private void assertNoNpBugInMethod(String method) {
@@ -35,22 +29,7 @@ class Bug3277814Test extends AbstractIntegrationTest {
             "NP_METHOD_PARAMETER_RELAXING_ANNOTATION",
         };
         for (String bugtype : bugtypes) {
-            final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                    .bugType(bugtype)
-                    .inClass("Bug3277814")
-                    .inMethod(method)
-                    .build();
-            assertThat(getBugCollection(), containsExactly(0, bugInstanceMatcher));
+            assertNoBugInMethod(bugtype, "Bug3277814", method);
         }
-    }
-
-    private void assertNpBugInMethod(String method, int line) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("NP_NULL_ON_SOME_PATH")
-                .inClass("Bug3277814")
-                .inMethod(method)
-                .atLine(line)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
     }
 }

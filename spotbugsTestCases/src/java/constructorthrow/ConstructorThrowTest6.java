@@ -3,7 +3,7 @@ package constructorthrow;
 /**
  * In this test case the constructor throws an unchecked exception,
  * there is no throws declaration, and there is a finalize method, that is
- * not overriding void#finalize(). A Warning still should be emited.
+ * not overriding void#finalize(). A Warning still should be emitted.
  * Inspired by @KengoToda's suggestion.
  */
 public class ConstructorThrowTest6 {

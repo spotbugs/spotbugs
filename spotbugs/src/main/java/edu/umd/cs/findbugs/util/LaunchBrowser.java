@@ -145,8 +145,7 @@ public class LaunchBrowser {
 
     static Process launchViaExec(URL url) throws IOException {
         ProcessBuilder builder = new ProcessBuilder(execCommand, url.toString());
-        Process p = builder.start();
-        return p;
+        return builder.start();
     }
 
     /**

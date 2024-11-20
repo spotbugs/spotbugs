@@ -647,7 +647,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             // If we're tracking, e.g., InputStream obligations,
             // and we see a FileInputStream reference being assigned
             // to a field (or returned from a method),
-            // then the false-positive supressions heuristic should apply.
+            // then the false-positive suppressions heuristic should apply.
             //
 
             return subtypes2.isSubtype(type, obligationType);
