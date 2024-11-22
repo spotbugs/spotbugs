@@ -28,6 +28,21 @@ class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegrationTes
     }
 
     @Test
+    void failurePath_fieldWithBadVisibility_whenSetAndGetAreReordered() {
+        performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityReordered.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "FieldWithBadVisibilityReordered", "run", 12);
+    }
+
+    @Test
+    void failurePath_fieldWithBadVisibility_whenClassHasTwoSetters() {
+        performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityTwoSetters.class");
+        assertBugTypeCount(BUG_TYPE, 2);
+        assertBugInMethodAtLine(BUG_TYPE, "FieldWithBadVisibilityTwoSetters", "shutdown", 18);
+        assertBugInMethodAtLine(BUG_TYPE, "FieldWithBadVisibilityTwoSetters", "up", 22);
+    }
+
+    @Test
     void failurePath_fieldWithBadVisibility_whenClassExtendsThread() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityThread.class");
         assertBugTypeCount(BUG_TYPE, 1);
@@ -39,6 +54,13 @@ class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegrationTes
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityRunnable.class");
         assertBugTypeCount(BUG_TYPE, 1);
         assertBugInMethodAtLine(BUG_TYPE, "FieldWithBadVisibilityRunnable", "shutdown", 18);
+    }
+
+    @Test
+    void failurePath_fieldWithBadVisibility_whenHavingSeparateMethods() {
+        performAnalysis("multithreaded/sharedPrimitiveVariables/NonsynchronizedSeparateMethod.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "NonsynchronizedSeparateMethod", "shutdown", 22);
     }
 
     @Test
@@ -62,6 +84,18 @@ class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegrationTes
     @Test
     void happyPath_synchronizedMethod() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethod.class");
+        assertBugTypeCount(BUG_TYPE, 0);
+    }
+
+    @Test
+    void happyPath_synchronizedSeparateMethod() {
+        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedSeparateMethod.class");
+        assertBugTypeCount(BUG_TYPE, 0);
+    }
+
+    @Test
+    void happyPath_synchronizedBlockSeparateMethod() {
+        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockSeparateMethod.class");
         assertBugTypeCount(BUG_TYPE, 0);
     }
 }
