@@ -14,6 +14,13 @@ class BadVisibilityOnSharedPrimitiveVariablesTest extends AbstractIntegrationTes
     }
 
     @Test
+    void failurePath_fieldWithBadVisibility_whenMethodHasIrrelevantSynchronizedBlock() {
+        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockWithBadVisibilityOnField.class");
+        assertBugTypeCount(BUG_TYPE, 1);
+        assertBugInMethodAtLine(BUG_TYPE, "SynchronizedBlockWithBadVisibilityOnField", "shutdown", 20);
+    }
+
+    @Test
     void failurePath_fieldWithBadVisibility_whenOtherMethodIsSynchronized() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethodAndBadVisibilityOnField.class");
         assertBugTypeCount(BUG_TYPE, 1);
