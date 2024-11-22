@@ -21,7 +21,12 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -39,7 +44,9 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
     private final BugAccumulator bugAccumulator;
     private final Map<XMethod, List<XField>> modifiedNotSecuredFieldsByMethods = new HashMap<>();
     private final Map<XMethod, List<XField>> comparedNotSecuredFieldsByMethods = new HashMap<>();
-    private boolean isInsideSynchronizedOrLockingMethod = false;
+    private Method currentMethod;
+    private CFG currentCFG;
+    private LockDataflow currentLockDataFlow;
 
     public BadVisibilityOnSharedPrimitiveVariables(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -47,7 +54,13 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
 
     @Override
     public void visit(Method method) {
-        isInsideSynchronizedOrLockingMethod = MultiThreadedCodeIdentifierUtils.isMethodMultiThreaded(method, getClassContext());
+        try {
+            currentMethod = method;
+            currentLockDataFlow = getClassContext().getLockDataflow(currentMethod);
+            currentCFG = getClassContext().getCFG(currentMethod);
+        } catch (CFGBuilderException | DataflowAnalysisException e) {
+            AnalysisContext.logError("There was an error during BadVisibilityOnSharedPrimitiveVariables analyzed " + getClassName(), e);
+        }
     }
 
     @Override
@@ -60,31 +73,33 @@ public class BadVisibilityOnSharedPrimitiveVariables extends OpcodeStackDetector
     @Override
     public void visitClassContext(ClassContext classContext) {
         if (MultiThreadedCodeIdentifierUtils.isPartOfMultiThreadedCode(classContext)) {
-            isInsideSynchronizedOrLockingMethod = false;
-
+            currentMethod = null;
+            currentCFG = null;
+            currentLockDataFlow = null;
             super.visitClassContext(classContext);
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (!isInsideSynchronizedOrLockingMethod) {
-            if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
-                XMethod modifyingMethod = getXMethod();
-                if (!Const.CONSTRUCTOR_NAME.equals(modifyingMethod.getName()) && !Const.STATIC_INITIALIZER_NAME.equals(modifyingMethod.getName())) {
-                    lookForUnsecuredOperationsOnFieldInOtherMethods(
-                            getXFieldOperand(), modifyingMethod, comparedNotSecuredFieldsByMethods, modifiedNotSecuredFieldsByMethods);
-                }
-            } else if (seen == Const.IFGE || seen == Const.IFGT || seen == Const.IFLT || seen == Const.IFLE || seen == Const.IFNE
-                    || seen == Const.IFEQ) {
-                XMethod comparingMethod = getXMethod();
-                XField lhs = stack.getStackItem(0).getXField();
-                XField rhs = stack.getStackDepth() > 1 ? stack.getStackItem(1).getXField() : null;
+        if (MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())) {
+            return;
+        }
+        if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
+            XMethod modifyingMethod = getXMethod();
+            if (!Const.CONSTRUCTOR_NAME.equals(modifyingMethod.getName()) && !Const.STATIC_INITIALIZER_NAME.equals(modifyingMethod.getName())) {
                 lookForUnsecuredOperationsOnFieldInOtherMethods(
-                        lhs, comparingMethod, modifiedNotSecuredFieldsByMethods, comparedNotSecuredFieldsByMethods);
-                lookForUnsecuredOperationsOnFieldInOtherMethods(
-                        rhs, comparingMethod, modifiedNotSecuredFieldsByMethods, comparedNotSecuredFieldsByMethods);
+                        getXFieldOperand(), modifyingMethod, comparedNotSecuredFieldsByMethods, modifiedNotSecuredFieldsByMethods);
             }
+        } else if (seen == Const.IFGE || seen == Const.IFGT || seen == Const.IFLT || seen == Const.IFLE || seen == Const.IFNE
+                || seen == Const.IFEQ) {
+            XMethod comparingMethod = getXMethod();
+            XField lhs = stack.getStackItem(0).getXField();
+            XField rhs = stack.getStackDepth() > 1 ? stack.getStackItem(1).getXField() : null;
+            lookForUnsecuredOperationsOnFieldInOtherMethods(
+                    lhs, comparingMethod, modifiedNotSecuredFieldsByMethods, comparedNotSecuredFieldsByMethods);
+            lookForUnsecuredOperationsOnFieldInOtherMethods(
+                    rhs, comparingMethod, modifiedNotSecuredFieldsByMethods, comparedNotSecuredFieldsByMethods);
         }
     }
 

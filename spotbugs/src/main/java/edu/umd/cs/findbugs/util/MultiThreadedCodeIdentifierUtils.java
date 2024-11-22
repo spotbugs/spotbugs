@@ -18,9 +18,17 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
+
+import java.util.Collection;
 import java.util.stream.Stream;
 
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.LockDataflow;
+import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import org.apache.bcel.classfile.Field;
@@ -116,5 +124,23 @@ public class MultiThreadedCodeIdentifierUtils {
 
     public static boolean isFromAtomicPackage(String signature) {
         return signature.contains(ATOMIC_PACKAGE);
+    }
+
+    public static boolean isLocked(Method currentMethod, CFG currentCFG, LockDataflow currentLockDataFlow, int pc) {
+        try {
+            if (currentMethod != null && currentLockDataFlow != null && currentCFG != null) {
+                Collection<Location> tLocations = currentCFG.getLocationsContainingInstructionWithOffset(pc);
+                for (Location tLoc : tLocations) {
+                    LockSet lockSet = currentLockDataFlow.getFactAtLocation(tLoc);
+                    if (lockSet.getNumLockedObjects() > 0) {
+                        // within a synchronized block
+                        return true;
+                    }
+                }
+            }
+        } catch (DataflowAnalysisException e) {
+            AnalysisContext.logError(String.format("Synchronization check caught an error when analyzing %s method.", currentMethod.getName()), e);
+        }
+        return false;
     }
 }
