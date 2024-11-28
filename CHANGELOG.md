@@ -32,6 +32,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix call graph, include non-parametric void methods ([#3160](https://github.com/spotbugs/spotbugs/pull/3160))
 - Added missing comma between line number and confidence when describing matching and mismatching bugs for tests ([#3187](https://github.com/spotbugs/spotbugs/pull/3187))
 - Fixed method matchers with array types ([#3203](https://github.com/spotbugs/spotbugs/issues/3203))
+- Fixed an error in the detection of bridge methods causing analysis crashes ([#3208](https://github.com/spotbugs/spotbugs/issues/3208))
 
 ### Cleanup
 - Cleanup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))

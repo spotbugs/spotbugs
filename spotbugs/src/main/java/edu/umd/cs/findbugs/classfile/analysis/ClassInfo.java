@@ -32,10 +32,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -103,14 +100,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
         boolean hasStubs;
 
-        private static String arguments(String signature) {
-            int i = signature.indexOf('(');
-            if (i == -1) {
-                return signature;
-            }
-            return signature.substring(0, i + 1);
-        }
-
         @Override
         public ClassInfo build() {
             AnalysisContext context = AnalysisContext.currentAnalysisContext();
@@ -129,11 +118,14 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
                     if (DEBUG) {
                         System.out.println("Have bridge method:" + m);
                     }
+
+                    String[] mArguments = new SignatureParser(m.getSignature()).getArguments();
+
                     for (MethodInfo to : methodInfoList) {
                         if (m != to) {
                             if (!to.isBridge()
                                     && m.getName().equals(to.getName())
-                                    && arguments(m.getSignature()).equals(arguments(to.getSignature()))) {
+                                    && Arrays.equals(mArguments, new SignatureParser(to.getSignature()).getArguments())) {
                                 if (DEBUG) {
                                     System.out.println("  to method:" + to);
                                 }
