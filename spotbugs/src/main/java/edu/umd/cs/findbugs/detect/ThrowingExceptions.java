@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Values;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ExceptionTable;
@@ -30,14 +31,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
         this.bugReporter = bugReporter;
     }
 
-    private JavaClass clazz;
     private String exceptionThrown = null;
-
-    @Override
-    public void visit(JavaClass obj) {
-        exceptionThrown = null;
-        clazz = obj;
-    }
 
     @Override
     public void visit(Method obj) {
@@ -47,14 +41,12 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             return;
         }
 
-        Stream<String> exceptionStream = null;
-
         // If the method is generic or is a method of a generic class, then first check the generic signature to avoid detection
         // of generic descendants of Exception or Throwable as Exception or Throwable itself.
+        Stream<String> exceptionStream = null;
         String signature = obj.getGenericSignature();
-        String[] exceptions = null;
         if (signature != null) {
-            exceptions = StringUtils.substringsBetween(signature, "^", ";");
+            String[] exceptions = StringUtils.substringsBetween(signature, "^", ";");
             if (exceptions != null) {
                 exceptionStream = Arrays.stream(exceptions)
                         .filter(s -> s.charAt(0) == 'L')
@@ -62,9 +54,8 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             }
         }
 
-        // If the method is not generic or it does not throw a generic exception then it has no exception specification in its generic
-        // signature.
-        if (signature == null || exceptions == null) {
+        // If the method is not generic, or it does not throw a generic exception then it has no exception specification in its generic signature.
+        if (signature == null || exceptionStream == null) {
             ExceptionTable exceptionTable = obj.getExceptionTable();
             if (exceptionTable != null) {
                 exceptionStream = Arrays.stream(exceptionTable.getExceptionNames());
@@ -74,16 +65,16 @@ public class ThrowingExceptions extends OpcodeStackDetector {
         // If the method throws Throwable or Exception because its ancestor throws the same exception then ignore it.
         if (exceptionStream != null) {
             Optional<String> exception = exceptionStream
-                    .filter(s -> "java.lang.Exception".equals(s) || "java.lang.Throwable".equals(s))
+                    .filter(s -> Values.DOTTED_JAVA_LANG_EXCEPTION.equals(s) || Values.DOTTED_JAVA_LANG_THROWABLE.equals(s))
                     .findAny();
-            if (exception.isPresent() && !parentThrows(obj, exception.get())) {
+            if (exception.isPresent() && !parentThrows(getThisClass(), obj, exception.get())) {
                 exceptionThrown = exception.get();
             }
         }
 
         // If the method's body is empty then we report the bug immediately.
         if (obj.getCode() == null && exceptionThrown != null) {
-            reportBug("java.lang.Exception".equals(exceptionThrown) ? "THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"
+            reportBug(Values.DOTTED_JAVA_LANG_EXCEPTION.equals(exceptionThrown) ? "THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"
                     : "THROWS_METHOD_THROWS_CLAUSE_THROWABLE", getXMethod());
         }
     }
@@ -92,7 +83,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
     public void visitAfter(Code obj) {
         // For methods with bodies we report the exception after checking their body.
         if (exceptionThrown != null) {
-            reportBug("java.lang.Exception".equals(exceptionThrown) ? "THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"
+            reportBug(Values.DOTTED_JAVA_LANG_EXCEPTION.equals(exceptionThrown) ? "THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"
                     : "THROWS_METHOD_THROWS_CLAUSE_THROWABLE", getXMethod());
         }
     }
@@ -101,19 +92,15 @@ public class ThrowingExceptions extends OpcodeStackDetector {
     public void sawOpcode(int seen) {
         if (seen == Const.ATHROW) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            if (item != null) {
-                if ("Ljava/lang/RuntimeException;".equals(item.getSignature())) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, "THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", LOW_PRIORITY)
-                                    .addClass(this)
-                                    .addMethod(getXMethod())
-                                    .addSourceLine(this));
-                }
+            if (item != null && "Ljava/lang/RuntimeException;".equals(item.getSignature())) {
+                bugReporter.reportBug(new BugInstance(this, "THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", LOW_PRIORITY)
+                        .addClass(this)
+                        .addMethod(getXMethod())
+                        .addSourceLine(this));
             }
-        } else if (exceptionThrown != null &&
-                (seen == Const.INVOKEVIRTUAL ||
-                        seen == Const.INVOKEINTERFACE ||
-                        seen == Const.INVOKESTATIC)) {
+
+        } else if (exceptionThrown != null
+                && (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE || seen == Const.INVOKESTATIC)) {
 
             // If the method throws Throwable or Exception because it invokes another method throwing such
             // exceptions then ignore this bug by resetting exceptionThrown to null.
@@ -133,25 +120,21 @@ public class ThrowingExceptions extends OpcodeStackDetector {
     }
 
     private void reportBug(String bugName, XMethod method) {
-        bugReporter.reportBug(new BugInstance(this, bugName, LOW_PRIORITY).addClass(this).addMethod(method));
-    }
-
-    private boolean parentThrows(@NonNull Method method, @DottedClassName String exception) {
-        return parentThrows(clazz, method, exception);
+        bugReporter.reportBug(new BugInstance(this, bugName, LOW_PRIORITY)
+                .addClass(this)
+                .addMethod(method));
     }
 
     private boolean parentThrows(@NonNull JavaClass clazz, @NonNull Method method, @DottedClassName String exception) {
-        JavaClass ancestor;
         boolean throwsEx = false;
         try {
-            ancestor = clazz.getSuperClass();
+            JavaClass ancestor = clazz.getSuperClass();
             if (ancestor != null) {
                 Optional<Method> superMethod = Arrays.stream(ancestor.getMethods())
                         .filter(m -> method.getName().equals(m.getName()) && signatureMatches(method, m))
                         .findAny();
                 if (superMethod.isPresent()) {
-                    throwsEx = Arrays.stream(superMethod.get().getExceptionTable().getExceptionNames())
-                            .anyMatch(exception::equals);
+                    throwsEx = Arrays.asList(superMethod.get().getExceptionTable().getExceptionNames()).contains(exception);
                 } else {
                     throwsEx = parentThrows(ancestor, method, exception);
                 }
@@ -162,8 +145,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
                         .filter(m -> method.getName().equals(m.getName()) && signatureMatches(method, m))
                         .findAny();
                 if (superMethod.isPresent()) {
-                    throwsEx |= Arrays.stream(superMethod.get().getExceptionTable().getExceptionNames())
-                            .anyMatch(exception::equals);
+                    throwsEx |= Arrays.asList(superMethod.get().getExceptionTable().getExceptionNames()).contains(exception);
                 } else {
                     throwsEx |= parentThrows(intf, method, exception);
                 }
@@ -207,7 +189,6 @@ public class ThrowingExceptions extends OpcodeStackDetector {
         String gRet = genSP.getReturnTypeSignature();
         String ret = sp.getReturnTypeSignature();
 
-        return (gRet.charAt(0) == 'T' && ret.charAt(0) == 'L') ||
-                gRet.equals(ret);
+        return (gRet.charAt(0) == 'T' && ret.charAt(0) == 'L') || gRet.equals(ret);
     }
 }
