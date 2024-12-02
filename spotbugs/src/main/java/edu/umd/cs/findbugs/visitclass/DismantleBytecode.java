@@ -60,7 +60,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
-abstract public class DismantleBytecode extends AnnotationVisitor {
+public abstract class DismantleBytecode extends AnnotationVisitor {
 
     private int opcode;
 
@@ -643,7 +643,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                             throw new IllegalStateException(String.format("bad wide bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
                         }
                     } else {
-                        throw new IllegalStateException(String.format("bad unpredicatable bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
+                        throw new IllegalStateException(String.format("bad unpredictable bytecode %d: %s", opcode, Const.getOpcodeName(opcode)));
                     }
                 } else {
                     if (byteStreamArgCount < 0) {
@@ -1000,7 +1000,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     public void sawClass() {
     }
 
-    static private NumberFormat formatter = NumberFormat.getIntegerInstance();
+    private static NumberFormat formatter = NumberFormat.getIntegerInstance();
     static {
         formatter.setMinimumIntegerDigits(4);
         formatter.setGroupingUsed(false);

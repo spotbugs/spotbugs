@@ -112,8 +112,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         try {
             TypeQualifierAnnotation tqa = TypeQualifierApplications.getInheritedTypeQualifierAnnotation(m,
                     parameter, nonnullTypeQualifierValue);
-            NullnessAnnotation result = toNullnessAnnotation(tqa);
-            return result;
+            return toNullnessAnnotation(tqa);
         } finally {
             profiler.end(this.getClass());
         }
@@ -124,8 +123,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         profiler.start(this.getClass());
         try {
             TypeQualifierAnnotation tqa = TypeQualifierApplications.getInheritedTypeQualifierAnnotation(m, nonnullTypeQualifierValue);
-            NullnessAnnotation result = toNullnessAnnotation(tqa);
-            return result;
+            return toNullnessAnnotation(tqa);
         } finally {
             profiler.end(this.getClass());
         }

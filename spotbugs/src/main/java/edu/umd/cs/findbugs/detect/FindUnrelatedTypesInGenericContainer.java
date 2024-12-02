@@ -304,7 +304,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     }
 
     @StaticConstant
-    final static Set<String> baseGenericTypes = new LinkedHashSet<>();
+    static final Set<String> baseGenericTypes = new LinkedHashSet<>();
     static {
         baseGenericTypes.addAll(Arrays.asList(new String[] { "java.util.Map", "java.util.Collection", "java.lang.Iterable",
             "java.util.Iterator", "com.google.common.collect.Multimap", "com.google.common.collect.Multiset",
@@ -672,7 +672,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 try {
                     targets = Hierarchy2.resolveVirtualMethodCallTargets(actualClassDescriptor, "equals",
                             "(Ljava/lang/Object;)Z", false, false);
-                    boolean allOk = targets.size() > 0;
+                    boolean allOk = !targets.isEmpty();
                     for (XMethod m2 : targets) {
                         if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), expectedClassDescriptor)) {
                             allOk = false;

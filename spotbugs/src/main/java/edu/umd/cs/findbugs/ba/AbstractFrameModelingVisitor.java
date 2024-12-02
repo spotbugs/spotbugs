@@ -63,7 +63,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
      * @param cpg
      *            the ConstantPoolGen of the method to be analyzed
      */
-    public AbstractFrameModelingVisitor(ConstantPoolGen cpg) {
+    protected AbstractFrameModelingVisitor(ConstantPoolGen cpg) {
         this.frame = null;
         this.cpg = cpg;
     }

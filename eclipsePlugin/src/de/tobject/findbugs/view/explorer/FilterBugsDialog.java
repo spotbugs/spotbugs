@@ -140,7 +140,7 @@ public class FilterBugsDialog extends SelectionDialog {
         }
     }
 
-    private final static class TreeLabelProvider implements ILabelProvider {
+    private static final class TreeLabelProvider implements ILabelProvider {
         @Override
         public Image getImage(Object element) {
             return null;
@@ -201,8 +201,7 @@ public class FilterBugsDialog extends SelectionDialog {
 
         public boolean isFiltering() {
             String filterString = getFilterString();
-            boolean yes = filterString != null && filterString.length() > 0 && !filterString.equals(getInitialText());
-            return yes;
+            return filterString != null && filterString.length() > 0 && !filterString.equals(getInitialText());
         }
     }
 
@@ -340,7 +339,7 @@ public class FilterBugsDialog extends SelectionDialog {
             // allow to specify filters using text area (no validation checks
             // yet)
             // TODO validate text entered by user and throw away
-            // invalide/duplicated entries
+            // invalid/duplicated entries
             selectedAsText = text;
         } else {
             selectedAsText = computed;
@@ -492,7 +491,7 @@ public class FilterBugsDialog extends SelectionDialog {
         final ContainerCheckedTreeViewer viewer = new ContainerCheckedTreeViewer(parent, style | SWT.SINGLE | SWT.BORDER
                 | SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE) {
             /**
-             * Overriden to re-set checked state of elements after filter change
+             * Overridden to re-set checked state of elements after filter change
              */
             @Override
             public void refresh(boolean updateLabels) {

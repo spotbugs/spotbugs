@@ -68,7 +68,7 @@ public class BugContentProvider implements ICommonContentProvider {
 
     public static boolean DEBUG;
 
-    private final static IMarker[] EMPTY = new IMarker[0];
+    private static final IMarker[] EMPTY = new IMarker[0];
 
     private final RefreshJob refreshJob;
 
@@ -385,7 +385,7 @@ public class BugContentProvider implements ICommonContentProvider {
                 continue;
             }
             if (!groupIds.containsKey(id)) {
-                groupIds.put(id, new HashSet<IMarker>());
+                groupIds.put(id, new HashSet<>());
             }
             groupIds.get(id).add(marker);
         }
@@ -508,7 +508,7 @@ public class BugContentProvider implements ICommonContentProvider {
                 break;
             default:
                 FindbugsPlugin.getDefault()
-                        .logWarning("UKNOWN delta change kind" + delta.changeKind);
+                        .logWarning("UNKNOWN delta change kind" + delta.changeKind);
 
             }
         }

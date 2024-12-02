@@ -80,7 +80,7 @@ public class DumbMethods extends OpcodeStackDetector {
         public void initMethod(Method method) {
         }
 
-        abstract public void sawOpcode(int seen);
+        public abstract void sawOpcode(int seen);
     }
 
     private final class InvalidMinMaxSubDetector extends SubDetector {
