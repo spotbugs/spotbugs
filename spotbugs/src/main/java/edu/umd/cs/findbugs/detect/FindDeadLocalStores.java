@@ -121,7 +121,7 @@ public class FindDeadLocalStores implements Detector {
         if (exclLocalsProperty != null) {
             for (String s : exclLocalsProperty.split(",")) {
                 String s2 = s.trim();
-                if (s2.length() > 0) {
+                if (!s2.isEmpty()) {
                     EXCLUDED_LOCALS.add(s2);
                 }
             }
@@ -414,7 +414,7 @@ public class FindDeadLocalStores implements Detector {
                                     Object value = ((LDC) instruction2).getValue(methodGen.getConstantPool());
                                     if (value instanceof String) {
                                         String n = (String) value;
-                                        if (n.length() > 0) {
+                                        if (!n.isEmpty()) {
                                             initializationOf = ClassName.toSignature(n);
                                         }
                                     }

@@ -276,7 +276,7 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
-        return missing == null || missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
+        return missing == null || missing.isEmpty() || missing.charAt(0) == '[' || missing.endsWith("package-info");
     }
 
     private static @CheckForNull RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
@@ -947,7 +947,7 @@ public class AnalysisContext implements AutoCloseable {
      */
     public JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException {
         try {
-            if (className.length() == 0) {
+            if (className.isEmpty()) {
                 throw new IllegalArgumentException("Class name is empty");
             }
             if (!ClassName.isValidClassName(className)) {

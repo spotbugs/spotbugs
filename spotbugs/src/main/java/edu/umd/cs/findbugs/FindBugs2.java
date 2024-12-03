@@ -178,7 +178,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
         String hostApp = System.getProperty(PROP_FINDBUGS_HOST_APP);
         String hostAppVersion = null;
-        if (hostApp == null || hostApp.trim().length() <= 0) {
+        if (hostApp == null || hostApp.trim().isEmpty()) {
             hostApp = "FindBugs TextUI";
             hostAppVersion = System.getProperty(PROP_FINDBUGS_HOST_APP_VERSION);
         }
