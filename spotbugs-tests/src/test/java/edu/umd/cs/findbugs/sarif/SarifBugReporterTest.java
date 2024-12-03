@@ -308,7 +308,7 @@ class SarifBugReporterTest {
     }
 
     @Test
-    void testExtensions() throws PluginException {
+    void testExtensions() {
         PluginLoader pluginLoader = DetectorFactoryCollection.instance().getCorePlugin().getPluginLoader();
         Plugin plugin = new Plugin("pluginId", "version", null, pluginLoader, true, false);
         DetectorFactoryCollection dfc = new DetectorFactoryCollection(plugin);

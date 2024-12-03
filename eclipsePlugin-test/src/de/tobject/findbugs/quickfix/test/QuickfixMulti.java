@@ -118,7 +118,7 @@ class QuickfixMulti extends AbstractQuickfixTest {
         checkJavaFiles(project.members());
     }
 
-    private void checkJavaFiles(IResource[] iResources) throws CoreException, IOException, JavaModelException {
+    private void checkJavaFiles(IResource[] iResources) throws CoreException, IOException {
         for (IResource resource : iResources) {
             if (resource instanceof IFile) {
                 String fileName = resource.getName();

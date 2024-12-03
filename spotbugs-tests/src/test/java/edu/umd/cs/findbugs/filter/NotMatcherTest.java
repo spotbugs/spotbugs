@@ -42,7 +42,7 @@ class NotMatcherTest {
     private final BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
 
     @Test
-    void invertsResultsFromWrappedMatcher_doesntMatchWhenWrappedDoesMatch() throws Exception {
+    void invertsResultsFromWrappedMatcher_doesntMatchWhenWrappedDoesMatch() {
         Matcher wrappedMatcher = new TestMatcher(true);
         NotMatcher notMatcher = new NotMatcher();
         notMatcher.addChild(wrappedMatcher);
@@ -51,7 +51,7 @@ class NotMatcherTest {
     }
 
     @Test
-    void invertsResultsFromWrappedMatcher_doesMatchWhenWrappedDoesnt() throws Exception {
+    void invertsResultsFromWrappedMatcher_doesMatchWhenWrappedDoesnt() {
         Matcher wrappedMatcher = new TestMatcher(false);
         NotMatcher notMatcher = new NotMatcher();
         notMatcher.addChild(wrappedMatcher);

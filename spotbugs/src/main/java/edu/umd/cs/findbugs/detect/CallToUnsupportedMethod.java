@@ -89,7 +89,7 @@ public class CallToUnsupportedMethod implements Detector {
      * @param classContext
      * @param method
      */
-    private void analyzeMethod(ClassContext classContext, Method method) throws MethodUnprofitableException, CFGBuilderException,
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException,
             DataflowAnalysisException {
         if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
             return;
