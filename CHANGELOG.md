@@ -44,7 +44,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Restrict the constructor of abstract classes visibility to protected ([#3178](https://github.com/spotbugs/spotbugs/pull/3178)) 
 - Cleanup double initialization and fix comments referring to findbugs instead of spotbugs([#3134](https://github.com/spotbugs/spotbugs/issues/3134))
 - Use diamond operator in constructor calls of Collections ([#3176](https://github.com/spotbugs/spotbugs/pull/3176))
-- Use `Collection.isEmpty()` to test for emptiness ([#3180](https://github.com/spotbugs/spotbugs/pull/3180))
+- Use `Collection.isEmpty()` or `String.isEmpty()` to test for emptiness ([#3180](https://github.com/spotbugs/spotbugs/pull/3180), [#3219](https://github.com/spotbugs/spotbugs/pull/3219))
 - Use method references instead of lambdas where possible ([#3179](https://github.com/spotbugs/spotbugs/pull/3179))
 
 ### Changed
