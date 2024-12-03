@@ -525,7 +525,7 @@ public class Filter {
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             option = option.substring(1);
-            if (optionExtraPart.length() == 0) {
+            if (optionExtraPart.isEmpty()) {
                 setField(option, true);
             } else {
                 setField(option, Boolean.parseBoolean(optionExtraPart));

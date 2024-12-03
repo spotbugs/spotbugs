@@ -364,7 +364,7 @@ public class BugContentProvider implements ICommonContentProvider {
             Identifier id = mapper.getIdentifier(marker);
             if (id == null) {
                 String pluginId = MarkerUtil.getPluginId(marker);
-                if (pluginId.length() == 0 || disabledPlugins.contains(pluginId)) {
+                if (pluginId.isEmpty() || disabledPlugins.contains(pluginId)) {
                     // do not report errors for disabled plugins
                     continue;
                 }
@@ -456,7 +456,7 @@ public class BugContentProvider implements ICommonContentProvider {
     protected void initWorkingSet(String workingSetName) {
         IWorkingSet workingSet = null;
 
-        if (workingSetName != null && workingSetName.length() > 0) {
+        if (workingSetName != null && !workingSetName.isEmpty()) {
             IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
             workingSet = workingSetManager.getWorkingSet(workingSetName);
         } /*

@@ -74,7 +74,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
      *            name of the class
      */
     protected PackageMemberAnnotation(@DottedClassName String className, String description, String sourceFileName) {
-        if (className.length() == 0) {
+        if (className.isEmpty()) {
             throw new IllegalArgumentException("Empty classname not allowed");
         }
         if (className.indexOf('/') >= 0) {

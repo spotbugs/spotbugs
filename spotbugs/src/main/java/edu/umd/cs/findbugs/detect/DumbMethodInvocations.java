@@ -110,7 +110,7 @@ public class DumbMethodInvocations implements Detector {
                     Constant operandValue = frame.getArgument(iins, cpg, paramNumber, parser);
                     if (operandValue.isConstantString()) {
                         String password = operandValue.getConstantString();
-                        if (password.length() == 0) {
+                        if (password.isEmpty()) {
                             bugAccumulator.accumulateBug(new BugInstance(this, "DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
                                     .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                         } else {

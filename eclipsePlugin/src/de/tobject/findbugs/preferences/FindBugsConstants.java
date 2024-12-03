@@ -129,14 +129,14 @@ public final class FindBugsConstants {
 
     public static Set<String> decodeIds(String text) {
         Set<String> sortedIds = new TreeSet<>();
-        if (text == null || text.trim().length() == 0) {
+        if (text == null || text.trim().isEmpty()) {
             return sortedIds;
         }
 
         String[] strings = text.split(IDS_PATTERN);
         for (String string : strings) {
             string = string.trim();
-            if (string.length() > 0) {
+            if (!string.isEmpty()) {
                 sortedIds.add(string);
             }
         }

@@ -48,7 +48,7 @@ public abstract class ClassName {
     }
 
     public static String toSignature(@SlashedClassName String className) {
-        if (className.length() == 0) {
+        if (className.isEmpty()) {
             throw new IllegalArgumentException("classname can't be empty");
         }
         if (className.charAt(0) == '[' || className.endsWith(";")) {
@@ -341,7 +341,7 @@ public abstract class ClassName {
         }
 
         for (String p : pp) {
-            if (p.length() > 0 && (StringUtils.containsIgnoreCase(className, p) || fuzzyMatch(className, p))) {
+            if (!p.isEmpty() && (StringUtils.containsIgnoreCase(className, p) || fuzzyMatch(className, p))) {
                 return true;
             }
         }
