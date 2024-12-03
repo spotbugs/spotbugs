@@ -200,14 +200,13 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
 
     public boolean isMethodCall() {
         switch (opcode) {
-        default:
-            return false;
         case Const.INVOKEINTERFACE:
         case Const.INVOKESPECIAL:
         case Const.INVOKEVIRTUAL:
         case Const.INVOKESTATIC:
             return true;
-
+        default:
+            return false;
         }
     }
 
