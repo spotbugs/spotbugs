@@ -39,7 +39,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
 
-    private String clsName;
+    private String className;
 
     public FindCircularDependencies(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -48,7 +48,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
 
     @Override
     public void visit(JavaClass obj) {
-        clsName = obj.getClassName();
+        className = obj.getClassName();
     }
 
     @Override
@@ -60,19 +60,19 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
                 return;
             }
 
-            if (clsName.equals(refClsName)) {
+            if (className.equals(refClsName)) {
                 return;
             }
 
-            if (clsName.startsWith(refClsName) && (refClsName.indexOf('$') >= 0)) {
+            if (className.startsWith(refClsName) && (refClsName.indexOf('$') >= 0)) {
                 return;
             }
 
-            if (refClsName.startsWith(clsName) && (clsName.indexOf('$') >= 0)) {
+            if (refClsName.startsWith(className) && (className.indexOf('$') >= 0)) {
                 return;
             }
 
-            Set<String> dependencies = dependencyGraph.computeIfAbsent(clsName, k -> new HashSet<>());
+            Set<String> dependencies = dependencyGraph.computeIfAbsent(className, k -> new HashSet<>());
 
             dependencies.add(refClsName);
         }

@@ -287,10 +287,10 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
             throw new IllegalStateException("getRefConstantOperand called but value not available");
         }
         if (refConstantOperand == null) {
-            String dottedClassConstantOperand = getDottedClassConstantOperand();
-            StringBuilder ref = new StringBuilder(dottedClassConstantOperand.length() + nameConstantOperand.length()
+            String dottedClassOperand = getDottedClassConstantOperand();
+            StringBuilder ref = new StringBuilder(dottedClassOperand.length() + nameConstantOperand.length()
                     + sigConstantOperand.length() + 5);
-            ref.append(dottedClassConstantOperand).append(".").append(nameConstantOperand).append(" : ")
+            ref.append(dottedClassOperand).append(".").append(nameConstantOperand).append(" : ")
                     .append(replaceSlashesWithDots(sigConstantOperand));
             refConstantOperand = ref.toString();
         }
