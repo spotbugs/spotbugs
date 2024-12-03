@@ -46,6 +46,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Use diamond operator in constructor calls of Collections ([#3176](https://github.com/spotbugs/spotbugs/pull/3176))
 - Use `Collection.isEmpty()` to test for emptiness ([#3180](https://github.com/spotbugs/spotbugs/pull/3180))
 - Use method references instead of lambdas where possible ([#3179](https://github.com/spotbugs/spotbugs/pull/3179))
+- Remove unnecessary throws declarations ([#3220](https://github.com/spotbugs/spotbugs/pull/3220))
 
 ### Changed
 - Bump up Java version to 11
