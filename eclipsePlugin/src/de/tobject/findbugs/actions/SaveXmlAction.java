@@ -89,7 +89,7 @@ public class SaveXmlAction extends FindBugsAction {
         FileDialog fileDialog = new FileDialog(FindbugsPlugin.getShell(), SWT.APPLICATION_MODAL | SWT.SAVE);
         fileDialog.setText("Select bug result xml for project: " + project.getName());
         String initialFileName = getDialogSettings().get(SAVE_XML_PATH_KEY);
-        if (initialFileName != null && initialFileName.length() > 0) {
+        if (initialFileName != null && !initialFileName.isEmpty()) {
             File initialFile = new File(initialFileName);
             // have to check if exists, otherwise crazy GTK will ignore preset
             // filter

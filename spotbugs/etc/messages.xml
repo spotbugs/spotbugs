@@ -9012,8 +9012,8 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION">
-    <ShortDescription>Method lists Exception in its throws clause.</ShortDescription>
-    <LongDescription>Method lists Exception in its throws clause.</LongDescription>
+    <ShortDescription>Method lists Exception in its throws clause, but it could be more specific.</ShortDescription>
+    <LongDescription>Method lists Exception in its throws clause, but it could be more specific.</LongDescription>
     <Details>
       <![CDATA[
         <p>
@@ -9029,8 +9029,8 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="THROWS_METHOD_THROWS_CLAUSE_THROWABLE">
-    <ShortDescription>Method lists Throwable in its throws clause.</ShortDescription>
-    <LongDescription>Method lists Throwable in its throws clause.</LongDescription>
+    <ShortDescription>Method lists Throwable in its throws clause, but it could be more specific.</ShortDescription>
+    <LongDescription>Method lists Throwable in its throws clause, but it could be more specific.</LongDescription>
     <Details>
       <![CDATA[
         <p>

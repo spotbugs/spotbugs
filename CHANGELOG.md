@@ -32,6 +32,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not report UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR for fields initialized in method annotated with TestNG's @BeforeClass. ([#3152](https://github.com/spotbugs/spotbugs/issues/3152))
 - Fixed detector `FindReturnRef` not finding references exposed from nested and inner classes ([#2042](https://github.com/spotbugs/spotbugs/issues/2042))
 - Fix call graph, include non-parametric void methods ([#3160](https://github.com/spotbugs/spotbugs/pull/3160))
+- Added missing comma between line number and confidence when describing matching and mismatching bugs for tests ([#3187](https://github.com/spotbugs/spotbugs/pull/3187))
+- Fixed method matchers with array types ([#3203](https://github.com/spotbugs/spotbugs/issues/3203))
+- Fix SARIF report's message property in Exception to meet the standard ([#3197](https://github.com/spotbugs/spotbugs/issues/3197))
+- Fixed `FI_FINALIZER_NULLS_FIELDS` FPs for functions called finalize() but not with the correct signature. ([#3207](https://github.com/spotbugs/spotbugs/issues/3207))
+- Fixed an error in the detection of bridge methods causing analysis crashes ([#3208](https://github.com/spotbugs/spotbugs/issues/3208))
+- Fixed detector `ThrowingExceptions` by removing false positive reports, such as synthetic methods (lambdas), methods which inherited their exception specifications and methods which call throwing methods ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
 
 ### Cleanup
 - Cleanup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
@@ -41,8 +47,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Restrict the constructor of abstract classes visibility to protected ([#3178](https://github.com/spotbugs/spotbugs/pull/3178)) 
 - Cleanup double initialization and fix comments referring to findbugs instead of spotbugs([#3134](https://github.com/spotbugs/spotbugs/issues/3134))
 - Use diamond operator in constructor calls of Collections ([#3176](https://github.com/spotbugs/spotbugs/pull/3176))
-- Use `Collection.isEmpty()` to test for emptiness ([#3180](https://github.com/spotbugs/spotbugs/pull/3180))
+- Use `Collection.isEmpty()` or `String.isEmpty()` to test for emptiness ([#3180](https://github.com/spotbugs/spotbugs/pull/3180), [#3219](https://github.com/spotbugs/spotbugs/pull/3219))
 - Use method references instead of lambdas where possible ([#3179](https://github.com/spotbugs/spotbugs/pull/3179))
+- Move default clauses to the end of switches ([#3222](https://github.com/spotbugs/spotbugs/pull/3222))
 
 ### Changed
 - Bump up Java version to 11

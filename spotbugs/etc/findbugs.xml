@@ -669,7 +669,7 @@
                     reports="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA"/>
           <Detector class="edu.umd.cs.findbugs.detect.DontUseFloatsAsLoopCounters" speed="fast"
                     reports="FL_FLOATS_AS_LOOP_COUNTERS"/>
-          <Detector class="edu.umd.cs.findbugs.detect.ThrowingExceptions" speed="fast" disabled="true"
+          <Detector class="edu.umd.cs.findbugs.detect.ThrowingExceptions" speed="fast"
                     reports="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION,THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION,THROWS_METHOD_THROWS_CLAUSE_THROWABLE" />
           <Detector class="edu.umd.cs.findbugs.detect.PermissionsSuper"
                     reports="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS"/>
