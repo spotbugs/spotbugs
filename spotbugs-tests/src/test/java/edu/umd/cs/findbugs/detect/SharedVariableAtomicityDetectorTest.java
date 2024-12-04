@@ -4,418 +4,417 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 
 class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
-    private static final String WRITE_64BIT_BUG_TYPE = "AT_NONATOMIC_64BIT_PRIMITIVE";
-    private static final String VISIBILITY_BUG_TYPE = "AT_STALE_THREAD_WRITE_OF_PRIMITIVE";
-    private static final String OPS_BUG_TYPE = "AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE";
+    private static final String WRITE_64BIT_BUG = "AT_NONATOMIC_64BIT_PRIMITIVE";
+    private static final String PRIMITIVE_BUG = "AT_STALE_THREAD_WRITE_OF_PRIMITIVE";
+    private static final String OPS_BUG = "AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE";
 
     @Test
-    void failurePath_fieldWithBadVisibility_whenOtherMethodHasSynchronizedBlock() {
+    void bugForStalePrimitiveWriteWhenOtherMethodHasSynchronizedBlock() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockAndBadVisibilityOnField.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 1);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
-        assertBugInMethodAtLine(VISIBILITY_BUG_TYPE, "SynchronizedBlockAndBadVisibilityOnField", "shutdown", 17);
+        assertBugTypeCount(PRIMITIVE_BUG, 1);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "SynchronizedBlockAndBadVisibilityOnField", "shutdown", 17);
     }
 
     @Test
-    void failurePath_fieldWithBadVisibility_whenMethodHasIrrelevantSynchronizedBlock() {
+    void bugForStalePrimitiveWriteWhenMethodHasIrrelevantSynchronizedBlock() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockWithBadVisibilityOnField.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 1);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
-        assertBugInMethodAtLine(VISIBILITY_BUG_TYPE, "SynchronizedBlockWithBadVisibilityOnField", "shutdown", 20);
+        assertBugTypeCount(PRIMITIVE_BUG, 1);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "SynchronizedBlockWithBadVisibilityOnField", "shutdown", 20);
     }
 
     @Test
-    void failurePath_fieldWithBadVisibility_whenOtherMethodIsSynchronized() {
+    void bugForStalePrimitiveWriteWhenOtherMethodIsSynchronized() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethodAndBadVisibilityOnField.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 1);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
-        assertBugInMethodAtLine(VISIBILITY_BUG_TYPE, "SynchronizedMethodAndBadVisibilityOnField", "shutdown", 17);
+        assertBugTypeCount(PRIMITIVE_BUG, 1);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "SynchronizedMethodAndBadVisibilityOnField", "shutdown", 17);
     }
 
     @Test
-    void failurePath_fieldWithBadVisibility_whenSetAndGetAreReordered() {
+    void bugForStalePrimitiveWriteWhenSetAndGetAreReordered() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityReordered.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 1);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
-        assertBugInMethodAtLine(VISIBILITY_BUG_TYPE, "FieldWithBadVisibilityReordered", "shutdown", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 1);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "FieldWithBadVisibilityReordered", "shutdown", 7);
     }
 
     @Test
-    void failurePath_fieldWithBadVisibility_whenClassHasTwoSetters() {
+    void bugForStalePrimitiveWriteWhenClassHasTwoSetters() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityTwoSetters.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 2);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
-        assertBugInMethodAtLine(VISIBILITY_BUG_TYPE, "FieldWithBadVisibilityTwoSetters", "shutdown", 18);
-        assertBugInMethodAtLine(VISIBILITY_BUG_TYPE, "FieldWithBadVisibilityTwoSetters", "up", 22);
+        assertBugTypeCount(PRIMITIVE_BUG, 2);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "FieldWithBadVisibilityTwoSetters", "shutdown", 18);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "FieldWithBadVisibilityTwoSetters", "up", 22);
     }
 
     @Test
-    void failurePath_fieldWithBadVisibility_whenClassExtendsThread() {
+    void bugForStalePrimitiveWriteWhenClassExtendsThread() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityThread.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 1);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
-        assertBugInMethodAtLine(VISIBILITY_BUG_TYPE, "FieldWithBadVisibilityThread", "shutdown", 18);
+        assertBugTypeCount(PRIMITIVE_BUG, 1);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "FieldWithBadVisibilityThread", "shutdown", 18);
     }
 
     @Test
-    void failurePath_fieldWithBadVisibility_whenClassImplementsRunnable() {
+    void bugForStalePrimitiveWriteWhenClassImplementsRunnable() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityRunnable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 1);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
-        assertBugInMethodAtLine(VISIBILITY_BUG_TYPE, "FieldWithBadVisibilityRunnable", "shutdown", 18);
+        assertBugTypeCount(PRIMITIVE_BUG, 1);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "FieldWithBadVisibilityRunnable", "shutdown", 18);
     }
 
     @Test
-    void failurePath_fieldWithBadVisibility_whenHavingSeparateMethods() {
+    void bugForStalePrimitiveWriteWhenHavingSeparateMethods() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/NonsynchronizedSeparateMethod.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 1);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
-        assertBugInMethodAtLine(VISIBILITY_BUG_TYPE, "NonsynchronizedSeparateMethod", "shutdown", 22);
+        assertBugTypeCount(PRIMITIVE_BUG, 1);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "NonsynchronizedSeparateMethod", "shutdown", 22);
     }
 
     @Test
-    void happyPath_atomicField() {
+    void noBugAtomicField() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/AtomicField.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     @Test
-    void happyPath_volatileField() {
+    void noBugSimpleVolatileField() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/VolatileField.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     @Test
-    void happyPath_synchronizedBlock() {
+    void noBugSynchronizedBlock() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlock.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     @Test
-    void happyPath_synchronizedMethod() {
+    void noBugSynchronizedMethod() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethod.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     @Test
-    void happyPath_synchronizedSeparateMethod() {
+    void noBugSynchronizedSeparateMethod() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedSeparateMethod.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     @Test
-    void happyPath_synchronizedBlockSeparateMethod() {
+    void noBugSynchronizedBlockSeparateMethod() {
         performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockSeparateMethod.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
-
     @Test
-    void happyPath_compoundOperation_onSharedAtomicVariable() {
+    void noBugCompoundOpOnAtomicVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundOperationOnSharedAtomicVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     @Test
-    void happyPath_compoundOperation_onSharedVariable_volatileReadSyncWrite() {
+    void noBugCompoundOperationVolatileReadSyncWrite() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionOnSharedVolatileReadSyncWrite.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     @Test
-    void happyPath_compoundOperation_readWriteLock() {
+    void noBugCompoundOperationReadWriteLock() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundNegateReadWriteLock.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     @Test
-    void happyPath_compoundOperation_onNotSharedVariable() {
+    void noBugCompoundOperationOnNotSharedVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivisionOnVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     @Test
-    void happyPath_compoundOperationInsideSynchronizedBlock_onSharedVariable() {
+    void noBugCompoundOperationInSynchronizedBlock() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/SynchronizedBlockCompoundOperationOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     @Test
-    void happyPath_compoundOperationInsideSynchronizedMethod_onSharedVariable() {
+    void noBugCompoundOperationInSynchronizedMethod() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/SynchronizedMethodCompoundOperationOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 0);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
     }
 
     // --num
     @Test
-    void reportsBugFor_compoundPreDecrementation_onSharedVariable() {
+    void bugForCompoundPreDecrementation() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPreDecrementationOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundPreDecrementationOnSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundPreDecrementationOnSharedVariable", "toggle", 7);
     }
 
     // num--
     @Test
-    void reportsBugFor_compoundPostDecrementation_onSharedVariable() {
+    void bugForCompoundPostDecrementation() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostDecrementationOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundPostDecrementationOnSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundPostDecrementationOnSharedVariable", "toggle", 7);
     }
 
     // ++num
     @Test
-    void reportsBugFor_compoundPreIncrementation_onSharedVariable() {
+    void bugForCompoundPreIncrementation() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPreIncrementationOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundPreIncrementationOnSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundPreIncrementationOnSharedVariable", "toggle", 7);
     }
 
     // num++
     @Test
-    void reportsBugFor_compoundPostIncrementation_onSharedVariable() {
+    void bugForCompoundPostIncrementation() {
         // The order of the functions is reversed
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostIncrementationOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundPostIncrementationOnSharedVariable", "toggle", 11);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundPostIncrementationOnSharedVariable", "toggle", 11);
     }
 
     // &=
     @Test
-    void reportsBugFor_compoundIAND_onSharedVariable() {
+    void bugForCompoundIAND() {
         // considered multithreaded because it has a volatile field (not the problematic)
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIANDOperationOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundIANDOperationOnSharedVariable", "toggle", 8);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundIANDOperationOnSharedVariable", "toggle", 8);
     }
 
     // |=
     @Test
-    void reportsBugFor_compoundIOR_onSharedVariable() {
+    void bugForCompoundIOR() {
         // considered multithreaded because it has a field (not the problematic) from the java.util.concurrent.atomic package
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIOROperationOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundIOROperationOnSharedVariable", "toggle", 10);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundIOROperationOnSharedVariable", "toggle", 10);
     }
 
     // >>>=
     @Test
-    void reportsBugFor_compoundLogicalRightShifting_onSharedVariable() {
+    void bugForCompoundLogicalRightShift() {
         // considered multithreaded because it extends Thread
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLogicalRightShiftingOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundLogicalRightShiftingOnSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundLogicalRightShiftingOnSharedVariable", "toggle", 7);
     }
 
     // >>=
     @Test
-    void reportsBugFor_compoundRightShifting_onSharedVariable() {
+    void bugForCompoundRightShift() {
         // considered multithreaded because it has a method with synchronized block
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundRightShiftingOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundRightShiftingOnSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundRightShiftingOnSharedVariable", "toggle", 7);
     }
 
     // <<=
     @Test
-    void reportsBugFor_compoundLeftShifting_onSharedVariable() {
+    void bugForCompoundLeftShift() {
         // considered multithreaded because it has synchronized method
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLeftShiftingOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundLeftShiftingOnSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundLeftShiftingOnSharedVariable", "toggle", 7);
     }
 
     // %=
     @Test
-    void reportsBugFor_compoundModulo_onSharedVariable() {
+    void bugForCompoundModulo() {
         // considered multithreaded because it implements Runnable
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundModuloOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundModuloOnSharedVariable", "run", 8);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundModuloOnSharedVariable", "run", 8);
     }
 
     // *=
     @Test
-    void reportsBugFor_compoundMultiplication_onSharedVariable() {
+    void bugForCompoundMultiplication() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundMultiplicationOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundMultiplicationOnSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundMultiplicationOnSharedVariable", "toggle", 7);
     }
 
     // /=
     @Test
-    void reportsBugFor_compoundDivision_onSharedVariable() {
+    void bugForCompoundDivision() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivisionOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundDivisionOnSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundDivisionOnSharedVariable", "toggle", 7);
     }
 
     // -=
     @Test
-    void reportsBugFor_compoundSubtraction_onSharedVariable() {
+    void bugForCompoundSubtraction() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubtractionOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundSubtractionOnSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundSubtractionOnSharedVariable", "toggle", 7);
     }
 
 
     // +=
     @Test
-    void reportsBugFor_compoundAddition_onSharedVolatileVariable() {
+    void bugForCompoundAdditionOnVolatileVar() {
         // simply defining the field as volatile is not enough
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionOnSharedVolatileVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundAdditionOnSharedVolatileVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundAdditionOnSharedVolatileVariable", "toggle", 7);
     }
 
     // ^=
     @Test
-    void reportsBugFor_compoundXOROperation_onSharedVariable() {
+    void bugForCompoundXOR() {
         // considered multithreaded because it has a field (not the problematic) with synchronized assignment
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundXOROperationOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundXOROperationOnSharedVariable", "toggle", 12);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundXOROperationOnSharedVariable", "toggle", 12);
     }
 
     // num = num + 2
     @Test
-    void reportsBugFor_simpleAddition_onSharedVariable() {
+    void bugForSimpleAdditionDependingOnPrevValue() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/AdditionOnSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "AdditionOnSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "AdditionOnSharedVariable", "toggle", 7);
     }
 
     // num = -num
     @Test
-    void reportsBugFor_negate_onSharedVariable() {
+    void bugForNegateDependingOnPrevValue() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/NegateSharedVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "NegateSharedVariable", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "NegateSharedVariable", "toggle", 7);
     }
 
     // num -= num + 2
     @Test
-    void reportsBugFor_compoundSubtraction_onSharedVariable_complex() {
+    void bugForCompoundSubtractionComplex() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubstractComplexExpression.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundSubstractComplexExpression", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundSubstractComplexExpression", "toggle", 7);
     }
 
     // num += num2 + 5
     @Test
-    void reportsBugFor_compoundAddition_onSharedVariable_complex_withAnotherVar() {
+    void bugForCompoundAdditionComplexWithAnotherVar() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionComplexExpressionWithAnotherVar.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundAdditionComplexExpressionWithAnotherVar", "toggle", 8);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundAdditionComplexExpressionWithAnotherVar", "toggle", 8);
     }
 
     // num2 = num; num += 1
     @Test
-    void reportsBugFor_compoundAddition_onSharedVariable_withAnotherVar() {
+    void bugForCompoundAdditionWithAnotherVar() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionWithAnotherVar.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 1);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(VISIBILITY_BUG_TYPE, "CompoundAdditionWithAnotherVar", "toggle", 8);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundAdditionWithAnotherVar", "toggle", 9);
+        assertBugTypeCount(PRIMITIVE_BUG, 1);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "CompoundAdditionWithAnotherVar", "toggle", 8);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundAdditionWithAnotherVar", "toggle", 9);
     }
 
     // num += param
     @Test
-    void reportsBugFor_compoundSubstractionOfArg_onSharedVariable() {
+    void bugForCompoundSubstractionOfArg() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubstractionOfArg.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundSubstractionOfArg", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundSubstractionOfArg", "toggle", 7);
     }
 
     // num += getOne()
     @Test
-    void reportsBugFor_compoundSubstractionOfFunCall_onSharedVariable() {
+    void bugForCompoundSubstractionOfFunCall() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubstractionOfMethodReturnValue.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 1);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundSubstractionOfMethodReturnValue", "toggle", 7);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 1);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundSubstractionOfMethodReturnValue", "toggle", 7);
     }
 
     @Test
-    void reportsBugFor_twoCompoundOperations_onSharedVariable() {
+    void bugForTwoCompoundOperations() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivideMultiplyOnVariable.class");
-        assertBugTypeCount(VISIBILITY_BUG_TYPE, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG_TYPE, 0);
-        assertBugTypeCount(OPS_BUG_TYPE, 2);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundDivideMultiplyOnVariable", "divide", 7);
-        assertBugInMethodAtLine(OPS_BUG_TYPE, "CompoundDivideMultiplyOnVariable", "multiply", 11);
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 2);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundDivideMultiplyOnVariable", "divide", 7);
+        assertBugInMethodAtLine(OPS_BUG, "CompoundDivideMultiplyOnVariable", "multiply", 11);
     }
 }
