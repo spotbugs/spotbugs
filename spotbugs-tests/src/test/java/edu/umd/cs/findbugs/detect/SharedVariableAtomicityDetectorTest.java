@@ -130,6 +130,14 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void noBugSynchronizedBlockPrimitiveSeparateMethod() {
+        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockPrimitiveSeparateMethod.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+    }
+
+    @Test
     void noBugCompoundOpOnAtomicVariable() {
         performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundOperationOnSharedAtomicVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
