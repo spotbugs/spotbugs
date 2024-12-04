@@ -141,7 +141,8 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
             if (field != null && !field.isFinal()) {
                 boolean fieldReadInOtherMethod = mapContainsFieldWithOtherMethod(field, method, readFieldsByMethods);
                 if (fieldReadInOtherMethod) {
-                    if (!relevantFields.isEmpty() && relevantFields.contains(field) && !MultiThreadedCodeIdentifierUtils.isFromAtomicPackage(field.getSignature())) {
+                    if (!relevantFields.isEmpty() && relevantFields.contains(field)
+                            && !MultiThreadedCodeIdentifierUtils.isFromAtomicPackage(field.getSignature())) {
                         bugAccumulator.accumulateBug(
                                 new BugInstance(this, "AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE", NORMAL_PRIORITY)
                                         .addClass(this)
@@ -149,7 +150,8 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
                                         .addField(field),
                                 this);
                     } else if (!field.isVolatile() && ClassName.isValidBaseTypeFieldDescriptor(field.getSignature())) {
-                        String bugType = is64bitPrimitive(field.getSignature()) ? "AT_NONATOMIC_64BIT_PRIMITIVE" : "AT_STALE_THREAD_WRITE_OF_PRIMITIVE";
+                        String bugType = is64bitPrimitive(field.getSignature()) ? "AT_NONATOMIC_64BIT_PRIMITIVE"
+                                : "AT_STALE_THREAD_WRITE_OF_PRIMITIVE";
                         bugAccumulator.accumulateBug(
                                 new BugInstance(this, bugType, NORMAL_PRIORITY)
                                         .addClass(this)
