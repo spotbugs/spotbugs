@@ -905,7 +905,7 @@ public class Project implements XMLWriteable, AutoCloseable {
         int branchPoint;
         if (slashPos >= 0) {
             String subPath = srcFile.substring(0, slashPos);
-            if ((subPath.length() == 0) || base.startsWith(subPath)) {
+            if ((subPath.isEmpty()) || base.startsWith(subPath)) {
                 branchPoint = slashPos + 1;
                 slashPos = srcFile.indexOf(slash, branchPoint);
                 while (slashPos >= 0) {

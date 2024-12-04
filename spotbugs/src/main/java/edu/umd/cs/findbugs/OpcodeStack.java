@@ -805,7 +805,7 @@ public class OpcodeStack {
 
             baseSig = signature;
 
-            if (baseSig.length() == 0) {
+            if (baseSig.isEmpty()) {
                 return null;
             }
             baseSig = baseSig.substring(1, baseSig.length() - 1);

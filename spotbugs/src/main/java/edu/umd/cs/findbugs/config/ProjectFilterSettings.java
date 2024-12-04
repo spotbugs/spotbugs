@@ -151,7 +151,7 @@ public class ProjectFilterSettings implements Cloneable {
     public static ProjectFilterSettings fromEncodedString(String s) {
         ProjectFilterSettings result = new ProjectFilterSettings();
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String minPriority;
             if (bar >= 0) {
@@ -167,7 +167,7 @@ public class ProjectFilterSettings implements Cloneable {
             result.setMinPriority(minPriority);
         }
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String categories;
             if (bar >= 0) {
@@ -187,7 +187,7 @@ public class ProjectFilterSettings implements Cloneable {
             }
         }
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String displayFalseWarnings;
             if (bar >= 0) {
@@ -200,7 +200,7 @@ public class ProjectFilterSettings implements Cloneable {
             result.setDisplayFalseWarnings(Boolean.parseBoolean(displayFalseWarnings));
         }
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String minRankStr;
             if (bar >= 0) {
@@ -235,7 +235,7 @@ public class ProjectFilterSettings implements Cloneable {
      */
     public static void hiddenFromEncodedString(ProjectFilterSettings result, String s) {
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String categories;
             if (bar >= 0) {

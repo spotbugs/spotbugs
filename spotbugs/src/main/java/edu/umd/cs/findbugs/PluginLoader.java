@@ -182,7 +182,7 @@ public class PluginLoader implements AutoCloseable {
     }
 
     public boolean hasParent() {
-        return parentId != null && parentId.length() > 0;
+        return parentId != null && !parentId.isEmpty();
     }
 
     /**
@@ -781,7 +781,7 @@ public class PluginLoader implements AutoCloseable {
                     String description = getChildText(filterMessageNode, "Description").trim();
                     String details = getChildText(filterMessageNode, "Details").trim();
                     PropertyBundle properties = new PropertyBundle();
-                    if (propertiesLocation != null && propertiesLocation.length() > 0) {
+                    if (propertiesLocation != null && !propertiesLocation.isEmpty()) {
                         URL properiesURL = classLoaderForResources.getResource(propertiesLocation);
                         if (properiesURL == null) {
                             AnalysisContext.logError("Could not load properties for " + plugin.getPluginId() + " component " + componentId
@@ -995,7 +995,7 @@ public class PluginLoader implements AutoCloseable {
             int cweid = 0;
             try {
                 String cweString = bugPatternNode.valueOf("@cweid");
-                if (cweString.length() > 0) {
+                if (!cweString.isEmpty()) {
                     cweid = Integer.parseInt(cweString);
                 }
             } catch (RuntimeException e) {
@@ -1006,7 +1006,7 @@ public class PluginLoader implements AutoCloseable {
 
             try {
                 String deprecatedStr = bugPatternNode.valueOf("@deprecated");
-                boolean deprecated = deprecatedStr.length() > 0 && Boolean.parseBoolean(deprecatedStr);
+                boolean deprecated = !deprecatedStr.isEmpty() && Boolean.parseBoolean(deprecatedStr);
                 if (deprecated) {
                     bugPattern.setDeprecated(deprecated);
                 }
@@ -1263,7 +1263,7 @@ public class PluginLoader implements AutoCloseable {
     }
 
     private static Date parseDate(String releaseDate) {
-        if (releaseDate == null || releaseDate.length() == 0) {
+        if (releaseDate == null || releaseDate.isEmpty()) {
             return null;
         }
         try {

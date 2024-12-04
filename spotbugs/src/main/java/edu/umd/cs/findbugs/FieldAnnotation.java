@@ -302,7 +302,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
         String givenPackageName = primaryClass.getPackageName();
         String thisPackageName = this.getPackageName();
         if (thisPackageName.equals(givenPackageName)) {
-            if (thisPackageName.length() == 0) {
+            if (thisPackageName.isEmpty()) {
                 return fieldName;
             } else {
                 return className.substring(thisPackageName.length() + 1) + "." + fieldName;
