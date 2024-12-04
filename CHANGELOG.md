@@ -35,6 +35,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix SARIF report's message property in Exception to meet the standard ([#3197](https://github.com/spotbugs/spotbugs/issues/3197))
 - Fixed `FI_FINALIZER_NULLS_FIELDS` FPs for functions called finalize() but not with the correct signature. ([#3207](https://github.com/spotbugs/spotbugs/issues/3207))
 - Fixed an error in the detection of bridge methods causing analysis crashes ([#3208](https://github.com/spotbugs/spotbugs/issues/3208))
+- Fixed detector `ThrowingExceptions` by removing false positive reports, such as synthetic methods (lambdas), methods which inherited their exception specifications and methods which call throwing methods ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
 
 ### Cleanup
 - Cleanup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
