@@ -1,4 +1,4 @@
-package multithreaded.sharedPrimitiveVariables;
+package multithreaded.primitivewrite;
 
 public class SynchronizedBlockSeparateMethod implements Runnable {
     private boolean done = false;

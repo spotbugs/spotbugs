@@ -1,9 +1,12 @@
-package multithreaded.sharedPrimitiveVariables;
+package multithreaded.primitivewrite;
 
-public class SynchronizedMethodAndBadVisibilityOnField {
+public class SynchronizedBlockWithBadVisibilityOnField {
     private boolean done = false;
 
     public void run() {
+        synchronized (SynchronizedBlockWithBadVisibilityOnField.class) {
+            System.out.println("this is synchronized, but not the whole method");
+        }
         while (!done) {
             try {
                 Thread.sleep(1000);
@@ -15,9 +18,5 @@ public class SynchronizedMethodAndBadVisibilityOnField {
 
     public void shutdown() {
         done = true;
-    }
-
-    public synchronized void print() {
-        System.out.println("synchronized method");
     }
 }

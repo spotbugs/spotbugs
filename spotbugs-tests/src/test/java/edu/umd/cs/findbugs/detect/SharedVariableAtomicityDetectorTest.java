@@ -11,7 +11,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void bugForStalePrimitiveWriteWhenOtherMethodHasSynchronizedBlock() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockAndBadVisibilityOnField.class");
+        performAnalysis("multithreaded/primitivewrite/SynchronizedBlockAndBadVisibilityOnField.class");
         assertBugTypeCount(PRIMITIVE_BUG, 1);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -20,7 +20,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void bugForStalePrimitiveWriteWhenMethodHasIrrelevantSynchronizedBlock() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockWithBadVisibilityOnField.class");
+        performAnalysis("multithreaded/primitivewrite/SynchronizedBlockWithBadVisibilityOnField.class");
         assertBugTypeCount(PRIMITIVE_BUG, 1);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -29,7 +29,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void bugForStalePrimitiveWriteWhenOtherMethodIsSynchronized() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethodAndBadVisibilityOnField.class");
+        performAnalysis("multithreaded/primitivewrite/SynchronizedMethodAndBadVisibilityOnField.class");
         assertBugTypeCount(PRIMITIVE_BUG, 1);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -38,7 +38,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void bugForStalePrimitiveWriteWhenSetAndGetAreReordered() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityReordered.class");
+        performAnalysis("multithreaded/primitivewrite/FieldWithBadVisibilityReordered.class");
         assertBugTypeCount(PRIMITIVE_BUG, 1);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -47,7 +47,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void bugForStalePrimitiveWriteWhenClassHasTwoSetters() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityTwoSetters.class");
+        performAnalysis("multithreaded/primitivewrite/FieldWithBadVisibilityTwoSetters.class");
         assertBugTypeCount(PRIMITIVE_BUG, 2);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -57,7 +57,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void bugForStalePrimitiveWriteWhenClassExtendsThread() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityThread.class");
+        performAnalysis("multithreaded/primitivewrite/FieldWithBadVisibilityThread.class");
         assertBugTypeCount(PRIMITIVE_BUG, 1);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -66,7 +66,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void bugForStalePrimitiveWriteWhenClassImplementsRunnable() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/FieldWithBadVisibilityRunnable.class");
+        performAnalysis("multithreaded/primitivewrite/FieldWithBadVisibilityRunnable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 1);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -77,7 +77,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Disabled
     void bugForStalePrimitiveWriteWhenHavingSeparateMethods() {
         // TODO fix detector
-        performAnalysis("multithreaded/sharedPrimitiveVariables/NonsynchronizedSeparateMethod.class");
+        performAnalysis("multithreaded/primitivewrite/NonsynchronizedSeparateMethod.class");
         assertBugTypeCount(PRIMITIVE_BUG, 1);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -86,7 +86,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugAtomicField() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/AtomicField.class");
+        performAnalysis("multithreaded/primitivewrite/AtomicField.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -94,7 +94,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugSimpleVolatileField() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/VolatileField.class");
+        performAnalysis("multithreaded/primitivewrite/VolatileField.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -102,7 +102,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugSynchronizedBlock() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlock.class");
+        performAnalysis("multithreaded/primitivewrite/SynchronizedBlock.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -110,7 +110,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugSynchronizedMethod() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedMethod.class");
+        performAnalysis("multithreaded/primitivewrite/SynchronizedMethod.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -118,7 +118,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugSynchronizedSeparateMethod() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedSeparateMethod.class");
+        performAnalysis("multithreaded/primitivewrite/SynchronizedSeparateMethod.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -126,7 +126,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugSynchronizedBlockSeparateMethod() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockSeparateMethod.class");
+        performAnalysis("multithreaded/primitivewrite/SynchronizedBlockSeparateMethod.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -134,7 +134,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugSynchronizedBlockPrimitiveSeparateMethod() {
-        performAnalysis("multithreaded/sharedPrimitiveVariables/SynchronizedBlockPrimitiveSeparateMethod.class");
+        performAnalysis("multithreaded/primitivewrite/SynchronizedBlockPrimitiveSeparateMethod.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);

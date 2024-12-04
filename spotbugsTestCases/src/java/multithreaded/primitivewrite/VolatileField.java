@@ -1,4 +1,4 @@
-package multithreaded.sharedPrimitiveVariables;
+package multithreaded.primitivewrite;
 
 public class VolatileField {
     private volatile boolean done = false;

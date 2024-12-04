@@ -1,13 +1,12 @@
-package multithreaded.sharedPrimitiveVariables;
+package multithreaded.primitivewrite;
 
-public class FieldWithBadVisibilityTwoSetters extends Thread {
+public class SynchronizedBlockAndBadVisibilityOnField {
     private boolean done = false;
 
-    @Override
     public void run() {
         while (!done) {
             try {
-                sleep(1000);
+                Thread.sleep(1000);
             } catch(InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
@@ -18,7 +17,9 @@ public class FieldWithBadVisibilityTwoSetters extends Thread {
         done = true;
     }
 
-    public void up() {
-        done = false;
+    public void print() {
+        synchronized (SynchronizedBlockAndBadVisibilityOnField.class) {
+            System.out.println("synchronized block");
+        }
     }
 }

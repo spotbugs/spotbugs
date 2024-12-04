@@ -1,4 +1,4 @@
-package multithreaded.sharedPrimitiveVariables;
+package multithreaded.primitivewrite;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

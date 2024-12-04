@@ -1,10 +1,9 @@
-package multithreaded.sharedPrimitiveVariables;
+package multithreaded.primitivewrite;
 
-public class FieldWithBadVisibilityRunnable implements Runnable {
+public class SynchronizedMethod {
     private boolean done = false;
 
-    @Override
-    public void run() {
+    public synchronized void doSomething() {
         while (!done) {
             try {
                 Thread.sleep(1000);
@@ -14,7 +13,8 @@ public class FieldWithBadVisibilityRunnable implements Runnable {
         }
     }
 
-    public void shutdown() {
+    public synchronized void shutdown() {
         done = true;
     }
+
 }

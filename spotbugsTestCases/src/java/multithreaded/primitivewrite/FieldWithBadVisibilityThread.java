@@ -1,11 +1,7 @@
-package multithreaded.sharedPrimitiveVariables;
+package multithreaded.primitivewrite;
 
-public class FieldWithBadVisibilityReordered extends Thread {
+public class FieldWithBadVisibilityThread extends Thread {
     private boolean done = false;
-
-    public void shutdown() {
-        done = true;
-    }
 
     @Override
     public void run() {
@@ -16,5 +12,9 @@ public class FieldWithBadVisibilityReordered extends Thread {
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    public void shutdown() {
+        done = true;
     }
 }
