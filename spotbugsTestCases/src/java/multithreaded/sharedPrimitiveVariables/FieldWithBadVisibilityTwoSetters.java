@@ -7,7 +7,7 @@ public class FieldWithBadVisibilityTwoSetters extends Thread {
     public void run() {
         while (!done) {
             try {
-                Thread.currentThread().sleep(1000);
+                sleep(1000);
             } catch(InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }

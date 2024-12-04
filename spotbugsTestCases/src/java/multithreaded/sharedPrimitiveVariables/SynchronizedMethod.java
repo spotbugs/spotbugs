@@ -6,7 +6,7 @@ public class SynchronizedMethod {
     public synchronized void doSomething() {
         while (!done) {
             try {
-                Thread.currentThread().sleep(1000);
+                Thread.sleep(1000);
             } catch(InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }

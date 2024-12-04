@@ -7,7 +7,7 @@ public class SynchronizedSeparateMethod implements Runnable {
         while (!isDone()) {
             try {
                 // ...
-                Thread.currentThread().sleep(1000); // Do something
+                Thread.sleep(1000); // Do something
             } catch(InterruptedException ie) {
                 Thread.currentThread().interrupt(); // Reset interrupted status
             }

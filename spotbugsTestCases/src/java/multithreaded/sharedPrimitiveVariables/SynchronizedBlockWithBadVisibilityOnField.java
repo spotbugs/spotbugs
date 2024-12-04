@@ -9,7 +9,7 @@ public class SynchronizedBlockWithBadVisibilityOnField {
         }
         while (!done) {
             try {
-                Thread.currentThread().sleep(1000);
+                Thread.sleep(1000);
             } catch(InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }

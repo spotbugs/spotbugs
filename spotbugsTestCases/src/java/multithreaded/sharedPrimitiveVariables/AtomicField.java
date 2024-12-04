@@ -8,7 +8,7 @@ public class AtomicField {
     public void doSomething() {
         while (!done.get()) {
             try {
-                Thread.currentThread().sleep(1000);
+                Thread.sleep(1000);
             } catch(InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }

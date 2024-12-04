@@ -8,7 +8,7 @@ public class SynchronizedBlock implements Runnable {
         synchronized (SynchronizedBlock.class) {
             while (!done) {
                 try {
-                    Thread.currentThread().sleep(1000);
+                    Thread.sleep(1000);
                 } catch(InterruptedException ie) {
                     Thread.currentThread().interrupt();
                 }
