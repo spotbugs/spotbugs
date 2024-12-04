@@ -108,7 +108,7 @@ public class RejarClassesForAnalysis {
 
             public boolean matchesEverything() {
                 for (String p : prefixes) {
-                    if (p.length() == 0) {
+                    if (p.isEmpty()) {
                         return true;
                     }
                 }

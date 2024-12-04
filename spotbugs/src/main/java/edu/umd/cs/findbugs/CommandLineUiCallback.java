@@ -77,7 +77,7 @@ public class CommandLineUiCallback implements IGuiCallback {
     }
 
     private int parseAnswer(String answer) {
-        if (null == answer || answer.length() == 0) {
+        if (null == answer || answer.isEmpty()) {
             System.out.println("You entered an empty string");
 
             return -1;
