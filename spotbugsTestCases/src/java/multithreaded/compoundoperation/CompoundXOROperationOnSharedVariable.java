@@ -1,4 +1,4 @@
-package multithreaded.compoundOperationOnSharedVariables;
+package multithreaded.compoundoperation;
 
 import java.util.ArrayList;
 import java.util.Collections;

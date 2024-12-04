@@ -1,4 +1,4 @@
-package multithreaded.compoundOperationOnSharedVariables;
+package multithreaded.compoundoperation;
 
 public class CompoundLeftShiftingOnSharedVariable {
     private int num = 1;

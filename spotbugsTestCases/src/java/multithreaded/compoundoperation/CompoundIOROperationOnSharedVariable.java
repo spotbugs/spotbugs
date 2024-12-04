@@ -1,4 +1,4 @@
-package multithreaded.compoundOperationOnSharedVariables;
+package multithreaded.compoundoperation;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

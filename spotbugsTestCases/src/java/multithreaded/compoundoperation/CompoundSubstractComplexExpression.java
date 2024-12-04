@@ -1,4 +1,4 @@
-package multithreaded.compoundOperationOnSharedVariables;
+package multithreaded.compoundoperation;
 
 public class CompoundSubstractComplexExpression extends Thread {
     private int num = 0;

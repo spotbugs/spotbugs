@@ -1,4 +1,4 @@
-package multithreaded.compoundOperationOnSharedVariables;
+package multithreaded.compoundoperation;
 
 public class SynchronizedMethodCompoundOperationOnSharedVariable extends Thread {
     private boolean flag = true;

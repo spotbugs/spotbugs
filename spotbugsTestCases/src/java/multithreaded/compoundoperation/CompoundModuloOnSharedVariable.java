@@ -1,4 +1,4 @@
-package multithreaded.compoundOperationOnSharedVariables;
+package multithreaded.compoundoperation;
 
 public class CompoundModuloOnSharedVariable implements Runnable {
     private Integer num = 0;

@@ -1,4 +1,4 @@
-package multithreaded.compoundOperationOnSharedVariables;
+package multithreaded.compoundoperation;
 
 public class CompoundAdditionOnSharedVolatileVariable extends Thread {
     private volatile int num = 0;

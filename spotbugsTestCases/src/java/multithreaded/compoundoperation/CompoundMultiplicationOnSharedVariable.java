@@ -1,4 +1,4 @@
-package multithreaded.compoundOperationOnSharedVariables;
+package multithreaded.compoundoperation;
 
 public class CompoundMultiplicationOnSharedVariable extends Thread {
     private Integer num = 0;

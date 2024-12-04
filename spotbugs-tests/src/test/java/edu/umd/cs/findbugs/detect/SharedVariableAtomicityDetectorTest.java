@@ -139,7 +139,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugCompoundOpOnAtomicVariable() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundOperationOnSharedAtomicVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundOperationOnSharedAtomicVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -147,7 +147,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugCompoundOperationVolatileReadSyncWrite() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionOnSharedVolatileReadSyncWrite.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundAdditionOnSharedVolatileReadSyncWrite.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -155,7 +155,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugCompoundOperationReadWriteLock() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundNegateReadWriteLock.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundNegateReadWriteLock.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -163,7 +163,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugCompoundOperationOnNotSharedVariable() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivisionOnVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundDivisionOnVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -171,7 +171,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugCompoundOperationInSynchronizedBlock() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/SynchronizedBlockCompoundOperationOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/SynchronizedBlockCompoundOperationOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -179,7 +179,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void noBugCompoundOperationInSynchronizedMethod() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/SynchronizedMethodCompoundOperationOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/SynchronizedMethodCompoundOperationOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
@@ -188,7 +188,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // --num
     @Test
     void bugForCompoundPreDecrementation() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPreDecrementationOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundPreDecrementationOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -198,7 +198,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // num--
     @Test
     void bugForCompoundPostDecrementation() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostDecrementationOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundPostDecrementationOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -208,7 +208,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // ++num
     @Test
     void bugForCompoundPreIncrementation() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPreIncrementationOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundPreIncrementationOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -219,7 +219,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Test
     void bugForCompoundPostIncrementation() {
         // The order of the functions is reversed
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundPostIncrementationOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundPostIncrementationOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -230,7 +230,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Test
     void bugForCompoundIAND() {
         // considered multithreaded because it has a volatile field (not the problematic)
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIANDOperationOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundIANDOperationOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -241,7 +241,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Test
     void bugForCompoundIOR() {
         // considered multithreaded because it has a field (not the problematic) from the java.util.concurrent.atomic package
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundIOROperationOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundIOROperationOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -252,7 +252,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Test
     void bugForCompoundLogicalRightShift() {
         // considered multithreaded because it extends Thread
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLogicalRightShiftingOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundLogicalRightShiftingOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -263,7 +263,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Test
     void bugForCompoundRightShift() {
         // considered multithreaded because it has a method with synchronized block
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundRightShiftingOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundRightShiftingOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -274,7 +274,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Test
     void bugForCompoundLeftShift() {
         // considered multithreaded because it has synchronized method
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundLeftShiftingOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundLeftShiftingOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -285,7 +285,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Test
     void bugForCompoundModulo() {
         // considered multithreaded because it implements Runnable
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundModuloOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundModuloOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -295,7 +295,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // *=
     @Test
     void bugForCompoundMultiplication() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundMultiplicationOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundMultiplicationOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -305,7 +305,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // /=
     @Test
     void bugForCompoundDivision() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivisionOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundDivisionOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -315,7 +315,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // -=
     @Test
     void bugForCompoundSubtraction() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubtractionOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundSubtractionOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -327,7 +327,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Test
     void bugForCompoundAdditionOnVolatileVar() {
         // simply defining the field as volatile is not enough
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionOnSharedVolatileVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundAdditionOnSharedVolatileVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -338,7 +338,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Test
     void bugForCompoundXOR() {
         // considered multithreaded because it has a field (not the problematic) with synchronized assignment
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundXOROperationOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundXOROperationOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -348,7 +348,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // num = num + 2
     @Test
     void bugForSimpleAdditionDependingOnPrevValue() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/AdditionOnSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/AdditionOnSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -358,7 +358,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // num = -num
     @Test
     void bugForNegateDependingOnPrevValue() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/NegateSharedVariable.class");
+        performAnalysis("multithreaded/compoundoperation/NegateSharedVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -368,7 +368,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // num -= num + 2
     @Test
     void bugForCompoundSubtractionComplex() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubstractComplexExpression.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundSubstractComplexExpression.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -378,7 +378,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // num += num2 + 5
     @Test
     void bugForCompoundAdditionComplexWithAnotherVar() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionComplexExpressionWithAnotherVar.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundAdditionComplexExpressionWithAnotherVar.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -388,7 +388,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // num2 = num; num += 1
     @Test
     void bugForCompoundAdditionWithAnotherVar() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundAdditionWithAnotherVar.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundAdditionWithAnotherVar.class");
         assertBugTypeCount(PRIMITIVE_BUG, 1);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -399,7 +399,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // num += param
     @Test
     void bugForCompoundSubstractionOfArg() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubstractionOfArg.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundSubstractionOfArg.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -409,7 +409,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     // num += getOne()
     @Test
     void bugForCompoundSubstractionOfFunCall() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundSubstractionOfMethodReturnValue.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundSubstractionOfMethodReturnValue.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 1);
@@ -418,7 +418,7 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
 
     @Test
     void bugForTwoCompoundOperations() {
-        performAnalysis("multithreaded/compoundOperationOnSharedVariables/CompoundDivideMultiplyOnVariable.class");
+        performAnalysis("multithreaded/compoundoperation/CompoundDivideMultiplyOnVariable.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 2);

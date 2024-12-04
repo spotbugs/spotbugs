@@ -1,4 +1,4 @@
-package multithreaded.compoundOperationOnSharedVariables;
+package multithreaded.compoundoperation;
 
 public class CompoundPreDecrementationOnSharedVariable extends Thread {
     private double num = 3.0;
