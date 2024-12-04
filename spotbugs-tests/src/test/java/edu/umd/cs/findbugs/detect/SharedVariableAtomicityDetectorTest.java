@@ -74,14 +74,12 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Disabled
     void bugForStalePrimitiveWriteWhenHavingSeparateMethods() {
-        // TODO fix detector
         performAnalysis("multithreaded/primitivewrite/NonsynchronizedSeparateMethod.class");
         assertBugTypeCount(PRIMITIVE_BUG, 1);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
-        assertBugInMethodAtLine(PRIMITIVE_BUG, "NonsynchronizedSeparateMethod", "shutdown", 22);
+        assertBugInMethodAtLine(PRIMITIVE_BUG, "NonsynchronizedSeparateMethod", "shutdown", 23);
     }
 
     @Test
@@ -130,6 +128,85 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);
+    }
+
+    @Test
+    void noBugSynchronizedLong() {
+        performAnalysis("multithreaded/primitivewrite/SynchronizedLong.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+    }
+
+    @Test
+    void noBugVolatileLong() {
+        performAnalysis("multithreaded/primitivewrite/VolatileLong.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+    }
+
+    @Test
+    void noBugSynchronizedBlockDouble() {
+        performAnalysis("multithreaded/primitivewrite/SynchronizedBlockDouble.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+    }
+
+    @Test
+    void noBugSynchronizedBlockDoubleFromOtherMethod() {
+        performAnalysis("multithreaded/primitivewrite/SynchronizedBlockDoubleFromOtherMethod.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+    }
+
+    @Test
+    @Disabled // TODO fix this
+    void reportFor64bitWriteNotAllReadSyncedOuter() {
+        performAnalysis("multithreaded/primitivewrite/NotAllUsageSynchronizedDoubleOuter.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 1);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(WRITE_64BIT_BUG, "NotAllUsageSynchronizedDoubleOuter", "setValue", 8);
+    }
+
+    @Test
+    @Disabled // TODO fix this
+    void reportFor64bitWriteNotAllReadSynced() {
+        performAnalysis("multithreaded/primitivewrite/NotAllUsageSynchronizedDouble.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 1);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(WRITE_64BIT_BUG, "NotAllUsageSynchronizedDouble", "setValue", 8);
+    }
+
+    @Test
+    void reportFor64bitWriteNotSyncedWrite() {
+        performAnalysis("multithreaded/primitivewrite/NonSynchronizedWriteLong.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 1);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(WRITE_64BIT_BUG, "NonSynchronizedWriteLong", "setValue", 7);
+    }
+
+    @Test
+    void reportFor64bitWriteNotAllSyncedWrite() {
+        performAnalysis("multithreaded/primitivewrite/NotAllSynchronizedWriteLong.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 1);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(WRITE_64BIT_BUG, "NotAllSynchronizedWriteLong", "setValue", 7);
+    }
+
+    @Test
+    void reportFor64bitWriteNotSynced() {
+        performAnalysis("multithreaded/primitivewrite/NotSynchronizedLong.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 1);
+        assertBugTypeCount(OPS_BUG, 0);
+        assertBugInMethodAtLine(WRITE_64BIT_BUG, "NotSynchronizedLong", "setValue", 7);
     }
 
     @Test

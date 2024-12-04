@@ -9348,9 +9348,11 @@ Using floating-point variables should not be used as loop counters, as they are 
     <Details>
       <![CDATA[
         <p>
-          The long and the double are 64-bit primitive types, and depending on the Java Virtual Machine implementation it can be treated as two separate 32-bit writes, and as such it's not atomic.
+          The long and the double are 64-bit primitive types, and depending on the Java Virtual Machine implementation assigning a value to them can be treated as two separate 32-bit writes, and as such it's not atomic.
           See <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-17.html#jls-17.7">JSL 17.7. Non-Atomic Treatment of double and long</a>.
           See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA05-J.+Ensure+atomicity+when+reading+and+writing+64-bit+values">VNA05-J. Ensure atomicity when reading and writing 64-bit values</a> for more info.
+
+          This bug can be ignored in platforms which guarantee that 64-bit long and double type read and write operations are atomic.
         </p>
         <p>
           To fix it, declare the variable volatile, change the type of the field to the corresponding atomic type from <code>java.lang.concurrent.atomic<\code> or correctly synchronize the code.
