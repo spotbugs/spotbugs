@@ -48,6 +48,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Use `Collection.isEmpty()` or `String.isEmpty()` to test for emptiness ([#3180](https://github.com/spotbugs/spotbugs/pull/3180), [#3219](https://github.com/spotbugs/spotbugs/pull/3219))
 - Use method references instead of lambdas where possible ([#3179](https://github.com/spotbugs/spotbugs/pull/3179))
 - Move default clauses to the end of switches ([#3222](https://github.com/spotbugs/spotbugs/pull/3222))
+- Remove unnecessary throws declarations ([#3220](https://github.com/spotbugs/spotbugs/pull/3220))
 
 ### Changed
 - Bump up Java version to 11
