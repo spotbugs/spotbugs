@@ -110,19 +110,19 @@ public class Update {
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             if ("-overrideRevisionNames".equals(option)) {
-                if (optionExtraPart.length() == 0) {
+                if (optionExtraPart.isEmpty()) {
                     overrideRevisionNames = true;
                 } else {
                     overrideRevisionNames = Boolean.parseBoolean(optionExtraPart);
                 }
             } else if ("-noPackageMoves".equals(option)) {
-                if (optionExtraPart.length() == 0) {
+                if (optionExtraPart.isEmpty()) {
                     noPackageMoves = true;
                 } else {
                     noPackageMoves = Boolean.parseBoolean(optionExtraPart);
                 }
             } else if ("-noResurrections".equals(option)) {
-                if (optionExtraPart.length() == 0) {
+                if (optionExtraPart.isEmpty()) {
                     noResurrections = true;
                 } else {
                     noResurrections = Boolean.parseBoolean(optionExtraPart);
@@ -456,7 +456,7 @@ public class Update {
         }
 
         if (commandLine.overrideRevisionNames || origCollection.getReleaseName() == null
-                || origCollection.getReleaseName().length() == 0) {
+                || origCollection.getReleaseName().isEmpty()) {
 
             if (commonPrefix >= firstPathParts.length) {
                 // This should only happen if either
@@ -502,7 +502,7 @@ public class Update {
                 newCollection.readXML(newFilename);
 
                 if (commandLine.overrideRevisionNames || newCollection.getReleaseName() == null
-                        || newCollection.getReleaseName().length() == 0) {
+                        || newCollection.getReleaseName().isEmpty()) {
                     newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
                 }
                 if (useAnalysisTimes) {

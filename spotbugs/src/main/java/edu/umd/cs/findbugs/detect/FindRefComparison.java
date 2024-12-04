@@ -476,7 +476,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             Type type = obj.getType(getCPG());
             if (isString(type)) {
                 Object value = obj.getValue(getCPG());
-                if (value instanceof String && ((String) value).length() == 0) {
+                if (value instanceof String && ((String) value).isEmpty()) {
                     pushValue(emptyStringTypeInstance);
                 } else {
                     pushValue(staticStringTypeInstance);
