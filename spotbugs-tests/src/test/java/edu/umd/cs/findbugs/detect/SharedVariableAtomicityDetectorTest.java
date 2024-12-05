@@ -83,6 +83,14 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void noBugWhenHavingAllCallsSynced() {
+        performAnalysis("multithreaded/primitivewrite/AllCallSynchronizedSeparateMethod.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+    }
+
+    @Test
     void noBugAtomicField() {
         performAnalysis("multithreaded/primitivewrite/AtomicField.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);

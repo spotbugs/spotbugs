@@ -51,6 +51,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private boolean isFirstVisit = true;
     private final Map<XMethod, List<XField>> readFieldsByMethods = new HashMap<>();
     private final Set<XField> relevantFields = new HashSet<>();
+    private final Map<XMethod, Set<XMethod>> nonSyncedMethodCallsByCallingMethods = new HashMap<>();
 
     public SharedVariableAtomicityDetector(BugReporter reporter) {
         this.bugAccumulator = new BugAccumulator(reporter);
@@ -92,6 +93,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
         bugAccumulator.reportAccumulatedBugs();
         relevantFields.clear();
         readFieldsByMethods.clear();
+        nonSyncedMethodCallsByCallingMethods.clear();
     }
 
     @Override
@@ -102,13 +104,13 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
         }
         XMethod method = getXMethod();
         if (isFirstVisit) {
-            collectFieldReads(seen, method);
+            collectFieldReadsAndInnerMethodCalls(seen, method);
         } else {
             checkAndReportBug(seen, method);
         }
     }
 
-    private void collectFieldReads(int seen, XMethod method) {
+    private void collectFieldReadsAndInnerMethodCalls(int seen, XMethod method) {
         if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
             addNonFinalFields(getXFieldOperand(), method, readFieldsByMethods);
 
@@ -117,6 +119,12 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
             XField rhs = stack.getStackDepth() > 1 ? stack.getStackItem(1).getXField() : null;
             addNonFinalFields(lhs, method, readFieldsByMethods);
             addNonFinalFields(rhs, method, readFieldsByMethods);
+
+        } else if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESTATIC) {
+            XMethod calledMethod = getXMethodOperand();
+            if (!method.equals(calledMethod)) {
+                nonSyncedMethodCallsByCallingMethods.computeIfAbsent(calledMethod, k -> new HashSet<>()).add(method);
+            }
         }
     }
 
@@ -125,9 +133,31 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
             map.computeIfAbsent(method, k -> new ArrayList<>()).add(field);
         }
     }
+    
+    private boolean hasNonSyncedNonPrivateCallToMethod(XMethod method, Set<XMethod> visitedMethods) {
+        if (!method.isPrivate()) {
+            return true;
+        }
+        boolean result = false;
+        if (nonSyncedMethodCallsByCallingMethods.containsKey(method)) {
+            for (XMethod callingMethod : nonSyncedMethodCallsByCallingMethods.get(method)) {
+                if (visitedMethods.contains(callingMethod)) {
+                    return false;
+                } else {
+                    visitedMethods.add(callingMethod);
+                    result |= hasNonSyncedNonPrivateCallToMethod(callingMethod, visitedMethods);
+                    visitedMethods.remove(callingMethod);
+                }
+            }
+        }
+        return result;
+    }
 
     private boolean mapContainsFieldWithOtherMethod(XField field, XMethod method, Map<XMethod, List<XField>> map) {
-        return map.entrySet().stream().anyMatch(entry -> entry.getValue().contains(field) && entry.getKey() != method);
+        return map.entrySet().stream()
+                .filter(entry -> entry.getValue().contains(field) && entry.getKey() != method)
+                .map(entry -> entry.getKey()) // other methods containing the field
+                .anyMatch(m -> hasNonSyncedNonPrivateCallToMethod(m, new HashSet<>()));
     }
 
     private void checkAndReportBug(int seen, XMethod method) {
