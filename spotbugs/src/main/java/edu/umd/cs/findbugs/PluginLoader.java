@@ -851,7 +851,7 @@ public class PluginLoader implements AutoCloseable {
                 String reports = detectorNode.valueOf("@reports");
                 String requireJRE = detectorNode.valueOf("@requirejre");
                 String hidden = detectorNode.valueOf("@hidden");
-                if (speed == null || speed.length() == 0) {
+                if (speed == null || speed.isEmpty()) {
                     speed = "fast";
                 }
                 // System.out.println("Found detector: class="+className+", disabled="+disabled);
