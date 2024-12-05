@@ -401,7 +401,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         } else if ("-quiet".equals(option)) {
             quiet = true;
         } else if ("-nested".equals(option)) {
-            scanNestedArchives = "".equals(optionExtraPart) || Boolean.valueOf(optionExtraPart).booleanValue();
+            scanNestedArchives = "".equals(optionExtraPart) || Boolean.parseBoolean(optionExtraPart);
         } else if ("-exitcode".equals(option)) {
             setExitCode = true;
         } else if ("-auxclasspathFromInput".equals(option)) {
