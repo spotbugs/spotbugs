@@ -738,11 +738,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *            the bug collection
      * @param monitor
      *            progress monitor
-     * @throws IOException
      * @throws CoreException
      */
     public static void storeBugCollection(IProject project, final SortedBugCollection bugCollection, IProgressMonitor monitor)
-            throws IOException, CoreException {
+            throws CoreException {
 
         // Store the bug collection and findbugs project in the session
         project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
