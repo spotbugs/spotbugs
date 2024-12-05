@@ -7517,9 +7517,9 @@ If the object is, indeed, non-serializable, an error will result.
 <p>
 This format string includes a newline character (\n). In format strings, it is generally
  preferable to use %n, which will produce the platform-specific line separator.
-
+ 
  When using text blocks introduced in Java 15, use the <code>\</code> escape sequence:
-
+	 
 <code>String value = """
                 first line%n\
                 second line%n\
@@ -8919,7 +8919,7 @@ object explicitly.</p>
     <Details>
       <![CDATA[
         <p>
-        This class is using singleton design pattern and does not implement the Cloneable interface, but implements the clone() method without being an unconditional CloneNotSupportedException-thrower.
+        This class is using singleton design pattern and does not implement the Cloneable interface, but implements the clone() method without being an unconditional CloneNotSupportedException-thrower. 
         With that, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
         Therefore, implementing the clone method should be avoided, otherwise the solution would be overriding the clone method to unconditionally throw CloneNotSupportedException.<br><br>
 
@@ -8959,9 +8959,9 @@ object explicitly.</p>
     <Details>
       <![CDATA[
         <p>
-        Instance-getter method of class using singleton design pattern is not synchronized. When this method is invoked by two or more threads simultaneously,
+        Instance-getter method of class using singleton design pattern is not synchronized. When this method is invoked by two or more threads simultaneously, 
         multiple instantiation of a singleton class becomes possible.<br><br>
-
+        
         <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
         </p>]]>
     </Details>
@@ -9081,6 +9081,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT">
     <ShortDescription>Expression in assertion may produce a side effect</ShortDescription>
     <LongDescription>The expression used in assertion at {1} may produce a side effect. If assertions are disabled, the expression won't get executed and the result of the method might change.</LongDescription>
