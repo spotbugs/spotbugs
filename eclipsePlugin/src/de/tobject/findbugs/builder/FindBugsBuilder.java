@@ -125,9 +125,8 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
      * @param kind
      *            kind the kind of build being requested, see
      *            IncrementalProjectBuilder
-     * @throws CoreException
      */
-    private void doBuild(final Map<?, ?> args, final IProgressMonitor monitor, int kind) throws CoreException {
+    private void doBuild(final Map<?, ?> args, final IProgressMonitor monitor, int kind) {
         boolean incremental = (kind == IncrementalProjectBuilder.INCREMENTAL_BUILD
                 || kind == IncrementalProjectBuilder.AUTO_BUILD);
         IProject project = getProject();

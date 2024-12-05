@@ -1178,7 +1178,7 @@ public class PluginLoader implements AutoCloseable {
         return constructedPlugin;
     }
 
-    public Document getPluginDescriptor() throws PluginException, PluginDoesntContainMetadataException {
+    public Document getPluginDescriptor() throws PluginException {
         Document pluginDescriptor;
 
         // Read the plugin descriptor

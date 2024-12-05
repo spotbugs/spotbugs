@@ -96,7 +96,7 @@ class SourceMatcherTest {
 
 
     @Test
-    void match() throws Exception {
+    void match() {
         SourceMatcher sm = new SourceMatcher(fileName);
 
         // no source set: test incomplete data
@@ -131,7 +131,7 @@ class SourceMatcherTest {
     }
 
     @Test
-    void testRealPathMatchWithRegexpAndProject() throws Exception {
+    void testRealPathMatchWithRegexpAndProject() {
         // add this test class as the bug target
         bug.addClass("SourceMatcherTest", null);
         ClassAnnotation primaryClass = bug.getPrimaryClass();
@@ -155,7 +155,7 @@ class SourceMatcherTest {
     }
 
     @Test
-    void testRealPathMatchWithRegexpAndAnalysisContext() throws Exception {
+    void testRealPathMatchWithRegexpAndAnalysisContext() {
         // add this test class as the bug target
         bug.addClass("SourceMatcherTest", null);
         ClassAnnotation primaryClass = bug.getPrimaryClass();
