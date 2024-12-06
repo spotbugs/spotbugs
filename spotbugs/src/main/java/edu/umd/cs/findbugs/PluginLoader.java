@@ -773,7 +773,7 @@ public class PluginLoader implements AutoCloseable {
 
                 try {
                     String propertiesLocation = componentNode.valueOf("@properties");
-                    boolean disabled = Boolean.valueOf(componentNode.valueOf("@disabled"));
+                    boolean disabled = Boolean.parseBoolean(componentNode.valueOf("@disabled"));
 
                     Node filterMessageNode = findMessageNode(messageCollectionList,
                             "/MessageCollection/PluginComponent[@id='" + componentId + "']",
@@ -822,7 +822,7 @@ public class PluginLoader implements AutoCloseable {
                                 + " loaded from " + loadedFrom);
                     }
                     String kind = main.valueOf("@kind");
-                    boolean analysis = Boolean.valueOf(main.valueOf("@analysis"));
+                    boolean analysis = Boolean.parseBoolean(main.valueOf("@analysis"));
                     Element mainMessageNode = (Element) findMessageNode(messageCollectionList,
                             "/MessageCollection/FindBugsMain[@cmd='" + cmd
                             // + " and @class='" + className
@@ -867,7 +867,7 @@ public class PluginLoader implements AutoCloseable {
                 }
                 DetectorFactory factory = new DetectorFactory(plugin, className, detectorClass, !"true".equals(disabled), speed,
                         reports, requireJRE);
-                if (Boolean.valueOf(hidden).booleanValue()) {
+                if (Boolean.parseBoolean(hidden)) {
                     factory.setHidden(true);
                 }
                 factory.setPositionSpecifiedInPluginDescriptor(detectorCount++);
@@ -927,7 +927,7 @@ public class PluginLoader implements AutoCloseable {
             }
             BugCategory bc = plugin.addOrCreateBugCategory(key);
 
-            boolean hidden = Boolean.valueOf(categoryNode.valueOf("@hidden"));
+            boolean hidden = Boolean.parseBoolean(categoryNode.valueOf("@hidden"));
             if (hidden) {
                 bc.setHidden(hidden);
             }
@@ -1006,7 +1006,7 @@ public class PluginLoader implements AutoCloseable {
 
             try {
                 String deprecatedStr = bugPatternNode.valueOf("@deprecated");
-                boolean deprecated = !deprecatedStr.isEmpty() && Boolean.valueOf(deprecatedStr).booleanValue();
+                boolean deprecated = !deprecatedStr.isEmpty() && Boolean.parseBoolean(deprecatedStr);
                 if (deprecated) {
                     bugPattern.setDeprecated(deprecated);
                 }
@@ -1178,7 +1178,7 @@ public class PluginLoader implements AutoCloseable {
         return constructedPlugin;
     }
 
-    public Document getPluginDescriptor() throws PluginException, PluginDoesntContainMetadataException {
+    public Document getPluginDescriptor() throws PluginException {
         Document pluginDescriptor;
 
         // Read the plugin descriptor
@@ -1288,7 +1288,7 @@ public class PluginLoader implements AutoCloseable {
 
         node = constraintElement.selectSingleNode("./" + singleDetectorElementName + "Category");
         if (node != null) {
-            boolean spanPlugins = Boolean.valueOf(node.valueOf("@spanplugins")).booleanValue();
+            boolean spanPlugins = Boolean.parseBoolean(node.valueOf("@spanplugins"));
 
             String categoryName = node.valueOf("@name");
             if (!"".equals(categoryName)) {
@@ -1307,7 +1307,7 @@ public class PluginLoader implements AutoCloseable {
 
         node = constraintElement.selectSingleNode("./" + singleDetectorElementName + "Subtypes");
         if (node != null) {
-            boolean spanPlugins = Boolean.valueOf(node.valueOf("@spanplugins")).booleanValue();
+            boolean spanPlugins = Boolean.parseBoolean(node.valueOf("@spanplugins"));
 
             String superName = node.valueOf("@super");
             if (!"".equals(superName)) {

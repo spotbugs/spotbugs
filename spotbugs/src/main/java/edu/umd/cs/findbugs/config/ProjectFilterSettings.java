@@ -197,7 +197,7 @@ public class ProjectFilterSettings implements Cloneable {
                 displayFalseWarnings = s;
                 s = "";
             }
-            result.setDisplayFalseWarnings(Boolean.valueOf(displayFalseWarnings).booleanValue());
+            result.setDisplayFalseWarnings(Boolean.parseBoolean(displayFalseWarnings));
         }
 
         if (!s.isEmpty()) {
@@ -282,7 +282,7 @@ public class ProjectFilterSettings implements Cloneable {
         }
 
         if (!displayFalseWarnings) {
-            boolean isFalseWarning = !Boolean.valueOf(bugInstance.getProperty(BugProperty.IS_BUG, "true")).booleanValue();
+            boolean isFalseWarning = !Boolean.parseBoolean(bugInstance.getProperty(BugProperty.IS_BUG, "true"));
             if (isFalseWarning) {
                 return false;
             }

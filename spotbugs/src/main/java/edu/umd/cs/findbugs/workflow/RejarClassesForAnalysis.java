@@ -626,7 +626,7 @@ public class RejarClassesForAnalysis {
         zipIn.close();
     }
 
-    private void advanceAuxiliaryOut() throws IOException, FileNotFoundException {
+    private void advanceAuxiliaryOut() throws IOException {
         auxiliaryOut.close();
         auxiliaryOut = createZipFile(getNextAuxiliaryFileOutput());
     }

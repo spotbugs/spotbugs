@@ -473,27 +473,27 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         if (isDebugging()) {
             // debugging for the plugin itself
             String option = Platform.getDebugOption(PLUGIN_DEBUG);
-            FindbugsPlugin.DEBUG = Boolean.valueOf(option).booleanValue();
+            FindbugsPlugin.DEBUG = Boolean.parseBoolean(option);
 
             // debugging for the builder and friends
             option = Platform.getDebugOption(BUILDER_DEBUG);
-            FindBugsBuilder.DEBUG = Boolean.valueOf(option).booleanValue();
+            FindBugsBuilder.DEBUG = Boolean.parseBoolean(option);
             FindBugsWorker.DEBUG = FindBugsBuilder.DEBUG;
 
             // debugging for the nature
             option = Platform.getDebugOption(NATURE_DEBUG);
-            FindBugsNature.DEBUG = Boolean.valueOf(option).booleanValue();
+            FindBugsNature.DEBUG = Boolean.parseBoolean(option);
 
             // debugging for the reporter
             option = Platform.getDebugOption(REPORTER_DEBUG);
-            Reporter.DEBUG = Boolean.valueOf(option).booleanValue();
+            Reporter.DEBUG = Boolean.parseBoolean(option);
 
             // debugging for the content provider
             option = Platform.getDebugOption(CONTENT_DEBUG);
-            BugContentProvider.DEBUG = Boolean.valueOf(option).booleanValue();
+            BugContentProvider.DEBUG = Boolean.parseBoolean(option);
 
             option = Platform.getDebugOption(PROFILER_DEBUG);
-            if (Boolean.valueOf(option).booleanValue()) {
+            if (Boolean.parseBoolean(option)) {
                 System.setProperty("profiler.report", "true");
             }
         }
@@ -738,11 +738,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *            the bug collection
      * @param monitor
      *            progress monitor
-     * @throws IOException
      * @throws CoreException
      */
     public static void storeBugCollection(IProject project, final SortedBugCollection bugCollection, IProgressMonitor monitor)
-            throws IOException, CoreException {
+            throws CoreException {
 
         // Store the bug collection and findbugs project in the session
         project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
