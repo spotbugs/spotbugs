@@ -53,6 +53,36 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private final Set<XField> relevantFields = new HashSet<>();
     private final Map<XMethod, Set<XMethod>> nonSyncedMethodCallsByCallingMethods = new HashMap<>();
 
+    private static final Set<Short> readOpCodes = Set.of(Const.GETFIELD, Const.GETSTATIC,
+            Const.ALOAD, Const.ALOAD_0, Const.ALOAD_1, Const.ALOAD_2, Const.ALOAD_3,
+            Const.DLOAD, Const.DLOAD_0, Const.DLOAD_1, Const.DLOAD_2, Const.DLOAD_3,
+            Const.LLOAD, Const.LLOAD_0, Const.LLOAD_1, Const.LLOAD_2, Const.LLOAD_3,
+            Const.FLOAD, Const.FLOAD_0, Const.FLOAD_1, Const.FLOAD_2, Const.FLOAD_3,
+            Const.ILOAD, Const.ILOAD_0, Const.ILOAD_1, Const.ILOAD_2, Const.ILOAD_3,
+            Const.DALOAD, Const.LALOAD, Const.FALOAD, Const.IALOAD);
+
+    private static final Set<Short> pushOpCodes = Set.of(Const.DCONST_0, Const.DCONST_1,
+            Const.LCONST_0, Const.LCONST_1,
+            Const.FCONST_0, Const.FCONST_1, Const.FCONST_2,
+            Const.ICONST_0, Const.ICONST_1, Const.ICONST_2, Const.ICONST_3, Const.ICONST_4, Const.ICONST_5,
+            Const.LDC, Const.LDC_W, Const.LDC2_W);
+
+    private static final Set<Short> operationOpCodes = Set.of(
+            // +=,++,       -=,--       *=,         /=,         %=          -
+            Const.DADD, Const.DSUB, Const.DMUL, Const.DDIV, Const.DREM, Const.DNEG,
+            Const.FADD, Const.FSUB, Const.FMUL, Const.FDIV, Const.FREM, Const.FNEG,
+            Const.LADD, Const.LSUB, Const.LMUL, Const.LDIV, Const.LREM, Const.LNEG,
+            Const.IADD, Const.ISUB, Const.IMUL, Const.IDIV, Const.IREM, Const.INEG,
+            // <<=,         >>=,        >>>=
+            Const.ISHL, Const.ISHR, Const.IUSHR,
+            Const.LSHL, Const.LSHR, Const.LUSHR,
+            // &=
+            Const.IAND, Const.LAND,
+            // |=, ^=
+            Const.IOR, Const.IXOR, Const.LOR, Const.LXOR);
+
+    private static final Set<Short> methodCallOpCodes = Set.of(Const.INVOKEVIRTUAL, Const.INVOKESPECIAL, Const.INVOKESTATIC, Const.INVOKEINTERFACE);
+
     public SharedVariableAtomicityDetector(BugReporter reporter) {
         this.bugAccumulator = new BugAccumulator(reporter);
     }
@@ -133,7 +163,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
             map.computeIfAbsent(method, k -> new ArrayList<>()).add(field);
         }
     }
-    
+
     private boolean hasNonSyncedNonPrivateCallToMethod(XMethod method, Set<XMethod> visitedMethods) {
         if (!method.isPrivate()) {
             return true;
@@ -156,7 +186,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private boolean mapContainsFieldWithOtherMethod(XField field, XMethod method, Map<XMethod, List<XField>> map) {
         return map.entrySet().stream()
                 .filter(entry -> entry.getValue().contains(field) && entry.getKey() != method)
-                .map(entry -> entry.getKey()) // other methods containing the field
+                .map(Map.Entry::getKey) // other methods containing the field
                 .anyMatch(m -> hasNonSyncedNonPrivateCallToMethod(m, new HashSet<>()));
     }
 
@@ -192,6 +222,13 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
                 }
             }
             relevantFields.clear();
+        } else {
+            short opcode = (short) seen;
+            // if the opcode is something different then it is not the calculation of the assigned value
+            if (!readOpCodes.contains(opcode) && !pushOpCodes.contains(opcode) && !operationOpCodes.contains(opcode)
+                    && !methodCallOpCodes.contains(opcode)) {
+                relevantFields.clear();
+            }
         }
     }
 

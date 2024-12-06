@@ -273,6 +273,14 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
         assertBugTypeCount(OPS_BUG, 0);
     }
 
+    @Test
+    void noBugNotRealDependentOp() {
+        performAnalysis("multithreaded/compoundoperation/NotRealCompoundOp.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+    }
+
     // --num
     @Test
     void bugForCompoundPreDecrementation() {
