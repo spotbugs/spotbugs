@@ -120,8 +120,8 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         case Const.INVOKESPECIAL:
         case Const.INVOKESTATIC:
             if (getDottedClassConstantOperand().equals(className)) {
-                String className = getDottedClassConstantOperand();
-                MethodAnnotation called = new MethodAnnotation(className, getNameConstantOperand(), getSigConstantOperand(),
+                String clsName = getDottedClassConstantOperand();
+                MethodAnnotation called = new MethodAnnotation(clsName, getNameConstantOperand(), getSigConstantOperand(),
                         seen == Const.INVOKESTATIC);
                 calledMethods.add(called);
                 calledMethodNames.add(getNameConstantOperand().toLowerCase());
@@ -155,11 +155,11 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                 if (kind >= 5 && kind <= 9) {
                     Constant ref = cp.getConstant(((ConstantMethodHandle) constant).getReferenceIndex());
                     if (ref instanceof ConstantCP) {
-                        String className = cp.getConstantString(((ConstantCP) ref).getClassIndex(), Const.CONSTANT_Class);
+                        String clsName = cp.getConstantString(((ConstantCP) ref).getClassIndex(), Const.CONSTANT_Class);
                         ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(((ConstantCP) ref).getNameAndTypeIndex());
                         String name = ((ConstantUtf8) cp.getConstant(nameAndType.getNameIndex())).getBytes();
                         String signature = ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
-                        MethodAnnotation called = new MethodAnnotation(ClassName.toDottedClassName(className), name, signature,
+                        MethodAnnotation called = new MethodAnnotation(ClassName.toDottedClassName(clsName), name, signature,
                                 kind == 6 /* invokestatic */);
                         calledMethods.add(called);
                         calledMethodNames.add(name.toLowerCase());

@@ -159,7 +159,7 @@ public class ProjectPackagePrefixes {
         System.out.println("Count by package for items not associated with a project");
 
         Set<String> packages = missingProjectCount.keySet();
-        for (int count = 0; count < 3; count++) {
+        for (int j = 0; j < 3; j++) {
             HashSet<String> extraSuperPackages = new HashSet<>();
 
             for (String p1 : packages) {

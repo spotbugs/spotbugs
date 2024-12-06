@@ -113,12 +113,12 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         private final TypeLongRange range;
 
         public LongRangeSet(String type) {
-            TypeLongRange range = typeRanges.get(type);
-            if (range == null) {
+            TypeLongRange typeLongRange = typeRanges.get(type);
+            if (typeLongRange == null) {
                 throw new IllegalArgumentException("Type is not supported: " + type);
             }
-            map.put(range.min, range.max);
-            this.range = range;
+            map.put(typeLongRange.min, typeLongRange.max);
+            this.range = typeLongRange;
         }
 
         private LongRangeSet(TypeLongRange range, long from, long to) {

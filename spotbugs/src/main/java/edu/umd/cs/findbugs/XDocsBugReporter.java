@@ -131,10 +131,10 @@ public class XDocsBugReporter extends TextUIBugReporter {
     }
 
     private void writeXML(Writer out, Project project) throws IOException {
-        Document document = endDocument(project);
+        Document doc = endDocument(project);
 
         XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
-        writer.write(document);
+        writer.write(doc);
     }
 
     private Document endDocument(Project project) {

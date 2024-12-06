@@ -1123,10 +1123,11 @@ public class DumbMethods extends OpcodeStackDetector {
                 long badValue = (seen == Const.IAND || seen == Const.LAND) ? -1 : 0;
                 OpcodeStack.Item rhs = stack.getStackItem(0);
                 OpcodeStack.Item lhs = stack.getStackItem(1);
-                int prevOpcode = getPrevOpcode(1);
+                int previousOpcode = getPrevOpcode(1);
                 int prevPrevOpcode = getPrevOpcode(2);
                 if (rhs.hasConstantValue(badValue)
-                        && (prevOpcode == Const.LDC || prevOpcode == Const.ICONST_0 || prevOpcode == Const.ICONST_M1 || prevOpcode == Const.LCONST_0)
+                        && (previousOpcode == Const.LDC || previousOpcode == Const.ICONST_0 || previousOpcode == Const.ICONST_M1
+                                || previousOpcode == Const.LCONST_0)
                         && prevPrevOpcode != Const.GOTO) {
                     reportVacuousBitOperation(seen, lhs);
                 }
