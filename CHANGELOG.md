@@ -11,8 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - SimpleDateFormat, DateTimeFormatter, FastDateFormat string check for bad combinations of flag formatting ([#637](https://github.com/spotbugs/spotbugs/issues/637))
 - New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
   - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
-- New detector `BadVisibilityOnSharedPrimitiveVariables` for new bug type `SPV_BAD_VISIBILITY_ON_SHARED_PRIMITIVE_VARIABLES` (See [SEI CERT rule VNA00-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables))
-- New detector `CompoundOperationsOnSharedVariables` for new bug type `COSV_COMPOUND_OPERATIONS_ON_SHARED_VARIABLES` (See [SEI CERT rule VNA02-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic))
+- New detector `SharedVariableAtomicityDetector` for new bug types `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE`, `AT_NONATOMIC_64BIT_PRIMITIVE` and `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` (See SEI CERT rules [VNA00-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables), [VNA02-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic) and [VNA05-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA05-J.+Ensure+atomicity+when+reading+and+writing+64-bit+values)).
 
 ### Fixed
 - Do not consider Records as Singletons ([#2981](https://github.com/spotbugs/spotbugs/issues/2981))
