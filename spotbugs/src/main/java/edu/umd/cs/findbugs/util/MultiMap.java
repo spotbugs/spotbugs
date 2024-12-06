@@ -38,9 +38,7 @@ public class MultiMap<K, V> {
     private Collection<V> makeCollection() {
         try {
             return containerClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

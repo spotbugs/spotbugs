@@ -445,10 +445,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
                 return "SOURCE_LINE_DEREF";
             }
             return pu.getDescription();
-        } catch (DataflowAnalysisException e) {
-            AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
-            return "SOURCE_LINE_DEREF";
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
             return "SOURCE_LINE_DEREF";
         }

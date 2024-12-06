@@ -246,9 +246,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                         }
                     }
                 }
-            } catch (DataflowAnalysisException e) {
-                result = IsNullValue.nonReportingNotNullValue();
-            } catch (ClassNotFoundException e) {
+            } catch (DataflowAnalysisException | ClassNotFoundException e) {
                 result = IsNullValue.nonReportingNotNullValue();
             }
             modelInstruction(obj, getNumWordsConsumed(obj), getNumWordsProduced(obj), result);

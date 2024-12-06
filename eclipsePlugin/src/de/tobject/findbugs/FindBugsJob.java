@@ -140,7 +140,7 @@ public abstract class FindBugsJob extends Job {
             }
 
             runWithProgress(monitor);
-        } catch (OperationCanceledException e) {
+        } catch (OperationCanceledException | InterruptedException e) {
             // Do nothing when operation cancelled.
             return Status.CANCEL_STATUS;
         } catch (CoreException ex) {
@@ -148,8 +148,6 @@ public abstract class FindBugsJob extends Job {
                 FindbugsPlugin.getDefault().logException(ex, createErrorMessage());
             }
             return ex.getStatus();
-        } catch (InterruptedException e) {
-            return Status.CANCEL_STATUS;
         } finally {
             if (acquired) {
                 if (DEBUG) {

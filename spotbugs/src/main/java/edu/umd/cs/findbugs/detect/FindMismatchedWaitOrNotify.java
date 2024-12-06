@@ -92,9 +92,7 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (DataflowAnalysisException e) {
-                bugReporter.logError("FindMismatchedWaitOrNotify: caught exception", e);
-            } catch (CFGBuilderException e) {
+            } catch (DataflowAnalysisException | CFGBuilderException e) {
                 bugReporter.logError("FindMismatchedWaitOrNotify: caught exception", e);
             }
         }
