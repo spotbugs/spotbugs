@@ -657,10 +657,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             try {
                 readBugCollectionAndProject(project, monitor);
                 bugCollection = (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
-            } catch (IOException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
-                bugCollection = createDefaultEmptyBugCollection(project);
-            } catch (DocumentException e) {
+            } catch (IOException | DocumentException e) {
                 FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
                 bugCollection = createDefaultEmptyBugCollection(project);
             }

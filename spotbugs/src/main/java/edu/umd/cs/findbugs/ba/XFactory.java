@@ -383,9 +383,7 @@ public class XFactory {
                 desc = DescriptorFactory.instance().getMethodDescriptor(superClass.getClassName(), desc.getName(),
                         desc.getSignature(), desc.isStatic());
             }
-        } catch (CheckedAnalysisException e) {
-            assert true;
-        } catch (RuntimeException e) {
+        } catch (CheckedAnalysisException | RuntimeException e) {
             assert true;
         }
         UnresolvedXMethod xmethod = new UnresolvedXMethod(originalDescriptor);

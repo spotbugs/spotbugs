@@ -333,10 +333,7 @@ public class SortedBugCollection implements BugCollection {
             checkInputStream(in);
             Reader reader = Util.getReader(in);
             doReadXML(reader, base);
-        } catch (RuntimeException e) {
-            in.close();
-            throw e;
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             in.close();
             throw e;
         }

@@ -78,9 +78,7 @@ public class FindSelfComparison2 implements Detector {
                     // report
                     bugReporter.logError("skipping unprofitable method in " + getClass().getName());
                 }
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
             }
         }

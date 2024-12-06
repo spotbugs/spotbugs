@@ -113,9 +113,7 @@ public abstract class WarningPropertyUtil {
                     propertySet.setProperty(GeneralWarningProperty.RECEIVER_OBJECT_TYPE, type.toString());
                 }
             }
-        } catch (DataflowAnalysisException e) {
-            // Ignore
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             // Ignore
         }
     }
@@ -163,9 +161,7 @@ public abstract class WarningPropertyUtil {
                 }
                 propertySet.setProperty(prop, call.getMethodName());
             }
-        } catch (CFGBuilderException e) {
-            // Ignore
-        } catch (DataflowAnalysisException e) {
+        } catch (CFGBuilderException | DataflowAnalysisException e) {
             // Ignore
         }
     }

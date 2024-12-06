@@ -224,9 +224,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 currentMethod = obj;
                 currentLockDataFlow = getClassContext().getLockDataflow(currentMethod);
                 currentCFG = getClassContext().getCFG(currentMethod);
-            } catch (CFGBuilderException e) {
-                reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
             }
         }

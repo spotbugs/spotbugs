@@ -205,9 +205,7 @@ public class DerefFinder {
                 }
             }
 
-        } catch (CFGBuilderException e) {
-            AnalysisContext.logError("Error generating derefs for " + thisMethod, e);
-        } catch (DataflowAnalysisException e) {
+        } catch (CFGBuilderException | DataflowAnalysisException e) {
             AnalysisContext.logError("Error generating derefs for " + thisMethod, e);
         }
         return derefs;

@@ -99,9 +99,7 @@ public abstract class ByteCodePatternDetector implements Detector {
                     reportMatch(classContext, method, match);
                 }
             }
-        } catch (DataflowAnalysisException e) {
-            getBugReporter().logError(getDetectorName() + " caught exception", e);
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             getBugReporter().logError(getDetectorName() + " caught exception", e);
         }
     }

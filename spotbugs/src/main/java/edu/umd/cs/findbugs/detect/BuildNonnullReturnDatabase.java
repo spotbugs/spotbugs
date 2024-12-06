@@ -119,13 +119,9 @@ public class BuildNonnullReturnDatabase {
 
             }
 
-        } catch (CFGBuilderException e) {
+        } catch (CFGBuilderException | DataflowAnalysisException e) {
             XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 
-            AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-                    .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
-        } catch (DataflowAnalysisException e) {
-            XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
                     .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
         }

@@ -1618,9 +1618,7 @@ public class PluginLoader implements AutoCloseable {
             String shortDesc = findMessageText(msgDocuments,
                     XPATH_PLUGIN_SHORT_DESCRIPTION, "");
             return new Summary(pluginId, shortDesc, provider, website);
-        } catch (DocumentException e) {
-            throw new IllegalArgumentException(e);
-        } catch (IOException e) {
+        } catch (DocumentException | IOException e) {
             throw new IllegalArgumentException(e);
         }
     }

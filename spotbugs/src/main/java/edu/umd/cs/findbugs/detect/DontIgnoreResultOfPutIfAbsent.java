@@ -120,9 +120,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (DataflowAnalysisException e) {
-                bugReporter.logError("Error analyzing " + method.toString(), e);
-            } catch (CFGBuilderException e) {
+            } catch (DataflowAnalysisException | CFGBuilderException e) {
                 bugReporter.logError("Error analyzing " + method.toString(), e);
             }
         }

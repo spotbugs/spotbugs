@@ -165,9 +165,7 @@ public class UnionResults {
                     results = more.createEmptyCollectionWithMetadata();
                 }
                 merge(hashes, results, more);
-            } catch (IOException e) {
-                System.err.println("Trouble reading/parsing " + fileName);
-            } catch (DocumentException e) {
+            } catch (IOException | DocumentException e) {
                 System.err.println("Trouble reading/parsing " + fileName);
             }
         }

@@ -88,9 +88,7 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
 
         try {
             return databaseClass.cast(createMethod.invoke(null, new Object[0]));
-        } catch (InvocationTargetException e) {
-            throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
-        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException | IllegalAccessException e) {
             throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
         }
     }
@@ -111,11 +109,7 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
 
         try {
             return constructor.newInstance(new Object[0]);
-        } catch (InstantiationException e) {
-            throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
-        } catch (IllegalAccessException e) {
-            throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
-        } catch (InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
         }
     }
