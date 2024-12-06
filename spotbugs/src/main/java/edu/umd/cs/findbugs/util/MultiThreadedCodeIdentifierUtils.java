@@ -122,7 +122,7 @@ public class MultiThreadedCodeIdentifierUtils {
                 || isInstanceOfLock(ClassName.fromFieldSignatureToDottedClassName(field.getSignature()));
     }
 
-    public static boolean isFromAtomicPackage(String signature) {
+    private static boolean isFromAtomicPackage(String signature) {
         return signature.contains(ATOMIC_PACKAGE);
     }
 

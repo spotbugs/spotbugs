@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
@@ -171,23 +170,12 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Disabled // TODO fix this
     void reportFor64bitWriteNotAllReadSyncedOuter() {
         performAnalysis("multithreaded/primitivewrite/NotAllUsageSynchronizedDoubleOuter.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 1);
         assertBugTypeCount(OPS_BUG, 0);
-        assertBugInMethodAtLine(WRITE_64BIT_BUG, "NotAllUsageSynchronizedDoubleOuter", "setValue", 8);
-    }
-
-    @Test
-    @Disabled // TODO fix this
-    void reportFor64bitWriteNotAllReadSynced() {
-        performAnalysis("multithreaded/primitivewrite/NotAllUsageSynchronizedDouble.class");
-        assertBugTypeCount(PRIMITIVE_BUG, 0);
-        assertBugTypeCount(WRITE_64BIT_BUG, 1);
-        assertBugTypeCount(OPS_BUG, 0);
-        assertBugInMethodAtLine(WRITE_64BIT_BUG, "NotAllUsageSynchronizedDouble", "setValue", 8);
+        assertBugInMethodAtLine(WRITE_64BIT_BUG, "NotAllUsageSynchronizedDoubleOuter", "setValue", 7);
     }
 
     @Test

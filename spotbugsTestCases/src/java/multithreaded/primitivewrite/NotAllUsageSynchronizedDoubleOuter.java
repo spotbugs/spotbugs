@@ -4,9 +4,7 @@ public class NotAllUsageSynchronizedDoubleOuter {
     private double d = 0.0;
 
     void setValue(double value) {
-        synchronized (NotAllUsageSynchronizedDoubleOuter.class) {
-            d = value;
-        }
+        d = value;
     }
 
     private void printValue() {

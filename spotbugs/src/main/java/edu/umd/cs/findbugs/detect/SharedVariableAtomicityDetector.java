@@ -36,10 +36,8 @@ import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,7 +47,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private CFG currentCFG;
     private LockDataflow currentLockDataFlow;
     private boolean isFirstVisit = true;
-    private final Map<XMethod, List<XField>> readFieldsByMethods = new HashMap<>();
+    private final Map<XMethod, Set<XField>> readFieldsByMethods = new HashMap<>();
     private final Set<XField> relevantFields = new HashSet<>();
     private final Map<XMethod, Set<XMethod>> nonSyncedMethodCallsByCallingMethods = new HashMap<>();
 
@@ -158,9 +156,9 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
         }
     }
 
-    private void addNonFinalFields(XField field, XMethod method, Map<XMethod, List<XField>> map) {
+    private void addNonFinalFields(XField field, XMethod method, Map<XMethod, Set<XField>> map) {
         if (field != null && !field.isFinal()) {
-            map.computeIfAbsent(method, k -> new ArrayList<>()).add(field);
+            map.computeIfAbsent(method, k -> new HashSet<>()).add(field);
         }
     }
 
@@ -183,7 +181,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
         return result;
     }
 
-    private boolean mapContainsFieldWithOtherMethod(XField field, XMethod method, Map<XMethod, List<XField>> map) {
+    private boolean mapContainsFieldWithOtherMethod(XField field, XMethod method, Map<XMethod, Set<XField>> map) {
         return map.entrySet().stream()
                 .filter(entry -> entry.getValue().contains(field) && entry.getKey() != method)
                 .map(Map.Entry::getKey) // other methods containing the field
@@ -201,8 +199,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
             if (field != null && !field.isFinal()) {
                 boolean fieldReadInOtherMethod = mapContainsFieldWithOtherMethod(field, method, readFieldsByMethods);
                 if (fieldReadInOtherMethod) {
-                    if (!relevantFields.isEmpty() && relevantFields.contains(field)
-                            && !MultiThreadedCodeIdentifierUtils.isFromAtomicPackage(field.getSignature())) {
+                    if (!relevantFields.isEmpty() && relevantFields.contains(field) && isPrimitiveOrItsBoxingType(field.getSignature())) {
                         bugAccumulator.accumulateBug(
                                 new BugInstance(this, "AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE", NORMAL_PRIORITY)
                                         .addClass(this)
@@ -230,6 +227,15 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
                 relevantFields.clear();
             }
         }
+    }
+
+    private boolean isPrimitiveOrItsBoxingType(String className) {
+        if (ClassName.isValidBaseTypeFieldDescriptor(className)) {
+            return true;
+        }
+
+        String clsName = ClassName.fromFieldSignature(className);
+        return clsName != null && ClassName.isValidBaseTypeFieldDescriptor(ClassName.getPrimitiveType(clsName));
     }
 
     private boolean is64bitPrimitive(String className) {
