@@ -397,9 +397,9 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     public void logAnError(String msg) {
-        RepositoryLookupFailureCallback lookupFailureCallback = getLookupFailureCallback();
-        if (lookupFailureCallback != null) {
-            lookupFailureCallback.logError(msg);
+        RepositoryLookupFailureCallback failureCallback = getLookupFailureCallback();
+        if (failureCallback != null) {
+            failureCallback.logError(msg);
         }
     }
 

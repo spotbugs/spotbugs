@@ -50,6 +50,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Move default clauses to the end of switches ([#3222](https://github.com/spotbugs/spotbugs/pull/3222))
 - Remove unnecessary throws declarations ([#3220](https://github.com/spotbugs/spotbugs/pull/3220))
 - Use `Boolean.parseBoolean()` for string-to-boolean conversion. ([#3217](https://github.com/spotbugs/spotbugs/pull/3217))
+- Rename shadowing fields ([#3221](https://github.com/spotbugs/spotbugs/pull/3221))
 
 ### Changed
 - Bump up Java version to 11

@@ -294,11 +294,11 @@ public class PackageStats extends BugCounts implements XMLWriteable {
 
         xmlOutput.addAttribute("package", packageName);
         xmlOutput.addAttribute("total_bugs", String.valueOf(getTotalBugs()));
-        int numClasses = packageMembers.size();
-        if (numClasses == 0) {
-            numClasses = this.numClasses;
+        int numClses = packageMembers.size();
+        if (numClses == 0) {
+            numClses = this.numClasses;
         }
-        xmlOutput.addAttribute("total_types", String.valueOf(numClasses));
+        xmlOutput.addAttribute("total_types", String.valueOf(numClses));
         xmlOutput.addAttribute("total_size", String.valueOf(size));
         writeBugPriorities(xmlOutput);
 
