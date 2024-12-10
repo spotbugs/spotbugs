@@ -121,7 +121,7 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
     private Stack<String> parameterNameStack = new Stack<>();
 
     private LambdaInfo currentLambda = null;
-
+    private boolean isDoPrivilegedDeprecated = false;
     private boolean isDoPrivileged = false;
     private boolean isDoPrivilegedRun = false;
     private boolean isLambdaCalledInDoPrivileged = false;
@@ -134,6 +134,7 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
 
     @Override
     public void visit(JavaClass obj) {
+        isDoPrivilegedDeprecated = obj.getMajor() >= Const.MAJOR_17;
         nonFinalMethodsCalledOnParam.clear();
         isDoPrivileged = Subtypes2.instanceOf(getDottedClassName(), "java.security.PrivilegedAction")
                 || Subtypes2.instanceOf(getDottedClassName(), "java.security.PrivilegedExceptionAction");
@@ -148,8 +149,8 @@ public class FindPotentialSecurityCheckBasedOnUntrustedSource extends OpcodeStac
 
     @Override
     public void visit(Code obj) {
-        if (!isDoPrivilegedRun && !isLambdaCalledInDoPrivileged &&
-                (!getThisClass().isPublic() || !getMethod().isPublic())) {
+        if (isDoPrivilegedDeprecated
+                || (!isDoPrivilegedRun && !isLambdaCalledInDoPrivileged && (!getThisClass().isPublic() || !getMethod().isPublic()))) {
             return;
         }
         super.visit(obj);
