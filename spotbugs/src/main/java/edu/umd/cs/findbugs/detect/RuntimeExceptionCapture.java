@@ -208,9 +208,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             Method m = getMethod();
             bugReporter.reportSkippedAnalysis(DescriptorFactory.instance().getMethodDescriptor(getClassName(), getMethodName(),
                     getMethodSig(), m.isStatic()));
-        } catch (DataflowAnalysisException e) {
-            bugReporter.logError("Error checking for dead exception store", e);
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             bugReporter.logError("Error checking for dead exception store", e);
         }
     }

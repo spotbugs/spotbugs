@@ -1548,9 +1548,7 @@ public class DumbMethods extends OpcodeStackDetector {
             }
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
-        } catch (DataflowAnalysisException e) {
-            bugReporter.logError("Exception caught by DumbMethods", e);
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             bugReporter.logError("Exception caught by DumbMethods", e);
         }
     }

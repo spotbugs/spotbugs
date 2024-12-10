@@ -236,15 +236,8 @@ public class FindSqlInjection implements Detector {
 
             try {
                 analyzeMethod(classContext, m);
-            } catch (DataflowAnalysisException e) {
-                bugReporter.logError(
-                        "FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(m),
-                        e);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError(
-                        "FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(m),
-                        e);
-            } catch (RuntimeException e) {
+
+            } catch (DataflowAnalysisException | CFGBuilderException | RuntimeException e) {
                 bugReporter.logError(
                         "FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(m),
                         e);
