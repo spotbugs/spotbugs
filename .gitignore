@@ -13,6 +13,8 @@ classesEclipse
 deps/
 eclipse/
 bin/
+.vscode/
+
 
 # to sign eclipse plugin
 spotbugs.jks
