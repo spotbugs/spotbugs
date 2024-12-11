@@ -30,6 +30,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not report UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR for fields initialized in method annotated with TestNG's @BeforeClass. ([#3152](https://github.com/spotbugs/spotbugs/issues/3152))
 - Fixed detector `FindReturnRef` not finding references exposed from nested and inner classes ([#2042](https://github.com/spotbugs/spotbugs/issues/2042))
 - Fix call graph, include non-parametric void methods ([#3160](https://github.com/spotbugs/spotbugs/pull/3160))
+- Fix multiple reporting of identical bugs messing up statistics ([#3185](https://github.com/spotbugs/spotbugs/issues/3185))
 
 ### Cleanup
 - Cleanup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
