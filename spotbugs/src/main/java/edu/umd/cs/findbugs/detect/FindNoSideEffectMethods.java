@@ -496,12 +496,10 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     public void sawOpcode(int seen) {
         if (!allowedFields.isEmpty() && seen == Const.PUTFIELD) {
             Item objItem = getStack().getStackItem(1);
-            if (objItem.getRegisterNumber() == 0) {
-                if (allowedFields.contains(getFieldDescriptorOperand())) {
-                    Item valueItem = getStack().getStackItem(0);
-                    if (!isNew(valueItem) && !valueItem.isNull()) {
-                        allowedFields.remove(getFieldDescriptorOperand());
-                    }
+            if (objItem.getRegisterNumber() == 0 && allowedFields.contains(getFieldDescriptorOperand())) {
+                Item valueItem = getStack().getStackItem(0);
+                if (!isNew(valueItem) && !valueItem.isNull()) {
+                    allowedFields.remove(getFieldDescriptorOperand());
                 }
             }
         }
@@ -538,10 +536,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             break;
         }
         case Const.PUTSTATIC:
-            if (classInit) {
-                if (getClassConstantOperand().equals(getClassName())) {
-                    break;
-                }
+            if (classInit && getClassConstantOperand().equals(getClassName())) {
+                break;
             }
             status = SideEffectStatus.SIDE_EFFECT;
             break;
@@ -898,14 +894,12 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                          */
                         continue;
                     }
-                    if (m.isStatic() || m.getName().equals(Const.CONSTRUCTOR_NAME)) {
-                        if (sideEffectClinit.contains(m.getSlashedClassName())) {
-                            /* Skip static methods and constructors for classes which have
-                             * side-effect class initializer
-                             */
-                            noSideEffectMethods.add(m, MethodSideEffectStatus.SE_CLINIT);
-                            continue;
-                        }
+                    if ((m.isStatic() || m.getName().equals(Const.CONSTRUCTOR_NAME)) && sideEffectClinit.contains(m.getSlashedClassName())) {
+                        /* Skip static methods and constructors for classes which have
+                         * side-effect class initializer
+                         */
+                        noSideEffectMethods.add(m, MethodSideEffectStatus.SE_CLINIT);
+                        continue;
                     }
                     if (m.equals(CLASS_GET_NAME) // used sometimes to trigger class loading
                             || m.equals(HASH_CODE) // found intended hashCode call several times in different projects, need further research
@@ -960,10 +954,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             try {
                 XClass xClass = subtype.getXClass();
                 XMethod subMethod = xClass.findMatchingMethod(xMethod.getMethodDescriptor());
-                if (subMethod != null) {
-                    if (!subMethod.isAbstract()) {
-                        return true;
-                    }
+                if (subMethod != null && !subMethod.isAbstract()) {
+                    return true;
                 }
             } catch (CheckedAnalysisException e) {
                 // ignore

@@ -194,32 +194,31 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
             duplicates.put(start, end);
             normalBlocks.put(catchAnyAddress, catchAnyAddress);
             for (Entry<Integer, Integer> entry : normalBlocks.entrySet()) {
-                if (lastEnd > -1) {
-                    if (entry.getKey() > lastEnd) {
-                        int candidateStart = lastEnd;
-                        int block2end = equalBlocks(firstInstruction, il.findHandle(candidateStart), end - start, il.getInstructionPositions());
-                        if (block2end > 0 && block2end <= entry.getKey()) {
-                            duplicates.put(candidateStart, block2end);
-                            while (true) {
-                                int newKey = Math.min(exceptionTargets.nextSetBit(block2end + 1), branchTargets.nextSetBit(block2end + 1));
-                                if (newKey < 0 || newKey > entry.getKey()) {
-                                    break;
-                                }
-                                InstructionHandle ih2 = il.findHandle(newKey);
-                                if (exceptionTargets.get(newKey)) {
-                                    ih2 = ih2.getNext(); // Skip astore
-                                }
-                                candidateStart = ih2.getPosition();
-                                block2end = equalBlocks(firstInstruction, ih2, end - start, il.getInstructionPositions());
-                                if (block2end > 0 && block2end <= entry.getKey()) {
-                                    duplicates.put(candidateStart, block2end);
-                                } else {
-                                    block2end = newKey;
-                                }
+                if (lastEnd > -1 && entry.getKey() > lastEnd) {
+                    int candidateStart = lastEnd;
+                    int block2end = equalBlocks(firstInstruction, il.findHandle(candidateStart), end - start, il.getInstructionPositions());
+                    if (block2end > 0 && block2end <= entry.getKey()) {
+                        duplicates.put(candidateStart, block2end);
+                        while (true) {
+                            int newKey = Math.min(exceptionTargets.nextSetBit(block2end + 1), branchTargets.nextSetBit(block2end + 1));
+                            if (newKey < 0 || newKey > entry.getKey()) {
+                                break;
+                            }
+                            InstructionHandle ih2 = il.findHandle(newKey);
+                            if (exceptionTargets.get(newKey)) {
+                                ih2 = ih2.getNext(); // Skip astore
+                            }
+                            candidateStart = ih2.getPosition();
+                            block2end = equalBlocks(firstInstruction, ih2, end - start, il.getInstructionPositions());
+                            if (block2end > 0 && block2end <= entry.getKey()) {
+                                duplicates.put(candidateStart, block2end);
+                            } else {
+                                block2end = newKey;
                             }
                         }
                     }
                 }
+
                 lastEnd = entry.getValue();
             }
             ih = ih.getNext();

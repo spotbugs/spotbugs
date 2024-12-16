@@ -708,14 +708,11 @@ public class FindPuzzlers extends OpcodeStackDetector {
         if (seen == Const.INEG) {
             OpcodeStack.Item top = stack.getStackItem(0);
             XMethod m = top.getReturnValueOf();
-            if (m != null) {
-                if ("compareTo".equals(m.getName()) || "compare".equals(m.getName())) {
-                    bugAccumulator.accumulateBug(new BugInstance(this, "RV_NEGATING_RESULT_OF_COMPARETO", NORMAL_PRIORITY)
-                            .addClassAndMethod(this)
-                            .addCalledMethod(m).addValueSource(top, this), this);
-                }
+            if (m != null && ("compareTo".equals(m.getName()) || "compare".equals(m.getName()))) {
+                bugAccumulator.accumulateBug(new BugInstance(this, "RV_NEGATING_RESULT_OF_COMPARETO", NORMAL_PRIORITY)
+                        .addClassAndMethod(this)
+                        .addCalledMethod(m).addValueSource(top, this), this);
             }
-
         }
         prevOpCode = seen;
 
