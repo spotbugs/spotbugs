@@ -388,13 +388,13 @@ public class Naming extends PreorderVisitor implements Detector {
 
             bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NAMING_CONVENTION", priority).addClass(this));
         }
-        if (name.endsWith("Exception")) {
-            // Does it ultimately inherit from Throwable?
-            if (!mightInheritFromException(DescriptorFactory.createClassDescriptor(obj))) {
-                // It doesn't, so the name is misleading
-                bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
-            }
+        if (name.endsWith("Exception")
+                // Does it ultimately inherit from Throwable?
+                && !mightInheritFromException(DescriptorFactory.createClassDescriptor(obj))) {
+            // It doesn't, so the name is misleading
+            bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
         }
+
 
         int badFieldNames = 0;
         for (Field f : obj.getFields()) {

@@ -124,12 +124,10 @@ public class AtomicityProblem extends OpcodeStackDetector {
             if ("java.util.concurrent.ConcurrentHashMap".equals(getDottedClassConstantOperand())) {
                 String methodName = getNameConstantOperand();
                 XClass xClass = getXClassOperand();
-                if (xClass != null && "put".equals(methodName)) {
-                    if ((getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
-                        bugReporter.reportBug(new BugInstance(this, "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION", priority)
-                                .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)
-                                .addSourceLine(this));
-                    }
+                if (xClass != null && "put".equals(methodName) && (getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
+                    bugReporter.reportBug(new BugInstance(this, "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION", priority)
+                            .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)
+                            .addSourceLine(this));
                 }
             }
             break;

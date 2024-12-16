@@ -95,10 +95,8 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             }
 
         }
-        if (element instanceof IMarker) {
-            if (!((IMarker) element).exists()) {
-                return null;
-            }
+        if (element instanceof IMarker && !((IMarker) element).exists()) {
+            return null;
         }
         return wbProvider.getImage(element);
     }
