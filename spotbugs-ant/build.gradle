@@ -8,7 +8,7 @@ dependencies {
   compileOnly 'org.apache.ant:ant:1.10.15'
 
   testImplementation 'org.apache.ant:ant:1.10.15'
-  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
   testImplementation 'org.hamcrest:hamcrest:3.0'
 }
 
