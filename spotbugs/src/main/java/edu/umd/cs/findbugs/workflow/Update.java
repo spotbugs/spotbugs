@@ -596,13 +596,10 @@ public class Update {
         //        int newBugs = 0;
         //        int matchedBugs = 0;
         for (BugInstance bug : origCollection.getCollection()) {
-            if (!matchedOldBugs.containsKey(bug)) {
-                if (matchOld.match(bug)) {
-                    //                    oldBugs++;
-                    LinkedList<BugInstance> q = set.computeIfAbsent(bug, k -> new LinkedList<>());
-                    q.add(bug);
-                }
-
+            if (!matchedOldBugs.containsKey(bug) && matchOld.match(bug)) {
+                // oldBugs++;
+                LinkedList<BugInstance> q = set.computeIfAbsent(bug, k -> new LinkedList<>());
+                q.add(bug);
             }
         }
         long newVersion = origCollection.getCurrentAppVersion().getSequenceNumber() + 1;

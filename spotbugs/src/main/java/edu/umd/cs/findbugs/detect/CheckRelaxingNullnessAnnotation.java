@@ -174,11 +174,10 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                     done = checkMethod(method);
                 } else {
                     for (XMethod superMethod : superClass.getXMethods()) {
-                        if (name.equals(superMethod.getName()) && compatibleParameters(desc, superMethod.getSignature())) {
-                            if (checkMethod(superMethod)) {
-                                done = true;
-                                break;
-                            }
+                        if (name.equals(superMethod.getName()) && compatibleParameters(desc, superMethod.getSignature())
+                                && checkMethod(superMethod)) {
+                            done = true;
+                            break;
                         }
                     }
                 }

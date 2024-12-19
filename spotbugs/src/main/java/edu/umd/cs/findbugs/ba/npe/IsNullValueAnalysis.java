@@ -402,19 +402,15 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         if (fact.isValid()) {
             IsNullValueFrame tmpFact = null;
 
-            if (!NO_SPLIT_DOWNGRADE_NSP) {
+            if (!NO_SPLIT_DOWNGRADE_NSP && !edge.isExceptionEdge() && cfg.getNumNonExceptionSucessors(edge.getSource()) > 1) {
                 // Downgrade NSP to DNR on non-exception control splits
-                if (!edge.isExceptionEdge() && cfg.getNumNonExceptionSucessors(edge.getSource()) > 1) {
-                    tmpFact = modifyFrame(fact, null);
-                    tmpFact.downgradeOnControlSplit();
-                }
+                tmpFact = modifyFrame(fact, null);
+                tmpFact.downgradeOnControlSplit();
             }
 
-            if (!NO_SWITCH_DEFAULT_AS_EXCEPTION) {
-                if (edge.getType() == SWITCH_DEFAULT_EDGE) {
-                    tmpFact = modifyFrame(fact, tmpFact);
-                    tmpFact.toExceptionValues();
-                }
+            if (!NO_SWITCH_DEFAULT_AS_EXCEPTION && edge.getType() == SWITCH_DEFAULT_EDGE) {
+                tmpFact = modifyFrame(fact, tmpFact);
+                tmpFact.toExceptionValues();
             }
 
             final BasicBlock destBlock = edge.getTarget();

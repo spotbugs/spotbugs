@@ -149,12 +149,10 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
     private void classifyWarning(BugInstance warning, boolean isBug) {
 
         BugProperty isBugProp = warning.lookupProperty(BugProperty.IS_BUG);
-        if (isBugProp != null) {
-            // Warning was previously classified
-            if (isBugProp.getValueAsBoolean() == isBug) {
-                // No change
-                return;
-            }
+        if (isBugProp != null
+                && isBugProp.getValueAsBoolean() == isBug) { // Warning was previously classified
+            // No change
+            return;
         }
 
         // Warning is being classified for the first time,

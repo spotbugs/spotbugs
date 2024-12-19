@@ -148,10 +148,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
         if (cloneOnlyThrowsException) {
             return;
         }
-        if (implementsCloneableDirectly && !hasCloneMethod) {
-            if (!referencesCloneMethod) {
-                bugReporter.reportBug(new BugInstance(this, "CN_IDIOM", NORMAL_PRIORITY).addClass(this));
-            }
+        if (implementsCloneableDirectly && !hasCloneMethod && !referencesCloneMethod) {
+            bugReporter.reportBug(new BugInstance(this, "CN_IDIOM", NORMAL_PRIORITY).addClass(this));
         }
 
         if (hasCloneMethod && isCloneable && !invokesSuperClone && !isFinal && obj.isPublic()) {

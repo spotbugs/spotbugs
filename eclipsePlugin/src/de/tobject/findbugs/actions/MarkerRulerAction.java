@@ -159,10 +159,9 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         AbstractMarkerAnnotationModel model = getModel();
         IDocument document = getDocument();
         for (int i = 0; i < allMarkers.length; i++) {
-            if (includesRulerLine(model.getMarkerPosition(allMarkers[i]), document)) {
-                if (MarkerUtil.isFindBugsMarker(allMarkers[i])) {
-                    markers.add(allMarkers[i]);
-                }
+            if (includesRulerLine(model.getMarkerPosition(allMarkers[i]), document)
+                    && MarkerUtil.isFindBugsMarker(allMarkers[i])) {
+                markers.add(allMarkers[i]);
             }
         }
     }
