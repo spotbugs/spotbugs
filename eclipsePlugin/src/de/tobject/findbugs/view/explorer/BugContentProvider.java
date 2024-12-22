@@ -411,12 +411,7 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     private IMarker[] getMarkers(IResource resource) {
-        if (resource instanceof IProject) {
-            if (!((IProject) resource).isAccessible()) {
-                return EMPTY;
-            }
-        }
-        if (!resourceFilter.contains(resource)) {
+        if ((resource instanceof IProject && !((IProject) resource).isAccessible()) || !resourceFilter.contains(resource)) {
             return EMPTY;
         }
         return MarkerUtil.getAllMarkers(resource);

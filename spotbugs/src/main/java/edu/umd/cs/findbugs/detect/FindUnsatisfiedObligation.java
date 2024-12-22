@@ -401,13 +401,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             @Override
             public void visitBasicBlock(BasicBlock basicBlock) {
                 curBlock = basicBlock;
-
-                if (COMPUTE_TRANSFERS && basicBlock == cfg.getExit()) {
-                    // We're at the CFG exit.
-
-                    if (adjustedLeakCount == 1) {
-                        applyPossibleObligationTransfers();
-                    }
+                // We're at the CFG exit.
+                if (COMPUTE_TRANSFERS && basicBlock == cfg.getExit() && adjustedLeakCount == 1) {
+                    applyPossibleObligationTransfers();
                 }
             }
 

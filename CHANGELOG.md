@@ -53,6 +53,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Use `Boolean.parseBoolean()` for string-to-boolean conversion. ([#3217](https://github.com/spotbugs/spotbugs/pull/3217))
 - Rename shadowing fields ([#3221](https://github.com/spotbugs/spotbugs/pull/3221))
 - Combine catch blocks with the same body ([#3223](https://github.com/spotbugs/spotbugs/pull/3223))
+- Merge conditions of nested ifs ([#3231](https://github.com/spotbugs/spotbugs/pull/3231))
 
 ### Changed
 - Bump up Java version to 11
