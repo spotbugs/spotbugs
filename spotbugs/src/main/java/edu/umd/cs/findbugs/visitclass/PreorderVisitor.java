@@ -379,8 +379,8 @@ public class PreorderVisitor extends BetterVisitor {
             constantPool.accept(this);
             Field[] fields = obj.getFields();
             Attribute[] attributes = obj.getAttributes();
-            for (Field field : fields) {
-                doVisitField(field);
+            for (Field f : fields) {
+                doVisitField(f);
             }
             boolean didInCallOrder = false;
 

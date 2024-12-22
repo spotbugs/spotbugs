@@ -711,7 +711,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
      *            name of output file
      */
     public void setOutputFile(String outputFileName) {
-        if (outputFileName != null && outputFileName.length() > 0) {
+        if (outputFileName != null && !outputFileName.isEmpty()) {
             this.outputFileName = outputFileName;
         }
     }

@@ -330,9 +330,7 @@ public class DiscoverSourceDirectories {
             try {
                 String fullyQualifiedSourceFileName = findFullyQualifiedSourceFileName(classPath, classDesc);
                 fullyQualifiedSourceFileNameList.add(fullyQualifiedSourceFileName);
-            } catch (IOException e) {
-                errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
-            } catch (CheckedAnalysisException e) {
+            } catch (IOException | CheckedAnalysisException e) {
                 errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
             }
         }

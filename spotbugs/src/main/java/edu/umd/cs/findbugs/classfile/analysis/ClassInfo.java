@@ -33,6 +33,7 @@ import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -103,14 +104,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
         boolean hasStubs;
 
-        private static String arguments(String signature) {
-            int i = signature.indexOf('(');
-            if (i == -1) {
-                return signature;
-            }
-            return signature.substring(0, i + 1);
-        }
-
         @Override
         public ClassInfo build() {
             AnalysisContext context = AnalysisContext.currentAnalysisContext();
@@ -129,17 +122,17 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
                     if (DEBUG) {
                         System.out.println("Have bridge method:" + m);
                     }
-                    for (MethodInfo to : methodInfoList) {
-                        if (m != to) {
-                            if (!to.isBridge()
-                                    && m.getName().equals(to.getName())
-                                    && arguments(m.getSignature()).equals(arguments(to.getSignature()))) {
-                                if (DEBUG) {
-                                    System.out.println("  to method:" + to);
-                                }
-                                bridgedSignatures.put(m, to.getSignature());
-                            }
 
+                    String[] mArguments = new SignatureParser(m.getSignature()).getArguments();
+
+                    for (MethodInfo to : methodInfoList) {
+                        if (m != to && !to.isBridge()
+                                && m.getName().equals(to.getName())
+                                && Arrays.equals(mArguments, new SignatureParser(to.getSignature()).getArguments())) {
+                            if (DEBUG) {
+                                System.out.println("  to method:" + to);
+                            }
+                            bridgedSignatures.put(m, to.getSignature());
                         }
                     } // end  for(MethodInfo to
                 } // end  if (m.isBridge()

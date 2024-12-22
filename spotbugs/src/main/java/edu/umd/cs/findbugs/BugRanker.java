@@ -148,7 +148,7 @@ public class BugRanker {
                 }
 
                 s = s.trim();
-                if (s.length() == 0) {
+                if (s.isEmpty()) {
                     continue;
                 }
 

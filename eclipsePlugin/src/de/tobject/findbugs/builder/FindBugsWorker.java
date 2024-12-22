@@ -367,8 +367,6 @@ public class FindBugsWorker {
             // props
             st.newPoint("storeBugCollection");
             FindbugsPlugin.storeBugCollection(project, resultCollection, monitor);
-        } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs results update");
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs results update");
         }

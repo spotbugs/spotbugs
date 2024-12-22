@@ -26,7 +26,7 @@ dependencies {
   }
 
   implementation project(':test-harness')
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
   implementation 'org.apache.ant:ant:1.10.15'
 }
 
