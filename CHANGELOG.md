@@ -38,6 +38,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed an error in the detection of bridge methods causing analysis crashes ([#3208](https://github.com/spotbugs/spotbugs/issues/3208))
 - Fixed detector `ThrowingExceptions` by removing false positive reports, such as synthetic methods (lambdas), methods which inherited their exception specifications and methods which call throwing methods ([#2040](https://github.com/spotbugs/spotbugs/issues/2040))
 - Do not report `DP_DO_INSIDE_DO_PRIVILEGED`, `DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED` and `USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE` in code targeting Java 17 and above, since it advises the usage of deprecated method ([#1515](https://github.com/spotbugs/spotbugs/issues/1515)).
+- Fixed a `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` false positive for a builder delegating to another builder ([#3235](https://github.com/spotbugs/spotbugs/issues/3235))
 
 ### Cleanup
 - Cleanup thread issue and regex issue in test-harness ([#3130](https://github.com/spotbugs/spotbugs/issues/3130))
