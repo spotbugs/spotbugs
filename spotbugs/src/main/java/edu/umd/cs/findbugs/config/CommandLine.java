@@ -272,9 +272,7 @@ public abstract class CommandLine {
             return count;
         } catch (HelpRequestedException e) {
             // fall through
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             e.printStackTrace();
         }
         System.out.println(usage);

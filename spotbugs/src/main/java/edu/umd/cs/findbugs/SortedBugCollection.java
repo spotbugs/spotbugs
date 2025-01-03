@@ -333,10 +333,7 @@ public class SortedBugCollection implements BugCollection {
             checkInputStream(in);
             Reader reader = Util.getReader(in);
             doReadXML(reader, base);
-        } catch (RuntimeException e) {
-            in.close();
-            throw e;
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             in.close();
             throw e;
         }
@@ -955,10 +952,11 @@ public class SortedBugCollection implements BugCollection {
         }
 
         invalidateHashes();
-        if (!bugInstance.isDead()) {
+        boolean added = bugSet.add(bugInstance);
+        if (added && !bugInstance.isDead()) {
             projectStats.addBug(bugInstance);
         }
-        return bugSet.add(bugInstance);
+        return added;
     }
 
     private void invalidateHashes() {

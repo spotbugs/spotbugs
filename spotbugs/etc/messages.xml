@@ -2592,33 +2592,42 @@ will need to be changed in order to compile it in later versions of Java.</p>
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
     <LongDescription>Invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
-<![CDATA[
-  <p> This code invokes a method that requires a security permission check.
-  If this code will be granted security permissions, but might be invoked by code that does not
-  have security permissions, then the invocation needs to occur inside a doPrivileged block.</p>
-]]>
+      <![CDATA[
+        <p> This code invokes a method that requires a security permission check.
+        If this code will be granted security permissions, but might be invoked by code that does not
+        have security permissions, then the invocation needs to occur inside a doPrivileged block.</p>
+        The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
+        got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
+        For this reason, this bug isn't reported in classes targeted Java 17 and above.
+      ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED"> <!-- misspelled for backward compatibility -->
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
     <LongDescription>Invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
-<![CDATA[
-  <p> This code invokes a method that requires a security permission check.
-  If this code will be granted security permissions, but might be invoked by code that does not
-  have security permissions, then the invocation needs to occur inside a doPrivileged block.</p>
-]]>
+      <![CDATA[
+        <p> This code invokes a method that requires a security permission check.
+        If this code will be granted security permissions, but might be invoked by code that does not
+        have security permissions, then the invocation needs to occur inside a doPrivileged block.</p>
+        The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
+        got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
+        For this reason, this bug isn't reported in classes targeted Java 17 and above.
+      ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
     <ShortDescription>Classloaders should only be created inside doPrivileged block</ShortDescription>
     <LongDescription>{1} creates a {2} classloader, which should be performed within a doPrivileged block</LongDescription>
     <Details>
-<![CDATA[
-  <p> This code creates a classloader,  which needs permission if a security manage is installed.
-  If this code might be invoked by code that does not
-  have security permissions, then the classloader creation needs to occur inside a doPrivileged block.</p>
-]]>
+      <![CDATA[
+        <p> This code creates a classloader,  which needs permission if a security manage is installed.
+        If this code might be invoked by code that does not
+        have security permissions, then the classloader creation needs to occur inside a doPrivileged block.</p>
+        The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
+        got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
+        For this reason, this bug isn't reported in classes targeted Java 17 and above.
+      ]]>
     </Details>
   </BugPattern>
   <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
@@ -9078,7 +9087,11 @@ Using floating-point variables should not be used as loop counters, as they are 
       method behaves exactly as expected.
       <p>
       See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources">SEC02-J. Do not base security checks on untrusted sources</a>.
-      </p>]]>
+      </p>
+      The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
+      got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
+      For this reason, this bug isn't reported in classes targeted Java 17 and above.
+      ]]>
     </Details>
   </BugPattern>
 

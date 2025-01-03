@@ -222,9 +222,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 currentMethod = obj;
                 currentLockDataFlow = getClassContext().getLockDataflow(currentMethod);
                 currentCFG = getClassContext().getCFG(currentMethod);
-            } catch (CFGBuilderException e) {
-                reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
             }
         }
@@ -254,12 +252,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 
         if (seen == Const.GETSTATIC) {
             XField f = getXFieldOperand();
-            if (pendingBugs.containsKey(f)) {
-                if (!MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())) {
-                    reporter.reportBug(pendingBugs.remove(f));
-
-                }
-
+            if (pendingBugs.containsKey(f) && !MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())) {
+                reporter.reportBug(pendingBugs.remove(f));
             }
         }
         // we are only interested in method calls
@@ -311,12 +305,12 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 }
             }
 
-            if (!SystemProperties.getBoolean(PROP_SKIP_SYNCHRONIZED_CHECK)) {
-                // check synchronization
-                if (MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())) {
-                    return;
-                }
+            if (!SystemProperties.getBoolean(PROP_SKIP_SYNCHRONIZED_CHECK)
+                    // check synchronization
+                    && MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())) {
+                return;
             }
+
 
             // if we get here, we want to generate a report, depending on the
             // type

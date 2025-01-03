@@ -126,16 +126,13 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
                     String[] mArguments = new SignatureParser(m.getSignature()).getArguments();
 
                     for (MethodInfo to : methodInfoList) {
-                        if (m != to) {
-                            if (!to.isBridge()
-                                    && m.getName().equals(to.getName())
-                                    && Arrays.equals(mArguments, new SignatureParser(to.getSignature()).getArguments())) {
-                                if (DEBUG) {
-                                    System.out.println("  to method:" + to);
-                                }
-                                bridgedSignatures.put(m, to.getSignature());
+                        if (m != to && !to.isBridge()
+                                && m.getName().equals(to.getName())
+                                && Arrays.equals(mArguments, new SignatureParser(to.getSignature()).getArguments())) {
+                            if (DEBUG) {
+                                System.out.println("  to method:" + to);
                             }
-
+                            bridgedSignatures.put(m, to.getSignature());
                         }
                     } // end  for(MethodInfo to
                 } // end  if (m.isBridge()
