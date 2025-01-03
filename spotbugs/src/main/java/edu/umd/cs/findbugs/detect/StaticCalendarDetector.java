@@ -19,10 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.util.MultiThreadedCodeIdentifierUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -41,9 +41,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
-import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -254,7 +252,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 
         if (seen == Const.GETSTATIC) {
             XField f = getXFieldOperand();
-            if (pendingBugs.containsKey(f) && !isLocked()) {
+            if (pendingBugs.containsKey(f) && !MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())) {
                 reporter.reportBug(pendingBugs.remove(f));
             }
         }
@@ -309,7 +307,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 
             if (!SystemProperties.getBoolean(PROP_SKIP_SYNCHRONIZED_CHECK)
                     // check synchronization
-                    && isLocked()) {
+                    && MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())) {
                 return;
             }
 
@@ -344,24 +342,6 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
         }
-    }
-
-    private boolean isLocked() {
-        try {
-            if (currentMethod != null && currentLockDataFlow != null && currentCFG != null) {
-                Collection<Location> tLocations = currentCFG.getLocationsContainingInstructionWithOffset(getPC());
-                for (Location tLoc : tLocations) {
-                    LockSet lockSet = currentLockDataFlow.getFactAtLocation(tLoc);
-                    if (lockSet.getNumLockedObjects() > 0) {
-                        // within a synchronized block
-                        return true;
-                    }
-                }
-            }
-        } catch (DataflowAnalysisException e) {
-            reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
-        }
-        return false;
     }
 
     @Override
