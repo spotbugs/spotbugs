@@ -734,9 +734,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
             if (!trueResourceName.equals(entry.getResourceName())) {
                 entry.overrideResourceName(trueResourceName);
             }
-        } catch (IOException e) {
-            errorLogger.logError("Invalid class resource " + entry.getResourceName() + " in " + entry, e);
-        } catch (InvalidClassFileFormatException e) {
+        } catch (IOException | InvalidClassFileFormatException e) {
             errorLogger.logError("Invalid class resource " + entry.getResourceName() + " in " + entry, e);
         } finally {
             IO.close(in);

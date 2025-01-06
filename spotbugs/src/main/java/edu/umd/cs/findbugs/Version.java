@@ -114,11 +114,11 @@ public class Version {
                 LOG.info("  description: {}", p.getShortDescription());
                 LOG.info("     provider: {}", p.getProvider());
                 String version = p.getVersion();
-                if (version != null && version.length() > 0) {
+                if (version != null && !version.isEmpty()) {
                     LOG.info("      version: {}", version);
                 }
                 String website = p.getWebsite();
-                if (website != null && website.length() > 0) {
+                if (website != null && !website.isEmpty()) {
                     LOG.info("      website: {}", website);
                 }
                 LOG.info("");

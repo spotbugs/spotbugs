@@ -73,11 +73,7 @@ public class CallToUnsupportedMethod implements Detector {
                 analyzeMethod(classContext, method);
             } catch (MethodUnprofitableException e) {
                 assert true; // move along; nothing to see
-            } catch (CFGBuilderException e) {
-                String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
-                        + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
-                bugReporter.logError(msg, e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
                         + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
                 bugReporter.logError(msg, e);
@@ -89,7 +85,7 @@ public class CallToUnsupportedMethod implements Detector {
      * @param classContext
      * @param method
      */
-    private void analyzeMethod(ClassContext classContext, Method method) throws MethodUnprofitableException, CFGBuilderException,
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException,
             DataflowAnalysisException {
         if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
             return;

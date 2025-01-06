@@ -471,25 +471,19 @@ public class Filter {
                 return false;
             }
 
-            if (hashChangedSpecified) {
-                if (bug.isInstanceHashConsistent() == hashChanged) {
-                    return false;
-                }
+            if (hashChangedSpecified && bug.isInstanceHashConsistent() == hashChanged) {
+                return false;
             }
             if (applySuppressionSpecified && applySuppression && suppressionFilter.match(bug)) {
                 return false;
             }
             SourceLineAnnotation primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
 
-            if (knownSourceSpecified) {
-                if (primarySourceLineAnnotation.isUnknown() == knownSource) {
-                    return false;
-                }
+            if (knownSourceSpecified && primarySourceLineAnnotation.isUnknown() == knownSource) {
+                return false;
             }
-            if (withSourceSpecified) {
-                if (sourceSearcher.findSource(primarySourceLineAnnotation) != withSource) {
-                    return false;
-                }
+            if (withSourceSpecified && sourceSearcher.findSource(primarySourceLineAnnotation) != withSource) {
+                return false;
             }
 
             if (sloppyUniqueSpecified) {
@@ -525,7 +519,7 @@ public class Filter {
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             option = option.substring(1);
-            if (optionExtraPart.length() == 0) {
+            if (optionExtraPart.isEmpty()) {
                 setField(option, true);
             } else {
                 setField(option, Boolean.parseBoolean(optionExtraPart));

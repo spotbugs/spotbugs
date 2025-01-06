@@ -256,7 +256,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
     private void checkDataflow(XMethod xmethod, CFG cfg, TypeQualifierValue<?> typeQualifierValue,
             ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
-            BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException, CheckedAnalysisException {
+            BackwardTypeQualifierDataflow backwardDataflow) throws CheckedAnalysisException {
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location loc = i.next();
 
@@ -371,7 +371,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
     private void checkValueSources(XMethod xMethod, CFG cfg, TypeQualifierValue<?> typeQualifierValue,
             ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
-            BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException, CheckedAnalysisException {
+            BackwardTypeQualifierDataflow backwardDataflow) throws CheckedAnalysisException {
 
         // Check to see if any backwards ALWAYS or NEVER values
         // reach incompatible sources.

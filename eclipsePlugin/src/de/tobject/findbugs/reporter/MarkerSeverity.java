@@ -40,7 +40,7 @@ public enum MarkerSeverity {
      *         returns {@link #Warning} severity.
      */
     public static MarkerSeverity get(String markerSeverity) {
-        if (markerSeverity == null || markerSeverity.length() == 0) {
+        if (markerSeverity == null || markerSeverity.isEmpty()) {
             return Warning;
         }
         try {

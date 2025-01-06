@@ -182,7 +182,7 @@ public class PluginLoader implements AutoCloseable {
     }
 
     public boolean hasParent() {
-        return parentId != null && parentId.length() > 0;
+        return parentId != null && !parentId.isEmpty();
     }
 
     /**
@@ -773,7 +773,7 @@ public class PluginLoader implements AutoCloseable {
 
                 try {
                     String propertiesLocation = componentNode.valueOf("@properties");
-                    boolean disabled = Boolean.valueOf(componentNode.valueOf("@disabled"));
+                    boolean disabled = Boolean.parseBoolean(componentNode.valueOf("@disabled"));
 
                     Node filterMessageNode = findMessageNode(messageCollectionList,
                             "/MessageCollection/PluginComponent[@id='" + componentId + "']",
@@ -781,7 +781,7 @@ public class PluginLoader implements AutoCloseable {
                     String description = getChildText(filterMessageNode, "Description").trim();
                     String details = getChildText(filterMessageNode, "Details").trim();
                     PropertyBundle properties = new PropertyBundle();
-                    if (propertiesLocation != null && propertiesLocation.length() > 0) {
+                    if (propertiesLocation != null && !propertiesLocation.isEmpty()) {
                         URL properiesURL = classLoaderForResources.getResource(propertiesLocation);
                         if (properiesURL == null) {
                             AnalysisContext.logError("Could not load properties for " + plugin.getPluginId() + " component " + componentId
@@ -822,7 +822,7 @@ public class PluginLoader implements AutoCloseable {
                                 + " loaded from " + loadedFrom);
                     }
                     String kind = main.valueOf("@kind");
-                    boolean analysis = Boolean.valueOf(main.valueOf("@analysis"));
+                    boolean analysis = Boolean.parseBoolean(main.valueOf("@analysis"));
                     Element mainMessageNode = (Element) findMessageNode(messageCollectionList,
                             "/MessageCollection/FindBugsMain[@cmd='" + cmd
                             // + " and @class='" + className
@@ -851,7 +851,7 @@ public class PluginLoader implements AutoCloseable {
                 String reports = detectorNode.valueOf("@reports");
                 String requireJRE = detectorNode.valueOf("@requirejre");
                 String hidden = detectorNode.valueOf("@hidden");
-                if (speed == null || speed.length() == 0) {
+                if (speed == null || speed.isEmpty()) {
                     speed = "fast";
                 }
                 // System.out.println("Found detector: class="+className+", disabled="+disabled);
@@ -867,7 +867,7 @@ public class PluginLoader implements AutoCloseable {
                 }
                 DetectorFactory factory = new DetectorFactory(plugin, className, detectorClass, !"true".equals(disabled), speed,
                         reports, requireJRE);
-                if (Boolean.valueOf(hidden).booleanValue()) {
+                if (Boolean.parseBoolean(hidden)) {
                     factory.setHidden(true);
                 }
                 factory.setPositionSpecifiedInPluginDescriptor(detectorCount++);
@@ -927,7 +927,7 @@ public class PluginLoader implements AutoCloseable {
             }
             BugCategory bc = plugin.addOrCreateBugCategory(key);
 
-            boolean hidden = Boolean.valueOf(categoryNode.valueOf("@hidden"));
+            boolean hidden = Boolean.parseBoolean(categoryNode.valueOf("@hidden"));
             if (hidden) {
                 bc.setHidden(hidden);
             }
@@ -995,7 +995,7 @@ public class PluginLoader implements AutoCloseable {
             int cweid = 0;
             try {
                 String cweString = bugPatternNode.valueOf("@cweid");
-                if (cweString.length() > 0) {
+                if (!cweString.isEmpty()) {
                     cweid = Integer.parseInt(cweString);
                 }
             } catch (RuntimeException e) {
@@ -1006,7 +1006,7 @@ public class PluginLoader implements AutoCloseable {
 
             try {
                 String deprecatedStr = bugPatternNode.valueOf("@deprecated");
-                boolean deprecated = deprecatedStr.length() > 0 && Boolean.valueOf(deprecatedStr).booleanValue();
+                boolean deprecated = !deprecatedStr.isEmpty() && Boolean.parseBoolean(deprecatedStr);
                 if (deprecated) {
                     bugPattern.setDeprecated(deprecated);
                 }
@@ -1178,7 +1178,7 @@ public class PluginLoader implements AutoCloseable {
         return constructedPlugin;
     }
 
-    public Document getPluginDescriptor() throws PluginException, PluginDoesntContainMetadataException {
+    public Document getPluginDescriptor() throws PluginException {
         Document pluginDescriptor;
 
         // Read the plugin descriptor
@@ -1263,7 +1263,7 @@ public class PluginLoader implements AutoCloseable {
     }
 
     private static Date parseDate(String releaseDate) {
-        if (releaseDate == null || releaseDate.length() == 0) {
+        if (releaseDate == null || releaseDate.isEmpty()) {
             return null;
         }
         try {
@@ -1288,7 +1288,7 @@ public class PluginLoader implements AutoCloseable {
 
         node = constraintElement.selectSingleNode("./" + singleDetectorElementName + "Category");
         if (node != null) {
-            boolean spanPlugins = Boolean.valueOf(node.valueOf("@spanplugins")).booleanValue();
+            boolean spanPlugins = Boolean.parseBoolean(node.valueOf("@spanplugins"));
 
             String categoryName = node.valueOf("@name");
             if (!"".equals(categoryName)) {
@@ -1307,7 +1307,7 @@ public class PluginLoader implements AutoCloseable {
 
         node = constraintElement.selectSingleNode("./" + singleDetectorElementName + "Subtypes");
         if (node != null) {
-            boolean spanPlugins = Boolean.valueOf(node.valueOf("@spanplugins")).booleanValue();
+            boolean spanPlugins = Boolean.parseBoolean(node.valueOf("@spanplugins"));
 
             String superName = node.valueOf("@super");
             if (!"".equals(superName)) {
@@ -1618,9 +1618,7 @@ public class PluginLoader implements AutoCloseable {
             String shortDesc = findMessageText(msgDocuments,
                     XPATH_PLUGIN_SHORT_DESCRIPTION, "");
             return new Summary(pluginId, shortDesc, provider, website);
-        } catch (DocumentException e) {
-            throw new IllegalArgumentException(e);
-        } catch (IOException e) {
+        } catch (DocumentException | IOException e) {
             throw new IllegalArgumentException(e);
         }
     }

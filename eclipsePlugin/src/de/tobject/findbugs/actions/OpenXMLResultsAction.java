@@ -75,9 +75,7 @@ public class OpenXMLResultsAction extends FindBugsAction {
             fileStore = EFS.getLocalFileSystem().getStore(new Path(file.getCanonicalPath()));
             IEditorInput input = new FileStoreEditorInput(fileStore);
             return page.openEditor(input, editorId);
-        } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Could not get canonical file path");
-        } catch (CoreException e) {
+        } catch (IOException | CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Could not get canonical file path");
         }
         return null;
