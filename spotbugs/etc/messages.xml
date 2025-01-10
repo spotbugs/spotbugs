@@ -1855,6 +1855,17 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod">
+    <Details>
+      <![CDATA[
+            <p>
+              Looks for hiding of static, non-private methods by the subclass.
+              It has exceptions for main method, constructor, inner classes, and auto generated methods.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns
@@ -9203,6 +9214,25 @@ Using floating-point variables should not be used as loop counters, as they are 
         ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="HSM_HIDING_METHOD">
+    <ShortDescription>Method hiding should be avoided.</ShortDescription>
+    <LongDescription>The method '{1.nameAndSignature}' in class '{0.simpleName}' hides a method in class '{2.simpleName}'. Declare the respective methods non-static or private to eradicate the problem.</LongDescription>
+    <Details>
+      <![CDATA[
+        Hiding happens when a subclass defines a static method
+        with same header (signature plus return type) as in any of the super classes.
+        In the event of method hiding the invoked method is determined based on the specific qualified name or
+        method invocation expression used at the calling site.
+        The results are often unexpected, although the Java language provides unambiguous rules for method invocation for method hiding.
+        Moreover, method hiding and method overriding is often confused by programmers.
+        Consequently, programmers should avoid the method hiding.
+        Programmer should declare the respective method non-static or restrict it as private to eradicate the problem.
+        <p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">MET07-J. Never declare a class method that hides a method declared in a superclass or superinterface</a>.
+        </p>
+        ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES">
         <ShortDescription>Do not reuse public identifiers from JSL as class name</ShortDescription>
         <LongDescription>The name of the class {0} shadows the publicly available identifier from the Java Standard Library.</LongDescription>
@@ -9507,5 +9537,6 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
+  <BugCode abbrev="HSM">Avoid method hiding</BugCode>
 </MessageCollection>
 
