@@ -279,7 +279,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             return;
         }
 
-        logMissingClass(classDescriptor.toDottedClassName());
+        logMissingClass(classDescriptor.getDottedClassName());
     }
 
     /**
