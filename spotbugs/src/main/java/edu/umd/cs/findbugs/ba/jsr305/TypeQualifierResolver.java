@@ -68,7 +68,6 @@ public class TypeQualifierResolver {
     };
 
     private static final ClassDescriptor[] NULLABLE_CLASS_DESCRIPTORS = new ClassDescriptor[] {
-        DescriptorFactory.createClassDescriptor("edu/umd/cs/findbugs/annotations/Nullable"),
         DescriptorFactory.createClassDescriptor("android/support/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("androidx/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable"),
