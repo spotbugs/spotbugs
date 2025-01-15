@@ -96,7 +96,7 @@ class BugCounts {
         writeBugPriorities(xmlOutput, nBugs);
     }
 
-    public static void writeBugPriorities(XMLOutput xmlOutput, @Nonnull int nBugs[]) throws IOException {
+    public static void writeBugPriorities(XMLOutput xmlOutput, @Nonnull int[] nBugs) throws IOException {
         int i = nBugs.length;
         while (--i > 0) {
             if (nBugs[i] > 0) {
