@@ -14,7 +14,7 @@ public class Foo {
         }
         System.out.println(s);
 
-        Integer i = new Integer(0);
+        Integer i = Integer.valueOf(0);
         System.out.println("" + i);
 
         System.out.printf("%s");
