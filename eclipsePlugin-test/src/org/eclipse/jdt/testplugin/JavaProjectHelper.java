@@ -321,16 +321,11 @@ public class JavaProjectHelper {
      */
     public static IPackageFragmentRoot addSourceContainerWithImport(IJavaProject jproject, String containerName, File zipFile,
             String containerEncoding, IPath[] exclusionFilters) throws InvocationTargetException, CoreException, IOException {
-        ZipFile file = new ZipFile(zipFile);
-        try {
+        try (ZipFile file = new ZipFile(zipFile)) {
             IPackageFragmentRoot root = addSourceContainer(jproject, containerName, exclusionFilters);
             ((IContainer) root.getCorrespondingResource()).setDefaultCharset(containerEncoding, null);
             importFilesFromZip(file, root.getPath(), null);
             return root;
-        } finally {
-            if (file != null) {
-                file.close();
-            }
         }
     }
 
@@ -387,17 +382,8 @@ public class JavaProjectHelper {
             IPath sourceAttachRoot) throws IOException, CoreException {
         IProject project = jproject.getProject();
         IFile newFile = project.getFile(jarPath.lastSegment());
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(jarPath.toFile());
+        try (InputStream inputStream = new FileInputStream(jarPath.toFile())) {
             newFile.create(inputStream, true, null);
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                }
-            }
         }
         return addLibrary(jproject, newFile.getFullPath(), sourceAttachPath, sourceAttachRoot);
     }
@@ -453,15 +439,10 @@ public class JavaProjectHelper {
     public static IPackageFragmentRoot addClassFolderWithImport(IJavaProject jproject, String containerName,
             IPath sourceAttachPath, IPath sourceAttachRoot, File zipFile) throws IOException, CoreException,
             InvocationTargetException {
-        ZipFile file = new ZipFile(zipFile);
-        try {
+        try (ZipFile file = new ZipFile(zipFile)) {
             IPackageFragmentRoot root = addClassFolder(jproject, containerName, sourceAttachPath, sourceAttachRoot);
             importFilesFromZip(file, root.getPath(), null);
             return root;
-        } finally {
-            if (file != null) {
-                file.close();
-            }
         }
     }
 
