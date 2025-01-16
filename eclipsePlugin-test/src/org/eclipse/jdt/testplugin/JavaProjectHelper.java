@@ -119,8 +119,7 @@ public class JavaProjectHelper {
      *            the java project
      */
     public static void set15CompilerOptions(IJavaProject project) {
-        @SuppressWarnings("rawtypes")
-        Map options = project.getOptions(false);
+        Map<String, String> options = project.getOptions(false);
         JavaProjectHelper.set15CompilerOptions(options);
         project.setOptions(options);
     }

@@ -2473,7 +2473,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     }
 
     public List<BugAnnotation> getAnnotationsForMessage(boolean showContext) {
-        ArrayList<BugAnnotation> result = new ArrayList<>();
+        List<BugAnnotation> result = new ArrayList<>();
 
         HashSet<BugAnnotation> primaryAnnotations = new HashSet<>();
 
