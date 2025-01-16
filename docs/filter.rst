@@ -113,7 +113,7 @@ If the ``name`` attribute of ``Class``, ``Source``, ``Method`` or ``Field`` star
 
 Note that the pattern is matched against whole element name and therefore ``.*`` clauses need to be used at pattern beginning and/or end to perform substring matching.
 
-See `java.util.regex.Pattern <https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html>`_ documentation for pattern syntax.
+See `java.util.regex.Pattern <https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/regex/Pattern.html>`_ documentation for pattern syntax.
 
 Caveats
 -------
