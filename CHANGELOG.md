@@ -5,7 +5,10 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2024-??-??
+## Unreleased - 2025-??-??
+
+### Fixed
+- Fixed the parsing of generics methods in `ThrowingExceptions` ([#3267](https://github.com/spotbugs/spotbugs/issues/3267))
 
 ## 4.9.0 - 2025-01-15
 ### Added
