@@ -10,6 +10,6 @@ class Issue3267Test extends AbstractIntegrationTest {
         performAnalysis("ghIssues/Issue3267.class",
                 "ghIssues/Issue3267BaseClass.class");
 
-        assertBugTypeCount("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 1);
+        assertBugTypeCount("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 2);
     }
 }
