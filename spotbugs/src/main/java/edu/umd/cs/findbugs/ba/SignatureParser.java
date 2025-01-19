@@ -36,6 +36,7 @@ import org.apache.bcel.generic.InvokeInstruction;
  *
  * @deprecated This signature parser does not support generics, use GenericSignatureParser instead.
  */
+@Deprecated
 public class SignatureParser {
     private int totalArgumentSize;
 
