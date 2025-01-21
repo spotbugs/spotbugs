@@ -7,12 +7,12 @@ tasks.named('compileJava', JavaCompile).configure {
     options.release = 11
 }
 
-// Force Eclipse use Java 1.8, otherwise it will get Java 17 (!) from gradle
+// Force Eclipse use Java 11, otherwise it will get Java 17 (!) from gradle
 eclipse {
   jdt {
-    sourceCompatibility = 8
-    targetCompatibility = 8
-    javaRuntimeName = "JavaSE-1.8"
+    sourceCompatibility = 11
+    targetCompatibility = 11
+    javaRuntimeName = "JavaSE-11"
   }
 }
 
@@ -234,7 +234,7 @@ def scripts = tasks.register('scripts', Copy) {
 javadoc {
   doFirst {
     // This is supposed to enable everything except "missing" but doesn't work with gradle
-    // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
+    // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
     options.addBooleanOption('Xdoclint:all,-missing', true)
 
     // TODO remove command and warning below if the doclint can be properly configured
