@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fixed the parsing of generics methods in `ThrowingExceptions` ([#3267](https://github.com/spotbugs/spotbugs/issues/3267))
 - Accept the 1st parameter of `java.util.concurrent.CompletableFuture`'s `completeOnTimeout()`, `getNow()` and `obtrudeValue()` functions as nullable ([#1001](https://github.com/spotbugs/spotbugs/issues/1001)).
+- Fixed the an analysis error when `FindReturnRef` was checking instructions corresponding to a CFG branch that was optimized away ([#3266](https://github.com/spotbugs/spotbugs/issues/3266))
 
 ## 4.9.0 - 2025-01-15
 ### Added
