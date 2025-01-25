@@ -1638,6 +1638,7 @@ public class OpcodeStack {
                         setTop(true);
                         break;
                     } else {
+                        // The jump was deemed impossible after constants analysis
                         break;
                     }
                 }
