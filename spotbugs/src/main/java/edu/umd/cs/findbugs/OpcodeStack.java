@@ -3109,6 +3109,7 @@ public class OpcodeStack {
     }
 
     private String methodName;
+    private String fullyQualifiedMethodName;
 
     DismantleBytecode v;
 
@@ -3140,6 +3141,9 @@ public class OpcodeStack {
         initialize();
 
         int result = resetForMethodEntry0(v);
+
+        fullyQualifiedMethodName = v.getFullyQualifiedMethodName();
+
         Code code = v.getMethod().getCode();
         if (code == null) {
             return result;
@@ -3273,7 +3277,7 @@ public class OpcodeStack {
     public Item getStackItem(int stackOffset) {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
-                    + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
+                    + " in " + fullyQualifiedMethodName, new IllegalArgumentException(stackOffset
                             + " is not a value stack offset"));
             return new Item("Lfindbugs/OpcodeStackError;");
 
