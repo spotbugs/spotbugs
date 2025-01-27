@@ -256,6 +256,9 @@ distributions {
     contents {
       from(scripts) {
         into 'bin'
+        filePermissions {
+          unix(0755)
+        }
       }
       from 'README.txt'
       from ('plugin') {
