@@ -243,7 +243,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             }
         }
 
-        if (instanceGetterMethod != null && !hasSynchronized(instanceGetterMethod) && isInstanceFieldLazilyInitialized) {
+        if (instanceGetterMethod != null && !hasSynchronized(instanceGetterMethod, new HashSet<>()) && isInstanceFieldLazilyInitialized) {
             bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", NORMAL_PRIORITY).addClass(this)
                     .addMethod(instanceGetterMethod));
         }
@@ -276,7 +276,17 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         super.visitAfter(javaClass);
     }
 
-    private boolean hasSynchronized(XMethod method) {
+    /**
+     * @param method The method we are checking
+     * @param visitedMethods The set of methods we have already visited, to break recursion when methods are called recursively. To be initially empty.
+     * @return true if the method (or one of the methods called recursively) is synchronized or uses a monitor.
+     */
+    private boolean hasSynchronized(XMethod method, Set<XMethod> visitedMethods) {
+        if (!visitedMethods.add(method)) {
+            // We are visiting an already visited method and have not found synchronization so far
+            return false;
+        }
+
         if (method.isSynchronized() || methodsUsingMonitor.contains(method)) {
             return true;
         }
@@ -284,7 +294,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         if (calledMethodsByMethods.containsKey(method)) {
             List<XMethod> calledMethods = calledMethodsByMethods.get(method);
             for (XMethod cm : calledMethods) {
-                if (hasSynchronized(cm)) {
+                if (hasSynchronized(cm, visitedMethods)) {
                     return true;
                 }
             }
