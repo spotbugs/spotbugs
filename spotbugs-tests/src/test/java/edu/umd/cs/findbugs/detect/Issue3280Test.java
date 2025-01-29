@@ -9,7 +9,7 @@ class Issue3280Test extends AbstractIntegrationTest {
     void testIssue() {
         performAnalysis("ghIssues/Issue3280.class");
 
-        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
-        assertBugInClass("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", "Issue3280");
+        assertNoBugInClass("SING_SINGLETON_IMPLEMENTS_CLONEABLE", "Issue3280");
+        assertBugInClassCount("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", "Issue3280", 1);
     }
 }
