@@ -14,6 +14,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Added execute file permission to files in the distribution archive ([#3274](https://github.com/spotbugs/spotbugs/issues/3274))
 - Fixed a stack overflow in  `MultipleInstantiationsOfSingletons` when a singleton initializer makes recursive calls ([#3280](https://github.com/spotbugs/spotbugs/issues/3280))
 - Fixed NPE in  `FindReturnRef` on inner class fields ([#3283](https://github.com/spotbugs/spotbugs/issues/3283))
+- Fixed NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE false positive when add edu.umd.cs.findbugs.annotations.Nullable [[#3243](https://github.com/spotbugs/spotbugs/issues/3243)]
 
 ## 4.9.0 - 2025-01-15
 ### Added
