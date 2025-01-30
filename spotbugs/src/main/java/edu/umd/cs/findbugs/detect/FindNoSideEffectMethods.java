@@ -359,6 +359,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         if (method.isAbstract() || method.isInterface()) {
             if (!sawImplementation
                     || getClassName().endsWith("Visitor") || getClassName().endsWith("Listener")
+                    || getClassName().endsWith("Builder")
                     || getClassName().startsWith("java/sql/")
                     || (getClassName().equals("java/util/concurrent/Future") && !method.getName().startsWith("is"))
                     || (getClassName().equals("java/lang/Process") && method.getName().equals("exitValue"))) {

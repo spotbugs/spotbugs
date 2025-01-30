@@ -81,7 +81,6 @@ import edu.umd.cs.findbugs.plugins.DuplicatePluginIdError;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.JavaWebStart;
-import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.XMLUtil;
 
 /**
@@ -361,14 +360,10 @@ public class PluginLoader implements AutoCloseable {
             // 3rd party FB plugin projects in Eclipse without packaging them to jars at all)
             File manifest = guessManifest(f);
             if (manifest != null) {
-                FileInputStream is = null;
-                try {
-                    is = new FileInputStream(manifest);
+                try (FileInputStream is = new FileInputStream(manifest)) {
                     mf = new Manifest(is);
                 } catch (IOException e) {
                     throw new PluginException("Failed loading manifest for plugin jar: " + url, e);
-                } finally {
-                    IO.close(is);
                 }
             }
         }
@@ -1507,13 +1502,11 @@ public class PluginLoader implements AutoCloseable {
 
     static void installWebStartPlugins() {
         URL pluginListProperties = getCoreResource("pluginlist.properties");
-        BufferedReader in = null;
         if (pluginListProperties != null) {
-            try {
+            try (BufferedReader in = UTF8.bufferedReader(pluginListProperties.openStream())) {
                 DetectorFactoryCollection.jawsDebugMessage(pluginListProperties.toString());
                 URL base = getUrlBase(pluginListProperties);
 
-                in = UTF8.bufferedReader(pluginListProperties.openStream());
                 while (true) {
                     String plugin = in.readLine();
 
@@ -1535,8 +1528,6 @@ public class PluginLoader implements AutoCloseable {
                 }
             } catch (IOException e) {
                 DetectorFactoryCollection.jawsDebugMessage("error : " + e.getMessage());
-            } finally {
-                Util.closeSilently(in);
             }
         }
     }
@@ -1623,13 +1614,10 @@ public class PluginLoader implements AutoCloseable {
         }
     }
 
-    private static Document parseDocument(@WillClose InputStream in) throws DocumentException {
-        Reader r = UTF8.bufferedReader(in);
-        try {
+    private static Document parseDocument(@WillClose InputStream in) throws DocumentException, IOException {
+        try (Reader r = UTF8.bufferedReader(in)) {
             SAXReader reader = XMLUtil.buildSAXReader();
             return reader.read(r);
-        } finally {
-            Util.closeSilently(r);
         }
     }
 }

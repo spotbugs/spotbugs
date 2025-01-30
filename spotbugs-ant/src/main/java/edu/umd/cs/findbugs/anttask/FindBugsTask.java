@@ -92,7 +92,6 @@ import edu.umd.cs.findbugs.ExitCodes;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  * @author Scott Wolk
- * @version $Revision: 1.56 $
  *
  * @since Ant 1.5
  *

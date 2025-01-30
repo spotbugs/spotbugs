@@ -914,6 +914,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
      *             {@link #foundNullDeref(Location,ValueNumber,IsNullValue,ValueNumberFrame,boolean)}
      *             instead
      */
+    @Deprecated
     @Override
     public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
         foundNullDeref(location, valueNumber, refValue, vnaFrame, true);
