@@ -13,6 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed the an analysis error when `FindReturnRef` was checking instructions corresponding to a CFG branch that was optimized away ([#3266](https://github.com/spotbugs/spotbugs/issues/3266))
 - Added execute file permission to files in the distribution archive ([#3274](https://github.com/spotbugs/spotbugs/issues/3274))
 - Fixed a stack overflow in  `MultipleInstantiationsOfSingletons` when a singleton initializer makes recursive calls ([#3280](https://github.com/spotbugs/spotbugs/issues/3280))
+- Fixed NPE in  `FindReturnRef` on inner class fields ([#3283](https://github.com/spotbugs/spotbugs/issues/3283))
 
 ## 4.9.0 - 2025-01-15
 ### Added

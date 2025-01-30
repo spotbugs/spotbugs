@@ -315,7 +315,7 @@ public class FindReturnRef extends OpcodeStackDetector {
     }
 
     private boolean isNestedField(XField field) {
-        if (getThisClass().isNested() && field.getName().startsWith("this$")) {
+        if (field != null && getThisClass().isNested() && field.getName().startsWith("this$")) {
             try {
                 List<JavaClass> hostClasses = NestedAccessUtil.getHostClasses(getThisClass());
                 String fieldType = ClassName.fromFieldSignatureToDottedClassName(field.getSignature());
