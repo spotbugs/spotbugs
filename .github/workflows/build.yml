@@ -8,7 +8,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-13]
         java: [11, 17, 21, 23]
       max-parallel: 6
     runs-on: ${{ matrix.os }}
