@@ -142,6 +142,10 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
         // using the overridden name.
         resourceName = translateResourceName(resourceName);
 
+        if (resourceName.contains("..")) {
+            throw new IllegalArgumentException("Invalid resource name: " + resourceName);
+        }
+
         File file = getFullPathOfResource(resourceName);
         if (!file.exists()) {
             return null;
