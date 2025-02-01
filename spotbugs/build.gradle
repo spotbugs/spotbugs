@@ -224,7 +224,7 @@ def scripts = tasks.register('scripts', Copy) {
   }
 
   into(layout.buildDirectory.dir("bin"))
-  duplicatesStrategy DuplicatesStrategy.FAIL
+  duplicatesStrategy = DuplicatesStrategy.FAIL
   filePermissions{
     unix (0755)
   }

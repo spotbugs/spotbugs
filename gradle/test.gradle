@@ -1,7 +1,7 @@
 tasks.withType(Test) {
     testLogging {
         events 'FAILED'
-        exceptionFormat 'full'
+        exceptionFormat = 'full'
     }
     doFirst {
       jvmArgs += [
