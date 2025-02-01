@@ -82,10 +82,12 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
     @Override
     public String getRealResourceName() {
         String entryName = zipEntry.getName();
-        if (entryName.contains("..")) {
+        Path entryPath = Paths.get(entryName).normalize();
+        Path zipRootPath = Paths.get("").toAbsolutePath().normalize();
+        if (!entryPath.startsWith(zipRootPath) || entryName.contains("..")) {
             throw new IllegalArgumentException("Invalid zip entry name: " + entryName);
         }
-        return entryName;
+        return entryPath.toString();
     }
 
     /*
