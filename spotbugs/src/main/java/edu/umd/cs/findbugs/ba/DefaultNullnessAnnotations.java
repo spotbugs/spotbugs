@@ -234,6 +234,13 @@ public class DefaultNullnessAnnotations {
                 "(Ljava/lang/Object;)Ljava/util/concurrent/CompletableFuture;", true, 0, NullnessAnnotation.NULLABLE);
         database.addMethodParameterAnnotation("java.util.concurrent.CompletableFuture", "completedStage",
                 "(Ljava/lang/Object;)Ljava/util/concurrent/CompletionStage;", true, 0, NullnessAnnotation.NULLABLE);
+        database.addMethodParameterAnnotation("java.util.concurrent.CompletableFuture", "completeOnTimeout",
+                "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/CompletableFuture;", false, 0,
+                NullnessAnnotation.NULLABLE);
+        database.addMethodParameterAnnotation("java.util.concurrent.CompletableFuture", "getNow",
+                "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NULLABLE);
+        database.addMethodParameterAnnotation("java.util.concurrent.CompletableFuture", "obtrudeValue",
+                "(Ljava/lang/Object;)V", false, 0, NullnessAnnotation.NULLABLE);
 
         database.addMethodParameterAnnotation("java.util.concurrent.ExecutionException", "<init>", "(Ljava/lang/String;)V",
                 false, 0, NullnessAnnotation.CHECK_FOR_NULL);
@@ -431,6 +438,31 @@ public class DefaultNullnessAnnotations {
         database.addMethodAnnotation("java.util.Objects", "requireNonNull", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;",
                 true, NullnessAnnotation.NONNULL);
 
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkNotNull", "(Ljava/lang/Object;)V",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkNotNull", "(Ljava/lang/Object;Ljava/lang/String;)V",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkExpressionValueIsNotNull",
+                "(Ljava/lang/Object;Ljava/lang/String;)V",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkNotNullExpressionValue",
+                "(Ljava/lang/Object;Ljava/lang/String;)V",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkReturnedValueIsNotNull",
+                "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkReturnedValueIsNotNull",
+                "(Ljava/lang/Object;Ljava/lang/String;)V",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkFieldIsNotNull",
+                "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkFieldIsNotNull", "(Ljava/lang/Object;Ljava/lang/String;)V",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkParameterIsNotNull", "(Ljava/lang/Object;Ljava/lang/String;)V",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("kotlin.jvm.internal.Intrinsics", "checkNotNullParameter", "(Ljava/lang/Object;Ljava/lang/String;)V",
+                true, 0, NullnessAnnotation.NONNULL);
 
         database.addMethodAnnotation("org.w3c.dom.Element", "getAttribute", "(Ljava/lang/String;)Ljava/lang/String;",
                 false, NullnessAnnotation.NONNULL);

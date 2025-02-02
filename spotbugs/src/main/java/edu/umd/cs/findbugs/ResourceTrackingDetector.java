@@ -60,7 +60,7 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
     protected BugReporter bugReporter;
 
-    public ResourceTrackingDetector(BugReporter bugReporter) {
+    protected ResourceTrackingDetector(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
@@ -112,9 +112,7 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
                 }
 
                 analyzeMethod(classContext, method, resourceTracker, resourceCollection);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Error analyzing method " + method.toString(), e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("Error analyzing method " + method.toString(), e);
             }
             bugAccumulator.reportAccumulatedBugs();

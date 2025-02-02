@@ -21,7 +21,9 @@ package sfBugs.a;
 /* this class only exists to induce a warning in another class;
  * see sfBugs/b/bug2010156.java */
 public class bug2010156 {
-    private int i, j, k;
+    private int i;
+    private int j;
+    private int k;
 
     public int testMethod1(int a, int b, int c) {
         i = a;

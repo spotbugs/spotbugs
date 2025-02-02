@@ -108,7 +108,7 @@ public class RejarClassesForAnalysis {
 
             public boolean matchesEverything() {
                 for (String p : prefixes) {
-                    if (p.length() == 0) {
+                    if (p.isEmpty()) {
                         return true;
                     }
                 }
@@ -626,7 +626,7 @@ public class RejarClassesForAnalysis {
         zipIn.close();
     }
 
-    private void advanceAuxiliaryOut() throws IOException, FileNotFoundException {
+    private void advanceAuxiliaryOut() throws IOException {
         auxiliaryOut.close();
         auxiliaryOut = createZipFile(getNextAuxiliaryFileOutput());
     }

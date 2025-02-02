@@ -1,13 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.jupiter.api.Test;
-
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
  * SpotBugs should suppress "UNF_UNREAD_FIELD" warning when triggering fields have certain annotations.
@@ -24,10 +18,7 @@ class Issue574Test extends AbstractIntegrationTest {
     @Test
     void testSerializedNameAnnotation() {
         performAnalysis("ghIssues/issue574/Issue574SerializedName.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertNoBugType(DESIRED_BUG_TYPE);
     }
 
     /**
@@ -37,10 +28,7 @@ class Issue574Test extends AbstractIntegrationTest {
     @Test
     void testXmlElementAnnotation() {
         performAnalysis("ghIssues/issue574/Issue574XmlElement.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertNoBugType(DESIRED_BUG_TYPE);
     }
 
     /**
@@ -51,9 +39,6 @@ class Issue574Test extends AbstractIntegrationTest {
     void testRegisterExtensionAnnotation() {
         performAnalysis("ghIssues/issue574/Issue574RegisterExtension.class",
                 "ghIssues/issue574/BypassFileNotFoundExceptionExtension.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(DESIRED_BUG_TYPE)
-                .build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
+        assertNoBugType(DESIRED_BUG_TYPE);
     }
 }

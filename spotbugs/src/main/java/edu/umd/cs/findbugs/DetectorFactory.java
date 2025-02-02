@@ -51,6 +51,34 @@ public class DetectorFactory {
 
     private static final Class<?>[] constructorArgTypes = new Class<?>[] { BugReporter.class };
 
+    private final @Nonnull Plugin plugin;
+
+    private final ReflectionDetectorCreator detectorCreator;
+
+    private final @Nonnull @DottedClassName String className;
+
+    private int positionSpecifiedInPluginDescriptor;
+
+    private final boolean defEnabled;
+
+    /**
+     * @deprecated This attribute is not used actively, and could be removed in future release
+     */
+    @Deprecated
+    private final String speed;
+
+    private final String reports;
+
+    private final String requireJRE;
+
+    private String detailHTML;
+
+    private int priorityAdjustment;
+
+    private boolean enabledButNonReporting;
+
+    private boolean hidden;
+
     static class ReflectionDetectorCreator {
         private final Class<?> detectorClass;
 
@@ -111,34 +139,6 @@ public class DetectorFactory {
             return detectorClass;
         }
     }
-
-    private final @Nonnull Plugin plugin;
-
-    private final ReflectionDetectorCreator detectorCreator;
-
-    private final @Nonnull @DottedClassName String className;
-
-    private int positionSpecifiedInPluginDescriptor;
-
-    private final boolean defEnabled;
-
-    /**
-     * @deprecated This attribute is not used actively, and could be removed in future release
-     */
-    @Deprecated
-    private final String speed;
-
-    private final String reports;
-
-    private final String requireJRE;
-
-    private String detailHTML;
-
-    private int priorityAdjustment;
-
-    private boolean enabledButNonReporting;
-
-    private boolean hidden;
 
     /**
      * Constructor.

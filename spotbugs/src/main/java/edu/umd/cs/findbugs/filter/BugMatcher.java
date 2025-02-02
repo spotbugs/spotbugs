@@ -97,7 +97,7 @@ public class BugMatcher implements Matcher {
 
     public void addAttribute(XMLOutput xmlOutput, String name, StringSetMatch matches) throws IOException {
         String value = matches.toString();
-        if (value.length() != 0) {
+        if (!value.isEmpty()) {
             xmlOutput.addAttribute(name, value);
         }
     }

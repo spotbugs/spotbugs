@@ -424,7 +424,7 @@ public class ClassContext {
      *         null if the method has no code
      */
     @CheckForNull
-    static public BitSet getBytecodeSet(JavaClass clazz, Method method) {
+    public static BitSet getBytecodeSet(JavaClass clazz, Method method) {
 
         XMethod xmethod = XFactory.createXMethod(clazz, method);
         if (cachedBitsets().containsKey(xmethod)) {
@@ -484,7 +484,7 @@ public class ClassContext {
                 result.add(i);
             }
         }
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result = Collections.<Integer>emptySet();
         }
 
@@ -882,13 +882,9 @@ public class ClassContext {
         try {
             dumpDataflowInformation(method, getCFG(method), getValueNumberDataflow(method), getIsNullValueDataflow(method), null,
                     null);
-        } catch (DataflowAnalysisException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             AnalysisContext.logError(
                     "Could not dump data information for " + getJavaClass().getClassName() + "." + method.getName(), e);
-        } catch (CFGBuilderException e) {
-            AnalysisContext.logError(
-                    "Could not dump data information for " + getJavaClass().getClassName() + "." + method.getName(), e);
-
         }
     }
 
@@ -896,13 +892,9 @@ public class ClassContext {
         try {
             dumpDataflowInformation(method, getCFG(method), getValueNumberDataflow(method), getIsNullValueDataflow(method),
                     getUnconditionalValueDerefDataflow(method), getTypeDataflow(method));
-        } catch (DataflowAnalysisException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             AnalysisContext.logError(
                     "Could not dump data information for " + getJavaClass().getClassName() + "." + method.getName(), e);
-        } catch (CFGBuilderException e) {
-            AnalysisContext.logError(
-                    "Could not dump data information for " + getJavaClass().getClassName() + "." + method.getName(), e);
-
         }
     }
 
@@ -1008,9 +1000,7 @@ public class ClassContext {
         try {
             MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(jclass, method);
             return Global.getAnalysisCache().getMethodAnalysis(analysisClass, methodDescriptor);
-        } catch (DataflowAnalysisException e) {
-            throw e;
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             throw e;
         } catch (CheckedAnalysisException e) {
             Throwable cause = e.getCause();

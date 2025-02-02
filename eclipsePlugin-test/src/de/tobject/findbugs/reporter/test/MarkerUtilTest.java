@@ -129,7 +129,6 @@ class MarkerUtilTest extends AbstractFindBugsTest {
 
     private IMarker getAnyMarker() {
         IMarker[] markers = MarkerUtil.getAllMarkers(getProject());
-        IMarker marker = markers[0];
-        return marker;
+        return markers[0];
     }
 }

@@ -40,11 +40,11 @@ public class SystemProperties {
 
     private static Properties properties = new Properties();
 
-    public final static boolean ASSERTIONS_ENABLED;
+    public static final boolean ASSERTIONS_ENABLED;
 
-    public final static boolean RUNNING_IN_ECLIPSE;
+    public static final boolean RUNNING_IN_ECLIPSE;
 
-    public final static boolean RUNNING_AS_IDE_PLUGIN;
+    public static final boolean RUNNING_AS_IDE_PLUGIN;
 
     static {
         String name = SystemProperties.class.getClassLoader().getClass().getCanonicalName();
@@ -52,7 +52,7 @@ public class SystemProperties {
         RUNNING_AS_IDE_PLUGIN = RUNNING_IN_ECLIPSE || name.startsWith("com.intellij.ide.");
     }
 
-    final static String OS_NAME;
+    static final String OS_NAME;
     static {
         boolean tmp = false;
         assert tmp = true; // set tmp to true if assertions are enabled
@@ -152,8 +152,7 @@ public class SystemProperties {
                 return defaultValue;
             }
             result = toBoolean(value);
-        } catch (IllegalArgumentException e) {
-        } catch (NullPointerException e) {
+        } catch (IllegalArgumentException | NullPointerException ignored) {
         }
         return result;
     }
@@ -230,6 +229,10 @@ public class SystemProperties {
         properties.setProperty(name, value);
     }
 
+    public static void removeProperty(String name) {
+        properties.remove(name);
+    }
+
     /**
      * @param name
      *            property name
@@ -284,8 +287,7 @@ public class SystemProperties {
         if (!m.matches() || m.groupCount() == 0) {
             return u;
         }
-        String result = String.format(URL_REWRITE_FORMAT, m.group(1));
-        return result;
+        return String.format(URL_REWRITE_FORMAT, m.group(1));
     }
 
 }

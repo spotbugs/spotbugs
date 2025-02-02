@@ -21,6 +21,7 @@ package de.tobject.findbugs;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -116,13 +117,13 @@ public class DetectorsExtensionHelper {
         if (bundle == null) {
             return null;
         }
-        File bundleFile;
-        try {
-            bundleFile = FileLocator.getBundleFile(bundle);
-        } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to resolve detector library for " + bundle.getSymbolicName());
+        Optional<File> optBundleFile = FileLocator.getBundleFileLocation(bundle);
+        if (!optBundleFile.isPresent()) {
+            FindbugsPlugin.getDefault().logError("Failed to resolve detector library for " + bundle.getSymbolicName());
             return null;
         }
+
+        File bundleFile = optBundleFile.get();
         boolean runningInDebugger = Boolean.getBoolean("eclipse.pde.launch");
         if (!DEFAULT_USE_PLUGIN_JAR.equals(libPathAsString)) {
             return new Path(bundleFile.getAbsolutePath()).append(libPathAsString).toOSString();
@@ -160,7 +161,7 @@ public class DetectorsExtensionHelper {
         }
 
         String outputDir = getBuildDirectory(bundleName, sourceDir);
-        if (outputDir.length() == 0) {
+        if (outputDir.isEmpty()) {
             FindbugsPlugin.getDefault().logException(new IllegalStateException("No output directory in build.properties"),
                     "No output directory in build.properties " + sourceDir);
             return null;

@@ -375,6 +375,8 @@
                     disabled="true" reports="DMI_UNSUPPORTED_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker" speed="fast"
                     reports="VA_FORMAT_STRING_USES_NEWLINE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DateFormatStringChecker" speed="fast"
+                    reports="FS_BAD_DATE_FORMAT_FLAG_COMBO"/>
           <Detector class="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference" speed="fast"
                     reports="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"/>
           <Detector class="edu.umd.cs.findbugs.detect.TestingGround" speed="fast" reports="TESTING"
@@ -645,6 +647,8 @@
                     reports="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR"/>
           <Detector class="edu.umd.cs.findbugs.detect.AtomicityProblem"
                     reports="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ResourceInMultipleThreadsDetector" speed="fast"
+                    reports="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD"/>
           <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings"
                     reports="FB_UNEXPECTED_WARNING,FB_MISSING_EXPECTED_WARNING" disabled="true"
                     hidden="false"/>
@@ -666,7 +670,7 @@
                     reports="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA"/>
           <Detector class="edu.umd.cs.findbugs.detect.DontUseFloatsAsLoopCounters" speed="fast"
                     reports="FL_FLOATS_AS_LOOP_COUNTERS"/>
-          <Detector class="edu.umd.cs.findbugs.detect.ThrowingExceptions" speed="fast" disabled="true"
+          <Detector class="edu.umd.cs.findbugs.detect.ThrowingExceptions" speed="fast"
                     reports="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION,THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION,THROWS_METHOD_THROWS_CLAUSE_THROWABLE" />
           <Detector class="edu.umd.cs.findbugs.detect.PermissionsSuper"
                     reports="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS"/>
@@ -687,7 +691,12 @@
                     reports="ENV_USE_PROPERTY_INSTEAD_OF_ENV"/>
           <Detector class="edu.umd.cs.findbugs.detect.MultipleInstantiationsOfSingletons" speed="fast"
                     reports="SING_SINGLETON_IMPLEMENTS_CLONEABLE,SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE,SING_SINGLETON_IMPLEMENTS_CLONE_METHOD,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR,SING_SINGLETON_IMPLEMENTS_SERIALIZABLE,SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" />
-    <!-- Bug Categories -->
+          <Detector class="edu.umd.cs.findbugs.detect.SharedVariableAtomicityDetector"
+                    reports="AT_NONATOMIC_64BIT_PRIMITIVE,AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE,AT_STALE_THREAD_WRITE_OF_PRIMITIVE"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod" speed="fast"
+                    reports="HSM_HIDING_METHOD"/>
+
+          <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
@@ -706,7 +715,7 @@
           <BugCode abbrev="AM" cweid="227"/>
           <BugCode abbrev="J2EE" cweid="4"/>
           <BugCode abbrev="RE" cweid="185"/>
-          <BugCode abbrev="MS" cweid="218"/>
+          <BugCode abbrev="MS" cweid="493"/>
           <BugCode abbrev="DE" cweid="391"/>
           <BugCode abbrev="XSS" cweid="79"/>
           <BugCode abbrev="HRS" cweid="113"/>
@@ -719,6 +728,7 @@
           <BugCode abbrev="ASE"/>
           <BugCode abbrev="VSC"/>
           <BugCode abbrev="DA"/>
+          <BugCode abbrev="HSM"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
           <BugPattern abbrev="AA" type="AA_ASSERTION_OF_ARGUMENTS" category="BAD_PRACTICE" />
@@ -728,6 +738,7 @@
 
           <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
                     category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="AT" type="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY" cweid="81"/>
           <BugPattern abbrev="SKIPPED" type="SKIPPED_CLASS_TOO_BIG" category="EXPERIMENTAL"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER"
@@ -859,9 +870,9 @@
           <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE"
                     cweid="583"/>
           <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE" cweid="568"/>
           <BugPattern abbrev="FI" type="FI_USELESS" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE" cweid="568"/>
           <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="BAD_PRACTICE" cweid="586"/>
           <BugPattern abbrev="Eq" type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"
                     category="BAD_PRACTICE"/>
@@ -1082,6 +1093,7 @@
           <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="VA_FORMAT_STRING_USES_NEWLINE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FS" type="FS_BAD_DATE_FORMAT_FLAG_COMBO" category="BAD_PRACTICE" experimental="true"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
@@ -1333,4 +1345,8 @@
           <BugPattern abbrev="SING" type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" category="CORRECTNESS" />
           <BugPattern abbrev="ENV" type="ENV_USE_PROPERTY_INSTEAD_OF_ENV" category="BAD_PRACTICE" />
           <BugPattern abbrev="CWO" type="CWO_CLOSED_WITHOUT_OPENED" category="MT_CORRECTNESS" />
+          <BugPattern abbrev="AT" type="AT_NONATOMIC_64BIT_PRIMITIVE" category="MT_CORRECTNESS" />
+          <BugPattern abbrev="AT" type="AT_STALE_THREAD_WRITE_OF_PRIMITIVE" category="MT_CORRECTNESS" />
+          <BugPattern abbrev="AT" type="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="HSM" type="HSM_HIDING_METHOD" category="CORRECTNESS"/>
 </FindbugsPlugin>

@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs.util;
 import java.util.*;
 import java.util.stream.Stream;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.JavaClass;
@@ -15,13 +16,20 @@ public class MutableClasses {
     private static final Set<String> KNOWN_IMMUTABLE_CLASSES = new HashSet<>(Arrays.asList(
             "java.lang.String", "java.lang.Integer", "java.lang.Byte", "java.lang.Character",
             "java.lang.Short", "java.lang.Boolean", "java.lang.Long", "java.lang.Double",
-            "java.lang.Float", "java.lang.StackTraceElement", "java.lang.Class", "java.math.BigInteger",
-            "java.math.Decimal", "java.io.File", "java.awt.Font", "java.awt.BasicStroke",
+            "java.lang.Float", "java.lang.StackTraceElement", "java.lang.Class", "java.lang.ClassLoader",
+            "java.io.File", "java.awt.Font", "java.awt.BasicStroke",
             "java.awt.Color", "java.awt.GradientPaint", "java.awt.LinearGradientPaint",
             "java.awt.RadialGradientPaint", "java.awt.Cursor", "java.util.Locale", "java.util.UUID", "java.net.URL",
-            "java.util.regex.Pattern",
             "java.net.URI", "java.net.Inet4Address", "java.net.Inet6Address", "java.net.InetSocketAddress",
-            "java.security.Permission", "com.google.common.collect.ImmutableBiMap",
+            "java.util.OptionalDouble", "java.util.OptionalInt", "java.util.OptionalLong",
+            "java.util.regex.Pattern", "java.nio.charset.Charset", "java.nio.file.Path",
+            "java.security.Permission",
+            "java.lang.module.Configuration",
+            "java.lang.module.ModuleDescriptor",
+            "java.lang.module.ModuleReference",
+            "java.lang.module.ResolvedModule",
+            "java.lang.Module", "java.lang.ModuleLayer",
+            "com.google.common.collect.ImmutableBiMap",
             "com.google.common.collect.ImmutableClassToInstanceMap",
             "com.google.common.collect.ImmutableCollection",
             "com.google.common.collect.ImmutableList",
@@ -57,7 +65,12 @@ public class MutableClasses {
             "java.util.ImmutableCollections$AbstractImmutableSet"));
 
     private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
-            "java.math", "java.time"));
+            "java.math", "java.time", "java.util.function", "java.lang.constant"));
+
+    private static final Set<String> CONSTRUCTOR_LIKE_NAMES = new HashSet<>(Arrays.asList(
+            Const.CONSTRUCTOR_NAME, Const.STATIC_INITIALIZER_NAME,
+            "clone", "init", "initialize", "dispose", "finalize", "this",
+            "_jspInit", "jspDestroy"));
 
     private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
@@ -93,6 +106,10 @@ public class MutableClasses {
                     .anyMatch(type -> type.endsWith("/Immutable;") || type.equals("Ljdk/internal/ValueBased;"))) {
                 return false;
             }
+            JavaClass ann = Repository.lookupClass("java.lang.annotation.Annotation");
+            if (cls.instanceOf(ann)) {
+                return false;
+            }
             return ClassAnalysis.load(cls, sig).isMutable();
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
@@ -100,12 +117,44 @@ public class MutableClasses {
         }
     }
 
+    /**
+     * Check if the method name looks like a constructor
+     *
+     * @param methodName
+     *            the method name
+     * @return true if the method name looks like a constructor
+     */
+    public static boolean isConstructorLikeMethod(String methodName) {
+        return CONSTRUCTOR_LIKE_NAMES.contains(methodName);
+    }
+
+    /**
+     * Check if the method name looks like a setter
+     *
+     * @param methodName
+     *            the method name
+     * @param classSig
+     *            the class signature
+     * @param retSig
+     *            the return type signature
+     * @return true if the method name looks like a setter
+     */
     public static boolean looksLikeASetter(String methodName, String classSig, String retSig) {
         if (Objects.equals(classSig, retSig)) {
             return false;
         }
+        return looksLikeASetter(methodName);
+    }
 
-        return SETTER_LIKE_PREFIXES.stream().anyMatch(name -> methodName.startsWith(name));
+    /**
+     * Check if the method name looks like a setter
+     *
+     * @param methodName
+     *            the method name
+     * @return true if the method name looks like a setter
+     */
+    public static boolean looksLikeASetter(String methodName) {
+        return SETTER_LIKE_PREFIXES.stream().anyMatch(methodName::startsWith);
     }
 
     /**

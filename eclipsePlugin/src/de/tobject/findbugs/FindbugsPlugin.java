@@ -421,14 +421,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      */
     public static IWorkbenchWindow getActiveWorkbenchWindow() {
         if (Display.getCurrent() != null) {
-            return getDefault().getWorkbench().getActiveWorkbenchWindow();
+            return PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         }
         // need to call from UI thread
         final IWorkbenchWindow[] window = new IWorkbenchWindow[1];
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                window[0] = getDefault().getWorkbench().getActiveWorkbenchWindow();
+                window[0] = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
             }
         });
         return window[0];
@@ -473,27 +473,27 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         if (isDebugging()) {
             // debugging for the plugin itself
             String option = Platform.getDebugOption(PLUGIN_DEBUG);
-            FindbugsPlugin.DEBUG = Boolean.valueOf(option).booleanValue();
+            FindbugsPlugin.DEBUG = Boolean.parseBoolean(option);
 
             // debugging for the builder and friends
             option = Platform.getDebugOption(BUILDER_DEBUG);
-            FindBugsBuilder.DEBUG = Boolean.valueOf(option).booleanValue();
+            FindBugsBuilder.DEBUG = Boolean.parseBoolean(option);
             FindBugsWorker.DEBUG = FindBugsBuilder.DEBUG;
 
             // debugging for the nature
             option = Platform.getDebugOption(NATURE_DEBUG);
-            FindBugsNature.DEBUG = Boolean.valueOf(option).booleanValue();
+            FindBugsNature.DEBUG = Boolean.parseBoolean(option);
 
             // debugging for the reporter
             option = Platform.getDebugOption(REPORTER_DEBUG);
-            Reporter.DEBUG = Boolean.valueOf(option).booleanValue();
+            Reporter.DEBUG = Boolean.parseBoolean(option);
 
             // debugging for the content provider
             option = Platform.getDebugOption(CONTENT_DEBUG);
-            BugContentProvider.DEBUG = Boolean.valueOf(option).booleanValue();
+            BugContentProvider.DEBUG = Boolean.parseBoolean(option);
 
             option = Platform.getDebugOption(PROFILER_DEBUG);
-            if (Boolean.valueOf(option).booleanValue()) {
+            if (Boolean.parseBoolean(option)) {
                 System.setProperty("profiler.report", "true");
             }
         }
@@ -657,10 +657,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             try {
                 readBugCollectionAndProject(project, monitor);
                 bugCollection = (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
-            } catch (IOException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
-                bugCollection = createDefaultEmptyBugCollection(project);
-            } catch (DocumentException e) {
+            } catch (IOException | DocumentException e) {
                 FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
                 bugCollection = createDefaultEmptyBugCollection(project);
             }
@@ -738,11 +735,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *            the bug collection
      * @param monitor
      *            progress monitor
-     * @throws IOException
      * @throws CoreException
      */
     public static void storeBugCollection(IProject project, final SortedBugCollection bugCollection, IProgressMonitor monitor)
-            throws IOException, CoreException {
+            throws CoreException {
 
         // Store the bug collection and findbugs project in the session
         project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
@@ -1134,8 +1130,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugCode> getKnownPatternTypes() {
-        Set<BugCode> patterns = new TreeSet<>(DetectorFactoryCollection.instance().getBugCodes());
-        return patterns;
+        return new TreeSet<>(DetectorFactoryCollection.instance().getBugCodes());
     }
 
     public static Set<String> getFilteredIds() {

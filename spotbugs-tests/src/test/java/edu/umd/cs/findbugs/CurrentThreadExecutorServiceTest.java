@@ -62,7 +62,7 @@ class CurrentThreadExecutorServiceTest {
     }
 
     @Test
-    void awaitTerminationWithoutShutdown() throws InterruptedException {
+    void awaitTerminationWithoutShutdown() {
         ExecutorService executorService = new CurrentThreadExecutorService();
         Assertions.assertThrows(IllegalStateException.class, () -> {
             executorService.awaitTermination(1, TimeUnit.SECONDS);

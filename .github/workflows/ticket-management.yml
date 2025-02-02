@@ -14,6 +14,7 @@ permissions:
 jobs:
   stale-pr-and-issue:
     # Mark stale issues and PRs, then close them 30 days later.
+    if: github.repository_owner == 'spotbugs'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/stale@v9

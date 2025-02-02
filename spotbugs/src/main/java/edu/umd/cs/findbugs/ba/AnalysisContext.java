@@ -200,11 +200,11 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Get the AnalysisContext associated with this thread
      */
-    static public AnalysisContext currentAnalysisContext() {
+    public static AnalysisContext currentAnalysisContext() {
         return currentAnalysisContext.get();
     }
 
-    static public XFactory currentXFactory() {
+    public static XFactory currentXFactory() {
         return currentXFactory.get();
     }
 
@@ -276,7 +276,7 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
-        return missing == null || missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
+        return missing == null || missing.isEmpty() || missing.charAt(0) == '[' || missing.endsWith("package-info");
     }
 
     private static @CheckForNull RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
@@ -295,7 +295,7 @@ public class AnalysisContext implements AutoCloseable {
      *
      * @see #getLookupFailureCallback()
      */
-    static public void reportMissingClass(ClassNotFoundException e) {
+    public static void reportMissingClass(ClassNotFoundException e) {
         requireNonNull(e, "argument is null");
         String missing = AbstractBugReporter.getMissingClassName(e);
         if (skipReportingMissingClass(missing)) {
@@ -311,12 +311,12 @@ public class AnalysisContext implements AutoCloseable {
         }
     }
 
-    static public void reportMissingClass(edu.umd.cs.findbugs.ba.MissingClassException e) {
+    public static void reportMissingClass(edu.umd.cs.findbugs.ba.MissingClassException e) {
         requireNonNull(e, "argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
-    static public boolean analyzingApplicationClass() {
+    public static boolean analyzingApplicationClass() {
         AnalysisContext context = AnalysisContext.currentAnalysisContext();
         if (context == null) {
             return false;
@@ -328,12 +328,12 @@ public class AnalysisContext implements AutoCloseable {
         return context.isApplicationClass(clazz);
     }
 
-    static public void reportMissingClass(edu.umd.cs.findbugs.classfile.MissingClassException e) {
+    public static void reportMissingClass(edu.umd.cs.findbugs.classfile.MissingClassException e) {
         requireNonNull(e, "argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
-    static public void reportMissingClass(ClassDescriptor c) {
+    public static void reportMissingClass(ClassDescriptor c) {
         requireNonNull(c, "argument is null");
         if (!analyzingApplicationClass()) {
             return;
@@ -354,7 +354,7 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Report an error
      */
-    static public void logError(String msg, Exception e) {
+    public static void logError(String msg, Exception e) {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
             if (e instanceof NoSuchBugPattern) {
@@ -388,7 +388,7 @@ public class AnalysisContext implements AutoCloseable {
     /**
      * Report an error
      */
-    static public void logError(String msg) {
+    public static void logError(String msg) {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
             return;
@@ -397,9 +397,9 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     public void logAnError(String msg) {
-        RepositoryLookupFailureCallback lookupFailureCallback = getLookupFailureCallback();
-        if (lookupFailureCallback != null) {
-            lookupFailureCallback.logError(msg);
+        RepositoryLookupFailureCallback failureCallback = getLookupFailureCallback();
+        if (failureCallback != null) {
+            failureCallback.logError(msg);
         }
     }
 
@@ -947,7 +947,7 @@ public class AnalysisContext implements AutoCloseable {
      */
     public JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException {
         try {
-            if (className.length() == 0) {
+            if (className.isEmpty()) {
                 throw new IllegalArgumentException("Class name is empty");
             }
             if (!ClassName.isValidClassName(className)) {

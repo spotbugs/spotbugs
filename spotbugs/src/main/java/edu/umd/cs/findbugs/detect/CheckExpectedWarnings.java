@@ -289,7 +289,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                     }
                 }
             }
-            if (expectedBugCodes == null || expectedBugCodes.trim().length() == 0) {
+            if (expectedBugCodes == null || expectedBugCodes.trim().isEmpty()) {
                 checkAnnotation(null, warnings, expectWarnings, priority, rank, num, descriptor, minPriority, cd);
             } else {
                 StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");

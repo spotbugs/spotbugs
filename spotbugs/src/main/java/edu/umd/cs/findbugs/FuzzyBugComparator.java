@@ -271,9 +271,7 @@ public class FuzzyBugComparator implements WarningComparator {
         }
 
         // Compare for exact match
-        int cmp = lhsMethod.compareTo(rhsMethod);
-
-        return cmp;
+        return lhsMethod.compareTo(rhsMethod);
     }
 
     /**

@@ -367,8 +367,6 @@ public class FindBugsWorker {
             // props
             st.newPoint("storeBugCollection");
             FindbugsPlugin.storeBugCollection(project, resultCollection, monitor);
-        } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs results update");
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs results update");
         }
@@ -386,9 +384,7 @@ public class FindBugsWorker {
         // unknown bug instances appearing (merged collection doesn't contain
         // all bugs)
         boolean copyDeadBugs = incremental;
-        SortedBugCollection merged = (SortedBugCollection) (update.mergeCollections(firstCollection, secondCollection,
-                copyDeadBugs, incremental));
-        return merged;
+        return (SortedBugCollection) (update.mergeCollections(firstCollection, secondCollection, copyDeadBugs, incremental));
     }
 
     private Map<String, Boolean> relativeToAbsolute(Map<String, Boolean> map) {
@@ -486,8 +482,7 @@ public class FindBugsWorker {
             return filePath;
         }
         // since Equinox 3.5 we can use IPath.makeRelativeTo(IPath)
-        IPath relativeTo = filePath.makeRelativeTo(commonPath);
-        return relativeTo;
+        return filePath.makeRelativeTo(commonPath);
     }
 
     /**

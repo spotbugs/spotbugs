@@ -72,9 +72,7 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Error compting field store types", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("Error compting field store types", e);
             }
         }

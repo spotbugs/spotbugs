@@ -149,7 +149,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
         return new DirectoryCodeBaseEntry(this, resourceName);
     }
 
-    InputStream openFile(String resourceName) throws FileNotFoundException, IOException {
+    InputStream openFile(String resourceName) throws IOException {
         File path = getFullPathOfResource(resourceName);
         return new BufferedInputStream(new FileInputStream(path));
     }

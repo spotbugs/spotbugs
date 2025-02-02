@@ -50,7 +50,7 @@ public abstract class FieldAccess extends SingleInstruction {
      *            name of the variable to bind to the value store in or loaded
      *            from the field
      */
-    public FieldAccess(String fieldVarName, String valueVarName) {
+    protected FieldAccess(String fieldVarName, String valueVarName) {
         this.fieldVarName = fieldVarName;
         this.valueVarName = valueVarName;
     }

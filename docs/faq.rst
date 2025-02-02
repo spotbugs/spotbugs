@@ -7,13 +7,13 @@ If you just want general information about SpotBugs, have a look at the manual.
 Q1: I'm getting java.lang.UnsupportedClassVersionError when I try to run SpotBugs
 ---------------------------------------------------------------------------------
 
-SpotBugs requires JRE8 or later to run.
+SpotBugs requires JRE11 or later to run.
 If you use an earlier version, you will see an exception error message similar to the following:
 
   Exception in thread "main" java.lang.UnsupportedClassVersionError:
   edu/umd/cs/findbugs/gui/FindBugsFrame (Unsupported major.minor version 52.0)
 
-The solution is to upgrade to JRE8 or later.
+The solution is to upgrade to JRE11 or later.
 
 Q2: SpotBugs is running out of memory, or is taking a long time to finish
 -------------------------------------------------------------------------

@@ -17,11 +17,15 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -30,23 +34,18 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
-import edu.umd.cs.findbugs.ba.XMethod;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
@@ -71,6 +70,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     private final Set<XField> eagerlyInitializedFields = new HashSet<>();
     private final Map<XField, XMethod> instanceGetterMethods = new HashMap<>();
     private final List<XMethod> methodsUsingMonitor = new ArrayList<>();
+    private final Map<XMethod, List<XMethod>> calledMethodsByMethods = new HashMap<>();
 
     public MultipleInstantiationsOfSingletons(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -102,6 +102,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         eagerlyInitializedFields.clear();
         instanceGetterMethods.clear();
         methodsUsingMonitor.clear();
+        calledMethodsByMethods.clear();
 
         if (obj.getClassName().endsWith("Singleton")) {
             hasSingletonPostFix = true;
@@ -129,12 +130,6 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         }
 
         super.visit(obj);
-    }
-
-    @Override
-    public boolean beforeOpcode(int seen) {
-        return seen == Const.PUTSTATIC || seen == Const.ARETURN || seen == Const.MONITORENTER || seen == Const.IFNONNULL
-                || (seen == Const.ATHROW && "clone".equals(getMethodName()));
     }
 
     @Override
@@ -176,25 +171,26 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                     }
                 }
             }
-        } else if (seen == Const.ATHROW && stack.getStackDepth() > 0) {
+        } else if (seen == Const.ATHROW && "clone".equals(getMethodName()) && stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            if (item != null && "Ljava/lang/CloneNotSupportedException;".equals(item.getSignature()) && cloneOnlyThrowsException) {
+            if (item != null && cloneOnlyThrowsException && "Ljava/lang/CloneNotSupportedException;".equals(item.getSignature())) {
                 cloneOnlyThrowsCloneNotSupportedException = true;
             }
         } else if (seen == Const.ARETURN && stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);
             XMethod method = getXMethod();
             XField field = item.getXField();
-            if (isInstanceField(field, getClassName()) && method.isPublic() && method.isStatic()) {
+            if (method.isPublic() && method.isStatic() && isInstanceField(field, getClassName())) {
                 instanceGetterMethods.put(field, method);
             } else {
                 XMethod calledMethod = item.getReturnValueOf();
                 SignatureParser parser = new SignatureParser(getMethodSig());
                 String calledMethodReturnType = ClassName.fromFieldSignature(parser.getReturnTypeSignature());
 
-                if (calledMethod != null && Const.CONSTRUCTOR_NAME.equals(calledMethod.getName())
+                if (calledMethod != null && !method.isPrivate() && method.isStatic()
+                        && Const.CONSTRUCTOR_NAME.equals(calledMethod.getName())
                         && calledMethod.getClassName().equals(getDottedClassName())
-                        && !method.isPrivate() && method.isStatic() && getClassName().equals(calledMethodReturnType)
+                        && getClassName().equals(calledMethodReturnType)
                         && !Const.CONSTRUCTOR_NAME.equals(getMethodName()) && !Const.STATIC_INITIALIZER_NAME.equals(getMethodName())
                         && !("clone".equals(getMethodName()) && "()Ljava/lang/Object;".equals(getMethodSig()))) {
                     hasNoFactoryMethod = false;
@@ -202,6 +198,11 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             }
         } else if (seen == Const.MONITORENTER) {
             methodsUsingMonitor.add(getXMethod());
+        } else if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL || seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE) {
+            if (!calledMethodsByMethods.containsKey(getXMethod())) {
+                calledMethodsByMethods.put(getXMethod(), new ArrayList<>());
+            }
+            calledMethodsByMethods.get(getXMethod()).add(getXMethodOperand());
         }
     }
 
@@ -225,11 +226,9 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         // - the instance field is either eagerly or lazily initialized
 
         if (!(hasSingletonPostFix
-                || (!javaClass.isAbstract() && !javaClass.isInterface()
-                        && isInstanceAssignOk
-                        && hasNoFactoryMethod
-                        && instanceGetterMethod != null
-                        && (isInstanceFieldEagerlyInitialized || isInstanceFieldLazilyInitialized)))) {
+                || (isInstanceAssignOk && hasNoFactoryMethod && instanceGetterMethod != null
+                        && (isInstanceFieldEagerlyInitialized || isInstanceFieldLazilyInitialized)
+                        && !javaClass.isAbstract() && !javaClass.isInterface() && !javaClass.isRecord()))) {
             return;
         }
 
@@ -243,10 +242,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             }
         }
 
-        boolean isGetterMethodUsingMonitor = methodsUsingMonitor.contains(instanceGetterMethod);
-
-        if (instanceGetterMethod != null && !instanceGetterMethod.isSynchronized() && !isGetterMethodUsingMonitor
-                && isInstanceFieldLazilyInitialized) {
+        if (instanceGetterMethod != null && isInstanceFieldLazilyInitialized && !hasSynchronized(instanceGetterMethod, new HashSet<>())) {
             bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", NORMAL_PRIORITY).addClass(this)
                     .addMethod(instanceGetterMethod));
         }
@@ -277,6 +273,33 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         }
 
         super.visitAfter(javaClass);
+    }
+
+    /**
+     * @param method The method we are checking
+     * @param visitedMethods The set of methods we have already visited, to break recursion when methods are called recursively. To be initially empty.
+     * @return true if the method (or one of the methods called recursively) is synchronized or uses a monitor.
+     */
+    private boolean hasSynchronized(XMethod method, Set<XMethod> visitedMethods) {
+        if (!visitedMethods.add(method)) {
+            // We are visiting an already visited method and have not found synchronization so far
+            return false;
+        }
+
+        if (method.isSynchronized() || methodsUsingMonitor.contains(method)) {
+            return true;
+        }
+
+        if (calledMethodsByMethods.containsKey(method)) {
+            List<XMethod> calledMethods = calledMethodsByMethods.get(method);
+            for (XMethod cm : calledMethods) {
+                if (hasSynchronized(cm, visitedMethods)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private int getNumberOfEnumValues(JavaClass javaClass) {

@@ -35,7 +35,7 @@ final class Result {
         result.addProperty("level", level.toJsonString());
 
         JsonArray locationArray = new JsonArray();
-        locations.stream().map(Location::toJsonObject).forEach(location -> locationArray.add(location));
+        locations.stream().map(Location::toJsonObject).forEach(locationArray::add);
         if (locationArray.size() > 0) {
             result.add("locations", locationArray);
         }

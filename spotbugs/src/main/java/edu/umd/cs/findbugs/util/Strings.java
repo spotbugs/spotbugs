@@ -163,7 +163,7 @@ public class Strings {
     public static String escapeXml(String s) {
         initializeEscapeMap();
 
-        if (s == null || s.length() == 0) {
+        if (s == null || s.isEmpty()) {
             return s;
         }
 
@@ -216,7 +216,7 @@ public class Strings {
                  * the pattern is compiled from a final string, so this
                  * exception should never be thrown
                  */
-                System.err.println("Imposible error:  " + "static final regular expression pattern "
+                System.err.println("Impossible error:  " + "static final regular expression pattern "
                         + "failed to compile.  Exception:  " + pse.toString());
                 return false;
             }
@@ -253,7 +253,7 @@ public class Strings {
             return s;
         }
 
-        if (s == null || s.length() == 0) {
+        if (s == null || s.isEmpty()) {
             return s;
         }
 

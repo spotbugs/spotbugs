@@ -305,8 +305,7 @@ public class WorkItem {
             recursive = true;
         }
         IMarker[] markers = MarkerUtil.getMarkers(markerTarget, recursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE);
-        Set<IMarker> forJavaElement = MarkerUtil.findMarkerForJavaElement(javaElt, markers, recursive);
-        return forJavaElement;
+        return MarkerUtil.findMarkerForJavaElement(javaElt, markers, recursive);
     }
 
     /**

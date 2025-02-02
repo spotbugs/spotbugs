@@ -31,7 +31,7 @@ public class WriteOnceProperties extends Properties {
     @Override
     public synchronized String getProperty(String key) {
         String result = super.getProperty(key);
-        if (result != null && result.length() > 0 && !propertReadAt.containsKey(key)) {
+        if (result != null && !result.isEmpty() && !propertReadAt.containsKey(key)) {
             propertReadAt.put(key, new PropertyReadAt());
         }
         return result;
@@ -40,7 +40,7 @@ public class WriteOnceProperties extends Properties {
     @Override
     public synchronized String getProperty(String key, String defaultValue) {
         String result = super.getProperty(key, defaultValue);
-        if (result != null && result.length() > 0 && !propertReadAt.containsKey(key)) {
+        if (result != null && !result.isEmpty() && !propertReadAt.containsKey(key)) {
             propertReadAt.put(key, new PropertyReadAt());
         }
         return result;

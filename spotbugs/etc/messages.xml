@@ -229,6 +229,14 @@ applied to method parameters and uses of those method parameters. </p>
 ]]>
      </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ResourceInMultipleThreadsDetector">
+    <Details>
+      <![CDATA[
+<p> Finds non-atomic typed resources that are used in multiple threads without proper synchronization.
+    </p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant">
     <Details>
 <![CDATA[
@@ -570,6 +578,14 @@ This does not help the garbage collector in any way, the nulling out of fields h
 <p> Checks for incorrect format strings.
 </p>
 ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DateFormatStringChecker">
+    <Details>
+      <![CDATA[
+      <p> Checks for incorrect date format strings.
+      </p>
+      ]]>
     </Details>
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis">
@@ -1840,6 +1856,27 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.SharedVariableAtomicityDetector">
+    <Details>
+      <![CDATA[
+              <p>
+                Looks for variables where the atomicity is not guaranteed,
+                where the synchronization is lacking for a field which is used in multiple methods.
+              </p>
+        ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod">
+    <Details>
+      <![CDATA[
+            <p>
+              Looks for hiding of static, non-private methods by the subclass.
+              It has exceptions for main method, constructor, inner classes, and auto generated methods.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns
@@ -2567,33 +2604,42 @@ will need to be changed in order to compile it in later versions of Java.</p>
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
     <LongDescription>Invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
-<![CDATA[
-  <p> This code invokes a method that requires a security permission check.
-  If this code will be granted security permissions, but might be invoked by code that does not
-  have security permissions, then the invocation needs to occur inside a doPrivileged block.</p>
-]]>
+      <![CDATA[
+        <p> This code invokes a method that requires a security permission check.
+        If this code will be granted security permissions, but might be invoked by code that does not
+        have security permissions, then the invocation needs to occur inside a doPrivileged block.</p>
+        The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
+        got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
+        For this reason, this bug isn't reported in classes targeted Java 17 and above.
+      ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED"> <!-- misspelled for backward compatibility -->
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
     <LongDescription>Invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
-<![CDATA[
-  <p> This code invokes a method that requires a security permission check.
-  If this code will be granted security permissions, but might be invoked by code that does not
-  have security permissions, then the invocation needs to occur inside a doPrivileged block.</p>
-]]>
+      <![CDATA[
+        <p> This code invokes a method that requires a security permission check.
+        If this code will be granted security permissions, but might be invoked by code that does not
+        have security permissions, then the invocation needs to occur inside a doPrivileged block.</p>
+        The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
+        got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
+        For this reason, this bug isn't reported in classes targeted Java 17 and above.
+      ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
     <ShortDescription>Classloaders should only be created inside doPrivileged block</ShortDescription>
     <LongDescription>{1} creates a {2} classloader, which should be performed within a doPrivileged block</LongDescription>
     <Details>
-<![CDATA[
-  <p> This code creates a classloader,  which needs permission if a security manage is installed.
-  If this code might be invoked by code that does not
-  have security permissions, then the classloader creation needs to occur inside a doPrivileged block.</p>
-]]>
+      <![CDATA[
+        <p> This code creates a classloader,  which needs permission if a security manage is installed.
+        If this code might be invoked by code that does not
+        have security permissions, then the classloader creation needs to occur inside a doPrivileged block.</p>
+        The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
+        got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
+        For this reason, this bug isn't reported in classes targeted Java 17 and above.
+      ]]>
     </Details>
   </BugPattern>
   <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
@@ -7503,6 +7549,39 @@ This format string includes a newline character (\n). In format strings, it is g
 ]]>
      </Details>
   </BugPattern>
+  <BugPattern type="FS_BAD_DATE_FORMAT_FLAG_COMBO">
+    <ShortDescription>Date-format strings may lead to unexpected behavior</ShortDescription>
+    <LongDescription>The '{3}' date format string may lead to unexpected behavior used in {1.nameAndSignature}</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      This format string includes a bad combination of flags which may lead to unexpected behavior.
+      Potential bad combinations include the following:
+      <ul>
+        <li>
+          using a week year ("Y") with month in year ("M") and day in month ("d") without
+          specifying week in year ("w"). Flag ("y") may be preferable here instead
+        </li>
+        <li>
+          using an AM/PM hour ("h" or "K") without specifying an AM/PM marker ("a") or
+          period of day marker ("B")
+        </li>
+        <li>
+          using a 24-hour format hour ("H" or "k") with specifying AM/PM or period of day markers
+        </li>
+        <li>
+          using a milli of day ("A") together with hours ("H", "h", "K", "k") and/or
+          minutes ("m") and/or seconds ("s")
+        </li>
+        <li>use of milli of day ("A") and nano of day ("N") together</li>
+        <li>use of fraction of second ("S") nano of second together ("n")</li>
+        <li>use of AM/PM markers ("a") and period of day ("B") together</li>
+        <li>use of year ("y") and year of era ("u") together</li>
+      </ul>
+     </p>
+      ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
     <ShortDescription>Primitive array passed to function expecting a variable number of object arguments</ShortDescription>
     <LongDescription>{2} passed to varargs method {3} in {1}</LongDescription>
@@ -8673,6 +8752,21 @@ after the call to initLogging, the logger configuration is lost
           ]]>
       </Details>
   </BugPattern>
+  <BugPattern type="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD">
+    <ShortDescription>Operation on resource is not safe in a multithreaded context</ShortDescription>
+    <LongDescription>Operation on resource {3} is not safe in a multithreaded context in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>This code contains an operation on a resource that is not safe in a multithreaded context.
+            The resource may be accessed by multiple threads concurrently without proper synchronization.
+            This may lead to data corruption. Use synchronization or other
+            concurrency control mechanisms to ensure that the resource is accessed safely.</p>
+        <p>See the related SEI CERT rule, but the detector is not restricted to chained methods:
+          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA04-J.+Ensure+that+calls+to+chained+methods+are+atomic">
+          VNA04-J. Ensure that calls to chained methods are atomic</a>.
+        </p>]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DM_DEFAULT_ENCODING">
     <ShortDescription>Reliance on default encoding</ShortDescription>
     <LongDescription>Found reliance on default encoding in {1}: {2}</LongDescription>
@@ -8939,8 +9033,8 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION">
-    <ShortDescription>Method lists Exception in its throws clause.</ShortDescription>
-    <LongDescription>Method lists Exception in its throws clause.</LongDescription>
+    <ShortDescription>Method lists Exception in its throws clause, but it could be more specific.</ShortDescription>
+    <LongDescription>Method lists Exception in its throws clause, but it could be more specific.</LongDescription>
     <Details>
       <![CDATA[
         <p>
@@ -8956,8 +9050,8 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="THROWS_METHOD_THROWS_CLAUSE_THROWABLE">
-    <ShortDescription>Method lists Throwable in its throws clause.</ShortDescription>
-    <LongDescription>Method lists Throwable in its throws clause.</LongDescription>
+    <ShortDescription>Method lists Throwable in its throws clause, but it could be more specific.</ShortDescription>
+    <LongDescription>Method lists Throwable in its throws clause, but it could be more specific.</LongDescription>
     <Details>
       <![CDATA[
         <p>
@@ -9005,7 +9099,11 @@ Using floating-point variables should not be used as loop counters, as they are 
       method behaves exactly as expected.
       <p>
       See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources">SEC02-J. Do not base security checks on untrusted sources</a>.
-      </p>]]>
+      </p>
+      The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
+      got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
+      For this reason, this bug isn't reported in classes targeted Java 17 and above.
+      ]]>
     </Details>
   </BugPattern>
   <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT">
@@ -9100,7 +9198,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   </BugPattern>
   <BugPattern type="VSC_VULNERABLE_SECURITY_CHECK_METHODS">
     <ShortDescription>Non-Private and non-final security check methods are vulnerable</ShortDescription>
-    <LongDescription>The method '{1}' performs security check by using '{2}' method of Security Manager Class, but is overrideable. Declare the method final or private in order to resolve the issue. </LongDescription>
+    <LongDescription>The method '{1}' performs security check by using '{2}' method of Security Manager Class, but is overridable. Declare the method final or private in order to resolve the issue. </LongDescription>
     <Details>
       <![CDATA[<p>
         Methods that perform security checks should be prevented from being overridden, so they must be declared as
@@ -9122,6 +9220,25 @@ Using floating-point variables should not be used as loop counters, as they are 
         <p>
         See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET01-J.+Never+use+assertions+to+validate+method+arguments">MET01-J. Never use assertions to validate method arguments</a>
         for more information.
+        </p>
+        ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="HSM_HIDING_METHOD">
+    <ShortDescription>Method hiding should be avoided.</ShortDescription>
+    <LongDescription>The method '{1.nameAndSignature}' in class '{0.simpleName}' hides a method in class '{2.simpleName}'. Declare the respective methods non-static or private to eradicate the problem.</LongDescription>
+    <Details>
+      <![CDATA[
+        Hiding happens when a subclass defines a static method
+        with same header (signature plus return type) as in any of the super classes.
+        In the event of method hiding the invoked method is determined based on the specific qualified name or
+        method invocation expression used at the calling site.
+        The results are often unexpected, although the Java language provides unambiguous rules for method invocation for method hiding.
+        Moreover, method hiding and method overriding is often confused by programmers.
+        Consequently, programmers should avoid the method hiding.
+        Programmer should declare the respective method non-static or restrict it as private to eradicate the problem.
+        <p>
+        See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">MET07-J. Never declare a class method that hides a method declared in a superclass or superinterface</a>.
         </p>
         ]]>
     </Details>
@@ -9279,6 +9396,62 @@ Using floating-point variables should not be used as loop counters, as they are 
         due to an exception thrower method before the locking.
         </p>
       ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="AT_NONATOMIC_64BIT_PRIMITIVE">
+    <ShortDescription>This write of this 64-bit primitive variable may not atomic</ShortDescription>
+    <LongDescription>This write of the 64-bit primitive variable "{2.name}" may not atomic</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          The long and the double are 64-bit primitive types, and depending on the Java Virtual Machine implementation assigning a value to them can be treated as two separate 32-bit writes, and as such it's not atomic.
+          See <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-17.html#jls-17.7">JSL 17.7. Non-Atomic Treatment of double and long</a>.
+          See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA05-J.+Ensure+atomicity+when+reading+and+writing+64-bit+values">VNA05-J. Ensure atomicity when reading and writing 64-bit values</a> for more info.
+
+          This bug can be ignored in platforms which guarantee that 64-bit long and double type read and write operations are atomic.
+        </p>
+        <p>
+          To fix it, declare the variable volatile, change the type of the field to the corresponding atomic type from <code>java.lang.concurrent.atomic<\code> or correctly synchronize the code.
+          Declaring the variable volatile may not be enough in some cases: e.g. when the variable is assigned a value which depends on the current value or on the result of nonatomic compound operations.
+        </p>
+     ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="AT_STALE_THREAD_WRITE_OF_PRIMITIVE">
+    <ShortDescription>This write of this shared primitive variable may not be visible to other threads</ShortDescription>
+    <LongDescription>Shared primitive variable "{2.name}" in one thread may not yield the value of the most recent write from another thread</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables">SEI CERT rule VNA00-J</a>
+          describes that reading a shared primitive variable in one thread may not yield the value of the most recent write to the variable from another thread.
+          Consequently, the thread may observe a stale value of the shared variable.
+        </p>
+        <p>
+          To fix it, declare the variable volatile, change the type of the field to the corresponding atomic type from <code>java.lang.concurrent.atomic<\code> or correctly synchronize the code.
+          Declaring the variable volatile may not be enough in some cases: e.g. when the variable is assigned a value which depends on the current value or on the result of nonatomic compound operations.
+          This guarantees that 64-bit primitive long and double variables are accessed atomically.
+        </p>
+     ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE">
+    <ShortDescription>Operation on shared variable is not atomic</ShortDescription>
+    <LongDescription>Operation on the "{2.name}" shared variable in "{0.simpleName}" class is not atomic</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          This write of a variable shared between functions depends on the current value of the variable (either because it's a compound operation - e.g. +=, ++ - or it simply depends on the current value), as such it consists of more than one discrete operation.
+          These operations are not atomic in themselves and need further synchronization.
+          See <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic">SEI CERT rule VNA02-J</a>.
+
+          Simply declaring a variable volatile fails to guarantee the atomicity of compound operations on the variable,
+          but synchronizing the writes on top of declaring the variable volatile for read operations is sufficient.
+        <p>
+          To solve this issue, synchronize compound operations and other write operations depending on the previous value,
+          use read-write locks, or declare the shared variable with an atomic type.
+        </p>
+     ]]>
     </Details>
   </BugPattern>
   <!--
@@ -9443,4 +9616,6 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
   <BugCode abbrev="CWO">Lock closed without being opened in the first place</BugCode>
+  <BugCode abbrev="HSM">Avoid method hiding</BugCode>
 </MessageCollection>
+

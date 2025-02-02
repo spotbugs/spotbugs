@@ -70,7 +70,6 @@ class FindBugsPerspectiveTest extends AbstractFindBugsTest {
 
     private IWorkbenchPage showFindBugsPerspective() throws WorkbenchException {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        IWorkbenchPage page = PlatformUI.getWorkbench().showPerspective(FINDBUGS_PERSPECTIVE_ID, window);
-        return page;
+        return PlatformUI.getWorkbench().showPerspective(FINDBUGS_PERSPECTIVE_ID, window);
     }
 }

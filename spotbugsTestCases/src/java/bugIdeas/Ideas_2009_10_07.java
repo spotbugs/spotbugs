@@ -17,7 +17,7 @@ public class Ideas_2009_10_07 {
         return -x.hashCode();
     }
 
-    static int f(boolean b1, boolean b2) {
+    static int f2(boolean b1, boolean b2) {
         Object x = null;
         if (b1)
             System.out.println("b1 true");

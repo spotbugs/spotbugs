@@ -132,13 +132,11 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                 }
             }
 
-            if (dest.isExceptionHandler()) {
+            if (dest.isExceptionHandler() && fact.isValid()) {
                 // Clear stack, push value for exception
-                if (fact.isValid()) {
-                    tmpFact = modifyFrame(fact, tmpFact);
-                    tmpFact.clearStack();
-                    tmpFact.pushValue(ResourceValue.notInstance());
-                }
+                tmpFact = modifyFrame(fact, tmpFact);
+                tmpFact.clearStack();
+                tmpFact.pushValue(ResourceValue.notInstance());
             }
         } else {
             if (result.getStatus() == ResourceValueFrame.NOT_OPEN_ON_EXCEPTION_PATH && fact.getStatus() == ResourceValueFrame.CLOSED) {
@@ -196,12 +194,11 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                         ResourceValueFrame frameAtIf = getFactAtLocation(new Location(lastInSourceHandle, source));
                         ResourceValue topValue = frameAtIf.getValue(frameAtIf.getNumSlots() - 1);
 
-                        if (topValue.isInstance()) {
-                            if ((isNullCheck && edgeType == IFCMP_EDGE) || (isNonNullCheck && edgeType == FALL_THROUGH_EDGE)) {
-                                // System.out.println("**** making resource nonexistent on edge "+edge.getId());
-                                tmpFact = modifyFrame(fact, tmpFact);
-                                tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
-                            }
+                        if (topValue.isInstance()
+                                && ((isNullCheck && edgeType == IFCMP_EDGE) || (isNonNullCheck && edgeType == FALL_THROUGH_EDGE))) {
+                            // System.out.println("**** making resource nonexistent on edge "+edge.getId());
+                            tmpFact = modifyFrame(fact, tmpFact);
+                            tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
                         }
                     }
                 }

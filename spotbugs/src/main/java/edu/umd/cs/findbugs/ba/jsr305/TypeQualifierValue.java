@@ -168,9 +168,7 @@ public class TypeQualifierValue<A extends Annotation> {
                                 new Class[] { qualifierClass }, handler));
                     }
 
-                } catch (ClassNotFoundException e) {
-                    assert true; // ignore
-                } catch (CheckedAnalysisException e) {
+                } catch (ClassNotFoundException | CheckedAnalysisException e) {
                     assert true; // ignore
                 } catch (Exception e) {
                     AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);

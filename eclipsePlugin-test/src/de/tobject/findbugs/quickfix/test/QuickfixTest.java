@@ -121,7 +121,6 @@ class QuickfixTest extends AbstractQuickfixTest {
         doTestQuickfixResolution("UseEqualsResolutionExample.java", pack.asList());
     }
 
-
     @Test
     void testUseValueOfResolution() throws CoreException, IOException {
         QuickFixTestPackager pack = new QuickFixTestPackager();
@@ -136,7 +135,5 @@ class QuickfixTest extends AbstractQuickfixTest {
     protected String getOutputFolderName() {
         return "/quickfixOutput/";
     }
-
-
 
 }
