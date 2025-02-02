@@ -1855,6 +1855,16 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.SharedVariableAtomicityDetector">
+    <Details>
+      <![CDATA[
+              <p>
+                Looks for variables where the atomicity is not guaranteed,
+                where the synchronization is lacking for a field which is used in multiple methods.
+              </p>
+        ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod">
     <Details>
       <![CDATA[
@@ -9374,6 +9384,62 @@ Using floating-point variables should not be used as loop counters, as they are 
       <p>
       See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables">ENV02-J. Do not trust the values of environment variables</a>.
       </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="AT_NONATOMIC_64BIT_PRIMITIVE">
+    <ShortDescription>This write of this 64-bit primitive variable may not atomic</ShortDescription>
+    <LongDescription>This write of the 64-bit primitive variable "{2.name}" may not atomic</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          The long and the double are 64-bit primitive types, and depending on the Java Virtual Machine implementation assigning a value to them can be treated as two separate 32-bit writes, and as such it's not atomic.
+          See <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-17.html#jls-17.7">JSL 17.7. Non-Atomic Treatment of double and long</a>.
+          See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA05-J.+Ensure+atomicity+when+reading+and+writing+64-bit+values">VNA05-J. Ensure atomicity when reading and writing 64-bit values</a> for more info.
+
+          This bug can be ignored in platforms which guarantee that 64-bit long and double type read and write operations are atomic.
+        </p>
+        <p>
+          To fix it, declare the variable volatile, change the type of the field to the corresponding atomic type from <code>java.lang.concurrent.atomic<\code> or correctly synchronize the code.
+          Declaring the variable volatile may not be enough in some cases: e.g. when the variable is assigned a value which depends on the current value or on the result of nonatomic compound operations.
+        </p>
+     ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="AT_STALE_THREAD_WRITE_OF_PRIMITIVE">
+    <ShortDescription>This write of this shared primitive variable may not be visible to other threads</ShortDescription>
+    <LongDescription>Shared primitive variable "{2.name}" in one thread may not yield the value of the most recent write from another thread</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables">SEI CERT rule VNA00-J</a>
+          describes that reading a shared primitive variable in one thread may not yield the value of the most recent write to the variable from another thread.
+          Consequently, the thread may observe a stale value of the shared variable.
+        </p>
+        <p>
+          To fix it, declare the variable volatile, change the type of the field to the corresponding atomic type from <code>java.lang.concurrent.atomic<\code> or correctly synchronize the code.
+          Declaring the variable volatile may not be enough in some cases: e.g. when the variable is assigned a value which depends on the current value or on the result of nonatomic compound operations.
+          This guarantees that 64-bit primitive long and double variables are accessed atomically.
+        </p>
+     ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE">
+    <ShortDescription>Operation on shared variable is not atomic</ShortDescription>
+    <LongDescription>Operation on the "{2.name}" shared variable in "{0.simpleName}" class is not atomic</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          This write of a variable shared between functions depends on the current value of the variable (either because it's a compound operation - e.g. +=, ++ - or it simply depends on the current value), as such it consists of more than one discrete operation.
+          These operations are not atomic in themselves and need further synchronization.
+          See <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic">SEI CERT rule VNA02-J</a>.
+
+          Simply declaring a variable volatile fails to guarantee the atomicity of compound operations on the variable,
+          but synchronizing the writes on top of declaring the variable volatile for read operations is sufficient.
+        <p>
+          To solve this issue, synchronize compound operations and other write operations depending on the previous value,
+          use read-write locks, or declare the shared variable with an atomic type.
+        </p>
+     ]]>
     </Details>
   </BugPattern>
   <!--
