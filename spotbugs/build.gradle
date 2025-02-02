@@ -92,7 +92,7 @@ dependencies {
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   api project(':spotbugs-annotations')
 
-  api "com.google.code.gson:gson:2.11.0"
+  api "com.google.code.gson:gson:2.12.1"
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
@@ -224,7 +224,7 @@ def scripts = tasks.register('scripts', Copy) {
   }
 
   into(layout.buildDirectory.dir("bin"))
-  duplicatesStrategy DuplicatesStrategy.FAIL
+  duplicatesStrategy = DuplicatesStrategy.FAIL
   filePermissions{
     unix (0755)
   }
@@ -256,6 +256,9 @@ distributions {
     contents {
       from(scripts) {
         into 'bin'
+        filePermissions {
+          unix(0755)
+        }
       }
       from 'README.txt'
       from ('plugin') {
