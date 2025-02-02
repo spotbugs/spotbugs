@@ -33,7 +33,10 @@ import org.apache.bcel.generic.InvokeInstruction;
  * A simple class to parse method signatures.
  *
  * @author David Hovemeyer
+ *
+ * @deprecated This signature parser does not support generics, use GenericSignatureParser instead.
  */
+@Deprecated
 public class SignatureParser {
     private int totalArgumentSize;
 

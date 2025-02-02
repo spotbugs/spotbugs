@@ -34,7 +34,6 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
@@ -308,7 +307,7 @@ class SarifBugReporterTest {
     }
 
     @Test
-    void testExtensions() throws PluginException {
+    void testExtensions() {
         PluginLoader pluginLoader = DetectorFactoryCollection.instance().getCorePlugin().getPluginLoader();
         Plugin plugin = new Plugin("pluginId", "version", null, pluginLoader, true, false);
         DetectorFactoryCollection dfc = new DetectorFactoryCollection(plugin);

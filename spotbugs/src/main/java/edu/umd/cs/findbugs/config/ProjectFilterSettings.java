@@ -151,7 +151,7 @@ public class ProjectFilterSettings implements Cloneable {
     public static ProjectFilterSettings fromEncodedString(String s) {
         ProjectFilterSettings result = new ProjectFilterSettings();
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String minPriority;
             if (bar >= 0) {
@@ -167,7 +167,7 @@ public class ProjectFilterSettings implements Cloneable {
             result.setMinPriority(minPriority);
         }
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String categories;
             if (bar >= 0) {
@@ -187,7 +187,7 @@ public class ProjectFilterSettings implements Cloneable {
             }
         }
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String displayFalseWarnings;
             if (bar >= 0) {
@@ -197,10 +197,10 @@ public class ProjectFilterSettings implements Cloneable {
                 displayFalseWarnings = s;
                 s = "";
             }
-            result.setDisplayFalseWarnings(Boolean.valueOf(displayFalseWarnings).booleanValue());
+            result.setDisplayFalseWarnings(Boolean.parseBoolean(displayFalseWarnings));
         }
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String minRankStr;
             if (bar >= 0) {
@@ -235,7 +235,7 @@ public class ProjectFilterSettings implements Cloneable {
      */
     public static void hiddenFromEncodedString(ProjectFilterSettings result, String s) {
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String categories;
             if (bar >= 0) {
@@ -282,7 +282,7 @@ public class ProjectFilterSettings implements Cloneable {
         }
 
         if (!displayFalseWarnings) {
-            boolean isFalseWarning = !Boolean.valueOf(bugInstance.getProperty(BugProperty.IS_BUG, "true")).booleanValue();
+            boolean isFalseWarning = !Boolean.parseBoolean(bugInstance.getProperty(BugProperty.IS_BUG, "true"));
             if (isFalseWarning) {
                 return false;
             }

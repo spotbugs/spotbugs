@@ -26,7 +26,7 @@ dependencies {
   }
 
   implementation project(':test-harness')
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
   implementation 'org.apache.ant:ant:1.10.15'
 }
 
@@ -34,7 +34,7 @@ dependencies {
 javadoc {
   doFirst {
     // This is supposed to enable everything except "missing" but doesn't work with gradle
-    // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
+    // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
     options.addBooleanOption('Xdoclint:all,-missing', true)
 
     // TODO remove command and warning below if the doclint can be properly configured

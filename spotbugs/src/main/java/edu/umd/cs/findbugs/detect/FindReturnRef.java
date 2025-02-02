@@ -122,12 +122,20 @@ public class FindReturnRef extends OpcodeStackDetector {
                     OpcodeStack currentStack = OpcodeStackScanner.getStackAt(javaClass, m, pc);
                     XField field = XFactory.createXField((FieldInstruction) ins, cpg);
                     fieldValues.computeIfAbsent(field, k -> new ArrayList<>());
-                    fieldValues.get(field).add(currentStack.getStackItem(0));
+
+                    if (!currentStack.isTop()) {
+                        // We might be at an instruction eliminated by OpcodeStackScanner, for instance because it is after if(1 != 1)
+                        fieldValues.get(field).add(currentStack.getStackItem(0));
+                    }
+
                     if (currentStack.hasIncomingBranches(pc)) {
                         for (Iterator<BasicBlock> bi = cfg.predecessorIterator(loc.getBasicBlock()); bi.hasNext();) {
                             BasicBlock previousBlock = bi.next();
                             InstructionHandle lastInstruction = previousBlock.getLastInstruction();
-                            if (lastInstruction != null) {
+
+                            // The CFG might have been optimized in BetterCFGBuilder2.optimize() :
+                            // The instruction targeters might be removed and some instructions are replaced by noop
+                            if (ih.hasTargeters() && lastInstruction != null) {
                                 OpcodeStack prevStack = OpcodeStackScanner.getStackAt(javaClass, m, lastInstruction.getPosition());
                                 if (prevStack.getStackDepth() > 1) {
                                     fieldValues.get(field).add(prevStack.getStackItem(0));
@@ -307,7 +315,7 @@ public class FindReturnRef extends OpcodeStackDetector {
     }
 
     private boolean isNestedField(XField field) {
-        if (getThisClass().isNested() && field.getName().startsWith("this$")) {
+        if (field != null && getThisClass().isNested() && field.getName().startsWith("this$")) {
             try {
                 List<JavaClass> hostClasses = NestedAccessUtil.getHostClasses(getThisClass());
                 String fieldType = ClassName.fromFieldSignatureToDottedClassName(field.getSignature());

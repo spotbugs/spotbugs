@@ -122,7 +122,7 @@ public class PropPageTitleProvider extends BugLabelProvider {
         }
         StringBuilder sb = new StringBuilder("Package: ");
         String name = pack.getElementName();
-        if (name == null || name.length() == 0) {
+        if (name == null || name.isEmpty()) {
             sb.append("default package");
         } else {
             sb.append(name);

@@ -15,7 +15,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public abstract class Bug1169 {
 
-    static abstract class Engine<R> {
+    abstract static class Engine<R> {
 
         public abstract void reset();
 

@@ -316,10 +316,8 @@ public class JdtUtils {
             if (isAnonymousType(childElem)) {
                 list.add((IType) childElem);
             }
-            if (childElem instanceof IParent) {
-                if (allowNested || !(childElem instanceof IType)) {
-                    collectAllAnonymous(list, (IParent) childElem, allowNested);
-                }
+            if (childElem instanceof IParent && (allowNested || !(childElem instanceof IType))) {
+                collectAllAnonymous(list, (IParent) childElem, allowNested);
             }
         }
     }

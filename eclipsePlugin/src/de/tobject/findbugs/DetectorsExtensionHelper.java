@@ -161,7 +161,7 @@ public class DetectorsExtensionHelper {
         }
 
         String outputDir = getBuildDirectory(bundleName, sourceDir);
-        if (outputDir.length() == 0) {
+        if (outputDir.isEmpty()) {
             FindbugsPlugin.getDefault().logException(new IllegalStateException("No output directory in build.properties"),
                     "No output directory in build.properties " + sourceDir);
             return null;
