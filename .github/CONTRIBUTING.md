@@ -13,7 +13,7 @@ When you find problems such as false-positives or false-negatives, consider to a
 Just three steps to follow:
 
 1. Create a [minimum and complete](http://stackoverflow.com/help/mcve) .java file under `spotbugsTestCases/src/java` directory.
-2. Create a unit test case under `spotbugs-tests/src/test/java` directory, Refer to [this commit](https://github.com/spotbugs/spotbugs/commit/c05c0f029c7ae4874791fddbd6e954c5908b80ff) as example.
+2. Create a unit test case under `spotbugs-tests/src/test/java` directory, Refer to [this commit](https://github.com/spotbugs/spotbugs/commit/c05c0f029c7ae4874791fddbd6e954c5908b80ff) as an example.
 3. Confirm that `./gradlew clean build` fails due to your new unit test case.
 
 ## Before you propose new rules
