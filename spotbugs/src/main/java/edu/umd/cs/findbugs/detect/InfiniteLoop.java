@@ -303,7 +303,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
         case Const.GOTO:
             if (getBranchOffset() < 0) {
                 BackwardsBranch bb = new BackwardsBranch(stack, getPC(), getBranchTarget());
-                if (bb.invariantRegisters.size() > 0) {
+                if (!bb.invariantRegisters.isEmpty()) {
                     backwardBranches.add(bb);
                 }
                 addBackwardsReach();

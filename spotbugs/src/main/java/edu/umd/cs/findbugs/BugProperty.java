@@ -102,7 +102,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
      * @return value of property as a boolean
      */
     public boolean getValueAsBoolean() {
-        return Boolean.valueOf(getValue()).booleanValue();
+        return Boolean.parseBoolean(getValue());
     }
 
     /**

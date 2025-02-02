@@ -38,11 +38,13 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 import edu.umd.cs.findbugs.util.MultiMap;
 
@@ -248,11 +250,21 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     private boolean shouldIgnoreCallInReadObject(XMethod method) {
-        // SER09-J-EX0: The readObject() method may invoke the overridable methods defaultReadObject() and readFields()
-        // in class java.io.ObjectInputStream
-        boolean inOIS = "java.io.ObjectInputStream".equals(method.getClassName());
-        String methodName = method.getName();
-        return inOIS && ("defaultReadObject".equals(methodName) || "readFields".equals(methodName));
+        // We're only interested in method calls on the object itself
+        // Calling ObjectInputStream.readInt() is not considered risky here because we assume that the object stream is not under the control of the attacker.
+        // Checking for vulnerabilities when the object stream IS under control of the attacker is beyond the scope of this detector.
+        @DottedClassName
+        String className = getClassContext().getClassDescriptor().getDottedClassName();
+        @DottedClassName
+        String methodClassName = method.getClassName();
+
+        try {
+            return !className.equals(methodClassName) && !Hierarchy.isSubtype(className, methodClassName);
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+
+            return true;
+        }
     }
 
     private boolean reportIfOverridableCallInReadObject(XMethod caller, XMethod method, SourceLineAnnotation sourceLine) {

@@ -132,7 +132,7 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
      * ----------------------------------------------------------------------
      */
 
-    public AbstractGraph() {
+    protected AbstractGraph() {
         this.vertexList = new ArrayList<>();
         this.edgeList = new ArrayList<>();
         this.maxVertexLabel = 0;

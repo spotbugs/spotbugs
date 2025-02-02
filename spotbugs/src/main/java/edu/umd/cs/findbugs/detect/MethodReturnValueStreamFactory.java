@@ -120,9 +120,9 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
             }
 
             // See if method name and signature match
-            String methodName = inv.getMethodName(cpg);
-            String methodSig = inv.getSignature(cpg);
-            if (!this.methodName.equals(methodName) || !this.methodSig.equals(methodSig)) {
+            String methodname = inv.getMethodName(cpg);
+            String signature = inv.getSignature(cpg);
+            if (!this.methodName.equals(methodname) || !this.methodSig.equals(signature)) {
                 return null;
             }
 

@@ -186,36 +186,36 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             }
 
             if (BUG_COLLECTION.equals(qName)) {
-                BugCollection bugCollection = this.bugCollection;
-                assert bugCollection != null;
+                BugCollection bugcollection = this.bugCollection;
+                assert bugcollection != null;
                 // Read and set the sequence number.
                 String version = getOptionalAttribute(attributes, "version");
-                if (bugCollection instanceof SortedBugCollection) {
-                    bugCollection.setAnalysisVersion(version);
+                if (bugcollection instanceof SortedBugCollection) {
+                    bugcollection.setAnalysisVersion(version);
                 }
 
                 // Read and set the sequence number.
                 String sequence = getOptionalAttribute(attributes, "sequence");
                 long seqval = parseLong(sequence, 0L);
-                bugCollection.setSequenceNumber(seqval);
+                bugcollection.setSequenceNumber(seqval);
 
                 // Read and set timestamp.
                 String timestamp = getOptionalAttribute(attributes, "timestamp");
                 long tsval = parseLong(timestamp, -1L);
-                bugCollection.setTimestamp(tsval);
+                bugcollection.setTimestamp(tsval);
                 // Read and set timestamp.
                 String analysisTimestamp = getOptionalAttribute(attributes, "analysisTimestamp");
                 if (analysisTimestamp != null) {
-                    bugCollection.setAnalysisTimestamp(parseLong(analysisTimestamp, -1L));
+                    bugcollection.setAnalysisTimestamp(parseLong(analysisTimestamp, -1L));
                 }
                 String analysisVersion = getOptionalAttribute(attributes, "version");
                 if (analysisVersion != null) {
-                    bugCollection.setAnalysisVersion(analysisVersion);
+                    bugcollection.setAnalysisVersion(analysisVersion);
                 }
 
                 // Set release name, if present.
                 String releaseName = getOptionalAttribute(attributes, "release");
-                bugCollection.setReleaseName((releaseName != null) ? releaseName : "");
+                bugcollection.setReleaseName((releaseName != null) ? releaseName : "");
             } else if (isTopLevelFilter(qName)) {
                 if (project != null) {
                     filter = new Filter();
@@ -224,12 +224,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 matcherStack.clear();
                 pushCompoundMatcher(filter);
             } else if (PROJECT.equals(qName)) {
-                Project project = this.project;
-                assert project != null;
+                Project prjct = this.project;
+                assert prjct != null;
                 // Project element
                 String projectName = getOptionalAttribute(attributes, Project.PROJECTNAME_ATTRIBUTE_NAME);
                 if (projectName != null) {
-                    project.setProjectName(projectName);
+                    prjct.setProjectName(projectName);
                 }
             } else {
                 String outerElement = elementStack.get(elementStack.size() - 1);
@@ -283,17 +283,17 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
                         String vmVersion = getOptionalAttribute(attributes, "vm_version");
                         String totalClasses = getOptionalAttribute(attributes, "total_classes");
-                        if (totalClasses != null && totalClasses.length() > 0) {
+                        if (totalClasses != null && !totalClasses.isEmpty()) {
                             bugCollection.getProjectStats().setTotalClasses(Integer.parseInt(totalClasses));
                         }
 
                         String totalSize = getOptionalAttribute(attributes, "total_size");
-                        if (totalSize != null && totalSize.length() > 0) {
+                        if (totalSize != null && !totalSize.isEmpty()) {
                             bugCollection.getProjectStats().setTotalSize(Integer.parseInt(totalSize));
                         }
 
                         String referencedClasses = getOptionalAttribute(attributes, "referenced_classes");
-                        if (referencedClasses != null && referencedClasses.length() > 0) {
+                        if (referencedClasses != null && !referencedClasses.isEmpty()) {
                             bugCollection.getProjectStats().setReferencedClasses(Integer.parseInt(referencedClasses));
                         }
                         bugCollection.getProjectStats().setVMVersion(vmVersion);
@@ -318,22 +318,22 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         stackTrace.clear();
                     }
                 } else if ("FindBugsSummary".equals(outerElement) && "PackageStats".equals(qName)) {
-                    BugCollection bugCollection = this.bugCollection;
-                    assert bugCollection != null;
+                    BugCollection bugcollection = this.bugCollection;
+                    assert bugcollection != null;
                     String packageName = getRequiredAttribute(attributes, "package", qName);
                     int numClasses = Integer.parseInt(getRequiredAttribute(attributes, "total_types", qName));
                     int size = Integer.parseInt(getRequiredAttribute(attributes, "total_size", qName));
-                    bugCollection.getProjectStats().putPackageStats(packageName, numClasses, size);
+                    bugcollection.getProjectStats().putPackageStats(packageName, numClasses, size);
 
                 } else if ("PackageStats".equals(outerElement)) {
-                    BugCollection bugCollection = this.bugCollection;
-                    assert bugCollection != null;
+                    BugCollection bugcollection = this.bugCollection;
+                    assert bugcollection != null;
                     if ("ClassStats".equals(qName)) {
                         String className = getRequiredAttribute(attributes, "class", qName);
                         Boolean isInterface = Boolean.valueOf(getRequiredAttribute(attributes, "interface", qName));
                         int size = Integer.parseInt(getRequiredAttribute(attributes, "size", qName));
                         String sourceFile = getOptionalAttribute(attributes, "sourceFile");
-                        bugCollection.getProjectStats().addClass(className, sourceFile, isInterface, size, false);
+                        bugcollection.getProjectStats().addClass(className, sourceFile, isInterface, size, false);
                     }
 
                 } else if (isTopLevelFilter(outerElement) || isCompoundElementTag(outerElement)) {
@@ -351,8 +351,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     }
                 } else if (BugCollection.HISTORY_ELEMENT_NAME.equals(outerElement)) {
                     if (AppVersion.ELEMENT_NAME.equals(qName)) {
-                        BugCollection bugCollection = this.bugCollection;
-                        assert bugCollection != null;
+                        BugCollection bugcollection = this.bugCollection;
+                        assert bugcollection != null;
 
                         try {
                             String sequence = getRequiredAttribute(attributes, "sequence", qName);
@@ -374,18 +374,18 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                                 appVersion.setNumClasses(Integer.parseInt(numClasses));
                             }
 
-                            bugCollection.addAppVersion(appVersion);
+                            bugcollection.addAppVersion(appVersion);
                         } catch (NumberFormatException e) {
                             throw new SAXException("Invalid AppVersion element", e);
                         }
                     }
                 } else if (BugCollection.PROJECT_ELEMENT_NAME.equals(outerElement)) {
-                    Project project = this.project;
-                    assert project != null;
+                    Project prjct = this.project;
+                    assert prjct != null;
                     if (Project.PLUGIN_ELEMENT_NAME.equals(qName)) {
                         String pluginId = getRequiredAttribute(attributes, Project.PLUGIN_ID_ATTRIBUTE_NAME, qName);
                         Boolean enabled = Boolean.valueOf(getRequiredAttribute(attributes, Project.PLUGIN_STATUS_ELEMENT_NAME, qName));
-                        project.setPluginStatusTrinary(pluginId, enabled);
+                        prjct.setPluginStatusTrinary(pluginId, enabled);
                     }
                 }
             }
@@ -724,34 +724,34 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
                 matcherStack.pop();
             } else if (BUG_COLLECTION.equals(outerElement)) {
-                BugCollection bugCollection = this.bugCollection;
-                assert bugCollection != null;
+                BugCollection bugcollection = this.bugCollection;
+                assert bugcollection != null;
                 if ("BugInstance".equals(qName)) {
-                    bugCollection.add(bugInstance, false);
+                    bugcollection.add(bugInstance, false);
                 }
             } else if (PROJECT.equals(outerElement)) {
-                Project project = this.project;
-                assert project != null;
+                Project prjct = this.project;
+                assert prjct != null;
                 if ("Jar".equals(qName)) {
-                    project.addFile(makeAbsolute(getTextContents()));
+                    prjct.addFile(makeAbsolute(getTextContents()));
                 } else if ("SrcDir".equals(qName)) {
                     sourceDirs.add(makeAbsolute(getTextContents()));
                 } else if ("AuxClasspathEntry".equals(qName)) {
-                    project.addAuxClasspathEntry(makeAbsolute(getTextContents()));
+                    prjct.addAuxClasspathEntry(makeAbsolute(getTextContents()));
                 }
             } else if (BugCollection.ERRORS_ELEMENT_NAME.equals(outerElement)) {
-                BugCollection bugCollection = this.bugCollection;
-                assert bugCollection != null;
+                BugCollection bugcollection = this.bugCollection;
+                assert bugcollection != null;
                 if (BugCollection.ANALYSIS_ERROR_ELEMENT_NAME.equals(qName)) {
                     analysisError.setMessage(getTextContents());
-                    bugCollection.addError(analysisError);
+                    bugcollection.addError(analysisError);
                 } else if (BugCollection.ERROR_ELEMENT_NAME.equals(qName)) {
-                    if (stackTrace.size() > 0) {
+                    if (!stackTrace.isEmpty()) {
                         analysisError.setStackTrace(stackTrace.toArray(new String[0]));
                     }
-                    bugCollection.addError(analysisError);
+                    bugcollection.addError(analysisError);
                 } else if (BugCollection.MISSING_CLASS_ELEMENT_NAME.equals(qName)) {
-                    bugCollection.addMissingClass(getTextContents());
+                    bugcollection.addMissingClass(getTextContents());
                 }
 
             } else if (BugCollection.ERROR_ELEMENT_NAME.equals(outerElement)) {
@@ -764,10 +764,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 }
             } else if ("ClassFeatures".equals(outerElement)) {
                 if (ClassFeatureSet.ELEMENT_NAME.equals(qName)) {
-                    BugCollection bugCollection = this.bugCollection;
-                    assert bugCollection != null;
+                    BugCollection bugcollection = this.bugCollection;
+                    assert bugcollection != null;
 
-                    bugCollection.setClassFeatureSet(classFeatureSet);
+                    bugcollection.setClassFeatureSet(classFeatureSet);
                     classFeatureSet = null;
                 }
             }

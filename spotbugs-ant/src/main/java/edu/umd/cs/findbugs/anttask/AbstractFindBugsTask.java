@@ -71,9 +71,9 @@ public abstract class AbstractFindBugsTask extends Task {
 
     private final String mainClass;
 
-    private boolean debug = false;
+    private boolean debug;
 
-    private File homeDir = null;
+    private File homeDir;
 
     private String jvm = "";
 
@@ -81,17 +81,17 @@ public abstract class AbstractFindBugsTask extends Task {
 
     private long timeout = DEFAULT_TIMEOUT;
 
-    private boolean failOnError = false;
+    private boolean failOnError;
 
-    protected String errorProperty = null;
+    protected String errorProperty;
 
     private final List<SystemProperty> systemPropertyList = new ArrayList<>();
 
-    private Path classpath = null;
+    private Path classpath;
 
-    private Path pluginList = null;
+    private Path pluginList;
 
-    private Java findbugsEngine = null;
+    private Java findbugsEngine;
 
     public String execResultProperty = "edu.umd.cs.findbugs.anttask.AbstractFindBugsTask" + "." + RESULT_PROPERTY_SUFFIX;
 
@@ -104,7 +104,7 @@ public abstract class AbstractFindBugsTask extends Task {
     }
 
     /**
-     * Set the home directory into which findbugs was installed
+     * Set the home directory into which spotbugs was installed
      *
      * @param homeDir
      *            installation directory
@@ -318,7 +318,7 @@ public abstract class AbstractFindBugsTask extends Task {
         findbugsEngine.setProject(getProject());
         findbugsEngine.setTaskName(getTaskName());
         findbugsEngine.setFork(true);
-        if (jvm.length() > 0) {
+        if (!jvm.isEmpty()) {
             findbugsEngine.setJvm(jvm);
         }
         findbugsEngine.setTimeout(timeout);

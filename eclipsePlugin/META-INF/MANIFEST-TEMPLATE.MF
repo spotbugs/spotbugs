@@ -30,7 +30,7 @@ Require-Bundle: org.eclipse.ui.workbench.texteditor,
  spotbugs-annotations;resolution:=optional;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: registered
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: de.tobject.findbugs,
  de.tobject.findbugs.actions,
  de.tobject.findbugs.adapters,

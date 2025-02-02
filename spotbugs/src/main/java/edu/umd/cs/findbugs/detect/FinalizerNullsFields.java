@@ -24,7 +24,6 @@ package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -53,16 +52,7 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 
     @Override
     public void visit(Method obj) {
-        if ("finalize".equals(obj.getName())) {
-            inFinalize = true;
-        } else {
-            inFinalize = false;
-        }
-    }
-
-    @Override
-    public void visit(Field obj) {
-
+        inFinalize = "finalize".equals(obj.getName()) && "()V".equals(obj.getSignature());
     }
 
     @Override

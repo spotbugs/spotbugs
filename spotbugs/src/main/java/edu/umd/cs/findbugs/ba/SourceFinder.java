@@ -267,7 +267,7 @@ public class SourceFinder implements AutoCloseable {
         return r;
     }
 
-    SourceRepository makeJarURLConnectionSourceRepository(final String url) throws MalformedURLException, IOException {
+    SourceRepository makeJarURLConnectionSourceRepository(final String url) throws IOException {
         final File file = File.createTempFile("jar_cache", null);
         file.deleteOnExit();
         final BlockingSourceRepository r = new BlockingSourceRepository();
@@ -288,7 +288,7 @@ public class SourceFinder implements AutoCloseable {
      * @throws IOException
      * @throws MalformedURLException
      */
-    private InputStream open(final String url) throws IOException, MalformedURLException {
+    private InputStream open(final String url) throws IOException {
         InputStream in = null;
         URLConnection connection = new URL(url).openConnection();
         if (getProject().isGuiAvaliable()) {
@@ -536,9 +536,8 @@ public class SourceFinder implements AutoCloseable {
     }
 
     public static String getPlatformName(String packageName, String fileName) {
-        String platformName = packageName.replace('.', File.separatorChar) + (packageName.length() > 0 ? File.separator : "")
+        return packageName.replace('.', File.separatorChar) + (packageName.isEmpty() ? "" : File.separator)
                 + fileName;
-        return platformName;
     }
 
     public static String getPlatformName(SourceLineAnnotation source) {
@@ -550,8 +549,7 @@ public class SourceFinder implements AutoCloseable {
     }
 
     public static String getCanonicalName(String packageName, String fileName) {
-        String canonicalName = ClassName.toSlashedClassName(packageName) + (packageName.length() > 0 ? "/" : "") + fileName;
-        return canonicalName;
+        return ClassName.toSlashedClassName(packageName) + (packageName.isEmpty() ? "" : "/") + fileName;
     }
 
     public static String getOrGuessSourceFile(SourceLineAnnotation source) {

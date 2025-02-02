@@ -89,9 +89,11 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
     public static final String VALUE_OF_ROLE = "LOCAL_VARIABLE_VALUE_OF";
 
-    final private String name;
+    private final String name;
 
-    final int register, pc;
+    final int register;
+
+    final int pc;
 
     final int line;
 
@@ -372,9 +374,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
                 }
             }
             return match;
-        } catch (DataflowAnalysisException e) {
-            AnalysisContext.logError("", e);
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             AnalysisContext.logError("", e);
         }
         return null;

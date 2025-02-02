@@ -53,8 +53,8 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
         testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
-    final static ClassDescriptor ConstantAnnotation = DescriptorFactory.createClassDescriptor(StaticConstant.class);
-    final static ClassDescriptor AnalysisContextContainedAnnotation = DescriptorFactory.createClassDescriptor(AnalysisContextContained.class);
+    static final ClassDescriptor ConstantAnnotation = DescriptorFactory.createClassDescriptor(StaticConstant.class);
+    static final ClassDescriptor AnalysisContextContainedAnnotation = DescriptorFactory.createClassDescriptor(AnalysisContextContained.class);
 
 
     private boolean analysisContextContained(XClass xclass) {
@@ -102,8 +102,6 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        default:
-            break;
         case Const.IF_ICMPEQ:
         case Const.IF_ICMPNE:
             OpcodeStack.Item left = stack.getStackItem(1);
@@ -113,6 +111,8 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
                         .addValueSource(left, this).addValueSource(right, this)
                         .addString("Just check the sign of the result of compare or compareTo, not specific values such as 1 or -1"), this);
             }
+            break;
+        default:
             break;
         }
 

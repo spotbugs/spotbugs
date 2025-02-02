@@ -185,7 +185,7 @@ public class ClassParser implements ClassParserInterface {
     }
 
     public static void extractReferencedClassesFromSignature(Set<ClassDescriptor> referencedClassSet, String signature) {
-        while (signature.length() > 0) {
+        while (!signature.isEmpty()) {
             int start = signature.indexOf('L');
             if (start < 0) {
                 break;
@@ -302,9 +302,7 @@ public class ClassParser implements ClassParserInterface {
         checkConstantTag(constant, IClassConstants.CONSTANT_Class);
 
         int refIndex = ((Integer) constant.data[0]).intValue();
-        String stringValue = getUtf8String(refIndex);
-
-        return stringValue;
+        return getUtf8String(refIndex);
     }
 
     /**

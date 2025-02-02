@@ -74,7 +74,7 @@ public class FindBugsMessageFormat {
         String pat = pattern;
         StringBuilder result = new StringBuilder();
 
-        while (pat.length() > 0) {
+        while (!pat.isEmpty()) {
             int subst = pat.indexOf('{');
             if (subst < 0) {
                 result.append(pat);

@@ -67,11 +67,11 @@ public class FindBugsViewerTask extends Task {
     private static final long DEFAULT_TIMEOUT = -1; // ten minutes
 
     // location to load bug report from
-    private boolean debug = false;
+    private boolean debug;
 
-    private File projectFile = null;
+    private File projectFile;
 
-    private File loadbugs = null;
+    private File loadbugs;
 
     private long timeout = DEFAULT_TIMEOUT;
 
@@ -79,13 +79,13 @@ public class FindBugsViewerTask extends Task {
 
     private String look = "native";
 
-    private File homeDir = null;
+    private File homeDir;
 
-    private Path classpath = null;
+    private Path classpath;
 
-    private Path pluginList = null;
+    private Path pluginList;
 
-    private Java findbugsEngine = null;
+    private Java findbugsEngine;
 
     /** Creates a new instance of FindBugsViewerTask */
     public FindBugsViewerTask() {

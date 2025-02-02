@@ -96,7 +96,7 @@ class BugCounts {
         writeBugPriorities(xmlOutput, nBugs);
     }
 
-    public static void writeBugPriorities(XMLOutput xmlOutput, @Nonnull int nBugs[]) throws IOException {
+    public static void writeBugPriorities(XMLOutput xmlOutput, @Nonnull int[] nBugs) throws IOException {
         int i = nBugs.length;
         while (--i > 0) {
             if (nBugs[i] > 0) {
@@ -234,8 +234,7 @@ public class PackageStats extends BugCounts implements XMLWriteable {
     }
 
     public @CheckForNull ClassStats getClassStatsOrNull(String name) {
-        ClassStats result = packageMembers.get(name);
-        return result;
+        return packageMembers.get(name);
     }
 
     @Override
@@ -295,11 +294,11 @@ public class PackageStats extends BugCounts implements XMLWriteable {
 
         xmlOutput.addAttribute("package", packageName);
         xmlOutput.addAttribute("total_bugs", String.valueOf(getTotalBugs()));
-        int numClasses = packageMembers.size();
-        if (numClasses == 0) {
-            numClasses = this.numClasses;
+        int numClses = packageMembers.size();
+        if (numClses == 0) {
+            numClses = this.numClasses;
         }
-        xmlOutput.addAttribute("total_types", String.valueOf(numClasses));
+        xmlOutput.addAttribute("total_types", String.valueOf(numClses));
         xmlOutput.addAttribute("total_size", String.valueOf(size));
         writeBugPriorities(xmlOutput);
 

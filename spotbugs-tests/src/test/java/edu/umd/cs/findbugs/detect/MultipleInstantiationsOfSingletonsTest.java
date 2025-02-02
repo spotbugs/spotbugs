@@ -1,14 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.jupiter.api.Test;
-
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 
@@ -23,45 +16,41 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
     void innerChildInstanceTest() {
         performAnalysis("singletons/InnerChildInstance.class",
-                "singletons/InnerChildInstance$Unknown.class",
-                "singletons/InnerChildInstance$1.class");
+                "singletons/InnerChildInstance$Unknown.class");
         assertNoBugs();
     }
 
     @Test
     void innerChildAndMoreInstanceTest() {
         performAnalysis("singletons/InnerChildAndMoreInstance.class",
-                "singletons/InnerChildAndMoreInstance$1.class",
                 "singletons/InnerChildAndMoreInstance$Unknown.class");
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
-        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "InnerChildAndMoreInstance");
+        assertBugTypeCount("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertBugInClass("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "InnerChildAndMoreInstance");
 
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void InnerChildAndMoreInstanceReorderedTest() {
         performAnalysis("singletons/InnerChildAndMoreInstanceReordered.class",
-                "singletons/InnerChildAndMoreInstanceReordered$1.class",
                 "singletons/InnerChildAndMoreInstanceReordered$Unknown.class");
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
-        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "InnerChildAndMoreInstanceReordered");
+        assertBugTypeCount("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertBugInClass("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "InnerChildAndMoreInstanceReordered");
 
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void InnerChildAndMoreInstanceNoGetterTest() {
         performAnalysis("singletons/InnerChildAndMoreInstanceNoGetter.class",
-                "singletons/InnerChildAndMoreInstanceNoGetter$1.class",
                 "singletons/InnerChildAndMoreInstanceNoGetter$Unknown.class");
         assertNoBugs();
     }
@@ -81,118 +70,118 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
     void cloneableSingletonTest() {
         performAnalysis("singletons/CloneableSingleton.class");
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 1);
-        assertSINGBug("SING_SINGLETON_IMPLEMENTS_CLONEABLE", "CloneableSingleton", "clone");
+        assertBugTypeCount("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 1);
+        assertBugInMethod("SING_SINGLETON_IMPLEMENTS_CLONEABLE", "CloneableSingleton", "clone");
 
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void indirectlyCloneableSingletonTest() {
         performAnalysis("singletons/IndirectlyCloneableSingleton.class", "singletons/CloneableClass.class");
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 1);
-        assertSINGBug("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", "IndirectlyCloneableSingleton");
+        assertBugTypeCount("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 1);
+        assertBugInClass("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", "IndirectlyCloneableSingleton");
 
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void defaultConstructorTest() {
         performAnalysis("singletons/DefaultConstructor.class");
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
-        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "DefaultConstructor");
+        assertBugTypeCount("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertBugInClass("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "DefaultConstructor");
 
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void protectedConstructorTest() {
         performAnalysis("singletons/ProtectedConstructor.class");
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
-        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "ProtectedConstructor");
+        assertBugTypeCount("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertBugInClass("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "ProtectedConstructor");
 
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void protectedConstructorStaticInitTest() {
         performAnalysis("singletons/ProtectedConstructorStaticInit.class");
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
-        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "ProtectedConstructorStaticInit");
+        assertBugTypeCount("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertBugInClass("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "ProtectedConstructorStaticInit");
 
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void protectedConstructorStaticInitReorderedTest() {
         performAnalysis("singletons/ProtectedConstructorStaticInitReordered.class");
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
-        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "ProtectedConstructorStaticInitReordered");
+        assertBugTypeCount("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertBugInClass("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "ProtectedConstructorStaticInitReordered");
 
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void notCloneableButHasCloneMethodTest() {
         performAnalysis("singletons/NotCloneableButHasCloneMethod.class");
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 1);
-        assertSINGBug("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", "NotCloneableButHasCloneMethod", "clone");
+        assertBugTypeCount("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 1);
+        assertBugInMethod("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", "NotCloneableButHasCloneMethod", "clone");
 
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void serializableSingletonTest() {
         performAnalysis("singletons/SerializableSingleton.class");
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 1);
-        assertSINGBug("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", "SerializableSingleton");
+        assertBugTypeCount("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 1);
+        assertBugInClass("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", "SerializableSingleton");
 
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void notSynchronizedSingletonTest() {
         performAnalysis("singletons/NotSynchronizedSingleton.class");
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 1);
-        assertSINGBug("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", "NotSynchronizedSingleton", "getInstance");
+        assertBugTypeCount("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 1);
+        assertBugInMethod("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", "NotSynchronizedSingleton", "getInstance");
 
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
+        assertNoBugType("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
     }
 
     @Test
@@ -200,14 +189,14 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
         performAnalysis("singletons/InappropriateSynchronization.class");
         // now cannot detect synchronization bug
         // because of the using of a monitor inside function
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertBugTypeCount("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
         //assertSINGBug("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", "InappropriateSynchronization", "getInstance");
 
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
+        assertNoBugType("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
     }
 
     @Test
@@ -248,6 +237,18 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void doubleCheckedLockingIndirectTest() {
+        performAnalysis("singletons/DoubleCheckedLockingIndirect.class");
+        assertNoBugs();
+    }
+
+    @Test
+    void doubleCheckedLockingIndirect2Test() {
+        performAnalysis("singletons/DoubleCheckedLockingIndirect2.class");
+        assertNoBugs();
+    }
+
+    @Test
     void multiplePrivateConstructorsTest() {
         performAnalysis("singletons/MultiplePrivateConstructors.class");
         assertNoBugs();
@@ -256,27 +257,27 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
     void multipleNonPrivateConstructorsTest() {
         performAnalysis("singletons/MultipleNonPrivateConstructors.class");
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
-        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "MultipleNonPrivateConstructors");
+        assertBugTypeCount("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertBugInClass("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "MultipleNonPrivateConstructors");
 
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
     void multipleNonPrivateConstructorsTest2() {
         performAnalysis("singletons/MultipleNonPrivateConstructors2.class");
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
-        assertSINGBug("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "MultipleNonPrivateConstructors2");
+        assertBugTypeCount("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 1);
+        assertBugInClass("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", "MultipleNonPrivateConstructors2");
 
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 
     @Test
@@ -287,35 +288,11 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     }
 
     private void assertNoBugs() {
-        assertNumOfSINGBugs("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
-        assertNumOfSINGBugs("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED", 0);
-    }
-
-    private void assertNumOfSINGBugs(String bugType, int num) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .build();
-        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertSINGBug(String bugType, String className) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .inClass(className)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
-    }
-
-    private void assertSINGBug(String bugType, String className, String method) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .inClass(className)
-                .inMethod(method)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+        assertNoBugType("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+        assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+        assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
     }
 }

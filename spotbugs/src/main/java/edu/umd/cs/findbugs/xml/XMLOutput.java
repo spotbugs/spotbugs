@@ -35,7 +35,7 @@ public interface XMLOutput {
     /**
      * Begin the XML document.
      */
-    public void beginDocument() throws IOException;
+    void beginDocument() throws IOException;
 
     /**
      * Open a tag with given name.
@@ -43,7 +43,7 @@ public interface XMLOutput {
      * @param tagName
      *            the tag name
      */
-    public void openTag(String tagName) throws IOException;
+    void openTag(String tagName) throws IOException;
 
     /**
      * Open a tag with given name and given attributes.
@@ -53,7 +53,7 @@ public interface XMLOutput {
      * @param attributeList
      *            the attributes
      */
-    public void openTag(String tagName, XMLAttributeList attributeList) throws IOException;
+    void openTag(String tagName, XMLAttributeList attributeList) throws IOException;
 
     /**
      * Start a tag, with the intention of adding attributes. Must be followed by
@@ -62,7 +62,7 @@ public interface XMLOutput {
      * @param tagName
      *            the tag name
      */
-    public void startTag(String tagName) throws IOException;
+    void startTag(String tagName) throws IOException;
 
     /**
      * Add an attribute to a started tag. Must follow a call to startTag.
@@ -72,7 +72,7 @@ public interface XMLOutput {
      * @param value
      *            the attribute value, unescaped.
      */
-    public void addAttribute(String name, String value) throws IOException;
+    void addAttribute(String name, String value) throws IOException;
 
     /**
      * End a started tag. Must follow a call to startTag.
@@ -80,7 +80,7 @@ public interface XMLOutput {
      * @param close
      *            true if the element has no content.
      */
-    public void stopTag(boolean close) throws IOException;
+    void stopTag(boolean close) throws IOException;
 
     /**
      * Open and close tag with given name.
@@ -88,7 +88,7 @@ public interface XMLOutput {
      * @param tagName
      *            the tag name
      */
-    public void openCloseTag(String tagName) throws IOException;
+    void openCloseTag(String tagName) throws IOException;
 
     /**
      * Open and close tag with given name and given attributes.
@@ -98,7 +98,7 @@ public interface XMLOutput {
      * @param attributeList
      *            the attributes
      */
-    public void openCloseTag(String tagName, XMLAttributeList attributeList) throws IOException;
+    void openCloseTag(String tagName, XMLAttributeList attributeList) throws IOException;
 
     /**
      * Close tag with given name.
@@ -106,7 +106,7 @@ public interface XMLOutput {
      * @param tagName
      *            the tag name
      */
-    public void closeTag(String tagName) throws IOException;
+    void closeTag(String tagName) throws IOException;
 
     /**
      * Write text to the XML document. XML metacharacters are automatically
@@ -115,7 +115,7 @@ public interface XMLOutput {
      * @param text
      *            the text to write
      */
-    public void writeText(String text) throws IOException;
+    void writeText(String text) throws IOException;
 
     /**
      * Write a CDATA section to the XML document. The characters are not escaped
@@ -124,7 +124,7 @@ public interface XMLOutput {
      * @param cdata
      *            the character data to write
      */
-    public void writeCDATA(String cdata) throws IOException;
+    void writeCDATA(String cdata) throws IOException;
 
     /**
      * Finish writing XML output, closing any underlying resources (such as
@@ -133,5 +133,5 @@ public interface XMLOutput {
      * this method should be performed in a finally block.
      */
     @DischargesObligation
-    public void finish() throws IOException;
+    void finish() throws IOException;
 }

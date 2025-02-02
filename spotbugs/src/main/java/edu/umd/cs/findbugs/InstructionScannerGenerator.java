@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import org.apache.bcel.generic.InstructionHandle;
+
 /**
  * Class for generating InstructionScanners at particular instructions of a
  * path. Because we don't know a priori where we might want to start scanning in
@@ -30,10 +32,10 @@ public interface InstructionScannerGenerator {
      * Return true if a new scanner should be created starting at this
      * instruction, false otherwise.
      */
-    public boolean start(org.apache.bcel.generic.InstructionHandle handle);
+    boolean start(InstructionHandle handle);
 
     /**
      * Create a new scanner.
      */
-    public InstructionScanner createScanner();
+    InstructionScanner createScanner();
 }

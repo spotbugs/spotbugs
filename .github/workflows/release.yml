@@ -49,7 +49,7 @@ jobs:
           java-version: '21'
           distribution: temurin
           cache: gradle
-      - uses: gradle/actions/wrapper-validation@v3
+      - uses: gradle/actions/wrapper-validation@v4
       - name: Download Eclipse
         run: |
           curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz

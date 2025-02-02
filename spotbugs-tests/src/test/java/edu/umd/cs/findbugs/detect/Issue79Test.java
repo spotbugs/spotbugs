@@ -1,12 +1,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * SpotBugs should remove the ResultSet obligation from all set
@@ -21,7 +17,6 @@ class Issue79Test extends AbstractIntegrationTest {
     @Test
     void testIssue() {
         performAnalysis("ghIssues/Issue79.class");
-        BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder().build();
-        assertThat(getBugCollection(), containsExactly(0, bugMatcher));
+        assertNoBugType("OBL_UNSATIFIED_OBLIGATION");
     }
 }

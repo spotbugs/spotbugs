@@ -228,9 +228,6 @@ public class AssertionMethods {
     }
 
     public boolean isAssertionCall(InvokeInstruction inv) {
-
-        boolean isAssertionMethod = assertionMethodRefSet.get(inv.getIndex());
-
-        return isAssertionMethod;
+        return assertionMethodRefSet.get(inv.getIndex());
     }
 }

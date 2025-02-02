@@ -122,6 +122,38 @@ public class Project implements XMLWriteable, AutoCloseable {
     /** key is plugin id */
     private final Map<String, Boolean> enabledPlugins;
 
+    /**
+     * StaticConstant used to name anonymous projects.
+     */
+    public static final String UNNAMED_PROJECT = "<<unnamed project>>";
+
+    private long timestampForAnalyzedClasses = 0L;
+
+    private IGuiCallback guiCallback;
+
+    @Nonnull
+    private Filter suppressionFilter = new Filter();
+
+    private SourceFinder sourceFinder;
+
+    static final String JAR_ELEMENT_NAME = "Jar";
+
+    static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
+
+    static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
+
+    static final String WRK_DIR_ELEMENT_NAME = "WrkDir";
+
+    static final String FILENAME_ATTRIBUTE_NAME = "filename";
+
+    static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
+
+    static final String PLUGIN_ELEMENT_NAME = "Plugin";
+
+    static final String PLUGIN_ID_ATTRIBUTE_NAME = "id";
+
+    static final String PLUGIN_STATUS_ELEMENT_NAME = "enabled";
+
     @CheckForNull
     public Boolean getPluginStatus(Plugin plugin) {
         return enabledPlugins.get(plugin.getPluginId());
@@ -142,20 +174,6 @@ public class Project implements XMLWriteable, AutoCloseable {
         requireNonNull(configuration);
         this.configuration = configuration;
     }
-
-    /**
-     * StaticConstant used to name anonymous projects.
-     */
-    public static final String UNNAMED_PROJECT = "<<unnamed project>>";
-
-    private long timestampForAnalyzedClasses = 0L;
-
-    private IGuiCallback guiCallback;
-
-    @Nonnull
-    private Filter suppressionFilter = new Filter();
-
-    private SourceFinder sourceFinder;
 
     /**
      * Create an anonymous project.
@@ -738,8 +756,7 @@ public class Project implements XMLWriteable, AutoCloseable {
             try {
                 return Project.readXML(projectFile);
             } catch (SAXException | ParserConfigurationException e) {
-                IOException ioe = new IOException("Couldn't read saved FindBugs project", e);
-                throw ioe;
+                throw new IOException("Couldn't read saved FindBugs project", e);
             }
         }
         throw new IllegalArgumentException("Can't read project from " + argument);
@@ -780,24 +797,6 @@ public class Project implements XMLWriteable, AutoCloseable {
         }
         return fileName;
     }
-
-    static final String JAR_ELEMENT_NAME = "Jar";
-
-    static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
-
-    static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
-
-    static final String WRK_DIR_ELEMENT_NAME = "WrkDir";
-
-    static final String FILENAME_ATTRIBUTE_NAME = "filename";
-
-    static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
-
-    static final String PLUGIN_ELEMENT_NAME = "Plugin";
-
-    static final String PLUGIN_ID_ATTRIBUTE_NAME = "id";
-
-    static final String PLUGIN_STATUS_ELEMENT_NAME = "enabled";
 
     @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
@@ -906,7 +905,7 @@ public class Project implements XMLWriteable, AutoCloseable {
         int branchPoint;
         if (slashPos >= 0) {
             String subPath = srcFile.substring(0, slashPos);
-            if ((subPath.length() == 0) || base.startsWith(subPath)) {
+            if ((subPath.isEmpty()) || base.startsWith(subPath)) {
                 branchPoint = slashPos + 1;
                 slashPos = srcFile.indexOf(slash, branchPoint);
                 while (slashPos >= 0) {

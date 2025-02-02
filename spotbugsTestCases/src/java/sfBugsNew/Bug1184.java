@@ -7,7 +7,7 @@ import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1184 {
-    @DesireWarning("BX_UNBOXING_IMMEDIATELY_REBOXED") // not generated under Jave 1.8
+    @DesireWarning("BX_UNBOXING_IMMEDIATELY_REBOXED") // not generated under Java 1.8
     public static void main(String[] args) {
         List<Integer> list = new ArrayList<>();
         list.add(1);

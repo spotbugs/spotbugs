@@ -54,13 +54,7 @@ public class JavaWebStart {
             showMethod = showObject.getClass().getMethod("showDocument", new Class[] { URL.class });
             getCodeBase = showObject.getClass().getMethod("getCodeBase", new Class[] {});
 
-        } catch (ClassNotFoundException e) {
-            assert true;
-        } catch (NoSuchMethodException e) {
-            assert true;
-        } catch (IllegalAccessException e) {
-            assert true;
-        } catch (InvocationTargetException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             assert true;
         }
         jnlpShowDocumentMethod = showMethod;
@@ -80,8 +74,6 @@ public class JavaWebStart {
                 if (base != null) {
                     return new URL(base, s);
                 }
-            } catch (RuntimeException e) {
-                assert true;
             } catch (Exception e) {
                 assert true;
             }
@@ -111,9 +103,7 @@ public class JavaWebStart {
                 }
                 return success;
 
-            } catch (InvocationTargetException ite) {
-                assert true;
-            } catch (IllegalAccessException iae) {
+            } catch (InvocationTargetException | IllegalAccessException ite) {
                 assert true;
             }
         }
