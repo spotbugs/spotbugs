@@ -2,15 +2,16 @@ package edu.umd.cs.findbugs.nullness;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.emptyIterable;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.nio.file.Paths;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.test.SpotBugsRule;
+import edu.umd.cs.findbugs.test.SpotBugsExtension;
+import edu.umd.cs.findbugs.test.SpotBugsRunner;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
@@ -19,19 +20,25 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  *
  * @author kzaikin
  */
-public class AndroidNullabilityTest {
-    @Rule
-    public SpotBugsRule spotbugs = new SpotBugsRule();
+@ExtendWith(SpotBugsExtension.class)
+class AndroidNullabilityTest {
 
     @Test
-    public void objectForNonNullParam_isOk() {
+    void objectForNonNullParam_isOk(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/ObjectForNonNullParam.class"));
         assertThat(bugCollection, emptyIterable());
     }
 
     @Test
-    public void nullForNonNullParam_isDetected() {
+    void objectForNonNullParam2_isOk(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/ObjectForNonNullParam2.class"));
+        assertThat(bugCollection, emptyIterable());
+    }
+
+    @Test
+    void nullForNonNullParam_isDetected(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/NullForNonNullParam.class"));
 
@@ -39,16 +46,39 @@ public class AndroidNullabilityTest {
     }
 
     @Test
-    public void checkedNullableReturn_isOk() {
+    void nullForNonNullParam2_isDetected(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/NullForNonNullParam2.class"));
+
+        assertThat(bugCollection, containsExactly(1, bug("NP_NONNULL_PARAM_VIOLATION")));
+    }
+
+    @Test
+    void checkedNullableReturn_isOk(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/CheckedNullableReturn.class"));
         assertThat(bugCollection, emptyIterable());
     }
 
     @Test
-    public void uncheckedNullableReturn_isDetected() {
+    void checkedNullableReturn2_isOk(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/CheckedNullableReturn2.class"));
+        assertThat(bugCollection, emptyIterable());
+    }
+
+    @Test
+    void uncheckedNullableReturn_isDetected(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/UncheckedNullableReturn.class"));
+
+        assertThat(bugCollection, containsExactly(1, bug("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")));
+    }
+
+    @Test
+    void uncheckedNullableReturn2_isDetected(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/UncheckedNullableReturn2.class"));
 
         assertThat(bugCollection, containsExactly(1, bug("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")));
     }

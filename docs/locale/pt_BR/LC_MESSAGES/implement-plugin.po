@@ -1,0 +1,299 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2021, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-22 15:35-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../implement-plugin.rst:2
+msgid "Implement SpotBugs plugin"
+msgstr "Implementação do SpotBugs Plugin"
+
+#: ../../implement-plugin.rst:5
+msgid "Create Maven project"
+msgstr "Criação do projeto Maven"
+
+#: ../../implement-plugin.rst:7
+msgid ""
+"Use `spotbugs-archetype <https://github.com/spotbugs/spotbugs-"
+"archetype>`_ to create Maven project. Then Maven archetype plugin will "
+"ask you to decide plugin's groupId, artifactId, package and initial "
+"version."
+msgstr ""
+"Use `spotbugs-archetype <https://github.com/spotbugs/spotbugs-"
+"archetype>`_ para criar o projeto Maven. Então, a arquitetura do Maven plugin "
+"pede para que você informe o groupId, artifactId, package e versão inicial do plugin."
+
+#: ../../implement-plugin.rst:14
+msgid "Write java code to represent bug to find"
+msgstr "Escrita do código Java para representar o bug a ser encontrado"
+
+#: ../../implement-plugin.rst:16
+msgid ""
+"In generated project, you can find a file named as `BadCase.java "
+"<https://github.com/spotbugs/spotbugs-archetype/blob/spotbugs-"
+"archetype-0.1.0/src/main/resources/archetype-"
+"resources/src/test/java/BadCase.java>`_. Update this file to represent "
+"the target bug to find."
+msgstr ""
+"No projeto gerado, você pode encontrar um arquivo nomeado como `BadCase.java "
+"<https://github.com/spotbugs/spotbugs-archetype/blob/spotbugs-"
+"archetype-0.1.0/src/main/resources/archetype-"
+"resources/src/test/java/BadCase.java>`_. Atualize esse arquivo para representar "
+"o bug a ser encontrado."
+
+#: ../../implement-plugin.rst:19 ../../implement-plugin.rst:41
+msgid ""
+"If you have multiple patterns to represent, add more classes into "
+"``src/test/java`` directory."
+msgstr ""
+"Se você tem muitos padrões a serem representados, adicione mais classes "
+"no diretório ``src/test/java``."
+
+#: ../../implement-plugin.rst:23
+msgid "Write test case to ensure your detector can find bug"
+msgstr "Escreva casos de teste para garantir que seu detector pode encontrar bugs"
+
+#: ../../implement-plugin.rst:25
+msgid ""
+"In generated project, you can find another file named as "
+"`MyDetectorTest.java <https://github.com/spotbugs/spotbugs-archetype/blob"
+"/spotbugs-archetype-0.1.0/src/main/resources/archetype-"
+"resources/src/test/java/MyDetectorTest.java>`_. The "
+"``spotbugs.performAnalysis(Path)`` in this test runs SpotBugs with your "
+"plugin, and return all found bugs (here 1st argument of this method is a "
+"path of class file compiled from ``BadCase.java``)."
+msgstr ""
+"No projeto gerado, você pode encontrar o arquivo nomeado como "
+"`MyDetectorTest.java <https://github.com/spotbugs/spotbugs-archetype/blob"
+"/spotbugs-archetype-0.1.0/src/main/resources/archetype-"
+"resources/src/test/java/MyDetectorTest.java>`_. Nesse teste, o "
+"``spotbugs.performAnalysis(Path)`` executa o SpotBugs com o seu "
+"plugin, e retorna todos os bugs encontrados (o primeiro argumento  desse método é "
+"o caminho do arquivo de classe compilado a partir de ``BadCase.java``)."
+
+#: ../../implement-plugin.rst:28
+msgid ""
+"You can use `BugInstanceMatcher "
+"<https://github.com/spotbugs/spotbugs/blob/master/test-"
+"harness/src/main/java/edu/umd/cs/findbugs/test/matcher/BugInstanceMatcher.java>`_"
+" to verify that your plugin can find bug as expected."
+msgstr ""
+"Você pode usar `BugInstanceMatcher "
+"<https://github.com/spotbugs/spotbugs/blob/master/test-"
+"harness/src/main/java/edu/umd/cs/findbugs/test/matcher/BugInstanceMatcher.java>`_"
+" para verificar que seu plugin pode encontrar bug como o esperado."
+
+#: ../../implement-plugin.rst:30
+msgid ""
+"Currently this test should fail, because we've not updated detector "
+"itself yet."
+msgstr ""
+"Atualmente, esse teste deve falhar, porque não atualizamos o detector ainda."
+
+#: ../../implement-plugin.rst:34
+msgid "Write java code to avoid false-positive"
+msgstr "Escrita de código Java para evitar falso-positivos"
+
+#: ../../implement-plugin.rst:36
+msgid ""
+"To avoid false-positive, it is good to ensure that in which case detector"
+" should NOT find bug."
+msgstr ""
+"Para evitar falso positivos, é bom garantir os casos em que o detector NÃO deve encontrar um bug."
+
+#: ../../implement-plugin.rst:38
+msgid ""
+"Update `GoodCase.java <https://github.com/spotbugs/spotbugs-"
+"archetype/blob/spotbugs-archetype-0.1.0/src/main/resources/archetype-"
+"resources/src/test/java/GoodCase.java>`_ in your project, and represent "
+"such cases. After that, add a test method into ``MyDetectorTest.java`` "
+"which verify that no bug found from this ``GoodCase`` class."
+msgstr ""
+"Atualize `GoodCase.java <https://github.com/spotbugs/spotbugs-"
+"archetype/blob/spotbugs-archetype-0.1.0/src/main/resources/archetype-"
+"resources/src/test/java/GoodCase.java>`_ no seu projeto, e represente tais casos. "
+"Em seguida, adicione um método de teste em ``MyDetectorTest.java`` "
+"o qual verifica que não foram encontradas instâncias de bug na classe ``GoodCase``."
+
+#: ../../implement-plugin.rst:45
+msgid "Update detector to pass all unit tests"
+msgstr "Atualize o detector para passar em todos os testes de unidade"
+
+#: ../../implement-plugin.rst:47
+msgid "Now you have tests to ensure that your detector can work as expected."
+msgstr "Agora você tem testes que garantem que seu detector funciona como o esperado."
+
+#: ../../implement-plugin.rst:51
+msgid "TBU"
+msgstr ""
+
+#: ../../implement-plugin.rst:55
+msgid "Which super class you should choose"
+msgstr "Qual super classe você deve escolher"
+
+#: ../../implement-plugin.rst:58
+msgid ""
+"`AnnotationDetector "
+"<https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/bcel/AnnotationDetector.html>`_"
+msgstr ""
+
+#: ../../implement-plugin.rst:58
+msgid ""
+"Base detector which analyzes annotations on classes, fields, methods, and"
+" method parameters."
+msgstr "Um detector base que analisa anotações em classes, campos, métodos e parâmetros de método."
+
+#: ../../implement-plugin.rst:61
+msgid ""
+"`BytecodeScanningDetector "
+"<https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BytecodeScanningDetector.html>`_"
+msgstr ""
+
+#: ../../implement-plugin.rst:61
+msgid "Base detector which analyzes java bytecode in class files."
+msgstr "Um detector base que analisa Java bytecode em arquivos de classe."
+
+#: ../../implement-plugin.rst:65
+msgid ""
+"`OpcodeStackDetector "
+"<https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/bcel/OpcodeStackDetector.html>`_"
+msgstr ""
+
+#: ../../implement-plugin.rst:64
+msgid ""
+"Sub class of ``BytecodeScanningDetector``, which can scan the bytecode of"
+" a method and use an `operand stack "
+"<https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.2>`_."
+msgstr "É uma subclasse de ``BytecodeScanningDetector``. "
+"Você pode verificar o bytecode do método e usar a pilha de operandos."
+
+#: ../../implement-plugin.rst:68
+msgid "Update findbugs.xml"
+msgstr "Atualizar o findbugs.xml"
+
+#: ../../implement-plugin.rst:70
+msgid ""
+"SpotBugs reads ``findbugs.xml`` in each plugin to find detectors and "
+"bugs. So when you add new detector, you need to add new ``<Detector>`` "
+"element like below:"
+msgstr "O SpotBugs lê o arquivo ``findbugs.xml`` em cada plugin para encontrar os detectores e bugs."
+"Portanto, ao adicionar um novo detector, você precisa adicionar o novo elemento ``<Detector>`` "
+"da seguinte maneira :"
+
+#: ../../implement-plugin.rst:77
+msgid ""
+"It is also necessary to add ``<BugPattern>``, to describe type and "
+"category of your bug pattern."
+msgstr "Você também  precisa adicionar ``<BugPattern>`` para descrever o tipo e a categoria do padrão de bug."
+
+#: ../../implement-plugin.rst:83
+msgid ""
+"You can find ``findbugs.xml`` in ``src/main/resources`` directory of "
+"generated Maven project."
+msgstr "você pode encontrar o arquivo ``findbugs.xml`` no diretório ``src/main/resources`` do projeto Maven gerado"
+
+#: ../../implement-plugin.rst:88
+msgid "Update messages.xml"
+msgstr "Atualizar messages.xml"
+
+#: ../../implement-plugin.rst:90
+msgid ""
+"SpotBugs reads ``messages.xml`` in each plugin to construct human "
+"readable message to report detected bug. It also supports reading "
+"localized messages from ``messages_ja.xml``, ``messages_fr.xml`` and so "
+"on."
+msgstr ""
+"O SpotBugs lê o arquivo ``messages.xml`` em cada plugin e cria uma mensagem legível "
+"por humanos para relatar os bugs detectados. Além disso, ele também suporta a leitura de mensagens localizadas em "
+"``messages_ja.xml``, ``messages_fr.xml`` e etc."
+
+#: ../../implement-plugin.rst:93
+msgid ""
+"You can find ``messages.xml`` in ``src/main/resources`` directory of "
+"generated Maven project."
+msgstr ""
+"Você pode encontrar o arquivo ``messages.xml`` no diretório ``src/main/resources`` do projeto Maven gerado."
+
+#: ../../implement-plugin.rst:96
+msgid "Update message of Detector"
+msgstr "Atualizar a mensagem do Detector"
+
+#: ../../implement-plugin.rst:98
+msgid ""
+"In ``<Detector>`` element, you can add detector's description message. "
+"Note that it should be plain text, HTML is not supported."
+msgstr ""
+"Você pode adicionar uma mensagem descritiva no elemento ``<Detector>``. "
+"Observe que a mensagem deve ser texto simples, HTML não é suportado."
+
+#: ../../implement-plugin.rst:109
+msgid "Update message of Bug Pattern"
+msgstr "Atualizar a mensagem de Bug Pattern"
+
+#: ../../implement-plugin.rst:111
+msgid ""
+"In ``<BugPattern>`` element, you can add bug pattern's description "
+"message. There are three kinds of messages:"
+msgstr ""
+"Você pode adicionar uma mensagem descritiva no elemento ``<BugPattern>``. "
+"Há três tipos de mensagens: "
+
+#: ../../implement-plugin.rst:116
+msgid "ShortDescription"
+msgstr ""
+
+#: ../../implement-plugin.rst:115
+msgid ""
+"Short description for bug pattern. Useful to tell its intent and "
+"character for users. It should be plain text, HTML is not supported."
+msgstr ""
+"Apresenta uma breve descrição de um padrão de bug. Essa mensagem é útil para "
+"comunicar as intenções e o caráter para os usuários. Deve ser texto simples e HTML não é compatível."
+
+#: ../../implement-plugin.rst:123
+msgid "LongDescription"
+msgstr ""
+
+#: ../../implement-plugin.rst:119
+msgid ""
+"Longer description for bug pattern. You can use placeholder like ``{0}`` "
+"(0-indexed), then added data into `BugInstance "
+"<https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_"
+" will be inserted at there. So this ``LongDescription`` is useful to tell"
+" detailed information about detected bug."
+msgstr ""
+"Apresenta uma descrição mais longa do padrão de bug. Você pode usar um espaço reservado como ``{0}``  "
+"(0-índice) e os dados de `BugInstance "
+"<https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_"
+" serão inseridos nesse espaço. Portanto, o ``LongDescription`` é útil para fornecer informações detalhadas "
+"sobre os bugs encontrados.
+
+#: ../../implement-plugin.rst:123
+msgid "It should be plain text, HTML is not supported."
+msgstr "Deve ser texto simples e HTML não é compatível."
+
+#: ../../implement-plugin.rst:126
+msgid "Details"
+msgstr "Detalhes"
+
+#: ../../implement-plugin.rst:126
+msgid ""
+"Detailed description for bug pattern. It should be HTML format, so this "
+"is useful to tell detailed specs/examples with table, list and code "
+"snippets."
+msgstr ""
+"Uma descrição detalhada do padrão de bug. Deve estar no formato HTML para comunicar especificações/exemplos "
+"detalhados em tabelas, listas e fragmentos de código."

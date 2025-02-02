@@ -62,15 +62,16 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
         new CFGFactory(), new UsagesRequiringNonNullValuesFactory(), new ValueNumberDataflowFactory(),
         new IsNullValueDataflowFactory(), new TypeDataflowFactory(), new DepthFirstSearchFactory(),
         new ReverseDepthFirstSearchFactory(), new UnpackedCodeFactory(), new LockDataflowFactory(), new LockCheckerFactory(),
-        new ReturnPathDataflowFactory(), new DominatorsAnalysisFactory(), new NonExceptionPostdominatorsAnalysisFactory(),
-        new NonImplicitExceptionPostDominatorsAnalysisFactory(), new ExceptionSetFactoryFactory(),
+        new ReturnPathDataflowFactory(), new NonExceptionDominatorsAnalysisFactory(), new NonExceptionPostDominatorsAnalysisFactory(),
+        new NonImplicitExceptionDominatorsAnalysisFactory(), new NonImplicitExceptionPostDominatorsAnalysisFactory(),
+        new ExceptionSetFactoryFactory(),
         new ParameterSignatureListFactory(), new ConstantDataflowFactory(), new LoadDataflowFactory(),
         new StoreDataflowFactory(), new LoadedFieldSetFactory(), new LiveLocalStoreDataflowFactory(),
         new BlockTypeAnalysisFactory(), new CallListDataflowFactory(), new UnconditionalValueDerefDataflowFactory(),
-        new CompactLocationNumberingFactory(),  new ReturnPathTypeDataflowFactory(),
+        new CompactLocationNumberingFactory(), new ReturnPathTypeDataflowFactory(),
         new ForwardTypeQualifierDataflowFactoryFactory(), new BackwardTypeQualifierDataflowFactoryFactory(),
         new OpcodeStack.JumpInfoFactory(), new StackMapAnalysisFactory(), new ObligationDataflowFactory(),
-        new ValueRangeAnalysisFactory(), new FinallyDuplicatesInfoFactory()};
+        new ValueRangeAnalysisFactory(), new FinallyDuplicatesInfoFactory() };
 
     private static final IDatabaseFactory<?>[] databaseFactoryList = {
         // new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),

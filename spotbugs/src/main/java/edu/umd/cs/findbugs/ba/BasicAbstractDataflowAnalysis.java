@@ -45,7 +45,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
     /**
      * Constructor.
      */
-    public BasicAbstractDataflowAnalysis() {
+    protected BasicAbstractDataflowAnalysis() {
         this.startFactMap = new IdentityHashMap<>();
         this.resultFactMap = new IdentityHashMap<>();
     }
@@ -136,8 +136,8 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
         Fact result = createFact();
         makeFactTop(result);
         if (this instanceof UnconditionalValueDerefAnalysis) {
-            ((UnconditionalValueDerefAnalysis)this).meetInto((UnconditionalValueDerefSet)predFact,
-                    edge, (UnconditionalValueDerefSet)result, true);
+            ((UnconditionalValueDerefAnalysis) this).meetInto((UnconditionalValueDerefSet) predFact,
+                    edge, (UnconditionalValueDerefSet) result, true);
         } else {
             meetInto(predFact, edge, result);
         }

@@ -73,14 +73,14 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
         }
 
         public LoadedVariable seen(int opcode) {
-            if(isRegisterLoad() && !isRegisterStore()) {
+            if (isRegisterLoad() && !isRegisterStore()) {
                 return new LoadedVariable(LoadedVariableState.LOCAL, getRegisterOperand(), null);
             }
-            switch(opcode) {
+            switch (opcode) {
             case Const.GETSTATIC:
                 return new LoadedVariable(LoadedVariableState.FIELD, 0, getFieldDescriptorOperand());
             case Const.GETFIELD:
-                if(lvState == LoadedVariableState.LOCAL && num == 0) {
+                if (lvState == LoadedVariableState.LOCAL && num == 0) {
                     // Ignore fields from other classes
                     return new LoadedVariable(LoadedVariableState.FIELD, 0, getFieldDescriptorOperand());
                 }
@@ -91,20 +91,13 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
         }
 
         public boolean same(LoadedVariable other) {
-            if(other.lvState != lvState) {
-                return false;
-            }
-            if(lvState == LoadedVariableState.LOCAL && num != other.num) {
-                return false;
-            }
-            if ((lvState == LoadedVariableState.FIELD) && !fd.equals(other.fd)) {
-                return false;
-            }
-            return true;
+            return other.lvState == lvState
+                    && !(lvState == LoadedVariableState.LOCAL && num != other.num)
+                    && !(lvState == LoadedVariableState.FIELD && !fd.equals(other.fd));
         }
 
         public BugInstance annotate(BugInstance bug) {
-            if(lvState == LoadedVariableState.FIELD) {
+            if (lvState == LoadedVariableState.FIELD) {
                 bug.addField(fd);
             }
             return bug;
@@ -134,7 +127,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if(hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
+        if (hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
             super.visitClassContext(classContext);
         }
     }
@@ -194,10 +187,10 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
     }
 
     private int handleStore(int storeRegister, int current) {
-        if(storeRegister == current) {
+        if (storeRegister == current) {
             return NOT_FOUND;
         }
-        if(current == IN_STACK) {
+        if (current == IN_STACK) {
             return storeRegister;
         }
         return current;
@@ -210,13 +203,13 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
     }
 
     private void removedFromStack(boolean includeKey) {
-        if(keySetRegister == IN_STACK) {
+        if (keySetRegister == IN_STACK) {
             keySetRegister = NOT_FOUND;
         }
-        if(iteratorRegister == IN_STACK) {
+        if (iteratorRegister == IN_STACK) {
             iteratorRegister = NOT_FOUND;
         }
-        if(keyRegister == IN_STACK && includeKey) {
+        if (keyRegister == IN_STACK && includeKey) {
             keyRegister = NOT_FOUND;
         }
     }
@@ -224,7 +217,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
     @Override
     public void sawOpcode(int seen) {
         boolean loadedPreserved = false;
-        if(isRegisterStore() && !isRegisterLoad()) {
+        if (isRegisterStore() && !isRegisterLoad()) {
             handleStore(getRegisterOperand());
         } else {
             switch (seen) {
@@ -263,7 +256,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                             .annotate(new BugInstance(this, "WMI_WRONG_MAP_ITERATOR", NORMAL_PRIORITY).addClass(this).addMethod(ma)),
                             this);
                     reset();
-                } else if(("intValue".equals(getNameConstantOperand()) && "java/lang/Integer".equals(getClassConstantOperand())) ||
+                } else if (("intValue".equals(getNameConstantOperand()) && "java/lang/Integer".equals(getClassConstantOperand())) ||
                         ("longValue".equals(getNameConstantOperand()) && "java/lang/Long".equals(getClassConstantOperand())) ||
                         ("doubleValue".equals(getNameConstantOperand()) && "java/lang/Double".equals(getClassConstantOperand())) ||
                         ("floatValue".equals(getNameConstantOperand()) && "java/lang/Float".equals(getClassConstantOperand()))) {
@@ -277,7 +270,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                         && ("java/lang/Integer".equals(getClassConstantOperand())
                                 || "java/lang/Long".equals(getClassConstantOperand())
                                 || "java/lang/Double".equals(getClassConstantOperand()) || "java/lang/Float"
-                                .equals(getClassConstantOperand()))) {
+                                        .equals(getClassConstantOperand()))) {
                     loadedPreserved = true;
                 }
                 removedFromStack(true);
@@ -289,7 +282,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                 removedFromStack(true);
             }
         }
-        if(!loadedPreserved) {
+        if (!loadedPreserved) {
             boolean mapLoaded = !loadedVariable.none() && loadedVariable.same(mapVariable);
             loadedVariable = loadedVariable.seen(seen);
             mapAndKeyLoaded = mapLoaded && loadedVariable.isRegister(keyRegister);

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<ruleset name="osidt"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+    <description>Selected PMD rules</description>
+    <rule ref="rulesets/java/basic.xml">
+        <!-- This is often helpful, but other times disrupts the flow of long else-if blocks -->
+        <exclude name="CollapsibleIfStatements"/>
+        <!-- Needs further investigation; some of the implementations are a bit of a mess -->
+        <exclude name="OverrideBothEqualsAndHashcode"/>
+    </rule>
+    <rule ref="rulesets/java/braces.xml"/>
+    <rule ref="rulesets/java/design.xml/SimplifyBooleanReturns"/>
+    <rule ref="rulesets/java/finalizers.xml"/>
+    <rule ref="rulesets/java/imports.xml">
+        <exclude name="TooManyStaticImports"/>
+    </rule>
+    <rule ref="rulesets/java/junit.xml">
+        <exclude name="JUnitTestContainsTooManyAsserts"/>
+    </rule>
+</ruleset>

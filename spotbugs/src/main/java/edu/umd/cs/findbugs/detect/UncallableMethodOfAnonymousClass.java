@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,6 +46,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.EditDistance;
+import edu.umd.cs.findbugs.util.Values;
 
 public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
@@ -66,7 +68,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         }
 
         String superclassName2 = getSuperclassName();
-        boolean weird = "java.lang.Object".equals(superclassName2) && obj.getInterfaceIndices().length == 0;
+        boolean weird = Values.DOTTED_JAVA_LANG_OBJECT.equals(superclassName2) && obj.getInterfaceIndices().length == 0;
         boolean hasAnonymousName = ClassName.isLocalOrAnonymous(obj.getClassName());
         boolean isAnonymousInnerClass = hasAnonymousName && !weird;
         if (isAnonymousInnerClass) {
@@ -155,7 +157,18 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         if (obj.isAbstract()) {
             return true;
         }
-
+        if (Values.SLASHED_JAVA_LANG_ENUM.equals(getSuperclassName()) &&
+                (("values".equals(obj.getName()) &&
+                        ("()[L" + getClassName() + ";").equals(obj.getSignature())) ||
+                        ("valueOf".equals(obj.getName())) &&
+                                ("(Ljava/lang/String;)L" + getClassName() + ";").equals(obj.getSignature()))) {
+            return true;
+        }
+        if (Values.SLASHED_JAVA_LANG_RECORD.equals(getSuperclassName()) &&
+                (Arrays.stream(getThisClass().getFields()).anyMatch(f -> f.getName().equals(obj.getName()))) &&
+                (obj.getSignature().startsWith("()"))) {
+            return true;
+        }
         String methodName = obj.getName();
         String sig = obj.getSignature();
         if (Const.CONSTRUCTOR_NAME.equals(methodName)) {
@@ -164,6 +177,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         if (Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
             return true;
         }
+
         if ("()Ljava/lang/Object;".equals(sig) && ("readResolve".equals(methodName) || "writeReplace".equals(methodName))) {
             return true;
         }
@@ -191,8 +205,9 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
             if (potentialSuperCall == null) {
                 String role = ClassAnnotation.SUPERCLASS_ROLE;
 
-                @DottedClassName String superclassName =  ClassName.toDottedClassName(getSuperclassName());
-                if ("java.lang.Object".equals(superclassName)) {
+                @DottedClassName
+                String superclassName = ClassName.toDottedClassName(getSuperclassName());
+                if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superclassName)) {
 
                     try {
                         JavaClass interfaces[] = getThisClass().getInterfaces();
@@ -208,8 +223,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 try {
                     XClass from = Global.getAnalysisCache().getClassAnalysis(XClass.class,
                             DescriptorFactory.createClassDescriptorFromDottedClassName(superclassName));
-                    XMethod  potentialMatch = null;
-                    for(XMethod m : from.getXMethods()) {
+                    XMethod potentialMatch = null;
+                    for (XMethod m : from.getXMethods()) {
                         if (!m.isStatic() && !m.isPrivate() && m.getName().toLowerCase().equals(obj.getName().toLowerCase())) {
                             if (potentialMatch == null) {
                                 potentialMatch = m;
@@ -222,7 +237,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                     }
                     if (potentialMatch != null) {
                         pendingBug.addMethod(potentialMatch)
-                        .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
+                                .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
                     }
 
                 } catch (CheckedAnalysisException e) {
@@ -262,7 +277,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 int priority = NORMAL_PRIORITY;
                 JavaClass superClass = clazz.getSuperClass();
                 String superClassName = superClass.getClassName();
-                if ("java.lang.Object".equals(superClassName)) {
+                if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superClassName)) {
                     priority = NORMAL_PRIORITY;
 
                 } else if (definedInClass(superClass).containsAll(definedInClass(clazz))) {

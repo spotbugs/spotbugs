@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.util.MultiMap;
 public class UnreadFieldsData {
     final Map<XField, Set<ProgramPoint>> assumedNonNull = new HashMap<>();
 
-    final  Map<XField, ProgramPoint> threadLocalAssignedInConstructor = new HashMap<>();
+    final Map<XField, ProgramPoint> threadLocalAssignedInConstructor = new HashMap<>();
 
     final Set<XField> nullTested = new HashSet<>();
 
@@ -58,20 +58,20 @@ public class UnreadFieldsData {
 
     final Set<XField> fieldsOfSerializableOrNativeClassed = new HashSet<>();
 
-    final  Set<XField> staticFieldsReadInThisMethod = new HashSet<>();
+    final Set<XField> staticFieldsReadInThisMethod = new HashSet<>();
 
-    final  Set<XField> allMyFields = new TreeSet<>();
+    final Set<XField> allMyFields = new TreeSet<>();
 
     final Set<XField> myFields = new TreeSet<>();
 
-    final  Set<XField> writtenFields = new HashSet<>();
+    final Set<XField> writtenFields = new HashSet<>();
 
 
     final Map<XField, SourceLineAnnotation> fieldAccess = new HashMap<>();
 
-    final  Set<XField> writtenNonNullFields = new HashSet<>();
+    final Set<XField> writtenNonNullFields = new HashSet<>();
 
-    final  Set<String> calledFromConstructors = new HashSet<>();
+    final Set<String> calledFromConstructors = new HashSet<>();
 
     final Set<XField> writtenInConstructorFields = new HashSet<>();
 
@@ -79,15 +79,15 @@ public class UnreadFieldsData {
 
     final Set<XField> writtenOutsideOfInitializationFields = new HashSet<>();
 
-    final  Set<XField> readFields = new HashSet<>();
+    final Set<XField> readFields = new HashSet<>();
 
-    final  Set<XField> constantFields = new HashSet<>();
+    final Set<XField> constantFields = new HashSet<>();
 
     final Set<String> needsOuterObjectInConstructor = new HashSet<>();
 
-    final  Set<String> innerClassCannotBeStatic = new HashSet<>();
+    final Set<String> innerClassCannotBeStatic = new HashSet<>();
 
-    final   HashSet<ClassDescriptor> toldStrongEvidenceForIntendedSerialization = new HashSet<>();
+    final HashSet<ClassDescriptor> toldStrongEvidenceForIntendedSerialization = new HashSet<>();
 
     public boolean isContainerField(XField f) {
         return containerFields.contains(f);

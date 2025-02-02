@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Iterator;
 
@@ -31,13 +32,13 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class Obfuscate {
 
-    final static String HASH_SEED = SystemProperties.getProperty("hashSeed", "");
+    static final String HASH_SEED = SystemProperties.getProperty("hashSeed", "");
 
     public static String hashData(String in) {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-1");
-            byte[] hash = md.digest((HASH_SEED + in).getBytes("UTF-8"));
+            byte[] hash = md.digest((HASH_SEED + in).getBytes(StandardCharsets.UTF_8));
             return String.format("%040x", new BigInteger(1, hash));
         } catch (RuntimeException e) {
             throw e;
@@ -123,7 +124,7 @@ public class Obfuscate {
 
         if ("hashCode".equals(methodName) && "()I".equals(methodSignature) || "equals".equals(methodName)
                 && "(Ljava/lang/Object;)Z".equals(methodSignature) || "compareTo".equals(methodName)
-                && "(Ljava/lang/Object;)I".equals(methodSignature) || "<init>".equals(methodName)
+                        && "(Ljava/lang/Object;)I".equals(methodSignature) || "<init>".equals(methodName)
                 || "<clinit>".equals(methodName)) {
             // don't need to obfuscate method name
         } else {

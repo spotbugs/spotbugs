@@ -50,7 +50,7 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
     public boolean match(BugInstance bugInstance) {
 
         MethodAnnotation methodAnnotation = null;
-        if (role == null || "".equals(role)) {
+        if (role == null || role.isEmpty()) {
             methodAnnotation = bugInstance.getPrimaryMethod();
         } else {
             for (BugAnnotation a : bugInstance.getAnnotations()) {
@@ -60,16 +60,9 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
                 }
             }
         }
-        if (methodAnnotation == null) {
-            return false;
-        }
-        if (!name.match(methodAnnotation.getMethodName())) {
-            return false;
-        }
-        if (signature != null && !signature.match(methodAnnotation.getMethodSignature())) {
-            return false;
-        }
-        return true;
+        return methodAnnotation != null
+                && name.match(methodAnnotation.getMethodName())
+                && (signature == null || signature.match(methodAnnotation.getMethodSignature()));
     }
 
     @Override
@@ -104,4 +97,3 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
         xmlOutput.openCloseTag("Method", attributes);
     }
 }
-

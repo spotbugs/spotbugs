@@ -48,6 +48,7 @@ public class Constant {
     public Object getConstantValue() {
         return value;
     }
+
     /**
      * Return whether or not this value is a constant.
      *

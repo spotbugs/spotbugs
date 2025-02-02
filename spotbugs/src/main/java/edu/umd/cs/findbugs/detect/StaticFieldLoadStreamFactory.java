@@ -79,4 +79,3 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
                 true);
     }
 }
-

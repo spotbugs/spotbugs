@@ -64,10 +64,10 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
     // private Subtypes subtypes;
     public AnnotationDatabase() {
-        defaultAnnotation.put(Target.ANY, new HashMap<String, AnnotationEnum>());
-        defaultAnnotation.put(Target.PARAMETER, new HashMap<String, AnnotationEnum>());
-        defaultAnnotation.put(Target.METHOD, new HashMap<String, AnnotationEnum>());
-        defaultAnnotation.put(Target.FIELD, new HashMap<String, AnnotationEnum>());
+        defaultAnnotation.put(Target.ANY, new HashMap<>());
+        defaultAnnotation.put(Target.PARAMETER, new HashMap<>());
+        defaultAnnotation.put(Target.METHOD, new HashMap<>());
+        defaultAnnotation.put(Target.FIELD, new HashMap<>());
         // if (!Subtypes.DO_NOT_USE) {
         // subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
         // }
@@ -388,7 +388,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
             return;
         }
         XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
-        if (!m.getClassName().equals(cName)){
+        if (!m.getClassName().equals(cName)) {
             return;
         }
         /*

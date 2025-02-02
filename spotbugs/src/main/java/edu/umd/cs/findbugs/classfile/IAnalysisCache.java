@@ -172,7 +172,7 @@ public interface IAnalysisCache {
      */
     public <E> E getDatabase(Class<E> databaseClass);
 
-    public @CheckForNull <E>  E getOptionalDatabase(Class<E> databaseClass);
+    public @CheckForNull <E> E getOptionalDatabase(Class<E> databaseClass);
 
     /**
      * Eagerly install a database. This avoids the need to register a database
@@ -203,7 +203,11 @@ public interface IAnalysisCache {
 
     /**
      * Get map of analysis-local objects.
+     *
+     * @deprecated This method is not necessary to realize multi-thread model in SpotBugs 4.0. See
+     *             {@link edu.umd.cs.findbugs.AnalysisLocal AnalysisLocal} for detail.
      */
+    @Deprecated
     public Map<?, ?> getAnalysisLocals();
 
     /**

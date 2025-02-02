@@ -19,7 +19,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.dom4j.DocumentException;
 
@@ -43,9 +42,7 @@ public class NewResults {
     public SortedBugCollection execute() {
         SortedBugCollection result = new SortedBugCollection();
 
-        for (Iterator<BugInstance> i = newCollection.iterator(); i.hasNext();) {
-            BugInstance bugInstance = i.next();
-
+        for (BugInstance bugInstance : newCollection) {
             if (!origCollection.contains(bugInstance)) {
                 result.add(bugInstance);
             }
@@ -71,4 +68,3 @@ public class NewResults {
         result.writeXML(outputFilename);
     }
 }
-

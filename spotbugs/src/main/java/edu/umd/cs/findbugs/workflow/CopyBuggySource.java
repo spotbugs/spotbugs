@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 public class CopyBuggySource {
     enum SrcKind {
         DIR, ZIP, Z0P_GZ;
+
         static SrcKind get(File f) {
             if (f.exists() && f.isDirectory() && f.canWrite()) {
                 return DIR;
@@ -203,8 +204,7 @@ public class CopyBuggySource {
         System.out.printf("All done. %d files not found, %d files copied%n", couldNotFind.size(), copyCount);
     }
 
-    private @CheckForNull
-    OutputStream getOutputStream(String fullName, long lastModifiedTime) throws IOException {
+    private @CheckForNull OutputStream getOutputStream(String fullName, long lastModifiedTime) throws IOException {
         if (kind == SrcKind.DIR) {
             dstFile = new File(src, fullName);
 

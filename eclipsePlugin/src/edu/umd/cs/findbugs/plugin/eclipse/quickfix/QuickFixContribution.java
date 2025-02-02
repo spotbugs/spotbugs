@@ -52,11 +52,11 @@ public class QuickFixContribution {
         Map<String, String> params = new HashMap<>();
         for (String keyValue : args) {
             String[] keyValueArr = keyValue.split("\\s*=\\s*");
-            if(keyValueArr.length > 1) {
+            if (keyValueArr.length > 1) {
                 params.put(keyValueArr[0], keyValueArr[1]);
             }
         }
-        return params.size() == 0? Collections.EMPTY_MAP : Collections.unmodifiableMap(params);
+        return params.size() == 0 ? Collections.EMPTY_MAP : Collections.unmodifiableMap(params);
     }
 
     @Override

@@ -20,24 +20,28 @@
 package edu.umd.cs.findbugs.filter;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
 import javax.annotation.WillClose;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SAXBugCollectionHandler;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -50,7 +54,6 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  */
 
 public class Filter extends OrMatcher {
-    private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
     private static final int PRIME = 31;
 
     private final IdentityHashMap<Matcher, Boolean> disabled = new IdentityHashMap<>();
@@ -130,7 +133,7 @@ public class Filter extends OrMatcher {
     public Filter(String fileName) throws IOException {
         try {
             parse(fileName);
-        } catch (SAXException e) {
+        } catch (SAXException | ParserConfigurationException e) {
             throw new IOException(e.getMessage());
         }
     }
@@ -145,7 +148,7 @@ public class Filter extends OrMatcher {
     public Filter(InputStream stream) throws IOException {
         try {
             parse("", stream);
-        } catch (SAXException e) {
+        } catch (SAXException | ParserConfigurationException e) {
             throw new IOException(e.getMessage());
         }
     }
@@ -200,10 +203,11 @@ public class Filter extends OrMatcher {
      *            name of the filter file
      * @throws IOException
      * @throws SAXException
-     * @throws FilterException
+     * @throws ParserConfigurationException
      */
-    private void parse(String fileName) throws IOException, SAXException {
-        FileInputStream fileInputStream = new FileInputStream(new File(fileName));
+    private void parse(String fileName) throws IOException, SAXException, ParserConfigurationException {
+        Path path = FileSystems.getDefault().getPath(fileName);
+        InputStream fileInputStream = Files.newInputStream(path);
         parse(fileName, fileInputStream);
     }
 
@@ -214,12 +218,19 @@ public class Filter extends OrMatcher {
      *            name of the filter file
      * @throws IOException
      * @throws SAXException
-     * @throws FilterException
+     * @throws ParserConfigurationException
      */
-    private void parse(String fileName, @WillClose InputStream stream) throws IOException, SAXException {
+    private void parse(String fileName, @WillClose InputStream stream) throws IOException, SAXException, ParserConfigurationException {
         try {
             SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, new File(fileName));
-            XMLReader xr = XMLReaderFactory.createXMLReader();
+            SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+            parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+            parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+            parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
+            parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
+            parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
+            SAXParser parser = parserFactory.newSAXParser();
+            XMLReader xr = parser.getXMLReader();
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);
             Reader reader = Util.getReader(stream);
@@ -286,4 +297,3 @@ public class Filter extends OrMatcher {
     }
 
 }
-

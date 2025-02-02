@@ -98,7 +98,7 @@ public class ProjectUtilities {
      * @return a (possibly empty) list of existing and opened projects with the FindBugs nature
      */
     @Nonnull
-    public static List<IProject> getFindBugsProjects(){
+    public static List<IProject> getFindBugsProjects() {
         IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
         List<IProject> fbProj = new ArrayList<>();
         for (IProject aProject : projects) {

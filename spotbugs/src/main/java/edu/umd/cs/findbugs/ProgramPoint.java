@@ -68,10 +68,7 @@ public class ProgramPoint {
         } else if (!method.equals(other.method)) {
             return false;
         }
-        if (pc != other.pc) {
-            return false;
-        }
-        return true;
+        return pc == other.pc;
     }
 
     public final int pc;

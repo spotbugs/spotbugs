@@ -67,10 +67,11 @@ public class Archive {
         if (lastDot < 0) {
             return fileName;
         }
-        String extension = fileName.substring(lastDot).toLowerCase(Locale.ENGLISH);
-        return extension;
+        return fileName.substring(lastDot).toLowerCase(Locale.ENGLISH);
     }
 
+    @Deprecated
+    @SuppressWarnings("unused") // unused within the codebase, but deprecated until next release for public API reasons
     public static boolean isLibraryFileName(String fileName) {
         String extension = getExtension(fileName);
         return ".jar".equals(extension);

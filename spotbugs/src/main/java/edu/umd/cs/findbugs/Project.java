@@ -24,7 +24,9 @@
  */
 
 package edu.umd.cs.findbugs;
+
 import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
+import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeFileList;
 import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedInputStream;
@@ -52,22 +54,27 @@ import java.util.jar.Manifest;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
@@ -83,8 +90,8 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  *
  * @author David Hovemeyer
  */
-public class Project implements XMLWriteable {
-    private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
+public class Project implements XMLWriteable, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(Project.class);
 
     private final List<File> currentWorkingDirectoryList;
 
@@ -113,7 +120,39 @@ public class Project implements XMLWriteable {
     private UserPreferences configuration;
 
     /** key is plugin id */
-    private final Map<String,Boolean> enabledPlugins;
+    private final Map<String, Boolean> enabledPlugins;
+
+    /**
+     * StaticConstant used to name anonymous projects.
+     */
+    public static final String UNNAMED_PROJECT = "<<unnamed project>>";
+
+    private long timestampForAnalyzedClasses = 0L;
+
+    private IGuiCallback guiCallback;
+
+    @Nonnull
+    private Filter suppressionFilter = new Filter();
+
+    private SourceFinder sourceFinder;
+
+    static final String JAR_ELEMENT_NAME = "Jar";
+
+    static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
+
+    static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
+
+    static final String WRK_DIR_ELEMENT_NAME = "WrkDir";
+
+    static final String FILENAME_ATTRIBUTE_NAME = "filename";
+
+    static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
+
+    static final String PLUGIN_ELEMENT_NAME = "Plugin";
+
+    static final String PLUGIN_ID_ATTRIBUTE_NAME = "id";
+
+    static final String PLUGIN_STATUS_ELEMENT_NAME = "enabled";
 
     @CheckForNull
     public Boolean getPluginStatus(Plugin plugin) {
@@ -135,20 +174,6 @@ public class Project implements XMLWriteable {
         requireNonNull(configuration);
         this.configuration = configuration;
     }
-
-    /**
-     * StaticConstant used to name anonymous projects.
-     */
-    public static final String UNNAMED_PROJECT = "<<unnamed project>>";
-
-    private long timestampForAnalyzedClasses = 0L;
-
-    private IGuiCallback guiCallback;
-
-    @Nonnull
-    private Filter suppressionFilter = new Filter();
-
-    private SourceFinder sourceFinder;
 
     /**
      * Create an anonymous project.
@@ -273,7 +298,7 @@ public class Project implements XMLWriteable {
                 isNew = addToListInternal(srcDirList, dir) || isNew;
             }
         }
-
+        IO.close(sourceFinder);
         sourceFinder = new SourceFinder(this);
         return isNew;
     }
@@ -359,6 +384,7 @@ public class Project implements XMLWriteable {
      */
     public void removeSourceDir(int num) {
         srcDirList.remove(num);
+        IO.close(sourceFinder);
         sourceFinder = new SourceFinder(this);
         isModified = true;
     }
@@ -367,14 +393,14 @@ public class Project implements XMLWriteable {
      * Get project files as an array of Strings.
      */
     public String[] getFileArray() {
-        return analysisTargets.toArray(new String[analysisTargets.size()]);
+        return analysisTargets.toArray(new String[0]);
     }
 
     /**
      * Get source dirs as an array of Strings.
      */
     public String[] getSourceDirArray() {
-        return srcDirList.toArray(new String[srcDirList.size()]);
+        return srcDirList.toArray(new String[0]);
     }
 
     /**
@@ -453,6 +479,7 @@ public class Project implements XMLWriteable {
      * Worklist for finding implicit classpath entries.
      */
     private static class WorkList {
+        private static final Logger LOG = LoggerFactory.getLogger(WorkList.class);
         private final LinkedList<WorkListItem> itemList;
 
         private final HashSet<String> addedSet;
@@ -493,13 +520,9 @@ public class Project implements XMLWriteable {
          *         examined already)
          */
         public boolean add(WorkListItem item) {
-            if (DEBUG) {
-                System.out.println("Adding " + item.getURL().toString());
-            }
+            LOG.debug("Adding {}", item.getURL());
             if (!addedSet.add(item.getURL().toString())) {
-                if (DEBUG) {
-                    System.out.println("\t==> Already processed");
-                }
+                LOG.debug("\t==> Already processed");
                 return false;
             }
 
@@ -571,10 +594,7 @@ public class Project implements XMLWriteable {
      *            list of implicit classpath entries found
      */
     private void processComponentJar(URL jarFileURL, WorkList workList, List<String> implicitClasspath) {
-
-        if (DEBUG) {
-            System.out.println("Processing " + jarFileURL.toString());
-        }
+        LOG.debug("Processing {}", jarFileURL);
 
         if (!jarFileURL.toString().endsWith(".zip") && !jarFileURL.toString().endsWith(".jar")) {
             return;
@@ -583,9 +603,7 @@ public class Project implements XMLWriteable {
         try {
             URL manifestURL = new URL("jar:" + jarFileURL.toString() + "!/META-INF/MANIFEST.MF");
 
-            InputStream in = null;
-            try {
-                in = manifestURL.openStream();
+            try (InputStream in = manifestURL.openStream()) {
                 Manifest manifest = new Manifest(in);
 
                 Attributes mainAttrs = manifest.getMainAttributes();
@@ -597,15 +615,9 @@ public class Project implements XMLWriteable {
                         URL referencedURL = workList.createRelativeURL(jarFileURL, jarFile);
                         if (workList.add(new WorkListItem(referencedURL))) {
                             implicitClasspath.add(referencedURL.toString());
-                            if (DEBUG) {
-                                System.out.println("Implicit jar: " + referencedURL.toString());
-                            }
+                            LOG.debug("Implicit jar: {}", referencedURL);
                         }
                     }
-                }
-            } finally {
-                if (in != null) {
-                    in.close();
                 }
             }
         } catch (IOException ignore) {
@@ -640,8 +652,7 @@ public class Project implements XMLWriteable {
      */
     @Deprecated
     public void write(String outputFile, boolean useRelativePaths, String relativeBase) throws IOException {
-        PrintWriter writer = UTF8.printWriter(outputFile);
-        try {
+        try (PrintWriter writer = UTF8.printWriter(outputFile)) {
             writer.println(JAR_FILES_KEY);
             for (String jarFile : analysisTargets) {
                 if (useRelativePaths) {
@@ -670,18 +681,17 @@ public class Project implements XMLWriteable {
                 writer.println(OPTIONS_KEY);
                 writer.println(RELATIVE_PATHS + "=true");
             }
-        } finally {
-            writer.close();
         }
 
         // Project successfully saved
         isModified = false;
     }
 
-    public static Project readXML(File f) throws IOException,  SAXException {
-        InputStream in = new BufferedInputStream(new FileInputStream(f));
+    public static Project readXML(File f) throws IOException, SAXException, ParserConfigurationException {
+        @SuppressWarnings("resource") // will be closed by caller
         Project project = new Project();
-        try {
+
+        try (InputStream in = new BufferedInputStream(new FileInputStream(f))) {
             String tag = Util.getXMLType(in);
             SAXBugCollectionHandler handler;
             if ("Project".equals(tag)) {
@@ -693,16 +703,24 @@ public class Project implements XMLWriteable {
                 throw new IOException("Can't load a project from a " + tag + " file");
             }
 
-            XMLReader xr = XMLReaderFactory.createXMLReader();
+            SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+            parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+            parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+            parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
+            parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
+            parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
+            SAXParser parser = parserFactory.newSAXParser();
+            XMLReader xr = parser.getXMLReader();
 
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);
 
-            Reader reader = Util.getReader(in);
-
-            xr.parse(new InputSource(reader));
-        } finally {
-            in.close();
+            try (Reader reader = Util.getReader(in)) {
+                xr.parse(new InputSource(reader));
+            }
+        } catch (IOException | SAXException | ParserConfigurationException e) {
+            project.close();
+            throw e;
         }
 
         // Presumably, project is now up-to-date
@@ -737,10 +755,8 @@ public class Project implements XMLWriteable {
         if (projectFileName.endsWith(".xml") || projectFileName.endsWith(".fbp")) {
             try {
                 return Project.readXML(projectFile);
-            } catch (SAXException e) {
-                IOException ioe = new IOException("Couldn't read saved FindBugs project");
-                ioe.initCause(e);
-                throw ioe;
+            } catch (SAXException | ParserConfigurationException e) {
+                throw new IOException("Couldn't read saved FindBugs project", e);
             }
         }
         throw new IllegalArgumentException("Can't read project from " + argument);
@@ -782,24 +798,6 @@ public class Project implements XMLWriteable {
         return fileName;
     }
 
-    static final String JAR_ELEMENT_NAME = "Jar";
-
-    static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
-
-    static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
-
-    static final String WRK_DIR_ELEMENT_NAME = "WrkDir";
-
-    static final String FILENAME_ATTRIBUTE_NAME = "filename";
-
-    static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
-
-    static final String PLUGIN_ELEMENT_NAME = "Plugin";
-
-    static final String PLUGIN_ID_ATTRIBUTE_NAME = "id";
-
-    static final String PLUGIN_STATUS_ELEMENT_NAME = "enabled";
-
     @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, null, null);
@@ -825,14 +823,14 @@ public class Project implements XMLWriteable {
             for (File file : currentWorkingDirectoryList) {
                 cwdStrings.add(file.getPath());
             }
-            XMLOutputUtil.writeElementList(xmlOutput, WRK_DIR_ELEMENT_NAME, convertToRelative(cwdStrings, base));
+            writeElementList(xmlOutput, WRK_DIR_ELEMENT_NAME, convertToRelative(cwdStrings, base));
         } else {
             // TODO to allow relative paths: refactor the code which uses null
             // file arguments
             writeElementList(xmlOutput, JAR_ELEMENT_NAME, analysisTargets);
             writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
             writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
-            XMLOutputUtil.writeFileList(xmlOutput, WRK_DIR_ELEMENT_NAME, currentWorkingDirectoryList);
+            writeFileList(xmlOutput, WRK_DIR_ELEMENT_NAME, currentWorkingDirectoryList);
         }
 
         if (!suppressionFilter.isEmpty()) {
@@ -841,7 +839,7 @@ public class Project implements XMLWriteable {
             xmlOutput.closeTag("SuppressionFilter");
         }
 
-        for(Map.Entry<String, Boolean> e : enabledPlugins.entrySet()) {
+        for (Map.Entry<String, Boolean> e : enabledPlugins.entrySet()) {
             String pluginId = e.getKey();
             Boolean enabled = e.getValue();
             Plugin plugin = Plugin.getByPluginId(pluginId);
@@ -907,7 +905,7 @@ public class Project implements XMLWriteable {
         int branchPoint;
         if (slashPos >= 0) {
             String subPath = srcFile.substring(0, slashPos);
-            if ((subPath.length() == 0) || base.startsWith(subPath)) {
+            if ((subPath.isEmpty()) || base.startsWith(subPath)) {
                 branchPoint = slashPos + 1;
                 slashPos = srcFile.indexOf(slash, branchPoint);
                 while (slashPos >= 0) {
@@ -951,9 +949,9 @@ public class Project implements XMLWriteable {
         // below the project file. This need not be the case, and we could use
         // ..
         // syntax to move up the tree. (To Be Added)
-
+    
         File file = new File(fileName);
-
+    
         if (!file.isAbsolute()) {
             for (File cwd : currentWorkingDirectoryList) {
                 File test = new File(cwd, fileName);
@@ -1046,7 +1044,7 @@ public class Project implements XMLWriteable {
             fileName = convertToAbsolute(fileName);
             replace.add(fileName);
         }
-
+    
         list.clear();
         list.addAll(replace);
     }*/
@@ -1121,5 +1119,10 @@ public class Project implements XMLWriteable {
 
         }
         return result;
+    }
+
+    @Override
+    public void close() {
+        IO.close(sourceFinder);
     }
 }

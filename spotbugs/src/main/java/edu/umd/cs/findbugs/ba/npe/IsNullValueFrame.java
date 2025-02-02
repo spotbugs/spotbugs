@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -139,8 +140,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         this.decision = decision;
     }
 
-    public @CheckForNull
-    IsNullConditionDecision getDecision() {
+    public @CheckForNull IsNullConditionDecision getDecision() {
         return decision;
     }
 
@@ -170,8 +170,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         }
     }
 
-    public @CheckForNull
-    IsNullValue getKnownValue(ValueNumber valueNumber) {
+    public @CheckForNull IsNullValue getKnownValue(ValueNumber valueNumber) {
         assert trackValueNumbers;
         return knownValueMap.get(valueNumber);
     }
@@ -180,7 +179,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         if (trackValueNumbers) {
             return knownValueMap.keySet();
         } else {
-            return Collections.<ValueNumber> emptySet();
+            return Collections.<ValueNumber>emptySet();
         }
     }
 
@@ -188,7 +187,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         if (trackValueNumbers) {
             return knownValueMap.entrySet();
         } else {
-            return Collections.<Map.Entry<ValueNumber, IsNullValue>> emptySet();
+            return Collections.<Map.Entry<ValueNumber, IsNullValue>>emptySet();
         }
     }
 
@@ -249,10 +248,10 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
             return false;
         }
         IsNullValueFrame o2 = (IsNullValueFrame) other;
-        if (!Util.nullSafeEquals(decision, o2.decision)) {
+        if (!Objects.equals(decision, o2.decision)) {
             return false;
         }
-        if (trackValueNumbers && !Util.nullSafeEquals(knownValueMap, o2.knownValueMap)) {
+        if (trackValueNumbers && !Objects.equals(knownValueMap, o2.knownValueMap)) {
             return false;
         }
 
@@ -305,4 +304,3 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         }
     }
 }
-

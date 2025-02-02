@@ -55,7 +55,8 @@ public class FindBadForLoop extends OpcodeStackDetector implements StatelessDete
         }
         if (lineNumbers != null
                 && stack.getStackDepth() >= 2
-                && (seen == Const.IF_ICMPGE || seen == Const.IF_ICMPGT || seen == Const.IF_ICMPLT || seen == Const.IF_ICMPLE || seen == Const.IF_ICMPNE || seen == Const.IF_ICMPEQ)) {
+                && (seen == Const.IF_ICMPGE || seen == Const.IF_ICMPGT || seen == Const.IF_ICMPLT || seen == Const.IF_ICMPLE
+                        || seen == Const.IF_ICMPNE || seen == Const.IF_ICMPEQ)) {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             OpcodeStack.Item item1 = stack.getStackItem(1);
             int r0 = item0.getRegisterNumber();
@@ -79,7 +80,7 @@ public class FindBadForLoop extends OpcodeStackDetector implements StatelessDete
                             && beforeIncLineNumber > incLineNumber) {
 
                         bugReporter.reportBug(new BugInstance(this, "QF_QUESTIONABLE_FOR_LOOP", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this));
+                                .addClassAndMethod(this).addSourceLine(this));
                     }
                 }
 

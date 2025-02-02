@@ -34,6 +34,8 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.TypePath;
+import org.objectweb.asm.TypeReference;
 
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -70,8 +72,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
     private final ClassReader classReader;
 
-    private @SlashedClassName
-    String slashedClassName;
+    private @SlashedClassName String slashedClassName;
 
     //    private final ClassDescriptor expectedClassDescriptor;
 
@@ -91,7 +92,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         /**
          *
          */
-        private final edu.umd.cs.findbugs.classfile.analysis.MethodInfo.Builder mBuilder;
+        private final MethodInfo.Builder mBuilder;
 
         /**
          *
@@ -111,7 +112,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         /**
          *
          */
-        private final edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder cBuilder;
+        private final ClassNameAndSuperclassInfo.Builder cBuilder;
 
         boolean sawReturn;
 
@@ -156,6 +157,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         HashSet<Label> labelsSeen = new HashSet<>();
 
+        private int parameterCount = -1;
+
         /**
          * @param calledClassSet
          * @param mBuilder
@@ -165,8 +168,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
          * @param cBuilder
          */
         private ClassParserMethodVisitor(TreeSet<ClassDescriptor> calledClassSet,
-                edu.umd.cs.findbugs.classfile.analysis.MethodInfo.Builder mBuilder, String methodName, int access,
-                String methodDesc, edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder cBuilder) {
+                MethodInfo.Builder mBuilder, String methodName, int access,
+                String methodDesc, ClassNameAndSuperclassInfo.Builder cBuilder) {
             this.calledClassSet = calledClassSet;
             this.mBuilder = mBuilder;
             this.methodName = methodName;
@@ -183,8 +186,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
-        public
-        void visitLocalVariable(String name,
+        public void visitLocalVariable(String name,
                 String desc,
                 String signature,
                 Label start,
@@ -258,8 +260,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 parameterLoadState = ParameterLoadState.LOADED_THIS;
 
                 match = true;
-            }
-            else if (parameterLoadState == ParameterLoadState.LOADED_THIS  && var > 0){
+            } else if (parameterLoadState == ParameterLoadState.LOADED_THIS && var > 0) {
                 parameterLoadState = ParameterLoadState.LOADED_THIS_AND_PARAMETER;
                 parameterForLoadState = var;
                 match = true;
@@ -286,6 +287,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 String desc) {
             if (opcode == Opcodes.PUTFIELD && parameterLoadState == ParameterLoadState.LOADED_THIS_AND_PARAMETER
                     && owner.equals(slashedClassName) && name.startsWith("this$")) {
+                // the field that has name starts with "this$" is generated for non-static inner class
+                // https://sourceforge.net/p/findbugs/bugs/1015/
                 mBuilder.setVariableIsSynthetic(parameterForLoadState);
             }
             fieldInstructionCount++;
@@ -424,7 +427,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
             if (isAccessMethod && accessOwner != null) {
                 if (!accessForField && methodCallCount == 1) {
                     mBuilder.setAccessMethodForMethod(accessOwner, accessName, accessDesc, accessIsStatic);
-                } else if(accessForField && fieldInstructionCount == 1) {
+                } else if (accessForField && fieldInstructionCount == 1) {
                     boolean isSetter = methodDesc.endsWith(")V");
                     int numArg = new SignatureParser(methodDesc).getNumParameters();
                     int expected = 0;
@@ -448,7 +451,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
             if (sawBackBranch) {
                 mBuilder.setHasBackBranch();
             }
-            boolean sawThrow = sawNormalThrow | sawUnsupportedThrow | sawStubThrow;
+            boolean sawThrow = sawNormalThrow || sawUnsupportedThrow || sawStubThrow;
             if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) {
 
                 mBuilder.setIsUnconditionalThrower();
@@ -484,11 +487,40 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
+        public void visitAnnotableParameterCount(final int parameterCount, final boolean visible) {
+            this.parameterCount = parameterCount;
+        }
+
+        @Override
         public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
                 boolean visible) {
             AnnotationValue value = new AnnotationValue(desc);
-            mBuilder.addParameterAnnotation(parameter, desc, value);
+            int shift = 0;
+            if (parameterCount >= 0) {
+                // if we have synthetic parameter, shift `parameter` value
+                shift = new SignatureParser(methodDesc).getNumParameters() - parameterCount;
+            }
+            mBuilder.addParameterAnnotation(parameter + shift, desc, value);
             return value.getAnnotationVisitor();
+        }
+
+        @Override
+        public org.objectweb.asm.AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath,
+                String desc, boolean visible) {
+            TypeReference typeRefObject = new TypeReference(typeRef);
+            if (typeRefObject.getSort() == TypeReference.METHOD_FORMAL_PARAMETER && typePath == null) {
+                // treat as parameter annotation
+                AnnotationValue value = new AnnotationValue(desc);
+                mBuilder.addParameterAnnotation(typeRefObject.getFormalParameterIndex(), desc, value);
+                return value.getAnnotationVisitor();
+            }
+            if (typeRefObject.getSort() == TypeReference.METHOD_RETURN && typePath == null) {
+                // treat as method annotation
+                AnnotationValue value = new AnnotationValue(desc);
+                mBuilder.addAnnotation(desc, value);
+                return value.getAnnotationVisitor();
+            }
+            return null;
         }
     }
 
@@ -502,6 +534,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
     enum ParameterLoadState {
         OTHER, LOADED_THIS, LOADED_THIS_AND_PARAMETER;
     }
+
     public ClassParserUsingASM(ClassReader classReader, @CheckForNull ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.classReader = classReader;
@@ -593,15 +626,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             @Override
             public void visitInnerClass(String name, String outerName, String innerName, int access) {
-                if (name.equals(slashedClassName) && outerName != null) {
-                    if (cBuilder instanceof ClassInfo.Builder) {
-                        ClassDescriptor outerClassDescriptor = DescriptorFactory.createClassDescriptor(outerName);
-                        ((ClassInfo.Builder) cBuilder).setImmediateEnclosingClass(outerClassDescriptor);
-                        ((ClassInfo.Builder) cBuilder).setAccessFlags(access);
-                    }
-
+                if (name.equals(slashedClassName) && outerName != null && cBuilder instanceof ClassInfo.Builder) {
+                    ClassDescriptor outerClassDescriptor = DescriptorFactory.createClassDescriptor(outerName);
+                    ((ClassInfo.Builder) cBuilder).setImmediateEnclosingClass(outerClassDescriptor);
+                    ((ClassInfo.Builder) cBuilder).setAccessFlags(access);
                 }
-
             }
 
             @Override
@@ -653,6 +682,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
             case Const.CONSTANT_Integer:
             case Const.CONSTANT_Float:
             case Const.CONSTANT_NameAndType:
+            case Const.CONSTANT_Dynamic:
             case Const.CONSTANT_InvokeDynamic:
                 size = 5;
                 break;

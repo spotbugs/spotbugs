@@ -72,16 +72,13 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Error compting field store types", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("Error compting field store types", e);
             }
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException
-    {
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();

@@ -17,8 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.5 $
-
 package edu.umd.cs.findbugs.graph;
 
 import java.util.Set;
@@ -37,4 +35,3 @@ public interface VertexCombinator<VertexType extends GraphVertex<VertexType>> {
      */
     public VertexType combineVertices(Set<VertexType> vertexSet);
 }
-

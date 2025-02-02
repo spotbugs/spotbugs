@@ -50,4 +50,3 @@ public class ReverseDepthFirstSearch extends edu.umd.cs.findbugs.graph.ReverseDe
         return result;
     }
 }
-

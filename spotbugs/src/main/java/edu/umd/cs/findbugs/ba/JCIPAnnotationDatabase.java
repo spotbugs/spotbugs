@@ -36,7 +36,7 @@ public class JCIPAnnotationDatabase {
     @CheckForNull
     public ElementValue getClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClass(dottedClassName);
-        return map == null? null : map.get(annotationClass);
+        return map == null ? null : map.get(annotationClass);
     }
 
     public boolean hasClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
@@ -48,7 +48,7 @@ public class JCIPAnnotationDatabase {
     @CheckForNull
     public ElementValue getFieldAnnotation(XField field, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClassMember(field);
-        return map == null? null : map.get(annotationClass);
+        return map == null ? null : map.get(annotationClass);
     }
 
     public boolean hasFieldAnnotation(XField field, String annotationClass) {
@@ -59,7 +59,7 @@ public class JCIPAnnotationDatabase {
     @CheckForNull
     public ElementValue getMethodAnnotation(XMethod method, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClassMember(method);
-        return map == null? null : map.get(annotationClass);
+        return map == null ? null : map.get(annotationClass);
     }
 
     public boolean hasMethodAnnotation(XMethod method, String annotationClass) {
@@ -74,11 +74,7 @@ public class JCIPAnnotationDatabase {
 
     public void addEntryForClassMember(ClassMember member,
             String annotationClass, ElementValue value) {
-        Map<String, ElementValue> map = memberAnnotations.get(member);
-        if (map == null) {
-            map = new HashMap<>();
-            memberAnnotations.put(member, map);
-        }
+        Map<String, ElementValue> map = memberAnnotations.computeIfAbsent(member, k -> new HashMap<>());
         map.put(annotationClass, value);
     }
 

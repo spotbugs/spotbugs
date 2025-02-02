@@ -30,10 +30,13 @@ import java.util.List;
 
 import javax.annotation.CheckForNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.io.IO;
 
 /**
  * Bug rankers are used to compute a bug rank for each bug instance. Bug ranks
@@ -90,7 +93,7 @@ public class BugRanker {
     /** Minimum value for user visible ranks (most relevant) */
     public static final int VISIBLE_RANK_MIN = 1;
 
-    static final boolean PLUGIN_DEBUG = Boolean.getBoolean("bugranker.plugin.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(BugRanker.class);
 
     static class Scorer {
         private final HashMap<String, Integer> adjustment = new HashMap<>();
@@ -137,8 +140,7 @@ public class BugRanker {
         if (u == null) {
             return;
         }
-        BufferedReader in = UTF8.bufferedReader(u.openStream());
-        try {
+        try (BufferedReader in = UTF8.bufferedReader(IO.openNonCachedStream(u))) {
             while (true) {
                 String s = in.readLine();
                 if (s == null) {
@@ -146,11 +148,11 @@ public class BugRanker {
                 }
 
                 s = s.trim();
-                if (s.length() == 0) {
+                if (s.isEmpty()) {
                     continue;
                 }
 
-                String parts[] = s.split(" ");
+                String[] parts = s.split(" ");
                 if (parts.length != 3) {
                     AnalysisContext.logError("Can't parse bug rank line: '" + s + "'. "
                             + "Valid line must contain 3 parts separated by spaces.");
@@ -170,8 +172,6 @@ public class BugRanker {
                             + "Valid kind must be either 'BugPattern', 'BugKind' or 'Category'.");
                 }
             }
-        } finally {
-            Util.closeSilently(in);
         }
     }
 
@@ -259,8 +259,7 @@ public class BugRanker {
     }
 
 
-    private static AnalysisLocal<HashMap<BugPattern, Integer>> rankForBugPattern
-    = new AnalysisLocal<HashMap<BugPattern, Integer>>() {
+    private static AnalysisLocal<HashMap<BugPattern, Integer>> rankForBugPattern = new AnalysisLocal<HashMap<BugPattern, Integer>>() {
         @Override
         protected HashMap<BugPattern, Integer> initialValue() {
             return new HashMap<>();
@@ -304,38 +303,29 @@ public class BugRanker {
             if (plugin.isCorePlugin()) {
                 continue;
             }
-            if (false) {
-                rankers.add(plugin.getBugRanker());
-                continue pluginLoop;
-            }
             for (DetectorFactory df : plugin.getDetectorFactories()) {
 
                 if (df.getReportedBugPatterns().contains(pattern)) {
-                    if (PLUGIN_DEBUG) {
-                        System.out.println("Bug rank match " + plugin + " " + df + " for " + pattern);
-                    }
+                    LOG.debug("Bug rank match {} {} for {}", plugin, df, pattern);
                     rankers.add(plugin.getBugRanker());
                     continue pluginLoop;
                 }
             }
-            if (PLUGIN_DEBUG) {
-                System.out.println("plugin " + plugin + " doesn't match " + pattern);
-            }
+            LOG.debug("plugin {} doesn't match {}", plugin, pattern);
 
         }
         rankers.add(getCoreRanker());
 
-        return rankBugPattern(pattern, rankers.toArray(new BugRanker[rankers.size()]));
+        return rankBugPattern(pattern, rankers.toArray(new BugRanker[0]));
     }
 
     public static void trimToMaxRank(BugCollection origCollection, int maxRank) {
-        for (Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext();) {
+        // Avoid SortedBugCollection.getCollection() because it is immutable.
+        for (Iterator<BugInstance> i = origCollection.iterator(); i.hasNext();) {
             BugInstance b = i.next();
             if (BugRanker.findRank(b) > maxRank) {
                 i.remove();
             }
-
         }
     }
 }
-

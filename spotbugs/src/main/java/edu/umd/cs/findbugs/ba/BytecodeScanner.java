@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  *
  * @author David Hovemeyer
  */
-public class BytecodeScanner implements org.apache.bcel.Constants {
+public class BytecodeScanner {
     private static final boolean DEBUG = SystemProperties.getBoolean("bs.debug");
 
     /**
@@ -253,14 +253,14 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 ++index;
                 break;
 
-                // Two byte instructions.
+            // Two byte instructions.
             case Const.BIPUSH:
             case Const.LDC:
             case Const.NEWARRAY:
                 index += 2;
                 break;
 
-                // Instructions that can be used with the WIDE prefix.
+            // Instructions that can be used with the WIDE prefix.
             case Const.ILOAD:
             case Const.LLOAD:
             case Const.FLOAD:
@@ -282,7 +282,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 }
                 break;
 
-                // IINC is a special case Const.for WIDE handling
+            // IINC is a special case Const.for WIDE handling
             case Const.IINC:
                 if (wide) {
                     // Skip opcode, two byte index, and two byte immediate
@@ -290,12 +290,12 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                     index += 5;
                     wide = false;
                 } else {
-                    // Skip opcode, one byte index, and one byte immedate value.
+                    // Skip opcode, one byte index, and one byte immediate value.
                     index += 3;
                 }
                 break;
 
-                // Three byte instructions.
+            // Three byte instructions.
             case Const.SIPUSH:
             case Const.LDC_W:
             case Const.LDC2_W:
@@ -331,12 +331,12 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 index += 3;
                 break;
 
-                // Four byte instructions.
+            // Four byte instructions.
             case Const.MULTIANEWARRAY:
                 index += 4;
                 break;
 
-                // Five byte instructions.
+            // Five byte instructions.
             case Const.INVOKEINTERFACE:
             case Const.INVOKEDYNAMIC:
             case Const.GOTO_W:
@@ -344,7 +344,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 index += 5;
                 break;
 
-                // TABLESWITCH - variable length.
+            // TABLESWITCH - variable length.
             case Const.TABLESWITCH: {
                 // Skip padding.
                 int offset = index + 1; // skip the opcode
@@ -364,7 +364,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 // Skip to next instruction.
                 index = offset + 12 + (tableSize * 4);
             }
-            break;
+                break;
 
             // LOOKUPSWITCH - variable length.
             case Const.LOOKUPSWITCH: {
@@ -384,7 +384,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 // Skip to next instruction.
                 index = offset + 8 + (numPairs * 8);
             }
-            break;
+                break;
 
             // Wide prefix.
             case Const.WIDE:
@@ -403,4 +403,3 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
         }
     }
 }
-

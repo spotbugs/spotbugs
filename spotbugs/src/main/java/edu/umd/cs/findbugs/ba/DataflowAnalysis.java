@@ -208,4 +208,3 @@ public interface DataflowAnalysis<Fact> {
      */
     public String factToString(Fact fact);
 }
-

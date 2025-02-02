@@ -45,13 +45,11 @@ public abstract class PointerUsageRequiringNonNullValue {
         return false;
     }
 
-    public @CheckForNull
-    XMethodParameter getNonNullParameter() {
+    public @CheckForNull XMethodParameter getNonNullParameter() {
         return null;
     }
 
-    public @CheckForNull
-    XField getNonNullField() {
+    public @CheckForNull XField getNonNullField() {
         return null;
     }
 
@@ -102,8 +100,7 @@ public abstract class PointerUsageRequiringNonNullValue {
     public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(final XMethod m, final int param) {
         return new PointerUsageRequiringNonNullValue() {
             @Override
-            public @CheckForNull
-            XMethodParameter getNonNullParameter() {
+            public @CheckForNull XMethodParameter getNonNullParameter() {
                 return new XMethodParameter(m, param);
             }
 
@@ -118,8 +115,7 @@ public abstract class PointerUsageRequiringNonNullValue {
     public static PointerUsageRequiringNonNullValue getStoredIntoNonNullField(final XField f) {
         return new PointerUsageRequiringNonNullValue() {
             @Override
-            public @CheckForNull
-            XField getNonNullField() {
+            public @CheckForNull XField getNonNullField() {
                 return f;
             }
 

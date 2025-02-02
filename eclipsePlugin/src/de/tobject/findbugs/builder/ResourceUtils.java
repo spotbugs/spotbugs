@@ -90,11 +90,9 @@ public class ResourceUtils {
 
         @Override
         public boolean accept(File file) {
-            if (!file.isDirectory()) {
+            if (!file.isDirectory() && pat.matcher(file.getName()).matches()) {
                 // add the clzs to the list of files to be analyzed
-                if (pat.matcher(file.getName()).matches()) {
-                    findBugsProject.addFile(file.getAbsolutePath());
-                }
+                findBugsProject.addFile(file.getAbsolutePath());
             }
             return false;
         }

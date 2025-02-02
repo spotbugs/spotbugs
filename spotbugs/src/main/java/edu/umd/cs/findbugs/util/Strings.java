@@ -24,7 +24,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
+
 
 /**
  * A class for static String utility methods.
@@ -91,21 +92,19 @@ public class Strings {
      * character escaping/unescaping
      */
 
-    private static final int xmlAllowedLowCharacterBound = 0x20;
+    private static final int XML_ALLOWED_LOW_CHARACTER_BOUND = 0x20;
 
     private static boolean isInvalidXMLCharacter(int c) {
-        if ((c < xmlAllowedLowCharacterBound && c >= 0x0 &&
-                // low-value characters allowed by XML 1.0 spec
-                // '\uFFFE' (&#65534;) cannot be deserialized by SAX reader.
-                c != 0x9 && c != 0xA && c != 0xD) || c == 0xFFFE) {
-            return true;
-        }
-        return false;
+        return (c < XML_ALLOWED_LOW_CHARACTER_BOUND && c >= 0x0
+        // low-value characters allowed by XML 1.0 spec
+        // '\uFFFE' (&#65534;) cannot be deserialized by SAX reader.
+                && c != 0x9 && c != 0xA && c != 0xD)
+                || c == 0xFFFE;
     }
 
     private static volatile boolean xmlLowValueEscapeStringsInitialized = false;
 
-    private static final String[] xmlLowValueEscapeStrings = new String[xmlAllowedLowCharacterBound];
+    private static final String[] xmlLowValueEscapeStrings = new String[XML_ALLOWED_LOW_CHARACTER_BOUND];
 
     private static final Object escapeInitLockObject = new Object();
 
@@ -132,7 +131,7 @@ public class Strings {
                 return;
             }
 
-            for (int i = 0; i < xmlAllowedLowCharacterBound; i++) {
+            for (int i = 0; i < XML_ALLOWED_LOW_CHARACTER_BOUND; i++) {
                 if (isInvalidXMLCharacter(i)) {
                     String escapedString = String.format("\\u%04x", i);
                     xmlLowValueEscapeStrings[i] = escapedString;
@@ -164,7 +163,7 @@ public class Strings {
     public static String escapeXml(String s) {
         initializeEscapeMap();
 
-        if (s == null || s.length() == 0) {
+        if (s == null || s.isEmpty()) {
             return s;
         }
 
@@ -185,7 +184,7 @@ public class Strings {
             sb.append(sChars, lastReplacement, sChars.length - lastReplacement);
         }
 
-        return StringEscapeUtils.escapeXml(sb.toString());
+        return StringEscapeUtils.escapeXml11(sb.toString());
     }
 
     private static final String unicodeUnescapeMatchExpression = "(\\\\*)(\\\\u)(\\p{XDigit}{4})";
@@ -217,7 +216,7 @@ public class Strings {
                  * the pattern is compiled from a final string, so this
                  * exception should never be thrown
                  */
-                System.err.println("Imposible error:  " + "static final regular expression pattern "
+                System.err.println("Impossible error:  " + "static final regular expression pattern "
                         + "failed to compile.  Exception:  " + pse.toString());
                 return false;
             }
@@ -254,7 +253,7 @@ public class Strings {
             return s;
         }
 
-        if (s == null || s.length() == 0) {
+        if (s == null || s.isEmpty()) {
             return s;
         }
 

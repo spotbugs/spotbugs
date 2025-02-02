@@ -25,6 +25,8 @@ import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LDC2_W;
 import org.apache.bcel.generic.SIPUSH;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 
@@ -40,6 +42,7 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
  * @author David Hovemeyer
  */
 public class ConstantFrameModelingVisitor extends AbstractFrameModelingVisitor<Constant, ConstantFrame> {
+    private static final Logger LOG = LoggerFactory.getLogger(ConstantFrameModelingVisitor.class);
 
     public ConstantFrameModelingVisitor(ConstantPoolGen cpg) {
         super(cpg);
@@ -52,17 +55,16 @@ public class ConstantFrameModelingVisitor extends AbstractFrameModelingVisitor<C
 
     @Override
     public void visitIINC(IINC obj) {
-        // System.out.println("before iinc: " + getFrame());
+        LOG.trace("before iinc: {}", getFrame());
         int v = obj.getIndex();
         int amount = obj.getIncrement();
         ConstantFrame f = getFrame();
         Constant c = f.getValue(v);
         if (c.isConstantInteger()) {
             f.setValue(v, new Constant(c.getConstantInt() + amount));
-        }
-        else {
+        } else {
             f.setValue(v, Constant.NOT_CONSTANT);
-            // System.out.println("after iinc: " + getFrame());
+            LOG.trace("after iinc: {}", getFrame());
         }
     }
 

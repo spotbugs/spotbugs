@@ -47,7 +47,7 @@ public class AtomicityProblem extends OpcodeStackDetector {
 
     private final BugReporter bugReporter;
 
-    final static boolean DEBUG = false;
+    static final boolean DEBUG = false;
 
     public AtomicityProblem(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -55,7 +55,7 @@ public class AtomicityProblem extends OpcodeStackDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if(hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/util/concurrent/ConcurrentHashMap"))) {
+        if (hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/util/concurrent/ConcurrentHashMap"))) {
             super.visitClassContext(classContext);
         }
     }
@@ -124,12 +124,10 @@ public class AtomicityProblem extends OpcodeStackDetector {
             if ("java.util.concurrent.ConcurrentHashMap".equals(getDottedClassConstantOperand())) {
                 String methodName = getNameConstantOperand();
                 XClass xClass = getXClassOperand();
-                if (xClass != null && "put".equals(methodName)) {
-                    if ((getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
-                        bugReporter.reportBug(new BugInstance(this, "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION", priority)
-                        .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)
-                        .addSourceLine(this));
-                    }
+                if (xClass != null && "put".equals(methodName) && (getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
+                    bugReporter.reportBug(new BugInstance(this, "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION", priority)
+                            .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)
+                            .addSourceLine(this));
                 }
             }
             break;

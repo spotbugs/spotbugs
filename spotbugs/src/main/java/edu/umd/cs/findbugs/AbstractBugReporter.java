@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -34,7 +33,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.dom4j.DocumentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
@@ -42,28 +44,28 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * An abstract class which provides much of the functionality required of all
  * BugReporter objects.
  */
 public abstract class AbstractBugReporter implements BugReporter {
-    private static final boolean DEBUG = SystemProperties.getBoolean("abreporter.debug");
-
-    private static final boolean DEBUG_MISSING_CLASSES = SystemProperties.getBoolean("findbugs.debug.missingclasses");
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractBugReporter.class);
 
     public static class Error {
         private final int sequence;
 
         private final String message;
 
+        @Nullable
         private final Throwable cause;
 
         public Error(int sequence, String message) {
             this(sequence, message, null);
         }
 
-        public Error(int sequence, String message, Throwable cause) {
+        public Error(int sequence, String message, @Nullable Throwable cause) {
             this.sequence = sequence;
             this.message = message;
             this.cause = cause;
@@ -77,6 +79,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             return message;
         }
 
+        @CheckForNull
         public Throwable getCause() {
             return cause;
         }
@@ -115,7 +118,9 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     private int rankThreshold;
 
-    private boolean relaxedSet, relaxed;
+    private boolean relaxedSet;
+
+    private boolean relaxed;
 
     private int errorCount;
 
@@ -127,7 +132,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     private final ProjectStats projectStats;
 
-    public AbstractBugReporter() {
+    protected AbstractBugReporter() {
         super();
         verbosityLevel = NORMAL;
         missingClassMessageList = new LinkedHashSet<>();
@@ -168,6 +173,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         }
         return relaxed;
     }
+
     // Subclasses must override doReportBug(), not this method.
     @Override
     public final void reportBug(@Nonnull BugInstance bugInstance) {
@@ -181,24 +187,18 @@ public abstract class AbstractBugReporter implements BugReporter {
 
         ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
         if (primaryClass != null && !AnalysisContext.currentAnalysisContext().isApplicationClass(primaryClass.getClassName())) {
-            if (DEBUG) {
-                System.out.println("AbstractBugReporter: Filtering due to non-primary class");
-            }
+            LOG.debug("AbstractBugReporter: Filtering due to non-primary class");
             return;
         }
         int priority = bugInstance.getPriority();
         int bugRank = bugInstance.getBugRank();
-        if (priority <= priorityThreshold && bugRank <= rankThreshold) {
-            doReportBug(bugInstance);
+        if (priority > priorityThreshold) {
+            LOG.debug("AbstractBugReporter: Filtering due to priorityThreshold {} > {}", priority,
+                    priorityThreshold);
+        } else if (bugRank > rankThreshold) {
+            LOG.debug("AbstractBugReporter: Filtering due to rankThreshold {} > {}", bugRank, rankThreshold);
         } else {
-            if (DEBUG) {
-                if (priority <= priorityThreshold) {
-                    System.out.println("AbstractBugReporter: Filtering due to priorityThreshold " + priority + " > "
-                            + priorityThreshold);
-                } else {
-                    System.out.println("AbstractBugReporter: Filtering due to rankThreshold " + bugRank + " > " + rankThreshold);
-                }
-            }
+            doReportBug(bugInstance);
         }
     }
 
@@ -210,8 +210,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         }
     }
 
-    public static @CheckForNull @DottedClassName
-    String getMissingClassName(ClassNotFoundException ex) {
+    public static @CheckForNull @DottedClassName String getMissingClassName(ClassNotFoundException ex) {
 
         // Try to decode the error message by extracting the class name.
         String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
@@ -225,10 +224,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     @Override
     public void reportMissingClass(ClassNotFoundException ex) {
-        if (DEBUG_MISSING_CLASSES) {
-            System.out.println("Missing class: " + ex.toString());
-            ex.printStackTrace(System.out);
-        }
+        LOG.debug("Missing class", ex);
 
         if (verbosityLevel == SILENT) {
             return;
@@ -237,14 +233,14 @@ public abstract class AbstractBugReporter implements BugReporter {
         logMissingClass(getMissingClassName(ex));
     }
 
-    static final protected boolean isValidMissingClassMessage(String message) {
+    protected static final boolean isValidMissingClassMessage(String message) {
         if (message == null) {
             return false;
         }
 
         message = message.trim();
 
-        if (message.startsWith("[")) {
+        if (message.startsWith(Values.SIG_ARRAY_PREFIX)) {
             // Sometimes we see methods called on array classes.
             // Obviously, these don't exist as class files.
             // So, we should just ignore the exception.
@@ -265,10 +261,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             // we ignore all "package-info" issues
             return false;
         }
-        if ("java.lang.Synthetic".equals(message)) {
-            return false;
-        }
-        return true;
+        return !"java.lang.Synthetic".equals(message);
     }
 
     /*
@@ -280,16 +273,13 @@ public abstract class AbstractBugReporter implements BugReporter {
      */
     @Override
     public void reportMissingClass(ClassDescriptor classDescriptor) {
-        if (DEBUG_MISSING_CLASSES) {
-            System.out.println("Missing class: " + classDescriptor);
-            new Throwable().printStackTrace(System.out);
-        }
+        LOG.debug("Missing class: {}", classDescriptor, new ClassNotFoundException());
 
         if (verbosityLevel == SILENT) {
             return;
         }
 
-        logMissingClass(classDescriptor.toDottedClassName());
+        logMissingClass(classDescriptor.getDottedClassName());
     }
 
     /**
@@ -374,7 +364,7 @@ public abstract class AbstractBugReporter implements BugReporter {
     @Override
     public void reportQueuedErrors() {
         // Report unique errors in order of their sequence
-        Error[] errorList = errorSet.toArray(new Error[errorSet.size()]);
+        Error[] errorList = errorSet.toArray(new Error[0]);
         Arrays.sort(errorList, (o1, o2) -> o1.getSequence() - o2.getSequence());
         for (Error error : errorList) {
             reportAnalysisError(new AnalysisError(error.getMessage(), error.getCause()));
@@ -432,4 +422,3 @@ public abstract class AbstractBugReporter implements BugReporter {
      */
     public abstract void reportMissingClass(String string);
 }
-

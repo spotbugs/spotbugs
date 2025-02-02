@@ -64,7 +64,7 @@ public class JavaVersion {
         try {
             // We need only care about 9+ early access in first segment
             int earlyAccess = strings[0].indexOf('-');
-            if(earlyAccess > 0){
+            if (earlyAccess > 0) {
                 // 9+ early access versions do not follow common scheme above (it would be too easy)
                 // they look like 9-ea+73 and have only one meaningful (major) part for us.
                 major = Integer.parseInt(strings[0].substring(0, earlyAccess));
@@ -72,7 +72,7 @@ public class JavaVersion {
                 rest = strings[0].substring(earlyAccess);
             } else {
                 major = Integer.parseInt(strings[0]);
-                if(strings.length > 1){
+                if (strings.length > 1) {
                     minor = Integer.parseInt(strings[1]);
                     if (strings.length > 2) {
                         rest = strings[2];
@@ -156,4 +156,3 @@ public class JavaVersion {
         return this.major > other.major || (this.major == other.major && this.minor >= other.minor);
     }
 }
-

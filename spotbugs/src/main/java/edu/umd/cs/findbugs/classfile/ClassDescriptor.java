@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2006-2018, University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,8 +39,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializable {
     private static final long serialVersionUID = 1L;
 
-    private final @SlashedClassName
-    String className;
+    private final @SlashedClassName String className;
 
     private static final Pattern ANONYMOUS_CLASS_NAME = Pattern.compile(".*\\$[0-9]*$");
 
@@ -65,8 +64,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     /**
      * @return Returns the class name in VM format, e.g. "java/lang/String"
      */
-    public final @SlashedClassName
-    String getClassName() {
+    public final @SlashedClassName String getClassName() {
         return className;
     }
 
@@ -84,6 +82,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     public boolean matches(Class<?> c) {
         return getDottedClassName().equals(c.getName());
     }
+
     /**
      * Get the resource name of this class as it would appear in the classpath.
      * E.g., "java/lang/String.class"
@@ -98,10 +97,12 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      * Get the name of the class in dotted format.
      *
      * @return the name of the class in dotted format
+     *
+     * @deprecated use {@link #getDottedClassName()} instead.
      */
-    public @DottedClassName
-    String toDottedClassName() {
-        return ClassName.toDottedClassName(className);
+    @Deprecated
+    public @DottedClassName String toDottedClassName() {
+        return getDottedClassName();
     }
 
     /**
@@ -109,21 +110,20 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      *
      * @return the name of the class in dotted format
      */
-    public @DottedClassName
-    String getDottedClassName() {
+    public @DottedClassName String getDottedClassName() {
         return ClassName.toDottedClassName(className);
     }
 
     public XClass getXClass() throws CheckedAnalysisException {
         return Global.getAnalysisCache().getClassAnalysis(XClass.class, this);
     }
+
     /**
      * Get the name of the package in dotted format.
      *
      * @return the name of the package in dotted format
      */
-    public @DottedClassName
-    String getPackageName() {
+    public @DottedClassName String getPackageName() {
         return ClassName.extractPackageName(ClassName.toDottedClassName(className));
     }
 
@@ -171,8 +171,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      *
      */
     @Deprecated
-    public static @CheckForNull
-    ClassDescriptor fromFieldSignature(String signature) {
+    public static @CheckForNull ClassDescriptor fromFieldSignature(String signature) {
         return DescriptorFactory.createClassDescriptorFromFieldSignature(signature);
     }
 
@@ -254,7 +253,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      */
     @Override
     public final boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof ClassDescriptor)) {
+        if (!(obj instanceof ClassDescriptor)) {
             return false;
         }
 

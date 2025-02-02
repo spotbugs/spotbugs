@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 public class AWTEventQueueExecutor extends AbstractExecutorService {
     @Override
     public void shutdown() {
+        // nothing to do here
     }
 
     @Override
@@ -41,9 +42,7 @@ public class AWTEventQueueExecutor extends AbstractExecutorService {
         }
         try {
             SwingUtilities.invokeAndWait(command);
-        } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
-        } catch (InvocationTargetException e) {
+        } catch (InterruptedException | InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
     }

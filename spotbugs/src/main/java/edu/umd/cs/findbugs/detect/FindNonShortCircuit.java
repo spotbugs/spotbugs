@@ -32,6 +32,10 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class FindNonShortCircuit extends OpcodeStackDetector implements StatelessDetector {
 
+    static final String NS_NON_SHORT_CIRCUIT = "NS_NON_SHORT_CIRCUIT";
+
+    static final String NS_DANGEROUS_NON_SHORT_CIRCUIT = "NS_DANGEROUS_NON_SHORT_CIRCUIT";
+
     int stage1 = 0;
 
     int stage2 = 0;
@@ -89,10 +93,10 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
 
     @Override
     public void sawOpcode(int seen) {
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stage1
+        // System.out.println(getPC() + " " + Const.getOpcodeName(seen) + " " + stage1
         // + " " + stage2);
         // System.out.println(stack);
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " +
+        // System.out.println(getPC() + " " + Const.getOpcodeName(seen) + " " +
         // sawMethodCall + " " + sawMethodCallOld + " " + stage1 + " " +
         // stage2);
         distance++;
@@ -189,22 +193,24 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
     }
 
     private void reportBug() {
+        bugAccumulator.accumulateBug(createBugInstance().addClassAndMethod(this), this);
+    }
+
+    BugInstance createBugInstance() {
         int priority = LOW_PRIORITY;
-        String pattern = "NS_NON_SHORT_CIRCUIT";
+        String pattern = NS_NON_SHORT_CIRCUIT;
 
         if (sawDangerOld) {
             if (sawNullTestVeryOld) {
                 priority = HIGH_PRIORITY;
-            }
-            if (sawMethodCallOld || sawNumericTestVeryOld && sawArrayDangerOld) {
+            } else if (sawMethodCallOld || sawNumericTestVeryOld && sawArrayDangerOld) {
                 priority = HIGH_PRIORITY;
-                pattern = "NS_DANGEROUS_NON_SHORT_CIRCUIT";
+                pattern = NS_DANGEROUS_NON_SHORT_CIRCUIT;
             } else {
                 priority = NORMAL_PRIORITY;
             }
         }
-
-        bugAccumulator.accumulateBug(new BugInstance(this, pattern, priority).addClassAndMethod(this), this);
+        return new BugInstance(this, pattern, priority);
     }
 
     private void scanForBooleanValue(int seen) {

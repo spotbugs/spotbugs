@@ -49,28 +49,37 @@ public class TypeQualifierResolver {
             .createClassDescriptor(javax.annotation.meta.TypeQualifierDefault.class);
 
     static final ClassDescriptor elementTypeDescriptor = DescriptorFactory
-            .createClassDescriptor(java.lang.annotation.ElementType.class);
-
-    static final ClassDescriptor androidNullable = DescriptorFactory.createClassDescriptor("android/support/annotation/Nullable");
-
-    static final ClassDescriptor androidNonNull = DescriptorFactory.createClassDescriptor("android/support/annotation/NonNull");
-
-    static final ClassDescriptor googleNullable = DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable");
-
-    static final ClassDescriptor intellijNullable = DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable");
-
-    static final ClassDescriptor intellijNotNull = DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/NotNull");
-
-    static final ClassDescriptor eclipseNullable = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/Nullable");
-
-    static final ClassDescriptor eclipseNonNull = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNull");
-
-    static final ClassDescriptor checkerFrameworkNullable = DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/qual/Nullable");
-
-    static final ClassDescriptor checkerFrameworkNullableDecl = DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NullableDecl");
+            .createClassDescriptor(ElementType.class);
 
     // javax.annotations.ParametersAreNonnullByDefault ?
     static final ClassDescriptor eclipseNonNullByDefault = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNullByDefault");
+
+    private static final ClassDescriptor[] NON_NULL_CLASS_DESCRIPTORS = new ClassDescriptor[] {
+        DescriptorFactory.createClassDescriptor("edu/umd/cs/findbugs/annotations/NonNull"),
+        DescriptorFactory.createClassDescriptor("android/support/annotation/NonNull"),
+        DescriptorFactory.createClassDescriptor("androidx/annotation/NonNull"),
+        DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/NotNull"),
+        DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNull"),
+        eclipseNonNullByDefault,
+        DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/qual/NonNull"),
+        DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NonNullDecl"),
+        DescriptorFactory.createClassDescriptor("org/netbeans/api/annotations/common/NonNull"),
+        DescriptorFactory.createClassDescriptor("lombok/NonNull"),
+    };
+
+    private static final ClassDescriptor[] NULLABLE_CLASS_DESCRIPTORS = new ClassDescriptor[] {
+        // intentionally ignored, semantics is different to other Nullable annotations, see <a href="https://github.com/spotbugs/spotbugs/issues/3243">#3243</a>
+        // DescriptorFactory.createClassDescriptor("edu/umd/cs/findbugs/annotations/Nullable"),
+        DescriptorFactory.createClassDescriptor("android/support/annotation/Nullable"),
+        DescriptorFactory.createClassDescriptor("androidx/annotation/Nullable"),
+        DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable"),
+        DescriptorFactory.createClassDescriptor("org/apache/avro/reflect/Nullable"),
+        DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable"),
+        DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/Nullable"),
+        DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/qual/Nullable"),
+        DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NullableDecl"),
+        DescriptorFactory.createClassDescriptor("org/netbeans/api/annotations/common/NullAllowed"),
+    };
 
     /**
      * Resolve an AnnotationValue into a list of AnnotationValues representing
@@ -83,7 +92,7 @@ public class TypeQualifierResolver {
      */
     public static Collection<AnnotationValue> resolveTypeQualifiers(AnnotationValue value) {
         LinkedList<AnnotationValue> result = new LinkedList<>();
-        resolveTypeQualifierNicknames(value, result, new LinkedList<ClassDescriptor>());
+        resolveTypeQualifierNicknames(value, result, new LinkedList<>());
         return result;
     }
 
@@ -132,21 +141,18 @@ public class TypeQualifierResolver {
             onStack.add(annotationClass);
 
             try {
-                if (annotationClass.equals(androidNullable)
-                        || annotationClass.equals(googleNullable)
-                        || annotationClass.equals(eclipseNullable)
-                        || annotationClass.equals(intellijNullable)
-                        || annotationClass.equals(checkerFrameworkNullable)
-                        || annotationClass.equals(checkerFrameworkNullableDecl)) {
-                    resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.CHECK_FOR_NULL), result, onStack);
-                    return;
+                for (ClassDescriptor descriptor : NULLABLE_CLASS_DESCRIPTORS) {
+                    if (annotationClass.equals(descriptor)) {
+                        resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.CHECK_FOR_NULL), result, onStack);
+                        return;
+                    }
                 }
-                if (annotationClass.equals(androidNonNull)
-                        || annotationClass.equals(eclipseNonNull)
-                        || annotationClass.equals(eclipseNonNullByDefault)
-                        || annotationClass.equals(intellijNotNull)) {
-                    resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.NONNULL), result, onStack);
-                    return;
+
+                for (ClassDescriptor descriptor : NON_NULL_CLASS_DESCRIPTORS) {
+                    if (annotationClass.equals(descriptor)) {
+                        resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.NONNULL), result, onStack);
+                        return;
+                    }
                 }
 
                 XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, annotationClass);
@@ -175,7 +181,7 @@ public class TypeQualifierResolver {
 
     public static void logMissingAnnotationClass(MissingClassException e) {
         ClassDescriptor c = e.getClassDescriptor();
-        if (c.getClassName().startsWith("javax.annotation")) {
+        if (c.getClassName().startsWith("javax.annotation") || c.getClassName().startsWith("jakarta.annotation")) {
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(c);
         }
     }
@@ -212,9 +218,6 @@ public class TypeQualifierResolver {
      *            AnnotationValue representing the use of an annotation
      * @param result
      *            LinkedList containing resolved type qualifier AnnotationValues
-     * @param onStack
-     *            stack of annotations being processed; used to detect cycles in
-     *            type qualifier nicknames
      */
     private static void resolveTypeQualifierDefaults(AnnotationValue value, ElementType defaultFor,
             LinkedList<AnnotationValue> result) {
@@ -231,7 +234,7 @@ public class TypeQualifierResolver {
                     if (e.desc.equals(elementTypeDescriptor) && e.value.equals(defaultFor.name())) {
                         for (ClassDescriptor d : c.getAnnotationDescriptors()) {
                             if (!d.equals(typeQualifierDefault)) {
-                                resolveTypeQualifierNicknames(c.getAnnotation(d), result, new LinkedList<ClassDescriptor>());
+                                resolveTypeQualifierNicknames(c.getAnnotation(d), result, new LinkedList<>());
                             }
                         }
                         break;

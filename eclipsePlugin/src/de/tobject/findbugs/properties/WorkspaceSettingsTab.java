@@ -81,8 +81,8 @@ public class WorkspaceSettingsTab extends Composite {
         cacheClassData.setToolTipText("Reuse .class data for the next FindBugs analysis. " +
                 "The cache will survive until the next project build.");
 
-        if(!isWorkspaceSettings()) {
-            Label lbl = new Label(this,SWT.WRAP );
+        if (!isWorkspaceSettings()) {
+            Label lbl = new Label(this, SWT.WRAP);
             lbl.setText("Currently, plugins can only be updated from the workspace settings");
             return;
         }
@@ -90,7 +90,7 @@ public class WorkspaceSettingsTab extends Composite {
         CheckboxTableViewer viewer = pathsWidget.createViewer("SpotBugs Plugins",
                 "See: <a href=\"http://www.ibm.com/developerworks/library/j-findbug2/\">'Writing custom plugins'</a>"
                         + " and <a href=\"http://fb-contrib.sourceforge.net/\">fb-contrib</a>: additional bug detectors package",
-                        true); // set true to enable checkbox to allow enable/disable detectors without removing them
+                true); // set true to enable checkbox to allow enable/disable detectors without removing them
         detectorProvider = createDetectorProvider(viewer);
         pathsWidget.createButtonsArea(detectorProvider);
         detectorProvider.refresh();
@@ -141,7 +141,7 @@ public class WorkspaceSettingsTab extends Composite {
     public void refreshUI(UserPreferences prefs) {
         cacheClassData.setSelection(store.getBoolean(FindBugsConstants.KEY_CACHE_CLASS_DATA));
         runAsExtraJob.setSelection(store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB));
-        if(!isWorkspaceSettings()) {
+        if (!isWorkspaceSettings()) {
             return;
         }
         confirmSwitch.setSelection(store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH));
@@ -161,7 +161,7 @@ public class WorkspaceSettingsTab extends Composite {
     public void performOK() {
         store.setValue(FindBugsConstants.KEY_CACHE_CLASS_DATA, cacheClassData.getSelection());
         store.setValue(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB, runAsExtraJob.getSelection());
-        if(!isWorkspaceSettings()) {
+        if (!isWorkspaceSettings()) {
             return;
         }
     }

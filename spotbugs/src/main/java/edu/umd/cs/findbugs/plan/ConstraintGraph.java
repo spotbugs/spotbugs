@@ -42,4 +42,3 @@ public class ConstraintGraph extends AbstractGraph<ConstraintEdge, DetectorNode>
         return "ConstraintGraph[Vertices: " + getNumVertices() + " Edges: " + getNumEdges() + "]";
     }
 }
-

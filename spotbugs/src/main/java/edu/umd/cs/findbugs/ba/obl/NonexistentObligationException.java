@@ -26,4 +26,3 @@ public class NonexistentObligationException extends Exception {
         super("Cleaning up nonexistent resource of type " + obligation.getClassName());
     }
 }
-

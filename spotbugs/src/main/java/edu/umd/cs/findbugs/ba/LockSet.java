@@ -124,7 +124,7 @@ public final class LockSet {
      */
     public int getNumLockedObjects() {
         int result = 0;
-        for (int i = 0; i < array.length; i += 2) {
+        for (int i = 0; i + 1 < array.length; i += 2) {
             if (array[i] == INVALID) {
                 break;
             }
@@ -166,7 +166,7 @@ public final class LockSet {
      *            the other LockSet
      */
     public void meetWith(LockSet other) {
-        for (int i = 0; i < array.length; i += 2) {
+        for (int i = 0; i + 1 < array.length; i += 2) {
             int valueNumber = array[i];
             if (valueNumber < 0) {
                 break;
@@ -177,7 +177,7 @@ public final class LockSet {
             array[i + 1] = mergeValues(mine, his);
         }
 
-        for (int i = 0; i < other.array.length; i += 2) {
+        for (int i = 0; i + 1 < other.array.length; i += 2) {
             int valueNumber = other.array[i];
             if (valueNumber < 0) {
                 break;
@@ -209,7 +209,7 @@ public final class LockSet {
      *            the ValueNumberFactory that produced the lock values
      */
     public boolean containsReturnValue(ValueNumberFactory factory) {
-        for (int i = 0; i < array.length; i += 2) {
+        for (int i = 0; i + 1 < array.length; i += 2) {
             int valueNumber = array[i];
             if (valueNumber < 0) {
                 break;
@@ -231,7 +231,7 @@ public final class LockSet {
      *            the other LockSet
      */
     public void intersectWith(LockSet other) {
-        for (int i = 0; i < array.length; i += 2) {
+        for (int i = 0; i + 1 < array.length; i += 2) {
             int valueNumber = array[i];
             if (valueNumber < 0) {
                 break;
@@ -255,7 +255,7 @@ public final class LockSet {
      * @return true if no locks are held, false if at least one lock is held
      */
     public boolean isEmpty() {
-        for (int i = 0; i < array.length; i += 2) {
+        for (int i = 0; i + 1 < array.length; i += 2) {
             int valueNumber = array[i];
             if (valueNumber < 0) {
                 return true;
@@ -269,15 +269,14 @@ public final class LockSet {
     }
 
     private boolean identicalSubset(LockSet other) {
-        for (int i = 0; i < array.length; i += 2) {
+        for (int i = 0; i + 1 < array.length; i += 2) {
             int valueNumber = array[i];
             if (valueNumber < 0) {
                 break;
             }
             int mine = array[i + 1];
             int his = other.getLockCount(valueNumber);
-            if (mine != his)
-            {
+            if (mine != his) {
                 return false;
                 // System.out.println("For value " + valueNumber + ", " + mine +
                 // "==" + his);
@@ -305,8 +304,7 @@ public final class LockSet {
             int value = array[i];
             if (value < 0) {
                 return -(i + 1); // didn't find requested valueNumber - return
-            } else if (value == valueNumber)
-            {
+            } else if (value == valueNumber) {
                 return i; // found requested valueNumber
             }
         }
@@ -350,7 +348,7 @@ public final class LockSet {
             buf.append("default=0");
             first = false;
         }
-        for (int i = 0; i < array.length; i += 2) {
+        for (int i = 0; i + 1 < array.length; i += 2) {
             int valueNumber = array[i];
             if (valueNumber < 0) {
                 continue;
@@ -409,4 +407,3 @@ public final class LockSet {
      * + l + " ==> " + ll.sameAs(l)); }
      */
 }
-

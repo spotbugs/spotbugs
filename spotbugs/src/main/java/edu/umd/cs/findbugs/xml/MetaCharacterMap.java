@@ -72,4 +72,3 @@ public class MetaCharacterMap {
         return replacementMap.get(c);
     }
 }
-

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.util.Objects;
 import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.ba.Location;
@@ -191,50 +192,18 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
         SourceSinkInfo other = (SourceSinkInfo) obj;
-        if (constantValue == null) {
-            if (other.constantValue != null) {
-                return false;
-            }
-        } else if (!constantValue.equals(other.constantValue)) {
-            return false;
-        }
-        if (interproc != other.interproc) {
-            return false;
-        }
-        if (local != other.local) {
-            return false;
-        }
-        if (location == null) {
-            if (other.location != null) {
-                return false;
-            }
-        } else if (!location.equals(other.location)) {
-            return false;
-        }
-        if (parameter != other.parameter) {
-            return false;
-        }
-        if (type != other.type) {
-            return false;
-        }
-        if (vn == null) {
-            if (other.vn != null) {
-                return false;
-            }
-        } else if (!vn.equals(other.vn)) {
-            return false;
-        }
-        if (when != other.when) {
-            return false;
-        }
-        return true;
+        return Objects.equals(constantValue, other.constantValue)
+                && interproc == other.interproc
+                && local == other.local
+                && Objects.equals(location, other.location)
+                && parameter == other.parameter
+                && type == other.type
+                && Objects.equals(vn, other.vn)
+                && when == other.when;
     }
 
     /*

@@ -34,4 +34,3 @@ public class JavaVersionException extends Exception {
         super(msg, cause);
     }
 }
-

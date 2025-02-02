@@ -169,9 +169,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         }
 
         pendingBugs.add(new BugInstance(this, "DB_DUPLICATE_BRANCHES", NORMAL_PRIORITY)
-        .addClassAndMethod(classContext.getJavaClass(), method)
-        .addSourceLineRange(classContext, this, thenStartPos, thenFinishPos)
-        .addSourceLineRange(classContext, this, elseStartPos, elseFinishPos));
+                .addClassAndMethod(classContext.getJavaClass(), method)
+                .addSourceLineRange(classContext, this, thenStartPos, thenFinishPos)
+                .addSourceLineRange(classContext, this, elseStartPos, elseFinishPos));
     }
 
     /**
@@ -207,8 +207,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
             if (eType == EdgeTypes.SWITCH_EDGE || eType == EdgeTypes.SWITCH_DEFAULT_EDGE) {
                 BasicBlock target = e.getTarget();
                 InstructionHandle firstIns = getDeepFirstInstruction(cfg, target);
-                if (firstIns == null)
-                {
+                if (firstIns == null) {
                     continue; // give up on this edge
                 }
                 int firstInsPosition = firstIns.getPosition();
@@ -237,8 +236,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
 
         HashMap<BigInteger, Collection<Integer>> map = new HashMap<>();
         for (int i = 0; i < idx; i++) {
-            if (switchPos[i] + 7 >= switchPos[i + 1])
-            {
+            if (switchPos[i] + 7 >= switchPos[i + 1]) {
                 continue; // ignore small switch clauses
             }
 
@@ -254,13 +252,11 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
                 // // leave endPos as is (store the throw instruction)
                 // Don't do this since many cases may throw "not implemented".
             } else {
-                if (i + 2 < idx)
-                {
+                if (i + 2 < idx) {
                     continue; // falls through to next case, so don't store it
                 }
                 // at all
-                if (i + 1 < idx && switchPos[idx] != switchPos[idx - 1])
-                {
+                if (i + 1 < idx && switchPos[idx] != switchPos[idx - 1]) {
                     continue; // also falls through unless switch has no default
                     // case
                 }
@@ -274,8 +270,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
             if (clauses.size() > 1) {
                 BugInstance bug = new BugInstance(this, "DB_DUPLICATE_SWITCH_CLAUSES", LOW_PRIORITY).addClassAndMethod(
                         classContext.getJavaClass(), method);
-                for (int i : clauses)
-                {
+                for (int i : clauses) {
                     bug.addSourceLineRange(this.classContext, this, switchPos[i], switchPos[i + 1] - 1); // not
                 }
                 // endPos,
@@ -288,12 +283,8 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
     }
 
     private void updateMap(HashMap<BigInteger, Collection<Integer>> map, int i, BigInteger clauseAsInt) {
-        Collection<Integer> values = map.get(clauseAsInt);
+        Collection<Integer> values = map.computeIfAbsent(clauseAsInt, k -> new LinkedList<>());
 
-        if (values == null) {
-            values = new LinkedList<>();
-            map.put(clauseAsInt, values);
-        }
         values.add(i); // index into the sorted array
     }
 

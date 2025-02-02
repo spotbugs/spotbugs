@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  *
  * @see PreorderVisitor
  */
-abstract public class PreorderDetector extends PreorderVisitor implements Detector {
+public abstract class PreorderDetector extends PreorderVisitor implements Detector {
     private ClassContext classContext;
 
     @Override
@@ -51,4 +51,3 @@ abstract public class PreorderDetector extends PreorderVisitor implements Detect
     public void report() {
     }
 }
-

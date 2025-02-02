@@ -35,9 +35,8 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class Lookup implements Constants2 {
+public class Lookup {
 
     /*
     private static Subtypes2 subtypes2() {
@@ -101,8 +100,7 @@ public class Lookup implements Constants2 {
         return findSuperImplementor(clazz, name, signature, isStatic);
     }
 
-    public static @CheckForNull
-    JavaClass findSuperDefiner(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
+    public static @CheckForNull JavaClass findSuperDefiner(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
         try {
             JavaClass c = clazz;
             while (true) {
@@ -121,8 +119,7 @@ public class Lookup implements Constants2 {
         }
     }
 
-    public static @CheckForNull
-    JavaClass findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
+    public static @CheckForNull JavaClass findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
         try {
             JavaClass c = clazz;
             while (true) {
@@ -142,8 +139,7 @@ public class Lookup implements Constants2 {
         }
     }
 
-    public static @CheckForNull
-    XMethod findSuperImplementorAsXMethod(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
+    public static @CheckForNull XMethod findSuperImplementorAsXMethod(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
         try {
             JavaClass c = clazz;
             while (true) {
@@ -163,8 +159,8 @@ public class Lookup implements Constants2 {
         }
     }
 
-    public static @DottedClassName
-    String findSuperImplementor(@DottedClassName String clazz, String name, String signature, BugReporter bugReporter) {
+    public static @DottedClassName String findSuperImplementor(@DottedClassName String clazz, String name, String signature,
+            BugReporter bugReporter) {
         try {
             JavaClass c = findImplementor(Repository.getSuperClasses(clazz), name, signature);
             return (c != null) ? c.getClassName() : clazz;
@@ -174,8 +170,7 @@ public class Lookup implements Constants2 {
         }
     }
 
-    public static @CheckForNull
-    JavaClass findImplementor(JavaClass[] clazz, String name, String signature) {
+    public static @CheckForNull JavaClass findImplementor(JavaClass[] clazz, String name, String signature) {
 
         for (JavaClass aClazz : clazz) {
             Method m = findImplementation(aClazz, name, signature);

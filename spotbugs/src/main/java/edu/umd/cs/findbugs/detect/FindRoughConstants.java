@@ -98,9 +98,9 @@ public class FindRoughConstants extends BytecodeScanningDetector {
 
     private static final BadConstant[] badConstants = new BadConstant[] {
         new BadConstant(Math.PI, 1, "Math.PI", HIGH_PRIORITY),
-        new BadConstant(Math.PI, 1/2.0, "Math.PI/2", NORMAL_PRIORITY),
-        new BadConstant(Math.PI, 1/3.0, "Math.PI/3", LOW_PRIORITY),
-        new BadConstant(Math.PI, 1/4.0, "Math.PI/4", LOW_PRIORITY),
+        new BadConstant(Math.PI, 1 / 2.0, "Math.PI/2", NORMAL_PRIORITY),
+        new BadConstant(Math.PI, 1 / 3.0, "Math.PI/3", LOW_PRIORITY),
+        new BadConstant(Math.PI, 1 / 4.0, "Math.PI/4", LOW_PRIORITY),
         new BadConstant(Math.PI, 2, "2*Math.PI", NORMAL_PRIORITY),
         new BadConstant(Math.E, 1, "Math.E", LOW_PRIORITY)
     };
@@ -116,7 +116,7 @@ public class FindRoughConstants extends BytecodeScanningDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if(hasInterestingConstant(classContext.getJavaClass().getConstantPool())) {
+        if (hasInterestingConstant(classContext.getJavaClass().getConstantPool())) {
             super.visitClassContext(classContext);
         }
     }
@@ -139,13 +139,13 @@ public class FindRoughConstants extends BytecodeScanningDetector {
         }
         // Lower priority if the constant is put into array immediately or after the boxing:
         // this is likely to be just similar number in some predefined dataset (like lookup table)
-        if(seen == Const.INVOKESTATIC && lastBug != null) {
+        if (seen == Const.INVOKESTATIC && lastBug != null) {
             if (getNextOpcode() == Const.AASTORE
                     && getNameConstantOperand().equals("valueOf")
                     && (getClassConstantOperand().equals("java/lang/Double") || getClassConstantOperand().equals(
                             "java/lang/Float"))) {
-                lastBug = ((BugInstance)lastBug.clone());
-                lastBug.setPriority(lastPriority+1);
+                lastBug = ((BugInstance) lastBug.clone());
+                lastBug.setPriority(lastPriority + 1);
                 bugAccumulator.forgetLastBug();
                 bugAccumulator.accumulateBug(lastBug, this);
             }
@@ -154,16 +154,16 @@ public class FindRoughConstants extends BytecodeScanningDetector {
     }
 
     private boolean hasInterestingConstant(ConstantPool cp) {
-        for(Constant constant : cp.getConstantPool()) {
-            if(constant instanceof ConstantFloat) {
-                float val = ((ConstantFloat)constant).getBytes();
-                if(isInteresting(val, val)) {
+        for (Constant constant : cp.getConstantPool()) {
+            if (constant instanceof ConstantFloat) {
+                float val = ((ConstantFloat) constant).getBytes();
+                if (isInteresting(val, val)) {
                     return true;
                 }
             }
-            if(constant instanceof ConstantDouble) {
-                double val = ((ConstantDouble)constant).getBytes();
-                if(isInteresting(val, val)) {
+            if (constant instanceof ConstantDouble) {
+                double val = ((ConstantDouble) constant).getBytes();
+                if (isInteresting(val, val)) {
                     return true;
                 }
             }
@@ -173,7 +173,7 @@ public class FindRoughConstants extends BytecodeScanningDetector {
 
     private boolean isInteresting(Number constValue, double candidate) {
         for (BadConstant badConstant : badConstants) {
-            if(getPriority(badConstant, constValue, candidate) < IGNORE_PRIORITY) {
+            if (getPriority(badConstant, constValue, candidate) < IGNORE_PRIORITY) {
                 return true;
             }
         }
@@ -189,13 +189,12 @@ public class FindRoughConstants extends BytecodeScanningDetector {
             return IGNORE_PRIORITY;
         }
         if (badConstant.equalPrefix(constValue)) {
-            return diff > 1e-4 ? badConstant.basePriority+1 :
-                diff < 1e-6 ? badConstant.basePriority-1 : badConstant.basePriority;
+            return diff > 1e-4 ? badConstant.basePriority + 1 : diff < 1e-6 ? badConstant.basePriority - 1 : badConstant.basePriority;
         }
         if (diff > 1e-7) {
             return IGNORE_PRIORITY;
         }
-        return badConstant.basePriority+1;
+        return badConstant.basePriority + 1;
     }
 
     private void checkConst(Number constValue) {
@@ -205,10 +204,10 @@ public class FindRoughConstants extends BytecodeScanningDetector {
         }
         for (BadConstant badConstant : badConstants) {
             int priority = getPriority(badConstant, constValue, candidate);
-            if(getNextOpcode() == Const.FASTORE || getNextOpcode() == Const.DASTORE) {
+            if (getNextOpcode() == Const.FASTORE || getNextOpcode() == Const.DASTORE) {
                 priority++;
             }
-            if(priority < IGNORE_PRIORITY) {
+            if (priority < IGNORE_PRIORITY) {
                 lastPriority = priority;
                 lastBug = new BugInstance(this, "CNT_ROUGH_CONSTANT_VALUE", priority).addClassAndMethod(this)
                         .addString(constValue.toString()).addString(badConstant.replacement);

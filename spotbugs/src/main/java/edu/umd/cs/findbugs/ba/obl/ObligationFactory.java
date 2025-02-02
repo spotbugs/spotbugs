@@ -27,6 +27,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
@@ -107,8 +108,7 @@ public class ObligationFactory {
      *         there is no such Obligation
      * @throws ClassNotFoundException
      */
-    public @CheckForNull
-    Obligation getObligationByType(ObjectType type) throws ClassNotFoundException {
+    public @CheckForNull Obligation getObligationByType(ObjectType type) throws ClassNotFoundException {
         for (Iterator<Obligation> i = obligationIterator(); i.hasNext();) {
             Obligation obligation = i.next();
             if (Hierarchy.isSubtype(type, obligation.getType())) {
@@ -128,8 +128,7 @@ public class ObligationFactory {
      * @return an Obligation that is a supertype of the given type, or null if
      *         there is no such Obligation
      */
-    public @CheckForNull
-    Obligation getObligationByType(ClassDescriptor classDescriptor) {
+    public @CheckForNull Obligation getObligationByType(ClassDescriptor classDescriptor) {
         try {
             return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName()));
         } catch (ClassNotFoundException e) {
@@ -166,7 +165,7 @@ public class ObligationFactory {
 
     public Obligation addObligation(@DottedClassName String className) {
         int nextId = classNameToObligationMap.size();
-        slashedClassNames.add(className.replace('.', '/'));
+        slashedClassNames.add(ClassName.toSlashedClassName(className));
         Obligation obligation = new Obligation(className, nextId);
         if (classNameToObligationMap.put(className, obligation) != null) {
             throw new IllegalStateException("Obligation " + className + " added multiple times");
@@ -191,4 +190,3 @@ public class ObligationFactory {
         return new ObligationSet(/* getMaxObligationTypes(), */this);
     }
 }
-

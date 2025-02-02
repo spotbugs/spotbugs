@@ -47,6 +47,7 @@ public class UserTextFile {
     public static Writer fileWriter(String fileName) throws IOException {
         return new OutputStreamWriter(new FileOutputStream(fileName), charset);
     }
+
     public static PrintWriter printWriter(String fileName) throws IOException {
         return new PrintWriter(new BufferedWriter(fileWriter(fileName)));
     }

@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.generic.*;
@@ -60,7 +60,6 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Visitor to model the effects of bytecode instructions on the types of the
@@ -73,7 +72,7 @@ import edu.umd.cs.findbugs.util.Util;
  * @see TypeFrame
  * @see TypeAnalysis
  */
-public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame> implements Constants, Debug {
+public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame> implements Debug {
 
     private ValueNumberDataflow valueNumberDataflow;
 
@@ -84,7 +83,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     private ValueNumber instanceOfValueNumber;
 
-    private final Set<ReferenceType> typesComputedFromGenerics = Util.newSetFromMap(new IdentityHashMap<ReferenceType, Boolean>());
+    private final Set<ReferenceType> typesComputedFromGenerics = Collections.newSetFromMap(new IdentityHashMap<>());
 
     protected final TypeMerger typeMerger;
 
@@ -126,7 +125,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             genericLocalVariables = null;
         } else {
             genericLocalVariables = new BitSet();
-            for(LocalVariable lv : localTypeTable.getLocalVariableTypeTable()) {
+            for (LocalVariable lv : localTypeTable.getLocalVariableTypeTable()) {
                 if (lv.getSignature().indexOf('<') > 0) {
                     genericLocalVariables.set(lv.getIndex());
                 }
@@ -221,7 +220,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             throw new InvalidBytecodeException("Unpredictable stack consumption for " + ins);
         }
         if (numWordsConsumed > frame.getStackDepth()) {
-            throw new InvalidBytecodeException("Stack underflow for " + ins + ", " + numWordsConsumed + " needed, " + frame.getStackDepth() + " avail, frame is " + frame);
+            throw new InvalidBytecodeException("Stack underflow for " + ins + ", " + numWordsConsumed + " needed, " + frame.getStackDepth()
+                    + " avail, frame is " + frame);
         }
         try {
             while (numWordsConsumed-- > 0) {
@@ -270,10 +270,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      */
     @Override
     public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
-        if (VERIFY_INTEGRITY) {
-            if (numWordsProduced > 0) {
-                throw new InvalidBytecodeException("missing visitor method for " + ins);
-            }
+        if (VERIFY_INTEGRITY && numWordsProduced > 0) {
+            throw new InvalidBytecodeException("missing visitor method for " + ins);
         }
         super.modelNormalInstruction(ins, numWordsConsumed, numWordsProduced);
     }
@@ -444,6 +442,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         visitInvokeInstructionCommon(obj);
     }
 
+    @Override
+    public void visitINVOKEDYNAMIC(INVOKEDYNAMIC obj) {
+        visitInvokeInstructionCommon(obj);
+    }
+
     private boolean getResultTypeFromGenericType(TypeFrame frame, int index, int expectedParameters) {
         try {
             Type mapType = frame.getStackValue(0);
@@ -511,34 +514,31 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             return;
         }
 
-        if ("isInstance".equals(methodName)) {
-            if ("java.lang.Class".equals(className) && valueNumberDataflow != null) {
-                // Record the value number of the value checked by this
-                // instruction,
-                // and the type the value was compared to.
-                try {
-                    ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
-                    if (vnaFrame.isValid()) {
-                        ValueNumber stackValue = vnaFrame.getStackValue(1);
-                        if (stackValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
-                            String c = valueNumberDataflow.getClassName(stackValue);
-                            if (c != null) {
-                                if (c.charAt(0) != '[' && !c.endsWith(";")) {
-                                    c = "L" + c.replace('.', '/') + ";";
-                                }
-                                Type type = Type.getType(c);
-                                if (type instanceof ReferenceType) {
-                                    instanceOfValueNumber = vnaFrame.getTopValue();
-                                    instanceOfType = (ReferenceType) type;
-                                    sawEffectiveInstanceOf = true;
-                                }
+        if ("isInstance".equals(methodName) && "java.lang.Class".equals(className) && valueNumberDataflow != null) {
+            // Record the value number of the value checked by this instruction,
+            // and the type the value was compared to.
+            try {
+                ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
+                if (vnaFrame.isValid()) {
+                    ValueNumber stackValue = vnaFrame.getStackValue(1);
+                    if (stackValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
+                        String c = valueNumberDataflow.getClassName(stackValue);
+                        if (c != null) {
+                            if (c.charAt(0) != '[' && !c.endsWith(";")) {
+                                c = "L" + ClassName.toSlashedClassName(c) + ";";
+                            }
+                            Type type = Type.getType(c);
+                            if (type instanceof ReferenceType) {
+                                instanceOfValueNumber = vnaFrame.getTopValue();
+                                instanceOfType = (ReferenceType) type;
+                                sawEffectiveInstanceOf = true;
                             }
                         }
-
                     }
-                } catch (DataflowAnalysisException e) {
-                    // Ignore
+
                 }
+            } catch (DataflowAnalysisException e) {
+                // Ignore
             }
         }
 
@@ -593,11 +593,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
         }
 
-        if ("java.util.Map$Entry".equals(className)) {
-            if ("getKey".equals(methodName) && getResultTypeFromGenericType(frame, 0, 2) || "getValue".equals(methodName)
-                    && getResultTypeFromGenericType(frame, 1, 2)) {
-                return;
-            }
+        if ("java.util.Map$Entry".equals(className)
+                && (("getKey".equals(methodName) && getResultTypeFromGenericType(frame, 0, 2))
+                        || ("getValue".equals(methodName) && getResultTypeFromGenericType(frame, 1, 2)))) {
+            return;
         }
 
         if ("entrySet".equals(methodName) && "()Ljava/util/Set;".equals(signature) && className.startsWith("java.util")
@@ -623,13 +622,13 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             return;
 
         }
-        if (className.startsWith("java.util") && className.endsWith("Map")) {
-            if ("keySet".equals(methodName) && "()Ljava/util/Set;".equals(signature)
-                    && handleGetMapView(frame, "java.util.Set", 0, 2) || "values".equals(methodName)
-                    && "()Ljava/util/Collection;".equals(signature) && handleGetMapView(frame, "java.util.Collection", 1, 2)) {
-                return;
-            }
+        if (className.startsWith("java.util") && className.endsWith("Map")
+                && ("keySet".equals(methodName) && "()Ljava/util/Set;".equals(signature) && handleGetMapView(frame, "java.util.Set", 0, 2)
+                        || ("values".equals(methodName) && "()Ljava/util/Collection;".equals(signature)
+                                && handleGetMapView(frame, "java.util.Collection", 1, 2)))) {
+            return;
         }
+
 
         if ("iterator".equals(methodName) && "()Ljava/util/Iterator;".equals(signature) && className.startsWith("java.util")
                 && handleGetMapView(frame, "java.util.Iterator", 0, 1)) {
@@ -728,7 +727,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         }
     }
 
-    public static final Pattern mapSignaturePattern = Pattern.compile("<(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;>.*Ljava/util/(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|/)*)?Map<T\\1;T\\2;>;.*");
+    public static final Pattern mapSignaturePattern = Pattern.compile(
+            "<(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;>.*Ljava/util/(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|/)*)?Map<T\\1;T\\2;>;.*");
+
     public static boolean isStraightGenericMap(ClassDescriptor c) {
         if (c.matches(Map.class)) {
             return true;
@@ -1501,4 +1502,3 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         return typesComputedFromGenerics.contains(t);
     }
 }
-

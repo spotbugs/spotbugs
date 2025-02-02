@@ -125,11 +125,9 @@ public class ClassPathImpl implements IClassPath {
     @Override
     public Map<String, ICodeBaseEntry> getApplicationCodebaseEntries() {
         Map<String, ICodeBaseEntry> appEntries = new HashMap<>();
-        Iterator<Entry<String, ICodeBaseEntry>> iterator = codeBaseEntryMap.entrySet().iterator();
-        while(iterator.hasNext()) {
-            Entry<String, ICodeBaseEntry> entry = iterator.next();
+        for (Entry<String, ICodeBaseEntry> entry : codeBaseEntryMap.entrySet()) {
             ICodeBaseEntry codeBaseEntry = entry.getValue();
-            if(codeBaseEntry.getCodeBase().isApplicationCodeBase()) {
+            if (codeBaseEntry.getCodeBase().isApplicationCodeBase()) {
                 appEntries.put(entry.getKey(), codeBaseEntry);
             }
         }
@@ -177,7 +175,7 @@ public class ClassPathImpl implements IClassPath {
      * @param codeBaseList
      *            list of codebases to search
      * @param resourceName
-     *            name of resourse
+     *            name of resource
      * @return codebase entry for the named resource, or null if the named
      *         resource cannot be found
      */

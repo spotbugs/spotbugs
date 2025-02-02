@@ -7,12 +7,8 @@ Create Maven project
 Use `spotbugs-archetype <https://github.com/spotbugs/spotbugs-archetype>`_ to create Maven project.
 Then Maven archetype plugin will ask you to decide plugin's groupId, artifactId, package and initial version.
 
-.. code-block:: bash
-
-  $ mvn archetype:generate \
-        -DarchetypeArtifactId=spotbugs-archetype \
-        -DarchetypeGroupId=com.github.spotbugs \
-        -DarchetypeVersion=0.2.0
+.. literalinclude:: generated/use-archetype.template.inc
+    :language: bash
 
 Write java code to represent bug to find
 ----------------------------------------
@@ -65,7 +61,7 @@ Which super class you should choose
   Base detector which analyzes java bytecode in class files.
 
 `OpcodeStackDetector <https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/bcel/OpcodeStackDetector.html>`_
-  Sub class of ``BytecodeScanningDetector``, which can scan the bytecode of a method and use an `operand stack <https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.2>`_.
+  Sub class of ``BytecodeScanningDetector``, which can scan the bytecode of a method and use an `operand stack <https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6.2>`_.
 
 
 Update findbugs.xml

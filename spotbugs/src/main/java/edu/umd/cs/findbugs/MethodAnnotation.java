@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.apache.bcel.Const;
 
@@ -105,7 +107,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         this.methodName = methodName;
         if (methodSig.indexOf('.') >= 0) {
             assert false : "signatures should not be dotted: " + methodSig;
-        methodSig = methodSig.replace('.', '/');
+            methodSig = ClassName.toSlashedClassName(methodSig);
         }
         this.methodSig = methodSig;
         this.isStatic = isStatic;
@@ -246,7 +248,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     public static MethodAnnotation fromCalledMethod(String className, String methodName, String methodSig, boolean isStatic) {
 
         MethodAnnotation methodAnnotation = fromForeignMethod(className, methodName, methodSig, isStatic);
-        methodAnnotation.setDescription("METHOD_CALLED");
+        methodAnnotation.setDescription(METHOD_CALLED);
         return methodAnnotation;
 
     }
@@ -455,7 +457,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     }
 
     private String getUglyMethod() {
-        return className + "." + methodName + " : " + methodSig.replace('/', '.');
+        return className + "." + methodName + " : " + ClassName.toDottedClassName(methodSig);
     }
 
     @Override
@@ -502,6 +504,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
+        writeXML(xmlOutput, false, false);
     }
 
     @Override
@@ -516,6 +519,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         String role = getDescription();
         if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
+        }
+
+        if (!getJavaAnnotationNames().isEmpty()) {
+            attributeList.addAttribute("classAnnotationNames",
+                    getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
         }
 
         if (sourceLines == null && !addMessages) {
@@ -537,10 +545,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     @Override
     public boolean isSignificant() {
         String role = getDescription();
-        if (METHOD_DANGEROUS_TARGET.equals(role) || METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL.equals(role)
-                || METHOD_SAFE_TARGET.equals(role) || METHOD_EQUALS_USED.equals(role) || METHOD_COMPUTED_IN.equals(role)) {
-            return false;
-        }
-        return true;
+        return !Arrays.asList(METHOD_DANGEROUS_TARGET, METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL,
+                METHOD_SAFE_TARGET, METHOD_EQUALS_USED, METHOD_COMPUTED_IN).contains(role);
     }
 }

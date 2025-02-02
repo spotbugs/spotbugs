@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.annotation.WillCloseWhenClosed;
 
@@ -64,6 +64,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os) {
         this(os, null);
     }
+
     /**
      * Constructor.
      *
@@ -74,6 +75,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     public OutputStreamXMLOutput(@WillCloseWhenClosed Writer writer) {
         this(writer, null);
     }
+
     /**
      * Constructor.
      *
@@ -83,7 +85,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
      *            name of stylesheet
      */
     public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os, String stylesheet) {
-        this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+        this.out = new OutputStreamWriter(os, StandardCharsets.UTF_8);
         this.nestingLevel = 0;
         this.newLine = true;
         this.stylesheet = stylesheet;
@@ -101,6 +103,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
         this.newLine = true;
         this.stylesheet = stylesheet;
     }
+
     @Override
     public void beginDocument() throws IOException {
         out.write(OPENING);
@@ -166,7 +169,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     private void emitTag(String tagName, String attributes, boolean close) throws IOException {
         startTag(tagName);
         attributes = attributes.trim();
-        if (attributes.length() > 0) {
+        if (!attributes.isEmpty()) {
             out.write(" ");
             out.write(attributes);
         }
@@ -202,6 +205,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     public void flush() throws IOException {
         out.flush();
     }
+
     @Override
     @DischargesObligation
     public void finish() throws IOException {
@@ -217,4 +221,3 @@ public class OutputStreamXMLOutput implements XMLOutput {
         }
     }
 }
-

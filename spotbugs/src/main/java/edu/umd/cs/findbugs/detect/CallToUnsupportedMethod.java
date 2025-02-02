@@ -73,11 +73,7 @@ public class CallToUnsupportedMethod implements Detector {
                 analyzeMethod(classContext, method);
             } catch (MethodUnprofitableException e) {
                 assert true; // move along; nothing to see
-            } catch (CFGBuilderException e) {
-                String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
-                        + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
-                bugReporter.logError(msg, e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
                         + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
                 bugReporter.logError(msg, e);
@@ -89,9 +85,9 @@ public class CallToUnsupportedMethod implements Detector {
      * @param classContext
      * @param method
      */
-    private void analyzeMethod(ClassContext classContext, Method method) throws MethodUnprofitableException, CFGBuilderException,
-    DataflowAnalysisException {
-        if (BCELUtil.isSynthetic(method)|| (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException,
+            DataflowAnalysisException {
+        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
             return;
         }
         CFG cfg = classContext.getCFG(method);
@@ -155,8 +151,8 @@ public class CallToUnsupportedMethod implements Detector {
                 }
             }
             BugInstance bug = new BugInstance(this, "DMI_UNSUPPORTED_METHOD", priority)
-            .addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(constantPoolGen, inv)
-            .addSourceLine(classContext, method, location);
+                    .addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(constantPoolGen, inv)
+                    .addSourceLine(classContext, method, location);
             bugReporter.reportBug(bug);
 
         }

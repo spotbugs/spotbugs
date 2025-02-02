@@ -43,12 +43,12 @@ public class URLProblems extends OpcodeStackDetector {
     private static final MethodDescriptor URL_EQUALS = new MethodDescriptor("java/net/URL", "equals", "(Ljava/lang/Object;)Z");
     private static final MethodDescriptor URL_HASHCODE = new MethodDescriptor("java/net/URL", "hashCode", "()I");
 
-    final static String[] BAD_SIGNATURES = { "Hashtable<Ljava/net/URL", "Map<Ljava/net/URL", "Set<Ljava/net/URL" };
+    static final String[] BAD_SIGNATURES = { "Hashtable<Ljava/net/URL", "Map<Ljava/net/URL", "Set<Ljava/net/URL" };
 
     // Must be sorted
-    private static final String[] HASHSET_KEY_METHODS = {"add", "contains", "remove"};
-    private static final String[] HASHMAP_KEY_METHODS = {"containsKey", "get", "remove"};
-    private static final String[] HASHMAP_TWO_ARG_KEY_METHODS = {"put"};
+    private static final String[] HASHSET_KEY_METHODS = { "add", "contains", "remove" };
+    private static final String[] HASHMAP_KEY_METHODS = { "containsKey", "get", "remove" };
+    private static final String[] HASHMAP_TWO_ARG_KEY_METHODS = { "put" };
 
     private static final List<MethodDescriptor> methods = Arrays.asList(URL_EQUALS, URL_HASHCODE,
             new MethodDescriptor("", "add", "(Ljava/lang/Object;)Z"),
@@ -59,9 +59,9 @@ public class URLProblems extends OpcodeStackDetector {
             new MethodDescriptor("", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"),
             new MethodDescriptor("", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"));
 
-    final private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
-    final private BugAccumulator accumulator;
+    private final BugAccumulator accumulator;
 
     private boolean hasInterestingMethodCalls;
 
@@ -83,7 +83,7 @@ public class URLProblems extends OpcodeStackDetector {
 
     @Override
     public void visit(Code obj) {
-        if(this.hasInterestingMethodCalls) {
+        if (this.hasInterestingMethodCalls) {
             super.visit(obj);
         }
     }
@@ -138,7 +138,7 @@ public class URLProblems extends OpcodeStackDetector {
                 || getMethodDescriptorOperand().equals(URL_HASHCODE))) {
             accumulator.accumulateBug(
                     new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL", HIGH_PRIORITY).addClassAndMethod(this)
-                    .addCalledMethod(this), this);
+                            .addCalledMethod(this), this);
         }
     }
 }

@@ -133,7 +133,7 @@ public class SloppyBugComparator implements WarningComparator {
             return cmp;
         }
 
-        boolean havePrimaryMethods = lhs.getPrimaryMethod() != null &&  rhs.getPrimaryMethod() != null;
+        boolean havePrimaryMethods = lhs.getPrimaryMethod() != null && rhs.getPrimaryMethod() != null;
         // Primary method must match (if any)
         cmp = compareMethodsAllowingNull(lhs.getPrimaryMethod(), rhs.getPrimaryMethod());
         if (cmp != 0) {

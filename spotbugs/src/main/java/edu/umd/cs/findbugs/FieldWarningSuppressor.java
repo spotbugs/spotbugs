@@ -1,11 +1,13 @@
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.annotations.SuppressMatchType;
+
 public class FieldWarningSuppressor extends ClassWarningSuppressor {
 
     FieldAnnotation field;
 
-    public FieldWarningSuppressor(String bugPattern, ClassAnnotation clazz, FieldAnnotation field) {
-        super(bugPattern, clazz);
+    public FieldWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, FieldAnnotation field) {
+        super(bugPattern, matchType, clazz);
         this.field = field;
     }
 
@@ -14,6 +16,7 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
     public String toString() {
         return String.format("Suppress %s in %s.%s", bugPattern, clazz, field);
     }
+
     @Override
     public boolean match(BugInstance bugInstance) {
 

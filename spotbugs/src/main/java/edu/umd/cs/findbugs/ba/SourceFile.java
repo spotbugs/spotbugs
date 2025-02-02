@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 /**
  * Cached data for a source file. Contains a map of line numbers to byte
@@ -120,6 +121,13 @@ public class SourceFile {
     }
 
     /**
+     * Get the full URI of the source file (with directory).
+     */
+    public URI getFullURI() {
+        return dataSource.getFullURI();
+    }
+
+    /**
      * Get an InputStream on data.
      *
      * @return an InputStream on the data in the source file, starting from
@@ -190,10 +198,7 @@ public class SourceFile {
             return;
         }
 
-        InputStream in = null;
-
-        try {
-            in = dataSource.open();
+        try (InputStream in = dataSource.open()) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
             addLineOffset(0); // Line 0 starts at offset 0
@@ -210,10 +215,6 @@ public class SourceFile {
             mapBuilder.eof();
 
             setData(out.toByteArray());
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
 
     }
@@ -232,4 +233,3 @@ public class SourceFile {
         return dataSource.getLastModified();
     }
 }
-

@@ -45,13 +45,13 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  *
  * @author David Hovemeyer
  */
-public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fact>> implements Detector2, NonReportingDetector {
+public class TestDataflowAnalysis<Fact, AnalysisType extends DataflowAnalysis<Fact>> implements Detector2, NonReportingDetector {
 
     private final String dataflowClassName;
 
     private final String methodName;
 
-    private Class<? extends Dataflow<Fact,AnalysisType>> dataflowClass;
+    private Class<? extends Dataflow<Fact, AnalysisType>> dataflowClass;
 
     private boolean initialized;
 
@@ -116,25 +116,24 @@ public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fac
             System.out.println("-----------------------------------------------------------------");
 
             // Create and execute the dataflow analysis
-            Dataflow<Fact,AnalysisType> dataflow = analysisCache.getMethodAnalysis(dataflowClass, methodDescriptor);
+            Dataflow<Fact, AnalysisType> dataflow = analysisCache.getMethodAnalysis(dataflowClass, methodDescriptor);
 
             System.out.println("Dataflow finished after " + dataflow.getNumIterations());
 
             if (SystemProperties.getBoolean("dataflow.printcfg")) {
-                DataflowCFGPrinter<Fact,AnalysisType> cfgPrinter
-                = new DataflowCFGPrinter<>(dataflow);
+                DataflowCFGPrinter<Fact, AnalysisType> cfgPrinter = new DataflowCFGPrinter<>(dataflow);
                 cfgPrinter.print(System.out);
             }
 
         }
     }
 
-    private void initialize()  {
+    private void initialize() {
         initialized = true;
 
         IAnalysisCache analysisCache = Global.getAnalysisCache();
 
-        Class<? extends Dataflow<Fact,AnalysisType>> cls = null;
+        Class<? extends Dataflow<Fact, AnalysisType>> cls = null;
 
         // First, try loading the dataflow class from the general findBugs code.
         try {

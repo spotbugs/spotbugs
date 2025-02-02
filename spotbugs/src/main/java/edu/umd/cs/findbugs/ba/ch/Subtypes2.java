@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.MapCache;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * Class for performing class hierarchy queries. Does <em>not</em> require
@@ -131,15 +132,16 @@ public class Subtypes2 {
         return graph;
     }
 
-    final static ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance(Collection.class);
-    final static ObjectType MAP_TYPE = ObjectTypeFactory.getInstance(Map.class);
+    static final ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance(Collection.class);
+    static final ObjectType MAP_TYPE = ObjectTypeFactory.getInstance(Map.class);
 
-    static public boolean isCollection(ReferenceType target) throws ClassNotFoundException {
+    public static boolean isCollection(ReferenceType target) throws ClassNotFoundException {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         return subtypes2.isSubtype(target, COLLECTION_TYPE);
     }
+
     /** A collection, a map, or some other container */
-    static public boolean isContainer(ReferenceType target) throws ClassNotFoundException {
+    public static boolean isContainer(ReferenceType target) throws ClassNotFoundException {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         return subtypes2.isSubtype(target, COLLECTION_TYPE)
                 || subtypes2.isSubtype(target, MAP_TYPE);
@@ -147,25 +149,36 @@ public class Subtypes2 {
 
 
     public static boolean isJSP(JavaClass javaClass) {
-        @DottedClassName String className = javaClass.getClassName();
-        if ( className.endsWith("_jsp") || className.endsWith("_tag")) {
+        @DottedClassName
+        String className = javaClass.getClassName();
+        if (className.endsWith("_jsp") || className.endsWith("_tag")) {
             return true;
         }
-        for(Method m : javaClass.getMethods()) {
+        for (Method m : javaClass.getMethods()) {
             if (m.getName().startsWith("_jsp")) {
                 return true;
             }
         }
 
-        for(Field f : javaClass.getFields()) {
+        for (Field f : javaClass.getFields()) {
             if (f.getName().startsWith("_jsp")) {
                 return true;
             }
         }
         return Subtypes2.instanceOf(className, "javax.servlet.jsp.JspPage")
+                || Subtypes2.instanceOf(className, "jakarta.servlet.jsp.JspPage")
                 || Subtypes2.instanceOf(className, "org.apache.jasper.runtime.HttpJspBase")
                 || Subtypes2.instanceOf(className, "javax.servlet.jsp.tagext.SimpleTagSupport")
+                || Subtypes2.instanceOf(className, "jakarta.servlet.jsp.tagext.SimpleTagSupport")
                 || Subtypes2.instanceOf(className, " org.apache.jasper.runtime.JspSourceDependent");
+    }
+
+    public static boolean isEnum(JavaClass javaClass) {
+        return "java.lang.Enum".equals(javaClass.getSuperclassName());
+    }
+
+    public static boolean isRecord(JavaClass javaClass) {
+        return "java.lang.Record".equals(javaClass.getSuperclassName());
     }
 
     public static boolean instanceOf(@DottedClassName String dottedSubtype, @DottedClassName String dottedSupertype) {
@@ -199,7 +212,7 @@ public class Subtypes2 {
         if (subtype.getClassName().equals(dottedSupertype) || subtype.getSuperclassName().equals(dottedSupertype)) {
             return true;
         }
-        if ("java.lang.Object".equals(subtype.getSuperclassName()) && subtype.getInterfaceIndices().length == 0) {
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(subtype.getSuperclassName()) && subtype.getInterfaceIndices().length == 0) {
             return false;
         }
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
@@ -397,6 +410,7 @@ public class Subtypes2 {
         // OK, we've exhausted the possibilities now
         return false;
     }
+
     ClassDescriptor prevSubDesc, prevSuperDesc;
     boolean prevResult;
 
@@ -764,8 +778,8 @@ public class Subtypes2 {
                 }
             }
 
-            for (ClassDescriptor c : aSuperTypes) {
-                return ObjectTypeFactory.getInstance(c.toDottedClassName());
+            if (!aSuperTypes.isEmpty()) {
+                return ObjectTypeFactory.getInstance(aSuperTypes.iterator().next().toDottedClassName());
             }
         }
 
@@ -894,7 +908,7 @@ public class Subtypes2 {
      * @return Collection of all XClass objects
      */
     public Collection<XClass> getXClassCollection() {
-        return Collections.<XClass> unmodifiableCollection(xclassSet);
+        return Collections.<XClass>unmodifiableCollection(xclassSet);
     }
 
     /**
@@ -1007,7 +1021,7 @@ public class Subtypes2 {
      *             if the start vertex cannot be resolved
      */
     public void traverseSupertypesDepthFirst(ClassDescriptor start, SupertypeTraversalVisitor visitor) throws ClassNotFoundException {
-        this.traverseSupertypesDepthFirstHelper(start, visitor, new HashSet<ClassDescriptor>());
+        this.traverseSupertypesDepthFirstHelper(start, visitor, new HashSet<>());
     }
 
     private void traverseSupertypesDepthFirstHelper(ClassDescriptor cur, SupertypeTraversalVisitor visitor,
@@ -1153,6 +1167,7 @@ public class Subtypes2 {
 
         return false;
     }
+
     private Set<ClassDescriptor> computeKnownSupertypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
         LinkedList<ClassVertex> workList = new LinkedList<>();
 

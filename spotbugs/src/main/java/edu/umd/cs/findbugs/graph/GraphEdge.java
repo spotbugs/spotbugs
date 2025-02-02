@@ -17,15 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.11 $
-
 package edu.umd.cs.findbugs.graph;
 
 /**
  * GraphEdge interface; represents an edge in a graph.
  */
 public interface GraphEdge<ActualEdgeType extends GraphEdge<ActualEdgeType, VertexType>, VertexType extends GraphVertex<VertexType>>
-extends Comparable<ActualEdgeType> {
+        extends Comparable<ActualEdgeType> {
 
     /**
      * Get the source vertex.
@@ -48,4 +46,3 @@ extends Comparable<ActualEdgeType> {
     public void setLabel(int label);
 
 }
-

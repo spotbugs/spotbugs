@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Iterator;
-
 import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -47,9 +45,7 @@ public class SortingBugReporter extends TextUIBugReporter {
 
     @Override
     public void finish() {
-        Iterator<BugInstance> i = bugCollection.iterator();
-        while (i.hasNext()) {
-            BugInstance bugInstance = i.next();
+        for (BugInstance bugInstance : bugCollection) {
             printBug(bugInstance);
         }
 
@@ -57,9 +53,7 @@ public class SortingBugReporter extends TextUIBugReporter {
     }
 
     @Override
-    public @Nonnull
-    BugCollection getBugCollection() {
+    public @Nonnull BugCollection getBugCollection() {
         return bugCollection;
     }
 }
-

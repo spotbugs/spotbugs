@@ -54,7 +54,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
     /**
      * Constructor. Adds shared options/switches.
      */
-    public FindBugsCommandLine() {
+    protected FindBugsCommandLine() {
         super();
         project = new Project();
         startOptionGroup("General FindBugs options:");
@@ -68,13 +68,13 @@ public abstract class FindBugsCommandLine extends CommandLine {
     }
 
     /**
-     * Additional constuctor just as hack for decoupling the core package from
+     * Additional constructor just as hack for decoupling the core package from
      * gui2 package
      *
      * @param modernGui
      *            ignored. In any case, gui2 options are added here.
      */
-    public FindBugsCommandLine(boolean modernGui) {
+    protected FindBugsCommandLine(boolean modernGui) {
         this();
         addOption("-f", "font size", "set font size");
         addSwitch("-clear", "clear saved GUI settings and exit");
@@ -92,8 +92,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
         return settingList;
     }
 
-    public @Nonnull
-    Project getProject() {
+    public @Nonnull Project getProject() {
         return project;
     }
 
@@ -143,7 +142,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
                 File file = new File(tok.nextToken());
                 Boolean enabled = Boolean.valueOf(file.isFile());
                 customPlugins.put(file.getAbsolutePath(), enabled);
-                if(enabled.booleanValue()) {
+                if (enabled.booleanValue()) {
                     try {
                         Plugin.loadCustomPlugin(file, getProject());
                     } catch (PluginException e) {

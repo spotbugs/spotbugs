@@ -62,7 +62,7 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 
     @Override
     public void sawOpcode(int seen) {
-        // System.out.println(state + " " + getPC() + " " + OPCODE_NAMES[seen]);
+        // System.out.println(state + " " + getPC() + " " + Const.getOpcodeName(seen));
         if (countDown == 2 && seen == Const.GOTO) {
             CodeException tryBlock = getSurroundingTryBlock(getPC());
             if (tryBlock != null && tryBlock.getEndPC() == getPC()) {
@@ -89,7 +89,7 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
                     priority = Priorities.NORMAL_PRIORITY;
                 }
                 pendingBug = new BugInstance(this, "ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD", priority)
-                .addClassAndMethod(this).addField(syncField).addSourceLine(this);
+                        .addClassAndMethod(this).addField(syncField).addSourceLine(this);
                 countDown = 2;
 
             }

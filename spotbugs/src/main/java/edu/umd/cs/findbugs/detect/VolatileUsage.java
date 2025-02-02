@@ -95,7 +95,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
             if (seen == Const.PUTFIELD && incrementField.equals(getXFieldOperand())) {
                 bugReporter.reportBug(new BugInstance(this, "VO_VOLATILE_INCREMENT",
                         "J".equals(incrementField.getSignature()) ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY)
-                .addClassAndMethod(this).addField(incrementField).addSourceLine(this));
+                        .addClassAndMethod(this).addField(incrementField).addSourceLine(this));
             }
             resetIncrementState();
             break;
@@ -144,7 +144,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
         for (XField f : AnalysisContext.currentXFactory().allFields()) {
-            if (isVolatileArray(f) && subtypes2.isApplicationClass(f.getClassDescriptor())) {
+            if (!f.isSynthetic() && isVolatileArray(f) && subtypes2.isApplicationClass(f.getClassDescriptor())) {
                 int priority = LOW_PRIORITY;
                 if (initializationWrites.contains(f) && !otherWrites.contains(f)) {
                     priority = NORMAL_PRIORITY;

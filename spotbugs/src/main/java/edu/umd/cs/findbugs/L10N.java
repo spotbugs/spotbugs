@@ -32,10 +32,13 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.umd.cs.findbugs.charsets.UserTextFile;
 
 public class L10N {
-    private static final boolean DEBUG = SystemProperties.getBoolean("i18n.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(L10N.class);
 
     private static final boolean GENERATE_MISSING_KEYS = SystemProperties.getBoolean("i18n.generateMissingKeys");
 
@@ -81,7 +84,7 @@ public class L10N {
         } catch (MissingResourceException mre) {
             try {
                 String en = lookup(bundle_en, key);
-                if (DEBUG) {
+                if (LOG.isDebugEnabled()) {
                     return "TRANSLATE(" + en + ")";
                 } else {
                     return en;
@@ -93,7 +96,7 @@ public class L10N {
                 }
                 // String en = "Default("+defaultString+")";
                 String en = defaultString;
-                if (DEBUG) {
+                if (LOG.isDebugEnabled()) {
                     return "TRANSLATE(" + en + ")";
                 } else {
                     return en;

@@ -23,11 +23,14 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Filter reported warnings by category.
  */
 public class CategoryFilteringBugReporter extends DelegatingBugReporter {
-    private static final boolean DEBUG = SystemProperties.getBoolean("cfbreporter.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(CategoryFilteringBugReporter.class);
 
     private final Set<String> categorySet;
 
@@ -43,9 +46,7 @@ public class CategoryFilteringBugReporter extends DelegatingBugReporter {
         if (categorySet.contains(category)) {
             getDelegate().reportBug(bugInstance);
         } else {
-            if (DEBUG) {
-                System.out.println("CategoryFilteringBugReporter: filtered due to category " + category);
-            }
+            LOG.debug("CategoryFilteringBugReporter: filtered due to category {}", category);
         }
     }
 }

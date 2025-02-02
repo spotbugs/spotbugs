@@ -2,17 +2,18 @@
 # Run `docker build -t spotbugs-sphinx .` to build docker image,
 # and run `docker run -it -v $(pwd):/documents spotbugs-sphinx make html` to generate documents.
 
-FROM ubuntu:xenial
-ENV DEBIAN_FRONTEND noninteractive
+FROM sphinxdoc/sphinx:8.1.3
 
-RUN mkdir documents
-RUN apt-get update
-RUN apt-get install -y python-sphinx texlive texlive-latex-extra pandoc build-essential curl
-RUN curl -kL https://bootstrap.pypa.io/get-pip.py | python
+WORKDIR /docs/docs
+RUN pip3 install --upgrade pip
 
-RUN pip install sphinx-intl
+ARG USER=sphinx
+RUN mkdir /home/$USER && \
+    useradd --no-log-init $USER && \
+    chown $USER:$USER -R /home/$USER
 
-WORKDIR /documents/docs
-VOLUME /documents
+USER $USER
+ENV PATH "/home/$USER/.local/bin:$PATH"
 
-CMD ["/bin/bash"]
+ADD requirements.txt /tmp
+RUN pip3 install -r /tmp/requirements.txt

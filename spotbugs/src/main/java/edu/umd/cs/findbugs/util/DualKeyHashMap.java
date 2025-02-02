@@ -49,7 +49,7 @@ public class DualKeyHashMap<K1, K2, V> {
     public Map<K2, V> get(K1 k1) {
         Map<K2, V> m = map.get(k1);
         if (m == null) {
-            return Collections.<K2, V> emptyMap();
+            return Collections.<K2, V>emptyMap();
         }
         return m;
     }

@@ -33,7 +33,7 @@ class ValidatorClassLoader extends ClassLoader {
         }
 
     }
-    final static ValidatorClassLoader INSTANCE = new ValidatorClassLoader();
+    static final ValidatorClassLoader INSTANCE = new ValidatorClassLoader();
 
     ValidatorClassLoader() {
         super(ClassLoader.getSystemClassLoader().getParent());
@@ -56,13 +56,14 @@ class ValidatorClassLoader extends ClassLoader {
 
         return super.loadClass(name, resolve);
     }
+
     @Override
     public Class<?> findClass(@DottedClassName String name) throws ClassNotFoundException {
         if (TypeQualifierValue.DEBUG_CLASSLOADING) {
             System.out.println("Looking for class data for " + name);
         }
 
-        if (name.startsWith("javax.annotation")) {
+        if (name.startsWith("javax.annotation") || name.startsWith("jakarta.annotation")) {
             return Class.forName(name);
         }
 
@@ -83,7 +84,7 @@ class ValidatorClassLoader extends ClassLoader {
     }
 
 
-    private Class<?> findClass(@DottedClassName String name, byte [] b)  {
+    private Class<?> findClass(@DottedClassName String name, byte[] b) {
         try {
             if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 System.out.println("Loading " + b.length + " bytes for class " + name);

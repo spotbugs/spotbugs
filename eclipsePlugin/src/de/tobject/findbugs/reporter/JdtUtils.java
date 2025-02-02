@@ -2,7 +2,7 @@
  * Contributions to FindBugs
  * Copyright (C) 2009, Andrei Loskutov
  *
- * The original code was developed by Andrei Loskutov under the BSD lizense for the
+ * The original code was developed by Andrei Loskutov under the BSD license for the
  * Bytecode Outline plugin at http://andrei.gmxhome.de/bytecode/index.html
  *
  * This library is free software; you can redistribute it and/or
@@ -167,15 +167,15 @@ public class JdtUtils {
             Integer prio;
             if ((prio = map.get(anonType)) != null) {
                 compilePrio = prio.intValue();
-//                if (Reporter.DEBUG) {
-//                    System.out.println("Using cache");
-//                }
+                //                if (Reporter.DEBUG) {
+                //                    System.out.println("Using cache");
+                //                }
             } else {
                 compilePrio = getAnonCompilePriority(anonType, firstAncestor, topAncestorType, is50OrHigher);
                 map.put(anonType, Integer.valueOf(compilePrio));
-//                if (Reporter.DEBUG) {
-//                    System.out.println("Calculating value!");
-//                }
+                //                if (Reporter.DEBUG) {
+                //                    System.out.println("Calculating value!");
+                //                }
             }
             return compilePrio;
         }
@@ -316,10 +316,8 @@ public class JdtUtils {
             if (isAnonymousType(childElem)) {
                 list.add((IType) childElem);
             }
-            if (childElem instanceof IParent) {
-                if (allowNested || !(childElem instanceof IType)) {
-                    collectAllAnonymous(list, (IParent) childElem, allowNested);
-                }
+            if (childElem instanceof IParent && (allowNested || !(childElem instanceof IType))) {
+                collectAllAnonymous(list, (IParent) childElem, allowNested);
             }
         }
     }
@@ -336,16 +334,16 @@ public class JdtUtils {
         final AnonymClassComparator classComparator = new AnonymClassComparator(anonType, sourceComparator);
         Collections.sort(anonymous, classComparator);
 
-//        if (Reporter.DEBUG) {
-//            debugCompilePrio(classComparator);
-//        }
+        //        if (Reporter.DEBUG) {
+        //            debugCompilePrio(classComparator);
+        //        }
     }
 
     /*
     private static void debugCompilePrio(final AnonymClassComparator classComparator) {
         final Map<IType, Integer> map = classComparator.map;
         Comparator<IType> prioComp = new Comparator<IType>() {
-
+    
             @Override
             public int compare(IType e1, IType e2) {
                 int result = map.get(e2).compareTo(map.get(e1));
@@ -354,9 +352,9 @@ public class JdtUtils {
                 }
                 return result;
             }
-
+    
         };
-
+    
         List<IType> keys = new ArrayList<IType>(map.keySet());
         Collections.sort(keys, prioComp);
         for (Iterator<IType> iterator = keys.iterator(); iterator.hasNext();) {
@@ -364,7 +362,7 @@ public class JdtUtils {
             System.out.println(map.get(key) + " : " + key);
         }
     }
-*/
+    */
 
     private static int getAnonCompilePriority(IJavaElement elt, IJavaElement firstAncestor, IJavaElement topAncestor,
             boolean is50OrHigher) {
@@ -419,7 +417,7 @@ public class JdtUtils {
      * opposite to rule 2)
      *
      * @param javaElement
-     * @return priority - lesser mean wil be compiled later, a value > 0
+     * @return priority - lesser mean will be compiled later, a value > 0
      */
     private static int getAnonCompilePriority50(IJavaElement javaElement, IJavaElement firstAncestor, IJavaElement topAncestor) {
 

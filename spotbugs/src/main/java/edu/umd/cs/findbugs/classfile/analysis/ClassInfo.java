@@ -33,6 +33,7 @@ import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -57,7 +58,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
-    private final static boolean DEBUG = SystemProperties.getBoolean("ci.debug");
+    private static final boolean DEBUG = SystemProperties.getBoolean("ci.debug");
     private final FieldInfo[] xFields;
 
     private final MethodInfo[] xMethods;
@@ -68,9 +69,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
     /* final */Map<ClassDescriptor, AnnotationValue> classAnnotations;
 
-    final private String classSourceSignature;
+    private final String classSourceSignature;
 
-    final private String source;
+    private final String source;
 
     private final boolean usesConcurrency;
 
@@ -103,43 +104,35 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
         boolean hasStubs;
 
-        private static String arguments(String signature) {
-            int i = signature.indexOf('(');
-            if (i == -1) {
-                return signature;
-            }
-            return signature.substring(0,i+1);
-        }
-
         @Override
         public ClassInfo build() {
             AnalysisContext context = AnalysisContext.currentAnalysisContext();
             FieldInfo fields[];
             MethodInfo methods[];
-            if (fieldInfoList.size() == 0) {
+            if (fieldInfoList.isEmpty()) {
                 fields = FieldInfo.EMPTY_ARRAY;
             } else {
-                fields = fieldInfoList.toArray(new FieldInfo[fieldInfoList.size()]);
+                fields = fieldInfoList.toArray(new FieldInfo[0]);
             }
 
 
-            for(MethodInfo m : methodInfoList) {
-                if (m.isBridge() && !bridgedSignatures.containsKey(m))  {
+            for (MethodInfo m : methodInfoList) {
+                if (m.isBridge() && !bridgedSignatures.containsKey(m)) {
 
                     if (DEBUG) {
                         System.out.println("Have bridge method:" + m);
                     }
-                    for(MethodInfo to : methodInfoList) {
-                        if (m != to) {
-                            if (!to.isBridge()
-                                    && m.getName().equals(to.getName())
-                                    && arguments( m.getSignature()).equals(arguments(to.getSignature()))) {
-                                if (DEBUG) {
-                                    System.out.println("  to method:" + to);
-                                }
-                                bridgedSignatures.put(m, to.getSignature());
-                            }
 
+                    String[] mArguments = new SignatureParser(m.getSignature()).getArguments();
+
+                    for (MethodInfo to : methodInfoList) {
+                        if (m != to && !to.isBridge()
+                                && m.getName().equals(to.getName())
+                                && Arrays.equals(mArguments, new SignatureParser(to.getSignature()).getArguments())) {
+                            if (DEBUG) {
+                                System.out.println("  to method:" + to);
+                            }
+                            bridgedSignatures.put(m, to.getSignature());
                         }
                     } // end  for(MethodInfo to
                 } // end  if (m.isBridge()
@@ -170,10 +163,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
             } // end for
 
-            if (methodInfoList.size() == 0) {
+            if (methodInfoList.isEmpty()) {
                 methods = MethodInfo.EMPTY_ARRAY;
             } else {
-                methods = methodInfoList.toArray(new MethodInfo[methodInfoList.size()]);
+                methods = methodInfoList.toArray(new MethodInfo[0]);
             }
 
             return new ClassInfo(classDescriptor, classSourceSignature, superclassDescriptor, interfaceDescriptorList,
@@ -257,7 +250,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         };
         List<MethodInfo> result = TopologicalSort.sortByCallGraph(Arrays.asList(xMethods), edges1);
         assert xMethods.length == result.size();
-        return result.toArray(new MethodInfo[result.size()]);
+        return result.toArray(new MethodInfo[0]);
     }
 
     /**
@@ -455,14 +448,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     }
 
     @Override
-    public @CheckForNull
-    String getSource() {
+    public @CheckForNull String getSource() {
         return source;
     }
 
     @Override
-    public @CheckForNull
-    AnnotatedObject getContainingScope() {
+    public @CheckForNull AnnotatedObject getContainingScope() {
         if (!containingScopeCached) {
             containingScope = getContainingScope0();
             containingScopeCached = true;
@@ -470,8 +461,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         return containingScope;
     }
 
-    public @CheckForNull
-    AnnotatedObject getContainingScope0() {
+    public @CheckForNull AnnotatedObject getContainingScope0() {
         try {
             if (immediateEnclosingClass != null) {
                 return Global.getAnalysisCache().getClassAnalysis(XClass.class, getImmediateEnclosingClass());

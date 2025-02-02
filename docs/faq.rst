@@ -7,13 +7,13 @@ If you just want general information about SpotBugs, have a look at the manual.
 Q1: I'm getting java.lang.UnsupportedClassVersionError when I try to run SpotBugs
 ---------------------------------------------------------------------------------
 
-SpotBugs requires JRE8 or later to run.
+SpotBugs requires JRE11 or later to run.
 If you use an earlier version, you will see an exception error message similar to the following:
 
   Exception in thread "main" java.lang.UnsupportedClassVersionError:
   edu/umd/cs/findbugs/gui/FindBugsFrame (Unsupported major.minor version 52.0)
 
-The solution is to upgrade to JRE8 or later.
+The solution is to upgrade to JRE11 or later.
 
 Q2: SpotBugs is running out of memory, or is taking a long time to finish
 -------------------------------------------------------------------------
@@ -64,6 +64,8 @@ As a result, it may assume that an unchecked exception thrown out of the method 
 You can use the ``-workHard`` command line argument or the ``findbugs.workHard`` boolean analysis property to make SpotBugs work harder to prune unlikely exception edges.
 This generally reduces the number of false warnings, at the expense of slowing down the analysis.
 
+.. _faq6:
+
 Q6: The Eclipse plugin loads, but doesn't work correctly
 --------------------------------------------------------
 
@@ -74,5 +76,4 @@ Q6: The Eclipse plugin loads, but doesn't work correctly
 Q7: Where is the Maven plugin for SpotBugs?
 -------------------------------------------
 
-The Maven Plugin for SpotBugs may be found `here <https://github.com/gleclaire/findbugs-maven-plugin/>`_.
-Please note that the Maven plugin is not maintained by the SpotBugs developers, so we can't answer questions about it.
+The Maven Plugin for SpotBugs may be found `here <https://github.com/spotbugs/spotbugs-maven-plugin/>`_.

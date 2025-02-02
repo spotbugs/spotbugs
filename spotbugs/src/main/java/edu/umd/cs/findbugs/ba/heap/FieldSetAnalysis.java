@@ -46,7 +46,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 
     private final Map<InstructionHandle, XField> instructionToFieldMap;
 
-    public FieldSetAnalysis(DepthFirstSearch dfs, ConstantPoolGen cpg) {
+    protected FieldSetAnalysis(DepthFirstSearch dfs, ConstantPoolGen cpg) {
         super(dfs);
         this.cpg = cpg;
         this.instructionToFieldMap = new HashMap<>();
@@ -111,8 +111,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 
     }
 
-    private void handleInstruction(InstructionHandle handle, BasicBlock basicBlock, FieldSet fact)
-    {
+    private void handleInstruction(InstructionHandle handle, BasicBlock basicBlock, FieldSet fact) {
         Instruction ins = handle.getInstruction();
         short opcode = ins.getOpcode();
         XField field;

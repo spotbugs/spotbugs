@@ -1,4 +1,4 @@
-tasks.withType(Javadoc).all {
+tasks.withType(Javadoc).configureEach {
   // Default configuration for all javadoc tasks
   options.with {
      memberLevel = JavadocMemberLevel.PROTECTED

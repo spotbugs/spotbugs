@@ -84,7 +84,7 @@ public class ManagePathsWidget extends Composite {
         }
 
         int style = SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL;
-        if(withCheckBox) {
+        if (withCheckBox) {
             style |= SWT.CHECK;
         }
         Table table = new Table(this, style);
@@ -98,11 +98,12 @@ public class ManagePathsWidget extends Composite {
             public void mouseHover(MouseEvent e) {
                 String tooltip = "";
                 ViewerCell cell = viewer.getCell(new Point(e.x, e.y));
-                if(cell != null) {
+                if (cell != null) {
                     tooltip = labelProvider.getToolTip(cell.getElement());
                 }
                 viewer.getControl().setToolTipText(tooltip);
             }
+
             @Override
             public void mouseExit(MouseEvent e) {
                 viewer.getControl().setToolTipText("");
@@ -137,10 +138,10 @@ public class ManagePathsWidget extends Composite {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-                if(selection.isEmpty()) {
+                if (selection.isEmpty()) {
                     removeButton.setEnabled(false);
                 } else {
-                    if(selection.getFirstElement() instanceof IPathElement) {
+                    if (selection.getFirstElement() instanceof IPathElement) {
                         IPathElement pathElement = (IPathElement) selection.getFirstElement();
                         removeButton.setEnabled(!pathElement.isSystem());
                     }

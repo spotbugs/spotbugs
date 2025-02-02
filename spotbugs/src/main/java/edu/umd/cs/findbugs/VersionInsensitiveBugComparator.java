@@ -114,7 +114,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         else
             return 0;
     }
-
+    
     private static String getCode(String pattern) {
         int sep = pattern.indexOf('_');
         if (sep < 0) {
@@ -122,7 +122,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         }
         return pattern.substring(0, sep);
     }
-
+    
     private void dump(BugInstance bug) {
         System.out.println(bug.getMessage());
         Iterator<BugAnnotation> i = bug.annotationIterator();
@@ -246,7 +246,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
             } else if (isBoring(lhsAnnotation)) {
                 throw new IllegalStateException("Impossible");
             } else {
-                throw new IllegalStateException("Unknown annotation type: " + lhsClass.getName());
+                cmp = lhsAnnotation.compareTo(rhsAnnotation);
             }
             if (cmp != 0) {
                 return cmp;

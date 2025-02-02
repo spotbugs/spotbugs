@@ -59,11 +59,7 @@ public class RebornIssues {
         Map<String, List<BugInstance>> map = new HashMap<>();
         for (BugInstance b : bugCollection.getCollection()) {
             if (b.getFirstVersion() != 0 || b.getLastVersion() != -1) {
-                List<BugInstance> lst = map.get(b.getInstanceHash());
-                if (lst == null) {
-                    lst = new LinkedList<>();
-                    map.put(b.getInstanceHash(), lst);
-                }
+                List<BugInstance> lst = map.computeIfAbsent(b.getInstanceHash(), k -> new LinkedList<>());
                 lst.add(b);
             }
         }

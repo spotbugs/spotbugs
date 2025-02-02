@@ -108,7 +108,7 @@ public class RejarClassesForAnalysis {
 
             public boolean matchesEverything() {
                 for (String p : prefixes) {
-                    if (p.length() == 0) {
+                    if (p.isEmpty()) {
                         return true;
                     }
                 }
@@ -134,7 +134,7 @@ public class RejarClassesForAnalysis {
         boolean ignoreTimestamps = false;
 
         RejarClassesForAnalysisCommandLine() {
-            addSwitch("-analyzeOnly",  "only read the jars files and analyze them; don't produce new jar files");
+            addSwitch("-analyzeOnly", "only read the jars files and analyze them; don't produce new jar files");
 
             addOption("-maxAge", "days", "maximum age in days (ignore jar files older than this)");
             addOption("-inputFileList", "filename", "text file containing names of jar files");
@@ -166,7 +166,7 @@ public class RejarClassesForAnalysis {
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             if ("-analyzeOnly".equals(option)) {
                 onlyAnalyze = true;
-            } else  if ("-ignoreTimestamps".equals(option)) {
+            } else if ("-ignoreTimestamps".equals(option)) {
                 ignoreTimestamps = true;
             } else {
                 throw new IllegalArgumentException("Unknown option : " + option);
@@ -226,8 +226,7 @@ public class RejarClassesForAnalysis {
 
     SortedMap<String, ZipOutputStream> analysisOutputFiles = new TreeMap<>();
 
-    public @Nonnull
-    ZipOutputStream getZipOutputFile(String path) {
+    public @Nonnull ZipOutputStream getZipOutputFile(String path) {
         ZipOutputStream result = analysisOutputFiles.get(path);
         if (result != null) {
             return result;
@@ -321,6 +320,7 @@ public class RejarClassesForAnalysis {
     }
 
     boolean classFileFound;
+
     public void execute() throws IOException {
 
         ArrayList<String> fileList = new ArrayList<>();
@@ -359,7 +359,7 @@ public class RejarClassesForAnalysis {
                     }
                     String name = ze.getName();
 
-                    String dottedName = name.replace('/', '.');
+                    String dottedName = ClassName.toDottedClassName(name);
                     if (exclude(dottedName)) {
                         return;
                     }
@@ -397,9 +397,9 @@ public class RejarClassesForAnalysis {
             }) && oldSize < copied.size()) {
                 inputZipFiles.add(f);
             } else if (classFileFound) {
-                System.err.println("Skipping " + fInName  + ", no new classes found");
+                System.err.println("Skipping " + fInName + ", no new classes found");
             } else {
-                System.err.println("Skipping " + fInName  + ", no classes found");
+                System.err.println("Skipping " + fInName + ", no classes found");
             }
         }
         for (String fInName : auxFileList) {
@@ -416,7 +416,7 @@ public class RejarClassesForAnalysis {
                 }
 
                 String name = ze.getName();
-                String dottedName = name.replace('/', '.');
+                String dottedName = ClassName.toDottedClassName(name);
                 if (!exclude(dottedName)) {
                     classFileFound = true;
                     long timestamp = ze.getTime();
@@ -432,9 +432,9 @@ public class RejarClassesForAnalysis {
             }) && oldSize < copied.size()) {
                 auxZipFiles.add(f);
             } else if (classFileFound) {
-                System.err.println("Skipping aux file " + fInName  + ", no new classes found");
+                System.err.println("Skipping aux file " + fInName + ", no new classes found");
             } else {
-                System.err.println("Skipping aux file" + fInName  + ", no classes found");
+                System.err.println("Skipping aux file" + fInName + ", no classes found");
             }
         }
 
@@ -498,7 +498,7 @@ public class RejarClassesForAnalysis {
 
 
                 String name = ze.getName();
-                String dottedName = name.replace('/', '.');
+                String dottedName = ClassName.toDottedClassName(name);
                 if (exclude(dottedName)) {
                     return;
                 }
@@ -547,7 +547,7 @@ public class RejarClassesForAnalysis {
                 }
 
                 String name = ze.getName();
-                String dottedName = name.replace('/', '.');
+                String dottedName = ClassName.toDottedClassName(name);
 
                 if (exclude(dottedName)) {
                     return;
@@ -589,7 +589,7 @@ public class RejarClassesForAnalysis {
         JavaClass j = new ClassParser(zipIn, name).parse();
         zipIn.close();
         String className = j.getClassName();
-        String computedFileName = ClassName.toSlashedClassName(className)+".class";
+        String computedFileName = ClassName.toSlashedClassName(className) + ".class";
         if (name.charAt(0) == '1') {
             System.out.println(name);
             System.out.println("  " + className);
@@ -626,7 +626,7 @@ public class RejarClassesForAnalysis {
         zipIn.close();
     }
 
-    private void advanceAuxiliaryOut() throws IOException, FileNotFoundException {
+    private void advanceAuxiliaryOut() throws IOException {
         auxiliaryOut.close();
         auxiliaryOut = createZipFile(getNextAuxiliaryFileOutput());
     }
@@ -648,9 +648,7 @@ public class RejarClassesForAnalysis {
             System.out.println("empty zip file: '" + f + "'");
             return false;
         }
-        ZipFile zipInputFile;
-        try {
-            zipInputFile = new ZipFile(f);
+        try (ZipFile zipInputFile = new ZipFile(f)) {
             for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
                 ZipEntry ze = e.nextElement();
                 if (!ze.isDirectory() && ze.getName().endsWith(".class") && ze.getSize() != 0) {
@@ -658,7 +656,6 @@ public class RejarClassesForAnalysis {
                 }
 
             }
-            zipInputFile.close();
         } catch (ClassFileNameMismatch e) {
             return false;
         } catch (IOException e) {

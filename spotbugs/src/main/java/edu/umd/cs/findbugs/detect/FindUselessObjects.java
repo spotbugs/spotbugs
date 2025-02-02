@@ -127,31 +127,31 @@ public class FindUselessObjects implements Detector {
         }
 
         void initObservedValues() throws DataflowAnalysisException {
-            for(Iterator<Location> iterator = cfg.locationIterator(); iterator.hasNext(); ) {
+            for (Iterator<Location> iterator = cfg.locationIterator(); iterator.hasNext();) {
                 Location location = iterator.next();
                 Instruction instruction = location.getHandle().getInstruction();
-                if(instruction instanceof ANEWARRAY || instruction instanceof NEWARRAY || instruction instanceof MULTIANEWARRAY) {
+                if (instruction instanceof ANEWARRAY || instruction instanceof NEWARRAY || instruction instanceof MULTIANEWARRAY) {
                     int number = vna.getFactAfterLocation(location).getTopValue().getNumber();
                     TypeFrame typeFrame = ta.getFactAfterLocation(location);
-                    if(typeFrame.isValid()) {
+                    if (typeFrame.isValid()) {
                         Type type = typeFrame.getTopValue();
                         observedValues.put(number, new ValueInfo(number, location, type));
                     }
-                } else if(instruction instanceof INVOKESPECIAL) {
+                } else if (instruction instanceof INVOKESPECIAL) {
                     InvokeInstruction inv = (InvokeInstruction) instruction;
                     if (inv.getMethodName(cpg).equals(CONSTRUCTOR_NAME)
                             && noSideEffectMethods.hasNoSideEffect(new MethodDescriptor(inv, cpg))) {
-                        int number = vna.getFactAtLocation(location).getStackValue(inv.consumeStack(cpg)-1).getNumber();
+                        int number = vna.getFactAtLocation(location).getStackValue(inv.consumeStack(cpg) - 1).getNumber();
                         TypeFrame typeFrame = ta.getFactAtLocation(location);
-                        if(typeFrame.isValid()) {
-                            Type type = typeFrame.getStackValue(inv.consumeStack(cpg)-1);
+                        if (typeFrame.isValid()) {
+                            Type type = typeFrame.getStackValue(inv.consumeStack(cpg) - 1);
                             observedValues.put(number, new ValueInfo(number, location, type));
                         }
                     }
                 }
             }
             thisValue = vna.getThisValue();
-            if(thisValue != null) {
+            if (thisValue != null) {
                 observedValues.remove(thisValue.getNumber());
             }
             count = observedValues.size();
@@ -163,12 +163,8 @@ public class FindUselessObjects implements Detector {
                 BitSet outputSet = vna.getMergeTree().getTransitiveOutputSet(entry.getKey());
                 outputSet.set(entry.getKey());
                 entry.getValue().origValues = outputSet;
-                for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i+1)) {
-                    Set<ValueInfo> list = values.get(i);
-                    if(list == null) {
-                        list = new HashSet<>();
-                        values.put(i, list);
-                    }
+                for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i + 1)) {
+                    Set<ValueInfo> list = values.computeIfAbsent(i, k -> new HashSet<>());
                     list.add(entry.getValue());
                 }
             }
@@ -176,7 +172,7 @@ public class FindUselessObjects implements Detector {
 
         boolean setEscape(Set<ValueInfo> vals) {
             boolean result = false;
-            for(ValueInfo vi : vals) {
+            for (ValueInfo vi : vals) {
                 result |= !vi.escaped;
                 vi.escaped = true;
                 count--;
@@ -186,8 +182,8 @@ public class FindUselessObjects implements Detector {
 
         boolean setDerivedEscape(Set<ValueInfo> vals, ValueNumber vn) {
             boolean result = false;
-            for(ValueInfo vi : vals) {
-                if(vi.origValues.get(vn.getNumber())) {
+            for (ValueInfo vi : vals) {
+                if (vi.origValues.get(vn.getNumber())) {
                     result |= !vi.derivedEscaped;
                     vi.derivedEscaped = true;
                 }
@@ -197,7 +193,7 @@ public class FindUselessObjects implements Detector {
 
         boolean setUsed(Set<ValueInfo> vals) {
             boolean result = false;
-            for(ValueInfo vi : vals) {
+            for (ValueInfo vi : vals) {
                 result |= !vi.used;
                 vi.used = true;
             }
@@ -206,8 +202,8 @@ public class FindUselessObjects implements Detector {
 
         boolean setObjectOnly(Set<ValueInfo> vals, ValueNumber vn) {
             boolean result = false;
-            for(ValueInfo vi : vals) {
-                if(vi.origValues.get(vn.getNumber()) || (!vi.derivedEscaped && vi.derivedValues.get(vn.getNumber()))) {
+            for (ValueInfo vi : vals) {
+                if (vi.origValues.get(vn.getNumber()) || (!vi.derivedEscaped && vi.derivedValues.get(vn.getNumber()))) {
                     result |= !vi.hasObjectOnlyCall;
                     vi.hasObjectOnlyCall = true;
                 } else {
@@ -221,31 +217,23 @@ public class FindUselessObjects implements Detector {
 
         boolean propagateValues(Set<ValueInfo> vals, ValueNumber origNumber, ValueNumber vn) {
             int number = vn.getNumber();
-            if(vals.size() == 1 && vals.iterator().next().origValue == number) {
+            if (vals.size() == 1 && vals.iterator().next().origValue == number) {
                 return false;
             }
             boolean result = setUsed(vals);
-            if(origNumber != null) {
-                for(ValueInfo vi : vals) {
-                    if(vi.origValues.get(origNumber.getNumber()) && !vi.derivedValues.get(number)) {
+            if (origNumber != null) {
+                for (ValueInfo vi : vals) {
+                    if (vi.origValues.get(origNumber.getNumber()) && !vi.derivedValues.get(number)) {
                         vi.derivedValues.set(number);
                         result = true;
                     }
                 }
             }
-            Set<ValueInfo> list = values.get(number);
-            if(list == null) {
-                list = new HashSet<>();
-                values.put(number, list);
-            }
+            Set<ValueInfo> list = values.computeIfAbsent(number, k -> new HashSet<>());
             result |= list.addAll(vals);
             BitSet outputSet = vna.getMergeTree().getTransitiveOutputSet(number);
-            for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i+1)) {
-                list = values.get(i);
-                if(list == null) {
-                    list = new HashSet<>();
-                    values.put(i, list);
-                }
+            for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i + 1)) {
+                list = values.computeIfAbsent(i, k -> new HashSet<>());
                 result |= list.addAll(vals);
             }
             return result;
@@ -253,8 +241,8 @@ public class FindUselessObjects implements Detector {
 
         boolean propagateToReturnValue(Set<ValueInfo> vals, ValueNumber vn, GenLocation location, MethodDescriptor m)
                 throws DataflowAnalysisException {
-            for(ValueInfo vi : vals) {
-                if(vi.type.getSignature().startsWith("[") && vi.hasObjectOnlyCall && vi.var == null && vn.getNumber() == vi.origValue) {
+            for (ValueInfo vi : vals) {
+                if (vi.type.getSignature().startsWith("[") && vi.hasObjectOnlyCall && vi.var == null && vn.getNumber() == vi.origValue) {
                     // Ignore initialized arrays passed to methods
                     vi.escaped = true;
                     count--;
@@ -281,12 +269,12 @@ public class FindUselessObjects implements Detector {
                 GenLocation next = advance();
 
                 private GenLocation advance() {
-                    if(locIterator.hasNext()) {
+                    if (locIterator.hasNext()) {
                         return new RegularLocation(ta, vna, locIterator.next());
                     }
-                    while(blockIterator.hasNext()) {
+                    while (blockIterator.hasNext()) {
                         BasicBlock block = blockIterator.next();
-                        if(block.isExceptionThrower() && cfg.getOutgoingEdgeWithType(block, EdgeTypes.FALL_THROUGH_EDGE) == null) {
+                        if (block.isExceptionThrower() && cfg.getOutgoingEdgeWithType(block, EdgeTypes.FALL_THROUGH_EDGE) == null) {
                             return new ExceptionLocation(ta, vna, block);
                         }
                     }
@@ -317,11 +305,11 @@ public class FindUselessObjects implements Detector {
 
         boolean escaped(ValueNumber vn) {
             Set<ValueInfo> vals = values.get(vn.getNumber());
-            if(vals == null) {
+            if (vals == null) {
                 return true;
             }
-            for(ValueInfo vi : vals) {
-                if(vi.escaped) {
+            for (ValueInfo vi : vals) {
+                if (vi.escaped) {
                     return true;
                 }
             }
@@ -330,15 +318,15 @@ public class FindUselessObjects implements Detector {
 
         Set<ValueInfo> getLiveVals(ValueNumber vn) {
             Set<ValueInfo> vals = this.values.get(vn.getNumber());
-            if(vals == null) {
+            if (vals == null) {
                 return null;
             }
-            if(vals.size() == 1) {
+            if (vals.size() == 1) {
                 return vals.iterator().next().escaped ? null : vals;
             }
             Set<ValueInfo> result = new HashSet<>();
-            for(ValueInfo vi : vals) {
-                if(!vi.escaped) {
+            for (ValueInfo vi : vals) {
+                if (!vi.escaped) {
                     result.add(vi);
                 }
             }
@@ -346,15 +334,15 @@ public class FindUselessObjects implements Detector {
         }
 
         void report() {
-            for(ValueInfo vi : observedValues.values()) {
-                if(!vi.escaped) {
-                    if(vi.hasObjectOnlyCall && vi.used && vi.var == null) {
+            for (ValueInfo vi : observedValues.values()) {
+                if (!vi.escaped) {
+                    if (vi.hasObjectOnlyCall && vi.used && vi.var == null) {
                         continue;
                     }
-                    if(vi.hasObjectOnlyCall || (vi.used && vi.var != null)) {
+                    if (vi.hasObjectOnlyCall || (vi.used && vi.var != null)) {
                         BugInstance bug = new BugInstance(vi.var == null ? "UC_USELESS_OBJECT_STACK" : "UC_USELESS_OBJECT",
                                 NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method);
-                        if(vi.var != null) {
+                        if (vi.var != null) {
                             bug.add(new StringAnnotation(vi.var));
                         }
                         reporter.reportBug(bug.addType(vi.type).addSourceLine(classContext, method, vi.created));
@@ -366,8 +354,11 @@ public class FindUselessObjects implements Detector {
 
     private static interface GenLocation {
         InstructionHandle getHandle();
+
         TypeFrame typeFrameBefore() throws DataflowAnalysisException;
+
         ValueNumberFrame frameBefore();
+
         ValueNumberFrame frameAfter();
     }
 
@@ -441,7 +432,7 @@ public class FindUselessObjects implements Detector {
 
         @Override
         public String toString() {
-            return "ex: "+b.getExceptionThrower()+" at "+b;
+            return "ex: " + b.getExceptionThrower() + " at " + b;
         }
     }
 
@@ -452,14 +443,14 @@ public class FindUselessObjects implements Detector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        for(Method method : classContext.getMethodsInCallOrder()) {
-            if(method.isAbstract() || method.isNative()) {
+        for (Method method : classContext.getMethodsInCallOrder()) {
+            if (method.isAbstract() || method.isNative()) {
                 continue;
             }
             try {
                 analyzeMethod(classContext, method);
             } catch (CheckedAnalysisException e) {
-                reporter.logError("Error analyzing "+method+" (class: "+classContext.getJavaClass().getClassName()+")", e);
+                reporter.logError("Error analyzing " + method + " (class: " + classContext.getJavaClass().getClassName() + ")", e);
             }
         }
     }
@@ -468,7 +459,7 @@ public class FindUselessObjects implements Detector {
         LocalVariableTable lvt = method.getLocalVariableTable();
         UselessValuesContext context = new UselessValuesContext(classContext, method);
         context.initObservedValues();
-        if(context.isEmpty()) {
+        if (context.isEmpty()) {
             return;
         }
         context.enhanceViaMergeTree();
@@ -476,46 +467,47 @@ public class FindUselessObjects implements Detector {
         int iteration = 0;
         do {
             changed = false;
-            if(++iteration > MAX_ITERATIONS) {
+            if (++iteration > MAX_ITERATIONS) {
                 AnalysisContext.logError("FindUselessObjects: " + classContext.getClassDescriptor().getDottedClassName() + "."
                         + method.getName() + method.getSignature() + ": cannot converge after " + MAX_ITERATIONS
                         + " iterations; method is skipped");
                 return;
             }
-            for(Iterator<GenLocation> iterator = context.genIterator(); iterator.hasNext() && !context.isEmpty(); ) {
+            for (Iterator<GenLocation> iterator = context.genIterator(); iterator.hasNext() && !context.isEmpty();) {
                 GenLocation location = iterator.next();
                 Instruction inst = location.getHandle().getInstruction();
                 ValueNumberFrame before = location.frameBefore();
                 if (!before.isValid()) {
                     continue;
                 }
-                if(inst instanceof IINC) {
-                    int index = ((IINC)inst).getIndex();
+                if (inst instanceof IINC) {
+                    int index = ((IINC) inst).getIndex();
                     Set<ValueInfo> vals = context.getLiveVals(before.getValue(index));
-                    if(vals != null) {
+                    if (vals != null) {
                         changed |= context.propagateValues(vals, null, location.frameAfter().getValue(index));
                     }
                     continue;
                 }
                 int nconsumed = inst.consumeStack(context.cpg);
-                if(nconsumed > 0) {
+                if (nconsumed > 0) {
                     ValueNumber[] vns = new ValueNumber[nconsumed];
                     before.getTopStackWords(vns);
-                    for(int i=0; i<nconsumed; i++) {
+                    for (int i = 0; i < nconsumed; i++) {
                         ValueNumber vn = vns[i];
                         Set<ValueInfo> vals = context.getLiveVals(vn);
-                        if(vals != null) {
-                            switch(inst.getOpcode()) {
+                        if (vals != null) {
+                            switch (inst.getOpcode()) {
                             case ASTORE:
                             case ASTORE_0:
                             case ASTORE_1:
                             case ASTORE_2:
                             case ASTORE_3:
-                                for(ValueInfo vi : vals) {
-                                    if(vi.var == null && vi.origValue == vn.getNumber()) {
-                                        int index = ((StoreInstruction)inst).getIndex();
-                                        LocalVariable lv = lvt == null ? null : lvt.getLocalVariable(index, location.getHandle().getNext().getPosition());
-                                        vi.var = lv == null ? "var$"+index : lv.getName();
+                                for (ValueInfo vi : vals) {
+                                    if (vi.var == null && vi.origValue == vn.getNumber()) {
+                                        int index = ((StoreInstruction) inst).getIndex();
+                                        LocalVariable lv = lvt == null ? null
+                                                : lvt.getLocalVariable(index, location.getHandle().getNext().getPosition());
+                                        vi.var = lv == null ? "var$" + index : lv.getName();
                                         vi.hasObjectOnlyCall = false;
                                         changed = true;
                                     }
@@ -630,15 +622,15 @@ public class FindUselessObjects implements Detector {
                             case SASTORE:
                             case IASTORE:
                             case PUTFIELD:
-                                if(i == 0) {
-                                    ValueNumber value = vns[vns.length-1];
-                                    if(!value.hasFlag(ValueNumber.CONSTANT_VALUE) && !value.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT) &&
+                                if (i == 0) {
+                                    ValueNumber value = vns[vns.length - 1];
+                                    if (!value.hasFlag(ValueNumber.CONSTANT_VALUE) && !value.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT) &&
                                             !context.observedValues.containsKey(value.getNumber())) {
                                         changed |= context.setDerivedEscape(vals, vn);
                                     }
                                     changed |= context.setObjectOnly(vals, vn);
                                 } else {
-                                    if(context.escaped(vns[0])) {
+                                    if (context.escaped(vns[0])) {
                                         changed |= context.setEscape(vals);
                                     } else {
                                         changed |= context.propagateValues(vals, null, vns[0]);
@@ -652,22 +644,22 @@ public class FindUselessObjects implements Detector {
                                 MethodDescriptor m = new MethodDescriptor((InvokeInstruction) inst, context.cpg);
                                 XMethod xMethod = null;
                                 try {
-                                    Type type = location.typeFrameBefore().getStackValue(nconsumed-1);
+                                    Type type = location.typeFrameBefore().getStackValue(nconsumed - 1);
                                     xMethod = Global
                                             .getAnalysisCache()
                                             .getClassAnalysis(XClass.class,
                                                     DescriptorFactory.createClassDescriptorFromSignature(type.getSignature()))
-                                                    .findMatchingMethod(m);
+                                            .findMatchingMethod(m);
                                 } catch (CheckedAnalysisException e) {
                                     // ignore
                                 }
-                                if(xMethod != null) {
+                                if (xMethod != null) {
                                     m = xMethod.getMethodDescriptor();
                                 }
                                 MethodSideEffectStatus status = noSideEffectMethods.status(m);
-                                if(status == MethodSideEffectStatus.NSE || status == MethodSideEffectStatus.SE_CLINIT) {
-                                    if(m.getName().equals(CONSTRUCTOR_NAME)) {
-                                        if(vns[0].equals(context.thisValue)) {
+                                if (status == MethodSideEffectStatus.NSE || status == MethodSideEffectStatus.SE_CLINIT) {
+                                    if (m.getName().equals(CONSTRUCTOR_NAME)) {
+                                        if (vns[0].equals(context.thisValue)) {
                                             changed |= context.setEscape(vals);
                                         } else {
                                             changed |= context.propagateValues(vals, null, vns[0]);
@@ -677,14 +669,14 @@ public class FindUselessObjects implements Detector {
                                     }
                                     break;
                                 }
-                                if(status == MethodSideEffectStatus.OBJ) {
-                                    if(i == 0) {
+                                if (status == MethodSideEffectStatus.OBJ) {
+                                    if (i == 0) {
                                         changed |= context.setDerivedEscape(vals, vn);
                                         changed |= context.propagateToReturnValue(vals, vn, location, m);
                                         changed |= context.setObjectOnly(vals, vn);
                                         break;
                                     } else {
-                                        if(!context.escaped(vns[0])) {
+                                        if (!context.escaped(vns[0])) {
                                             changed |= context.propagateValues(vals, null, vns[0]);
                                             changed |= context.propagateToReturnValue(vals, vn, location, m);
                                             break;
@@ -701,7 +693,7 @@ public class FindUselessObjects implements Detector {
                     }
                 }
             }
-        } while(changed);
+        } while (changed);
         context.report();
     }
 

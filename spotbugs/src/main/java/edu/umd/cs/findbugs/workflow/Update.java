@@ -83,11 +83,11 @@ public class Update {
     int maxRank = BugRanker.VISIBLE_RANK_MAX;
 
     class UpdateCommandLine extends CommandLine {
-        boolean overrideRevisionNames = false;
+        boolean overrideRevisionNames;
 
         String outputFilename;
 
-        boolean withMessages = false;
+        boolean withMessages;
 
         UpdateCommandLine() {
             addSwitch("-overrideRevisionNames", "override revision names for each version with names computed filenames");
@@ -101,7 +101,7 @@ public class Update {
             addOption("-output", "output file", "explicit filename for merged results (standard out used if not specified)");
             addOption("-maxRank", "max rank", "maximum rank for issues to store");
 
-            addSwitch("-quiet", "don't generate any outout to standard out unless there is an error");
+            addSwitch("-quiet", "don't generate any output to standard out unless there is an error");
             addSwitch("-useAnalysisTimes", "use analysis timestamp rather than code timestamp in history");
             addSwitch("-withMessages", "Add bug description");
             addOption("-onlyMostRecent", "number", "only use the last # input files");
@@ -110,19 +110,19 @@ public class Update {
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             if ("-overrideRevisionNames".equals(option)) {
-                if (optionExtraPart.length() == 0) {
+                if (optionExtraPart.isEmpty()) {
                     overrideRevisionNames = true;
                 } else {
                     overrideRevisionNames = Boolean.parseBoolean(optionExtraPart);
                 }
             } else if ("-noPackageMoves".equals(option)) {
-                if (optionExtraPart.length() == 0) {
+                if (optionExtraPart.isEmpty()) {
                     noPackageMoves = true;
                 } else {
                     noPackageMoves = Boolean.parseBoolean(optionExtraPart);
                 }
             } else if ("-noResurrections".equals(option)) {
-                if (optionExtraPart.length() == 0) {
+                if (optionExtraPart.isEmpty()) {
                     noResurrections = true;
                 } else {
                     noResurrections = Boolean.parseBoolean(optionExtraPart);
@@ -185,12 +185,7 @@ public class Update {
         matchBugs(baselineCollection, bugCollection);
         matchBugs(SortedBugCollection.BugInstanceComparator.instance, baselineCollection, bugCollection);
         matchBugs(versionInsensitiveBugComparator, baselineCollection, bugCollection);
-        for (Iterator<BugInstance> i = bugCollection.getCollection().iterator(); i.hasNext();) {
-            BugInstance bug = i.next();
-            if (matchedOldBugs.containsKey(bug)) {
-                i.remove();
-            }
-        }
+        bugCollection.getCollection().removeIf(matchedOldBugs::containsKey);
 
     }
 
@@ -342,7 +337,7 @@ public class Update {
         BugRanker.trimToMaxRank(newCollection, maxRank);
         if (sloppyMatch) {
             TreeSet<BugInstance> sloppyUnique = new TreeSet<>(new SloppyBugComparator());
-            for(Iterator<BugInstance> i = newCollection.iterator(); i.hasNext(); ) {
+            for (Iterator<BugInstance> i = newCollection.iterator(); i.hasNext();) {
                 if (!sloppyUnique.add(i.next())) {
                     i.remove();
                 }
@@ -461,7 +456,7 @@ public class Update {
         }
 
         if (commandLine.overrideRevisionNames || origCollection.getReleaseName() == null
-                || origCollection.getReleaseName().length() == 0) {
+                || origCollection.getReleaseName().isEmpty()) {
 
             if (commonPrefix >= firstPathParts.length) {
                 // This should only happen if either
@@ -507,7 +502,7 @@ public class Update {
                 newCollection.readXML(newFilename);
 
                 if (commandLine.overrideRevisionNames || newCollection.getReleaseName() == null
-                        || newCollection.getReleaseName().length() == 0) {
+                        || newCollection.getReleaseName().isEmpty()) {
                     newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
                 }
                 if (useAnalysisTimes) {
@@ -572,6 +567,7 @@ public class Update {
 
     enum MatchOldBugs {
         IF_LIVE, IF_CLASS_NOT_SEEN_UNTIL_NOW, ALWAYS;
+
         boolean match(BugInstance b) {
             switch (this) {
             case ALWAYS:
@@ -600,17 +596,10 @@ public class Update {
         //        int newBugs = 0;
         //        int matchedBugs = 0;
         for (BugInstance bug : origCollection.getCollection()) {
-            if (!matchedOldBugs.containsKey(bug)) {
-                if (matchOld.match(bug)) {
-                    //                    oldBugs++;
-                    LinkedList<BugInstance> q = set.get(bug);
-                    if (q == null) {
-                        q = new LinkedList<>();
-                        set.put(bug, q);
-                    }
-                    q.add(bug);
-                }
-
+            if (!matchedOldBugs.containsKey(bug) && matchOld.match(bug)) {
+                // oldBugs++;
+                LinkedList<BugInstance> q = set.computeIfAbsent(bug, k -> new LinkedList<>());
+                q.add(bug);
             }
         }
         long newVersion = origCollection.getCurrentAppVersion().getSequenceNumber() + 1;
@@ -621,7 +610,9 @@ public class Update {
                 if (q == null) {
                     continue;
                 }
-                for (Iterator<BugInstance> i = q.iterator(); i.hasNext();) {
+                Iterator<BugInstance> i = q.iterator();
+                boolean foundLiveBug = false;
+                while (!foundLiveBug && i.hasNext()) {
                     BugInstance matchedBug = i.next();
 
                     if (matchedBug.isDead()) {
@@ -635,6 +626,7 @@ public class Update {
                         // System.out.println("  resurrected " +
                         // bug.getMessageWithoutPrefix());
                     }
+                    foundLiveBug = true;
 
                     //                    matchedBugs++;
                     mapFromNewToOldBug.put(bug, matchedBug);
@@ -643,7 +635,6 @@ public class Update {
                     if (q.isEmpty()) {
                         set.remove(bug);
                     }
-                    break;
                 }
             }
         }

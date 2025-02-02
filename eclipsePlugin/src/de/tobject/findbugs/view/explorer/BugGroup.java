@@ -65,7 +65,7 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
     }
 
     public Object[] getChildren() {
-        if (children.size() == 0) {
+        if (children.isEmpty()) {
             // TODO should we ask content provider to create children???
             return allMarkers.toArray(new Object[allMarkers.size()]);
         }
@@ -99,7 +99,7 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
             default:
                 @SuppressWarnings("rawtypes")
                 MarkerMapper mapper = type.getMapper();
-                if(identifier == null) {
+                if (identifier == null) {
                     shortDescription = mapper.getShortDescription(this);
                 } else {
                     shortDescription = mapper.getShortDescription(identifier);
@@ -134,7 +134,7 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
         if (BugContentProvider.DEBUG) {
             System.out.println("Removing child: " + child + " from " + this);
         }
-        if (children.size() == 0) {
+        if (children.isEmpty()) {
             if (getMarkersCount() > 0) {
                 removeMarkers(allMarkers);
             }
@@ -234,13 +234,13 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
         if ("type".equals(name)) {
             String groupType = getType().name();
             boolean match = groupType.equals(value);
-            if(match) {
+            if (match) {
                 return match;
             }
-            if(value.indexOf('|') > 0){
+            if (value.indexOf('|') > 0) {
                 String[] split = value.split("\\|");
                 for (String string : split) {
-                    if(groupType.equals(string)){
+                    if (groupType.equals(string)) {
                         return true;
                     }
                 }
@@ -251,7 +251,7 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
 
     @Override
     public boolean equals(Object obj) {
-        if(this == obj){
+        if (this == obj) {
             return true;
         }
         if (!(obj instanceof BugGroup)) {
@@ -288,10 +288,10 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public int compareTo(BugGroup o) {
-        if(identifier == null || !getType().equals(o.getType())){
+        if (identifier == null || !getType().equals(o.getType())) {
             return 0;
         }
-        if(identifier instanceof Comparable<?>){
+        if (identifier instanceof Comparable<?>) {
             return ((Comparable) identifier).compareTo(o.identifier);
         }
         return 0;

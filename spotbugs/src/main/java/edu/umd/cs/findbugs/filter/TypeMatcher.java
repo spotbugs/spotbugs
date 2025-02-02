@@ -59,17 +59,12 @@ public class TypeMatcher implements Matcher {
                 }
             }
         }
-        if(typeAnnotation == null){
+        if (typeAnnotation == null) {
             return false;
         }
-        String typeDesctiptor = typeAnnotation.getTypeDescriptor();
-        if(!descriptor.match(typeDesctiptor)){
-            return false;
-        }
-        if (typeParameters != null && !typeParameters.equals(typeAnnotation.getTypeParameters())) {
-            return false;
-        }
-        return true;
+        String typeDescriptor = typeAnnotation.getTypeDescriptor();
+        return descriptor.match(typeDescriptor)
+                && (typeParameters == null || typeParameters.equals(typeAnnotation.getTypeParameters()));
     }
 
     @Override
@@ -83,4 +78,3 @@ public class TypeMatcher implements Matcher {
         xmlOutput.openCloseTag("Type", attributes);
     }
 }
-

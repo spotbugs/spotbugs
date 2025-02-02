@@ -60,28 +60,28 @@ public class RedundantConditions implements Detector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        for(Method method : classContext.getJavaClass().getMethods()) {
+        for (Method method : classContext.getJavaClass().getMethods()) {
             MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(classContext.getJavaClass(), method);
             ValueRangeAnalysis analysis;
             try {
                 analysis = Global.getAnalysisCache().getMethodAnalysis(ValueRangeAnalysis.class, methodDescriptor);
             } catch (CheckedAnalysisException e) {
-                bugReporter.logError("ValueRangeAnalysis failed for "+methodDescriptor, e);
+                bugReporter.logError("ValueRangeAnalysis failed for " + methodDescriptor, e);
                 continue;
             }
-            if(analysis == null) {
+            if (analysis == null) {
                 continue;
             }
-            for(RedundantCondition condition : analysis.getRedundantConditions()) {
+            for (RedundantCondition condition : analysis.getRedundantConditions()) {
                 int priority = getPriority(methodDescriptor, condition);
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, method,
                         condition.getLocation().getHandle().getPosition());
-                BugInstance bug = new BugInstance(condition.isByType()?"UC_USELESS_CONDITION_TYPE":"UC_USELESS_CONDITION", priority)
-                .addClassAndMethod(methodDescriptor).add(new StringAnnotation(normalize(condition.getTrueCondition())));
-                if(condition.isByType()) {
+                BugInstance bug = new BugInstance(condition.isByType() ? "UC_USELESS_CONDITION_TYPE" : "UC_USELESS_CONDITION", priority)
+                        .addClassAndMethod(methodDescriptor).add(new StringAnnotation(normalize(condition.getTrueCondition())));
+                if (condition.isByType()) {
                     bug.addType(condition.getSignature());
                 }
-                if(condition.isDeadCodeUnreachable() && condition.getDeadCodeLocation() != null && priority == HIGH_PRIORITY) {
+                if (condition.isDeadCodeUnreachable() && condition.getDeadCodeLocation() != null && priority == HIGH_PRIORITY) {
                     bug.addSourceLine(methodDescriptor, condition.getDeadCodeLocation()).describe(SourceLineAnnotation.ROLE_UNREACHABLE_CODE);
                 }
                 bugAccumulator.accumulateBug(bug, sourceLineAnnotation);
@@ -92,34 +92,34 @@ public class RedundantConditions implements Detector {
     }
 
     private String normalize(String condition) {
-        if(condition.startsWith("this.this$")) {
+        if (condition.startsWith("this.this$")) {
             return condition.substring("this.".length());
         }
-        if(condition.startsWith("this.val$")) {
+        if (condition.startsWith("this.val$")) {
             return condition.substring("this.val$".length());
         }
         return condition;
     }
 
     private int getPriority(MethodDescriptor methodDescriptor, RedundantCondition condition) {
-        if(condition.isByType()) {
+        if (condition.isByType()) {
             // Skip reports which should be reported by another detector
             long number = condition.getNumber().longValue();
-            switch(condition.getSignature()) {
+            switch (condition.getSignature()) {
             case "I":
-                if(number == Integer.MIN_VALUE || number == Integer.MAX_VALUE) {
+                if (number == Integer.MIN_VALUE || number == Integer.MAX_VALUE) {
                     // Will be reported as INT_VACUOUS_COMPARISON
                     return IGNORE_PRIORITY;
                 }
                 break;
             case "C":
-                if(number <= 0) {
+                if (number <= 0) {
                     // Will be reported as INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE
                     return IGNORE_PRIORITY;
                 }
                 break;
             case "B":
-                if(number < Byte.MIN_VALUE || number >= Byte.MAX_VALUE) {
+                if (number < Byte.MIN_VALUE || number >= Byte.MAX_VALUE) {
                     // Will be reported as INT_BAD_COMPARISON_WITH_SIGNED_BYTE
                     return IGNORE_PRIORITY;
                 }
@@ -128,29 +128,30 @@ public class RedundantConditions implements Detector {
                 break;
             }
         }
-        int priority = condition.isDeadCodeUnreachable() ? HIGH_PRIORITY : condition.isBorder()
-                || condition.getSignature().equals("Z") ? LOW_PRIORITY : NORMAL_PRIORITY;
+        int priority = condition.isDeadCodeUnreachable() ? HIGH_PRIORITY
+                : condition.isBorder()
+                        || condition.getSignature().equals("Z") ? LOW_PRIORITY : NORMAL_PRIORITY;
         // check for boolean conversion
-        if(condition.getDeadCodeLocation() != null && condition.getLiveCodeLocation() != null && condition.isDeadCodeUnreachable()) {
+        if (condition.getDeadCodeLocation() != null && condition.getLiveCodeLocation() != null && condition.isDeadCodeUnreachable()) {
             InstructionHandle deadHandle = condition.getDeadCodeLocation().getHandle();
             InstructionHandle liveHandle = condition.getLiveCodeLocation().getHandle();
             int deadValue = getIntValue(deadHandle);
             int liveValue = getIntValue(liveHandle);
-            if((deadValue == 0 && liveValue == 1) || (deadValue == 1 && liveValue == 0)) {
+            if ((deadValue == 0 && liveValue == 1) || (deadValue == 1 && liveValue == 0)) {
                 InstructionHandle deadNext = deadHandle.getNext();
                 InstructionHandle liveNext = liveHandle.getNext();
-                if(deadNext != null && liveNext != null) {
+                if (deadNext != null && liveNext != null) {
                     InstructionHandle middle, after;
-                    if(deadNext.getNext() == liveHandle) {
+                    if (deadNext.getNext() == liveHandle) {
                         middle = deadNext;
                         after = liveNext;
-                    } else if(liveNext.getNext() == deadHandle) {
+                    } else if (liveNext.getNext() == deadHandle) {
                         middle = liveNext;
                         after = deadNext;
                     } else {
                         return priority;
                     }
-                    if(!(middle.getInstruction() instanceof GOTO) || ((GOTO)middle.getInstruction()).getTarget() != after) {
+                    if (!(middle.getInstruction() instanceof GOTO) || ((GOTO) middle.getInstruction()).getTarget() != after) {
                         return priority;
                     }
                     MethodGen methodGen;
@@ -161,28 +162,28 @@ public class RedundantConditions implements Detector {
                     }
                     InstructionHandle consumer = getConsumer(methodGen, after);
                     Instruction consumerInst = consumer == null ? null : consumer.getInstruction();
-                    if(consumerInst != null) {
+                    if (consumerInst != null) {
                         short opcode = consumerInst.getOpcode();
-                        if(opcode == Const.IADD || opcode == Const.ISUB || opcode == Const.IMUL
+                        if (opcode == Const.IADD || opcode == Const.ISUB || opcode == Const.IMUL
                                 || opcode == Const.ISHR || opcode == Const.ISHL || opcode == Const.IUSHR) {
                             // It's actually integer expression with explicit ? 1 : 0 or ? 0 : 1 operation
                             return priority;
                         }
                     }
-                    if(condition.getSignature().equals("Z")) {
+                    if (condition.getSignature().equals("Z")) {
                         // Ignore !flag when flag value is known
                         return IGNORE_PRIORITY;
                     }
                     priority = condition.isBorder() ? LOW_PRIORITY : NORMAL_PRIORITY;
-                    if(consumerInst instanceof InvokeInstruction) {
+                    if (consumerInst instanceof InvokeInstruction) {
                         ConstantPoolGen constantPool = methodGen.getConstantPool();
-                        String methodName = ((InvokeInstruction)consumerInst).getMethodName(constantPool);
+                        String methodName = ((InvokeInstruction) consumerInst).getMethodName(constantPool);
                         // Ignore values conditions used in assertion methods
-                        if((methodName.equals("assertTrue") || methodName.equals("checkArgument") || methodName.equals("isLegal")
+                        if ((methodName.equals("assertTrue") || methodName.equals("checkArgument") || methodName.equals("isLegal")
                                 || methodName.equals("isTrue"))) {
                             return liveValue == 1 ? condition.isBorder() ? IGNORE_PRIORITY : LOW_PRIORITY : HIGH_PRIORITY;
                         }
-                        if((methodName.equals("assertFalse") || methodName.equals("isFalse"))) {
+                        if ((methodName.equals("assertFalse") || methodName.equals("isFalse"))) {
                             return liveValue == 0 ? condition.isBorder() ? IGNORE_PRIORITY : LOW_PRIORITY : HIGH_PRIORITY;
                         }
                     }
@@ -201,19 +202,19 @@ public class RedundantConditions implements Detector {
     private InstructionHandle getConsumer(MethodGen methodGen, InstructionHandle start) {
         int depth = 1;
         InstructionHandle cur = start;
-        while(cur != null) {
+        while (cur != null) {
             Instruction inst = cur.getInstruction();
             depth -= inst.consumeStack(methodGen.getConstantPool());
-            if(depth <= 0) {
+            if (depth <= 0) {
                 return cur;
             }
             depth += inst.produceStack(methodGen.getConstantPool());
-            if(inst instanceof BranchInstruction) {
-                if(inst instanceof GotoInstruction) {
-                    cur = ((GotoInstruction)inst).getTarget();
+            if (inst instanceof BranchInstruction) {
+                if (inst instanceof GotoInstruction) {
+                    cur = ((GotoInstruction) inst).getTarget();
                     continue;
                 }
-                if(!(inst instanceof IfInstruction)) {
+                if (!(inst instanceof IfInstruction)) {
                     return null;
                 }
             }
@@ -224,8 +225,8 @@ public class RedundantConditions implements Detector {
 
     private int getIntValue(InstructionHandle handle) {
         Instruction instruction = handle.getInstruction();
-        if(instruction instanceof ICONST) {
-            return ((ICONST)instruction).getValue().intValue();
+        if (instruction instanceof ICONST) {
+            return ((ICONST) instruction).getValue().intValue();
         }
         return -1;
     }

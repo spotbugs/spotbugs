@@ -69,7 +69,7 @@ public abstract class MethodPropertyDatabase<Property> extends PropertyDatabase<
         writer.write(",");
         writer.write(method.getSignature());
         writer.write(",");
-        XMethod xMethod =  XFactory.createXMethod(method);
+        XMethod xMethod = XFactory.createXMethod(method);
         writer.write(Integer.toString(xMethod.getAccessFlags() & 0xf));
     }
 }

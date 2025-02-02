@@ -325,7 +325,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             if (methodDescriptor.getName().equals(Const.CONSTRUCTOR_NAME)) {
                 try {
 
-                    if (subtypes2.isSubtype(methodDescriptor.getClassDescriptor(), DescriptorFactory.createClassDescriptorFromDottedClassName(obligation.getClassName()))) {
+                    if (subtypes2.isSubtype(methodDescriptor.getClassDescriptor(), DescriptorFactory.createClassDescriptorFromDottedClassName(
+                            obligation.getClassName()))) {
                         return;
                     }
 
@@ -377,10 +378,10 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             List<PossibleObligationTransfer> transferList;
 
             public PostProcessingPathVisitor(Obligation possiblyLeakedObligation/*
-             * ,
-             * int
-             * initialLeakCount
-             */, State state) {
+                                                                                * ,
+                                                                                * int
+                                                                                * initialLeakCount
+                                                                                */, State state) {
                 this.possiblyLeakedObligation = possiblyLeakedObligation;
                 this.state = state;
                 this.adjustedLeakCount = state.getObligationSet().getCount(possiblyLeakedObligation.getId());
@@ -400,13 +401,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             @Override
             public void visitBasicBlock(BasicBlock basicBlock) {
                 curBlock = basicBlock;
-
-                if (COMPUTE_TRANSFERS && basicBlock == cfg.getExit()) {
-                    // We're at the CFG exit.
-
-                    if (adjustedLeakCount == 1) {
-                        applyPossibleObligationTransfers();
-                    }
+                // We're at the CFG exit.
+                if (COMPUTE_TRANSFERS && basicBlock == cfg.getExit() && adjustedLeakCount == 1) {
+                    applyPossibleObligationTransfers();
                 }
             }
 
@@ -416,7 +413,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                     Instruction ins = handle.getInstruction();
                     short opcode = ins.getOpcode();
                     if (DEBUG) {
-                        System.out.printf("%3d %s%n", handle.getPosition(),Const.getOpcodeName(opcode));
+                        System.out.printf("%3d %s%n", handle.getPosition(), Const.getOpcodeName(opcode));
                     }
 
                     if (opcode == Const.PUTFIELD || opcode == Const.PUTSTATIC || opcode == Const.ARETURN) {
@@ -646,7 +643,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             // If we're tracking, e.g., InputStream obligations,
             // and we see a FileInputStream reference being assigned
             // to a field (or returned from a method),
-            // then the false-positive supressions heuristic should apply.
+            // then the false-positive suppressions heuristic should apply.
             //
 
             return subtypes2.isSubtype(type, obligationType);
@@ -681,7 +678,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                             if (entryState.getObligationSet().getCount(obligation.getId()) > 0) {
                                 lastSourceLine = SourceLineAnnotation.forFirstLineOfMethod(methodDescriptor);
                                 lastSourceLine
-                                .setDescription(SourceLineAnnotation.ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER);
+                                        .setDescription(SourceLineAnnotation.ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER);
                                 bugInstance.add(lastSourceLine);
                                 sawFirstCreation = true;
 

@@ -256,8 +256,7 @@ public class GenericUtilities {
      * break up a signature with many types or call createTypes(String) to
      * return a list of types
      */
-    public static @CheckForNull
-    Type getType(String signature) {
+    public static @CheckForNull Type getType(String signature) {
         try {
             // ensure signature only has one type
             final Iterator<String> signatureIterator = new GenericSignatureParser("(" + signature + ")V")
@@ -338,7 +337,7 @@ public class GenericUtilities {
             return t2;
         }
         if (t2 instanceof ObjectType) {
-            return merge(t1,(ObjectType) t2);
+            return merge(t1, (ObjectType) t2);
         }
         if (t2 instanceof NullType) {
             return t1;
@@ -431,8 +430,7 @@ public class GenericUtilities {
      *            bytecode signature e.g. e.g.
      *            <code>Ljava/util/ArrayList&lt;Ljava/lang/String;&gt;;Ljava/util/ArrayList&lt;TT;&gt;;Ljava/util/ArrayList&lt;*&gt;;</code>
      */
-    public static final @CheckForNull
-    List<ReferenceType> getTypeParameters(String signature) {
+    public static final @CheckForNull List<ReferenceType> getTypeParameters(String signature) {
         GenericSignatureParser parser = new GenericSignatureParser("(" + signature + ")V");
         List<ReferenceType> types = new ArrayList<>();
 

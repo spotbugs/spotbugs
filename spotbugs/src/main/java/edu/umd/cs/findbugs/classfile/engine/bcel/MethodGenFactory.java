@@ -61,7 +61,7 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
         if (method.getCode() == null) {
             return null;
         }
-        XMethod xmethod =  XFactory.createXMethod(descriptor);
+        XMethod xmethod = XFactory.createXMethod(descriptor);
         if (xmethod.usesInvokeDynamic() && false) {
             AnalysisContext.currentAnalysisContext().analysisSkippedDueToInvokeDynamic(xmethod);
             return null;
@@ -81,7 +81,8 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
                 return null;
             }
             if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
-                if (codeLength > 6000 || (Const.STATIC_INITIALIZER_NAME.equals(methodName) || "getContents".equals(methodName)) && codeLength > 2000) {
+                if (codeLength > 6000 || (Const.STATIC_INITIALIZER_NAME.equals(methodName) || "getContents".equals(methodName))
+                        && codeLength > 2000) {
                     analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
                             new JavaClassAndMethod(jclass, method).toMethodDescriptor());
                     return null;

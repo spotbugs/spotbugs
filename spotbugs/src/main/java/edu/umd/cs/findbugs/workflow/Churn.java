@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.workflow;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -53,9 +52,6 @@ public class Churn {
     }
 
     String getKey(BugInstance b) {
-        if (false) {
-            return b.getType();
-        }
         String result = b.getCategoryAbbrev();
         if ("C".equals(result) || "N".equals(result)) {
             return result;
@@ -112,9 +108,7 @@ public class Churn {
         aliveAt = new int[(int) bugCollection.getSequenceNumber() + 1];
         diedAfter = new int[(int) bugCollection.getSequenceNumber() + 1];
 
-        for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
-            BugInstance bugInstance = j.next();
-
+        for (BugInstance bugInstance : bugCollection) {
             String key = getKey(bugInstance);
             Data d = data.get(key);
             if (d == null) {
@@ -155,14 +149,14 @@ public class Churn {
             }
         }
         System.out.printf("%7s %3s %5s %5s %5s  %s%n", "chi", "%", "const", "fix", "max", "kind");
-        double fixRate;
+        double fixrate;
         if (this.fixRate == -1) {
-            fixRate = ((double) all.fixed) / (all.fixed + all.persist);
+            fixrate = ((double) all.fixed) / (all.fixed + all.persist);
         } else {
-            fixRate = this.fixRate / 100.0;
+            fixrate = this.fixRate / 100.0;
         }
-        double highFixRate = fixRate + 0.05;
-        double lowFixRate = fixRate - 0.05;
+        double highFixRate = fixrate + 0.05;
+        double lowFixRate = fixrate - 0.05;
         for (Map.Entry<String, Data> e : data.entrySet()) {
             Data d = e.getValue();
             int total = d.persist + d.fixed;

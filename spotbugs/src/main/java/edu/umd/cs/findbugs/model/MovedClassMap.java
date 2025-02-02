@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.model;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -109,10 +108,8 @@ public class MovedClassMap implements ClassNameRewriter {
     private Set<String> buildClassSet(BugCollection bugCollection) {
         Set<String> classSet = new HashSet<>();
 
-        for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
-            BugInstance warning = i.next();
-            for (Iterator<BugAnnotation> j = warning.annotationIterator(); j.hasNext();) {
-                BugAnnotation annotation = j.next();
+        for (BugInstance warning : bugCollection) {
+            for (BugAnnotation annotation : warning.getAnnotations()) {
                 if (!(annotation instanceof ClassAnnotation)) {
                     continue;
                 }

@@ -25,9 +25,8 @@ Install the plug-in
             |     asm-tree-3.3.jar
             |     bcel.jar
             |     commons-lang-2.6.jar
-            |     dom4j-2.1.0.jar
+            |     dom4j-2.1.3.jar
             |     jaxen-1.1.6.jar
-            |     jFormatString.jar
             |     jsr305.jar
             |
             +- META-INF
@@ -66,7 +65,7 @@ Manual mode
 ------------
 Since running the FindBugs plug-in in automatic mode can be vey time-consuming,
 you may choose to run the plug-in in manual mode. As the name implies, you
-have to start the bug pattern detecion manually when the plug-in is in manual mode.
+have to start the bug pattern detection manually when the plug-in is in manual mode.
 
 To enable manual mode:
 1) Make sure that the [Run FindBugs automatically] checkbox on the Java project properties

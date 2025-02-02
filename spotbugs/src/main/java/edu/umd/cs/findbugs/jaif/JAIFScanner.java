@@ -114,20 +114,20 @@ public class JAIFScanner {
         // FP literals
         new TokenPattern(DIGITS + DOT + DIGITS_OPT + EXP_PART_OPT + FLOAT_TYPE_SUFFIX_OPT,
                 JAIFTokenKind.FLOATING_POINT_LITERAL),
-                new TokenPattern(DOT + DIGITS + EXP_PART_OPT + FLOAT_TYPE_SUFFIX_OPT, JAIFTokenKind.FLOATING_POINT_LITERAL),
-                new TokenPattern(DIGITS + EXP_PART + FLOAT_TYPE_SUFFIX_OPT, JAIFTokenKind.FLOATING_POINT_LITERAL),
-                new TokenPattern(DIGITS + EXP_PART_OPT + FLOAT_TYPE_SUFFIX, JAIFTokenKind.FLOATING_POINT_LITERAL),
+        new TokenPattern(DOT + DIGITS + EXP_PART_OPT + FLOAT_TYPE_SUFFIX_OPT, JAIFTokenKind.FLOATING_POINT_LITERAL),
+        new TokenPattern(DIGITS + EXP_PART + FLOAT_TYPE_SUFFIX_OPT, JAIFTokenKind.FLOATING_POINT_LITERAL),
+        new TokenPattern(DIGITS + EXP_PART_OPT + FLOAT_TYPE_SUFFIX, JAIFTokenKind.FLOATING_POINT_LITERAL),
 
-                // This must come after the FP literal patterns
-                new TokenPattern(DOT, JAIFTokenKind.DOT),
+        // This must come after the FP literal patterns
+        new TokenPattern(DOT, JAIFTokenKind.DOT),
 
-                // Integer literals
-                new TokenPattern("0" + OCTAL_DIGITS + INT_TYPE_SUFFIX_OPT, JAIFTokenKind.OCTAL_LITERAL),
-                new TokenPattern(HEX_SIGNIFIER + HEX_DIGITS + INT_TYPE_SUFFIX_OPT, JAIFTokenKind.HEX_LITERAL),
-                new TokenPattern(DIGITS + INT_TYPE_SUFFIX_OPT, JAIFTokenKind.DECIMAL_LITERAL),
+        // Integer literals
+        new TokenPattern("0" + OCTAL_DIGITS + INT_TYPE_SUFFIX_OPT, JAIFTokenKind.OCTAL_LITERAL),
+        new TokenPattern(HEX_SIGNIFIER + HEX_DIGITS + INT_TYPE_SUFFIX_OPT, JAIFTokenKind.HEX_LITERAL),
+        new TokenPattern(DIGITS + INT_TYPE_SUFFIX_OPT, JAIFTokenKind.DECIMAL_LITERAL),
 
-                // String literals
-                new TokenPattern("\"" + STRING_CHARS_OPT + "\"", JAIFTokenKind.STRING_LITERAL), };
+        // String literals
+        new TokenPattern("\"" + STRING_CHARS_OPT + "\"", JAIFTokenKind.STRING_LITERAL), };
 
     private final BufferedReader reader;
 

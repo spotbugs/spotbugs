@@ -98,7 +98,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                 if (!m.isStatic()
                         && ("clone".equals(name) && "()Ljava/lang/Object;".equals(signature) || "toString".equals(name)
                                 && "()Ljava/lang/String;".equals(signature) || m.isPrivate() && "readResolve".equals(name)
-                                && "()Ljava/lang/Object;".equals(signature))) {
+                                        && "()Ljava/lang/Object;".equals(signature))) {
                     NullnessAnnotation result = super.getDirectAnnotation(m);
                     if (result != null) {
                         return result;
@@ -112,8 +112,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                     return NullnessAnnotation.NONNULL;
                 }
             }
-            NullnessAnnotation result = super.getResolvedAnnotation(o, getMinimal);
-            return result;
+            return super.getResolvedAnnotation(o, getMinimal);
         } finally {
             profiler.end(this.getClass());
         }

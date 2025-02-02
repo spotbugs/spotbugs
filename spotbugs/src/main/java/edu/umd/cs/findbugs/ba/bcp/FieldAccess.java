@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @see Load
  * @see Store
  */
-public abstract class FieldAccess extends SingleInstruction implements org.apache.bcel.Constants {
+public abstract class FieldAccess extends SingleInstruction {
     private final String fieldVarName;
 
     private final String valueVarName;
@@ -50,7 +50,7 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
      *            name of the variable to bind to the value store in or loaded
      *            from the field
      */
-    public FieldAccess(String fieldVarName, String valueVarName) {
+    protected FieldAccess(String fieldVarName, String valueVarName) {
         this.fieldVarName = fieldVarName;
         this.valueVarName = valueVarName;
     }
@@ -123,4 +123,3 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
 
     }
 }
-

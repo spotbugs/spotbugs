@@ -20,10 +20,12 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,8 +55,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  * @see PluginLoader
  * @author David Hovemeyer
  */
-public class Plugin {
-
+public class Plugin implements AutoCloseable {
 
     private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
     static Map<URI, Plugin> allPlugins = new LinkedHashMap<>();
@@ -80,7 +81,7 @@ public class Plugin {
 
     private final LinkedHashMap<String, BugCategory> bugCategories;
 
-    private final HashMap<String,String> myGlobalOptions;
+    private final HashMap<String, String> myGlobalOptions;
 
     private final DualKeyHashMap<Class<?>, String, ComponentPlugin<?>> componentPlugins;
 
@@ -101,7 +102,9 @@ public class Plugin {
 
     private final boolean cannotDisable;
 
-    static enum EnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED }
+    static enum EnabledState {
+        PLUGIN_DEFAULT, ENABLED, DISABLED
+    }
 
     private EnabledState enabled;
 
@@ -120,7 +123,7 @@ public class Plugin {
         }
         assert enabled || !cannotDisable;
         myGlobalOptions = new HashMap<>();
-        componentPlugins = new DualKeyHashMap<> ();
+        componentPlugins = new DualKeyHashMap<>();
         this.version = version;
         this.releaseDate = releaseDate;
         this.detectorFactoryList = new ArrayList<>();
@@ -181,7 +184,7 @@ public class Plugin {
         myGlobalOptions.put(key, value);
     }
 
-    Map<String,String> getMyGlobalOptions() {
+    Map<String, String> getMyGlobalOptions() {
         return Collections.unmodifiableMap(myGlobalOptions);
     }
 
@@ -201,14 +204,14 @@ public class Plugin {
      *
      * @return the website, or null if the was not specified
      */
-    public  @CheckForNull String getWebsite() {
+    public @CheckForNull String getWebsite() {
         if (website == null) {
             return null;
         }
         return website.toASCIIString();
     }
 
-    public  @CheckForNull URI getWebsiteURI() {
+    public @CheckForNull URI getWebsiteURI() {
         return website;
     }
 
@@ -393,8 +396,9 @@ public class Plugin {
 
     public String getShortPluginId() {
         int i = pluginId.lastIndexOf('.');
-        return pluginId.substring(i+1);
+        return pluginId.substring(i + 1);
     }
+
     /**
      * Set the analysis engine registrar class that, when instantiated, can be
      * used to register the plugin's analysis engines with the analysis cache.
@@ -424,8 +428,7 @@ public class Plugin {
         public boolean choose(DetectorFactory factory);
     }
 
-    private @CheckForNull
-    DetectorFactory findFirstMatchingFactory(FactoryChooser chooser) {
+    private @CheckForNull DetectorFactory findFirstMatchingFactory(FactoryChooser chooser) {
         for (DetectorFactory factory : getDetectorFactories()) {
             if (chooser.choose(factory)) {
                 return factory;
@@ -474,15 +477,15 @@ public class Plugin {
     }
 
     @SuppressWarnings("unchecked")
-    public <T>  ComponentPlugin<T> getComponentPlugin(Class<T> componentClass, String name) {
+    public <T> ComponentPlugin<T> getComponentPlugin(Class<T> componentClass, String name) {
         return (ComponentPlugin<T>) componentPlugins.get(componentClass, name);
     }
 
     public static synchronized @CheckForNull Plugin getByPluginId(String name) {
-        if(name == null) {
+        if (name == null) {
             return null;
         }
-        for(Plugin plugin : allPlugins.values()) {
+        for (Plugin plugin : allPlugins.values()) {
             // the second part is questionable, as this may lead to id collisions
             if (name.equals(plugin.getPluginId()) /*|| name.equals(plugin.getShortPluginId())*/) {
                 return plugin;
@@ -504,7 +507,7 @@ public class Plugin {
 
     public static synchronized Collection<String> getAllPluginIds() {
         ArrayList<String> result = new ArrayList<>();
-        for(Plugin p : allPlugins.values()) {
+        for (Plugin p : allPlugins.values()) {
             result.add(p.getPluginId());
         }
         return result;
@@ -659,7 +662,7 @@ public class Plugin {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
 
-    public static @CheckForNull  Plugin addCustomPlugin(URI u) throws PluginException {
+    public static @CheckForNull Plugin addCustomPlugin(URI u) throws PluginException {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
 
@@ -685,7 +688,7 @@ public class Plugin {
     public static synchronized void removeCustomPlugin(Plugin plugin) {
         Set<Entry<URI, Plugin>> entrySet = Plugin.allPlugins.entrySet();
         for (Entry<URI, Plugin> entry : entrySet) {
-            if(entry.getValue() == plugin) {
+            if (entry.getValue() == plugin) {
                 Plugin.allPlugins.remove(entry.getKey());
                 PluginLoader.loadedPluginIds.remove(plugin.getPluginId());
                 break;
@@ -694,4 +697,12 @@ public class Plugin {
         DetectorFactoryCollection.instance().unLoadPlugin(plugin);
     }
 
+    /**
+     * Closes the underlying {@link PluginLoader}, in turn this closes the {@link URLClassLoader}.
+     * When loading a custom plugin from a .jar file this method needs to be called to release the reference on that file.
+     */
+    @Override
+    public void close() throws IOException {
+        pluginLoader.close();
+    }
 }

@@ -91,7 +91,8 @@ public class TypeQualifierApplications {
          * XMethod/parameter, the effective TypeQualifierAnnotation (if any) for
          * that XMethod/parameter.
          */
-        private final Map<TypeQualifierValue<?>, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations = new HashMap<>();
+        private final Map<TypeQualifierValue<?>, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations =
+                new HashMap<>();
     }
 
     private static ThreadLocal<Data> instance = new ThreadLocal<Data>() {
@@ -151,11 +152,11 @@ public class TypeQualifierApplications {
             return result;
         }
         if (m.getAnnotationDescriptors().isEmpty()) {
-            return Collections.<AnnotationValue> emptyList();
+            return Collections.<AnnotationValue>emptyList();
         }
         result = TypeQualifierResolver.resolveTypeQualifiers(m.getAnnotations());
-        if (result.size() == 0) {
-            result = Collections.<AnnotationValue> emptyList();
+        if (result.isEmpty()) {
+            result = Collections.<AnnotationValue>emptyList();
         }
         getDirectObjectAnnotations().put(m, result);
         return result;
@@ -176,8 +177,7 @@ public class TypeQualifierApplications {
         Map<Integer, Collection<AnnotationValue>> map = directParameterAnnotations.get(m);
         if (map == null) {
             int n = m.getNumParams();
-            if (m.isVarArgs())
-            {
+            if (m.isVarArgs()) {
                 n--; // ignore annotations on varargs parameters
             }
             map = new HashMap<>(n + 2);
@@ -254,8 +254,7 @@ public class TypeQualifierApplications {
         When when = whenValue == null ? When.ALWAYS : When.valueOf(whenValue.value);
         ClassDescriptor annotationClass = v.getAnnotationClass();
         TypeQualifierValue<?> tqv = TypeQualifierValue.getValue(annotationClass, v.getValue("value"));
-        TypeQualifierAnnotation tqa = TypeQualifierAnnotation.getValue(tqv, when);
-        return tqa;
+        return TypeQualifierAnnotation.getValue(tqv, when);
     }
 
     /**
@@ -384,8 +383,8 @@ public class TypeQualifierApplications {
      *            a TypeQualifierValue
      * @return matching TypeQualifierAnnotation, or null if none
      */
-    private static @CheckForNull
-    TypeQualifierAnnotation findMatchingTypeQualifierAnnotation(Collection<TypeQualifierAnnotation> typeQualifierAnnotations,
+    private static @CheckForNull TypeQualifierAnnotation findMatchingTypeQualifierAnnotation(
+            Collection<TypeQualifierAnnotation> typeQualifierAnnotations,
             TypeQualifierValue<?> typeQualifierValue) {
         for (TypeQualifierAnnotation typeQualifierAnnotation : typeQualifierAnnotations) {
             if (typeQualifierAnnotation.typeQualifier.equals(typeQualifierValue)) {
@@ -407,8 +406,8 @@ public class TypeQualifierApplications {
      *            annotation
      * @return default TypeQualifierAnnotation, or null if none
      */
-    private static @CheckForNull
-    TypeQualifierAnnotation getDefaultAnnotation(AnnotatedObject o, TypeQualifierValue<?> typeQualifierValue, ElementType elementType) {
+    private static @CheckForNull TypeQualifierAnnotation getDefaultAnnotation(AnnotatedObject o, TypeQualifierValue<?> typeQualifierValue,
+            ElementType elementType) {
         //
         // Try to find a default annotation using the standard JSR-305
         // default annotation mechanism.
@@ -450,12 +449,12 @@ public class TypeQualifierApplications {
         }
 
         // Try out default JDT (Eclipse) annotations
-        if(result == null){
+        if (result == null) {
             AnnotationValue annotationValue = o.getAnnotation(TypeQualifierResolver.eclipseNonNullByDefault);
-            if(annotationValue != null){
+            if (annotationValue != null) {
                 Collection<AnnotationValue> resolvedTypeQualifiers = TypeQualifierResolver.resolveTypeQualifiers(annotationValue);
                 tqa = extractAnnotation(resolvedTypeQualifiers, typeQualifierValue);
-                if(tqa != null){
+                if (tqa != null) {
                     return tqa;
                 }
             }
@@ -463,8 +462,7 @@ public class TypeQualifierApplications {
         return result;
     }
 
-    private static @CheckForNull
-    TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
+    private static @CheckForNull TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
             TypeQualifierValue<?> typeQualifierValue) {
 
         if (DEBUG_DEFAULT_ANNOTATION) {
@@ -500,7 +498,7 @@ public class TypeQualifierApplications {
             if (!(obj instanceof Type)) {
                 if (DEBUG_DEFAULT_ANNOTATION) {
                     System.out
-                    .println("Found a non-Type value in value array of " + defaultAnnotation.toString() + " annotation");
+                            .println("Found a non-Type value in value array of " + defaultAnnotation.toString() + " annotation");
                 }
                 continue;
             }
@@ -596,11 +594,8 @@ public class TypeQualifierApplications {
     private static TypeQualifierAnnotation computeEffectiveTypeQualifierAnnotation(TypeQualifierValue<?> typeQualifierValue,
             AnnotatedObject o) {
 
-        Map<AnnotatedObject, TypeQualifierAnnotation> map = getEffectiveObjectAnnotations().get(typeQualifierValue);
-        if (map == null) {
-            map = new HashMap<>();
-            getEffectiveObjectAnnotations().put(typeQualifierValue, map);
-        }
+        Map<AnnotatedObject, TypeQualifierAnnotation> map = getEffectiveObjectAnnotations().computeIfAbsent(
+                typeQualifierValue, k -> new HashMap<>());
 
         // Check cached answer
         TypeQualifierAnnotation result;
@@ -712,8 +707,7 @@ public class TypeQualifierApplications {
     private static TypeQualifierAnnotation getDefaultTypeQualifierAnnotation(AnnotatedObject o,
             TypeQualifierValue<?> typeQualifierValue, boolean stopAtClassScope) {
 
-        if (o.isSynthetic())
-        {
+        if (o.isSynthetic()) {
             return null; // synthetic objects don't get default annotations
         }
 
@@ -735,7 +729,7 @@ public class TypeQualifierApplications {
             if (result != null) {
                 // Great - found an outer scope with a relevant annotation
                 assert false : "I don't think we should be looking here";
-            return result;
+                return result;
             }
 
             // Check default annotations
@@ -760,8 +754,7 @@ public class TypeQualifierApplications {
      * @return effective TypeQualifierAnnotation on the parameter, or null if
      *         there is no effective TypeQualifierAnnotation
      */
-    public static @CheckForNull
-    TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(final XMethod xmethod, final int parameter,
+    public static @CheckForNull TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(final XMethod xmethod, final int parameter,
             TypeQualifierValue<?> typeQualifierValue) {
 
         TypeQualifierAnnotation tqa = computeEffectiveTypeQualifierAnnotation(typeQualifierValue, xmethod, parameter);
@@ -795,7 +788,8 @@ public class TypeQualifierApplications {
                         + typeQualifierValue.value.getClass().toString() + ")");
             }
         }
-        Map<TypeQualifierValue<?>, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations = getEffectiveParameterAnnotations();
+        Map<TypeQualifierValue<?>, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations =
+                getEffectiveParameterAnnotations();
         DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation> map = effectiveParameterAnnotations.get(typeQualifierValue);
         if (map == null) {
             if (DEBUG) {
@@ -830,13 +824,12 @@ public class TypeQualifierApplications {
             // Compute answer
             TypeQualifierAnnotation tqa;
 
-            if (xmethod.isVarArgs() && parameter == xmethod.getNumParams()-1) {
+            if (xmethod.isVarArgs() && parameter == xmethod.getNumParams() - 1) {
                 tqa = null;
                 if (DEBUG) {
                     System.out.print("  vararg parameters don't get type qualifiers");
                 }
-            }
-            else {
+            } else {
                 // Check direct application
                 if (DEBUG) {
                     System.out.print("  (1) Checking direct application...");
@@ -921,8 +914,8 @@ public class TypeQualifierApplications {
      * @return TypeQualifierAnnotation directly applied to the parameter, or
      *         null if there is no directly applied TypeQualifierAnnotation
      */
-    public static @CheckForNull @CheckReturnValue
-    TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter, TypeQualifierValue<?> typeQualifierValue) {
+    public static @CheckForNull @CheckReturnValue TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter,
+            TypeQualifierValue<?> typeQualifierValue) {
         XMethod bridge = xmethod.bridgeTo();
         if (bridge != null) {
             xmethod = bridge;
@@ -949,8 +942,7 @@ public class TypeQualifierApplications {
      * @return effective inherited TypeQualifierAnnotation on the parameter, or
      *         null if there is not effective TypeQualifierAnnotation
      */
-    public static @CheckForNull
-    TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod xmethod, int parameter,
+    public static @CheckForNull TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod xmethod, int parameter,
             TypeQualifierValue<?> typeQualifierValue) {
         assert !xmethod.isStatic();
 
@@ -980,25 +972,17 @@ public class TypeQualifierApplications {
      * @return the default (outer scope) TypeQualifierAnnotation on the
      *         parameter, or null if there is no default TypeQualifierAnnotation
      */
-    private static @CheckForNull
-    TypeQualifierAnnotation getDefaultTypeQualifierAnnotationForParameters(XMethod xmethod,
+    private static @CheckForNull TypeQualifierAnnotation getDefaultTypeQualifierAnnotationForParameters(XMethod xmethod,
             TypeQualifierValue<?> typeQualifierValue, boolean stopAtMethodScope) {
 
-        if (xmethod.isSynthetic())
-        {
+        if (xmethod.isSynthetic()) {
             return null; // synthetic methods don't get default annotations
         }
         // System.out.println("Looking for default " + typeQualifierValue +
         // " annotation of parameters of " + xmethod);
-        if ("<init>".equals(xmethod.getName()) && xmethod.getClassDescriptor().isAnonymousClass())
-        {
+        if ("<init>".equals(xmethod.getName()) && xmethod.getClassDescriptor().isAnonymousClass()) {
             return null; // constructors for anonymous inner classes don't get
             // default annotations
-        }
-
-        /** private methods don't inherit from class or package scope */
-        if (xmethod.isPrivate()) {
-            stopAtMethodScope = true;
         }
 
         boolean stopAtClassScope = false;
@@ -1028,7 +1012,7 @@ public class TypeQualifierApplications {
             if (tqa != null) {
                 // Found matching annotation in outer scope
                 assert false : "I think this code is dead; it shouldn't find anything";
-            return tqa;
+                return tqa;
             }
             // Check for default annotation
             tqa = getDefaultAnnotation(o, typeQualifierValue, ElementType.PARAMETER);

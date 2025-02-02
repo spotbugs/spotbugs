@@ -28,12 +28,12 @@ Types of Match clauses
 <Bug>
 ^^^^^
 
-This element specifies a particular bug ``pattern or patterns to match. The ``pattern`` attribute is a comma-separated list of bug pattern types.
+This element specifies a particular bug ``pattern`` or ``patterns`` to match. The ``pattern`` attribute is a comma-separated list of bug pattern types.
 You can find the bug pattern types for particular warnings by looking at the output produced by the **-xml** output option (the type attribute of BugInstance elements), or from the :doc:`bugDescriptions`.
 
-For more coarse-grained matching, use ``code`` attribute. It takes a comma-separated list of bug abbreviations. For most-coarse grained matching use ``category`` attriute, that takes a comma separated list of bug category names: ``CORRECTNESS``, ``MT_CORRECTNESS``, ``BAD_PRACTICICE``, ``PERFORMANCE``, ``STYLE``.
+For more coarse-grained matching, use ``code`` attribute. It takes a comma-separated list of bug abbreviations. For most-coarse grained matching use ``category`` attribute, that takes a comma separated list of bug category names: ``CORRECTNESS``, ``MT_CORRECTNESS``, ``BAD_PRACTICE``, ``PERFORMANCE``, ``STYLE``.
 
-If more than one of the attributes mentioned above are specified on the same <Bug> element, all bug patterns that match either one of specified pattern names, or abreviations, or categories will be matched.
+If more than one of the attributes mentioned above are specified on the same <Bug> element, all bug patterns that match either one of specified pattern names, or abbreviations, or categories will be matched.
 
 As a backwards compatibility measure, <BugPattern> and <BugCode> elements may be used instead of <Bug> element. Each of these uses a name attribute for specifying accepted values list. Support for these elements may be removed in a future release.
 
@@ -50,7 +50,7 @@ Same as ``<Confidence>``, exists for backward compatibility.
 <Rank>
 ^^^^^^
 
-This element matches warnings with a particular bug rank. The ``value`` attribute should be an integer value between 1 and 20, where 1 to 4 are scariest, 5 to 9 scary, 10 to 14 troubling, and 15 to 20 of concern bugs.
+This element matches warnings having at least a specified bug rank. The ``value`` attribute should be an integer value between 1 and 20, where 1 to 4 are scariest, 5 to 9 scary, 10 to 14 troubling, and 15 to 20 of concern bugs.
 
 <Package>
 ^^^^^^^^^
@@ -113,7 +113,7 @@ If the ``name`` attribute of ``Class``, ``Source``, ``Method`` or ``Field`` star
 
 Note that the pattern is matched against whole element name and therefore ``.*`` clauses need to be used at pattern beginning and/or end to perform substring matching.
 
-See `java.util.regex.Pattern <https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html>`_ documentation for pattern syntax.
+See `java.util.regex.Pattern <https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/regex/Pattern.html>`_ documentation for pattern syntax.
 
 Caveats
 -------
@@ -137,7 +137,7 @@ So, for example, if you want to suppress IC (initialization circularity) reports
      <Bug code="IC" />
   </Match>
 
-By explicitly matching both classes, you ensure that the IC bug instance will be matched regardless of which class involved in the circularity happens to be listed first in the bug instance. (Of course, this approach might accidentally supress circularities involving "com.foobar.A" or "com.foobar.B" and a third class.)
+By explicitly matching both classes, you ensure that the IC bug instance will be matched regardless of which class involved in the circularity happens to be listed first in the bug instance. (Of course, this approach might accidentally suppress circularities involving "com.foobar.A" or "com.foobar.B" and a third class.)
 
 Many kinds of bugs report what method they occur in. For those bug instances, you can put Method clauses in the Match element and they should work as expected.
 
@@ -250,7 +250,7 @@ Match bugs in specific parts of the code base
     <Package name="~.*\.internal" />
     <Bug code="MS" />
   </Match>
-  <!-- match anonymoous inner classes warnings in ui package hierarchy -->
+  <!-- match anonymous inner classes warnings in ui package hierarchy -->
   <Match>
     <Package name="~com\.foobar\.fooproject\.ui.*" />
     <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
@@ -309,9 +309,9 @@ Complete Example
 
     <?xml version="1.0" encoding="UTF-8"?>
     <FindBugsFilter
-		xmlns="https://github.com/spotbugs/filter/3.0.0"
+		xmlns="https://github.com/spotbugs/filter/4.8.4"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+		xsi:schemaLocation="https://github.com/spotbugs/filter/4.8.4 https://raw.githubusercontent.com/spotbugs/spotbugs/4.8.4/spotbugs/etc/findbugsfilter.xsd">
     <Match>
       <Class name="com.foobar.ClassNotToBeAnalyzed" />
     </Match>

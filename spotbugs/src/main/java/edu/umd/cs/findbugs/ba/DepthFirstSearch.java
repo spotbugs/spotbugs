@@ -49,4 +49,3 @@ public class DepthFirstSearch extends edu.umd.cs.findbugs.graph.DepthFirstSearch
         return result;
     }
 }
-

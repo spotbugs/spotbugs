@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.generic;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -78,25 +79,22 @@ public class GenericSignatureParser {
                 case 'T':
                     int startsemi = index;
                     int leftCount = 0;
-                    int i = startsemi + 1;
-                    loop: while (true) {
-                        char c = signature.charAt(i);
+                    int i = startsemi;
+                    char c;
+                    do {
+                        i++;
+                        c = signature.charAt(i);
                         switch (c) {
-                        case ';':
-                            if (leftCount == 0) {
-                                break loop;
-                            }
-                            break;
                         case '<':
                             leftCount++;
                             break;
                         case '>':
                             leftCount--;
                             break;
+                        default:
+                            break;
                         }
-                        i++;
-
-                    }
+                    } while (c != ';' || leftCount != 0);
                     String foo = signature.substring(startsemi, i + 1);
                     result.append(foo);
                     index = i + 1;
@@ -211,8 +209,7 @@ public class GenericSignatureParser {
      * @return an iterator over the parameters of the generic signature of
      *         method. Returns null if the generic signature cannot be parsed
      */
-    public static @CheckForNull
-    Iterator<String> getGenericSignatureIterator(Method target) {
+    public static @CheckForNull Iterator<String> getGenericSignatureIterator(Method target) {
         try {
             GenericSignatureParser parser = null;
             String genericSignature = null;
@@ -222,13 +219,8 @@ public class GenericSignatureParser {
                     Signature sig = (Signature) a;
                     if (genericSignature != null) {
                         if (!genericSignature.equals(sig.getSignature())) {
-                            if (false) {
-                                System.out.println("Inconsistent signatures: ");
-                                System.out.println(genericSignature);
-                                System.out.println(sig.getSignature());
-                            }
-                            return null; // we've seen two inconsistent
-                            // signatures
+                            // we've seen two inconsistent signatures
+                            return null;
                         }
                         continue;
                     }
@@ -246,19 +238,25 @@ public class GenericSignatureParser {
         return null;
     }
 
+    public String[] getArguments() {
+        ArrayList<String> result = new ArrayList<>();
+        for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
+            result.add(i.next());
+        }
+        return result.toArray(new String[0]);
+    }
+
     /**
      * Compare a plain method signature to the a generic method Signature and
-     * return true if they match
+     * return true if they have the same number of parameters.
+     *
+     * @see GenericSignatureParser#getNumParameters()
      */
     public static boolean compareSignatures(String plainSignature, String genericSignature) {
         GenericSignatureParser plainParser = new GenericSignatureParser(plainSignature);
         GenericSignatureParser genericParser = new GenericSignatureParser(genericSignature);
 
-        if (plainParser.getNumParameters() != genericParser.getNumParameters()) {
-            return false;
-        }
-
-        return true;
+        return plainParser.getNumParameters() == genericParser.getNumParameters();
     }
 
     public static void main(String[] args) {

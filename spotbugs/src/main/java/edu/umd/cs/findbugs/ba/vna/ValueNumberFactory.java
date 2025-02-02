@@ -20,13 +20,13 @@
 package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Factory for ValueNumbers. A single Factory must be used to create all of the
@@ -85,23 +85,7 @@ public class ValueNumberFactory {
      */
     @Deprecated
     public void compact(int[] map, int numValuesAllocated) {
-        if (true) {
-            throw new UnsupportedOperationException();
-        }
-        ArrayList<ValueNumber> oldList = this.allocatedValueList;
-        ArrayList<ValueNumber> newList = new ArrayList<>(Collections.<ValueNumber> nCopies(numValuesAllocated, null));
-
-        for (ValueNumber value : oldList) {
-            int newNumber = map[value.getNumber()];
-            if (newNumber >= 0) {
-                // Note: because we are simply assigning new numbers to the
-                // old ValueNumber objects, their flags remain valid.
-                // value.number = newNumber;
-                newList.set(newNumber, value);
-            }
-        }
-
-        this.allocatedValueList = newList;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -113,7 +97,7 @@ public class ValueNumberFactory {
     public ValueNumber getClassObjectValue(@DottedClassName String className) {
         // assert className.indexOf('.') == -1;
         // TODO: Check to see if we need to do this
-        className = className.replace('/', '.');
+        className = ClassName.toDottedClassName(className);
         ValueNumber value = classObjectValueMap.get(className);
         if (value == null) {
             value = createFreshValue(ValueNumber.CONSTANT_CLASS_OBJECT);
@@ -122,9 +106,7 @@ public class ValueNumberFactory {
         return value;
     }
 
-    public @CheckForNull
-    @DottedClassName
-    String getClassName(ValueNumber v) {
+    public @CheckForNull @DottedClassName String getClassName(ValueNumber v) {
         if (!v.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
             throw new IllegalArgumentException("Not a value number for a constant class");
         }
@@ -137,4 +119,3 @@ public class ValueNumberFactory {
     }
 
 }
-

@@ -52,7 +52,7 @@ public class ClassNotFoundExceptionParser {
         list.add(BCEL_MISSING_CLASS_PATTERN);
         list.add(TYPE_REPOSITORY_MISSING_CLASS_PATTERN);
 
-        patternList = list.toArray(new Pattern[list.size()]);
+        patternList = list.toArray(new Pattern[0]);
     }
 
     /**
@@ -63,8 +63,7 @@ public class ClassNotFoundExceptionParser {
      * @return the name of the missing class, or null if we couldn't figure out
      *         the class name
      */
-    public static @DottedClassName
-    String getMissingClassName(ClassNotFoundException ex) {
+    public static @DottedClassName String getMissingClassName(ClassNotFoundException ex) {
         // If the exception has a ResourceNotFoundException as the cause,
         // then we have an easy answer.
         Throwable cause = ex.getCause();
@@ -94,4 +93,3 @@ public class ClassNotFoundExceptionParser {
     }
 
 }
-

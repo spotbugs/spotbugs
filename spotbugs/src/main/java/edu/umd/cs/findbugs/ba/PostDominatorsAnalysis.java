@@ -27,9 +27,9 @@ package edu.umd.cs.findbugs.ba;
  * @see AbstractDominatorsAnalysis
  */
 public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
-    final private ReverseDepthFirstSearch rdfs;
+    private final ReverseDepthFirstSearch rdfs;
 
-    final private DepthFirstSearch dfs;
+    private final DepthFirstSearch dfs;
 
     /**
      * Constructor.
@@ -118,4 +118,3 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
     // driver.execute(args[0]);
     // }
 }
-

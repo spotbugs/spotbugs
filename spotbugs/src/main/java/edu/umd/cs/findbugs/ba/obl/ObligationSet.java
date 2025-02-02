@@ -50,13 +50,14 @@ public class ObligationSet {
 
 
     public boolean isEmpty() {
-        for(short s : countList) {
+        for (short s : countList) {
             if (s > 0) {
                 return false;
             }
         }
         return true;
     }
+
     public void add(Obligation obligation) {
         invalidate();
         countList[obligation.getId()]++;
@@ -65,8 +66,7 @@ public class ObligationSet {
     public void remove(Obligation obligation) {
         invalidate();
         int count = countList[obligation.getId()];
-        if (count > 0)
-        {
+        if (count > 0) {
             countList[obligation.getId()]--; // = (short)(count - 1);
         }
     }
@@ -117,12 +117,7 @@ public class ObligationSet {
 
         ObligationSet other = (ObligationSet) o;
 
-        if (!Arrays.equals(this.countList, other.countList)
-                /* || !Arrays.equals(this.whereCreated, other.whereCreated) */) {
-            return false;
-        }
-
-        return true;
+        return Arrays.equals(this.countList, other.countList);
     }
 
     /*
@@ -180,4 +175,3 @@ public class ObligationSet {
         this.cachedHashCode = INVALID_HASH_CODE;
     }
 }
-

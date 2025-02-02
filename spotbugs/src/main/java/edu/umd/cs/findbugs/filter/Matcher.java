@@ -42,4 +42,3 @@ public interface Matcher {
 
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException;
 }
-

@@ -3,31 +3,20 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
-  compileOnly project(':spotbugs')
+  api (project(':spotbugs')) {
+    transitive = true
+  }
 }
 
-task javadocJar(type: Jar) {
-  classifier = 'javadoc'
-  from javadoc
+java {
+  withJavadocJar()
+  withSourcesJar()
 }
 
-task sourcesJar(type: Jar) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
-}
-
-artifacts {
-  archives jar, javadocJar, sourcesJar
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name 'Core of Test Harness for SpotBugs Plugin'
-        description 'Core feature to support unit test for SpotBugs Plugin'
-      }
-    }
+publishing.publications.maven {
+  pom {
+    name = 'Core of Test Harness for SpotBugs Plugin'
+    description = 'Core feature to support unit test for SpotBugs Plugin'
   }
 }
 

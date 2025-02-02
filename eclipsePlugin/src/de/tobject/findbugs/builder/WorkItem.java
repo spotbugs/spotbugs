@@ -227,18 +227,17 @@ public class WorkItem {
         return classNamePattern;
     }
 
-    public @CheckForNull
-    IResource getCorespondingResource() {
+    public @CheckForNull IResource getCorespondingResource() {
         if (resource != null) {
             return resource;
         }
         try {
             IResource resource1 = javaElt.getCorrespondingResource();
-            if(resource1 != null) {
+            if (resource1 != null) {
                 return resource1;
             }
             IJavaElement ancestor = javaElt.getAncestor(IJavaElement.COMPILATION_UNIT);
-            if(ancestor != null){
+            if (ancestor != null) {
                 return ancestor.getCorrespondingResource();
             }
         } catch (JavaModelException e) {
@@ -247,8 +246,7 @@ public class WorkItem {
         return null;
     }
 
-    public @CheckForNull
-    IJavaElement getCorespondingJavaElement() {
+    public @CheckForNull IJavaElement getCorespondingJavaElement() {
         if (javaElt != null) {
             return javaElt;
         }
@@ -261,8 +259,7 @@ public class WorkItem {
      *         null. The return value can be absolutely unrelated to the
      *         {@link #getCorespondingResource()}.
      */
-    public @Nonnull
-    IResource getMarkerTarget() {
+    public @Nonnull IResource getMarkerTarget() {
         IResource res = getCorespondingResource();
         if (res != null) {
             return res;
@@ -299,7 +296,7 @@ public class WorkItem {
             return new HashSet<>(Arrays.asList(markers));
         }
         IResource markerTarget = getMarkerTarget();
-        if(!markerTarget.isAccessible()) {
+        if (!markerTarget.isAccessible()) {
             return Collections.emptySet();
         }
         if (!recursive
@@ -308,8 +305,7 @@ public class WorkItem {
             recursive = true;
         }
         IMarker[] markers = MarkerUtil.getMarkers(markerTarget, recursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE);
-        Set<IMarker> forJavaElement = MarkerUtil.findMarkerForJavaElement(javaElt, markers, recursive);
-        return forJavaElement;
+        return MarkerUtil.findMarkerForJavaElement(javaElt, markers, recursive);
     }
 
     /**
@@ -319,7 +315,7 @@ public class WorkItem {
      * @return source root folder matching (parent of) given path, or null
      */
     private static @Nullable IPath getMatchingSourceRoot(@Nullable IPath srcPath, Map<IPath, IPath> outLocations) {
-        if(srcPath == null) {
+        if (srcPath == null) {
             return null;
         }
         Set<Entry<IPath, IPath>> outEntries = outLocations.entrySet();
@@ -349,8 +345,7 @@ public class WorkItem {
      *         java element (method, inner class etc), results are undefined
      *         yet.
      */
-    public @CheckForNull
-    IPath getPath() {
+    public @CheckForNull IPath getPath() {
         IResource corespondingResource = getCorespondingResource();
         if (corespondingResource != null) {
             return corespondingResource.getLocation();
@@ -383,6 +378,13 @@ public class WorkItem {
             return false;
         }
         return Archive.isArchiveFileName(file.getName());
+    }
+
+    /**
+     * @return true if this work item corresponds to a project
+     */
+    public boolean isProject() {
+        return resource instanceof IProject || javaElt instanceof IJavaProject;
     }
 
     @Override

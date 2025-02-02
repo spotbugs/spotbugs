@@ -85,14 +85,14 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
     @Override
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         xclass = getClassInfo(classDescriptor);
-        if(xclass != null){
+        if (xclass != null) {
             super.visitClass(classDescriptor);
         }
     }
 
     @CheckForNull
-    XClass getClassInfo(ClassDescriptor classDescr){
-        if(classDescr == null){
+    XClass getClassInfo(ClassDescriptor classDescr) {
+        if (classDescr == null) {
             return null;
         }
         try {
@@ -137,7 +137,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             super.visitEnd();
             // 1 test if we have suspicious annotations on method or parameters
             relaxedNullReturn = containsRelaxedNonNull(visibleAnnotations);
-            if(!relaxedNullReturn){
+            if (!relaxedNullReturn) {
                 relaxedNullReturn = containsRelaxedNonNull(invisibleAnnotations);
             }
             boolean needsCheck = relaxedNullReturn;
@@ -174,11 +174,10 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                     done = checkMethod(method);
                 } else {
                     for (XMethod superMethod : superClass.getXMethods()) {
-                        if (name.equals(superMethod.getName()) && compatibleParameters(desc, superMethod.getSignature())) {
-                            if (checkMethod(superMethod)) {
-                                done = true;
-                                break;
-                            }
+                        if (name.equals(superMethod.getName()) && compatibleParameters(desc, superMethod.getSignature())
+                                && checkMethod(superMethod)) {
+                            done = true;
+                            break;
                         }
                     }
                 }
@@ -195,7 +194,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                 foundAny = true;
             }
             if (nonNullParameter != null) {
-                for(Map.Entry<Integer, NullnessAnnotation> e : nonNullParameter.entrySet()) {
+                for (Map.Entry<Integer, NullnessAnnotation> e : nonNullParameter.entrySet()) {
                     int i = e.getKey();
                     if (containsNullness(method.getParameterAnnotations(i), CHECK_FOR_NULL)) {
                         NullnessAnnotation a = e.getValue();
@@ -204,16 +203,16 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                         bug.addClassAndMethod(xmethod);
                         LocalVariableAnnotation lva = null;
                         if (localVariables != null) {
-                            for(LocalVariableNode lvn : localVariables) {
-                                if (lvn.index == i+1) {
-                                    lva = new LocalVariableAnnotation(lvn.name, i+1, 0);
+                            for (LocalVariableNode lvn : localVariables) {
+                                if (lvn.index == i + 1) {
+                                    lva = new LocalVariableAnnotation(lvn.name, i + 1, 0);
                                     lva.setDescription(LocalVariableAnnotation.PARAMETER_NAMED_ROLE);
                                     break;
                                 }
                             }
                         }
-                        if (lva==null) {
-                            lva = new LocalVariableAnnotation("?", i+1, 0);
+                        if (lva == null) {
+                            lva = new LocalVariableAnnotation("?", i + 1, 0);
                             lva.setDescription(LocalVariableAnnotation.PARAMETER_ROLE);
                         }
                         bug.add(lva);
@@ -243,7 +242,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                 ClassDescriptor interfaceDescr = interfacesToVisit.poll();
                 if (visited.add(interfaceDescr)) {
                     XClass xinterface = getClassInfo(interfaceDescr);
-                    if(xinterface != null){
+                    if (xinterface != null) {
                         interfacesToVisit.addAll(Arrays.asList(xinterface.getInterfaceDescriptorList()));
                         return xinterface;
                     }
@@ -256,7 +255,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             XClass currentSuperclass = superclass;
             // compute next one
             superclass = getClassInfo(superclass.getSuperclassDescriptor());
-            if(superclass != null){
+            if (superclass != null) {
                 interfacesToVisit = new LinkedList<>(Arrays.asList(superclass.getInterfaceDescriptorList()));
             }
             return currentSuperclass;
@@ -327,10 +326,9 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             while (params.hasNext()) {
                 String param = params.next();
                 String superParam = superParams.next();
-                if (areRelated(param, superParam)) {
-                    continue;
+                if (!areRelated(param, superParam)) {
+                    return false;
                 }
-                return false;
             }
             String retSig = sig.getReturnTypeSignature();
             String superRetSig = superSig.getReturnTypeSignature();

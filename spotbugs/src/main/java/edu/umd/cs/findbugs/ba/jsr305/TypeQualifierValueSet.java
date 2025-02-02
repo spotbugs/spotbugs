@@ -49,7 +49,7 @@ public class TypeQualifierValueSet {
 
     private State state = State.VALID;
 
-    final boolean  isStrict;
+    final boolean isStrict;
 
     public TypeQualifierValueSet(TypeQualifierValue<?> typeQualifierValue) {
         this.valueMap = new HashMap<>(3);
@@ -65,27 +65,16 @@ public class TypeQualifierValueSet {
         FlowValue flowValue = FlowValue.flowValueFromWhen(sourceSinkInfo.getWhen());
 
         setValue(vn, flowValue);
-        if (true) {
-            switch (flowValue) {
-            case ALWAYS:
-                addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
-                break;
-            case NEVER:
-                addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
-                break;
-            default:
-                break;
-            }
-        }/* else {
-
-            if (flowValue.isYes()) {
-                addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
-            }
-
-            if (flowValue.isNo()) {
-                addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
-            }
-        }*/
+        switch (flowValue) {
+        case ALWAYS:
+            addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
+            break;
+        case NEVER:
+            addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
+            break;
+        default:
+            break;
+        }
     }
 
     private void setValue(ValueNumber vn, FlowValue flowValue) {
@@ -114,11 +103,7 @@ public class TypeQualifierValueSet {
 
     private static void addSourceSinkInfo(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn,
             SourceSinkInfo sourceSinkInfo) {
-        Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
-        if (sourceSinkInfoSet == null) {
-            sourceSinkInfoSet = new HashSet<>(3);
-            sourceSinkInfoSetMap.put(vn, sourceSinkInfoSet);
-        }
+        Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
         sourceSinkInfoSet.add(sourceSinkInfo);
     }
 
@@ -132,12 +117,15 @@ public class TypeQualifierValueSet {
     public Set<? extends SourceSinkInfo> getWhere(ValueNumber vn) {
         FlowValue f = getValue(vn);
         switch (f) {
-        case ALWAYS:  return getSourceSinkInfoSet(whereAlways, vn);
-        case NEVER:  return getSourceSinkInfoSet(whereNever, vn);
+        case ALWAYS:
+            return getSourceSinkInfoSet(whereAlways, vn);
+        case NEVER:
+            return getSourceSinkInfoSet(whereNever, vn);
         }
         return Collections.emptySet();
 
     }
+
     public Set<? extends SourceSinkInfo> getWhereAlways(ValueNumber vn) {
         return getSourceSinkInfoSet(whereAlways, vn);
     }
@@ -155,17 +143,11 @@ public class TypeQualifierValueSet {
 
         return sourceSinkInfoSet;
     }
+
     private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
             ValueNumber vn) {
-        Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
-        if (sourceSinkInfoSet == null) {
-            sourceSinkInfoSet = new HashSet<>(3);
-            sourceSinkInfoSetMap.put(vn, sourceSinkInfoSet);
-        }
-        return sourceSinkInfoSet;
+        return sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
     }
-
-
 
     public FlowValue getValue(ValueNumber vn) {
         FlowValue result = valueMap.get(vn);
@@ -322,8 +304,7 @@ public class TypeQualifierValueSet {
             return state.toString();
         }
 
-        TreeSet<ValueNumber> interesting = new TreeSet<>();
-        interesting.addAll(valueMap.keySet());
+        TreeSet<ValueNumber> interesting = new TreeSet<>(valueMap.keySet());
 
         StringBuilder buf = new StringBuilder();
 
@@ -332,7 +313,7 @@ public class TypeQualifierValueSet {
 
         for (ValueNumber vn : interesting) {
             FlowValue value = getValue(vn);
-            if (value == FlowValue.TOP ||  /* !isStrict && */ value == FlowValue.UNKNOWN) {
+            if (value == FlowValue.TOP || /* !isStrict && */ value == FlowValue.UNKNOWN) {
                 continue;
             }
             if (buf.length() > 1) {
@@ -346,10 +327,11 @@ public class TypeQualifierValueSet {
         return buf.toString();
     }
 
-    public String valueNumberToString(ValueNumber vn ) {
+    public String valueNumberToString(ValueNumber vn) {
         return valueNumberToString(vn, getValue(vn));
     }
-    public String valueNumberToString(ValueNumber vn, FlowValue value ) {
+
+    public String valueNumberToString(ValueNumber vn, FlowValue value) {
         StringBuilder buf = new StringBuilder();
 
         buf.append(vn.getNumber());
@@ -378,8 +360,7 @@ public class TypeQualifierValueSet {
     }
 
     private static void appendSourceSinkInfos(StringBuilder buf, String key, Set<? extends SourceSinkInfo> sourceSinkInfoSet) {
-        TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<>();
-        sortedLocSet.addAll(sourceSinkInfoSet);
+        TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<>(sourceSinkInfoSet);
         boolean first = true;
         buf.append(key);
         buf.append("(");

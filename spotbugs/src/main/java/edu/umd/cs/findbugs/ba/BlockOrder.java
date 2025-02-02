@@ -35,4 +35,3 @@ public interface BlockOrder {
      */
     public int compare(BasicBlock b1, BasicBlock b2);
 }
-

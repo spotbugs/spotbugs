@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.NonReportingDetector;
  * @author David Hovemeyer
  */
 public class NoteUnconditionalParamDerefs extends BuildUnconditionalParamDerefDatabase implements NonReportingDetector,
-InterproceduralFirstPassDetector {
+        InterproceduralFirstPassDetector {
 
     final BugReporter reporter;
 

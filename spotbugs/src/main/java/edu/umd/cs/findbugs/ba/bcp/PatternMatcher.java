@@ -29,6 +29,8 @@ import javax.annotation.Nullable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -56,7 +58,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @see ByteCodePattern
  */
 public class PatternMatcher implements DFSEdgeTypes {
-    private static final boolean DEBUG = SystemProperties.getBoolean("bcp.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(PatternMatcher.class);
 
     private static final boolean SHOW_WILD = SystemProperties.getBoolean("bcp.showWild");
 
@@ -89,7 +91,7 @@ public class PatternMatcher implements DFSEdgeTypes {
      *            the Method to analyze
      */
     public PatternMatcher(ByteCodePattern pattern, ClassContext classContext, Method method) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
         this.pattern = pattern;
         this.cfg = classContext.getCFG(method);
         this.cpg = classContext.getConstantPoolGen();
@@ -424,7 +426,7 @@ public class PatternMatcher implements DFSEdgeTypes {
             ValueNumberFrame after = vnaDataflow.getFactAfterLocation(location);
 
             // Try to match the instruction against the pattern element.
-            boolean debug = DEBUG && (!(patternElement instanceof Wild) || SHOW_WILD);
+            boolean debug = LOG.isDebugEnabled() && (!(patternElement instanceof Wild) || SHOW_WILD);
             if (debug) {
 
                 debug((parentPath >= 0 ? parentPath + "->" : "") + path + ": Match " + patternElement + " against "
@@ -448,11 +450,11 @@ public class PatternMatcher implements DFSEdgeTypes {
     }
 
     private void debug(String s) {
-        if (!DEBUG) {
+        if (!LOG.isDebugEnabled()) {
             throw new IllegalStateException("Only call if DEBUG is true");
         }
-        System.out.print("                                            ".substring(0, depth));
-        System.out.println(s);
+        String indent = "                                            ".substring(0, depth);
+        LOG.debug("{}{}", indent, s);
     }
 
     /**
@@ -471,14 +473,14 @@ public class PatternMatcher implements DFSEdgeTypes {
             // Have we reached the end of the pattern?
             if (state.isComplete()) {
                 // This is a complete match.
-                if (DEBUG) {
+                if (LOG.isDebugEnabled()) {
                     debug("FINISHED A MATCH!");
                 }
                 resultList.add(state.getResult());
                 return;
             }
 
-            if (DEBUG) {
+            if (LOG.isDebugEnabled()) {
                 debug("Matching " + state.getPatternElement() + " against " + state.currentMatch);
             }
             // If we've reached the minimum number of occurrences for this
@@ -505,7 +507,7 @@ public class PatternMatcher implements DFSEdgeTypes {
             if (state.lookForDominatedInstruction()) {
                 Iterable<State> dominatedInstructions = state.dominatedInstructionStateIterable();
                 for (State s : dominatedInstructions) {
-                    if (DEBUG) {
+                    if (LOG.isDebugEnabled()) {
                         debug("trying " + s);
                     }
                     work(s);
@@ -562,4 +564,3 @@ public class PatternMatcher implements DFSEdgeTypes {
 
     }
 }
-

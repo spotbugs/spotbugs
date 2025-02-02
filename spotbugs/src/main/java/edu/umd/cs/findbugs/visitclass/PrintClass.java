@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -103,9 +104,9 @@ public class PrintClass {
             System.err.println("list: No input files specified");
         } else if (zip_file != null) {
             for (int i = 0; i < files; i++) {
-                file_name[i] = file_name[i].replace('.', '/');
+                file_name[i] = ClassName.toSlashedClassName(file_name[i]);
             }
-            try(ZipFile z = new ZipFile(zip_file)){
+            try (ZipFile z = new ZipFile(zip_file)) {
                 TreeSet<ZipEntry> zipEntries = new TreeSet<>(new ZipEntryComparator());
                 for (Enumeration<? extends ZipEntry> e = z.entries(); e.hasMoreElements();) {
                     zipEntries.add(e.nextElement());

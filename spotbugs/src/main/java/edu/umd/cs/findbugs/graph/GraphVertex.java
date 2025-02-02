@@ -17,8 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.8 $
-
 package edu.umd.cs.findbugs.graph;
 
 /**
@@ -37,4 +35,3 @@ public interface GraphVertex<ActualVertexType> extends Comparable<ActualVertexTy
     public void setLabel(int label);
 
 }
-

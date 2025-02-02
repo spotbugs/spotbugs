@@ -43,13 +43,13 @@ public class MutableEnum extends OpcodeStackDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if(!classContext.getJavaClass().isEnum() || !classContext.getJavaClass().isPublic()) {
+        if (!classContext.getJavaClass().isEnum() || !classContext.getJavaClass().isPublic()) {
             return;
         }
         boolean hasInterestingField = false;
-        for(XField field : classContext.getXClass().getXFields()) {
-            if(!field.isStatic() && !field.isFinal() && !field.isSynthetic()) {
-                if(field.isPublic()) {
+        for (XField field : classContext.getXClass().getXFields()) {
+            if (!field.isStatic() && !field.isFinal() && !field.isSynthetic()) {
+                if (field.isPublic()) {
                     reporter.reportBug(new BugInstance("ME_MUTABLE_ENUM_FIELD", NORMAL_PRIORITY).addClass(classContext.getJavaClass())
                             .addField(field));
                 } else {
@@ -57,7 +57,7 @@ public class MutableEnum extends OpcodeStackDetector {
                 }
             }
         }
-        if(hasInterestingField) {
+        if (hasInterestingField) {
             super.visitClassContext(classContext);
         }
     }
@@ -65,25 +65,22 @@ public class MutableEnum extends OpcodeStackDetector {
     @Override
     public boolean shouldVisitCode(Code obj) {
         skip = false;
-        if(getXMethod().isPublic() && getNumberMethodArguments() > 0) {
-            return true;
-        }
-        return false;
+        return getXMethod().isPublic() && getNumberMethodArguments() > 0;
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if(skip) {
+        if (skip) {
             return;
         }
-        if(isBranch(seen) || seen == Const.ATHROW || isReturn(seen)) {
+        if (isBranch(seen) || seen == Const.ATHROW || isReturn(seen)) {
             skip = true;
         }
-        if(seen == Const.PUTFIELD) {
+        if (seen == Const.PUTFIELD) {
             XField xField = getXFieldOperand();
-            if(xField != null && xField.getClassDescriptor().getClassName().equals(getClassName())) {
+            if (xField != null && xField.getClassDescriptor().getClassName().equals(getClassName())) {
                 Item val = getStack().getStackItem(0);
-                if(val.isInitialParameter()) {
+                if (val.isInitialParameter()) {
                     reporter.reportBug(new BugInstance("ME_ENUM_FIELD_SETTER", NORMAL_PRIORITY).addClassAndMethod(this).addField(xField)
                             .addSourceLine(this));
                 }

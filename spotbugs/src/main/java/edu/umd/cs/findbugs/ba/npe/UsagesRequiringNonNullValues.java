@@ -73,8 +73,7 @@ public class UsagesRequiringNonNullValues {
         map.add(loc.getHandle().getPosition(), p);
     }
 
-    public @CheckForNull
-    PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn, ValueNumberDataflow vnaDataflow) {
+    public @CheckForNull PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn, ValueNumberDataflow vnaDataflow) {
         // PointerUsageRequiringNonNullValue secondBest = null;
         MergeTree mergeTree = vnaDataflow.getAnalysis().getMergeTree();
         for (Pair p : map.get(loc.getHandle().getPosition())) {

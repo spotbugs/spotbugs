@@ -91,12 +91,12 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
          * + returnValueIsRef + " " + isSynchronized + " " + isNative );
          */
         if (name.startsWith("get") && !isSynchronized
-                // && returnValueIsRef
-                ) {
+        // && returnValueIsRef
+        ) {
             getMethods.put(name.substring(3), MethodAnnotation.fromVisitedMethod(this));
         } else if (name.startsWith("set") && isSynchronized
-                // && firstArgIsRef
-                ) {
+        // && firstArgIsRef
+        ) {
             setMethods.put(name.substring(3), MethodAnnotation.fromVisitedMethod(this));
         }
     }

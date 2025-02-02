@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import java.util.Objects;
+
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
@@ -28,8 +30,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  */
 public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 
-    private final @SlashedClassName
-    String slashedClassName;
+    private final @SlashedClassName String slashedClassName;
 
     private final String name;
 
@@ -41,7 +42,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 
     private final int nameSigHashCode;
 
-    public FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
+    protected FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
         assert slashedClassName.indexOf('.') == -1 : "class name not in VM format: " + slashedClassName;
 
         this.slashedClassName = slashedClassName;
@@ -52,7 +53,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     }
 
     public static int getNameSigHashCode(String name, String signature) {
-        return name.hashCode() * 3119 + signature.hashCode() * 131;
+        return Objects.hash(name, signature);
     }
 
     public int getNameSigHashCode() {
@@ -64,8 +65,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
      *
      * @return Returns the class name
      */
-    public @SlashedClassName
-    String getSlashedClassName() {
+    public @SlashedClassName String getSlashedClassName() {
         return slashedClassName;
     }
 
@@ -132,7 +132,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     @Override
     public final int hashCode() {
         if (cachedHashCode == 0) {
-            cachedHashCode = slashedClassName.hashCode() * 7919 + nameSigHashCode + (isStatic ? 1 : 0);
+            cachedHashCode = Objects.hash(slashedClassName, nameSigHashCode, isStatic);
         }
         return cachedHashCode;
     }

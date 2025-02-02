@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -51,6 +52,10 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.CheckReturnValue;
 
 /**
  * A BugAnnotation that records a range of source lines in a class.
@@ -60,6 +65,8 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  */
 public class SourceLineAnnotation implements BugAnnotation {
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(SourceLineAnnotation.class);
 
     public static final String DEFAULT_ROLE = "SOURCE_LINE_DEFAULT";
 
@@ -93,17 +100,18 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     private String description;
 
-    final private @DottedClassName String className;
+    @DottedClassName
+    private final String className;
 
     private String sourceFile;
 
-    final private int startLine;
+    private final int startLine;
 
-    final private int endLine;
+    private final int endLine;
 
-    final private int startBytecode;
+    private final int startBytecode;
 
-    final private int endBytecode;
+    private final int endBytecode;
 
     private boolean synthetic;
 
@@ -205,9 +213,8 @@ public class SourceLineAnnotation implements BugAnnotation {
      */
     @Nonnull
     public static SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile, int startBytecode, int endBytecode) {
-        SourceLineAnnotation result = new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
+        return new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
         // result.setDescription("SOURCE_LINE_UNKNOWN");
-        return result;
     }
 
     /**
@@ -219,10 +226,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @return the SourceLineAnnotation
      */
     public static SourceLineAnnotation fromVisitedMethod(PreorderVisitor visitor) {
-
-        SourceLineAnnotation sourceLines = getSourceAnnotationForMethod(visitor.getDottedClassName(), visitor.getMethodName(),
-                visitor.getMethodSig());
-        return sourceLines;
+        return getSourceAnnotationForMethod(visitor.getDottedClassName(), visitor.getMethodName(), visitor.getMethodSig());
     }
 
     /**
@@ -339,7 +343,7 @@ public class SourceLineAnnotation implements BugAnnotation {
                 }
                 if (firstLine < Integer.MAX_VALUE) {
 
-                    result = new SourceLineAnnotation(methodDescriptor.getClassDescriptor().toDottedClassName(), sourceFile,
+                    result = new SourceLineAnnotation(methodDescriptor.getClassDescriptor().getDottedClassName(), sourceFile,
                             firstLine, firstLine, bytecode, bytecode);
                 }
             }
@@ -348,7 +352,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
 
         if (result == null) {
-            result = createUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
+            result = createUnknown(methodDescriptor.getClassDescriptor().getDottedClassName());
         }
         return result;
     }
@@ -421,7 +425,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @param methodDescriptor
      *            MethodDescriptor identifying analyzed method
      * @param location
-     *            Location of instruction within analyed method
+     *            Location of instruction within analyzed method
      * @return SourceLineAnnotation describing visited instruction
      */
     public static SourceLineAnnotation fromVisitedInstruction(MethodDescriptor methodDescriptor, Location location) {
@@ -435,7 +439,7 @@ public class SourceLineAnnotation implements BugAnnotation {
             Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
             return fromVisitedInstruction(jclass, method, position);
         } catch (CheckedAnalysisException e) {
-            return createReallyUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
+            return createReallyUnknown(methodDescriptor.getClassDescriptor().getDottedClassName());
         }
     }
 
@@ -940,8 +944,49 @@ public class SourceLineAnnotation implements BugAnnotation {
         if (classname.indexOf('.') > 0) {
             packageName = classname.substring(0, 1 + classname.lastIndexOf('.'));
         }
-        String sourcePath = packageName.replace('.', CANONICAL_PACKAGE_SEPARATOR) + sourceFile;
-        return sourcePath;
+        return packageName.replace('.', CANONICAL_PACKAGE_SEPARATOR) + sourceFile;
+    }
+
+    /**
+     * Returns the complete path of the source file the analyzed class has been generated from,
+     * if this information is available to the current AnalysisContext, otherwise falls back to getSourcePath().
+     *
+     * @return the complete path of the source file the analyzed class has been generated from,
+     * otherwise falls back to getSourcePath().
+     */
+    public String getRealSourcePath() {
+        if (isSourceFileKnown()) {
+            SourceFinder sourceFinder = getSourceFinder();
+            if (sourceFinder != null) {
+                try {
+                    return new File(sourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
+                } catch (IOException e) {
+                    LOG.debug("Error resolving Real SourcePath (only relative source path will be available) ", e);
+                }
+            } else {
+                AnalysisContext.logError("No SourceFinder found (only relative source path will be available) ");
+            }
+        }
+        return getSourcePath();
+    }
+
+    /**
+     * This method hands back a SourceFinder for this SourceLineAnnotation.
+     * It can be used to identify the full path of a source file rather than
+     * just the class name. The method either tries to find it in the currently
+     * set project or in the Analysis Context.
+     * @return the currently available SourceFinder, or null if it could not be found
+     */
+    private @CheckReturnValue SourceFinder getSourceFinder() {
+        Project project = myProject.get();
+        // First try to identify the correct SourceFinder by the set project
+        if (project != null) {
+            return project.getSourceFinder();
+        }
+        // if this is not successful try to find the SourceFinder using the Analysis Context
+        return Optional.ofNullable(AnalysisContext.currentAnalysisContext())
+                .map(AnalysisContext::getSourceFinder)
+                .orElse(null);
     }
 
     public void setSynthetic(boolean synthetic) {

@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -172,7 +172,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
         // Compute digest of method names and signatures, in order.
         // Also, compute method hashes.
-        CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
+        CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
         for (Method method : methodList) {
             work(digest, method.getName(), encoder);
             work(digest, method.getSignature(), encoder);
@@ -321,9 +321,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
      */
     @Override
     public int compareTo(ClassHash other) {
-        int cmp = MethodHash.compareHashes(this.classHash, other.classHash);
-        // System.out.println(this + " <=> " + other + ": compareTo=" + cmp);
-        return cmp;
+        return MethodHash.compareHashes(this.classHash, other.classHash);
     }
 
     /*

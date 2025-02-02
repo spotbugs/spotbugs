@@ -45,7 +45,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     private final Map<String, String> resourceNameTranslationMap;
 
-    public AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
+    protected AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
         this.codeBaseLocator = codeBaseLocator;
         this.lastModifiedTime = -1L;
         this.resourceNameTranslationMap = new HashMap<>();
@@ -125,6 +125,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
             this.lastModifiedTime = lastModifiedTime;
         }
     }
+
     public void addLastModifiedTime(long lastModifiedTime) {
         if (lastModifiedTime > 0 && FindBugs.validTimestamp(lastModifiedTime) && this.lastModifiedTime < lastModifiedTime) {
             this.lastModifiedTime = lastModifiedTime;

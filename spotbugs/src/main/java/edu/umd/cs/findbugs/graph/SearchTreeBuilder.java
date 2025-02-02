@@ -64,4 +64,3 @@ public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>> imple
         return searchTree;
     }
 }
-

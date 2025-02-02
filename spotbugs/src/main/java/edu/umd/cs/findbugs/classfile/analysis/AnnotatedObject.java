@@ -36,15 +36,13 @@ public interface AnnotatedObject {
     /** return the ClassDescriptor for the class associated with this object */
     public ClassDescriptor getClassDescriptor();
 
-    public @Nullable
-    AnnotationValue getAnnotation(ClassDescriptor desc);
+    public @Nullable AnnotationValue getAnnotation(ClassDescriptor desc);
 
     public Collection<AnnotationValue> getAnnotations();
 
     public ElementType getElementType();
 
-    public @CheckForNull
-    AnnotatedObject getContainingScope();
+    public @CheckForNull AnnotatedObject getContainingScope();
 
     public boolean isSynthetic();
 }

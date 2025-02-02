@@ -67,6 +67,7 @@ public class InitializationChain extends BytecodeScanningDetector {
             this.constructor = constructor;
             this.pc = pc;
         }
+
         XMethod constructor;
         int pc;
         XField field;
@@ -82,7 +83,7 @@ public class InitializationChain extends BytecodeScanningDetector {
     protected Iterable<Method> getMethodVisitOrder(JavaClass obj) {
         ArrayList<Method> visitOrder = new ArrayList<>();
         Method staticInitializer = null;
-        for(Method m : obj.getMethods()) {
+        for (Method m : obj.getMethods()) {
             String name = m.getName();
             if (Const.STATIC_INITIALIZER_NAME.equals(name)) {
                 staticInitializer = m;
@@ -100,7 +101,7 @@ public class InitializationChain extends BytecodeScanningDetector {
 
     @Override
     public void visit(Code obj) {
-        fieldsReadInThisConstructor  = new HashSet<>();
+        fieldsReadInThisConstructor = new HashSet<>();
         super.visit(obj);
         staticFieldsRead.put(getXMethod(), fieldsReadInThisConstructor);
         requires.remove(getDottedClassName());
@@ -143,7 +144,8 @@ public class InitializationChain extends BytecodeScanningDetector {
             return;
         }
 
-        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) &&  getClassConstantOperand().equals(getClassName())) {
+        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && getClassConstantOperand().equals(
+                getClassName())) {
 
             XMethod m = getXMethodOperand();
             Set<XField> read = staticFieldsRead.get(m);
@@ -160,7 +162,7 @@ public class InitializationChain extends BytecodeScanningDetector {
                 prev.field = f;
             }
             if (staticFieldsReadInAnyConstructor.contains(f) && !warningGiven.contains(f)) {
-                for(InvocationInfo i : invocationInfo) {
+                for (InvocationInfo i : invocationInfo) {
                     Set<XField> fields = staticFieldsRead.get(i.constructor);
                     if (fields != null && fields.contains(f)) {
                         warningGiven.add(f);

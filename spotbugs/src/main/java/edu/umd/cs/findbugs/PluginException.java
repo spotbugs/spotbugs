@@ -26,9 +26,7 @@ package edu.umd.cs.findbugs;
  * @see PluginLoader
  */
 public class PluginException extends Exception {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -53,4 +51,3 @@ public class PluginException extends Exception {
         super(msg, cause);
     }
 }
-

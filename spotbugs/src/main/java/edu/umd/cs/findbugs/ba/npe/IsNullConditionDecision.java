@@ -37,14 +37,11 @@ import edu.umd.cs.findbugs.util.Strings;
  * @see IsNullValueAnalysis
  */
 public class IsNullConditionDecision {
-    private final @CheckForNull
-    ValueNumber value;
+    private final @CheckForNull ValueNumber value;
 
-    private final @CheckForNull
-    IsNullValue ifcmpDecision;
+    private final @CheckForNull IsNullValue ifcmpDecision;
 
-    private final @CheckForNull
-    IsNullValue fallThroughDecision;
+    private final @CheckForNull IsNullValue fallThroughDecision;
 
     /**
      * Constructor.
@@ -121,8 +118,7 @@ public class IsNullConditionDecision {
      * @return the IsNullValue representing the decision, or null if the edge is
      *         infeasible
      */
-    public @CheckForNull
-    IsNullValue getDecision(int edgeType) {
+    public @CheckForNull IsNullValue getDecision(int edgeType) {
         switch (edgeType) {
         case EdgeTypes.IFCMP_EDGE:
             return ifcmpDecision;
@@ -144,4 +140,3 @@ public class IsNullConditionDecision {
         return buf.toString();
     }
 }
-

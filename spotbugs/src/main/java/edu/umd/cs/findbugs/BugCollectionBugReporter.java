@@ -34,7 +34,8 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 
     private final Project project;
 
-    @CheckForNull private final PrintWriter writer;
+    @CheckForNull
+    private final PrintWriter writer;
 
     public BugCollectionBugReporter(Project project) {
         this(project, null);
@@ -46,13 +47,13 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
         bugCollection.setTimestamp(System.currentTimeMillis());
         this.writer = writer;
     }
+
     public Project getProject() {
         return project;
     }
 
     @Override
-    public @Nonnull
-    BugCollection getBugCollection() {
+    public @Nonnull BugCollection getBugCollection() {
         return bugCollection;
     }
 
@@ -89,6 +90,16 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
         }
         bugCollection.addMissingClass(missing);
         super.reportMissingClass(ex);
+    }
+
+    @Override
+    public void reportMissingClass(ClassDescriptor classDescriptor) {
+        String missing = classDescriptor.getDottedClassName();
+        if (!isValidMissingClassMessage(missing)) {
+            return;
+        }
+        bugCollection.addMissingClass(missing);
+        super.reportMissingClass(classDescriptor);
     }
 
     @Override
@@ -143,4 +154,3 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 
 
 }
-

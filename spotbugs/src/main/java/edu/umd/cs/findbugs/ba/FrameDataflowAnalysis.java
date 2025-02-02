@@ -32,8 +32,8 @@ import javax.annotation.CheckForNull;
  * @see DataflowAnalysis
  */
 public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<ValueType>> extends
-ForwardDataflowAnalysis<FrameType> {
-    public FrameDataflowAnalysis(DepthFirstSearch dfs) {
+        ForwardDataflowAnalysis<FrameType> {
+    protected FrameDataflowAnalysis(DepthFirstSearch dfs) {
         super(dfs);
     }
 
@@ -98,7 +98,7 @@ ForwardDataflowAnalysis<FrameType> {
             if (b.getFirstInstruction() != null && b.getFirstInstruction().getPosition() == pc) {
                 b2 = cfg.getPredecessorWithEdgeType(b, EdgeTypes.FALL_THROUGH_EDGE);
             }
-            if(b2 != null && b2.isExceptionThrower()) {
+            if (b2 != null && b2.isExceptionThrower()) {
                 for (Iterator<Edge> i = cfg.incomingEdgeIterator(b2); i.hasNext();) {
                     Edge e = i.next();
                     FrameType fact = getFactOnEdge(e);
@@ -164,7 +164,7 @@ ForwardDataflowAnalysis<FrameType> {
      *            modifyFrame() is being called
      * @return a modifiable copy of fact
      */
-    final protected FrameType modifyFrame(FrameType orig, @CheckForNull FrameType copy) {
+    protected final FrameType modifyFrame(FrameType orig, @CheckForNull FrameType copy) {
         if (copy == null) {
             copy = createFact();
             copy.copyFrom(orig);
@@ -231,4 +231,3 @@ ForwardDataflowAnalysis<FrameType> {
      */
     protected abstract void mergeValues(FrameType otherFrame, FrameType resultFrame, int slot) throws DataflowAnalysisException;
 }
-

@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.log.Profiler;
  * @author David Hovemeyer
  */
 public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType extends ResourceTracker<Resource>> implements
-Detector {
+        Detector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("rtd.debug");
 
@@ -60,7 +60,7 @@ Detector {
 
     protected BugReporter bugReporter;
 
-    public ResourceTrackingDetector(BugReporter bugReporter) {
+    protected ResourceTrackingDetector(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
@@ -112,9 +112,7 @@ Detector {
                 }
 
                 analyzeMethod(classContext, method, resourceTracker, resourceCollection);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Error analyzing method " + method.toString(), e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("Error analyzing method " + method.toString(), e);
             }
             bugAccumulator.reportAccumulatedBugs();
@@ -201,4 +199,3 @@ Detector {
     }
 
 }
-

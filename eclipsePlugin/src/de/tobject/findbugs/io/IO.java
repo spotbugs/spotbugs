@@ -86,7 +86,7 @@ public abstract class IO {
     private static void mkdirs(@Nonnull IResource resource, IProgressMonitor monitor) throws CoreException {
         IContainer container = resource.getParent();
         if (container.getType() == IResource.FOLDER && !container.exists()) {
-            if(!container.getParent().exists()) {
+            if (!container.getParent().exists()) {
                 mkdirs(container, monitor);
             }
             ((IFolder) container).create(true, true, monitor);
@@ -102,10 +102,8 @@ public abstract class IO {
      *            the FileOutput object responsible for generating the data
      */
     public static void writeFile(final File file, final FileOutput output, final IProgressMonitor monitor) throws CoreException {
-        FileOutputStream fout = null;
-        try {
-            fout = new FileOutputStream(file);
-            BufferedOutputStream bout = new BufferedOutputStream(fout);
+        try (FileOutputStream fout = new FileOutputStream(file);
+                BufferedOutputStream bout = new BufferedOutputStream(fout)) {
             if (monitor != null) {
                 monitor.subTask("writing data to " + file.getName());
             }
@@ -114,8 +112,6 @@ public abstract class IO {
         } catch (IOException e) {
             IStatus status = FindbugsPlugin.createErrorStatus("Exception while " + output.getTaskDescription(), e);
             throw new CoreException(status);
-        } finally {
-            closeQuietly(fout);
         }
     }
 

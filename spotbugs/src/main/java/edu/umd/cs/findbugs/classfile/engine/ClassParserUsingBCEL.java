@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
@@ -60,7 +58,7 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
     public ClassParserUsingBCEL(JavaClass javaClass, @CheckForNull ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.javaClass = javaClass;
-        this.slashedClassName = javaClass.getClassName().replace('.', '/');
+        this.slashedClassName = ClassName.toSlashedClassName(javaClass.getClassName());
         this.expectedClassDescriptor = expectedClassDescriptor;
         this.codeBaseEntry = codeBaseEntry;
 
@@ -109,20 +107,8 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
     public void parse(ClassInfo.Builder builder) throws InvalidClassFileFormatException {
         parse((ClassNameAndSuperclassInfo.Builder) builder);
 
-        final List<FieldDescriptor> fieldDescriptorList = new LinkedList<>();
-        final List<MethodDescriptor> methodDescriptorList = new LinkedList<>();
         final TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<>();
         javaClass.accept(new AnnotationVisitor() {
-            @Override
-            public void visit(Method obj) {
-                methodDescriptorList.add(parseMethod(obj));
-            }
-
-            @Override
-            public void visit(Field obj) {
-                fieldDescriptorList.add(parseField(obj));
-            }
-
             @Override
             public void visit(ConstantClass obj) {
                 @SlashedClassName

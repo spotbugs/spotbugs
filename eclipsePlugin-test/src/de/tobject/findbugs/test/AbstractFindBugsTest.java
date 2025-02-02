@@ -19,6 +19,7 @@
 package de.tobject.findbugs.test;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -52,19 +53,16 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
     }
 
     protected ICompilationUnit getClassA() throws JavaModelException {
-        ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject().findElement(new Path("A.java"));
-        return compilationUnit;
+        return (ICompilationUnit) getJavaProject().findElement(new Path("A.java"));
     }
 
     protected ICompilationUnit getClassB() throws JavaModelException {
-        ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject().findElement(new Path("B.java"));
-        return compilationUnit;
+        return (ICompilationUnit) getJavaProject().findElement(new Path("B.java"));
     }
 
     protected IPackageFragment getDefaultPackageInSrc() throws JavaModelException {
-        IPackageFragment fragment = getJavaProject().findPackageFragment(
+        return getJavaProject().findPackageFragment(
                 new Path("/" + AbstractPluginTest.TEST_PROJECT + "/" + AbstractPluginTest.SRC));
-        return fragment;
     }
 
     /**
@@ -90,7 +88,7 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
         // here
         FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
         UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
-        HashMap<String, Boolean> map = new HashMap<String, Boolean>();
+        Map<String, Boolean> map = new HashMap<>();
         if (on) {
             map.put(getBugsFileLocation(), Boolean.TRUE);
             preferences.setExcludeBugsFiles(map);
@@ -108,12 +106,12 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
         // here
         FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
         UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
-        HashMap<String, Boolean> map = new HashMap<String, Boolean>();
+        Map<String, Boolean> map = new HashMap<>();
         if (on) {
             map.put(getFilterFileLocation(), Boolean.TRUE);
             preferences.setExcludeFilterFiles(map);
         } else {
-            preferences.setExcludeFilterFiles(new HashMap<String, Boolean>());
+            preferences.setExcludeFilterFiles(new HashMap<>());
         }
         FindbugsPlugin.saveUserPreferences(getProject(), preferences);
     }

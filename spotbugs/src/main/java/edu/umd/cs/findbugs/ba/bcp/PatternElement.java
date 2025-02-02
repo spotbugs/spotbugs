@@ -23,8 +23,9 @@ import javax.annotation.CheckForNull;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -34,7 +35,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * some number of bytecode instructions.
  */
 public abstract class PatternElement {
-    private static final boolean DEBUG = SystemProperties.getBoolean("bcp.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(PatternElement.class);
 
     private PatternElement next;
 
@@ -164,8 +165,7 @@ public abstract class PatternElement {
      *         PatternElement and BindingSet; if the match is not successful,
      *         returns null
      */
-    public abstract @CheckForNull
-    MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
+    public abstract @CheckForNull MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
             BindingSet bindingSet) throws DataflowAnalysisException;
 
     /**
@@ -211,9 +211,7 @@ public abstract class PatternElement {
             bindingSet = new BindingSet(new Binding(varName, variable), bindingSet);
         } else {
             if (!existingVariable.sameAs(variable)) {
-                if (DEBUG) {
-                    System.out.println("\tConflicting variable " + varName + ": " + variable + " != " + existingVariable);
-                }
+                LOG.debug("\tConflicting variable {}: {} != {}", varName, variable, existingVariable);
                 return null;
             }
         }
@@ -232,4 +230,3 @@ public abstract class PatternElement {
         return buf.toString();
     }
 }
-

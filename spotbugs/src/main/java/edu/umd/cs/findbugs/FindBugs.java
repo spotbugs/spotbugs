@@ -26,7 +26,6 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.dom4j.DocumentException;
@@ -40,6 +39,8 @@ import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 
+import static java.util.logging.Level.*;
+
 /**
  * Static methods and fields useful for working with instances of
  * IFindBugsEngine.
@@ -51,85 +52,89 @@ import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
  * @author David Hovemeyer
  */
 public abstract class FindBugs {
+
+    /** Date of release of Java 1.0 */
+    public static final long MINIMUM_TIMESTAMP = new GregorianCalendar(1996, 0, 23).getTime().getTime();
+
     /**
      * Analysis settings for -effort:min.
      */
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MIN_EFFORT = new AnalysisFeatureSetting[] {
-            new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
 
     /**
      * Analysis settings for -effort:less.
      */
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] LESS_EFFORT = new AnalysisFeatureSetting[] {
-            new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
 
     /**
      * Analysis settings for -effort:default.
      */
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] DEFAULT_EFFORT = new AnalysisFeatureSetting[] {
-            new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
 
     /**
      * Analysis settings for -effort:more.
      */
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MORE_EFFORT = new AnalysisFeatureSetting[] {
-            new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
 
     /**
      * Analysis settings for -effort:max.
      */
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MAX_EFFORT = new AnalysisFeatureSetting[] {
-            new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, true), };
+        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, true), };
 
     /**
      * Debug tracing.
@@ -149,6 +154,7 @@ public abstract class FindBugs {
     public static void setNoAnalysis() {
         noAnalysis = true;
     }
+
     /**
      * @return Returns the noAnalysis.
      */
@@ -172,10 +178,10 @@ public abstract class FindBugs {
         return noMains;
     }
 
-    public static final Logger LOGGER = Logger.getLogger(FindBugs.class.getPackage().getName());
+    public static final Logger LOG = Logger.getLogger(FindBugs.class.getPackage().getName());
 
     static {
-        LOGGER.setLevel(Level.WARNING);
+        LOG.setLevel(WARNING);
     }
 
     /**
@@ -279,10 +285,6 @@ public abstract class FindBugs {
                 }
             }
             if (maxRank > rankThreshold) {
-                if (false) {
-                    System.out.println("Detector " + factory.getShortName() + " has max rank " + maxRank + ", disabling");
-                    System.out.println("Reports : " + reportedBugPatterns);
-                }
                 return false;
             }
         }
@@ -294,11 +296,7 @@ public abstract class FindBugs {
             return isTrainingDetector || isNonReportingDetector;
         }
 
-        if (isTrainingDetector) {
-            return false;
-        }
-
-        return true;
+        return !isTrainingDetector;
     }
 
     /**
@@ -350,7 +348,7 @@ public abstract class FindBugs {
         try {
             argCount = commandLine.parse(argv);
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            LOG.severe(e.getMessage());
             showHelp(commandLine);
         } catch (HelpRequestedException e) {
             showHelp(commandLine);
@@ -365,7 +363,7 @@ public abstract class FindBugs {
         commandLine.configureEngine(findBugs);
         if (commandLine.getProject().getFileCount() == 0 &&
                 !commandLine.justPrintConfiguration() && !commandLine.justPrintVersion()) {
-            System.out.println("No files to be analyzed");
+            LOG.warning("No files to be analyzed");
 
             showHelp(commandLine);
         }
@@ -395,7 +393,7 @@ public abstract class FindBugs {
      */
     @SuppressFBWarnings("DM_EXIT")
     public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine) throws IOException {
-        boolean verbose = !commandLine.quiet() || commandLine.setExitCode();
+        boolean verbose = !commandLine.quiet();
 
         try {
             findBugs.execute();
@@ -403,10 +401,7 @@ public abstract class FindBugs {
             assert false; // should not occur
             checkExitCodeFail(commandLine, e);
             throw new RuntimeException(e);
-        } catch (RuntimeException e) {
-            checkExitCodeFail(commandLine, e);
-            throw e;
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             checkExitCodeFail(commandLine, e);
             throw e;
         }
@@ -415,35 +410,14 @@ public abstract class FindBugs {
         int missingClassCount = findBugs.getMissingClassCount();
         int errorCount = findBugs.getErrorCount();
 
-        if (verbose) {
-            if (bugCount > 0) {
-                System.err.println("Warnings generated: " + bugCount);
-            }
-            if (missingClassCount > 0) {
-                System.err.println("Missing classes: " + missingClassCount);
-            }
-            if (errorCount > 0) {
-                System.err.println("Analysis errors: " + errorCount);
-            }
+        if (verbose || commandLine.setExitCode()) {
+            LOG.log(FINE, "Warnings generated: {0}", bugCount);
+            LOG.log(FINE, "Missing classes: {0}", missingClassCount);
+            LOG.log(FINE, "Analysis errors: {0}", errorCount);
         }
 
         if (commandLine.setExitCode()) {
-            int exitCode = 0;
-            System.err.println("Calculating exit code...");
-            if (errorCount > 0) {
-                exitCode |= ExitCodes.ERROR_FLAG;
-                System.err.println("Setting 'errors encountered' flag (" + ExitCodes.ERROR_FLAG + ")");
-            }
-            if (missingClassCount > 0) {
-                exitCode |= ExitCodes.MISSING_CLASS_FLAG;
-                System.err.println("Setting 'missing class' flag (" + ExitCodes.MISSING_CLASS_FLAG + ")");
-            }
-            if (bugCount > 0) {
-                exitCode |= ExitCodes.BUGS_FOUND_FLAG;
-                System.err.println("Setting 'bugs found' flag (" + ExitCodes.BUGS_FOUND_FLAG + ")");
-            }
-            System.err.println("Exit code set to: " + exitCode);
-
+            int exitCode = ExitCodes.from(errorCount, missingClassCount, bugCount);
             System.exit(exitCode);
         }
     }
@@ -480,8 +454,7 @@ public abstract class FindBugs {
      * Show the overall FindBugs command synopsis.
      */
     public static void showSynopsis() {
-        System.out
-        .println("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
+        LOG.warning("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
     }
 
     /**
@@ -515,7 +488,7 @@ public abstract class FindBugs {
      * @throws org.dom4j.DocumentException
      */
     public static BugReporter configureBaselineFilter(BugReporter bugReporter, String baselineFileName) throws IOException,
-    DocumentException {
+            DocumentException {
         return new ExcludingHashesBugReporter(bugReporter, baselineFileName);
     }
 
@@ -528,33 +501,29 @@ public abstract class FindBugs {
      */
     public static void configureBugCollection(IFindBugsEngine findBugs) {
         BugCollection bugs = findBugs.getBugReporter().getBugCollection();
+        if (bugs == null) {
+            return;
+        }
 
-        if (bugs != null) {
-            bugs.setReleaseName(findBugs.getReleaseName());
+        bugs.setReleaseName(findBugs.getReleaseName());
 
-            Project project = findBugs.getProject();
+        Project project = findBugs.getProject();
 
-            String projectName = project.getProjectName();
+        String projectName = project.getProjectName();
 
-            if (projectName == null) {
-                projectName = findBugs.getProjectName();
-                project.setProjectName(projectName);
-            }
+        if (projectName == null) {
+            projectName = findBugs.getProjectName();
+            project.setProjectName(projectName);
+        }
 
-            long timestamp = project.getTimestamp();
-            if (FindBugs.validTimestamp(timestamp)) {
-                bugs.setTimestamp(timestamp);
-                bugs.getProjectStats().setTimestamp(timestamp);
-            }
-
+        long timestamp = project.getTimestamp();
+        if (FindBugs.validTimestamp(timestamp)) {
+            bugs.setTimestamp(timestamp);
+            bugs.getProjectStats().setTimestamp(timestamp);
         }
     }
-
-    /** Date of release of Java 1.0 */
-    public final static long MINIMUM_TIMESTAMP = new GregorianCalendar(1996, 0, 23).getTime().getTime();
 
     public static boolean validTimestamp(long timestamp) {
         return timestamp > MINIMUM_TIMESTAMP;
     }
 }
-

@@ -53,7 +53,7 @@ public abstract class AnalysisFactory<Analysis> implements IMethodAnalysisEngine
      * @param analysisName
      *            name of the analysis factory: for diagnostics/debugging
      */
-    public AnalysisFactory(String analysisName, Class<Analysis> analysisClass) {
+    protected AnalysisFactory(String analysisName, Class<Analysis> analysisClass) {
         this.analysisName = analysisName;
         this.analysisClass = analysisClass;
     }

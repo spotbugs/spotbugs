@@ -52,4 +52,3 @@ public interface DFSEdgeTypes {
      */
     public static final int CROSS_EDGE = 3;
 }
-

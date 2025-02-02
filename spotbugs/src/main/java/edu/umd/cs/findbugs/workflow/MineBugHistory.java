@@ -160,9 +160,7 @@ public class MineBugHistory {
         AppVersion currentAppVersion = bugCollection.getCurrentAppVersion();
         sequenceToAppVersionMap.put(sequenceNumber, currentAppVersion);
 
-        for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
-            BugInstance bugInstance = j.next();
-
+        for (BugInstance bugInstance : bugCollection) {
             for (int i = 0; i <= maxSequence; ++i) {
                 if (bugInstance.getFirstVersion() > i) {
                     continue;

@@ -71,7 +71,7 @@ public class DontUseEnum extends PreorderDetector {
             LocalVariableAnnotation var = new LocalVariableAnnotation(obj.getName(), obj.getIndex(), obj.getStartPC());
             SourceLineAnnotation source = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, obj.getStartPC());
             BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER", NORMAL_PRIORITY)
-            .addClassAndMethod(this).add(var).add(source);
+                    .addClassAndMethod(this).add(var).add(source);
             bugReporter.reportBug(bug);
         }
     }

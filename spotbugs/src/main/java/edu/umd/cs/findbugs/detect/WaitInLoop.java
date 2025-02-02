@@ -60,7 +60,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
         if ((sawWait || sawAwait) && waitAt < earliestJump) {
             String bugType = sawWait ? "WA_NOT_IN_LOOP" : "WA_AWAIT_NOT_IN_LOOP";
             bugReporter.reportBug(new BugInstance(this, bugType, waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
-            .addClassAndMethod(this).addSourceLine(this, waitAt));
+                    .addClassAndMethod(this).addSourceLine(this, waitAt));
         }
         if (sawNotify) {
             bugReporter.reportBug(new BugInstance(this, "NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY).addClassAndMethod(this)
@@ -97,30 +97,16 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
     private boolean isConditionAwait() {
         String className = getClassConstantOperand();
         String name = getNameConstantOperand();
+
+        if (!"java/util/concurrent/locks/Condition".equals(className) || !name.startsWith("await")) {
+            return false;
+        }
+
         String sig = getSigConstantOperand();
-
-        if (!"java/util/concurrent/locks/Condition".equals(className)) {
-            return false;
-        }
-
-        if (!name.startsWith("await")) {
-            return false;
-        }
-
-        if ("await".equals(name) && ("()V".equals(sig) || "(JLjava/util/concurrent/TimeUnit;)V".equals(sig))) {
-            return true;
-        }
-        if ("awaitNanos".equals(name) && "(J)V".equals(sig)) {
-            return true;
-        }
-        if ("awaitUninterruptibly".equals(name) && "()V".equals(sig)) {
-            return true;
-        }
-        if ("awaitUntil".equals(name) && "(Ljava/util/Date;)V".equals(sig)) {
-            return true;
-        }
-
-        return false;
+        return ("await".equals(name) && ("()V".equals(sig) || "(JLjava/util/concurrent/TimeUnit;)V".equals(sig)))
+                || ("awaitNanos".equals(name) && "(J)V".equals(sig))
+                || ("awaitUninterruptibly".equals(name) && "()V".equals(sig))
+                || ("awaitUntil".equals(name) && "(Ljava/util/Date;)V".equals(sig));
     }
 
     private boolean isMonitorWait() {

@@ -180,12 +180,7 @@ public class ExecutionPlan {
             }
         } while (change);
 
-        for (Iterator<Map.Entry<String, DetectorFactory>> i = factoryMap.entrySet().iterator(); i.hasNext();) {
-            Map.Entry<String, DetectorFactory> e = i.next();
-            if (!factoryChooser.choose(e.getValue())) {
-                i.remove();
-            }
-        }
+        factoryMap.entrySet().removeIf(e -> !factoryChooser.choose(e.getValue()));
 
         // Build inter-pass constraint graph
         Map<String, DetectorNode> nodeMap = new HashMap<>();
@@ -318,7 +313,7 @@ public class ExecutionPlan {
     }
 
     private void createConstraintEdges(ConstraintGraph result, Set<DetectorNode> earlierSet, Set<DetectorNode> laterSet,
-            DetectorOrderingConstraint constraint)  {
+            DetectorOrderingConstraint constraint) {
 
         // It is perfectly fine for a constraint to produce no edges
         // if any detector it specifies is not enabled.
@@ -346,7 +341,7 @@ public class ExecutionPlan {
                 DetectorNode node = i.next();
                 if (constraintGraph.getNumIncomingEdges(node) == 0) {
                     inDegreeZeroList.add(node);
-                } else if (DEBUG ) {
+                } else if (DEBUG) {
                     System.out.println("Can't schedule " + node.getFactory().getShortName());
                     Iterator<ConstraintEdge> incomingEdgeIterator = constraintGraph.incomingEdgeIterator(node);
                     while (incomingEdgeIterator.hasNext()) {
@@ -401,8 +396,8 @@ public class ExecutionPlan {
         for (DetectorOrderingConstraint constraint : constraintList) {
             // Does this constraint specify any detectors in this pass?
             // If so, add it to the pass constraints
-            if (selectDetectors(constraint.getEarlier(), detectorSet).size() > 0
-                    || selectDetectors(constraint.getLater(), detectorSet).size() > 0) {
+            if (!selectDetectors(constraint.getEarlier(), detectorSet).isEmpty()
+                    || !selectDetectors(constraint.getLater(), detectorSet).isEmpty()) {
                 passConstraintList.add(constraint);
             }
         }
@@ -454,8 +449,7 @@ public class ExecutionPlan {
     }
 
     private Set<DetectorFactory> getUnassignedSet() {
-        Set<DetectorFactory> unassignedSet = new HashSet<>();
-        unassignedSet.addAll(factoryMap.values());
+        Set<DetectorFactory> unassignedSet = new HashSet<>(factoryMap.values());
         unassignedSet.removeAll(assignedToPassSet);
         return unassignedSet;
     }
@@ -476,9 +470,8 @@ public class ExecutionPlan {
         pass.append(factory);
     }
 
-    private void appendDetectorsToPass(Collection<DetectorFactory> detectorSet, AnalysisPass pass)
-    {
-        DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[detectorSet.size()]);
+    private void appendDetectorsToPass(Collection<DetectorFactory> detectorSet, AnalysisPass pass) {
+        DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[0]);
         Arrays.sort(unassignedList, (a, b) -> {
             // Sort first by plugin id...
             int cmp = a.getPlugin().getPluginId().compareTo(b.getPlugin().getPluginId());
@@ -533,4 +526,3 @@ public class ExecutionPlan {
         execPlan.print();
     }
 }
-

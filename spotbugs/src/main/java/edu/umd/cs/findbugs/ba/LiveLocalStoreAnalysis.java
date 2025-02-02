@@ -142,10 +142,8 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
      * @param fact
      */
     private void verifyFact(BitSet fact) {
-        if (VERIFY_INTEGRITY) {
-            if (isTop(fact) && fact.nextSetBit(0) < topBit) {
-                throw new IllegalStateException();
-            }
+        if (VERIFY_INTEGRITY && isTop(fact) && fact.nextSetBit(0) < topBit) {
+            throw new IllegalStateException();
         }
     }
 
@@ -229,4 +227,3 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
     // driver.execute(filename);
     // }
 }
-

@@ -18,17 +18,17 @@
  */
 package de.tobject.findbugs.view.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PartInitException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.test.TestScenario;
 import de.tobject.findbugs.view.explorer.GroupType;
@@ -38,26 +38,27 @@ import de.tobject.findbugs.view.explorer.GroupType;
  *
  * @author Tomás Pollak
  */
-public class BugExplorerViewTest extends AbstractBugExplorerViewTest {
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+class BugExplorerViewTest extends AbstractBugExplorerViewTest {
+
+    @BeforeAll
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
-    @AfterClass
-    public static void tearDownClass() throws CoreException {
+    @AfterAll
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testShowView() throws PartInitException {
+    void testShowView() throws PartInitException {
         // Show the view
         IViewPart view = showBugExplorerView();
         assertNotNull(view);
     }
 
     @Test
-    public void testViewContents_Empty() throws PartInitException {
+    void testViewContents_Empty() throws PartInitException {
         // Get the content provider
         ITreeContentProvider contentProvider = getNavigatorContentProvider();
         assertNotNull(contentProvider);
@@ -69,7 +70,7 @@ public class BugExplorerViewTest extends AbstractBugExplorerViewTest {
     }
 
     @Test
-    public void testViewContents_Project_Pattern_Marker() throws CoreException {
+    void testViewContents_Project_Pattern_Marker() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -85,7 +86,7 @@ public class BugExplorerViewTest extends AbstractBugExplorerViewTest {
     }
 
     @Test
-    public void testViewContents_Project_Pattern_Package_Marker() throws CoreException {
+    void testViewContents_Project_Pattern_Package_Marker() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -113,9 +114,8 @@ public class BugExplorerViewTest extends AbstractBugExplorerViewTest {
                 setOf(expectedMarker1));
         ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(GroupType.Pattern, null, setOf(expectedMarker2),
                 setOf(expectedMarker2));
-        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
+        return new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
                 expectedPattern2), setOf(expectedMarker1, expectedMarker2));
-        return expectedProject;
     }
 
     private ExpectedViewElement createProjectPatternPackageMarkerExpectedContents() throws JavaModelException {
@@ -137,8 +137,7 @@ public class BugExplorerViewTest extends AbstractBugExplorerViewTest {
                 setOf(expectedMarker1));
         ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(GroupType.Pattern, null, setOf(expectedPackage2),
                 setOf(expectedMarker2));
-        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
+        return new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
                 expectedPattern2), setOf(expectedMarker1, expectedMarker2));
-        return expectedProject;
     }
 }

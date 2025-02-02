@@ -161,4 +161,3 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
         }
     }
 }
-

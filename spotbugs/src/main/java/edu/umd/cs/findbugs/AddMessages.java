@@ -160,7 +160,7 @@ public class AddMessages {
             }
             Element details = root.addElement("BugPattern");
             details.addAttribute("type", bugType).addAttribute("abbrev", bugPattern.getAbbrev())
-            .addAttribute("category", bugPattern.getCategory());
+                    .addAttribute("category", bugPattern.getCategory());
             details.addElement("ShortDescription").addText(bugPattern.getShortDescription());
             details.addElement("Details").addCDATA(bugPattern.getDetailText());
         }
@@ -194,4 +194,3 @@ public class AddMessages {
         writer.close();
     }
 }
-

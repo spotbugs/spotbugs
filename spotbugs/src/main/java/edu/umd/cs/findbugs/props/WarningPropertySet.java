@@ -130,8 +130,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
      *            the WarningProperty
      * @return true if the set contains the WarningProperty, false if not
      */
-    public @CheckReturnValue
-    boolean containsProperty(T prop) {
+    public @CheckReturnValue boolean containsProperty(T prop) {
         return map.keySet().contains(prop);
     }
 

@@ -1,0 +1,3365 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2021, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-23 11:11+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../detectors.rst:2
+msgid "Detectors"
+msgstr ""
+
+#: ../../detectors.rst:4
+msgid "This document lists all detectors in SpotBugs."
+msgstr ""
+
+#: ../../detectors.rst:7
+msgid "Standard detectors"
+msgstr ""
+
+#: ../../detectors.rst:9
+msgid "These detectors are on by default:"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:2
+msgid "OverridingMethodsMustInvokeSuperDetector"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:4
+msgid ""
+"<p> Finds overriding methods that must call super.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:12
+msgid ":ref:`OVERRIDING_METHODS_MUST_INVOKE_SUPER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:15
+msgid "FindRoughConstants"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:17
+msgid ""
+"<p> Finds constants which roughly (but not precisely) equal to known "
+"values like Math.PI.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:25
+msgid ":ref:`CNT_ROUGH_CONSTANT_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:28
+msgid "SynchronizeAndNullCheckField"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:30
+msgid ""
+"<p> This detector looks for a field that is synchronized on and then null"
+" checked.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:37
+msgid ":ref:`NP_SYNC_AND_NULL_CHECK_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:40
+msgid "InitializeNonnullFieldsInConstructor"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:42
+msgid ""
+"<p> Finds non-null fields that are not written to in constructors.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:50
+msgid ":ref:`NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:53
+msgid "BooleanReturnNull"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:55
+msgid ""
+"<p> Looks for methods with Boolean return type that return explicit null "
+"values.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:63
+msgid ":ref:`NP_BOOLEAN_RETURN_NULL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:66
+msgid "OptionalReturnNull"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:68
+msgid ""
+"<p> Looks for methods with Optional return type that return explicit null"
+" values.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:76
+msgid ":ref:`NP_OPTIONAL_RETURN_NULL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:79
+msgid "ConfusionBetweenInheritedAndOuterMethod"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:81
+msgid "<p> Looks for potential confusion between inherited and outer methods.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:88
+msgid ":ref:`IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:91
+msgid "SynchronizationOnSharedBuiltinConstant"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:93
+msgid ""
+"<p> This detector looks for synchronization on a shared built-in constant"
+" (such as a String).</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:100
+msgid ":ref:`DL_SYNCHRONIZATION_ON_BOOLEAN`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:101
+msgid ":ref:`DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:102
+msgid ":ref:`DL_SYNCHRONIZATION_ON_SHARED_CONSTANT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:103
+msgid ":ref:`DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:106
+msgid "NoteUnconditionalParamDerefs"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:108
+msgid ""
+"<p>\n"
+"Analyze all methods in the application to determine which\n"
+"dereference parameters unconditionally.  This information is used in\n"
+"a later analysis pass to find call sites where null values may\n"
+"be passed to those methods.\n"
+"</p>\n"
+"<p>\n"
+"This is a slow detector.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:123
+#: ../../generated/detectorListEnabled.inc:1094
+msgid ":ref:`NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:124
+#: ../../generated/detectorListEnabled.inc:258
+msgid ":ref:`NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:127
+msgid "SynchronizeOnClassLiteralNotGetClass"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:129
+msgid ""
+"<p> Looks for code that synchronizes on the results of getClass rather "
+"than on class\n"
+"literals.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:138
+msgid ":ref:`WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:141
+msgid "InfiniteRecursiveLoop"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:143
+msgid "<p> Looks for an infinite recursive loop. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:150
+msgid ":ref:`IL_CONTAINER_ADDED_TO_ITSELF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:151
+msgid ":ref:`IL_INFINITE_RECURSIVE_LOOP`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:154
+msgid "InfiniteLoop"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:156
+msgid "<p> Looks for an infinite loop. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:163
+msgid ":ref:`IL_INFINITE_LOOP`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:166
+msgid "VolatileUsage"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:168
+msgid "<p> Looks for bug patterns in the usage of volatile fields. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:175
+msgid ":ref:`VO_VOLATILE_INCREMENT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:176
+msgid ":ref:`VO_VOLATILE_REFERENCE_TO_ARRAY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:179
+msgid "InheritanceUnsafeGetResource"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:181
+msgid ""
+"<p> Looks for uses of this.getClass().getResource(...), which can give\n"
+"unexpected results if the class is extended by a class in\n"
+"another package. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:191
+msgid ":ref:`UI_INHERITANCE_UNSAFE_GETRESOURCE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:194
+msgid "DoInsideDoPrivileged"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:196
+msgid "<p> Looks for code that should be executed inside doPrivileged blocks.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:203
+msgid ":ref:`DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:204
+msgid ":ref:`DP_DO_INSIDE_DO_PRIVILEGED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:207
+msgid "HugeSharedStringConstants"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:209
+msgid ""
+"<p> This detector looks for string constants that are duplicated across "
+"multiple classfiles.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:217
+msgid ":ref:`HSC_HUGE_SHARED_STRING_CONSTANT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:220
+msgid "FinalizerNullsFields"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:222
+msgid ""
+"<p> This detector looks for finalizers that null out fields of a class.\n"
+"This does not help the garbage collector in any way, the nulling out of "
+"fields has no effect.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:231
+msgid ":ref:`FI_FINALIZER_NULLS_FIELDS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:232
+msgid ":ref:`FI_FINALIZER_ONLY_NULLS_FIELDS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:235
+msgid "MutableEnum"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:237
+msgid "<p> Looks and warns about mutable enum fields.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:244
+msgid ":ref:`ME_ENUM_FIELD_SETTER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:245
+msgid ":ref:`ME_MUTABLE_ENUM_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:248
+msgid "InconsistentAnnotations"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:250
+msgid ""
+"<p> This detector finds inconsistencies between type qualifiers directly\n"
+"applied to method parameters and uses of those method parameters. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:261
+msgid "RepeatedConditionals"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:263
+msgid ""
+"<p> This detector looks for code containing repeated conditional tests, "
+"such as (x == 5 || x == 5)."
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:270
+msgid ":ref:`RpC_REPEATED_CONDITIONAL_TEST`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:273
+msgid "RedundantConditions"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:275
+msgid ""
+"<p> This detector looks for code containing useless conditions like the "
+"second condition in this expression: (x >= 10 && x >= 5)."
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:282
+msgid ":ref:`UC_USELESS_CONDITION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:283
+msgid ":ref:`UC_USELESS_CONDITION_TYPE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:286
+msgid "FormatStringChecker"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:288
+msgid ""
+"<p> Checks for incorrect format strings.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:296
+msgid ":ref:`VA_FORMAT_STRING_USES_NEWLINE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:299
+msgid "LostLoggerDueToWeakReference"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:301
+msgid ""
+"<p> This detector finds code that behaves differently under OpenJDK 1.6, "
+"where\n"
+"weak references are used to hold onto Loggers.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:310
+msgid ":ref:`LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:313
+msgid "EqualsOperandShouldHaveClassCompatibleWithThis"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:315
+msgid ""
+"<p> Checks for equals methods that check for their operand being an "
+"instance of a class\n"
+"that is not compatible with the class defining the equals method.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:324
+msgid ":ref:`EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:327
+msgid "CheckImmutableAnnotation"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:329
+msgid ""
+"<p> Looks for violations of the rules for classes annotated as "
+"net.jcip.annotations.Immutable or "
+"javax.annotation.concurrent.Immutable.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:336
+msgid ":ref:`JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:339
+msgid "DontCatchIllegalMonitorStateException"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:341
+msgid ""
+"<p> This detector looks for try-catch blocks that catch an "
+"IllegalMonitorStateException.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:348
+msgid ":ref:`IMSE_DONT_CATCH_IMSE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:351
+msgid "CloneIdiom"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:353
+msgid ""
+"<p> This detector looks for violations of the idioms for writing\n"
+"cloneable classes. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:361
+msgid ":ref:`CN_IDIOM`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:362
+msgid ":ref:`CN_IDIOM_NO_SUPER_CALL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:363
+msgid ":ref:`CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:366
+msgid "ComparatorIdiom"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:368
+msgid ""
+"<p> This detector looks for violations of the idioms for writing\n"
+"classes that implement <code>Comparator</code>. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:376
+msgid ":ref:`SE_COMPARATOR_SHOULD_BE_SERIALIZABLE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:379
+msgid "FindFieldSelfAssignment"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:381
+msgid ""
+"<p> This detector looks for places where a field is assigned\n"
+"by reading the value of the same field.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:389
+msgid ":ref:`SA_FIELD_SELF_ASSIGNMENT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:390
+msgid ":ref:`SA_LOCAL_DOUBLE_ASSIGNMENT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:393
+msgid "FindSelfComparison"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:395
+#: ../../generated/detectorListEnabled.inc:411
+msgid ""
+"<p> This detector looks for places where a value is compared with "
+"itself.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:402
+msgid ":ref:`SA_FIELD_DOUBLE_ASSIGNMENT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:403
+#: ../../generated/detectorListEnabled.inc:418
+msgid ":ref:`SA_FIELD_SELF_COMPARISON`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:404
+#: ../../generated/detectorListEnabled.inc:419
+msgid ":ref:`SA_FIELD_SELF_COMPUTATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:405
+#: ../../generated/detectorListEnabled.inc:420
+msgid ":ref:`SA_LOCAL_SELF_COMPARISON`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:406
+#: ../../generated/detectorListEnabled.inc:421
+msgid ":ref:`SA_LOCAL_SELF_COMPUTATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:409
+msgid "FindSelfComparison2"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:424
+msgid "DroppedException"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:426
+msgid ""
+"<p> This detector looks for code where an exception is caught,\n"
+"but nothing is done to handle the exception.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:434
+msgid ":ref:`DE_MIGHT_DROP`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:435
+msgid ":ref:`DE_MIGHT_IGNORE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:438
+msgid "LoadOfKnownNullValue"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:440
+msgid ""
+"<p> Looks for loads of values known to be null.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:448
+msgid ":ref:`NP_LOAD_OF_KNOWN_NULL_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:451
+msgid "DumbMethodInvocations"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:453
+msgid ""
+"<p> This detector looks for bad arguments being passed to methods\n"
+"(e.g., substring(0)).\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:462
+msgid ":ref:`DMI_CONSTANT_DB_PASSWORD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:463
+msgid ":ref:`DMI_EMPTY_DB_PASSWORD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:464
+msgid ":ref:`DMI_HARDCODED_ABSOLUTE_FILENAME`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:465
+msgid ":ref:`DMI_USELESS_SUBSTRING`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:468
+msgid "URLProblems"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:470
+msgid ""
+"<p> The equals and hashCode method on <code>java.net.URL</code> resolve\n"
+"the domain name. As a result, these operations can be very expensive, and"
+" this\n"
+"detector looks for places where those methods might be invoked.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:480
+msgid ":ref:`DMI_BLOCKING_METHODS_ON_URL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:481
+#: ../../generated/detectorListEnabled.inc:502
+msgid ":ref:`DMI_COLLECTION_OF_URLS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:484
+msgid "DumbMethods"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:486
+msgid ""
+"<p> This detector looks for calls to pointless methods,\n"
+"such as the no-argument String constructor.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:495
+msgid ":ref:`BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:496
+msgid ":ref:`BIT_ADD_OF_SIGNED_BYTE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:497
+msgid ":ref:`BIT_IOR_OF_SIGNED_BYTE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:498
+msgid ":ref:`DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:499
+msgid ":ref:`DMI_ARGUMENTS_WRONG_ORDER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:500
+msgid ":ref:`DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:501
+msgid ":ref:`DMI_CALLING_NEXT_FROM_HASNEXT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:503
+#: ../../generated/detectorListEnabled.inc:1189
+msgid ":ref:`DMI_DOH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:504
+msgid ":ref:`DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:505
+msgid ":ref:`DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:506
+msgid ":ref:`DMI_RANDOM_USED_ONLY_ONCE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:507
+msgid ":ref:`DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:508
+msgid ":ref:`DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:509
+msgid ":ref:`DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:510
+msgid ":ref:`DM_BOOLEAN_CTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:511
+msgid ":ref:`DM_BOXED_PRIMITIVE_FOR_COMPARE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:512
+msgid ":ref:`DM_BOXED_PRIMITIVE_FOR_PARSING`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:513
+msgid ":ref:`DM_BOXED_PRIMITIVE_TOSTRING`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:514
+msgid ":ref:`DM_CONVERT_CASE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:515
+msgid ":ref:`DM_EXIT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:516
+msgid ":ref:`DM_GC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:517
+msgid ":ref:`DM_INVALID_MIN_MAX`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:518
+msgid ":ref:`DM_MONITOR_WAIT_ON_CONDITION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:519
+msgid ":ref:`DM_NEW_FOR_GETCLASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:520
+msgid ":ref:`DM_NEXTINT_VIA_NEXTDOUBLE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:521
+msgid ":ref:`DM_RUN_FINALIZERS_ON_EXIT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:522
+msgid ":ref:`DM_STRING_CTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:523
+msgid ":ref:`DM_STRING_TOSTRING`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:524
+msgid ":ref:`DM_STRING_VOID_CTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:525
+msgid ":ref:`DM_USELESS_THREAD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:526
+msgid ":ref:`INT_BAD_COMPARISON_WITH_INT_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:527
+msgid ":ref:`INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:528
+msgid ":ref:`INT_BAD_COMPARISON_WITH_SIGNED_BYTE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:529
+msgid ":ref:`INT_BAD_REM_BY_1`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:530
+msgid ":ref:`INT_VACUOUS_BIT_OPERATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:531
+msgid ":ref:`INT_VACUOUS_COMPARISON`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:532
+msgid ":ref:`NP_IMMEDIATE_DEREFERENCE_OF_READLINE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:533
+msgid ":ref:`RANGE_ARRAY_INDEX`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:534
+msgid ":ref:`RANGE_ARRAY_LENGTH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:535
+msgid ":ref:`RANGE_ARRAY_OFFSET`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:536
+msgid ":ref:`RANGE_STRING_INDEX`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:537
+msgid ":ref:`RV_01_TO_INT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:538
+msgid ":ref:`RV_ABSOLUTE_VALUE_OF_HASHCODE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:539
+msgid ":ref:`RV_ABSOLUTE_VALUE_OF_RANDOM_INT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:540
+msgid ":ref:`RV_REM_OF_HASHCODE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:541
+msgid ":ref:`RV_REM_OF_RANDOM_INT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:542
+msgid ":ref:`SW_SWING_METHODS_INVOKED_IN_SWING_THREAD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:545
+msgid "NumberConstructor"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:547
+msgid ""
+"<p> Looks for calls to Number constructors with primitive arguments.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:555
+msgid ":ref:`DM_FP_NUMBER_CTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:556
+msgid ":ref:`DM_NUMBER_CTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:559
+msgid "FindSqlInjection"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:561
+msgid ""
+"<p>\n"
+"This detector uses data flow analysis to look for invocations of execute "
+"methods\n"
+"on SQL statements in which something other than a constant string is "
+"passed as an argument.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:571
+msgid ":ref:`SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:572
+msgid ":ref:`SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:575
+msgid "FindDoubleCheck"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:577
+msgid ""
+"<p> This detector looks for instances of double checked locking.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:585
+msgid ":ref:`DC_DOUBLECHECK`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:586
+msgid ":ref:`DC_PARTIALLY_CONSTRUCTED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:589
+msgid "FindFinalizeInvocations"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:591
+msgid ""
+"<p> This detector looks for calls to finalize() and other finalizer-"
+"related\n"
+"issues.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:599
+msgid ":ref:`FI_EMPTY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:600
+msgid ":ref:`FI_EXPLICIT_INVOCATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:601
+msgid ":ref:`FI_MISSING_SUPER_CALL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:602
+msgid ":ref:`FI_NULLIFY_SUPER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:603
+msgid ":ref:`FI_PUBLIC_SHOULD_BE_PROTECTED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:604
+msgid ":ref:`FI_USELESS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:607
+msgid "FindHEmismatch"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:609
+msgid ""
+"<p> This detector looks for problems in the definition of the hashCode() "
+"and equals()\n"
+"methods.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:617
+msgid ":ref:`CO_ABSTRACT_SELF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:618
+msgid ":ref:`CO_SELF_NO_OBJECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:619
+msgid ":ref:`EQ_ABSTRACT_SELF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:620
+msgid ":ref:`EQ_COMPARETO_USE_OBJECT_EQUALS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:621
+msgid ":ref:`EQ_DOESNT_OVERRIDE_EQUALS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:622
+msgid ":ref:`EQ_DONT_DEFINE_EQUALS_FOR_ENUM`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:623
+msgid ":ref:`EQ_OTHER_NO_OBJECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:624
+msgid ":ref:`EQ_OTHER_USE_OBJECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:625
+msgid ":ref:`EQ_SELF_NO_OBJECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:626
+msgid ":ref:`EQ_SELF_USE_OBJECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:627
+msgid ":ref:`HE_EQUALS_NO_HASHCODE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:628
+msgid ":ref:`HE_EQUALS_USE_HASHCODE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:629
+msgid ":ref:`HE_HASHCODE_NO_EQUALS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:630
+msgid ":ref:`HE_HASHCODE_USE_OBJECT_EQUALS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:631
+msgid ":ref:`HE_INHERITS_EQUALS_USE_HASHCODE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:632
+msgid ":ref:`HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:633
+msgid ":ref:`HE_USE_OF_UNHASHABLE_CLASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:636
+msgid "OverridingEqualsNotSymmetrical"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:638
+msgid ""
+"<p> Looks for equals methods that override equals methods in a superclass"
+" where the equivalence relationship might not be symmetrical.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:646
+msgid ":ref:`EQ_ALWAYS_FALSE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:647
+msgid ":ref:`EQ_ALWAYS_TRUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:648
+msgid ":ref:`EQ_COMPARING_CLASS_NAMES`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:649
+msgid ":ref:`EQ_GETCLASS_AND_CLASS_CONSTANT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:650
+msgid ":ref:`EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:651
+msgid ":ref:`EQ_UNUSUAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:654
+msgid "FindNakedNotify"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:656
+msgid ""
+"<p> This detector looks for calls to notify() that don't seem\n"
+"to modify mutable object state.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:664
+msgid ":ref:`NN_NAKED_NOTIFY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:667
+msgid "FindReturnRef"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:669
+msgid ""
+"<p> This detector looks for methods that return mutable static data.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:677
+msgid ":ref:`EI_EXPOSE_BUF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:678
+msgid ":ref:`EI_EXPOSE_BUF2`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:679
+msgid ":ref:`EI_EXPOSE_REP`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:680
+msgid ":ref:`EI_EXPOSE_REP2`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:681
+msgid ":ref:`EI_EXPOSE_STATIC_BUF2`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:682
+msgid ":ref:`EI_EXPOSE_STATIC_REP2`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:683
+msgid ":ref:`MS_EXPOSE_BUF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:684
+msgid ":ref:`MS_EXPOSE_REP`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:687
+msgid "FindRunInvocations"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:689
+msgid ""
+"<p> This detector looks for calls to Thread.run().  It is a fast\n"
+"detector.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:697
+msgid ":ref:`RU_INVOKE_RUN`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:700
+msgid "SwitchFallthrough"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:702
+msgid ""
+"<p> This detector looks for switch statements containing fall through.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:710
+msgid ":ref:`SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:711
+msgid ":ref:`SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:712
+msgid ":ref:`SF_SWITCH_FALLTHROUGH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:713
+msgid ":ref:`SF_SWITCH_NO_DEFAULT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:716
+msgid "FindSpinLoop"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:718
+msgid ""
+"<p> This detector looks for loops that spin reading from a field.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:726
+msgid ":ref:`SP_SPIN_ON_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:729
+msgid "FindNonShortCircuit"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:731
+msgid ""
+"<p> This detector looks for suspicious uses of non-short-circuiting\n"
+"boolean operators (<code>|</code> and <code>&amp;</code> instead of\n"
+"<code>||</code> and <code>&amp;&amp;</code>).</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:740
+msgid ":ref:`NS_DANGEROUS_NON_SHORT_CIRCUIT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:741
+msgid ":ref:`NS_NON_SHORT_CIRCUIT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:744
+msgid "FindTwoLockWait"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:746
+msgid ""
+"<p> This detector looks for calls to wait() with two (or more) locks "
+"held.\n"
+"It is a slow detector.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:754
+msgid ":ref:`TLW_TWO_LOCK_WAIT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:757
+msgid "FindUnconditionalWait"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:759
+msgid ""
+"<p> This detector looks for calls to wait() not in a conditional or loop."
+"\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:767
+msgid ":ref:`UW_UNCOND_WAIT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:770
+msgid "FindUninitializedGet"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:772
+msgid ""
+"<p> This detector looks for reads of uninitialized fields in "
+"constructors.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:780
+msgid ":ref:`UR_UNINIT_READ`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:783
+msgid "DontUseEnum"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:785
+msgid ""
+"<p>Checks that fields and methods don't use the name assert or enum as "
+"they are keywords in Java 5.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:792
+msgid ":ref:`NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:793
+msgid ":ref:`NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:796
+msgid "FindUnsyncGet"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:798
+msgid ""
+"<p> This detector looks for get and set methods where the get is "
+"unsynchronized\n"
+"while the set is synchronized.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:806
+msgid ":ref:`UG_SYNC_SET_UNSYNC_GET`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:809
+msgid "InitializationChain"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:811
+msgid ""
+"<p> This detector looks for potentially circular class initialization\n"
+"dependencies.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:819
+msgid ":ref:`IC_INIT_CIRCULARITY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:820
+msgid ":ref:`SI_INSTANCE_BEFORE_FINALS_ASSIGNED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:823
+msgid "IteratorIdioms"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:825
+msgid ""
+"<p> This detector looks for problems in how Iterator classes are defined."
+"\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:833
+msgid ":ref:`IT_NO_SUCH_ELEMENT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:836
+msgid "PreferZeroLengthArrays"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:838
+msgid ""
+"<p> This detector looks for methods that return either arrays or an "
+"explicit null reference.\n"
+"Returning a zero length array is generally preferred in this context to "
+"returning a null reference.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:847
+msgid ":ref:`PZLA_PREFER_ZERO_LENGTH_ARRAYS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:850
+msgid "SynchronizingOnContentsOfFieldToProtectField"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:852
+msgid ""
+"<p> This detector looks for code that seems to be synchronizing on a "
+"field in order\n"
+"to guard updates of that field.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:861
+msgid ":ref:`ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:864
+msgid "MutableLock"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:866
+msgid ""
+"<p> This detector looks for synchronization on objects read from\n"
+"modified fields.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:874
+msgid ":ref:`ML_SYNC_ON_UPDATED_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:877
+msgid "FindUselessObjects"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:879
+msgid "<p> Looks for useless objects.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:887
+msgid ":ref:`UC_USELESS_OBJECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:888
+msgid ":ref:`UC_USELESS_OBJECT_STACK`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:891
+msgid "MutableStaticFields"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:893
+msgid ""
+"<p> This detector looks for static fields that may be modified by\n"
+"malicious code.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:901
+msgid ":ref:`MS_CANNOT_BE_FINAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:902
+msgid ":ref:`MS_FINAL_PKGPROTECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:903
+msgid ":ref:`MS_MUTABLE_ARRAY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:904
+msgid ":ref:`MS_MUTABLE_COLLECTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:905
+msgid ":ref:`MS_MUTABLE_COLLECTION_PKGPROTECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:906
+msgid ":ref:`MS_MUTABLE_HASHTABLE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:907
+msgid ":ref:`MS_OOI_PKGPROTECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:908
+msgid ":ref:`MS_PKGPROTECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:909
+msgid ":ref:`MS_SHOULD_BE_FINAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:910
+msgid ":ref:`MS_SHOULD_BE_REFACTORED_TO_BE_FINAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:913
+msgid "Naming"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:915
+msgid "<p> This detector looks for suspiciously-named methods.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:922
+msgid ":ref:`NM_BAD_EQUAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:923
+msgid ":ref:`NM_CLASS_NAMING_CONVENTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:924
+msgid ":ref:`NM_CLASS_NOT_EXCEPTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:925
+msgid ":ref:`NM_CONFUSING`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:926
+msgid ":ref:`NM_FIELD_NAMING_CONVENTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:927
+msgid ":ref:`NM_LCASE_HASHCODE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:928
+msgid ":ref:`NM_LCASE_TOSTRING`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:929
+msgid ":ref:`NM_METHOD_CONSTRUCTOR_CONFUSION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:930
+msgid ":ref:`NM_METHOD_NAMING_CONVENTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:931
+msgid ":ref:`NM_SAME_SIMPLE_NAME_AS_INTERFACE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:932
+msgid ":ref:`NM_SAME_SIMPLE_NAME_AS_SUPERCLASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:933
+msgid ":ref:`NM_VERY_CONFUSING`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:934
+msgid ":ref:`NM_VERY_CONFUSING_INTENTIONAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:935
+msgid ":ref:`NM_WRONG_PACKAGE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:936
+msgid ":ref:`NM_WRONG_PACKAGE_INTENTIONAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:939
+msgid "ReadReturnShouldBeChecked"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:941
+msgid ""
+"<p> This detector looks for calls to InputStream.read() or "
+"InputStream.skip() where the\n"
+"return value is ignored.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:949
+msgid ":ref:`RR_NOT_CHECKED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:950
+msgid ":ref:`SR_NOT_CHECKED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:953
+msgid "SerializableIdiom"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:955
+msgid ""
+"<p> This detector looks for potential problems in the implementation\n"
+"of Serializable classes.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:963
+msgid ":ref:`RS_READOBJECT_SYNC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:964
+msgid ":ref:`SE_BAD_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:965
+msgid ":ref:`SE_BAD_FIELD_INNER_CLASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:966
+msgid ":ref:`SE_BAD_FIELD_STORE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:967
+msgid ":ref:`SE_INNER_CLASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:968
+msgid ":ref:`SE_METHOD_MUST_BE_PRIVATE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:969
+msgid ":ref:`SE_NONFINAL_SERIALVERSIONID`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:970
+msgid ":ref:`SE_NONLONG_SERIALVERSIONID`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:971
+msgid ":ref:`SE_NONSTATIC_SERIALVERSIONID`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:972
+msgid ":ref:`SE_NO_SERIALVERSIONID`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:973
+msgid ":ref:`SE_NO_SUITABLE_CONSTRUCTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:974
+msgid ":ref:`SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:975
+msgid ":ref:`SE_PRIVATE_READ_RESOLVE_NOT_INHERITED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:976
+msgid ":ref:`SE_READ_RESOLVE_IS_STATIC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:977
+msgid ":ref:`SE_READ_RESOLVE_MUST_RETURN_OBJECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:978
+msgid ":ref:`SE_TRANSIENT_FIELD_NOT_RESTORED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:979
+msgid ":ref:`SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:980
+msgid ":ref:`WS_WRITEOBJECT_SYNC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:983
+msgid "StartInConstructor"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:985
+msgid "<p> This detector looks for constructors that start threads.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:992
+msgid ":ref:`SC_START_IN_CTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:995
+msgid "FindBadForLoop"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:997
+msgid ""
+"<p> This detector looks for incorrect for loops.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1005
+msgid ":ref:`QF_QUESTIONABLE_FOR_LOOP`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1008
+msgid "ExplicitSerialization"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1010
+msgid ""
+"<p> Looks for explicit serialization via readObject and\n"
+"    writeObject as evidence\n"
+"that this class is, indeed, serialized. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1019
+msgid ":ref:``"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1022
+msgid "UnreadFields"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1024
+msgid "<p> This detector looks for fields whose value is never read.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1031
+msgid ":ref:`NP_UNWRITTEN_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1032
+msgid ":ref:`NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1033
+msgid ":ref:`SIC_INNER_SHOULD_BE_STATIC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1034
+msgid ":ref:`SIC_INNER_SHOULD_BE_STATIC_ANON`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1035
+msgid ":ref:`SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1036
+msgid ":ref:`SIC_THREADLOCAL_DEADLY_EMBRACE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1037
+msgid ":ref:`SS_SHOULD_BE_STATIC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1038
+msgid ":ref:`ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1039
+msgid ":ref:`URF_UNREAD_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1040
+msgid ":ref:`URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1041
+msgid ":ref:`UUF_UNUSED_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1042
+msgid ":ref:`UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1043
+msgid ":ref:`UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1044
+msgid ":ref:`UWF_NULL_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1045
+msgid ":ref:`UWF_UNWRITTEN_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1046
+msgid ":ref:`UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1049
+msgid "WaitInLoop"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1051
+msgid ""
+"<p> This detector looks for calls to wait() that are not in a loop.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1059
+msgid ":ref:`NO_NOTIFY_NOT_NOTIFYALL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1060
+msgid ":ref:`WA_AWAIT_NOT_IN_LOOP`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1061
+msgid ":ref:`WA_NOT_IN_LOOP`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1064
+msgid "FindComparatorProblems"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1066
+msgid ""
+"<p> This detector looks for problems in Comparator.compare or "
+"Comparable.compareTo implementation.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1073
+msgid ":ref:`CO_COMPARETO_INCORRECT_FLOATING`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1074
+msgid ":ref:`CO_COMPARETO_RESULTS_MIN_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1077
+msgid "FindNullDeref"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1079
+msgid ""
+"<p> This detector looks for places where a null pointer exception might\n"
+"occur.  It also looks for redundant comparisons of reference values "
+"against\n"
+"null.  It is a slow detector.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1088
+msgid ":ref:`NP_ALWAYS_NULL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1089
+msgid ":ref:`NP_ALWAYS_NULL_EXCEPTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1090
+msgid ":ref:`NP_ARGUMENT_MIGHT_BE_NULL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1091
+msgid ":ref:`NP_CLONE_COULD_RETURN_NULL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1092
+msgid ":ref:`NP_CLOSING_NULL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1093
+msgid ":ref:`NP_DEREFERENCE_OF_READLINE_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1095
+#: ../../generated/detectorListEnabled.inc:1126
+msgid ":ref:`NP_GUARANTEED_DEREF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1096
+msgid ":ref:`NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1097
+msgid ":ref:`NP_NONNULL_PARAM_VIOLATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1098
+msgid ":ref:`NP_NONNULL_RETURN_VIOLATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1099
+#: ../../generated/detectorListEnabled.inc:1127
+msgid ":ref:`NP_NULL_ON_SOME_PATH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1100
+msgid ":ref:`NP_NULL_ON_SOME_PATH_EXCEPTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1101
+msgid ":ref:`NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1102
+msgid ":ref:`NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1103
+msgid ":ref:`NP_NULL_PARAM_DEREF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1104
+msgid ":ref:`NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1105
+msgid ":ref:`NP_NULL_PARAM_DEREF_NONVIRTUAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1106
+msgid ":ref:`NP_STORE_INTO_NONNULL_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1107
+msgid ":ref:`NP_TOSTRING_COULD_RETURN_NULL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1108
+msgid ":ref:`RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1109
+msgid ":ref:`RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1110
+msgid ":ref:`RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1111
+msgid ":ref:`RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1112
+msgid ":ref:`RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1115
+msgid "FindNullDerefsInvolvingNonShortCircuitEvaluation"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1117
+msgid ""
+"<p> This detector looks for places where a null pointer exception might\n"
+"occur, and the use of non-short-circuit evaluation causes the usual "
+"techniques to fail.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1130
+msgid "FindOpenStream"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1132
+msgid ""
+"<p> This detector looks for IO stream objects which do not escape the\n"
+"method and do not appear to be closed on all paths out of the method.\n"
+"It is a slow detector.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1141
+msgid ":ref:`ODR_OPEN_DATABASE_RESOURCE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1142
+msgid ":ref:`ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1143
+msgid ":ref:`OS_OPEN_STREAM`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1144
+msgid ":ref:`OS_OPEN_STREAM_EXCEPTION_PATH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1147
+msgid "FindUselessControlFlow"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1149
+msgid ""
+"<p> This detector looks for control flow statements which have no effect."
+"\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1157
+msgid ":ref:`UCF_USELESS_CONTROL_FLOW`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1158
+msgid ":ref:`UCF_USELESS_CONTROL_FLOW_NEXT_LINE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1161
+msgid "FindUnreleasedLock"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1163
+msgid ""
+"<p> This detector looks for JSR-166 (<code>java.util.concurrent</code>)\n"
+"locks which are acquired, but not released on all paths out of the "
+"method.&nbsp;\n"
+"It is a moderately fast detector.&nbsp; Note that in order to use this\n"
+"detector, you need to have the <code>java.util.concurrent</code> package\n"
+"in the auxiliary classpath (or be analyzing the package itself).</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1174
+msgid ":ref:`UL_UNRELEASED_LOCK`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1175
+msgid ":ref:`UL_UNRELEASED_LOCK_EXCEPTION_PATH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1178
+msgid "FindRefComparison"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1180
+msgid ""
+"<p> This detector looks for places where two reference values are "
+"compared\n"
+"with the == or != operator, and the class is of a type (such as "
+"<code>java.lang.String</code>)\n"
+"where comparing reference values is generally an error.  It is a slow "
+"detector.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1190
+msgid ":ref:`EC_ARRAY_AND_NONARRAY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1191
+#: ../../generated/detectorListEnabled.inc:1707
+msgid ":ref:`EC_BAD_ARRAY_COMPARE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1192
+msgid ":ref:`EC_INCOMPATIBLE_ARRAY_COMPARE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1193
+msgid ":ref:`EC_NULL_ARG`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1194
+msgid ":ref:`EC_UNRELATED_CLASS_AND_INTERFACE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1195
+msgid ":ref:`EC_UNRELATED_INTERFACES`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1196
+msgid ":ref:`EC_UNRELATED_TYPES`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1197
+msgid ":ref:`EC_UNRELATED_TYPES_USING_POINTER_EQUALITY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1198
+msgid ":ref:`ES_COMPARING_PARAMETER_STRING_WITH_EQ`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1199
+msgid ":ref:`ES_COMPARING_STRINGS_WITH_EQ`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1200
+msgid ":ref:`RC_REF_COMPARISON`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1201
+msgid ":ref:`RC_REF_COMPARISON_BAD_PRACTICE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1202
+msgid ":ref:`RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1205
+msgid "FindMismatchedWaitOrNotify"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1207
+msgid ""
+"<p> This detector looks for calls to wait(), notify(), or notifyAll()\n"
+"which do not appear to be made on an object which is currently "
+"locked.&nbsp;\n"
+"It is a moderately fast detector.&nbsp; <b>This detector is disabled "
+"because\n"
+"it is still under development, and produces too many false "
+"positives.</b></p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1217
+msgid ":ref:`MWN_MISMATCHED_NOTIFY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1218
+msgid ":ref:`MWN_MISMATCHED_WAIT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1221
+msgid "FindEmptySynchronizedBlock"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1223
+msgid "<p> This detector looks for empty synchronized blocks.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1230
+msgid ":ref:`ESync_EMPTY_SYNC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1233
+msgid "FindInconsistentSync2"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1235
+msgid ""
+"<p> This detector looks for fields that are accessed in an inconsistent "
+"manner\n"
+"with respect to locking.  It is a slow detector.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1243
+msgid ":ref:`IS2_INCONSISTENT_SYNC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1244
+msgid ":ref:`IS_FIELD_NOT_GUARDED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1245
+msgid ":ref:`MSF_MUTABLE_SERVLET_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1248
+msgid "FindLocalSelfAssignment2"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1250
+msgid ""
+"<p> This detector looks for self assignments of local variables.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1258
+msgid ":ref:`SA_LOCAL_SELF_ASSIGNMENT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1259
+msgid ":ref:`SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1262
+msgid "IncompatMask"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1264
+msgid ""
+"<p> This detector looks for suspicious bitwise logical expressions.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1272
+msgid ":ref:`BIT_AND`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1273
+msgid ":ref:`BIT_AND_ZZ`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1274
+msgid ":ref:`BIT_IOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1275
+msgid ":ref:`BIT_SIGNED_CHECK`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1276
+msgid ":ref:`BIT_SIGNED_CHECK_HIGH_BIT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1279
+msgid "LazyInit"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1281
+msgid ""
+"<p> This detector looks for lazy field initialization where the\n"
+"field is not volatile.  It is a moderately fast detector.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1289
+msgid ":ref:`LI_LAZY_INIT_STATIC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1290
+msgid ":ref:`LI_LAZY_INIT_UPDATE_STATIC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1293
+msgid "FindJSR166LockMonitorenter"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1295
+msgid ""
+"<p> This detector looks for ordinary synchronization performed\n"
+"on JSR166 locks.  It is a moderately fast detector.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1303
+msgid ":ref:`JLM_JSR166_LOCK_MONITORENTER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1304
+msgid ":ref:`JLM_JSR166_UTILCONCURRENT_MONITORENTER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1305
+msgid ":ref:`JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1308
+msgid "FindUncalledPrivateMethods"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1310
+msgid ""
+"<p> This detector looks for private methods that are never called.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1318
+msgid ":ref:`UPM_UNCALLED_PRIVATE_METHOD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1321
+msgid "UncallableMethodOfAnonymousClass"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1323
+msgid ""
+"<p> This detector looks for anonymous inner classes that define methods\n"
+"that are probably intended to but do not override methods in a "
+"superclass.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1332
+msgid ":ref:`UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1335
+msgid "StringConcatenation"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1337
+msgid ""
+"<p> This detector looks for String concatenation in loops using +.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1345
+msgid ":ref:`SBSC_USE_STRINGBUFFER_CONCATENATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1348
+msgid "InvalidJUnitTest"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1350
+msgid ""
+"<p> This detector looks for JUnit tests that are malformed.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1358
+msgid ":ref:`IJU_BAD_SUITE_METHOD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1359
+msgid ":ref:`IJU_NO_TESTS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1360
+msgid ":ref:`IJU_SETUP_NO_SUPER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1361
+msgid ":ref:`IJU_SUITE_NOT_STATIC`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1362
+msgid ":ref:`IJU_TEARDOWN_NO_SUPER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1365
+msgid "BadlyOverriddenAdapter"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1367
+msgid ""
+"<p> This detector looks for code that extends an Adapter class and "
+"overrides a Listener\n"
+"method with the wrong signature. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1375
+msgid ":ref:`BOA_BADLY_OVERRIDDEN_ADAPTER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1378
+msgid "BadResultSetAccess"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1380
+msgid ""
+"<p> This detector looks for calls to getXXX or setXXX methods of a result"
+" set where the\n"
+"field index is 0. As ResultSet fields start at index 1, this is always a "
+"mistake.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1389
+msgid ":ref:`SQL_BAD_PREPARED_STATEMENT_ACCESS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1390
+msgid ":ref:`SQL_BAD_RESULTSET_ACCESS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1393
+msgid "SuperfluousInstanceOf"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1395
+msgid ""
+"<p> This detector looks for type checks using the instanceof operator "
+"where the determination\n"
+"can be done statically. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1403
+msgid ":ref:`SIO_SUPERFLUOUS_INSTANCEOF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1406
+msgid "SuspiciousThreadInterrupted"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1408
+msgid ""
+"<p>\n"
+"This detector looks for calls to Thread.interrupted() from a non-static "
+"context. If it is called from\n"
+"Thread.currentThread().interrupted(), then it is just a useless exercise,"
+" just use Thread.interrupted().\n"
+"However if it is called on an arbitrary thread object, it is most "
+"probably an error, as interrupted()\n"
+"is always called on the current thread.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1420
+msgid ":ref:`STI_INTERRUPTED_ON_CURRENTTHREAD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1421
+msgid ":ref:`STI_INTERRUPTED_ON_UNKNOWNTHREAD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1424
+msgid "FindDeadLocalStores"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1426
+msgid ""
+"<p>\n"
+"This detector looks for assignments to local variables that\n"
+"are never subsequently read. It is a moderately fast detector.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1436
+msgid ":ref:`DLS_DEAD_LOCAL_INCREMENT_IN_RETURN`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1437
+msgid ":ref:`DLS_DEAD_LOCAL_STORE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1438
+msgid ":ref:`DLS_DEAD_LOCAL_STORE_OF_NULL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1439
+msgid ":ref:`DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1440
+msgid ":ref:`DLS_DEAD_STORE_OF_CLASS_LITERAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1441
+msgid ":ref:`IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1444
+msgid "FindMaskedFields"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1446
+msgid ""
+"<p> This detector looks for class level fields that are masked by\n"
+"local fields defined in methods.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1455
+msgid ":ref:`MF_CLASS_MASKS_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1456
+msgid ":ref:`MF_METHOD_MASKS_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1459
+msgid "WrongMapIterator"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1461
+msgid ""
+"<p> This detector looks for accessing the value of a Map entry, using a "
+"key that was retrieved from\n"
+"a keySet iterator. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1469
+msgid ":ref:`WMI_WRONG_MAP_ITERATOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1472
+msgid "InstantiateStaticClass"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1474
+msgid ""
+"<p> This detector looks for code that creates objects based on classes "
+"that only define static methods.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1482
+msgid ":ref:`ISC_INSTANTIATE_STATIC_CLASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1485
+msgid "RuntimeExceptionCapture"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1487
+msgid ""
+"<p> This detector looks for catch clauses that catch Exception,\n"
+"when no code in the block throws Exception. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1495
+msgid ":ref:`REC_CATCH_EXCEPTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1498
+msgid "FindFloatEquality"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1500
+msgid "<p> Looks for floating point equality expressions. A fast detector. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1507
+msgid ":ref:`FE_FLOATING_POINT_EQUALITY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1508
+msgid ":ref:`FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1511
+msgid "FindUnsatisfiedObligation"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1513
+msgid ""
+"<p>This detector looks for I/O streams and database resources that\n"
+"are not cleaned up on all paths out of a method.  This is a slow "
+"detector.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1521
+msgid ":ref:`OBL_UNSATISFIED_OBLIGATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1522
+msgid ":ref:`OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1525
+msgid "UnnecessaryMath"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1527
+msgid ""
+"<p>This detector looks for code that calls java.lang.Math static methods "
+"on constant values,\n"
+"where the resultant value is a statically known constant. It is faster, "
+"and sometimes more\n"
+"accurate, to use the constant instead.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1536
+msgid ":ref:`UM_UNNECESSARY_MATH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1539
+msgid "RedundantInterfaces"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1541
+msgid ""
+"<p>This detector looks for classes that declare they implement the same "
+"interface\n"
+"as a super class. This is redundant, if a superclass implements an "
+"interface, so does\n"
+"the subclass.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1550
+msgid ":ref:`RI_REDUNDANT_INTERFACES`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1553
+msgid "MultithreadedInstanceAccess"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1555
+msgid ""
+"<p>This detector looks for potential problems in implementing the Struts "
+"framework.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1563
+msgid ":ref:`MTIA_SUSPECT_SERVLET_INSTANCE_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1564
+msgid ":ref:`MTIA_SUSPECT_STRUTS_INSTANCE_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1567
+msgid "BadUseOfReturnValue"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1569
+msgid ""
+"<p> Looks for cases where the return value of a function is discarded\n"
+"after being checked for non-null.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1578
+msgid ":ref:`RV_CHECK_FOR_POSITIVE_INDEXOF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1579
+msgid ":ref:`RV_DONT_JUST_NULL_CHECK_READLINE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1582
+msgid "MethodReturnCheck"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1584
+msgid ""
+"<p> This detector looks for calls to methods where the return value\n"
+"is suspiciously ignored.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1592
+msgid ":ref:`RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1593
+msgid ":ref:`RV_EXCEPTION_NOT_THROWN`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1594
+msgid ":ref:`RV_RETURN_VALUE_IGNORED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1595
+msgid ":ref:`RV_RETURN_VALUE_IGNORED_BAD_PRACTICE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1596
+msgid ":ref:`RV_RETURN_VALUE_IGNORED_INFERRED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1597
+msgid ":ref:`RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1598
+msgid ":ref:`UC_USELESS_VOID_METHOD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1601
+msgid "IDivResultCastToDouble"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1603
+msgid ""
+"<p>\n"
+"This detector looks for places where the result of integer division is\n"
+"cast to double. Often, what was meant was to cast the integer operands\n"
+"to double and then perform the division.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1614
+msgid ":ref:`ICAST_IDIV_CAST_TO_DOUBLE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1615
+msgid ":ref:`ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1616
+msgid ":ref:`ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1619
+msgid "FindBadCast2"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1621
+msgid ""
+"<p>\n"
+"This detector looks for bad casts of object references using data flow "
+"analysis.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1630
+msgid ":ref:`BC_BAD_CAST_TO_ABSTRACT_COLLECTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1631
+msgid ":ref:`BC_BAD_CAST_TO_CONCRETE_COLLECTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1632
+msgid ":ref:`BC_IMPOSSIBLE_CAST`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1633
+msgid ":ref:`BC_IMPOSSIBLE_DOWNCAST`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1634
+msgid ":ref:`BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1635
+msgid ":ref:`BC_IMPOSSIBLE_INSTANCEOF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1636
+msgid ":ref:`BC_UNCONFIRMED_CAST`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1637
+msgid ":ref:`BC_UNCONFIRMED_CAST_OF_RETURN_VALUE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1638
+msgid ":ref:`BC_VACUOUS_INSTANCEOF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1639
+msgid ":ref:`NP_NULL_INSTANCEOF`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1642
+msgid "FindUseOfNonSerializableValue"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1644
+msgid ""
+"<p>\n"
+"This detector looks for uses of non Serializable objects in contexts that"
+" require them to be serializable.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1653
+msgid ":ref:`DMI_NONSERIALIZABLE_OBJECT_WRITTEN`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1654
+msgid ":ref:`J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1657
+msgid "BadSyntaxForRegularExpression"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1659
+msgid ""
+"<p> This detector looks for regular expressions that have invalid syntax."
+"  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1666
+msgid ":ref:`RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1667
+msgid ":ref:`RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1668
+msgid ":ref:`RE_POSSIBLE_UNINTENDED_PATTERN`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1671
+msgid "VarArgsProblems"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1673
+msgid "<p> Looks for problems with arising from Java 1.5 varargs.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1680
+msgid ":ref:`VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1683
+msgid "FindPuzzlers"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1685
+msgid ""
+"<p> This detector looks for miscellaneous small errors\n"
+"mentioned by Joshua Bloch and Neal Gafter in\n"
+"their work on Programming Puzzlers.\n"
+"  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1695
+msgid ":ref:`BSHIFT_WRONG_ADD_PRIORITY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1696
+msgid ":ref:`BX_BOXING_IMMEDIATELY_UNBOXED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1697
+msgid ":ref:`BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1698
+msgid ":ref:`BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1699
+msgid ":ref:`BX_UNBOXING_IMMEDIATELY_REBOXED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1700
+msgid ":ref:`DLS_DEAD_LOCAL_STORE_IN_RETURN`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1701
+msgid ":ref:`DLS_OVERWRITTEN_INCREMENT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1702
+msgid ":ref:`DMI_BAD_MONTH`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1703
+msgid ":ref:`DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1704
+msgid ":ref:`DMI_INVOKING_HASHCODE_ON_ARRAY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1705
+msgid ":ref:`DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1706
+msgid ":ref:`DMI_INVOKING_TOSTRING_ON_ARRAY`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1708
+msgid ":ref:`ICAST_BAD_SHIFT_AMOUNT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1709
+msgid ":ref:`ICAST_INTEGER_MULTIPLY_CAST_TO_LONG`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1710
+msgid ":ref:`ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1711
+msgid ":ref:`IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1712
+msgid ":ref:`IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1713
+msgid ":ref:`IM_AVERAGE_COMPUTATION_COULD_OVERFLOW`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1714
+msgid ":ref:`IM_BAD_CHECK_FOR_ODD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1715
+msgid ":ref:`IM_MULTIPLYING_RESULT_OF_IREM`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1716
+msgid ":ref:`PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1717
+msgid ":ref:`RV_NEGATING_RESULT_OF_COMPARETO`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1720
+msgid "IntCast2LongAsInstant"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1722
+msgid ""
+"<p> Finds uses of 32-bit values to describe milliseconds since the epoch."
+"\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1730
+msgid ":ref:`ICAST_INT_2_LONG_AS_INSTANT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1733
+msgid "FindSleepWithLockHeld"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1735
+msgid ""
+"<p>\n"
+"   This detector looks for calls to Thread.sleep() made with\n"
+"   a lock held.  It is a slow detector.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1745
+msgid ":ref:`SWL_SLEEP_WITH_LOCK_HELD`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1748
+msgid "DuplicateBranches"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1750
+msgid ""
+"<p> This detector looks for if/else or switch statements that have the\n"
+"same code for two branches, thus rendering the test useless. This often\n"
+"is caused by copying and pasting the two branches, causing incorrect "
+"logic\n"
+"for the one branch.</p><p></p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1760
+msgid ":ref:`DB_DUPLICATE_BRANCHES`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1761
+msgid ":ref:`DB_DUPLICATE_SWITCH_CLAUSES`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1764
+msgid "XMLFactoryBypass"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1766
+msgid ""
+"<p> This detector looks for direct allocations of implementations of XML "
+"interfaces.\n"
+"This ties the code to a specific implementation, rather than using the "
+"supplied\n"
+"factory pattern to create these objects.</p>\n"
+"<p></p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1776
+msgid ":ref:`XFB_XML_FACTORY_BYPASS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1779
+msgid "ConfusedInheritance"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1781
+msgid ""
+"<p>\n"
+"This detector looks for final classes that declare protected members. As "
+"this\n"
+"class can not be derived from, the use of protected access for members is"
+"\n"
+"incorrect. The access should be changed to public or private to represent"
+"\n"
+"the correct intention of the field. This was probably caused by a change "
+"in\n"
+"use for this class, without completely changing all of the class to the "
+"new\n"
+"paradigm.\n"
+"</p>\n"
+"<p></p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1796
+msgid ":ref:`CI_CONFUSED_INHERITANCE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1799
+msgid "QuestionableBooleanAssignment"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1801
+msgid ""
+"<p>\n"
+"This detector looks for simple assignments of literal boolean values to "
+"variables in\n"
+"conditional expressions.\n"
+"</p>\n"
+"<p></p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1812
+msgid ":ref:`QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1815
+msgid "AppendingToAnObjectOutputStream"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1817
+msgid "<p>Looks for an attempt to append to an object output stream.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1824
+msgid ":ref:`IO_APPENDING_TO_OBJECT_OUTPUT_STREAM`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1827
+msgid "FindUnrelatedTypesInGenericContainer"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1829
+msgid ""
+"<p> This detector looks at the arguments of calls to generic\n"
+"collection methods that receive a <code>java.lang.Object</code>\n"
+"to see if the argument's type is related to the collection's\n"
+"parameter. Arguments with unrelated class types are never going\n"
+"to be in the collection. For example, if <code>foo</code> is a\n"
+"<code>List&lt;String&gt;</code> and <code>bar</code> is a\n"
+"<code>StringBuffer</code>, the call <code>foo.contains(bar)</code>\n"
+"will always return false. This is a fast detector.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1844
+msgid ":ref:`DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1845
+msgid ":ref:`DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1846
+msgid ":ref:`DMI_VACUOUS_SELF_COLLECTION_CALL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1847
+msgid ":ref:`GC_UNCHECKED_TYPE_IN_GENERIC_CALL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1848
+msgid ":ref:`GC_UNRELATED_TYPES`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1851
+msgid "StaticCalendarDetector"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1853
+msgid ""
+"<p>This detector warns about static fields of type java.util.Calendar or "
+"java.text.DateFormat (and subclasses) because\n"
+" Calendars are inherently unsafe for multithreaded use.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1861
+msgid ":ref:`STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1862
+msgid ":ref:`STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1863
+msgid ":ref:`STCAL_STATIC_CALENDAR_INSTANCE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1864
+msgid ":ref:`STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1867
+msgid "CheckTypeQualifiers"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1869
+msgid ""
+"<p>Check for violations of properties specified by JSR-305\n"
+"type qualifier annotations.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1877
+msgid ":ref:`TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1878
+msgid ":ref:`TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1879
+msgid ":ref:`TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1880
+msgid ":ref:`TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1881
+msgid ":ref:`TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1882
+msgid ":ref:`TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1883
+msgid ":ref:`TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1884
+msgid ":ref:`TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1887
+msgid "CrossSiteScripting"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1889
+msgid ""
+"<p> This detector looks for obvious/blatant cases of cross site scripting"
+" vulnerabilities.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1896
+msgid ":ref:`HRS_REQUEST_PARAMETER_TO_COOKIE`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1897
+msgid ":ref:`HRS_REQUEST_PARAMETER_TO_HTTP_HEADER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1898
+msgid ":ref:`PT_ABSOLUTE_PATH_TRAVERSAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1899
+msgid ":ref:`PT_RELATIVE_PATH_TRAVERSAL`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1900
+msgid ":ref:`XSS_REQUEST_PARAMETER_TO_JSP_WRITER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1901
+msgid ":ref:`XSS_REQUEST_PARAMETER_TO_SEND_ERROR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1902
+msgid ":ref:`XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1905
+msgid "DontIgnoreResultOfPutIfAbsent"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1907
+msgid ""
+"<p>Checks that if the result of putIfAbsent is ignored,\n"
+"  the value passed as the second argument is not reused. </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1915
+msgid ":ref:`RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1918
+msgid "ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1920
+msgid "<p>Checks for methods invoked from constructors for superclasses.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1927
+msgid ":ref:`UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1930
+msgid "AtomicityProblem"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1932
+msgid ""
+"<p> Finds sequences of operations (e.g., get/put) on a concurrent "
+"abstraction\n"
+"    that will not be executed atomically.\n"
+"    </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1941
+msgid ":ref:`AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1944
+msgid "DefaultEncodingDetector"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1946
+msgid ""
+"<p> Checks for calls to methods which perform a byte to String (or String"
+" to byte) conversion using the user's default\n"
+" platform encoding. This can cause the application behaviour to vary "
+"between platforms.  </p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1954
+msgid ":ref:`DM_DEFAULT_ENCODING`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1957
+msgid "CheckRelaxingNullnessAnnotation"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1959
+msgid ""
+"<p>Checks that overriding methods do not relax @Nonnull (made "
+"@CheckForNull) on return values\n"
+"or @CheckForNull (made @Nonnull) on parameters.</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1967
+msgid ":ref:`NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1968
+msgid ":ref:`NP_METHOD_RETURN_RELAXING_ANNOTATION`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1971
+msgid "DontAssertInstanceofInTests"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1973
+msgid ""
+"<p>Detector for patterns in JUnit tests where the type of an object\n"
+"   is checked by asserting the instanceof operator.</p>\n"
+"<p>\n"
+"   This should be avoided as the ClassCastException that would result\n"
+"   from an improper cast may provide more information regarding the\n"
+"   cause of the error than a \"false is not true\" message which would\n"
+"   result from asserting the result of the instanceof operator.\n"
+"</p>\n"
+"          <p>It is a fast detector</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1988
+msgid ":ref:`JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS`"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1991
+msgid "FindBadEndOfStreamCheck"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:1993
+msgid ""
+"<p>Detector for patterns where the return value of "
+"java.io.FileInputStream.read() or\n"
+"   java.io.FileReader.read() is converted before checking against -1.</p>"
+"\n"
+"<p>\n"
+"   Both methods return an int. If this int is converted to byte (in the "
+"case of\n"
+"   FileInputStream.read()) then -1 and the byte 0xFF become "
+"indistinguishable.\n"
+"   If it is converted to char (in the case of FileReader.read()) then -1 "
+"becomes\n"
+"   0xFFFF which is Character.MAX_VALUE since characters are unsigned in "
+"Java.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListEnabled.inc:2007
+msgid ":ref:`EOS_BAD_END_OF_STREAM_CHECK`"
+msgstr ""
+
+#: ../../detectors.rst:14
+msgid "Disabled detectors"
+msgstr ""
+
+#: ../../detectors.rst:16
+msgid "These detectors are off by default:"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:2
+msgid "EmptyZipFileEntry"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:4
+msgid ""
+"<p> This looks for creation of empty zip file entries. It is a moderately"
+" fast detector.</p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:11
+msgid ":ref:`AM_CREATES_EMPTY_JAR_FILE_ENTRY`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:12
+msgid ":ref:`AM_CREATES_EMPTY_ZIP_FILE_ENTRY`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:15
+msgid "CallToUnsupportedMethod"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:17
+msgid "<p> This detector looks for calls to methods that are unsupported."
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:24
+msgid ":ref:`DMI_UNSUPPORTED_METHOD`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:27
+msgid "CovariantArrayAssignment"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:29
+msgid ""
+"<p> This detector looks for covariant array assignments like Object[] "
+"array = new String[10] which may cause ArrayStoreException at runtime.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:37
+msgid ":ref:`CAA_COVARIANT_ARRAY_ELEMENT_STORE`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:38
+msgid ":ref:`CAA_COVARIANT_ARRAY_FIELD`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:39
+msgid ":ref:`CAA_COVARIANT_ARRAY_LOCAL`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:40
+msgid ":ref:`CAA_COVARIANT_ARRAY_RETURN`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:43
+msgid "InefficientInitializationInsideLoop"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:45
+msgid ""
+"<p> This detector looks for objects initialized within loop which can be "
+"moved outside for better performance.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:53
+msgid ":ref:`IIL_ELEMENTS_GET_LENGTH_IN_LOOP`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:54
+msgid ":ref:`IIL_PATTERN_COMPILE_IN_LOOP`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:55
+msgid ":ref:`IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:56
+msgid ":ref:`IIL_PREPARE_STATEMENT_IN_LOOP`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:59
+msgid "InefficientIndexOf"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:61
+msgid ""
+"<p> This detector looks for code that uses String.indexOf(String) or "
+"String.lastIndexOf(String),\n"
+"passing a constant string of length 1. It is recommended to use the more "
+"efficient integer implementations.\n"
+"A fast detector.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:71
+msgid ":ref:`IIO_INEFFICIENT_INDEX_OF`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:72
+msgid ":ref:`IIO_INEFFICIENT_LAST_INDEX_OF`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:75
+msgid "InefficientToArray"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:77
+msgid ""
+"<p> This detector looks for code that converts Collections to arrays\n"
+"using the toArray() method that takes a prototype array, passing\n"
+"an array argument which is zero-length.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:87
+msgid ":ref:`ITA_INEFFICIENT_TO_ARRAY`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:90
+msgid "BadAppletConstructor"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:92
+msgid ""
+"<p>\n"
+"This detector looks for Applet constructors that call methods in the "
+"parent\n"
+"Applet that rely on the Applet stub. Since this stub isn't initialized "
+"until just\n"
+"before the init() method, these methods will fail in the constructor.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:103
+msgid ":ref:`BAC_BAD_APPLET_CONSTRUCTOR`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:106
+msgid "FindCircularDependencies"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:108
+msgid "<p>This detector looks for circular dependencies among classes. </p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:115
+msgid ":ref:`CD_CIRCULAR_DEPENDENCY`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:118
+msgid "PublicSemaphores"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:120
+msgid ""
+"<p>This detector looks for public classes that synchronize and use "
+"wait(), notify() or notifyAll()\n"
+"on <b>this</b>. This exposes a synchronization implementation as a public"
+" artifact of the class.\n"
+"Clients of the class may use an instance of the class as its own "
+"synchronizing object, and cause\n"
+"havoc to the base implementation.\n"
+"</p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:131
+msgid ":ref:`PS_PUBLIC_SEMAPHORES`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:134
+msgid "InefficientMemberAccess"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:136
+msgid ""
+"<p> This detector looks for internal classes that write to member "
+"variables of the\n"
+"owning class, when that member variable is private. In this case, a "
+"special compiler\n"
+"generated accessor method needs to be used to write to this variable. "
+"Relaxing the\n"
+"visibility to protected will allow the field to be directly written.</p>\n"
+"<p></p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:147
+msgid ":ref:`IMA_INEFFICIENT_MEMBER_ACCESS`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:150
+msgid "UselessSubclassMethod"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:152
+msgid ""
+"<p>\n"
+"This detector looks for subclasses that implement methods defined in the "
+"super\n"
+"class, that only pass the parameters untouched to the parent class "
+"method.\n"
+"These methods can just be removed.\n"
+"</p>\n"
+"<p></p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:164
+msgid ":ref:`USM_USELESS_ABSTRACT_METHOD`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:165
+msgid ":ref:`USM_USELESS_SUBCLASS_METHOD`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:168
+msgid "CheckExpectedWarnings"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:170
+msgid ""
+"<p>Checks @ExpectedWarning and @NoWarning annotations.\n"
+"This detector is used only for testing SpotBugs.</p>"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:178
+msgid ":ref:`FB_MISSING_EXPECTED_WARNING`"
+msgstr ""
+
+#: ../../generated/detectorListDisabled.inc:179
+msgid ":ref:`FB_UNEXPECTED_WARNING`"
+msgstr ""
+

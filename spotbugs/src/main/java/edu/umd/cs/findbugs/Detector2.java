@@ -37,17 +37,17 @@ public interface Detector2 extends Priorities {
      * @throws CheckedAnalysisException
      *             if an exception occurs during analysis
      */
-    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException;
+    void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException;
 
     /**
      * This method is called at the end of the analysis pass.
      */
-    public void finishPass();
+    void finishPass();
 
     /**
      * Get the name of the detector class.
      *
      * @return the name of the detector class.
      */
-    public String getDetectorClassName();
+    String getDetectorClassName();
 }

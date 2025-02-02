@@ -37,14 +37,16 @@ public class OpcodeStackScanner {
 
     public static class UnreachableCodeException extends RuntimeException {
 
-        public UnreachableCodeException( @DottedClassName String className, String methodName, String methodSignature, int pc) {
+        public UnreachableCodeException(@DottedClassName String className, String methodName, String methodSignature, int pc) {
             super("Didn't reach pc " + pc + " of " + className + "." + methodName + methodSignature);
             this.className = className;
             this.methodName = methodName;
             this.methodSignature = methodSignature;
             this.pc = pc;
         }
-        @DottedClassName String className;
+
+        @DottedClassName
+        String className;
         String methodName;
         String methodSignature;
         int pc;
@@ -72,7 +74,7 @@ public class OpcodeStackScanner {
     static class Scanner extends OpcodeStackDetector {
 
         Scanner(JavaClass theClass, Method targetMethod, int targetPC) {
-            if(DEBUG) {
+            if (DEBUG) {
                 System.out.println("Scanning " + theClass.getClassName() + "." + targetMethod.getName());
             }
             this.theClass = theClass;
@@ -92,7 +94,7 @@ public class OpcodeStackScanner {
 
         @Override
         public void afterOpcode(int seen) {
-            if(DEBUG) {
+            if (DEBUG) {
                 System.out.printf("%3d: %8s %s%n", getPC(), Const.getOpcodeName(seen), getStack());
             }
             if (getPC() == targetPC) {

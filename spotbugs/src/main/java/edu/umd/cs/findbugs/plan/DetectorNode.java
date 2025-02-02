@@ -59,4 +59,3 @@ public class DetectorNode extends AbstractVertex<ConstraintEdge, DetectorNode> {
         return "DetectorNode[" + factory.getReportedBugPatternCodes() + "]";
     }
 }
-

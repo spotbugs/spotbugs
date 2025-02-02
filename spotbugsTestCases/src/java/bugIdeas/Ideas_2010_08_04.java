@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2010_08_04 {
-    @NoWarning("VA_FORMAT_STRING_BAD_CONVERSION")
+    // @NoWarning("VA_FORMAT_STRING_BAD_CONVERSION")
     public static void main(String[] args) {
         java.sql.Time time = new java.sql.Time(System.currentTimeMillis());
 

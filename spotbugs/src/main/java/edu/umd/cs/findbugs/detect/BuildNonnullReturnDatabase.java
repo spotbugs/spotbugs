@@ -54,9 +54,9 @@ public class BuildNonnullReturnDatabase {
         boolean fullAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(
                 FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES);
         if (!fullAnalysis && !AnalysisContext.currentAnalysisContext()./*
-         * getSubtypes
-         * ().
-         */isApplicationClass(classContext.getJavaClass())) {
+                                                                       * getSubtypes
+                                                                       * ().
+                                                                       */isApplicationClass(classContext.getJavaClass())) {
             return;
         }
         if (VERBOSE_DEBUG) {
@@ -112,22 +112,18 @@ public class BuildNonnullReturnDatabase {
             if (guaranteedNonNull) {
                 returnsNonNull++;
                 AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
-                .setProperty(xmethod.getMethodDescriptor(), guaranteedNonNull);
+                        .setProperty(xmethod.getMethodDescriptor(), guaranteedNonNull);
                 if (DEBUG) {
                     System.out.println("Unconditional deref: " + xmethod + "=" + guaranteedNonNull);
                 }
 
             }
 
-        } catch (CFGBuilderException e) {
+        } catch (CFGBuilderException | DataflowAnalysisException e) {
             XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-            .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
-        } catch (DataflowAnalysisException e) {
-            XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-            AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-            .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
+                    .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
         }
     }
 

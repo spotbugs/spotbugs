@@ -28,14 +28,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -43,11 +49,13 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import javax.annotation.WillClose;
+import javax.annotation.WillCloseWhenClosed;
 
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -55,7 +63,7 @@ import edu.umd.cs.findbugs.util.Util;
  * which is like a classpath, but for finding source files instead of class
  * files.
  */
-public class SourceFinder {
+public class SourceFinder implements AutoCloseable {
     private static final boolean DEBUG = SystemProperties.getBoolean("srcfinder.debug");
 
     private static final int CACHE_SIZE = 50;
@@ -85,12 +93,15 @@ public class SourceFinder {
     /**
      * A repository of source files.
      */
-    private interface SourceRepository {
+    private interface SourceRepository extends AutoCloseable {
         public boolean contains(String fileName);
 
         public boolean isPlatformDependent();
 
         public SourceFileDataSource getDataSource(String fileName);
+
+        @Override
+        void close() throws IOException;
     }
 
     /**
@@ -130,6 +141,11 @@ public class SourceFinder {
 
         private String getFullFileName(String fileName) {
             return baseDir + File.separator + fileName;
+        }
+
+        @Override
+        public void close() {
+            // this class keeps no file handler
         }
     }
 
@@ -182,10 +198,16 @@ public class SourceFinder {
         @Override
         public SourceFileDataSource getDataSource(final String fileName) {
             return new SourceFileDataSource() {
+                private final URI uri = URI.create(fileName);
 
                 @Override
                 public String getFullFileName() {
                     return fileName;
+                }
+
+                @Override
+                public URI getFullURI() {
+                    return uri;
                 }
 
                 @Override
@@ -207,6 +229,11 @@ public class SourceFinder {
         @Override
         public boolean isPlatformDependent() {
             return false;
+        }
+
+        @Override
+        public void close() {
+            // this class keeps no file handler
         }
     }
 
@@ -240,33 +267,38 @@ public class SourceFinder {
         return r;
     }
 
-    SourceRepository makeJarURLConnectionSourceRepository(final String url) throws MalformedURLException, IOException {
+    SourceRepository makeJarURLConnectionSourceRepository(final String url) throws IOException {
         final File file = File.createTempFile("jar_cache", null);
         file.deleteOnExit();
         final BlockingSourceRepository r = new BlockingSourceRepository();
         Util.runInDameonThread(() -> {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                URLConnection connection = new URL(url).openConnection();
-                if (getProject().isGuiAvaliable()) {
-                    int size = connection.getContentLength();
-                    in = getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), size,
-                            "Loading source via url");
-                } else {
-                    in = connection.getInputStream();
-                }
-                out = new FileOutputStream(file);
+            try (InputStream in = open(url); OutputStream out = new FileOutputStream(file);) {
                 IO.copy(in, out);
                 r.setBase(new ZipSourceRepository(new ZipFile(file)));
             } catch (IOException e) {
                 assert true;
-            } finally {
-                Util.closeSilently(in);
-                Util.closeSilently(out);
             }
         }, "Source loading thread");
         return r;
+    }
+
+    /**
+     * @param url
+     * @return
+     * @throws IOException
+     * @throws MalformedURLException
+     */
+    private InputStream open(final String url) throws IOException {
+        InputStream in = null;
+        URLConnection connection = new URL(url).openConnection();
+        if (getProject().isGuiAvaliable()) {
+            int size = connection.getContentLength();
+            in = getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), size,
+                    "Loading source via url");
+        } else {
+            in = connection.getInputStream();
+        }
+        return in;
     }
 
     static class BlockingSourceRepository implements SourceRepository {
@@ -281,7 +313,7 @@ public class SourceFinder {
             return ready.getCount() == 0;
         }
 
-        public void setBase(SourceRepository base) {
+        public void setBase(@WillCloseWhenClosed SourceRepository base) {
             this.base = base;
             ready.countDown();
         }
@@ -312,6 +344,10 @@ public class SourceFinder {
             return base.isPlatformDependent();
         }
 
+        @Override
+        public void close() throws IOException {
+            base.close();
+        }
     }
 
     /**
@@ -319,9 +355,11 @@ public class SourceFinder {
      */
     static class ZipSourceRepository implements SourceRepository {
         ZipFile zipFile;
+        FileSystem zipFileSystem;
 
-        public ZipSourceRepository(ZipFile zipFile) {
+        public ZipSourceRepository(@WillCloseWhenClosed ZipFile zipFile) throws IOException {
             this.zipFile = zipFile;
+            this.zipFileSystem = FileSystems.newFileSystem(Paths.get(zipFile.getName()), (ClassLoader) null);
         }
 
         @Override
@@ -336,7 +374,13 @@ public class SourceFinder {
 
         @Override
         public SourceFileDataSource getDataSource(String fileName) {
-            return new ZipSourceFileDataSource(zipFile, fileName);
+            return new ZipSourceFileDataSource(zipFile, zipFileSystem, fileName);
+        }
+
+        @Override
+        public void close() throws IOException {
+            zipFileSystem.close();
+            zipFile.close();
         }
     }
 
@@ -372,7 +416,7 @@ public class SourceFinder {
     /**
      * Set the list of source directories.
      */
-    void setSourceBaseList(Iterable<String> sourceBaseList) {
+    public /* visible for testing */ void setSourceBaseList(Iterable<String> sourceBaseList) {
         for (String repos : sourceBaseList) {
             if (repos.endsWith(".zip") || repos.endsWith(".jar") || repos.endsWith(".z0p.gz")) {
                 // Zip or jar archive
@@ -484,13 +528,16 @@ public class SourceFinder {
             }
         }
 
-        throw new FileNotFoundException("Can't find source file " + fileName);
+        String sourceRepositories = repositoryList.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+        throw new FileNotFoundException("Can't find source file " + fileName + " (source repositories="
+                + sourceRepositories + ")");
     }
 
     public static String getPlatformName(String packageName, String fileName) {
-        String platformName = packageName.replace('.', File.separatorChar) + (packageName.length() > 0 ? File.separator : "")
+        return packageName.replace('.', File.separatorChar) + (packageName.isEmpty() ? "" : File.separator)
                 + fileName;
-        return platformName;
     }
 
     public static String getPlatformName(SourceLineAnnotation source) {
@@ -502,11 +549,10 @@ public class SourceFinder {
     }
 
     public static String getCanonicalName(String packageName, String fileName) {
-        String canonicalName = packageName.replace('.', '/') + (packageName.length() > 0 ? "/" : "") + fileName;
-        return canonicalName;
+        return ClassName.toSlashedClassName(packageName) + (packageName.isEmpty() ? "" : "/") + fileName;
     }
 
-    public static String getOrGuessSourceFile(SourceLineAnnotation source)  {
+    public static String getOrGuessSourceFile(SourceLineAnnotation source) {
         if (source.isSourceFileKnown()) {
             return source.getSourceFile();
         }
@@ -578,5 +624,22 @@ public class SourceFinder {
         cache = new Cache();
         setSourceBaseList(project.getResolvedSourcePaths());
     }
-}
 
+    @Override
+    public void close() {
+        for (SourceRepository repo : repositoryList) {
+            IO.close(repo);
+        }
+    }
+
+    public Optional<URI> getBase(SourceLineAnnotation sourceLineAnnotation) {
+        String relativePath = getPlatformName(sourceLineAnnotation);
+        return getBase(relativePath);
+    }
+
+    public Optional<URI> getBase(String fileName) {
+        return repositoryList.stream()
+                .filter(SourceRepository::isPlatformDependent)
+                .filter(repo -> repo.contains(fileName)).map(repo -> repo.getDataSource("").getFullURI()).findFirst();
+    }
+}

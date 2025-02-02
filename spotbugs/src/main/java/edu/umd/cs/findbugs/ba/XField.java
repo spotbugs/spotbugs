@@ -61,4 +61,3 @@ public interface XField extends ClassMember, AnnotatedObject, ComparableField {
      */
     public FieldDescriptor getFieldDescriptor();
 }
-

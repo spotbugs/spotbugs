@@ -126,18 +126,32 @@ Common command-line options
 
 These options may be used with both the GUI and command-line interfaces.
 
--effort:min:
-  This option disables analyses that increase precision but also increase memory consumption.
-  You may want to try this option if you find that SpotBugs runs out of memory, or takes an unusually long time to complete its analysis.
-  See :doc:`effort`.
-
--effort:max:
-  Enable analyses which increase precision and find more bugs, but which may require more memory and take more time to complete.
+-effort[:min|less|default|more|max]:
+  Set analysis effort level. 
+  The -effort:min disables several analyses that increase precision but also increase memory consumption. You may want to try this option if you find that SpotBugs with the -effort:less still runs out of memory, or takes an unusually long time to complete its analysis.
+  The -effort:less disables some analyses that increase precision but also increase memory consumption. You may want to try this option if you find that SpotBugs with the -effort:more/-effort:default runs out of memory, or takes an unusually long time to complete its analysis.
+  The -effort:more runs several analyses to find bugs, this is the -effort:default.
+  The -effort:max enable analyses which increase precision and find more bugs, but which may require more memory and take more time to complete.
   See :doc:`effort`.
 
 -project *project*:
   Specify a project to be analyzed. The project file you specify should be one that was created using the GUI interface.
   It will typically end in the extension .fb or .fbp.
+  
+-pluginList <jar1[;jar2...]>:
+  Specify list of plugin Jar files to load.
+  
+-home <home directory>:
+  Specify SpotBugs home directory.
+    
+-adjustExperimental:
+  Lower priority of experimental Bug Patterns.
+  
+-workHard:
+  Ensure analysis effort is at least 'default'.
+
+-conserveSpace:
+  Same as -effort:min (for backward compatibility).
 
 GUI Options
 ^^^^^^^^^^^
@@ -152,8 +166,11 @@ Text UI Options
 
 These options are only accepted by the Text User Interface.
 
--sortByClass:
+-sortByClass=filepath:
   Sort reported bug instances by class name.
+
+  From SpotBugs 4.5.0, this option receives a file path like ``-sortByClass=path/to/spotbugs.txt``.
+  It is also supported to set multiple reports like ``-xml=spotbugs.xml -sortByClass=spotbugs.txt``.
 
 -include *filterFile.xml*:
   Only report bug instances that match the filter specified by filterFile.xml.
@@ -163,12 +180,13 @@ These options are only accepted by the Text User Interface.
   Report all bug instances except those matching the filter specified by filterFile.xml.
   See :doc:`filter`.
 
--onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.**:
+-onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.*,!com.foobar.mypkg.ExcludedClass*:
   Restrict analysis to find bugs to given comma-separated list of classes and packages.
   Unlike filtering, this option avoids running analysis on classes and packages that are not explicitly matched: for large projects, this may greatly reduce the amount of time needed to run the analysis.
   (However, some detectors may produce inaccurate results if they aren't run on the entire application.)
   Classes should be specified using their full classnames (including package), and packages should be specified in the same way they would in a Java import statement to import all classes in the package (i.e., add .* to the full name of the package).
-  Replace .* with .- to also analyze all subpackages.
+  Replace ``.*`` with ``.-`` to also analyze all subpackages.
+  Items starting with ``!`` are treated as exclusions, removing otherwise-included classes from analysis.
 
 -low:
   Report all bugs.
@@ -183,13 +201,16 @@ These options are only accepted by the Text User Interface.
   Relaxed reporting mode.
   For many detectors, this option suppresses the heuristics used to avoid reporting false positives.
 
--xml:
+-xml=filepath:
   Produce the bug reports as XML.
   The XML data produced may be viewed in the GUI at a later time.
   You may also specify this option as ``-xml:withMessages``; when this variant of the option is used, the XML output will contain human-readable messages describing the warnings contained in the file.
   XML files generated this way are easy to transform into reports.
 
--html:
+  From SpotBugs 4.5.0, this option receives a file path like ``-xml:withMessages=path/to/spotbugs.xml``.
+  It is also supported to set multiple reports like ``-xml=spotbugs.xml -html=spotbugs.html``.
+
+-html=filepath:
   Generate HTML output. By default, SpotBugs will use the default.xsl XSLT stylesheet to generate the HTML: you can find this file in spotbugs.jar, or in the SpotBugs source or binary distributions.
   Variants of this option include ``-html:plain.xsl``, ``-html:fancy.xsl`` and ``-html:fancy-hist.xsl``.
   The ``plain.xsl`` stylesheet does not use Javascript or DOM, and may work better with older web browsers, or for printing.
@@ -198,17 +219,26 @@ These options are only accepted by the Text User Interface.
 
   If you want to specify your own XSLT stylesheet to perform the transformation to HTML, specify the option as ``-html:myStylesheet.xsl``, where ``myStylesheet.xsl`` is the filename of the stylesheet you want to use.
 
--emacs:
+  From SpotBugs 4.5.0, this option receives a file path like ``-html:fancy-hist.xsl=path/to/spotbugs.html``.
+  It is also supported to set multiple reports like ``-xml=spotbugs.xml -html=spotbugs.html``.
+
+-sarif=filepath:
+  Produce the bug reports in `SARIF 2.1.0 <https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html>`_.
+
+  From SpotBugs 4.5.0, this option receives a file path like ``-sarif=path/to/spotbugs.sarif``.
+  It is also supported to set multiple reports like ``-xml=spotbugs.xml -sarif=spotbugs.sarif``.
+
+-emacs=filepath:
   Produce the bug reports in Emacs format.
 
--xdocs:
+-xdocs=filepath:
   Produce the bug reports in xdoc XML format for use with Apache Maven.
 
 -output *filename*:
-  Produce the output in the specified file.
+  This argument is deprecated. Use report type option like ``-xml=spotbugs.xml`` instead.
 
 -outputFile *filename*:
-  This argument is deprecated. Use ``-output`` instead.
+  This argument is deprecated. Use report type option like ``-xml=spotbugs.xml`` instead.
 
 -nested[:true|false]:
   This option enables or disables scanning of nested jar and zip files found in the list of files and directories to be analyzed.
@@ -231,3 +261,95 @@ These options are only accepted by the Text User Interface.
   Set the path of the user preferences file to use, which might override some of the options above.
   Specifying userPrefs as first argument would mean some later options will override them, as last argument would mean they will override some previous options).
   This rationale behind this option is to reuse SpotBugs Eclipse project settings for command line execution.
+
+-showPlugins:
+  Show list of available detector plugins.
+
+Output options
+**************
+-timestampNow:
+  Set timestamp of results to be current time.
+
+-quiet:
+  Suppress error messages.
+
+-longBugCodes:
+  Report long bug codes.
+
+-progress:
+  Display progress in terminal window.
+
+-release <release name>:
+  Set the release name of the analyzed application.
+
+-maxRank <rank>:
+  Only report issues with a bug rank at least as scary as that provided.
+
+-dontCombineWarnings:
+  Don't combine warnings that differ only in line number.
+
+-train[:outputDir]:
+  Save training data (experimental); output dir defaults to '.'.
+
+-useTraining[:inputDir]:
+  Use training data (experimental); input dir defaults to '.'.
+
+-redoAnalysis <filename>:
+  Redo analysis using configuration from previous analysis.
+
+-sourceInfo <filename>:
+  Specify source info file (line numbers for fields/classes).
+
+-projectName <project name>:
+  Descriptive name of project.
+
+-reanalyze <filename>:
+  Redo analysis in provided file.
+  
+Output filtering options
+************************
+-bugCategories <cat1[,cat2...]>:
+  Only report bugs in given categories.
+
+-excludeBugs <baseline bugs>:
+  Exclude bugs that are also reported in the baseline xml output.
+
+-applySuppression:
+  Exclude any bugs that match suppression filter loaded from fbp file.
+
+Detector (visitor) configuration options
+****************************************
+-visitors <v1[,v2...]>:
+  Run only named visitors.
+
+-omitVisitors <v1[,v2...]>:
+  Omit named visitors.
+
+-chooseVisitors <+v1,-v2,...>:
+  Selectively enable/disable detectors.
+
+-choosePlugins <+p1,-p2,...>:
+  Selectively enable/disable plugins.
+
+-adjustPriority <v1=(raise|lower)[,...]>:
+  Raise/lower priority of warnings for given visitor(s)
+
+Project configuration options
+*****************************
+-sourcepath <source path>:
+  Set source path for analyzed classes.
+
+-exitcode:
+  Set exit code of process.
+
+-noClassOk:
+  Output empty warning file if no classes are specified.
+
+-xargs:
+  Get list of classfiles/jarfiles from standard input rather than command line.
+
+-bugReporters <name,name2,-name3>:
+  Bug reporter decorators to explicitly enable/disable.
+
+-printConfiguration:
+  Print configuration and exit, without running analysis.

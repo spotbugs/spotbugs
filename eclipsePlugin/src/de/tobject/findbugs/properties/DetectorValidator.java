@@ -77,7 +77,7 @@ public class DetectorValidator {
         try {
             sum = PluginLoader.validate(file);
         } catch (IllegalArgumentException e) {
-            if(FindbugsPlugin.getDefault().isDebugging()) {
+            if (FindbugsPlugin.getDefault().isDebugging()) {
                 e.printStackTrace();
             }
             return new ValidationStatus(IStatus.ERROR,
@@ -85,7 +85,7 @@ public class DetectorValidator {
         }
         Plugin loadedPlugin = Plugin.getByPluginId(sum.id);
         URI uri = file.toURI();
-        if(loadedPlugin != null && !uri.equals(loadedPlugin.getPluginLoader().getURI())
+        if (loadedPlugin != null && !uri.equals(loadedPlugin.getPluginLoader().getURI())
                 && loadedPlugin.isGloballyEnabled()) {
             return new ValidationStatus(IStatus.ERROR, "Duplicated SpotBugs plugin: " + sum.id + ", already loaded from: "
                     + loadedPlugin.getPluginLoader().getURI(), sum, null);

@@ -271,6 +271,7 @@ public class FilterFilesTab extends Composite {
                 u.setExcludeBugsFiles(files);
             }
         };
+
         final String propertyName;
 
         FilterKind(String propertyName) {

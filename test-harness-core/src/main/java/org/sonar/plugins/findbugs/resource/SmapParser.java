@@ -66,7 +66,7 @@ public class SmapParser {
     private final Map<Integer, FileInfo> fileinfo = new HashMap<>();
     private final Map<Integer, int[]> java2jsp = new HashMap<>();
 
-    private static final Pattern LINE_INFO_PATTERN = Pattern.compile("([0-9]+)(?:#([0-9]+))?(?:,([0-9]+))?:([0-9]+)(?:,([0-9]+))?");
+    private static final Pattern LINE_INFO_PATTERN = Pattern.compile("(\\d+)(?:#(\\d+))?(?:,(\\d+))?:(\\d+)(?:,(\\d+))?");
 
     private static String getLine(BufferedReader reader) throws IOException {
         String s = reader.readLine();
@@ -93,7 +93,7 @@ public class SmapParser {
 
         //Parse the file info section (*F)
         String line;
-        while((line = getLine(reader)) != null && !line.equals("*L")) {
+        while ((line = getLine(reader)) != null && !line.equals("*L")) {
             String path = null;
             if (line.startsWith("+ ")) {
                 path = getLine(reader);
@@ -108,7 +108,7 @@ public class SmapParser {
 
         //Parse the line number mapping section (*L)
         int lastLFI = 0;
-        while((line = getLine(reader)) != null && !line.equals("*E")) {
+        while ((line = getLine(reader)) != null && !line.equals("*E")) {
 
             if (!line.startsWith("*")) {
 
@@ -124,7 +124,7 @@ public class SmapParser {
                 int outputLineIncrement = m.group(5) == null ? 1 : Integer.parseInt(m.group(5));
 
                 for (int i = 0; i < repeatCount; i++) {
-                    int[] inputMapping = new int[]{ lineFileID, inputStartLine + i};
+                    int[] inputMapping = new int[] { lineFileID, inputStartLine + i };
                     int baseOL = outputStartLine + i * outputLineIncrement;
                     for (int ol = baseOL; ol < baseOL + outputLineIncrement; ol++) {
                         if (!java2jsp.containsKey(ol)) {
@@ -161,9 +161,9 @@ public class SmapParser {
     }
 
     public SmapLocation getSmapLocation(Integer lineNo) {
-        int[] origSource =java2jsp.get(lineNo);
+        int[] origSource = java2jsp.get(lineNo);
         FileInfo info = fileinfo.get(origSource[0]);
-        return new SmapLocation(info,origSource[1], origSource[0] == 0);
+        return new SmapLocation(info, origSource[1], origSource[0] == 0);
     }
 
     public static class FileInfo {

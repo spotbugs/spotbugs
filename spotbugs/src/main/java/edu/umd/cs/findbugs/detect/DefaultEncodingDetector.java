@@ -19,6 +19,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * <p>
@@ -50,9 +51,9 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
      * platform encoding.
      */
     static class DefaultEncodingAnnotation extends AnnotationEnumeration<DefaultEncodingAnnotation> {
-        public final static DefaultEncodingAnnotation DEFAULT_ENCODING = new DefaultEncodingAnnotation("DefaultEncoding", 1);
+        public static final DefaultEncodingAnnotation DEFAULT_ENCODING = new DefaultEncodingAnnotation("DefaultEncoding", 1);
 
-        private final static DefaultEncodingAnnotation[] myValues = { DEFAULT_ENCODING };
+        private static final DefaultEncodingAnnotation[] myValues = { DEFAULT_ENCODING };
 
         public static DefaultEncodingAnnotation[] values() {
             return myValues.clone();
@@ -74,6 +75,7 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
         }
 
         Set<ClassDescriptor> classes = new HashSet<>();
+
         @Override
         protected void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic,
                 DefaultEncodingAnnotation annotation) {
@@ -84,9 +86,9 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
 
         @Override
         public void loadAuxiliaryAnnotations() {
-            addMethodAnnotation("java.lang.String", "getBytes", "()[B", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "([B)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "([BII)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "getBytes", "()[B", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "([B)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "([BII)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.io.ByteArrayOutputStream", "toString", "()Ljava/lang/String;", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.io.FileReader", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
@@ -149,7 +151,7 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
     @Override
     public boolean shouldVisit(JavaClass obj) {
         Set<ClassDescriptor> called = getXClass().getCalledClassDescriptors();
-        for(ClassDescriptor c : defaultEncodingAnnotationDatabase.classes) {
+        for (ClassDescriptor c : defaultEncodingAnnotationDatabase.classes) {
             if (called.contains(c)) {
                 return true;
             }
@@ -157,12 +159,14 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
 
         return false;
     }
+
     @Override
     public void visit(Code code) {
         super.visit(code); // make callbacks to sawOpcode for all opcodes
         bugAccumulator.reportAccumulatedBugs();
 
     }
+
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {

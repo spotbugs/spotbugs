@@ -19,6 +19,7 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -139,7 +140,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
                     Method superMethod = findSuperclassMethod(superclassName, getMethod());
                     if ((superMethod == null) || differentAttributes(getMethod(), superMethod)
                             || getMethod().isProtected()
-                            && !samePackage(getDottedClassName(), superclassName)) {
+                                    && !samePackage(getDottedClassName(), superclassName)) {
                         return;
                     }
 
@@ -157,12 +158,14 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         if (i < 0) {
             return "";
         }
-        return classname.substring(0,i);
+        return classname.substring(0, i);
     }
+
     public boolean samePackage(@DottedClassName String classname1, @DottedClassName String classname2) {
         return getPackage(classname1).equals(getPackage(classname2));
 
     }
+
     @Override
     public void sawOpcode(int seen) {
         switch (state) {
@@ -287,7 +290,8 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         }
 
         if (!"Object".equals(superclassName)) {
-            @DottedClassName String superSuperClassName = superClass.getSuperclassName();
+            @DottedClassName
+            String superSuperClassName = superClass.getSuperclassName();
             if (superSuperClassName.equals(superclassName)) {
                 throw new ClassNotFoundException("superclass of " + superclassName + " is itself");
             }
@@ -301,12 +305,13 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         HashSet<String> result = new HashSet<>();
         ExceptionTable exceptionTable = m.getExceptionTable();
         if (exceptionTable != null) {
-            for (String e : exceptionTable.getExceptionNames()) {
-                result.add(e);
-            }
+            Collections.addAll(result, exceptionTable.getExceptionNames());
         }
         return result;
     }
+
+    // TODO awaiting https://github.com/spotbugs/spotbugs/issues/626
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     private boolean differentAttributes(Method m1, Method m2) {
         if (m1.getAnnotationEntries().length > 0 || m2.getAnnotationEntries().length > 0) {
             return true;

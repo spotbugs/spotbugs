@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -41,14 +44,21 @@ import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.BootstrapMethod;
+import org.apache.bcel.classfile.BootstrapMethods;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantDynamic;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantInteger;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantLong;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
@@ -57,6 +67,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
+import org.apache.commons.lang3.tuple.Pair;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
 import edu.umd.cs.findbugs.StackMapAnalyzer.JumpInfoFromStackMap;
@@ -79,7 +90,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.visitclass.Constants2;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -103,7 +114,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * <li>wide</li>
  * </ul>
  */
-public class OpcodeStack implements Constants2 {
+public class OpcodeStack {
 
     /** You can put this annotation on a OpcodeStack detector
      * to indicate that it uses {@link OpcodeStack.Item#userValue},
@@ -115,16 +126,49 @@ public class OpcodeStack implements Constants2 {
      * versions of FindBugs that do not support {@link edu.umd.cs.findbugs.bcel.OpcodeStackDetector.WithCustomJumpInfo }}
      */
     @Documented
-    @Target({ElementType.TYPE, ElementType.PACKAGE})
+    @Target({ ElementType.TYPE, ElementType.PACKAGE })
     @Retention(RetentionPolicy.RUNTIME)
     public @interface CustomUserValue {
     }
 
     private static final String JAVA_UTIL_ARRAYS_ARRAY_LIST = "Ljava/util/Arrays$ArrayList;";
+    private static final String JAVA_UTIL_COLLECTIONS = "java/util/Collections";
 
     private static final boolean DEBUG = SystemProperties.getBoolean("ocstack.debug");
 
     private static final boolean DEBUG2 = DEBUG;
+
+    private static final Map<Pair<String, String>, String> IMMUTABLE_RETURNER_MAP = new HashMap<>();
+    static {
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyList"), "Ljava/util/Collections$EmptyList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyMap"), "Ljava/util/Collections$EmptyMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyNavigableMap"), "Ljava/util/Collections$EmptyNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptySortedMap"), "Ljava/util/Collections$EmptyNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptySet"), "Ljava/util/Collections$EmptySet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyNavigableSet"), "Ljava/util/Collections$EmptyNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptySortedSet"), "Ljava/util/Collections$EmptyNavigableSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "singletonList"), "Ljava/util/Collections$SingletonList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "singletonMap"), "Ljava/util/Collections$SingletonMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "singleton"), "Ljava/util/Collections$SingletonSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableList"), "Ljava/util/Collections$UnmodifiableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableMap"), "Ljava/util/Collections$UnmodifiableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableNavigableMap"), "Ljava/util/Collections$UnmodifiableNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableSortedMap"), "Ljava/util/Collections$UnmodifiableSortedMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableSet"), "Ljava/util/Collections$UnmodifiableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableNavigableSet"), "Ljava/util/Collections$UnmodifiableNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableSortedSet"), "Ljava/util/Collections$UnmodifiableSortedSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_LIST, "of"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_LIST, "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_MAP, "of"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_MAP, "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_SET, "of"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_SET, "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
+    }
 
     @StaticConstant
     static final HashMap<String, String> boxedTypes = new HashMap<>();
@@ -198,107 +242,60 @@ public class OpcodeStack implements Constants2 {
             return kind;
         }
 
-        public static final @SpecialKind
-        int NOT_SPECIAL = 0;
+        public static final @SpecialKind int NOT_SPECIAL = 0;
 
-        public static final @SpecialKind
-        int SIGNED_BYTE = 1;
+        public static final @SpecialKind int SIGNED_BYTE = 1;
 
-        public static final @SpecialKind
-        int RANDOM_INT = 2;
+        public static final @SpecialKind int RANDOM_INT = 2;
 
-        public static final @SpecialKind
-        int LOW_8_BITS_CLEAR = 3;
+        public static final @SpecialKind int LOW_8_BITS_CLEAR = 3;
 
-        public static final @SpecialKind
-        int HASHCODE_INT = 4;
+        public static final @SpecialKind int HASHCODE_INT = 4;
 
-        public static final @SpecialKind
-        int INTEGER_SUM = 5;
+        public static final @SpecialKind int INTEGER_SUM = 5;
 
-        public static final @SpecialKind
-        int AVERAGE_COMPUTED_USING_DIVISION = 6;
+        public static final @SpecialKind int AVERAGE_COMPUTED_USING_DIVISION = 6;
 
-        public static final @SpecialKind
-        int FLOAT_MATH = 7;
+        public static final @SpecialKind int FLOAT_MATH = 7;
 
-        public static final @SpecialKind
-        int RANDOM_INT_REMAINDER = 8;
+        public static final @SpecialKind int RANDOM_INT_REMAINDER = 8;
 
-        public static final @SpecialKind
-        int HASHCODE_INT_REMAINDER = 9;
+        public static final @SpecialKind int HASHCODE_INT_REMAINDER = 9;
 
-        public static final @SpecialKind
-        int FILE_SEPARATOR_STRING = 10;
+        public static final @SpecialKind int FILE_SEPARATOR_STRING = 10;
 
-        public static final @SpecialKind
-        int MATH_ABS = 11;
+        public static final @SpecialKind int MATH_ABS = 11;
 
-        public static final @SpecialKind
-        int MATH_ABS_OF_RANDOM = 12;
+        public static final @SpecialKind int MATH_ABS_OF_RANDOM = 12;
 
-        public static final @SpecialKind
-        int MATH_ABS_OF_HASHCODE = 13;
+        public static final @SpecialKind int MATH_ABS_OF_HASHCODE = 13;
 
-        public static final @SpecialKind
-        int NON_NEGATIVE = 14;
+        public static final @SpecialKind int NON_NEGATIVE = 14;
 
-        public static final @SpecialKind
-        int NASTY_FLOAT_MATH = 15;
+        public static final @SpecialKind int NASTY_FLOAT_MATH = 15;
 
-        public static final @SpecialKind
-        int FILE_OPENED_IN_APPEND_MODE = 16;
+        public static final @SpecialKind int FILE_OPENED_IN_APPEND_MODE = 16;
 
-        public static final @SpecialKind
-        int SERVLET_REQUEST_TAINTED = 17;
+        public static final @SpecialKind int SERVLET_REQUEST_TAINTED = 17;
 
-        public static final @SpecialKind
-        int NEWLY_ALLOCATED = 18;
+        public static final @SpecialKind int NEWLY_ALLOCATED = 18;
 
-        public static final @SpecialKind
-        int ZERO_MEANS_NULL = 19;
+        public static final @SpecialKind int ZERO_MEANS_NULL = 19;
 
-        public static final @SpecialKind
-        int NONZERO_MEANS_NULL = 20;
+        public static final @SpecialKind int NONZERO_MEANS_NULL = 20;
 
-        public static final @SpecialKind
-        int RESULT_OF_I2L = 21;
+        public static final @SpecialKind int RESULT_OF_I2L = 21;
 
-        public static final @SpecialKind
-        int RESULT_OF_L2I = 22;
+        public static final @SpecialKind int RESULT_OF_L2I = 22;
 
-        public static final @SpecialKind
-        int SERVLET_OUTPUT = 23;
+        public static final @SpecialKind int SERVLET_OUTPUT = 23;
 
-        public static final @SpecialKind
-        int TYPE_ONLY = 24;
+        public static final @SpecialKind int TYPE_ONLY = 24;
 
-        /**
-         * @deprecated will be deleted at v4 release. use {@link #getSpecialKindName(int)} instead.
-         */
-        @Deprecated
         @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-        public static final HashMap<Integer, String> specialKindNames = new HashMap<>();
+        private static final ConcurrentMap<Integer, String> specialKindToName = new ConcurrentHashMap<>();
 
-        private static @SpecialKind int nextSpecialKind = asSpecialKind(TYPE_ONLY + 1);
-
-        /**
-         * Define new SpecialKind with given name, and return its {@code int} value
-         * @param name
-         *      the name of new SpecialKind, can be null
-         * @return
-         *      {@code int} value which expresses new SpecialKind
-         * @see <a href="https://github.com/spotbugs/spotbugs/pull/23">Known bug</a>
-         * @deprecated use {@link #defineSpecialKind(String)} instead.
-         */
-        @Deprecated
-        public static @SpecialKind
-        int defineNewSpecialKind(String name) {
-            specialKindNames.put(nextSpecialKind, name);
-            @SpecialKind int result = asSpecialKind( nextSpecialKind+1);
-            nextSpecialKind = result;
-            return result;
-        }
+        private static AtomicInteger nextSpecialKind = new AtomicInteger(TYPE_ONLY + 1);
 
         private static final int IS_INITIAL_PARAMETER_FLAG = 1;
 
@@ -308,15 +305,13 @@ public class OpcodeStack implements Constants2 {
 
         public static final Object UNKNOWN = null;
 
-        private @SpecialKind
-        int specialKind = NOT_SPECIAL;
+        private @SpecialKind int specialKind = NOT_SPECIAL;
 
         private String signature;
 
         private Object constValue = UNKNOWN;
 
-        private @CheckForNull
-        ClassMember source;
+        private @CheckForNull ClassMember source;
 
         private int pc = -1;
 
@@ -381,6 +376,7 @@ public class OpcodeStack implements Constants2 {
         public boolean usesTwoSlots() {
             return getSize() == 2;
         }
+
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof Item)) {
@@ -399,7 +395,8 @@ public class OpcodeStack implements Constants2 {
 
         public boolean sameValue(OpcodeStack.Item that) {
 
-            return this.equals(that) && (this.registerNumber != -1 && this.registerNumber == that.registerNumber || this.fieldLoadedFromRegister != -1);
+            return this.equals(that) && (this.registerNumber != -1 && this.registerNumber == that.registerNumber
+                    || this.fieldLoadedFromRegister != -1);
         }
 
         @Override
@@ -477,7 +474,7 @@ public class OpcodeStack implements Constants2 {
                 break;
             default:
                 buf.append(", #" + specialKind);
-                buf.append("(" + specialKindNames.get(specialKind) + ")");
+                buf.append("(" + specialKindToName.get(specialKind) + ")");
                 break;
 
             }
@@ -535,12 +532,12 @@ public class OpcodeStack implements Constants2 {
             if (i1.equals(i2)) {
                 return i1;
             }
-            Item m = new Item();
             if (i1.getSpecialKind() == TYPE_ONLY && i2.getSpecialKind() != TYPE_ONLY) {
                 return i2;
             } else if (i2.getSpecialKind() == TYPE_ONLY && i1.getSpecialKind() != TYPE_ONLY) {
                 return i1;
             }
+            Item m = new Item();
             m.flags = i1.flags & i2.flags;
             m.setCouldBeZero(i1.isCouldBeZero() || i2.isCouldBeZero());
             if (i1.pc == i2.pc) {
@@ -606,14 +603,17 @@ public class OpcodeStack implements Constants2 {
             return it;
 
         }
+
         public Item(String signature) {
             this(signature, UNKNOWN);
         }
+
         public static Item typeOnly(String signature) {
             Item it = new Item(signature, UNKNOWN);
             it.setSpecialKind(TYPE_ONLY);
             return it;
         }
+
         public Item(Item it) {
             this.signature = it.signature;
             this.constValue = it.constValue;
@@ -634,20 +634,42 @@ public class OpcodeStack implements Constants2 {
             this.signature = signature;
             if (constValue instanceof Number) {
                 Number constantNumericValue = (Number) constValue;
-                if ("B".equals(signature)) {
+                switch (signature) {
+                case "Z":
+                case "Ljava/lang/Boolean;":
+                    this.constValue = constantNumericValue.intValue() != 0;
+                    break;
+                case "B":
+                case "Ljava/lang/Byte;":
                     this.constValue = constantNumericValue.byteValue();
-                } else if ("S".equals(signature)) {
+                    break;
+                case "S":
+                case "Ljava/lang/Short;":
                     this.constValue = constantNumericValue.shortValue();
-                } else if ("C".equals(signature)) {
+                    break;
+                case "C":
+                case "Ljava/lang/Character;":
                     this.constValue = (char) constantNumericValue.intValue();
-                } else if ("I".equals(signature)) {
+                    break;
+                case "I":
+                case "Ljava/lang/Integer;":
                     this.constValue = constantNumericValue.intValue();
-                } else if ("D".equals(signature)) {
+                    break;
+                case "J":
+                case "Ljava/lang/Long;":
+                    this.constValue = constantNumericValue.longValue();
+                    break;
+                case "D":
+                case "Ljava/lang/Double;":
                     this.constValue = constantNumericValue.doubleValue();
-                } else if ("F".equals(signature)) {
+                    break;
+                case "F":
+                case "Ljava/lang/Float;":
                     this.constValue = constantNumericValue.floatValue();
+                    break;
+                default:
+                    break;
                 }
-
             }
             char s = signature.charAt(0);
             if (s != 'L' && s != '[') {
@@ -696,8 +718,7 @@ public class OpcodeStack implements Constants2 {
             this.registerNumber = -1;
         }
 
-        public @CheckForNull
-        String getHttpParameterName() {
+        public @CheckForNull String getHttpParameterName() {
             if (!isServletParameterTainted()) {
                 throw new IllegalStateException();
             }
@@ -775,8 +796,7 @@ public class OpcodeStack implements Constants2 {
         }
 
         /** Returns null for primitive and arrays */
-        public @CheckForNull
-        JavaClass getJavaClass() throws ClassNotFoundException {
+        public @CheckForNull JavaClass getJavaClass() throws ClassNotFoundException {
             String baseSig;
 
             if (isPrimitive() || isArray()) {
@@ -785,11 +805,11 @@ public class OpcodeStack implements Constants2 {
 
             baseSig = signature;
 
-            if (baseSig.length() == 0) {
+            if (baseSig.isEmpty()) {
                 return null;
             }
             baseSig = baseSig.substring(1, baseSig.length() - 1);
-            baseSig = baseSig.replace('/', '.');
+            baseSig = ClassName.toDottedClassName(baseSig);
             return Repository.lookupClass(baseSig);
         }
 
@@ -877,8 +897,7 @@ public class OpcodeStack implements Constants2 {
         /**
          * @return Returns the specialKind.
          */
-        public @SpecialKind
-        int getSpecialKind() {
+        public @SpecialKind int getSpecialKind() {
             return specialKind;
         }
 
@@ -906,8 +925,7 @@ public class OpcodeStack implements Constants2 {
          * @return if this value is the return value of a method, give the
          *         method invoked
          */
-        public @CheckForNull
-        XMethod getReturnValueOf() {
+        public @CheckForNull XMethod getReturnValueOf() {
             if (source instanceof XMethod) {
                 return (XMethod) source;
             }
@@ -940,12 +958,13 @@ public class OpcodeStack implements Constants2 {
         public void setServletParameterTainted() {
             setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
         }
+
         public void setIsServletWriter() {
             setSpecialKind(Item.SERVLET_OUTPUT);
         }
 
 
-        public  boolean isServletWriter() {
+        public boolean isServletWriter() {
             if (getSpecialKind() == Item.SERVLET_OUTPUT) {
                 return true;
             }
@@ -955,15 +974,17 @@ public class OpcodeStack implements Constants2 {
             XMethod writingToSource = getReturnValueOf();
 
 
-            return writingToSource != null && "javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
+            return writingToSource != null && ("javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
+                    || "jakarta.servlet.http.HttpServletResponse".equals(writingToSource.getClassName()))
                     && ("getWriter".equals(writingToSource.getName()) || "getOutputStream".equals(writingToSource.getName()));
         }
 
         public boolean valueCouldBeNegative() {
             return !isNonNegative()
                     && (getSpecialKind() == Item.RANDOM_INT || getSpecialKind() == Item.SIGNED_BYTE
-                    || getSpecialKind() == Item.HASHCODE_INT || getSpecialKind() == Item.RANDOM_INT_REMAINDER
-                    || getSpecialKind() == Item.HASHCODE_INT_REMAINDER || getSpecialKind() == Item.MATH_ABS_OF_RANDOM || getSpecialKind() == Item.MATH_ABS_OF_HASHCODE);
+                            || getSpecialKind() == Item.HASHCODE_INT || getSpecialKind() == Item.RANDOM_INT_REMAINDER
+                            || getSpecialKind() == Item.HASHCODE_INT_REMAINDER || getSpecialKind() == Item.MATH_ABS_OF_RANDOM
+                            || getSpecialKind() == Item.MATH_ABS_OF_HASHCODE);
 
         }
 
@@ -1094,9 +1115,11 @@ public class OpcodeStack implements Constants2 {
          * @return int value to represent new special kind
          * @since 3.1.0
          */
-        public static @SpecialKind
-        int defineSpecialKind(String name) {
-            return defineNewSpecialKind(name) - 1;
+        public static @SpecialKind int defineSpecialKind(String name) {
+            @SpecialKind
+            int specialKind = nextSpecialKind.getAndIncrement();
+            specialKindToName.put(Integer.valueOf(specialKind), name);
+            return specialKind;
         }
 
         /**
@@ -1105,7 +1128,7 @@ public class OpcodeStack implements Constants2 {
          * @since 3.1.0
          */
         public static Optional<String> getSpecialKindName(@SpecialKind int specialKind) {
-            return Optional.ofNullable(specialKindNames.get(Integer.valueOf(specialKind)));
+            return Optional.ofNullable(specialKindToName.get(Integer.valueOf(specialKind)));
         }
     }
 
@@ -1287,7 +1310,7 @@ public class OpcodeStack implements Constants2 {
         Item it, it2;
         Constant cons;
 
-        // System.out.printf("%3d %12s%s%n", dbc.getPC(), OPCODE_NAMES[seen],
+        // System.out.printf("%3d %12s%s%n", dbc.getPC(), Const.getOpcodeName(seen),
         // this);
         if (dbc.isRegisterStore()) {
             setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
@@ -1444,7 +1467,7 @@ public class OpcodeStack implements Constants2 {
                 }
                 FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
                 Item i = new Item(dbc.getSigConstantOperand(), field, Integer.MAX_VALUE);
-                if ("separator".equals(field.getFieldName()) && "java.io.File".equals(field.getClassName())) {
+                if ("separator".equals(field.getFieldName()) && Values.DOTTED_JAVA_IO_FILE.equals(field.getClassName())) {
                     i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
                 }
                 i.setPC(dbc.getPC());
@@ -1483,33 +1506,32 @@ public class OpcodeStack implements Constants2 {
             case Const.IFGT:
             case Const.IFGE:
 
-                seenTransferOfControl = true;
-                {
-                    Item topItem = pop();
+                seenTransferOfControl = true; {
+                Item topItem = pop();
 
-                    // System.out.printf("%4d %10s %s%n",
-                    // dbc.getPC(),OPCODE_NAMES[seen], topItem);
-                    if (seen == Const.IFLT || seen == Const.IFLE) {
-                        registerTestedFoundToBeNonnegative = topItem.registerNumber;
-                    }
-                    // if we see a test comparing a special negative value with
-                    // 0,
-                    // reset all other such values on the opcode stack
-                    if (topItem.valueCouldBeNegative() && (seen == Const.IFLT || seen == Const.IFLE || seen == Const.IFGT || seen == Const.IFGE)) {
-                        int specialKind = topItem.getSpecialKind();
-                        for (Item item : stack) {
-                            if (item != null && item.getSpecialKind() == specialKind) {
-                                item.setSpecialKind(Item.NOT_SPECIAL);
-                            }
-                        }
-                        for (Item item : lvValues) {
-                            if (item != null && item.getSpecialKind() == specialKind) {
-                                item.setSpecialKind(Item.NOT_SPECIAL);
-                            }
-                        }
-
-                    }
+                // System.out.printf("%4d %10s %s%n",
+                // dbc.getPC(),Const.getOpcodeName(seen), topItem);
+                if (seen == Const.IFLT || seen == Const.IFLE) {
+                    registerTestedFoundToBeNonnegative = topItem.registerNumber;
                 }
+                // if we see a test comparing a special negative value with
+                // 0,
+                // reset all other such values on the opcode stack
+                if (topItem.valueCouldBeNegative() && (seen == Const.IFLT || seen == Const.IFLE || seen == Const.IFGT || seen == Const.IFGE)) {
+                    int specialKind = topItem.getSpecialKind();
+                    for (Item item : stack) {
+                        if (item != null && item.getSpecialKind() == specialKind) {
+                            item.setSpecialKind(Item.NOT_SPECIAL);
+                        }
+                    }
+                    for (Item item : lvValues) {
+                        if (item != null && item.getSpecialKind() == specialKind) {
+                            item.setSpecialKind(Item.NOT_SPECIAL);
+                        }
+                    }
+
+                }
+            }
                 addJumpValue(dbc.getPC(), dbc.getBranchTarget());
 
                 break;
@@ -1616,6 +1638,7 @@ public class OpcodeStack implements Constants2 {
                         setTop(true);
                         break;
                     } else {
+                        // The jump was deemed impossible after constants analysis
                         break;
                     }
                 }
@@ -1822,7 +1845,7 @@ public class OpcodeStack implements Constants2 {
                 push(valueLoaded);
 
             }
-            break;
+                break;
 
             case Const.ARRAYLENGTH: {
                 Item array = pop();
@@ -1830,7 +1853,7 @@ public class OpcodeStack implements Constants2 {
                 newItem.setSpecialKind(Item.NON_NEGATIVE);
                 push(newItem);
             }
-            break;
+                break;
 
             case Const.BALOAD: {
                 pop(2);
@@ -1985,7 +2008,7 @@ public class OpcodeStack implements Constants2 {
 
                 push(newValue);
             }
-            break;
+                break;
 
 
 
@@ -1995,7 +2018,7 @@ public class OpcodeStack implements Constants2 {
 
                 push(newValue);
             }
-            break;
+                break;
 
             case Const.I2L:
             case Const.D2L:
@@ -2011,16 +2034,15 @@ public class OpcodeStack implements Constants2 {
 
                 push(newValue);
             }
-            break;
+                break;
 
-            case Const.I2S:
-            {
+            case Const.I2S: {
                 Item item1 = pop();
                 Item newValue = new Item(item1, "S");
                 newValue.setCouldBeNegative();
                 push(newValue);
             }
-            break;
+                break;
 
             case Const.L2I:
             case Const.D2I:
@@ -2063,7 +2085,7 @@ public class OpcodeStack implements Constants2 {
                 item.setSpecialKind(Item.NEWLY_ALLOCATED);
                 push(item);
             }
-            break;
+                break;
 
             case Const.NEWARRAY: {
                 Item length = pop();
@@ -2116,7 +2138,7 @@ public class OpcodeStack implements Constants2 {
                     push(new Item());
                 }
             }
-            break;
+                break;
 
             case Const.JSR:
                 seenTransferOfControl = true;
@@ -2167,7 +2189,7 @@ public class OpcodeStack implements Constants2 {
             setTop(true);
         } finally {
             if (DEBUG) {
-                System.out.printf("%4d: %14s %s%n", dbc.getPC(), Const.getOpcodeName(seen) ,  this);
+                System.out.printf("%4d: %14s %s%n", dbc.getPC(), Const.getOpcodeName(seen), this);
             }
         }
     }
@@ -2214,6 +2236,10 @@ public class OpcodeStack implements Constants2 {
         }
         if (constant instanceof Character) {
             return ((Character) constant).charValue();
+        }
+        if (constant instanceof Boolean) {
+            Boolean val = (Boolean) constant;
+            return val.booleanValue() ? 1 : 0;
         }
         throw new IllegalArgumentException(String.valueOf(constant));
     }
@@ -2442,7 +2468,7 @@ public class OpcodeStack implements Constants2 {
         }
     }
 
-    static private void addBoxedType(Class<?>... clss) {
+    private static void addBoxedType(Class<?>... clss) {
         for (Class<?> c : clss) {
             Class<?> primitiveType;
             try {
@@ -2469,9 +2495,11 @@ public class OpcodeStack implements Constants2 {
         }
 
     }
+
     private void processMethodCall(DismantleBytecode dbc, int seen) {
-        @SlashedClassName String clsName = dbc.getClassConstantOperand();
-        String methodName = dbc.getNameConstantOperand();
+        @SlashedClassName
+        String clsName = dbc.getClassConstantOperand();
+        String method = dbc.getNameConstantOperand();
         String signature = dbc.getSigConstantOperand();
         String appenderValue = null;
         boolean servletRequestParameterTainted = false;
@@ -2486,8 +2514,7 @@ public class OpcodeStack implements Constants2 {
 
         if (boxedTypes.containsKey(clsName)
                 && topItem != null
-                && ("valueOf".equals(methodName) && !signature.contains("String") || methodName.equals(boxedTypes.get(clsName)
-                        + "Value"))) {
+                && ("valueOf".equals(method) && !signature.contains("String") || method.equals(boxedTypes.get(clsName) + "Value"))) {
             // boxing/unboxing conversion
             Item value = pop();
             String newSignature = new SignatureParser(signature).getReturnTypeSignature();
@@ -2518,9 +2545,9 @@ public class OpcodeStack implements Constants2 {
             }
         }
         boolean initializingServletWriter = false;
-        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(methodName) && clsName.startsWith("java/io") && clsName.endsWith("Writer")
+        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(method) && clsName.startsWith("java/io") && clsName.endsWith("Writer")
                 && numberArguments > 0) {
-            Item firstArg = getStackItem(numberArguments-1);
+            Item firstArg = getStackItem(numberArguments - 1);
             if (firstArg.isServletWriter()) {
                 initializingServletWriter = true;
             }
@@ -2534,7 +2561,7 @@ public class OpcodeStack implements Constants2 {
         // TODO: stack merging for trinaries kills the constant.. would be nice
         // to maintain.
         if ("java/lang/StringBuffer".equals(clsName) || "java/lang/StringBuilder".equals(clsName)) {
-            if (Const.CONSTRUCTOR_NAME.equals(methodName)) {
+            if (Const.CONSTRUCTOR_NAME.equals(method)) {
                 if ("(Ljava/lang/String;)V".equals(signature)) {
                     Item i = getStackItem(0);
                     appenderValue = (String) i.getConstant();
@@ -2544,13 +2571,13 @@ public class OpcodeStack implements Constants2 {
                 } else if ("()V".equals(signature)) {
                     appenderValue = "";
                 }
-            } else if ("toString".equals(methodName) && getStackDepth() >= 1) {
+            } else if ("toString".equals(method) && getStackDepth() >= 1) {
                 Item i = getStackItem(0);
                 appenderValue = (String) i.getConstant();
                 if (i.isServletParameterTainted()) {
                     servletRequestParameterTainted = true;
                 }
-            } else if ("append".equals(methodName)) {
+            } else if ("append".equals(method)) {
                 if (signature.indexOf("II)") == -1 && getStackDepth() >= 2) {
                     sbItem = getStackItem(1);
                     Item i = getStackItem(0);
@@ -2572,7 +2599,7 @@ public class OpcodeStack implements Constants2 {
                     sawUnknownAppend = true;
                 }
             }
-        } else if (seen == Const.INVOKESPECIAL && "java/io/FileOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(methodName)
+        } else if (seen == Const.INVOKESPECIAL && "java/io/FileOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(method)
                 && ("(Ljava/io/File;Z)V".equals(signature) || "(Ljava/lang/String;Z)V".equals(signature)) && stack.size() > 3) {
             OpcodeStack.Item item = getStackItem(0);
             Object value = item.getConstant();
@@ -2586,7 +2613,7 @@ public class OpcodeStack implements Constants2 {
                 }
                 return;
             }
-        } else if (seen == Const.INVOKESPECIAL && "java/io/BufferedOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(methodName)
+        } else if (seen == Const.INVOKESPECIAL && "java/io/BufferedOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(method)
                 && "(Ljava/io/OutputStream;)V".equals(signature)) {
 
             if (getStackItem(0).getSpecialKind() == Item.FILE_OPENED_IN_APPEND_MODE
@@ -2599,7 +2626,7 @@ public class OpcodeStack implements Constants2 {
                 newTop.setPC(dbc.getPC());
                 return;
             }
-        } else if (seen == Const.INVOKEINTERFACE && "getParameter".equals(methodName)
+        } else if (seen == Const.INVOKEINTERFACE && "getParameter".equals(method)
                 && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
             Item requestParameter = pop();
             pop();
@@ -2615,7 +2642,7 @@ public class OpcodeStack implements Constants2 {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == Const.INVOKEINTERFACE && "getQueryString".equals(methodName)
+        } else if (seen == Const.INVOKEINTERFACE && "getQueryString".equals(method)
                 && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
             pop();
             Item result = new Item("Ljava/lang/String;");
@@ -2624,7 +2651,7 @@ public class OpcodeStack implements Constants2 {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == Const.INVOKEINTERFACE && "getHeader".equals(methodName)
+        } else if (seen == Const.INVOKEINTERFACE && "getHeader".equals(method)
                 && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
             /* Item requestParameter = */pop();
             pop();
@@ -2634,20 +2661,40 @@ public class OpcodeStack implements Constants2 {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == Const.INVOKESTATIC && "asList".equals(methodName) && "java/util/Arrays".equals(clsName)) {
+        } else if (seen == Const.INVOKESTATIC && "asList".equals(method) && "java/util/Arrays".equals(clsName)) {
             /* Item requestParameter = */pop();
             Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
             push(result);
             return;
-        } else if (seen == Const.INVOKESTATIC && "(Ljava/util/List;)Ljava/util/List;".equals(signature)
-                && "java/util/Collections".equals(clsName)) {
-            Item requestParameter = pop();
-            if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
-                Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
+        } else if (seen == Const.INVOKESTATIC) {
+            Item requestParameter = null;
+            if ("(Ljava/util/List;)Ljava/util/List;".equals(signature)
+                    && JAVA_UTIL_COLLECTIONS.equals(clsName)) {
+                requestParameter = top();
+            }
+            String returnTypeName = IMMUTABLE_RETURNER_MAP.get(Pair.of(clsName, method));
+            if (returnTypeName != null) {
+                SignatureParser sp = new SignatureParser(signature);
+                for (int i = 0; i < sp.getNumParameters(); ++i) {
+                    pop();
+                }
+                Item result;
+                if (requestParameter != null && JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
+                    result = new Item("Ljava/util/Collections$UnmodifiableRandomAccessList;");
+                } else {
+                    result = new Item(returnTypeName);
+                }
                 push(result);
                 return;
+            } else if (requestParameter != null) {
+                pop();
+                if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
+                    Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
+                    push(result);
+                    return;
+                }
+                push(requestParameter); // fall back to standard logic
             }
-            push(requestParameter); // fall back to standard logic
         }
 
         pushByInvoke(dbc, seen != Const.INVOKESTATIC);
@@ -2681,24 +2728,23 @@ public class OpcodeStack implements Constants2 {
         }
 
         if (("java/util/Random".equals(clsName) || "java/security/SecureRandom".equals(clsName)) &&
-                ("nextInt".equals(methodName)  && "()I".equals(signature)
-                        || "nextLong".equals(methodName)  && "()J".equals(signature))
-                ) {
+                ("nextInt".equals(method) && "()I".equals(signature)
+                        || "nextLong".equals(method) && "()J".equals(signature))) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.RANDOM_INT);
             push(i);
-        } else if ("size".equals(methodName) && "()I".equals(signature)
+        } else if ("size".equals(method) && "()I".equals(signature)
                 && Subtypes2.instanceOf(ClassName.toDottedClassName(clsName), "java.util.Collection")) {
             Item i = new Item(pop());
             if (i.getSpecialKind() == Item.NOT_SPECIAL) {
                 i.setSpecialKind(Item.NON_NEGATIVE);
             }
             push(i);
-        } else if("java/lang/String".equals(clsName) && numberArguments == 0 && topItem != null &&
+        } else if ("java/lang/String".equals(clsName) && numberArguments == 0 && topItem != null &&
                 topItem.getConstant() instanceof String) {
             String input = (String) topItem.getConstant();
             Object result;
-            switch(methodName) {
+            switch (method) {
             case "length":
                 result = input.length();
                 break;
@@ -2712,12 +2758,12 @@ public class OpcodeStack implements Constants2 {
             default:
                 result = null;
             }
-            if(result != null) {
+            if (result != null) {
                 Item i = new Item(pop());
                 i.constValue = result;
                 push(i);
             }
-        } else if (ClassName.isMathClass(clsName) && "abs".equals(methodName)) {
+        } else if (ClassName.isMathClass(clsName) && "abs".equals(method)) {
             Item i = new Item(pop());
             if (i.getSpecialKind() == Item.HASHCODE_INT) {
                 i.setSpecialKind(Item.MATH_ABS_OF_HASHCODE);
@@ -2727,14 +2773,15 @@ public class OpcodeStack implements Constants2 {
                 i.setSpecialKind(Item.MATH_ABS);
             }
             push(i);
-        } else if (seen == Const.INVOKEVIRTUAL && "hashCode".equals(methodName) && "()I".equals(signature) || seen == Const.INVOKESTATIC
-                && "java/lang/System".equals(clsName) && "identityHashCode".equals(methodName)
+        } else if (seen == Const.INVOKEVIRTUAL && "hashCode".equals(method) && "()I".equals(signature) || seen == Const.INVOKESTATIC
+                && "java/lang/System".equals(clsName) && "identityHashCode".equals(method)
                 && "(Ljava/lang/Object;)I".equals(signature)) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.HASHCODE_INT);
             push(i);
         } else if (topIsTainted
-                && (methodName.startsWith("encode") && "javax/servlet/http/HttpServletResponse".equals(clsName) || "trim".equals(methodName) && "java/lang/String".equals(clsName))) {
+                && (method.startsWith("encode") && "javax/servlet/http/HttpServletResponse".equals(clsName) || "trim".equals(method)
+                        && "java/lang/String".equals(clsName))) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
             i.injection = injection;
@@ -2747,15 +2794,86 @@ public class OpcodeStack implements Constants2 {
             push(i);
         }
 
+        if (seen == Const.INVOKESTATIC && topItem != null && topItem.isInitialParameter()
+                && isMethodThatReturnsGivenReference(clsName, method)) {
+            assert getStackDepth() > 0;
+            assert !getStackItem(0).isInitialParameter();
+            // keep returned StackItem as initial parameter
+            getStackItem(0).setInitialParameter(true);
+        }
+    }
+
+    private boolean isMethodThatReturnsGivenReference(String clsName, String methodName) {
+        return "java/util/Objects".equals(clsName) && "requireNonNull".equals(methodName)
+                || "com/google/common/base/Preconditions".equals(clsName) && "checkNotNull".equals(methodName);
     }
 
     private void processInvokeDynamic(DismantleBytecode dbc) {
+        String appenderValue = null;
+        boolean servletRequestParameterTainted = false;
+        Item topItem = null;
+        if (getStackDepth() > 0) {
+            topItem = getStackItem(0);
+        }
+
         String signature = dbc.getSigConstantOperand();
+
+        if ("makeConcatWithConstants".equals(dbc.getNameConstantOperand())) {
+            String[] args = new SignatureParser(signature).getArguments();
+            if (args.length == 1) {
+                Item i = getStackItem(0);
+                if (i.isServletParameterTainted()) {
+                    servletRequestParameterTainted = true;
+                }
+                Object sVal = i.getConstant();
+                if (sVal == null) {
+                    appenderValue = null;
+                } else {
+                    JavaClass clazz = dbc.getThisClass();
+                    BootstrapMethod bm = getBootstrapMethod(clazz.getAttributes(), dbc.getConstantRefOperand());
+                    ConstantPool cp = clazz.getConstantPool();
+                    String concatArg = ((ConstantString) cp.getConstant(bm.getBootstrapArguments()[0])).getBytes(cp);
+                    appenderValue = concatArg.replace("\u0001", sVal.toString());
+                }
+            } else if (args.length == 2) {
+                Item i1 = getStackItem(0);
+                Item i2 = getStackItem(1);
+                if (i1.isServletParameterTainted() || i2.isServletParameterTainted()) {
+                    servletRequestParameterTainted = true;
+                }
+                Object sVal1 = i1.getConstant();
+                Object sVal2 = i2.getConstant();
+                if (sVal1 == null || sVal2 == null) {
+                    appenderValue = null;
+                } else {
+                    appenderValue = sVal2.toString() + sVal1.toString();
+                }
+            }
+        }
 
         int numberArguments = PreorderVisitor.getNumberArguments(signature);
 
         pop(numberArguments);
         pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
+
+        if ((appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
+            Item i = this.getStackItem(0);
+            i.constValue = appenderValue;
+            if (servletRequestParameterTainted) {
+                i.injection = topItem.injection;
+                i.setServletParameterTainted();
+            }
+        }
+    }
+
+    private BootstrapMethod getBootstrapMethod(Attribute[] attribs, Constant index) {
+        ConstantInvokeDynamic bmidx = (ConstantInvokeDynamic) index;
+        for (Attribute attr : attribs) {
+            if (attr instanceof BootstrapMethods) {
+                return ((BootstrapMethods) attr).getBootstrapMethods()[bmidx.getBootstrapMethodAttrIndex()];
+            }
+        }
+        return null;
     }
 
     private boolean mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
@@ -2770,13 +2888,10 @@ public class OpcodeStack implements Constants2 {
                 System.out.println("jump items: " + mergeFrom);
             }
         } else {
-            if (DEBUG2) {
-                if (intoSize != fromSize) {
-                    System.out.printf("Bad merging %d items from %d items%n", intoSize, fromSize);
-                    System.out.println("current items: " + mergeInto);
-                    System.out.println("jump items: " + mergeFrom);
-                }
-
+            if (DEBUG2 && intoSize != fromSize) {
+                System.out.printf("Bad merging %d items from %d items%n", intoSize, fromSize);
+                System.out.println("current items: " + mergeInto);
+                System.out.println("jump items: " + mergeFrom);
             }
 
             List<Item> mergeIntoCopy = null;
@@ -2798,7 +2913,7 @@ public class OpcodeStack implements Constants2 {
                 Item newValue = mergeFrom.get(i);
                 mergeInto.add(newValue);
                 changed = true;
-
+            
             }
              */
             if (DEBUG2 && changed) {
@@ -2817,13 +2932,13 @@ public class OpcodeStack implements Constants2 {
     }
 
     public void printJumpEntries() {
-        for(int i=jumpEntryLocations.nextSetBit(0); i>=0; i=jumpEntryLocations.nextSetBit(i+1)) {
-            List<Item> stack = jumpStackEntries.get(i);
+        for (int i = jumpEntryLocations.nextSetBit(0); i >= 0; i = jumpEntryLocations.nextSetBit(i + 1)) {
+            List<Item> stackItems = jumpStackEntries.get(i);
             List<Item> locals = jumpEntries.get(i);
-            if (stack != null) {
-                System.out.printf("%4d: %s::%s%n", i, stack, locals);
+            if (stackItems != null) {
+                System.out.printf("%4d: %s::%s%n", i, stackItems, locals);
             } else {
-                System.out.printf("%4d:    ::%s%n", i,  locals);
+                System.out.printf("%4d:    ::%s%n", i, locals);
             }
         }
     }
@@ -2871,6 +2986,7 @@ public class OpcodeStack implements Constants2 {
 
             static final boolean DEBUG1 = false;
             final MethodDescriptor descriptor;
+
             private JumpStackComputation(MethodDescriptor descriptor) {
                 this.descriptor = descriptor;
             }
@@ -2928,8 +3044,8 @@ public class OpcodeStack implements Constants2 {
             }
              */
             do {
-                if (DEBUG && iteration > 1 ) {
-                    System.out.println("Iterative jump info for " + xMethod +", iteration " + iteration);
+                if (DEBUG && iteration > 1) {
+                    System.out.println("Iterative jump info for " + xMethod + ", iteration " + iteration);
                     myStack.printJumpEntries();
                     System.out.println();
                 }
@@ -2952,9 +3068,9 @@ public class OpcodeStack implements Constants2 {
                     break;
                 }
             } while (myStack.isJumpInfoChangedByBackwardsBranch() && myStack.backwardsBranch);
-            if (iteration > 20&& iteration <= 40) {
-                AnalysisContext.logError("Iterative jump info converged after " + iteration + " iterations in " + xMethod + ", size " + method.getCode().getLength());
-
+            if (iteration > 20 && iteration <= 40) {
+                AnalysisContext.logError("Iterative jump info converged after " + iteration + " iterations in " + xMethod + ", size " + method
+                        .getCode().getLength());
             }
             return new JumpInfo(myStack.jumpEntries, myStack.jumpStackEntries, myStack.jumpEntryLocations);
         }
@@ -2978,7 +3094,7 @@ public class OpcodeStack implements Constants2 {
             setJumpInfoChangedByNewTarget();
             jumpEntries.put(Integer.valueOf(target), new ArrayList<>(lvValues));
             jumpEntryLocations.set(target);
-            if (stack.size() > 0) {
+            if (!stack.isEmpty()) {
                 jumpStackEntries.put(Integer.valueOf(target), new ArrayList<>(stack));
             }
         } else {
@@ -2986,16 +3102,15 @@ public class OpcodeStack implements Constants2 {
                 setJumpInfoChangedByBackwardBranch("locals", from, target);
             }
             List<Item> stackAtTarget = jumpStackEntries.get(Integer.valueOf(target));
-            if (stack.size() > 0 && stackAtTarget != null) {
-                if (mergeLists(stackAtTarget, stack, false)) {
-                    setJumpInfoChangedByBackwardBranch("stack", from, target);
-                }
+            if (!stack.isEmpty() && stackAtTarget != null && mergeLists(stackAtTarget, stack, false)) {
+                setJumpInfoChangedByBackwardBranch("stack", from, target);
             }
         }
 
     }
 
     private String methodName;
+    private String fullyQualifiedMethodName;
 
     DismantleBytecode v;
 
@@ -3027,6 +3142,9 @@ public class OpcodeStack implements Constants2 {
         initialize();
 
         int result = resetForMethodEntry0(v);
+
+        fullyQualifiedMethodName = v.getFullyQualifiedMethodName();
+
         Code code = v.getMethod().getCode();
         if (code == null) {
             return result;
@@ -3035,7 +3153,7 @@ public class OpcodeStack implements Constants2 {
         if (useIterativeAnalysis) {
             if (visitor instanceof OpcodeStackDetector.WithCustomJumpInfo) {
                 jump = ((OpcodeStackDetector.WithCustomJumpInfo) visitor).customJumpInfo();
-            } else if ((visitor instanceof OpcodeStackDetector) && !((OpcodeStackDetector)visitor).isUsingCustomUserValue()) {
+            } else if ((visitor instanceof OpcodeStackDetector) && !((OpcodeStackDetector) visitor).isUsingCustomUserValue()) {
                 jump = getJumpInfo();
             } else {
                 jump = getJumpInfoFromStackMap();
@@ -3071,6 +3189,7 @@ public class OpcodeStack implements Constants2 {
             return null;
         }
     }
+
     private JumpInfoFromStackMap getJumpInfoFromStackMap() {
         IAnalysisCache analysisCache = Global.getAnalysisCache();
         XMethod xMethod = XFactory.createXMethod(v.getThisClass(), v.getMethod());
@@ -3092,15 +3211,15 @@ public class OpcodeStack implements Constants2 {
 
     public void setJumpInfoChangedByBackwardBranch(String kind, int from, int to) {
         if (from < to) {
-            return ;
+            return;
         }
 
 
         if (DEBUG && !this.isJumpInfoChangedByBackwardsBranch()) {
             System.out.printf("%s jump info at %d changed by jump from %d%n", kind, to, from);
         }
-        this.setJumpInfoChangedByBackwardsBranch(from,to);
-        return ;
+        this.setJumpInfoChangedByBackwardsBranch(from, to);
+        return;
     }
 
     private int resetForMethodEntry0(PreorderVisitor visitor) {
@@ -3159,8 +3278,8 @@ public class OpcodeStack implements Constants2 {
     public Item getStackItem(int stackOffset) {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
-            + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                    + " is not a value stack offset"));
+                    + " in " + fullyQualifiedMethodName, new IllegalArgumentException(stackOffset
+                            + " is not a value stack offset"));
             return new Item("Lfindbugs/OpcodeStackError;");
 
         }
@@ -3178,11 +3297,15 @@ public class OpcodeStack implements Constants2 {
         return stack.remove(stack.size() - 1);
     }
 
+    private Item top() {
+        return stack.get(stack.size() - 1);
+    }
+
     public void replace(int stackOffset, Item value) {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get replace stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
-            + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                    + " is not a value stack offset"));
+                    + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
+                            + " is not a value stack offset"));
 
         }
         int tos = stack.size() - 1;
@@ -3222,6 +3345,12 @@ public class OpcodeStack implements Constants2 {
             push(new Item("D", Double.valueOf(((ConstantDouble) c).getBytes())));
         } else if (c instanceof ConstantLong) {
             push(new Item("J", Long.valueOf(((ConstantLong) c).getBytes())));
+        } else if (c instanceof ConstantDynamic) {
+            ConstantPool cp = dbc.getConstantPool();
+            ConstantNameAndType sig = cp.getConstant(((ConstantDynamic) c).getNameAndTypeIndex());
+            String nameConstantOperand = ((ConstantUtf8) cp.getConstant(sig.getNameIndex())).getBytes();
+            String sigConstantOperand = ((ConstantUtf8) cp.getConstant(sig.getSignatureIndex())).getBytes();
+            push(new Item(sigConstantOperand, nameConstantOperand));
         } else {
             throw new UnsupportedOperationException("StaticConstant type not expected");
         }
@@ -3457,14 +3586,15 @@ public class OpcodeStack implements Constants2 {
             String context = v != null ? v.getFullyQualifiedMethodName() : toString();
             AnalysisContext.logError(
                     String.format("Exception processing 'pushByLongMath' with opcode %d, lhs %s and rhs %s in %s",
-                        seen, String.valueOf(lhs), String.valueOf(rhs), context), e);
+                            seen, String.valueOf(lhs), String.valueOf(rhs), context), e);
         }
         push(newValue);
     }
 
     private void pushByFloatMath(int seen, Item it, Item it2) {
         Item result;
-        @SpecialKind int specialKind = Item.FLOAT_MATH;
+        @SpecialKind
+        int specialKind = Item.FLOAT_MATH;
         if ((it.getConstant() instanceof Float) && it2.getConstant() instanceof Float) {
             if (seen == Const.FADD) {
                 result = new Item("F", Float.valueOf(constantToFloat(it2) + constantToFloat(it)));
@@ -3491,7 +3621,8 @@ public class OpcodeStack implements Constants2 {
 
     private void pushByDoubleMath(int seen, Item it, Item it2) {
         Item result;
-        @SpecialKind int specialKind = Item.FLOAT_MATH;
+        @SpecialKind
+        int specialKind = Item.FLOAT_MATH;
         if ((it.getConstant() instanceof Double) && it2.getConstant() instanceof Double) {
             if (seen == Const.DADD) {
                 result = new Item("D", Double.valueOf(constantToDouble(it2) + constantToDouble(it)));
@@ -3503,8 +3634,7 @@ public class OpcodeStack implements Constants2 {
                 result = new Item("D", Double.valueOf(constantToDouble(it2) / constantToDouble(it)));
             } else if (seen == Const.DREM) {
                 result = new Item("D", Double.valueOf(constantToDouble(it2) % constantToDouble(it)));
-            }
-            else {
+            } else {
                 result = new Item("D"); // ?
             }
         } else {
@@ -3585,9 +3715,9 @@ public class OpcodeStack implements Constants2 {
     }
 
     private static void clearRegisterLoad(List<Item> list, int register) {
-        for (int pos=0; pos<list.size(); pos++) {
+        for (int pos = 0; pos < list.size(); pos++) {
             Item i = list.get(pos);
-            if(i != null && (i.registerNumber == register || i.fieldLoadedFromRegister == register)) {
+            if (i != null && (i.registerNumber == register || i.fieldLoadedFromRegister == register)) {
                 i = new Item(i);
                 if (i.registerNumber == register) {
                     i.registerNumber = -1;
@@ -3659,10 +3789,7 @@ public class OpcodeStack implements Constants2 {
     }
 
     public boolean isTop() {
-        if (top) {
-            return true;
-        }
-        return false;
+        return top;
     }
 
     void setReachOnlyByBranch(boolean reachOnlyByBranch) {

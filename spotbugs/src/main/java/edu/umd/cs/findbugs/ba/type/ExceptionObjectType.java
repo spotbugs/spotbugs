@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba.type;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
@@ -29,7 +28,7 @@ import org.apache.bcel.generic.Type;
  * track of the entire set of exceptions that can be caught, and whether they
  * are explicit or implicit.
  */
-public class ExceptionObjectType extends ObjectType implements Constants, ExtendedTypes {
+public class ExceptionObjectType extends ObjectType implements ExtendedTypes {
     /**
      *
      */
@@ -122,4 +121,3 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
         return buf.toString();
     }
 }
-

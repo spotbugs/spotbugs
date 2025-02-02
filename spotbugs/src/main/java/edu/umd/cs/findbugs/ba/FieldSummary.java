@@ -99,11 +99,8 @@ public class FieldSummary {
     }
 
     public void setCalledFromSuperConstructor(ProgramPoint from, XMethod calledFromConstructor) {
-        Set<ProgramPoint> set = selfMethodsCalledFromConstructor.get(calledFromConstructor);
-        if (set == null) {
-            set = new HashSet<>();
-            selfMethodsCalledFromConstructor.put(calledFromConstructor, set);
-        }
+        Set<ProgramPoint> set = selfMethodsCalledFromConstructor.computeIfAbsent(calledFromConstructor,
+                k -> new HashSet<>());
         set.add(from);
         callsOverriddenMethodsFromConstructor.add(from.method.getClassDescriptor());
 
@@ -147,7 +144,7 @@ public class FieldSummary {
     public Set<XField> getFieldsWritten(@Nullable XMethod method) {
         Set<XField> result = fieldsWritten.get(method);
         if (result == null) {
-            return Collections.<XField> emptySet();
+            return Collections.<XField>emptySet();
         }
         return result;
     }
@@ -156,17 +153,12 @@ public class FieldSummary {
         if (field.isFinal()) {
             return false;
         }
-        if (writtenOutsideOfConstructor.contains(field)) {
-            return true;
-        }
-        if (!AnalysisContext.currentAnalysisContext().unreadFieldsAvailable()) {
+        if (writtenOutsideOfConstructor.contains(field)
+                || !AnalysisContext.currentAnalysisContext().unreadFieldsAvailable()) {
             return true;
         }
         UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
-        if (unreadFields.isReflexive(field)) {
-            return true;
-        }
-        return false;
+        return unreadFields.isReflexive(field);
     }
 
     public boolean addWrittenOutsideOfConstructor(XField field) {
@@ -214,7 +206,7 @@ public class FieldSummary {
             for (Iterator<Map.Entry<XField, OpcodeStack.Item>> i = summary.entrySet().iterator(); i.hasNext();) {
                 Map.Entry<XField, OpcodeStack.Item> entry = i.next();
                 XField f = entry.getKey();
-                if ( AnalysisContext.currentXFactory().isReflectiveClass(f.getClassDescriptor())) {
+                if (AnalysisContext.currentXFactory().isReflectiveClass(f.getClassDescriptor())) {
                     i.remove();
                     removed++;
                     continue;
@@ -251,8 +243,7 @@ public class FieldSummary {
 
     }
 
-    public @CheckForNull
-    XMethod getSuperCall(XMethod from) {
+    public @CheckForNull XMethod getSuperCall(XMethod from) {
         return nonVoidSuperConstructorsCalled.get(from);
 
     }

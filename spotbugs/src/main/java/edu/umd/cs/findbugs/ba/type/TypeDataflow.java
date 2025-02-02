@@ -71,4 +71,3 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
         return result;
     }
 }
-

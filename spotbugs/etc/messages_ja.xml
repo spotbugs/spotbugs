@@ -172,6 +172,13 @@ SpotBugs の以前のバージョンでは，このカテゴリは Style とし�
   Detectors
   **********************************************************************
    -->
+  <Detector class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector">
+    <Details>
+      <![CDATA[
+<p>オーバーライドしているメソッドのうち、スーパークラスのメソッドを呼び出すべきものを見つけます。</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindRoughConstants">
     <Details>
 <![CDATA[
@@ -1423,6 +1430,16 @@ FindNullDeref ディテクタで，非 <code>null</code> 値だけが使われ�
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.InefficientReplaceAll">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは， <code>replaceAll(String regex, String replacement)</code> メソッドに
+正規表現固有の文字を含まない文字列を渡しているコードを探します。
+</p>
+]]>
+    </Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest">
     <Details>
@@ -1988,13 +2005,57 @@ FindNullDeref ディテクタで，非 <code>null</code> 値だけが使われ�
 ]]>
       </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DontAssertInstanceofInTests">
+    <Details>
+      <![CDATA[
+        <p>
+          このディテクタは、インスタンスの型を instanceof 演算子を使って検証しているJUnitテストをチェックします。
+        </p>
+        <p>
+          instanceof 演算子を使うと "false is not true" という直感的でないメッセージを
+          伴う例外が記録されます。これは ClassCastException などよりも情報に乏しいため、他の手法を
+          用いることが推奨されます。
+        </p>
+        <p>このディテクタは高速に動作します。</p>
+      ]]>
+    </Details>
+  </Detector>
 
   <!--
   **********************************************************************
   BugPatterns
   **********************************************************************
   -->
+  <BugPattern type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS">
+    <ShortDescription> テストコードで instanceof 演算子を用いて型を検証するのは推奨されません。 </ShortDescription>
+    <LongDescription> 型 {0} の検証を {2} の {3} で実行していますが、これは期待通りの挙動が確認されなかった場合に有用な情報が得られません。 </LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          テストコードで型を instanceof 演算子を使って検証することは、ClassCastExceptionなどに比べて有用な情報が得られないため
+          推奨されません。
+        </p>
+        <p>
+          デバッグのためには <code>"false is not true"</code> のような意味のない情報よりも、
+          ClassCastException 例外のようにどの型がどの型にキャストできなかったのかを説明できる手法が良いでしょう。
+        </p>
+        <p>
+          もしJUnitをhamcrestと組み合わせて使っているのであれば、 hamcrestの<a href="https://junit.org/junit4/javadoc/latest/index.html?org/hamcrest/core/IsInstanceOf.html"><code>IsInstanceOf</code></a>
+          クラスを使うことが推奨されます。
+        </p>
+      ]]>
+    </Details>
+  </BugPattern>
 
+  <BugPattern type="OVERRIDING_METHODS_MUST_INVOKE_SUPER">
+    <ShortDescription>スーパークラスのメソッドが @OverridingMethodsMustInvokeSuper で修飾されていますが, オーバーライドしているメソッドはスーパークラスのメソッドを呼び出していません。</ShortDescription>
+    <LongDescription>スーパークラスのメソッドが @OverridingMethodsMustInvokeSuper で修飾されていますが, {1}はスーパークラスのメソッドを呼び出していません。</LongDescription>
+    <Details>
+      <![CDATA[
+    <p>スーパークラスのメソッドが @OverridingMethodsMustInvokeSuper で修飾されていますが, オーバーライドしているメソッドはスーパークラスのメソッドを呼び出していません。</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="CNT_ROUGH_CONSTANT_VALUE">
     <ShortDescription>既知の定数の雑な値を見つけた</ShortDescription>
     <LongDescription>{3} の雑な値を見つけました: {2}</LongDescription>
@@ -3911,7 +3972,7 @@ Web サーバは，一般的にサーブレットや JSP クラスのインス�
   </BugPattern>
 
   <BugPattern type="MS_EXPOSE_REP">
-    <ShortDescription>配列を返すことによって内部表現を暴露するかもしれない public static メソッド</ShortDescription>
+    <ShortDescription>配列または可変オブジェクトを返すことによって内部表現を暴露するかもしれない public static メソッド</ShortDescription>
     <LongDescription>{1} は，{2.givenClass} を返すことによって，内部表現を暴露するかもしれません。</LongDescription>
     <Details>
 <![CDATA[
@@ -4413,7 +4474,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-<code>final</code> ではない <code>public static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
+<code>final</code> ではない <code>public static</code> または <code>protected static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドを <code>final</code> にします。
 しかしながら，スタティックイニシャライザには複数のフィールドへの書き込みがあるので，何らかのリファクタリングを必要とするでしょう。
 </p>
@@ -4427,7 +4488,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-<code>final</code> ではない <code>public static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
+<code>final</code> ではない <code>public static</code> または <code>protected static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドを <code>final</code> にします。
 </p>
 ]]>
@@ -4878,6 +4939,7 @@ public class B extends A {
 フィールドは， <code>transient</code> と宣言していますが，クラスは直列化可能ではないので，まったく効果がありません。
 クラスが <code>transient</code> だったときの名残かもしれません，または直列化機構を誤解しているのかもしれません。
 </p>
+<p><em>このバグは特殊な<tt>reportTransientFieldOfNonSerializableClass</tt>オプションが指定されたときのみ報告されます。</em></p>
 ]]>
     </Details>
   </BugPattern>
@@ -4915,9 +4977,9 @@ public class B extends A {
     <Details>
 <![CDATA[
 <p>
-このクラスは， <code>Externalizable</code> インタフェースを実装していますが，引数なしコンストラクタを定義していません。
-<code>Externalizable</code> オブジェクトが直列化復元されるときは，最初に引数なしコンストラクタを呼び出すことによって構築される必要があります。
-このクラスには引数なしコンストラクタがないので，直列化と直列化復元は実行時に失敗します。
+このクラスは， <code>Externalizable</code> インタフェースを実装していますが，publicな引数なしコンストラクタを定義していません。
+<code>Externalizable</code> オブジェクトが直列化復元されるときは，最初にpublicな引数なしコンストラクタを呼び出すことによって構築される必要があります。
+このクラスにはpublicな引数なしコンストラクタがないので，直列化と直列化復元は実行時に失敗します。
 </p>
 ]]>
     </Details>
@@ -7114,6 +7176,17 @@ String s = buf.toString();
 ]]>
     </Details>
   </BugPattern>
+    <BugPattern type="IRA_INEFFICIENT_REPLACEALL">
+      <ShortDescription>replaceAll(String regex, String replacement) の引数に正規表現を使用していないメソッド</ShortDescription>
+      <LongDescription>{1} は， replaceAll(String regex, String replacement) の引数に正規表現を使用していません。</LongDescription>
+      <Details>
+  <![CDATA[
+<p>このメソッドは， <code>replaceAll(String regex, String replacement)</code> の引数に正規表現を使用していません。
+正規表現が不要な場合は、 <code>myString.replace(CharSequence target, CharSequence replacement)</code> を使用するほうがより効率的です。
+</p>
+  ]]>
+      </Details>
+    </BugPattern>
 
   <BugPattern type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD">
     <ShortDescription>run メソッドでの JUnit アサーションは JUnit によって通知されない</ShortDescription>
@@ -7802,20 +7875,6 @@ double value2 = x / (double) y;
     </Details>
   </BugPattern>
 
-  <BugPattern type="VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT">
-    <ShortDescription>書式文字列ための前の引数がない</ShortDescription>
-    <LongDescription>書式文字列の引数 {2} の前の引数がありません。{1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-この書式文字列は前の書式指示子の引数が再利用されるようにするために「相対インデックス (<code>&lt;</code>)」を指定しています。
-しかしながら，前の引数がありません。
-たとえば， <code>formatter.format("%&lt;s %s", "a", "b")</code> が実行されると <code>MissingFormatArgumentException</code> をスローします。
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
   <BugPattern type="VA_FORMAT_STRING_USES_NEWLINE">
     <ShortDescription>書式文字列は \n よりも %n を使用すべき</ShortDescription>
     <LongDescription>書式文字列は，\n よりも %n を使用すべきです。{1}</LongDescription>
@@ -7824,129 +7883,16 @@ double value2 = x / (double) y;
 <p>
 この書式文字列は改行文字 (<code>\n</code>) が含まれています。
 一般的に書式文字列には <code>%n</code> を使用することがより望ましいです。<code>%n</code> は，プラットフォーム特有の行セパレータを作り出します。
+
+Java 15 複数行テキスト ブロック
+
+<code>String value = """
+                first line%n\
+                second line%n\
+                """;</code>
 </p>
 ]]>
   </Details>
-  </BugPattern>
-
-  <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION">
-    <ShortDescription>与えられた引数の型は書式指示子に合致しない</ShortDescription>
-    <LongDescription>引数の型 {3} は，書式指示子 {4} によって扱えません。{1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-引数の1つは対応する書式指示子と互換性がありません。その結果，実行されるときに実行時例外を生成します。
-たとえば， <code>String.format("%d", "1")</code> は，文字列 "1" が書式指示子 <code>%d</code> と互換性がないので例外を生成します。
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN">
-    <ShortDescription>Boolean 型ではない引数を ％b 書式指示子を使用してフォーマットしている</ShortDescription>
-    <LongDescription>Boolean 型ではない引数を ％b 書式指示子を使用してフォーマットしています。{1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-<code>Boolean</code> 型ではない引数を <code>%b</code> 書式指示子でフォーマットしています。これは例外をスローしません。
-その代わりに，非 <code>null</code> 値では <code>true</code> ， <code>null</code> では <code>false</code> を出力します。
-書式文字列のこの機能は奇妙で意図したことではないかもしれません。
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY">
-    <ShortDescription>書式文字列を使用して役に立たない方法で配列をフォーマットしている</ShortDescription>
-    <LongDescription>役に立たない方法で引数の型 {3} をフォーマットしています。{1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-書式文字列でフォーマットされている引数の1つは配列です。
-実際には配列の内容を表示しない [I@304282 のような，かなり役に立たない書式を使用してフォーマットされます。
-フォーマットで扱う前に <code>Arrays.asList(...)</code> を使用して配列をラップすることを検討してください。
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="VA_FORMAT_STRING_ARG_MISMATCH">
-    <ShortDescription>書式文字列への引数の数と書式指示子の数が一致していない</ShortDescription>
-    <LongDescription>書式文字列は "{3}" によって呼び出されている書式文字列メソッド {2} は，書式指示子の数が {4} なのに 引数の数は {5} です。{1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-可変長引数による書式文字列メソッドが呼び出されていますが渡された引数の数と書式文字列の中の % 書式指示子の数が一致していません。
-これはおそらく作成者の意図したことではありません。
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED">
-    <ShortDescription>printf スタイルの書式が期待されているところで MessageFormat が与えられている</ShortDescription>
-    <LongDescription>{2} は，prntf スタイルの書式を必要としていますが MessageFormat によって呼び出されています。</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-Java の <code>printf</code> 書式文字列と引数のリストを期待するメソッドが呼び出されています。
-しかしながら，書式文字列にはどんな書式指示子 (たとえば， <code>%s</code>) も含まないで，メッセージフォーマットの要素 (たとえば， <code>{0}</code>) を含んでいます。
-<code>printf</code> スタイルの書式文字列が必要なときに， <code>MessageFormat</code> の文字列を与えている可能性が高いです。
-実行時に，すべての引数は無視され，書式文字列は正確にフォーマットされずに返されます。
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED">
-    <ShortDescription>書式文字列で実際に使われるよりも多くの引数が渡されている</ShortDescription>
-    <LongDescription>書式文字列 {3} によって呼び出されている書式文字列メソッド {2} は，書式指示子の数が {4} なのに 引数の数は {5} です。{1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-可変長引数による書式文字列メソッドが呼び出されていますが，書式文字列で実際に使われるよりも多くの引数が渡されています。
-これは実行時例外の原因とはなりませんが，コードはフォーマットされた文字列に含まれることを意図した情報を黙って省略しているかもしれません。
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="VA_FORMAT_STRING_ILLEGAL">
-    <ShortDescription>無効な書式文字列</ShortDescription>
-    <LongDescription>無効な書式文字列 "{3}" です。{1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-書式文字列は構文的に無効です。この文が実行されると実行時例外が発生します。
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="VA_FORMAT_STRING_MISSING_ARGUMENT">
-    <ShortDescription>書式文字列は足りない引数を参照している</ShortDescription>
-    <LongDescription>書式文字列 "{3}" は 引数が {5} 必要なのに {6} だけしか与えられていません。{1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-書式文字列で書式指示子を満たすために十分な引数が渡されていません。この文が実行されると実行時例外が発生します。
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="VA_FORMAT_STRING_BAD_ARGUMENT">
-    <ShortDescription>書式指示子へ渡している引数に互換性がない</ShortDescription>
-    <LongDescription>書式指示子 {4} は，対応する引数と互換性がありません。{1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-書式指示子は，対応する引数と互換性がありません。
-たとえば， <code>System.out.println("%d\n", "hello");</code> の <code>%d</code> 書式指示子は数値の引数を必要としますが数値ではなく文字列が渡されています。
-この文が実行されると実行時例外が発生します。
-</p>
-]]>
-    </Details>
   </BugPattern>
 
   <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
@@ -8333,7 +8279,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 <![CDATA[
 <p>
 このコードは <code>x % 2 == 1</code> を使用して値が負数なのか確かめていますが，負数 (たとえば， <code>(-5) % 2 == -1</code>) なので機能しません。
-奇数チェックを意図しているなら， <code>x &amp; 1 == 1</code> または <code>x % 2 != 0</code> を使用することを検討してください。
+奇数チェックを意図しているなら， <code>(x &amp; 1) == 1</code> または <code>x % 2 != 0</code> を使用することを検討してください。
 </p>
 ]]>
     </Details>
@@ -8495,7 +8441,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 <![CDATA[
 <p>
 このクラスは， <code>final</code> と宣言されていますが，フィールドは <code>protected</code> と宣言されています。
-クラスは <code>fainal</code> なので派生できません。<code>protected</code> の使用は紛らわしいです。
+クラスは <code>final</code> なので派生できません。<code>protected</code> の使用は紛らわしいです。
 フィールドのためのアクセス修飾子は，フィールドの真の用途を表すため， <code>private</code> か <code>public</code> に変更すべきです。
 </p>
 ]]>
@@ -9245,4 +9191,5 @@ Ulf Ochsenfahrt と Eric Fellheimer
   <BugCode abbrev="OBL">ストリームまたはリソースをクリーンアップする責務が満たされていない</BugCode>
   <BugCode abbrev="FB">SpotBugs はメソッドで期待された警告を出さない</BugCode>
   <BugCode abbrev="DL">共有オブジェクトを意図的でなくロックすることによる潜在的デッドロック</BugCode>
+  <BugCode abbrev="JUA">JUnitアサーションの問題</BugCode>
 </MessageCollection>

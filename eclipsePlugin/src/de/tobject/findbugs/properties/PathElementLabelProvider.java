@@ -13,12 +13,12 @@ public class PathElementLabelProvider extends LabelProvider implements IColorPro
 
     @Override
     public Color getForeground(Object element) {
-        if(!(element instanceof IPathElement)) {
+        if (!(element instanceof IPathElement)) {
             return null;
         }
         IPathElement pathElement = (IPathElement) element;
         IStatus status = pathElement.getStatus();
-        if(status == null || status.isOK()) {
+        if (status == null || status.isOK()) {
             // use default
             return null;
         }
@@ -32,12 +32,12 @@ public class PathElementLabelProvider extends LabelProvider implements IColorPro
 
     @Nonnull
     public String getToolTip(Object element) {
-        if(!(element instanceof IPathElement)) {
+        if (!(element instanceof IPathElement)) {
             return "";
         }
         IPathElement pathElement = (IPathElement) element;
         IStatus status = pathElement.getStatus();
-        if(status == null || status.isOK()) {
+        if (status == null || status.isOK()) {
             return pathElement.toString();
         }
         return status.getMessage();

@@ -129,7 +129,7 @@ public class IncompatMask extends OpcodeStackDetector {
             } else {
                 bug = new BugInstance(this, "BIT_SIGNED_CHECK", onlyLowBits ? LOW_PRIORITY : NORMAL_PRIORITY);
             }
-            bug.addClassAndMethod(this).addString(toHex(arg1)+" ("+arg1+")").addSourceLine(this);
+            bug.addClassAndMethod(this).addString(toHex(arg1) + " (" + arg1 + ")").addSourceLine(this);
             bugReporter.reportBug(bug);
         }
         if (equality) {
@@ -163,11 +163,11 @@ public class IncompatMask extends OpcodeStackDetector {
     }
 
     private static String toHex(Number n) {
-        return "0x"+(n instanceof Long ? Long.toHexString(n.longValue()) : Integer.toHexString(n.intValue()));
+        return "0x" + (n instanceof Long ? Long.toHexString(n.longValue()) : Integer.toHexString(n.intValue()));
     }
 
     private boolean checkItem(int n) {
-        if(bitresultItem != null) {
+        if (bitresultItem != null) {
             for (int i = 0; i < n; i++) {
                 if (stack.getStackItem(i) == bitresultItem) {
                     return true;
@@ -187,7 +187,7 @@ public class IncompatMask extends OpcodeStackDetector {
         case Const.LAND:
         case Const.IOR:
         case Const.LOR:
-            if(stack.getStackDepth() > 0) {
+            if (stack.getStackDepth() > 0) {
                 bitresultItem = stack.getStackItem(0);
             }
             break;

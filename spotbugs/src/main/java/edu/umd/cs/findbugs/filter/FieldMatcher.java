@@ -52,7 +52,7 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
     @Override
     public boolean match(BugInstance bugInstance) {
         FieldAnnotation fieldAnnotation = null;
-        if (role == null || "".equals(role)) {
+        if (role == null || role.isEmpty()) {
             fieldAnnotation = bugInstance.getPrimaryField();
         } else {
             for (BugAnnotation a : bugInstance.getAnnotations()) {
@@ -62,16 +62,9 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
                 }
             }
         }
-        if (fieldAnnotation == null) {
-            return false;
-        }
-        if (!name.match(fieldAnnotation.getFieldName())) {
-            return false;
-        }
-        if (signature != null && !signature.match(fieldAnnotation.getFieldSignature())) {
-            return false;
-        }
-        return true;
+        return fieldAnnotation != null
+                && name.match(fieldAnnotation.getFieldName())
+                && (signature == null || signature.match(fieldAnnotation.getFieldSignature()));
     }
 
     @Override

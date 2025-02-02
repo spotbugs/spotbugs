@@ -20,28 +20,35 @@
 package edu.umd.cs.findbugs;
 
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 
 import javax.annotation.CheckForNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Version number and release date information.
  */
 public class Version {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     /**
      * SpotBugs website.
      */
     public static final String WEBSITE = "https://spotbugs.github.io/";
 
-    public final static String VERSION_STRING;
+    public static final String VERSION_STRING;
 
     /**
      * @deprecated Use {@link #VERSION_STRING} instead.
     */
     @Deprecated
-    public final static String RELEASE;
+    public static final String RELEASE;
 
     private static String applicationName = "";
     private static String applicationVersion = "";
@@ -54,7 +61,7 @@ public class Version {
         if (!fromFile) {
             try {
                 final Enumeration<URL> resources = Version.class.getClassLoader()
-                    .getResources("META-INF/MANIFEST.MF");
+                        .getResources("META-INF/MANIFEST.MF");
                 while (resources.hasMoreElements()) {
                     try (final InputStream is = resources.nextElement().openStream()) {
                         final Manifest manifest = new Manifest(is);
@@ -90,7 +97,7 @@ public class Version {
         return applicationVersion;
     }
 
-    public static void main(String[] argv) throws InterruptedException {
+    public static void main(String[] argv) {
         if (argv.length == 0) {
             printVersion(false);
             return;
@@ -99,24 +106,24 @@ public class Version {
         String arg = argv[0];
 
         if ("-release".equals(arg)) {
-            System.out.println(VERSION_STRING);
+            LOG.info(VERSION_STRING);
         } else if ("-plugins".equals(arg)) {
             DetectorFactoryCollection.instance();
-            for(Plugin p : Plugin.getAllPlugins()) {
-                System.out.println("Plugin: " + p.getPluginId());
-                System.out.println("  description: " + p.getShortDescription());
-                System.out.println("     provider: " + p.getProvider());
+            for (Plugin p : Plugin.getAllPlugins()) {
+                LOG.info("Plugin: {}", p.getPluginId());
+                LOG.info("  description: {}", p.getShortDescription());
+                LOG.info("     provider: {}", p.getProvider());
                 String version = p.getVersion();
-                if (version != null && version.length() > 0) {
-                    System.out.println("      version: " + version);
+                if (version != null && !version.isEmpty()) {
+                    LOG.info("      version: {}", version);
                 }
                 String website = p.getWebsite();
-                if (website != null && website.length() > 0) {
-                    System.out.println("      website: " + website);
+                if (website != null && !website.isEmpty()) {
+                    LOG.info("      website: {}", website);
                 }
-                System.out.println();
+                LOG.info("");
             }
-        } else if ("-configuration".equals(arg)){
+        } else if ("-configuration".equals(arg)) {
             printVersion(true);
         } else {
             usage();
@@ -125,42 +132,41 @@ public class Version {
     }
 
     private static void usage() {
-        System.err.println("Usage: " + Version.class.getName() + "  [(-release|-date|-props|-configuration)]");
+        LOG.error("Usage: {} [(-release|-date|-props|-configuration)]", Version.class.getName());
     }
 
     /**
      * @param justPrintConfiguration
-     * @throws InterruptedException
      */
-    public static void printVersion(boolean justPrintConfiguration) throws InterruptedException {
-        System.out.println("SpotBugs " + Version.VERSION_STRING);
-        if (justPrintConfiguration) {
-            for (Plugin plugin : Plugin.getAllPlugins()) {
-                System.out.printf("Plugin %s, version %s, loaded from %s%n", plugin.getPluginId(), plugin.getVersion(),
-                        plugin.getPluginLoader().getURL());
-                if (plugin.isCorePlugin()) {
-                    System.out.println("  is core plugin");
-                }
-                if (plugin.isInitialPlugin()) {
-                    System.out.println("  is initial plugin");
-                }
-                if (plugin.isEnabledByDefault()) {
-                    System.out.println("  is enabled by default");
-                }
-                if (plugin.isGloballyEnabled()) {
-                    System.out.println("  is globally enabled");
-                }
-                Plugin parent = plugin.getParentPlugin();
-                if (parent != null) {
-                    System.out.println("  has parent plugin " + parent.getPluginId());
-                }
-
-                for (DetectorFactory factory : plugin.getDetectorFactories()) {
-                    System.out.printf("  detector %s%n", factory.getShortName());
-                }
-                System.out.println();
+    public static void printVersion(boolean justPrintConfiguration) {
+        LOG.info("SpotBugs {}", Version.VERSION_STRING);
+        if (!justPrintConfiguration) {
+            return;
+        }
+        for (Plugin plugin : Plugin.getAllPlugins()) {
+            LOG.info("Plugin {}, version {}, loaded from {}",
+                    plugin.getPluginId(), plugin.getVersion(), plugin.getPluginLoader().getURL());
+            if (plugin.isCorePlugin()) {
+                LOG.info("  is core plugin");
             }
+            if (plugin.isInitialPlugin()) {
+                LOG.info("  is initial plugin");
+            }
+            if (plugin.isEnabledByDefault()) {
+                LOG.info("  is enabled by default");
+            }
+            if (plugin.isGloballyEnabled()) {
+                LOG.info("  is globally enabled");
+            }
+            Plugin parent = plugin.getParentPlugin();
+            if (parent != null) {
+                LOG.info("  has parent plugin {}", parent.getPluginId());
+            }
+
+            for (DetectorFactory factory : plugin.getDetectorFactories()) {
+                LOG.info("  detector {}", factory.getShortName());
+            }
+            LOG.info("");
         }
     }
 }
-

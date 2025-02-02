@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="ConsoleLog" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%msg%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="edu.umd.cs.findbugs.Version" level="info" additivity="false">
+      <AppenderRef ref="Console"/>
+    </Logger>
+    <Root level="error">
+      <AppenderRef ref="ConsoleLog"/>
+    </Root>
+  </Loggers>
+</Configuration>

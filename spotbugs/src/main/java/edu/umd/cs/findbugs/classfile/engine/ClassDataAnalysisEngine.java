@@ -54,7 +54,7 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
         } catch (ResourceNotFoundException e) {
             // Allow loading javax.annotation's from our own classpath - in case we analyze projects
             // using 3rd party nullness annotations (which do not have jsr305 classes on classpath)
-            if(resourceName.startsWith("javax/annotation/")){
+            if (resourceName.startsWith("javax/annotation/")) {
                 codeBaseEntry = new VirtualCodeBaseEntry(descriptor);
             } else {
                 throw new MissingClassException(descriptor, e);
@@ -108,7 +108,7 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
         @Override
         public InputStream openResource() throws IOException {
             InputStream stream = getClass().getClassLoader().getResourceAsStream(descriptor.toResourceName());
-            if(stream == null){
+            if (stream == null) {
                 throw new IOException("Can not load '" + descriptor.toResourceName() + "' from SpotBugs classpath.");
             }
             return stream;

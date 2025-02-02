@@ -83,8 +83,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
     /**
      * Get the type of edge.
      */
-    public @Type
-    int getType() {
+    public @Type int getType() {
         return type;
     }
 
@@ -175,7 +174,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
     public boolean sourceIsTopOfLoop(@Nonnull Set<Integer> positions) {
         if (positions == null) {
-            AnalysisContext.logError("Null positions",  new NullPointerException("positions can't be null"));
+            AnalysisContext.logError("Null positions", new NullPointerException("positions can't be null"));
             return false;
         }
         BasicBlock source = getSource();
@@ -274,8 +273,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
     /**
      * Get numeric edge type from string representation.
      */
-    public static @Type
-    int stringToEdgeType(String s) {
+    public static @Type int stringToEdgeType(String s) {
         s = s.toUpperCase(Locale.ENGLISH);
 
         if ("FALL_THROUGH".equals(s)) {
@@ -311,4 +309,3 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
         }
     }
 }
-

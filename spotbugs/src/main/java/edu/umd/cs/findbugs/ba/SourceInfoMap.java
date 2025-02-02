@@ -189,16 +189,14 @@ public class SourceInfoMap {
         /**
          * @return Returns the start.
          */
-        public @Nonnull
-        Integer getStart() {
+        public @Nonnull Integer getStart() {
             return start;
         }
 
         /**
          * @return Returns the end.
          */
-        public @Nonnull
-        Integer getEnd() {
+        public @Nonnull Integer getEnd() {
             return end;
         }
 
@@ -290,8 +288,7 @@ public class SourceInfoMap {
      * @return the line number range, or null if no line number is known for the
      *         field
      */
-    public @CheckForNull
-    SourceLineRange getFieldLine(String className, String fieldName) {
+    public @CheckForNull SourceLineRange getFieldLine(String className, String fieldName) {
         return fieldLineMap.get(new FieldDescriptor(className, fieldName));
     }
 
@@ -307,8 +304,7 @@ public class SourceInfoMap {
      * @return the line number range, or null if no line number is known for the
      *         method
      */
-    public @CheckForNull
-    SourceLineRange getMethodLine(String className, String methodName, String methodSignature) {
+    public @CheckForNull SourceLineRange getMethodLine(String className, String methodName, String methodSignature) {
         return methodLineMap.get(new MethodDescriptor(className, methodName, methodSignature));
     }
 
@@ -320,8 +316,7 @@ public class SourceInfoMap {
      * @return the line number range, or null if no line number is known for the
      *         class
      */
-    public @CheckForNull
-    SourceLineRange getClassLine(String className) {
+    public @CheckForNull SourceLineRange getClassLine(String className) {
         return classLineMap.get(className);
     }
 
@@ -337,10 +332,8 @@ public class SourceInfoMap {
      *             if an I/O error occurs, or if the format is invalid
      */
     public void read(@WillClose InputStream inputStream) throws IOException {
-        BufferedReader reader = new BufferedReader(Util.getReader(inputStream));
-
         int lineNumber = 0;
-        try {
+        try (BufferedReader reader = new BufferedReader(Util.getReader(inputStream))) {
             String line;
             int lparen;
             String version;
@@ -413,12 +406,6 @@ public class SourceInfoMap {
             IOException ioe = new IOException("Invalid syntax in source info file at line " + lineNumber);
             ioe.initCause(e);
             throw ioe;
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                // ignore
-            }
         }
     }
 

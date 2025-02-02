@@ -90,7 +90,7 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector {
                 if (!signature.equals(obj.getSignature())) {
                     if (!badOverrideMap.keySet().contains(methodName)) {
                         badOverrideMap.put(methodName, new BugInstance(this, "BOA_BADLY_OVERRIDDEN_ADAPTER", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this));
+                                .addClassAndMethod(this).addSourceLine(this));
                     }
                 } else {
                     badOverrideMap.put(methodName, null);
@@ -99,4 +99,3 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector {
         }
     }
 }
-

@@ -3,7 +3,6 @@ package ghIssues;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.meta.When;
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/463">GitHub issue</a>

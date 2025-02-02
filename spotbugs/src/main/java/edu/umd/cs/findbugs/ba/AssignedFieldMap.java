@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Constants;
-
-public class AssignedFieldMap implements Constants {
+public class AssignedFieldMap {
     /*
      * private final Map<Method, Set<XField>> assignedFieldSetForMethodMap;
      * private final JavaClass myClass;
@@ -94,4 +92,3 @@ public class AssignedFieldMap implements Constants {
      * handle = handle.getNext(); } }
      */
 }
-

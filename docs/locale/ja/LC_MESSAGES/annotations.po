@@ -1,0 +1,246 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2019, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-11-05 12:44+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../annotations.rst:2
+msgid "Annotations"
+msgstr "アノテーション"
+
+#: ../../annotations.rst:4
+msgid ""
+"SpotBugs supports several annotations to express the developer's intent "
+"so that SpotBugs can issue warnings more appropriately. Annotations for "
+"SpotBugs (mostly deprecated except for SuppressFBWarnings)."
+msgstr ""
+"SpotBugsは開発者の意図を表現するためのアノテーションをサポートすることで、より適切な"
+"警告を生成します。ここではSpotBugs自身が用意したアノテーションを紹介します"
+"（SuppressFBWarnings以外は非推奨です）。"
+
+#: ../../annotations.rst:8
+msgid "edu.umd.cs.findbugs.annotations.CheckForNull"
+msgstr "edu.umd.cs.findbugs.annotations.CheckForNull"
+
+#: ../../annotations.rst:9
+msgid ""
+"The annotated element might be null, and uses of the element should check"
+" for null."
+msgstr ""
+"このアノテーションによって修飾された要素はnullである可能性があります。利用者は利用前にnullであるか確認すべきです。"
+
+#: ../../annotations.rst:12
+msgid "edu.umd.cs.findbugs.annotations.CheckReturnValue"
+msgstr "edu.umd.cs.findbugs.annotations.CheckReturnValue"
+
+#: ../../annotations.rst:13
+msgid ""
+"This annotation is used to denote a method whose return value should "
+"always be checked when invoking the method."
+msgstr ""
+"このアノテーションによって修飾されたメソッドの戻り値は、呼び出し元によって必ず"
+"確認されるべきです。"
+
+#: ../../annotations.rst:16
+msgid "edu.umd.cs.findbugs.annotations.CleanupObligation"
+msgstr "edu.umd.cs.findbugs.annotations.CleanupObligation"
+
+#: ../../annotations.rst:17 ../../annotations.rst:100
+msgid "Mark a class or interface as a resource type requiring cleanup."
+msgstr "このアノテーションによって修飾されたクラスやインタフェースは、資源であり利用後に片付ける必要があります。"
+
+#: ../../annotations.rst:20
+msgid "edu.umd.cs.findbugs.annotations.CreatesObligation"
+msgstr "edu.umd.cs.findbugs.annotations.CreatesObligation"
+
+#: ../../annotations.rst:21
+msgid ""
+"Mark a constructor or method as creating a resource which requires "
+"cleanup."
+msgstr ""
+"このアノテーションによって修飾されたコンストラクタやメソッドは、片付ける必要のある資源を生成します。"
+
+#: ../../annotations.rst:24
+msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotation"
+msgstr "edu.umd.cs.findbugs.annotations.DefaultAnnotation"
+
+#: ../../annotations.rst:25 ../../annotations.rst:29 ../../annotations.rst:33
+#: ../../annotations.rst:37
+msgid ""
+"Indicates that all members of the class or package should be annotated "
+"with the default value of the supplied annotation class."
+msgstr ""
+"このアノテーションに修飾されたクラスあるいはパッケージにあるすべてのメンバーが、"
+"デフォルトで指定されたアノテーションにより修飾されているものとして扱われます。"
+
+#: ../../annotations.rst:28
+msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields"
+msgstr "edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields"
+
+#: ../../annotations.rst:32
+msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotationForMethods"
+msgstr "edu.umd.cs.findbugs.annotations.DefaultAnnotationForMethods"
+
+#: ../../annotations.rst:36
+msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters"
+msgstr "edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters"
+
+#: ../../annotations.rst:40
+msgid "edu.umd.cs.findbugs.annotations.DesireNoWarning (Deprecated)"
+msgstr "edu.umd.cs.findbugs.annotations.DesireNoWarning (非推奨)"
+
+#: ../../annotations.rst:41 ../../annotations.rst:45 ../../annotations.rst:53
+#: ../../annotations.rst:61
+msgid "The annotation based approach is useless for lambdas."
+msgstr "アノテーションを用いた手法はラムダ式には利用できません。"
+
+#: ../../annotations.rst:44
+msgid "edu.umd.cs.findbugs.annotations.DesireWarning (Deprecated)"
+msgstr "edu.umd.cs.findbugs.annotations.DesireWarning (非推奨)"
+
+#: ../../annotations.rst:48
+msgid "edu.umd.cs.findbugs.annotations.DischargesObligation"
+msgstr "edu.umd.cs.findbugs.annotations.DischargesObligation"
+
+#: ../../annotations.rst:49
+msgid "Mark a method as cleaning up a resource."
+msgstr "修飾されたメソッドを、資源を片付ける処理として表現します。"
+
+#: ../../annotations.rst:52
+msgid "edu.umd.cs.findbugs.annotations.ExpectWarning (Deprecated)"
+msgstr "edu.umd.cs.findbugs.annotations.ExpectWarning (非推奨)"
+
+#: ../../annotations.rst:56
+msgid "edu.umd.cs.findbugs.annotations.NonNull"
+msgstr "edu.umd.cs.findbugs.annotations.NonNull"
+
+#: ../../annotations.rst:57
+msgid "The annotated element must not be null."
+msgstr "修飾された要素はnullであってはなりません。"
+
+#: ../../annotations.rst:60
+msgid "edu.umd.cs.findbugs.annotations.NoWarning (Deprecated)"
+msgstr "edu.umd.cs.findbugs.annotations.NoWarning (非推奨)"
+
+#: ../../annotations.rst:64
+msgid "edu.umd.cs.findbugs.annotations.Nullable"
+msgstr "edu.umd.cs.findbugs.annotations.Nullable"
+
+#: ../../annotations.rst:65
+msgid ""
+"The annotated element could be null under some circumstances. This is "
+"treated the same way as not being annotated."
+msgstr ""
+"修飾された要素はnullになる可能性があります。修飾されていない要素と同様に扱われます。"
+
+#: ../../annotations.rst:69
+msgid "edu.umd.cs.findbugs.annotations.OverrideMustInvoke"
+msgstr "edu.umd.cs.findbugs.annotations.OverrideMustInvoke"
+
+#: ../../annotations.rst:70
+msgid ""
+"Used to annotate a method that, if overridden, must (or should) be "
+"invoked by an invocation on super in the overriding method."
+msgstr ""
+"修飾されたメソッドがオーバーライドされた場合、オーバーライドしたメソッドは"
+"オーバーライドされたメソッドを呼び出す必要があります。"
+
+#: ../../annotations.rst:73
+msgid "edu.umd.cs.findbugs.annotations.PossiblyNull (Deprecated)"
+msgstr "edu.umd.cs.findbugs.annotations.PossiblyNull (非推奨)"
+
+#: ../../annotations.rst:74
+msgid ""
+"Use `CheckForNull` instead. The name of which more clearly indicates that"
+" not only could the value be null, but that good coding practice requires"
+" that the value be checked for null."
+msgstr ""
+"`CheckForNull` を使ってください。そちらのほうが意味をより良く表す名前を持っています。"
+"nullである可能性に触れるだけでなく、それを確認してから利用すべきと明示しているからです。"
+
+#: ../../annotations.rst:79
+msgid "edu.umd.cs.findbugs.annotations.ReturnValuesAreNonnullByDefault"
+msgstr "edu.umd.cs.findbugs.annotations.ReturnValuesAreNonnullByDefault"
+
+#: ../../annotations.rst:80
+msgid ""
+"This annotation can be applied to a package, class or method to indicate "
+"that the methods in that element have nonnull return values by default "
+"unless there is: An explicit nullness annotation The method overrides a "
+"method in a superclass (in which case the annotation of the corresponding"
+" parameter in the superclass applies) there is a default annotation "
+"applied to a more tightly nested element."
+msgstr ""
+"このアノテーションはパッケージ、クラスまたはメソッドを修飾します。修飾された範囲において、"
+"メソッドの戻り値はデフォルトで非nullとなります。明示的にnullnessを表すアノテーションで"
+"修飾したり、親クラスのメソッドをオーバーライドしたり（この場合は親クラスにて修飾された"
+"nullnessが利用されます）、より狭い範囲に適用されるデフォルト値を適用したりすることで"
+"デフォルト以外の値が使用されます。"
+
+#: ../../annotations.rst:86
+msgid "edu.umd.cs.findbugs.annotations.SuppressFBWarnings"
+msgstr "edu.umd.cs.findbugs.annotations.SuppressFBWarnings"
+
+#: ../../annotations.rst:87
+msgid "Used to suppress SpotBugs warnings."
+msgstr "SpotBugsによる警告を抑制するのに使用します。"
+
+#: ../../annotations.rst:90
+msgid "edu.umd.cs.findbugs.annotations.SuppressWarnings (Deprecated)"
+msgstr "edu.umd.cs.findbugs.annotations.SuppressWarnings (非推奨)"
+
+#: ../../annotations.rst:91
+msgid "Use `SuppressFBWarnings` instead."
+msgstr "`SuppressFBWarnings` を代わりに使用してください。"
+
+#: ../../annotations.rst:94
+msgid "edu.umd.cs.findbugs.annotations.UnknownNullness"
+msgstr "edu.umd.cs.findbugs.annotations.UnknownNullness"
+
+#: ../../annotations.rst:95
+msgid ""
+"Used to indicate that the nullness of element is unknown, or may vary in "
+"unknown ways in subclasses."
+msgstr ""
+"修飾された要素がnullになるかどうかが不明な際、またはサブクラスによって決定される際に利用します。"
+
+#: ../../annotations.rst:99
+msgid "edu.umd.cs.findbugs.annotations.CleanupObligation (Deprecated)"
+msgstr "edu.umd.cs.findbugs.annotations.CleanupObligation (非推奨)"
+
+#: ../../annotations.rst:103
+msgid "edu.umd.cs.findbugs.annotations.CreatesObligation (Deprecated)"
+msgstr "edu.umd.cs.findbugs.annotations.CreatesObligation (非推奨)"
+
+#: ../../annotations.rst:104
+msgid ""
+"Mark a constructor or method as creating a resource which requires "
+"cleanup. The marked method must be a member of a class marked with the "
+"CleanupObligation annotation."
+msgstr ""
+"片付ける必要のある資源を生成するメソッドかコンストラクタを修飾します。"
+"修飾されたメソッドはCleanupObligationアノテーションによって修飾されたクラスのメンバーでなければなりません。"
+
+#: ../../annotations.rst:108
+msgid "edu.umd.cs.findbugs.annotations.DischargesObligation (Deprecated)"
+msgstr "edu.umd.cs.findbugs.annotations.DischargesObligation (非推奨)"
+
+#: ../../annotations.rst:109
+msgid ""
+"Mark a method as cleaning up a resource. The marked method must be a "
+"member of a class marked with the CleanupObligation annotation."
+msgstr ""
+"修飾されたメソッドを、資源を片付ける処理として表現します。"
+"修飾されたメソッドはCleanupObligationアノテーションによって修飾されたクラスのメンバーでなければなりません。"

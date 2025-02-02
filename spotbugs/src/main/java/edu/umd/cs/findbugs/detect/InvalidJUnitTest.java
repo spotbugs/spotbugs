@@ -137,8 +137,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
     private boolean hasSuite(Method[] methods) {
         for (Method m : methods) {
             if (m.getName().equals("suite") && m.isPublic() && m.isStatic()
-                    // && m.getReturnType().equals(junit.framework.Test.class)
-                    // && m.getArgumentTypes().length == 0
+            // && m.getReturnType().equals(junit.framework.Test.class)
+            // && m.getArgumentTypes().length == 0
                     && m.getSignature().equals("()Ljunit/framework/Test;")) {
                 return true;
             }
@@ -223,4 +223,3 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
         }
     }
 }
-

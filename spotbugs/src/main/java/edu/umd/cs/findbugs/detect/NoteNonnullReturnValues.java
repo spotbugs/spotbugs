@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  * @author David Hovemeyer
  */
 public class NoteNonnullReturnValues extends BuildNonnullReturnDatabase implements Detector, NonReportingDetector,
-InterproceduralFirstPassDetector {
+        InterproceduralFirstPassDetector {
 
     public NoteNonnullReturnValues(BugReporter bugReporter) {
     }

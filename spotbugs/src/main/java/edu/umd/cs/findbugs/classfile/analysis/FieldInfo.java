@@ -53,7 +53,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     public static final FieldInfo[] EMPTY_ARRAY = new FieldInfo[0];
 
-    static public class Builder {
+    public static class Builder {
         final int accessFlags;
 
         final String className, fieldName, fieldSignature;
@@ -85,8 +85,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     final int accessFlags;
 
-    final @CheckForNull
-    String fieldSourceSignature;
+    final @CheckForNull String fieldSourceSignature;
 
     Map<ClassDescriptor, AnnotationValue> fieldAnnotations;
 
@@ -125,14 +124,12 @@ public class FieldInfo extends FieldDescriptor implements XField {
     }
 
     @Override
-    public @DottedClassName
-    String getClassName() {
+    public @DottedClassName String getClassName() {
         return getClassDescriptor().toDottedClassName();
     }
 
     @Override
-    public @DottedClassName
-    String getPackageName() {
+    public @DottedClassName String getPackageName() {
         return getClassDescriptor().getPackageName();
     }
 
@@ -312,7 +309,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
                 // we don't know
                 // if it has a
                 // generic type
-                isStatic ? Const.ACC_STATIC : 0, new HashMap<ClassDescriptor, AnnotationValue>(), false);
+                isStatic ? Const.ACC_STATIC : 0, new HashMap<>(), false);
     }
 
     @Override
@@ -321,8 +318,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
     }
 
     @Override
-    public @CheckForNull
-    AnnotatedObject getContainingScope() {
+    public @CheckForNull AnnotatedObject getContainingScope() {
         try {
             return Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
         } catch (CheckedAnalysisException e) {

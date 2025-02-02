@@ -69,4 +69,3 @@ public class Binding {
         return buf.toString();
     }
 }
-

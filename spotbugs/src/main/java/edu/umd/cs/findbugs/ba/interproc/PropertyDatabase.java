@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -81,8 +81,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      *            the key
      * @return the property, or null if no property is set for this key
      */
-    public @CheckForNull
-    ValueType getProperty(KeyType key) {
+    public @CheckForNull ValueType getProperty(KeyType key) {
         return propertyMap.get(key);
     }
 
@@ -137,10 +136,8 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      * @throws PropertyDatabaseFormatException
      */
     public void read(@WillClose InputStream in) throws IOException, PropertyDatabaseFormatException {
-        BufferedReader reader = null;
 
-        try {
-            reader = new BufferedReader(Util.getReader(in));
+        try (BufferedReader reader = new BufferedReader(Util.getReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
@@ -155,14 +152,6 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
                 ValueType property = decodeProperty(line.substring(bar + 1));
 
                 setProperty(key, property);
-            }
-        } finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException e) {
-                // Ignore
             }
         }
     }
@@ -201,14 +190,11 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      * @throws IOException
      */
     public void write(@WillClose OutputStream out) throws IOException {
-        BufferedWriter writer = null;
+
         boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
 
-        try {
-            writer = new BufferedWriter(new OutputStreamWriter(out, UTF8.charset));
-
-            TreeSet<KeyType> sortedMethodSet = new TreeSet<>();
-            sortedMethodSet.addAll(propertyMap.keySet());
+            TreeSet<KeyType> sortedMethodSet = new TreeSet<>(propertyMap.keySet());
             for (KeyType key : sortedMethodSet) {
                 if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassDescriptor())) {
 
@@ -222,14 +208,6 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
             }
         } finally {
             AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
-
-            try {
-                if (writer != null) {
-                    writer.close();
-                }
-            } catch (IOException e) {
-                // Ignore
-            }
         }
     }
 

@@ -1,6 +1,5 @@
 Manifest-Version: 1.0
 Export-Package: edu.umd.cs.findbugs,
- edu.umd.cs.findbugs.architecture,
  edu.umd.cs.findbugs.asm,
  edu.umd.cs.findbugs.ba,
  edu.umd.cs.findbugs.ba.bcp,
@@ -30,7 +29,6 @@ Export-Package: edu.umd.cs.findbugs,
  edu.umd.cs.findbugs.config,
  edu.umd.cs.findbugs.detect,
  edu.umd.cs.findbugs.filter,
- edu.umd.cs.findbugs.formatStringChecker,
  edu.umd.cs.findbugs.graph,
  edu.umd.cs.findbugs.gui,
  edu.umd.cs.findbugs.gui2,
@@ -65,8 +63,7 @@ Export-Package: edu.umd.cs.findbugs,
  org.objectweb.asm.signature,
  org.objectweb.asm.tree,
  org.objectweb.asm.tree.analysis,
- org.objectweb.asm.util,
- org.objectweb.asm.xml
+ org.objectweb.asm.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ManifestVersion: 2
 Bundle-Name: spotbugs

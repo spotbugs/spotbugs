@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -175,19 +174,9 @@ public class UserPreferences implements Cloneable {
      * @throws IOException
      */
     public void read(@WillClose InputStream in) throws IOException {
-        BufferedInputStream prefStream = null;
         Properties props = new Properties();
-        try {
-            prefStream = new BufferedInputStream(in);
+        try (BufferedInputStream prefStream = new BufferedInputStream(in)) {
             props.load(prefStream);
-        } finally {
-            try {
-                if (prefStream != null) {
-                    prefStream.close();
-                }
-            } catch (IOException ioe) {
-                // Ignore
-            }
         }
 
         if (props.size() == 0) {
@@ -196,10 +185,11 @@ public class UserPreferences implements Cloneable {
 
         Properties prefixlessProperties = new Properties();
         for (Map.Entry<?, ?> e : props.entrySet()) {
-            if(e.getKey() instanceof String) {
+            if (e.getKey() instanceof String) {
                 String key = e.getKey().toString();
                 String value = e.getValue().toString();
-                prefixlessProperties.setProperty(key.replace("/instance/edu.umd.cs.findbugs.plugin.eclipse/", ""), value);
+                prefixlessProperties.setProperty(key.replace("/instance/edu.umd.cs.findbugs.plugin.eclipse/", "")
+                        .replace("/instance/com.github.spotbugs.plugin.eclipse/", ""), value);
             } else {
                 prefixlessProperties.put(e.getKey(), e.getValue());
             }
@@ -294,9 +284,7 @@ public class UserPreferences implements Cloneable {
             props.put(key, projectName);
         }
 
-        Iterator<Entry<String, Boolean>> it = detectorEnablementMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<String, Boolean> entry = it.next();
+        for (Entry<String, Boolean> entry : detectorEnablementMap.entrySet()) {
             props.put("detector" + entry.getKey(), entry.getKey() + BOOL_SEPARATOR + String.valueOf(entry.getValue().booleanValue()));
         }
 
@@ -315,18 +303,9 @@ public class UserPreferences implements Cloneable {
         writeProperties(props, KEY_EXCLUDE_BUGS, excludeBugsFiles);
         writeProperties(props, KEY_PLUGIN, customPlugins);
 
-        OutputStream prefStream = null;
-        try {
-            prefStream = new BufferedOutputStream(out);
+        try (OutputStream prefStream = new BufferedOutputStream(out)) {
             props.store(prefStream, "SpotBugs User Preferences");
             prefStream.flush();
-        } finally {
-            try {
-                if (prefStream != null) {
-                    prefStream.close();
-                }
-            } catch (IOException ioe) {
-            }
         }
     }
 
@@ -363,14 +342,9 @@ public class UserPreferences implements Cloneable {
     public void removeProject(String projectName) {
         // It should only be in list once (usually in slot 0) but check entire
         // list...
-        Iterator<String> it = recentProjectsList.iterator();
-        while (it.hasNext()) {
-            // LinkedList, so remove() via iterator is faster than
-            // remove(index).
-            if (projectName.equals(it.next())) {
-                it.remove();
-            }
-        }
+        // LinkedList, so remove() via iterator is faster than
+        // remove(index).
+        recentProjectsList.removeIf(projectName::equals);
     }
 
     /**
@@ -395,15 +369,10 @@ public class UserPreferences implements Cloneable {
      */
     public boolean isDetectorEnabled(DetectorFactory factory) {
         String detectorName = factory.getShortName();
-        Boolean enabled = detectorEnablementMap.get(detectorName);
-        if (enabled == null) {
-            // No explicit preference has been specified for this detector,
-            // so use the default enablement specified by the
-            // DetectorFactory.
-            enabled = factory.isDefaultEnabled();
-            detectorEnablementMap.put(detectorName, enabled);
-        }
-        return enabled;
+        // No explicit preference has been specified for this detector,
+        // so use the default enablement specified by the
+        // DetectorFactory.
+        return detectorEnablementMap.computeIfAbsent(detectorName, k -> factory.isDefaultEnabled());
     }
 
     /**
@@ -512,7 +481,7 @@ public class UserPreferences implements Cloneable {
     @Override
     public int hashCode() {
         return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
-        + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0);
+                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0);
     }
 
     @Override
@@ -627,16 +596,16 @@ public class UserPreferences implements Cloneable {
      * @see Plugin#isCorePlugin()
      * @see Plugin#isGloballyEnabled()
      */
-    public Set<String> getCustomPlugins(boolean enabled){
+    public Set<String> getCustomPlugins(boolean enabled) {
         Set<Entry<String, Boolean>> entrySet = customPlugins.entrySet();
         Set<String> result = new TreeSet<>();
         for (Entry<String, Boolean> entry : entrySet) {
-            if(enabled) {
-                if(entry.getValue() != null && entry.getValue().booleanValue()) {
+            if (enabled) {
+                if (entry.getValue() != null && entry.getValue().booleanValue()) {
                     result.add(entry.getKey());
                 }
             } else {
-                if(entry.getValue() == null || !entry.getValue().booleanValue()) {
+                if (entry.getValue() == null || !entry.getValue().booleanValue()) {
                     result.add(entry.getKey());
                 }
             }

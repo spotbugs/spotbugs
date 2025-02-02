@@ -1,0 +1,249 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2021, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 4.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-22 15:35-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../annotations.rst:2
+msgid "Annotations"
+msgstr "Anotações"
+
+#: ../../annotations.rst:4
+msgid ""
+"SpotBugs supports several annotations to express the developer's intent "
+"so that SpotBugs can issue warnings more appropriately. Annotations for "
+"SpotBugs (mostly deprecated except for SuppressFBWarnings)."
+msgstr ""
+"O SpotBugs suporta várias anotações para emitir avisos mais precisos "
+"conforme a intenção do desenvolvedor. As anotações para o SpotBugs são apresentadas a seguir "
+"(a maioria das anotações são obsoletas, com exceção da SuppressFBWarnings)."
+
+#: ../../annotations.rst:8
+msgid "edu.umd.cs.findbugs.annotations.CheckForNull"
+msgstr ""
+
+#: ../../annotations.rst:9
+msgid ""
+"The annotated element might be null, and uses of the element should check"
+" for null."
+msgstr "O elemento anotado pode ser nulo e deve ser verificado se seu uso é nulo."
+
+#: ../../annotations.rst:12
+msgid "edu.umd.cs.findbugs.annotations.CheckReturnValue"
+msgstr ""
+
+#: ../../annotations.rst:13
+msgid ""
+"This annotation is used to denote a method whose return value should "
+"always be checked when invoking the method."
+msgstr ""
+"Esta anotação é usada para denotar um método cujo valor de retorno "
+"deve sempre ser verificado ao invocar o método."
+
+#: ../../annotations.rst:16
+msgid "edu.umd.cs.findbugs.annotations.CleanupObligation"
+msgstr ""
+
+#: ../../annotations.rst:17 ../../annotations.rst:100
+msgid "Mark a class or interface as a resource type requiring cleanup."
+msgstr "Marca a classe ou interface como um tipo de recurso que requer limpeza."
+
+#: ../../annotations.rst:20
+msgid "edu.umd.cs.findbugs.annotations.CreatesObligation"
+msgstr ""
+
+#: ../../annotations.rst:21
+msgid ""
+"Mark a constructor or method as creating a resource which requires "
+"cleanup."
+msgstr "Marca o construtor ou método como um tipo de recurso que requer limpeza."
+
+#: ../../annotations.rst:24
+msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotation"
+msgstr ""
+
+#: ../../annotations.rst:25 ../../annotations.rst:29 ../../annotations.rst:33
+#: ../../annotations.rst:37
+msgid ""
+"Indicates that all members of the class or package should be annotated "
+"with the default value of the supplied annotation class."
+msgstr ""
+"Indica que todos os membros da classe ou pacote devem ser anotados "
+"com o valor default da classe de anotação fornecida."
+
+#: ../../annotations.rst:28
+msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields"
+msgstr ""
+
+#: ../../annotations.rst:32
+msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotationForMethods"
+msgstr ""
+
+#: ../../annotations.rst:36
+msgid "edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters"
+msgstr ""
+
+#: ../../annotations.rst:40
+msgid "edu.umd.cs.findbugs.annotations.DesireNoWarning (Deprecated)"
+msgstr ""
+
+#: ../../annotations.rst:41 ../../annotations.rst:45 ../../annotations.rst:53
+#: ../../annotations.rst:61
+msgid "The annotation based approach is useless for lambdas."
+msgstr "A abordagem baseada em anotação não é útil para lambdas."
+
+#: ../../annotations.rst:44
+msgid "edu.umd.cs.findbugs.annotations.DesireWarning (Deprecated)"
+msgstr ""
+
+#: ../../annotations.rst:48
+msgid "edu.umd.cs.findbugs.annotations.DischargesObligation"
+msgstr ""
+
+#: ../../annotations.rst:49
+msgid "Mark a method as cleaning up a resource."
+msgstr "Marca um método como limpeza de um recurso."
+
+#: ../../annotations.rst:52
+msgid "edu.umd.cs.findbugs.annotations.ExpectWarning (Deprecated)"
+msgstr ""
+
+#: ../../annotations.rst:56
+msgid "edu.umd.cs.findbugs.annotations.NonNull"
+msgstr ""
+
+#: ../../annotations.rst:57
+msgid "The annotated element must not be null."
+msgstr ""
+
+#: ../../annotations.rst:60
+msgid "edu.umd.cs.findbugs.annotations.NoWarning (Deprecated)"
+msgstr ""
+
+#: ../../annotations.rst:64
+msgid "edu.umd.cs.findbugs.annotations.Nullable"
+msgstr ""
+
+#: ../../annotations.rst:65
+msgid ""
+"The annotated element could be null under some circumstances. This is "
+"treated the same way as not being annotated."
+msgstr ""
+"O elemento anotado pode ser nulo em algumas circunstâncias. "
+"Isso é tratado da mesma maneira que não ser anotado."
+
+#: ../../annotations.rst:69
+msgid "edu.umd.cs.findbugs.annotations.OverrideMustInvoke"
+msgstr ""
+
+#: ../../annotations.rst:70
+msgid ""
+"Used to annotate a method that, if overridden, must (or should) be "
+"invoked by an invocation on super in the overriding method."
+msgstr ""
+"Usado para anotar um método que, se sobrescrito (override), deveria ser "
+"invocado por uma chamada super no método de sobrescrita."
+
+#: ../../annotations.rst:73
+msgid "edu.umd.cs.findbugs.annotations.PossiblyNull (Deprecated)"
+msgstr ""
+
+#: ../../annotations.rst:74
+msgid ""
+"Use `CheckForNull` instead. The name of which more clearly indicates that"
+" not only could the value be null, but that good coding practice requires"
+" that the value be checked for null."
+msgstr ""
+"Em vez disso, use `CheckForNull`. O nome indica mais claramente que não apenas "
+"o valor pode ser nulo, mas que a boa prática de codificação requer que o valor "
+"seja verificado quanto a nulo. "
+
+#: ../../annotations.rst:79
+msgid "edu.umd.cs.findbugs.annotations.ReturnValuesAreNonnullByDefault"
+msgstr ""
+
+#: ../../annotations.rst:80
+msgid ""
+"This annotation can be applied to a package, class or method to indicate "
+"that the methods in that element have nonnull return values by default "
+"unless there is: An explicit nullness annotation The method overrides a "
+"method in a superclass (in which case the annotation of the corresponding"
+" parameter in the superclass applies) there is a default annotation "
+"applied to a more tightly nested element."
+msgstr ""
+"Esta anotação pode ser aplicada a um pacote, classe ou método para indicar "
+"que os métodos nesse elemento têm valores de retorno não nulos por default "
+"a menos que haja uma anotação explícita de nulidade. O método substitui um "
+"método em uma superclasse (neste caso, a anotação do parâmetro correspondente "
+"na superclasse se aplica) há uma anotação default aplicada a um elemento mais "
+"fortemente aninhado. "
+
+#: ../../annotations.rst:86
+msgid "edu.umd.cs.findbugs.annotations.SuppressFBWarnings"
+msgstr ""
+
+#: ../../annotations.rst:87
+msgid "Used to suppress SpotBugs warnings."
+msgstr ""
+
+#: ../../annotations.rst:90
+msgid "edu.umd.cs.findbugs.annotations.SuppressWarnings (Deprecated)"
+msgstr ""
+
+#: ../../annotations.rst:91
+msgid "Use `SuppressFBWarnings` instead."
+msgstr ""
+
+#: ../../annotations.rst:94
+msgid "edu.umd.cs.findbugs.annotations.UnknownNullness"
+msgstr ""
+
+#: ../../annotations.rst:95
+msgid ""
+"Used to indicate that the nullness of element is unknown, or may vary in "
+"unknown ways in subclasses."
+msgstr ""
+"Usado para indicar que a nulidade do elemento é desconhecida ou pode variar "
+"de maneiras desconhecidas nas subclasses."
+
+#: ../../annotations.rst:99
+msgid "edu.umd.cs.findbugs.annotations.CleanupObligation (Deprecated)"
+msgstr ""
+
+#: ../../annotations.rst:103
+msgid "edu.umd.cs.findbugs.annotations.CreatesObligation (Deprecated)"
+msgstr ""
+
+#: ../../annotations.rst:104
+msgid ""
+"Mark a constructor or method as creating a resource which requires "
+"cleanup. The marked method must be a member of a class marked with the "
+"CleanupObligation annotation."
+msgstr ""
+"Marca um construtor ou método como a criação de um recurso que requer limpeza. "
+"O método marcado deve ser um membro de uma classe marcada com a anotação CleanupObligation."
+
+#: ../../annotations.rst:108
+msgid "edu.umd.cs.findbugs.annotations.DischargesObligation (Deprecated)"
+msgstr ""
+
+#: ../../annotations.rst:109
+msgid ""
+"Mark a method as cleaning up a resource. The marked method must be a "
+"member of a class marked with the CleanupObligation annotation."
+msgstr ""
+"Marca um método como limpeza de um recurso. O método marcado deve ser "
+"um membro de uma classe marcada com a anotação CleanupObligation."

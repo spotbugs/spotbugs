@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.IF_ACMPNE;
@@ -70,7 +71,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @see IsNullValueFrameModelingVisitor
  */
 public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame> implements EdgeTypes,
-IsNullValueAnalysisFeatures {
+        IsNullValueAnalysisFeatures {
     static final boolean DEBUG = SystemProperties.getBoolean("inva.debug");
 
     static {
@@ -99,8 +100,7 @@ IsNullValueAnalysisFeatures {
 
     private JavaClassAndMethod classAndMethod;
 
-    private final @CheckForNull
-    PointerEqualityCheck pointerEqualityCheck;
+    private final @CheckForNull PointerEqualityCheck pointerEqualityCheck;
 
     public IsNullValueAnalysis(MethodDescriptor descriptor, MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow,
             TypeDataflow typeDataflow, DepthFirstSearch dfs, AssertionMethods assertionMethods) {
@@ -127,8 +127,7 @@ IsNullValueAnalysisFeatures {
         INIT, START, SAW1, SAW2, IFEQUAL, IFNOTEQUAL;
     }
 
-    public static @CheckForNull
-    PointerEqualityCheck getForPointerEqualityCheck(CFG cfg, ValueNumberDataflow vna) {
+    public static @CheckForNull PointerEqualityCheck getForPointerEqualityCheck(CFG cfg, ValueNumberDataflow vna) {
         PointerEqualityCheckState state = PointerEqualityCheckState.INIT;
         int target = Integer.MAX_VALUE;
         Location test = null;
@@ -141,21 +140,21 @@ IsNullValueAnalysisFeatures {
                 state = PointerEqualityCheckState.START;
                 break;
             case START:
-                if (ins instanceof org.apache.bcel.generic.ALOAD) {
+                if (ins instanceof ALOAD) {
                     state = PointerEqualityCheckState.SAW1;
                 } else {
                     return null;
                 }
                 break;
             case SAW1:
-                if (ins instanceof org.apache.bcel.generic.ALOAD) {
+                if (ins instanceof ALOAD) {
                     state = PointerEqualityCheckState.SAW2;
                 } else {
                     return null;
                 }
                 break;
             case SAW2:
-                if (ins instanceof org.apache.bcel.generic.IF_ACMPNE) {
+                if (ins instanceof IF_ACMPNE) {
                     state = PointerEqualityCheckState.IFEQUAL;
                     target = ((IF_ACMPNE) ins).getIndex() + loc.getHandle().getPosition();
                     test = loc;
@@ -187,8 +186,7 @@ IsNullValueAnalysisFeatures {
         return null;
     }
 
-    private @CheckForNull
-    ValueNumber getKnownNonnullDueToPointerDisequality(ValueNumber knownNull, int pc) {
+    private @CheckForNull ValueNumber getKnownNonnullDueToPointerDisequality(ValueNumber knownNull, int pc) {
         if (pointerEqualityCheck == null || pc < pointerEqualityCheck.firstValuePC) {
             return null;
         }
@@ -292,7 +290,7 @@ IsNullValueAnalysisFeatures {
 
     }
 
-    public void startTransfer()  {
+    public void startTransfer() {
         lastFrame = null;
         instanceOfFrame = null;
     }
@@ -357,8 +355,8 @@ IsNullValueAnalysisFeatures {
         Location location = new Location(handle, basicBlock);
         ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(location);
         if (!vnaFrameAfter.isValid()) {
-            assert false : "Invalid VNA after location " + location + " in " +  SignatureConverter.convertMethodSignature(methodGen);
-        return;
+            assert false : "Invalid VNA after location " + location + " in " + SignatureConverter.convertMethodSignature(methodGen);
+            return;
         }
         for (int i = start; i < fact.getNumSlots(); ++i) {
             ValueNumber value = vnaFrameAfter.getValue(i);
@@ -378,8 +376,8 @@ IsNullValueAnalysisFeatures {
         if (visitor.getSlotContainingNewNullValue() >= 0) {
             ValueNumber newNullValue = vnaFrameAfter.getValue(visitor.getSlotContainingNewNullValue());
             addLocationWhereValueBecomesNull(new LocationWhereValueBecomesNull(location, newNullValue// ,
-                    // handle
-                    ));
+            // handle
+            ));
         }
 
     }
@@ -404,19 +402,15 @@ IsNullValueAnalysisFeatures {
         if (fact.isValid()) {
             IsNullValueFrame tmpFact = null;
 
-            if (!NO_SPLIT_DOWNGRADE_NSP) {
+            if (!NO_SPLIT_DOWNGRADE_NSP && !edge.isExceptionEdge() && cfg.getNumNonExceptionSucessors(edge.getSource()) > 1) {
                 // Downgrade NSP to DNR on non-exception control splits
-                if (!edge.isExceptionEdge() && cfg.getNumNonExceptionSucessors(edge.getSource()) > 1) {
-                    tmpFact = modifyFrame(fact, null);
-                    tmpFact.downgradeOnControlSplit();
-                }
+                tmpFact = modifyFrame(fact, null);
+                tmpFact.downgradeOnControlSplit();
             }
 
-            if (!NO_SWITCH_DEFAULT_AS_EXCEPTION) {
-                if (edge.getType() == SWITCH_DEFAULT_EDGE) {
-                    tmpFact = modifyFrame(fact, tmpFact);
-                    tmpFact.toExceptionValues();
-                }
+            if (!NO_SWITCH_DEFAULT_AS_EXCEPTION && edge.getType() == SWITCH_DEFAULT_EDGE) {
+                tmpFact = modifyFrame(fact, tmpFact);
+                tmpFact.toExceptionValues();
             }
 
             final BasicBlock destBlock = edge.getTarget();
@@ -429,18 +423,16 @@ IsNullValueAnalysisFeatures {
 
                 // Downgrade NULL and NSP to DNR if the handler is for
                 // CloneNotSupportedException or InterruptedException
-                if (true) {
-                    CodeExceptionGen handler = destBlock.getExceptionGen();
-                    ObjectType catchType = handler.getCatchType();
-                    if (catchType != null) {
-                        String catchClass = catchType.getClassName();
-                        if ("java.lang.CloneNotSupportedException".equals(catchClass)
-                                || "java.lang.InterruptedException".equals(catchClass)) {
-                            for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
-                                IsNullValue value = tmpFact.getValue(i);
-                                if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
-                                    tmpFact.setValue(i, IsNullValue.nullOnComplexPathValue());
-                                }
+                CodeExceptionGen handler = destBlock.getExceptionGen();
+                ObjectType catchType = handler.getCatchType();
+                if (catchType != null) {
+                    String catchClass = catchType.getClassName();
+                    if ("java.lang.CloneNotSupportedException".equals(catchClass)
+                            || "java.lang.InterruptedException".equals(catchClass)) {
+                        for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
+                            IsNullValue value = tmpFact.getValue(i);
+                            if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
+                                tmpFact.setValue(i, IsNullValue.nullOnComplexPathValue());
                             }
                         }
                     }
@@ -515,7 +507,7 @@ IsNullValueAnalysisFeatures {
                         }
                     }
                 } // if (edgeType == IFCMP_EDGE || edgeType ==
-                // FALL_THROUGH_EDGE)
+                  // FALL_THROUGH_EDGE)
 
                 // If this is a fall-through edge from a null check,
                 // then we know the value checked is not null.
@@ -553,7 +545,7 @@ IsNullValueAnalysisFeatures {
                         tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, noKaboomNonNullValue);
                     }
                 } // if (sourceBlock.isNullCheck() && edgeType ==
-                // FALL_THROUGH_EDGE)
+                  // FALL_THROUGH_EDGE)
 
                 if (propagatePhiNodeInformation && targetVnaFrame.phiNodeForLoads) {
                     if (DEBUG) {
@@ -669,7 +661,7 @@ IsNullValueAnalysisFeatures {
             }
             short secondToLastOpcode = prev.getInstruction().getOpcode();
             // System.out.println("Second last opcode: " +
-            // Const.OPCODE_NAMES[secondToLastOpcode]);
+            // Const.Const.getOpcodeName(secondToLastOpcode));
             if (secondToLastOpcode != Const.INSTANCEOF) {
                 return null;
             }

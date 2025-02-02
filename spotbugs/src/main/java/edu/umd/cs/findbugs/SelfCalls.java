@@ -32,6 +32,8 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MONITORENTER;
 import org.apache.bcel.generic.MONITOREXIT;
 import org.apache.bcel.generic.MethodGen;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -42,7 +44,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * Build a call graph of the self calls in a class.
  */
 public class SelfCalls {
-    private static final boolean DEBUG = SystemProperties.getBoolean("selfcalls.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(SelfCalls.class);
 
     private final ClassContext classContext;
 
@@ -72,17 +74,13 @@ public class SelfCalls {
         JavaClass jclass = classContext.getJavaClass();
         Method[] methods = jclass.getMethods();
 
-        if (DEBUG) {
-            System.out.println("Class has " + methods.length + " methods");
-        }
+        LOG.debug("Class has {} methods", methods.length);
 
         // Add call graph nodes for all methods
         for (Method method : methods) {
             callGraph.addNode(method);
         }
-        if (DEBUG) {
-            System.out.println("Added " + callGraph.getNumVertices() + " nodes to graph");
-        }
+        LOG.debug("Added {} nodes to graph", callGraph.getNumVertices());
 
         // Scan methods for self calls
         for (Method method : methods) {
@@ -94,9 +92,7 @@ public class SelfCalls {
             scan(callGraph.getNodeForMethod(method));
         }
 
-        if (DEBUG) {
-            System.out.println("Found " + callGraph.getNumEdges() + " self calls");
-        }
+        LOG.debug("Found {} self calls", callGraph.getNumEdges());
     }
 
     /**
@@ -234,10 +230,7 @@ public class SelfCalls {
         // Hmm...no matching method found.
         // This is almost certainly because the named method
         // was inherited from a superclass.
-        if (DEBUG) {
-            System.out.println("No method found for " + calledClassName + "." + calledMethodName + " : " + calledMethodSignature);
-        }
+        LOG.debug("No method found for {}.{} : {}", calledClassName, calledMethodName, calledMethodSignature);
         return null;
     }
 }
-

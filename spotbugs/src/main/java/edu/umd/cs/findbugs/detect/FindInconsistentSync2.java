@@ -213,12 +213,10 @@ public class FindInconsistentSync2 implements Detector {
                 return true;
             }
         } catch (ClassNotFoundException e) {
+            // TODO https://github.com/spotbugs/spotbugs/issues/629
             assert true;
         }
-        if (classDescriptor.getClassName().endsWith("Servlet")) {
-            return true;
-        }
-        return false;
+        return classDescriptor.getClassName().endsWith("Servlet");
     }
 
     /**
@@ -290,7 +288,7 @@ public class FindInconsistentSync2 implements Detector {
                 return;
             }
 
-            if (!servletField && !isLocked && syncAccessList.size() == 0 && unsyncAccessList.size() > 6) {
+            if (!servletField && !isLocked && syncAccessList.isEmpty() && unsyncAccessList.size() > 6) {
                 interesting = false;
                 syncAccessList = null;
                 unsyncAccessList = null;
@@ -371,10 +369,7 @@ public class FindInconsistentSync2 implements Detector {
             lockedMethodSet.retainAll(findLockedMethods(classContext, selfCalls, obviouslyLockedSites));
             // publicReachableMethods = findPublicReachableMethods(classContext,
             // selfCalls);
-        } catch (CFGBuilderException e) {
-            bugReporter.logError("Error finding locked call sites", e);
-            return;
-        } catch (DataflowAnalysisException e) {
+        } catch (CFGBuilderException | DataflowAnalysisException e) {
             bugReporter.logError("Error finding locked call sites", e);
             return;
         }
@@ -411,9 +406,7 @@ public class FindInconsistentSync2 implements Detector {
 
             try {
                 analyzeMethod(classContext, method, lockedMethodSet);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Error analyzing method", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("Error analyzing method", e);
             }
         }
@@ -433,7 +426,7 @@ public class FindInconsistentSync2 implements Detector {
 
     @Override
     public void report() {
-        if(statMap.isEmpty()){
+        if (statMap.isEmpty()) {
             return;
         }
         JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
@@ -449,7 +442,7 @@ public class FindInconsistentSync2 implements Detector {
             }
             ElementValue guardedByValue = jcipAnotationDatabase.getFieldAnnotation(xfield, "GuardedBy");
             boolean guardedByThis;
-            if(guardedByValue != null){
+            if (guardedByValue != null) {
                 guardedByThis = "this".equals(guardedByValue.stringifyValue());
             } else {
                 guardedByThis = false;
@@ -625,7 +618,7 @@ public class FindInconsistentSync2 implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method, Set<Method> lockedMethodSet) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
 
         InnerClassAccessMap icam = AnalysisContext.currentAnalysisContext().getInnerClassAccessMap();
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -804,7 +797,7 @@ public class FindInconsistentSync2 implements Detector {
     }
 
     /**
-     * Determine whether or not the the given method is a getter method. I.e.,
+     * Determine whether or not the given method is a getter method. I.e.,
      * if it just returns the value of an instance field.
      *
      * @param classContext
@@ -824,9 +817,7 @@ public class FindInconsistentSync2 implements Detector {
         }
 
         int count = 0;
-        Iterator<InstructionHandle> it = il.iterator();
-        while (it.hasNext()) {
-            InstructionHandle ih = it.next();
+        for (InstructionHandle ih : il) {
             switch (ih.getInstruction().getOpcode()) {
             case Const.GETFIELD:
                 count++;
@@ -883,8 +874,7 @@ public class FindInconsistentSync2 implements Detector {
      * assume that nonpublic methods will only be called from within the class,
      * which is not really a valid assumption.
      */
-    private static Set<Method> findNotUnlockedMethods(ClassContext classContext, SelfCalls selfCalls, Set<CallSite> obviouslyLockedSites)
-    {
+    private static Set<Method> findNotUnlockedMethods(ClassContext classContext, SelfCalls selfCalls, Set<CallSite> obviouslyLockedSites) {
 
         JavaClass javaClass = classContext.getJavaClass();
         Method[] methodList = javaClass.getMethods();
@@ -893,8 +883,7 @@ public class FindInconsistentSync2 implements Detector {
 
         // Initially, assume no methods are called from an
         // unlocked context
-        Set<Method> lockedMethodSet = new HashSet<>();
-        lockedMethodSet.addAll(Arrays.asList(methodList));
+        Set<Method> lockedMethodSet = new HashSet<>(Arrays.asList(methodList));
 
         // Assume all public methods are called from
         // unlocked context
@@ -950,8 +939,7 @@ public class FindInconsistentSync2 implements Detector {
      * assume that nonpublic methods will only be called from within the class,
      * which is not really a valid assumption.
      */
-    private static Set<Method> findLockedMethods(ClassContext classContext, SelfCalls selfCalls, Set<CallSite> obviouslyLockedSites)
-    {
+    private static Set<Method> findLockedMethods(ClassContext classContext, SelfCalls selfCalls, Set<CallSite> obviouslyLockedSites) {
 
         JavaClass javaClass = classContext.getJavaClass();
         Method[] methodList = javaClass.getMethods();
@@ -1103,4 +1091,3 @@ public class FindInconsistentSync2 implements Detector {
         return obviouslyLockedSites;
     }
 }
-

@@ -72,4 +72,3 @@ public class StreamEscape implements Comparable<StreamEscape> {
         return source + " to " + target;
     }
 }
-

@@ -78,4 +78,3 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
         return null;
     }
 }
-

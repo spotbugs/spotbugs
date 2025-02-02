@@ -59,7 +59,6 @@ import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Java main application to filter/transform an XML bug collection or bug
@@ -248,7 +247,8 @@ public class Filter {
             addSwitchWithOptionalExtraPart("-shouldFix", "truth", "Only issues with a consensus view that they should be fixed");
 
             addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
-            addOption("-calls", "pattern", "allow only bugs that involve a call to a method that matches this pattern (matches with method class or name)");
+            addOption("-calls", "pattern",
+                    "allow only bugs that involve a call to a method that matches this pattern (matches with method class or name)");
 
             addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
             addOption("-category", "category", "allow only warnings with a category that starts with this string");
@@ -276,8 +276,8 @@ public class Filter {
             versions.put(v.getReleaseName(), v);
             timeStamps.put(v.getTimestamp(), v);
 
-            return getVersionNum(versions,  timeStamps,  val,
-                    roundToLaterVersion,  v.getSequenceNumber());
+            return getVersionNum(versions, timeStamps, val,
+                    roundToLaterVersion, v.getSequenceNumber());
         }
 
         public static long getVersionNum(Map<String, AppVersion> versions, SortedMap<Long, AppVersion> timeStamps, String val,
@@ -322,7 +322,7 @@ public class Filter {
         // 31.. = Long.MAX
         // if roundToLater == false, ..-1 = Long.MIN, 0..9 = 0, 10..19 = 1,
         // 20..29 = 2, 30..39 = 3, 40 .. = 4
-        static private long getAppropriateSeq(SortedMap<Long, AppVersion> timeStamps, long when, boolean roundToLaterVersion) {
+        private static long getAppropriateSeq(SortedMap<Long, AppVersion> timeStamps, long when, boolean roundToLaterVersion) {
             if (roundToLaterVersion) {
                 SortedMap<Long, AppVersion> geq = timeStamps.tailMap(when);
                 if (geq.isEmpty()) {
@@ -357,8 +357,7 @@ public class Filter {
             }
 
             long fixed = getVersionNum(collection, fixedAsString, true);
-            if (fixed >= 0)
-            {
+            if (fixed >= 0) {
                 last = fixed - 1; // fixed means last on previous sequence (ok
                 // if -1)
             }
@@ -458,7 +457,7 @@ public class Filter {
                 if (m == null) {
                     return false;
                 }
-                if (!callsPattern.matcher(m.getClassName()).find()  && !callsPattern.matcher(m.getMethodName()).find()) {
+                if (!callsPattern.matcher(m.getClassName()).find() && !callsPattern.matcher(m.getMethodName()).find()) {
                     return false;
                 }
             }
@@ -472,25 +471,19 @@ public class Filter {
                 return false;
             }
 
-            if (hashChangedSpecified) {
-                if (bug.isInstanceHashConsistent() == hashChanged) {
-                    return false;
-                }
+            if (hashChangedSpecified && bug.isInstanceHashConsistent() == hashChanged) {
+                return false;
             }
             if (applySuppressionSpecified && applySuppression && suppressionFilter.match(bug)) {
                 return false;
             }
             SourceLineAnnotation primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
 
-            if (knownSourceSpecified) {
-                if (primarySourceLineAnnotation.isUnknown() == knownSource) {
-                    return false;
-                }
+            if (knownSourceSpecified && primarySourceLineAnnotation.isUnknown() == knownSource) {
+                return false;
             }
-            if (withSourceSpecified) {
-                if (sourceSearcher.findSource(primarySourceLineAnnotation) != withSource) {
-                    return false;
-                }
+            if (withSourceSpecified && sourceSearcher.findSource(primarySourceLineAnnotation) != withSource) {
+                return false;
             }
 
             if (sloppyUniqueSpecified) {
@@ -520,16 +513,13 @@ public class Filter {
             if (now < bug.getFirstVersion()) {
                 return false;
             }
-            if (bug.isDead() && bug.getLastVersion() < now) {
-                return false;
-            }
-            return true;
+            return !bug.isDead() || bug.getLastVersion() >= now;
         }
 
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             option = option.substring(1);
-            if (optionExtraPart.length() == 0) {
+            if (optionExtraPart.isEmpty()) {
                 setField(option, true);
             } else {
                 setField(option, Boolean.parseBoolean(optionExtraPart));
@@ -608,9 +598,7 @@ public class Filter {
                 }
             } else if ("-hashes".equals(option)) {
                 hashesFromFile = new HashSet<>();
-                BufferedReader in = null;
-                try {
-                    in = new BufferedReader(UTF8.fileReader(argument));
+                try (BufferedReader in = new BufferedReader(UTF8.fileReader(argument))) {
                     while (true) {
                         String h = in.readLine();
                         if (h == null) {
@@ -620,8 +608,6 @@ public class Filter {
                     }
                 } catch (IOException e) {
                     throw new RuntimeException("Error reading hashes from " + argument, e);
-                } finally {
-                    Util.closeSilently(in);
                 }
             } else {
                 throw new IllegalArgumentException("can't handle command line argument of " + option);

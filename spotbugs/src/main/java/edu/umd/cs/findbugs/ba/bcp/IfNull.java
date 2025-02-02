@@ -58,4 +58,3 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
         return edge.getType() == (isIfNull ? IFCMP_EDGE : FALL_THROUGH_EDGE);
     }
 }
-

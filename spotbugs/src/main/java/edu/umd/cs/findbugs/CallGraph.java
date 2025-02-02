@@ -55,4 +55,3 @@ public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
         return new CallGraphEdge(source, target);
     }
 }
-

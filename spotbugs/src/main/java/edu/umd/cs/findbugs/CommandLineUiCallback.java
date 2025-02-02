@@ -42,6 +42,7 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     public CommandLineUiCallback() {
     }
+
     BufferedReader br = UserTextFile.bufferedReader(System.in);
 
     @Override
@@ -76,7 +77,7 @@ public class CommandLineUiCallback implements IGuiCallback {
     }
 
     private int parseAnswer(String answer) {
-        if (null == answer || answer.length() == 0) {
+        if (null == answer || answer.isEmpty()) {
             System.out.println("You entered an empty string");
 
             return -1;
@@ -92,7 +93,7 @@ public class CommandLineUiCallback implements IGuiCallback {
         case 'c':
             return JOptionPane.CANCEL_OPTION;
         default:
-            System.out.println("You entered '" + option +"'");
+            System.out.println("You entered '" + option + "'");
             return -1;
         }
     }

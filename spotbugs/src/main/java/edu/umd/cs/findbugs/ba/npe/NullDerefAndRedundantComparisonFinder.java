@@ -272,11 +272,8 @@ public class NullDerefAndRedundantComparisonFinder {
             if (DEBUG_DEREFS) {
                 System.out.println("OOO " + lwvbn);
             }
-            Set<Location> locationSet = nullValueAssignmentMap.get(lwvbn.getValueNumber());
-            if (locationSet == null) {
-                locationSet = new HashSet<>(4);
-                nullValueAssignmentMap.put(lwvbn.getValueNumber(), locationSet);
-            }
+            Set<Location> locationSet = nullValueAssignmentMap.computeIfAbsent(lwvbn.getValueNumber(),
+                    k -> new HashSet<>(4));
             locationSet.add(lwvbn.getLocation());
             if (DEBUG_DEREFS) {
                 System.out.println(lwvbn.getValueNumber() + " becomes null at " + lwvbn.getLocation());
@@ -308,7 +305,7 @@ public class NullDerefAndRedundantComparisonFinder {
                 //                    assert false : "No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet()
                 //                            + " while analyzing " + classContext.getJavaClass().getClassName() + "." + method.getName();
                 //                }
-                assignedNullLocationSet = Collections.<Location> emptySet();
+                assignedNullLocationSet = Collections.<Location>emptySet();
             }
             SortedSet<Location> knownNullAndDoomedAt = bugLocationMap.get(valueNumber);
 
@@ -497,7 +494,7 @@ public class NullDerefAndRedundantComparisonFinder {
         }
 
         // Make sure the frames contain meaningful information
-        if (!vnaFrame.isValid() || !invFrame.isValid()  || vnaFrame.getNumLocals() != invFrame.getNumLocals()
+        if (!vnaFrame.isValid() || !invFrame.isValid() || vnaFrame.getNumLocals() != invFrame.getNumLocals()
                 || derefSet.isEmpty()) {
             return;
         }
@@ -508,7 +505,7 @@ public class NullDerefAndRedundantComparisonFinder {
         } else {
             slots = vnaFrame.getNumLocals();
             /*
-        if (false) {
+            if (false) {
             InstructionHandle handle = thisLocation.getHandle();
             if (handle != null && handle.getInstruction() instanceof NullnessConversationInstruction) {
                 try {
@@ -533,7 +530,7 @@ public class NullDerefAndRedundantComparisonFinder {
                     AnalysisContext.logError("huh", e);
                 }
             }
-        }
+            }
              */
         }
 
@@ -625,12 +622,8 @@ public class NullDerefAndRedundantComparisonFinder {
         thisNullValueDeref.add(isNullValue, unconditionalDerefLocationSet);
 
         if (thisLocation != null) {
-            SortedSet<Location> locationsForThisBug = bugLocations.get(valueNumber);
+            SortedSet<Location> locationsForThisBug = bugLocations.computeIfAbsent(valueNumber, k -> new TreeSet<>());
 
-            if (locationsForThisBug == null) {
-                locationsForThisBug = new TreeSet<>();
-                bugLocations.put(valueNumber, locationsForThisBug);
-            }
             locationsForThisBug.add(thisLocation);
         }
     }
@@ -662,11 +655,11 @@ public class NullDerefAndRedundantComparisonFinder {
             if (lineMentionedMultipleTimes.get(lineNumber) && confused) {
                 reportIt = false;
             } else if (redundantBranch.location.getBasicBlock().isInJSRSubroutine() /*
-             * occurs
-             * in
-             * a
-             * JSR
-             */
+                                                                                    * occurs
+                                                                                    * in
+                                                                                    * a
+                                                                                    * JSR
+                                                                                    */
                     && confused) {
                 reportIt = false;
             } else {
@@ -811,7 +804,7 @@ public class NullDerefAndRedundantComparisonFinder {
     }
 
     private void analyzeNullCheck(IsNullValueDataflow invDataflow, BasicBlock basicBlock) throws DataflowAnalysisException,
-    CFGBuilderException {
+            CFGBuilderException {
         // Look for null checks where the value checked is definitely
         // null or null on some path.
 
@@ -829,8 +822,7 @@ public class NullDerefAndRedundantComparisonFinder {
         if (DEBUG) {
             System.out.println("For basic block " + basicBlock + " value is " + refValue);
         }
-        if (refValue.isDefinitelyNotNull())
-        {
+        if (refValue.isDefinitelyNotNull()) {
             return;
             //        if (false && !refValue.mightBeNull())
             //            return;

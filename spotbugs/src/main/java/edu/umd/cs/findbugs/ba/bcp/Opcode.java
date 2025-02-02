@@ -72,4 +72,3 @@ public class Opcode extends PatternElement {
         return 1;
     }
 }
-

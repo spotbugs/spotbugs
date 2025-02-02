@@ -70,7 +70,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 
     }
 
-    private boolean isStaticOnlyClass(XClass xClass)  {
+    private boolean isStaticOnlyClass(XClass xClass) {
 
         if (xClass.getInterfaceDescriptorList().length > 0) {
             return false;
@@ -104,11 +104,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
             }
         }
 
-        if (staticCount == 0) {
-            return false;
-        }
-        return true;
-
+        return staticCount != 0;
     }
 
 }

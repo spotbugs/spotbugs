@@ -71,7 +71,6 @@ import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author Andrei Loskutov
@@ -250,7 +249,7 @@ public class DetectorConfigurationTab extends Composite {
                 return factory.getSpeed();
             case PLUGIN:
                 String provider = factory.getPlugin().getProvider();
-                if(provider == null) {
+                if (provider == null) {
                     provider = "<unknown>";
                 }
                 if (provider.endsWith(" project")) {
@@ -368,7 +367,7 @@ public class DetectorConfigurationTab extends Composite {
         GridData layoutData2 = new GridData(GridData.FILL_BOTH);
         text.setLayoutData(layoutData2);
         text.setBackground(getShell().getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-        sash.setWeights(new int[] { 3, 1 });
+        sash.setWeights(3, 1);
 
         availableRulesTable.addSelectionListener(new SelectionListener() {
             @Override
@@ -415,13 +414,13 @@ public class DetectorConfigurationTab extends Composite {
         StringBuilder sb = new StringBuilder();
         sb.append("\n\nPlugin: ").append(plugin.getPluginId());
         String version = plugin.getVersion();
-        if (version.length() > 0) {
+        if (!version.isEmpty()) {
             sb.append("\nVersion: ").append(version);
         }
 
         sb.append("\nProvider: ").append(plugin.getProvider());
         String website = plugin.getWebsite();
-        if (website != null && website.length() > 0) {
+        if (website != null && !website.isEmpty()) {
             sb.append(" (").append(website).append(")");
         }
         return sb.toString();

@@ -52,4 +52,3 @@ public interface GraphToolkit<GraphType extends Graph<EdgeType, VertexType>, Edg
     public void copyEdge(EdgeType source, EdgeType dest);
 
 }
-

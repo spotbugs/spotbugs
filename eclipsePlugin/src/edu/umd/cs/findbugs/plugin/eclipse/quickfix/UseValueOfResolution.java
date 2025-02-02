@@ -181,7 +181,7 @@ public class UseValueOfResolution extends BugResolution {
         public String getLabelReplacement() {
             // returns what is in the constructor arguments
             if (primitiveTypeCreation == null || primitiveTypeCreation.arguments().isEmpty()) {
-                return "...";   //safe return value
+                return "..."; //safe return value
             }
             // can safely use toString() here because it's user facing, not being used as actual code
             return primitiveTypeCreation.arguments().get(0).toString();

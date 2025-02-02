@@ -33,12 +33,15 @@ import org.apache.bcel.generic.InvokeInstruction;
  * A simple class to parse method signatures.
  *
  * @author David Hovemeyer
+ *
+ * @deprecated This signature parser does not support generics, use GenericSignatureParser instead.
  */
+@Deprecated
 public class SignatureParser {
     private int totalArgumentSize;
 
     public int getTotalArgumentSize() {
-        if ( parameterOffset == null) {
+        if (parameterOffset == null) {
             getParameterOffset();
         }
         return totalArgumentSize;
@@ -46,8 +49,9 @@ public class SignatureParser {
 
     private @CheckForNull int parameterOffset[];
 
-    @Nonnull int[] getParameterOffset() {
-        if ( parameterOffset != null ) {
+    @Nonnull
+    int[] getParameterOffset() {
+        if (parameterOffset != null) {
             return parameterOffset;
         }
         ArrayList<Integer> offsets = new ArrayList<>();
@@ -76,8 +80,7 @@ public class SignatureParser {
 
     public int getSlotsFromTopOfStackForParameter(int paramNum) {
         int offset = getParameterOffset()[paramNum];
-        int result = totalArgumentSize - offset;
-        return result;
+        return totalArgumentSize - offset;
     }
 
     private class ParameterSignatureIterator implements Iterator<String> {
@@ -168,8 +171,9 @@ public class SignatureParser {
         for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
             result.add(i.next());
         }
-        return result.toArray(new String[result.size()]);
+        return result.toArray(new String[0]);
     }
+
     /**
      * Get an Iterator over signatures of the method parameters.
      *
@@ -180,7 +184,7 @@ public class SignatureParser {
     }
 
     public Iterable<String> parameterSignatures() {
-        return () -> new ParameterSignatureIterator();
+        return ParameterSignatureIterator::new;
 
     }
 
@@ -280,4 +284,3 @@ public class SignatureParser {
         System.out.println(parser.getNumParameters() + " parameter(s)");
     }
 }
-

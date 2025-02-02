@@ -88,7 +88,7 @@ public class LoadXmlAction extends FindBugsAction {
         FileDialog fileDialog = new FileDialog(FindbugsPlugin.getShell(), SWT.APPLICATION_MODAL | SWT.OPEN);
         fileDialog.setText("Select bug result xml for project: " + project.getName());
         String initialFileName = getDialogSettings().get(LOAD_XML_PATH_KEY);
-        if (initialFileName != null && initialFileName.length() > 0) {
+        if (initialFileName != null && !initialFileName.isEmpty()) {
             File initialFile = new File(initialFileName);
             // have to check if exists, otherwise crazy GTK will ignore preset
             // filter

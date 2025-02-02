@@ -41,8 +41,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 
     private final ClassDescriptor classDescriptor;
 
-    private final @CheckForNull
-    XClass xclass;
+    private final @CheckForNull XClass xclass;
 
     private int flags;
 
@@ -120,8 +119,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
     /**
      * @return Returns the xClass.
      */
-    public @Nullable
-    XClass getXClass() {
+    public @Nullable XClass getXClass() {
         return xclass;
     }
 

@@ -92,19 +92,17 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
             throws DataflowAnalysisException {
         result.copyFrom(start);
 
-        if (start.isValid()) {
-            if (basicBlock.isExceptionHandler()) {
-                CodeExceptionGen exceptionGen = basicBlock.getExceptionGen();
-                ObjectType catchType = exceptionGen.getCatchType();
-                if (catchType == null) {
-                    // Probably a finally block, or a synchronized block
-                    // exception-compensation catch block.
-                    result.pushFinally();
-                } else {
-                    // Catch type was explicitly specified:
-                    // this is probably a programmer-written catch block
-                    result.pushCatch();
-                }
+        if (start.isValid() && basicBlock.isExceptionHandler()) {
+            CodeExceptionGen exceptionGen = basicBlock.getExceptionGen();
+            ObjectType catchType = exceptionGen.getCatchType();
+            if (catchType == null) {
+                // Probably a finally block, or a synchronized block
+                // exception-compensation catch block.
+                result.pushFinally();
+            } else {
+                // Catch type was explicitly specified:
+                // this is probably a programmer-written catch block
+                result.pushCatch();
             }
         }
     }
@@ -139,4 +137,3 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
     // driver.execute(argv[0]);
     // }
 }
-

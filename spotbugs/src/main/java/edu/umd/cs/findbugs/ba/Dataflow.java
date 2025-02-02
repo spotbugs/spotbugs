@@ -185,6 +185,8 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
             }
 
             if (numIterations >= MAX_ITERS + 9) {
+                DEBUG = debugWas;
+
                 throw new DataflowAnalysisException("Too many iterations (" + numIterations + ") in dataflow when analyzing "
                         + getFullyQualifiedMethodName());
             }
@@ -380,9 +382,9 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
                 if (DEBUG && SystemProperties.getBoolean("dataflow.blockdebug")) {
                     debug(block, "Dumping flow values for block:\n");
-                    Iterator<org.apache.bcel.generic.InstructionHandle> ii = block.instructionIterator();
+                    Iterator<InstructionHandle> ii = block.instructionIterator();
                     while (ii.hasNext()) {
-                        org.apache.bcel.generic.InstructionHandle handle = ii.next();
+                        InstructionHandle handle = ii.next();
                         Fact tmpResult = analysis.createFact();
                         analysis.transfer(block, handle, start, tmpResult);
                         System.out.println("\t" + handle + " " + analysis.factToString(tmpResult));
@@ -433,7 +435,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
             MethodGen mg = cfg.getMethodGen();
             System.out.println(mg.getClassName() + "." + mg.getName() + mg.getSignature());
             new RuntimeException("Quiescence achieved----------------------------------------------------------------")
-            .printStackTrace(System.out);
+                    .printStackTrace(System.out);
 
         }
         DEBUG = debugWas;

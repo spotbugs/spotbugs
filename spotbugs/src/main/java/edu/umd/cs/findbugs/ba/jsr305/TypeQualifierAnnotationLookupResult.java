@@ -92,8 +92,7 @@ public class TypeQualifierAnnotationLookupResult {
      * @return the effective TypeQualifierAnnotation, or null if no effective
      *         TypeQualifierAnnotation can be found
      */
-    public @CheckForNull
-    TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation() {
+    public @CheckForNull TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation() {
         boolean firstPartialResult = true;
         TypeQualifierAnnotation effective = null;
 

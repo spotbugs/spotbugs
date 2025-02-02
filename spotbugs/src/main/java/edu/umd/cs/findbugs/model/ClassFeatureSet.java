@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
@@ -165,15 +166,7 @@ public class ClassFeatureSet implements XMLWriteable {
 
         String name = member.getName();
 
-        if (name.startsWith("class$")) {
-            return true;
-        }
-
-        if (name.startsWith("access$")) {
-            return true;
-        }
-
-        return false;
+        return name.startsWith("class$") || name.startsWith("access$");
     }
 
     /**
@@ -295,9 +288,9 @@ public class ClassFeatureSet implements XMLWriteable {
         }
 
         if (signature.startsWith("L")) {
-            signature = signature.substring(1, signature.length() - 1).replace('/', '.');
+            signature = ClassName.fromFieldSignatureToDottedClassName(signature);
             signature = transformClassName(signature);
-            signature = "L" + signature.replace('.', '/') + ";";
+            signature = "L" + ClassName.toSlashedClassName(signature) + ";";
         }
         buf.append(signature);
 

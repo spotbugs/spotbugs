@@ -76,6 +76,7 @@ public class Util {
 
         return getSizeOfSurroundingTryBlock(method, ClassName.toSlashedClassName(exceptionClass), pc);
     }
+
     public static int getSizeOfSurroundingTryBlock(@CheckForNull Method method, @CheckForNull String vmNameOfExceptionClass, int pc) {
         if (method == null) {
             return Integer.MAX_VALUE;
@@ -83,8 +84,8 @@ public class Util {
         return getSizeOfSurroundingTryBlock(method.getConstantPool(), method.getCode(), vmNameOfExceptionClass, pc);
     }
 
-    public static @CheckForNull
-    CodeException getSurroundingTryBlock(ConstantPool constantPool, Code code, @CheckForNull String vmNameOfExceptionClass, int pc) {
+    public static @CheckForNull CodeException getSurroundingTryBlock(ConstantPool constantPool, Code code,
+            @CheckForNull String vmNameOfExceptionClass, int pc) {
         int size = Integer.MAX_VALUE;
         if (code.getExceptionTable() == null) {
             return null;
@@ -93,7 +94,7 @@ public class Util {
         for (CodeException catchBlock : code.getExceptionTable()) {
             if (vmNameOfExceptionClass != null) {
                 Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
-                if (catchType == null && !vmNameOfExceptionClass.isEmpty() ||  catchType instanceof ConstantClass
+                if (catchType == null && !vmNameOfExceptionClass.isEmpty() || catchType instanceof ConstantClass
                         && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass)) {
                     continue;
                 }
@@ -121,10 +122,14 @@ public class Util {
         }
         for (CodeException catchBlock : code.getExceptionTable()) {
             if (vmNameOfExceptionClass != null) {
-                Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
-                if (catchType == null && !vmNameOfExceptionClass.isEmpty() ||  catchType instanceof ConstantClass
-                        && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass)) {
+                if (catchBlock.getCatchType() == 0) {
                     continue;
+                } else {
+                    Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
+                    if (catchType == null && !vmNameOfExceptionClass.isEmpty() || catchType instanceof ConstantClass
+                            && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass)) {
+                        continue;
+                    }
                 }
             }
             int startPC = catchBlock.getStartPC();

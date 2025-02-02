@@ -13,6 +13,10 @@ classesEclipse
 deps/
 eclipse/
 bin/
+.vscode/
+
+# to sign eclipse plugin
+spotbugs.jks
 
 # generated manifest files
 spotbugs/META-INF/MANIFEST.MF
@@ -45,6 +49,10 @@ spotbugs/src/doc/bugDescriptions.html
 spotbugs/src/doc/bugDescriptions_fr.html
 spotbugs/src/doc/bugDescriptions_ja.html
 spotbugs/web/
-spotbugsTestCases/build/
 spotbugsTestCases/history/
 *.log
+spotbugs-tests/src/test/resources/
+
+# This folder contains compiled class files used as samples for unit tests
+!spotbugsTestCases/src/classSamples/**
+.pydevproject

@@ -44,12 +44,12 @@ import org.dom4j.io.SAXReader;
 public abstract class XPathFind {
     private final Document document;
 
-    public XPathFind(Document document) {
+    protected XPathFind(Document document) {
         this.document = document;
     }
 
     public void find(String xpath) {
-        List<Node> nodes =  XMLUtil.selectNodes(document, xpath);
+        List<Node> nodes = XMLUtil.selectNodes(document, xpath);
         for (Node node : nodes) {
             match(node);
         }
@@ -66,7 +66,7 @@ public abstract class XPathFind {
         String fileName = argv[0];
         String xpath = argv[1];
 
-        SAXReader reader = new SAXReader();
+        SAXReader reader = XMLUtil.buildSAXReader();
         Document document = reader.read(fileName);
 
         XPathFind finder = new XPathFind(document) {
@@ -92,4 +92,3 @@ public abstract class XPathFind {
         finder.find(xpath);
     }
 }
-

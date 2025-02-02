@@ -416,7 +416,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
     @Override
     public LockResourceTracker getResourceTracker(ClassContext classContext, Method method) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
         return new LockResourceTracker(bugReporter, classContext.getCFG(method), classContext.getValueNumberDataflow(method),
                 classContext.getIsNullValueDataflow(method));
     }
@@ -448,8 +448,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             Location location = resource.getLocation();
             InstructionHandle handle = location.getHandle();
             InstructionHandle nextInstruction = handle.getNext();
-            if (nextInstruction.getInstruction() instanceof RETURN)
-            {
+            if (nextInstruction.getInstruction() instanceof RETURN) {
                 return; // don't report as error; intentional
             }
             bugAccumulator.accumulateBug(new BugInstance(this, bugType, priority).addClassAndMethod(methodGen, sourceFile),
@@ -502,4 +501,3 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
     // driver.execute(classFile, methodName, offset);
     // }
 }
-

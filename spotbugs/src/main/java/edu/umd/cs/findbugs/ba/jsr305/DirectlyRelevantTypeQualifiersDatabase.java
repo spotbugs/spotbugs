@@ -60,7 +60,7 @@ public class DirectlyRelevantTypeQualifiersDatabase {
         if (result != null) {
             return result;
         }
-        return Collections.<TypeQualifierValue<?>> emptyList();
+        return Collections.<TypeQualifierValue<?>>emptyList();
     }
 
     /**
@@ -69,7 +69,7 @@ public class DirectlyRelevantTypeQualifiersDatabase {
      * @return set of all known type qualifiers
      */
     public Set<TypeQualifierValue<?>> getAllKnownQualifiers() {
-        return Collections.<TypeQualifierValue<?>> unmodifiableSet(allKnownQualifiers);
+        return Collections.<TypeQualifierValue<?>>unmodifiableSet(allKnownQualifiers);
     }
 
     /**

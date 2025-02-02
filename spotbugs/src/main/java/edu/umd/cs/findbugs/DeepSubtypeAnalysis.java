@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs;
 import java.util.List;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ArrayType;
@@ -15,19 +16,20 @@ import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.Values;
 
 public class DeepSubtypeAnalysis {
-    static private JavaClass serializable;
+    private static JavaClass serializable;
 
-    static private JavaClass collection;
+    private static JavaClass collection;
 
-    static private JavaClass comparator;
+    private static JavaClass comparator;
 
-    static private JavaClass map;
+    private static JavaClass map;
 
-    static private JavaClass remote;
+    private static JavaClass remote;
 
-    static private ClassNotFoundException storedException;
+    private static ClassNotFoundException storedException;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("dsa.debug");
 
@@ -60,12 +62,12 @@ public class DeepSubtypeAnalysis {
                 return 1.0;
             }
         }
-        double result =  isDeepSerializable(type.getSignature());
+        double result = isDeepSerializable(type.getSignature());
         if (type instanceof GenericObjectType && Subtypes2.isContainer(type)) {
             GenericObjectType gt = (GenericObjectType) type;
             List<? extends ReferenceType> parameters = gt.getParameters();
             if (parameters != null) {
-                for(ReferenceType t : parameters) {
+                for (ReferenceType t : parameters) {
                     double r = isDeepSerializable(t);
                     if (result > r) {
                         result = r;
@@ -76,6 +78,7 @@ public class DeepSubtypeAnalysis {
 
         return result;
     }
+
     public static ReferenceType getLeastSerializableTypeComponent(ReferenceType type)
             throws ClassNotFoundException {
         if (type instanceof ArrayType) {
@@ -89,12 +92,12 @@ public class DeepSubtypeAnalysis {
         }
 
         ReferenceType result = type;
-        double value =  isDeepSerializable(type.getSignature());
+        double value = isDeepSerializable(type.getSignature());
         if (type instanceof GenericObjectType && Subtypes2.isContainer(type)) {
             GenericObjectType gt = (GenericObjectType) type;
             List<? extends ReferenceType> parameters = gt.getParameters();
             if (parameters != null) {
-                for(ReferenceType t : parameters) {
+                for (ReferenceType t : parameters) {
                     double r = isDeepSerializable(t);
                     if (value > r) {
                         value = r;
@@ -120,7 +123,7 @@ public class DeepSubtypeAnalysis {
         }
 
         String refName = getComponentClass(refSig);
-        if ("java.lang.Object".equals(refName)) {
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(refName)) {
             return 0.99;
         }
 
@@ -138,7 +141,7 @@ public class DeepSubtypeAnalysis {
         }
 
         String refName = getComponentClass(refSig);
-        if ("java.lang.Object".equals(refName)) {
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(refName)) {
             return 0.99;
         }
 
@@ -177,7 +180,7 @@ public class DeepSubtypeAnalysis {
 
         // TODO: This method now returns primitive type signatures, is this ok?
         if (refSig.charAt(0) == 'L') {
-            return refSig.substring(1, refSig.length() - 1).replace('/', '.');
+            return ClassName.fromFieldSignatureToDottedClassName(refSig);
         }
         return refSig;
     }
@@ -187,7 +190,7 @@ public class DeepSubtypeAnalysis {
             throw storedException;
         }
 
-        if ("java.lang.Object".equals(x.getClassName())) {
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(x.getClassName())) {
             return 0.4;
         }
 

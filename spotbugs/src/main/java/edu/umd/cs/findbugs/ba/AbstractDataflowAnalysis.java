@@ -118,8 +118,9 @@ public abstract class AbstractDataflowAnalysis<Fact> extends BasicAbstractDatafl
         copy(start, result);
 
         if (isFactValid(result)) {
-            Iterator<InstructionHandle> i = isForwards() ? basicBlock.instructionIterator() : basicBlock
-                    .instructionReverseIterator();
+            Iterator<InstructionHandle> i = isForwards() ? basicBlock.instructionIterator()
+                    : basicBlock
+                            .instructionReverseIterator();
 
             while (i.hasNext()) {
                 InstructionHandle handle = i.next();
@@ -142,4 +143,3 @@ public abstract class AbstractDataflowAnalysis<Fact> extends BasicAbstractDatafl
     }
 
 }
-

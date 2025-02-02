@@ -31,20 +31,20 @@ public class NotMatcher extends CompoundMatcher {
 
     @Override
     public boolean match(BugInstance bugInstance) {
-        if(!childIterator().hasNext() ) {
+        if (!childIterator().hasNext()) {
             return false;
         }
 
         Matcher invertedMatcher = childIterator().next();
-        return ! invertedMatcher.match(bugInstance);
+        return !invertedMatcher.match(bugInstance);
     }
 
     @Override
-    public void writeXML(XMLOutput xmlOutput, boolean disabled)  throws IOException {
-        if(childIterator().hasNext()) {
+    public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+        if (childIterator().hasNext()) {
             xmlOutput.startTag("Not");
             if (disabled) {
-                xmlOutput.addAttribute("disabled","true");
+                xmlOutput.addAttribute("disabled", "true");
             }
             Matcher invertedMatcher = childIterator().next();
             xmlOutput.stopTag(false);
@@ -59,7 +59,7 @@ public class NotMatcher extends CompoundMatcher {
     public String toString() {
         Matcher invertedMatcher = childIterator().hasNext() ? childIterator().next() : null;
         String invertedMatcherString = invertedMatcher == null ? "" : invertedMatcher.toString();
-        return "Not(" + invertedMatcherString +")";
+        return "Not(" + invertedMatcherString + ")";
     }
 
     @Override

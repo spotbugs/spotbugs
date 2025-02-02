@@ -1,42 +1,15 @@
 apply plugin: 'org.sonarqube'
 
-def isTarget = 'master'.equals(System.env.TRAVIS_BRANCH) || 'release-3.1'.equals(System.env.TRAVIS_BRANCH)
-
-// for security reasons travis secure variables are defined when build is
-// initiated by a pull request from same repository only
-// so pull requests from external repositories can not be analysed by sonar
-def isSecure = 'true'.equals(System.env.TRAVIS_SECURE_ENV_VARS)
-
-if (!isSecure || !isTarget) {
-    rootProject.tasks['sonarqube'].setEnabled(false)
-    return
-}
-
-def isPush = 'push'.equals(System.env.TRAVIS_EVENT_TYPE);
-def isPullRequest = 'pull_request'.equals(System.env.TRAVIS_EVENT_TYPE);
-
-rootProject.tasks['sonarqube'].setEnabled(isPush || isPullRequest)
-
-sonarqube {
+sonar {
     properties {
-        property 'sonar.host.url', System.env.SONAR_HOST_URL
-        property 'sonar.login', System.env.SONAR_LOGIN
+        property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.organization', 'spotbugs'
         property 'sonar.projectKey', 'com.github.spotbugs.spotbugs'
         property 'sonar.projectName', 'SpotBugs'
-        property 'sonar.projectVersion', rootProject.version
-        property 'sonar.organization', 'spotbugs'
-        // https://docs.sonarqube.org/display/PLUG/Branch+Plugin
-        property 'sonar.branch.name', System.env.TRAVIS_BRANCH
+        property 'sonar.coverage.jacoco.xmlReportPaths', "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
     }
 }
 
-if (isPullRequest) {
-    sonarqube {
-        properties {
-            property 'sonar.analysis.mode', 'preview'
-            property 'sonar.github.oauth', System.env.GITHUB_TOKEN
-            property 'sonar.github.pullRequest', System.env.TRAVIS_PULL_REQUEST
-            property 'sonar.github.repository', System.env.TRAVIS_REPO_SLUG
-        }
-    }
+tasks.named('sonar').configure {
+    dependsOn jacocoRootReport
 }

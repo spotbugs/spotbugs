@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
  */
 public abstract class FindBugsJob extends Job {
 
-    private final static Semaphore analysisSem;
+    private static final Semaphore analysisSem;
 
     private static final boolean DEBUG = false;
     static {
@@ -59,21 +59,20 @@ public abstract class FindBugsJob extends Job {
     private final IResource resource;
 
     public static void cancelSimilarJobs(FindBugsJob job) {
-        if(job.getResource() == null) {
+        if (job.getResource() == null) {
             return;
         }
         Job[] jobs = Job.getJobManager().find(FindbugsPlugin.class);
         for (Job job2 : jobs) {
             if (job2 instanceof FindBugsJob
-                    && job.getResource().equals(((FindBugsJob)job2).getResource())) {
-                if(job2.getState() != Job.RUNNING) {
-                    job2.cancel();
-                }
+                    && job.getResource().equals(((FindBugsJob) job2).getResource())
+                    && job2.getState() != Job.RUNNING) {
+                job2.cancel();
             }
         }
     }
 
-    public FindBugsJob(String name, IResource resource) {
+    protected FindBugsJob(String name, IResource resource) {
         super(name);
         this.resource = resource;
         setRule(new MutexSchedulingRule(resource));
@@ -94,8 +93,8 @@ public abstract class FindBugsJob extends Job {
         setPriority(Job.INTERACTIVE);
 
         // paranoia
-        if(supportsMulticore() && analysisSem.availablePermits() == 0
-                && Job.getJobManager().find(FindbugsPlugin.class).length == 0){
+        if (supportsMulticore() && analysisSem.availablePermits() == 0
+                && Job.getJobManager().find(FindbugsPlugin.class).length == 0) {
             analysisSem.release(MutexSchedulingRule.MAX_JOBS);
         }
 
@@ -113,9 +112,9 @@ public abstract class FindBugsJob extends Job {
         return getName() + " failed";
     }
 
-    abstract protected void runWithProgress(IProgressMonitor monitor) throws CoreException;
+    protected abstract void runWithProgress(IProgressMonitor monitor) throws CoreException;
 
-    protected boolean supportsMulticore(){
+    protected boolean supportsMulticore() {
         return false;
     }
 
@@ -123,7 +122,7 @@ public abstract class FindBugsJob extends Job {
     public IStatus run(IProgressMonitor monitor) {
         boolean acquired = false;
         try {
-            if(supportsMulticore()){
+            if (supportsMulticore()) {
                 if (DEBUG) {
                     FindbugsPlugin.log("Acquiring analysisSem");
                 }
@@ -140,7 +139,7 @@ public abstract class FindBugsJob extends Job {
             }
 
             runWithProgress(monitor);
-        } catch (OperationCanceledException e) {
+        } catch (OperationCanceledException | InterruptedException e) {
             // Do nothing when operation cancelled.
             return Status.CANCEL_STATUS;
         } catch (CoreException ex) {
@@ -148,10 +147,8 @@ public abstract class FindBugsJob extends Job {
                 FindbugsPlugin.getDefault().logException(ex, createErrorMessage());
             }
             return ex.getStatus();
-        } catch (InterruptedException e) {
-            return Status.CANCEL_STATUS;
         } finally {
-            if(acquired){
+            if (acquired) {
                 if (DEBUG) {
                     FindbugsPlugin.log("releasing analysisSem");
                 }

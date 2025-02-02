@@ -58,4 +58,3 @@ public class New extends OneVariableInstruction {
         return addOrCheckDefinition(result, bindingSet);
     }
 }
-

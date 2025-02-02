@@ -49,4 +49,3 @@ public class CFGBuilderFactory {
         return new BetterCFGBuilder2(descriptor, methodGen);
     }
 }
-

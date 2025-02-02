@@ -45,6 +45,7 @@ public class SourceCharset {
     public static Writer fileWriter(File fileName) throws IOException {
         return new OutputStreamWriter(new FileOutputStream(fileName), charset);
     }
+
     public static PrintWriter printWriter(File fileName) throws IOException {
         return new PrintWriter(new BufferedWriter(fileWriter(fileName)));
     }
@@ -52,6 +53,7 @@ public class SourceCharset {
     public static Writer fileWriter(String fileName) throws IOException {
         return new OutputStreamWriter(new FileOutputStream(fileName), charset);
     }
+
     public static PrintWriter printWriter(String fileName) throws IOException {
         return new PrintWriter(new BufferedWriter(fileWriter(fileName)));
     }

@@ -22,10 +22,14 @@ package edu.umd.cs.findbugs.filter;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class AndMatcher extends CompoundMatcher {
+    private static final Logger LOG = LoggerFactory.getLogger(AndMatcher.class);
 
     transient boolean anyMatches = false;
 
@@ -50,7 +54,7 @@ public class AndMatcher extends CompoundMatcher {
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         if (numberChildren() == 1) {
-            // System.out.println("One child: " + this);
+            LOG.trace("One child: {}", this);
             childIterator().next().writeXML(xmlOutput, disabled);
             return;
         }
@@ -72,4 +76,3 @@ public class AndMatcher extends CompoundMatcher {
     }
 
 }
-

@@ -30,4 +30,3 @@ public class FilterException extends RuntimeException {
         super(msg, cause);
     }
 }
-

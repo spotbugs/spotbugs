@@ -26,18 +26,20 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Helper class for parsing command line arguments.
@@ -62,7 +64,7 @@ public abstract class CommandLine {
 
     int maxWidth;
 
-    public CommandLine() {
+    protected CommandLine() {
         this.unlistedOptions = new HashSet<>();
         this.optionList = new LinkedList<>();
         this.optionGroups = new HashMap<>();
@@ -170,7 +172,7 @@ public abstract class CommandLine {
      */
 
     public String[] expandOptionFiles(String[] argv, boolean ignoreComments, boolean ignoreBlankLines) throws IOException,
-    HelpRequestedException {
+            HelpRequestedException {
         // Add all expanded options at the end of the options list, before the
         // list of
         // jar/zip/class files and directories.
@@ -187,12 +189,9 @@ public abstract class CommandLine {
                 continue;
             }
 
-            BufferedReader reader = null;
-            try {
-                reader = UTF8.bufferedReader(new FileInputStream(arg.substring(1)));
+            try (FileInputStream stream = new FileInputStream(arg.substring(1));
+                    BufferedReader reader = UTF8.bufferedReader(stream)) {
                 addCommandLineOptions(expandedOptionsList, reader, ignoreComments, ignoreBlankLines);
-            } finally {
-                Util.closeSilently(reader);
             }
         }
         resultList.addAll(expandedOptionsList);
@@ -200,21 +199,17 @@ public abstract class CommandLine {
             resultList.add(argv[i]);
         }
 
-        return resultList.toArray(new String[resultList.size()]);
+        return resultList.toArray(new String[0]);
     }
 
     public static ArrayList<String> getAnalysisOptionProperties(boolean ignoreComments, boolean ignoreBlankLines) {
         ArrayList<String> resultList = new ArrayList<>();
         URL u = DetectorFactoryCollection.getCoreResource("analysisOptions.properties");
         if (u != null) {
-            BufferedReader reader = null;
-            try {
-                reader = UTF8.bufferedReader(u.openStream());
+            try (BufferedReader reader = UTF8.bufferedReader(u.openStream())) {
                 addCommandLineOptions(resultList, reader, ignoreComments, ignoreBlankLines);
             } catch (IOException e) {
                 AnalysisContext.logError("unable to load analysisOptions.properties", e);
-            } finally {
-                Util.closeSilently(reader);
             }
         }
         return resultList;
@@ -236,9 +231,7 @@ public abstract class CommandLine {
             if (line.length() >= 2 && line.charAt(0) == '"' && line.charAt(line.length() - 1) == '"') {
                 resultList.add(line.substring(0, line.length() - 1));
             } else {
-                for (String segment : line.split(" ")) {
-                    resultList.add(segment);
-                }
+                Collections.addAll(resultList, line.split(" "));
             }
         }
     }
@@ -279,9 +272,7 @@ public abstract class CommandLine {
             return count;
         } catch (HelpRequestedException e) {
             // fall through
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             e.printStackTrace();
         }
         System.out.println(usage);
@@ -322,12 +313,9 @@ public abstract class CommandLine {
                 ++arg;
                 continue;
             }
-            String optionExtraPart = "";
-            int colon = option.indexOf(':');
-            if (colon >= 0) {
-                optionExtraPart = option.substring(colon + 1);
-                option = option.substring(0, colon);
-            }
+            Option split = splitOption(option);
+            option = split.option;
+            String optionExtraPart = split.extraPart;
 
             if (optionDescriptionMap.get(option) == null) {
                 throw new IllegalArgumentException("Unknown option: " + option);
@@ -352,6 +340,38 @@ public abstract class CommandLine {
         }
 
         return arg;
+    }
+
+    @NonNull
+    /* visible for testing */ static Option splitOption(String option) {
+        String optionExtraPart = "";
+        int colon = option.indexOf(':');
+        if (colon >= 0) {
+            optionExtraPart = option.substring(colon + 1);
+            option = option.substring(0, colon);
+        }
+        int eq = option.indexOf('=');
+        if (eq >= 0) {
+            if (optionExtraPart.isEmpty()) {
+                optionExtraPart = option.substring(eq); // starts with '='
+            } else {
+                optionExtraPart = option.substring(eq) + ":" + optionExtraPart;
+            }
+            option = option.substring(0, eq);
+        }
+        return new Option(option, optionExtraPart);
+    }
+
+    static final class Option {
+        @NonNull
+        final String option;
+        @NonNull
+        final String extraPart;
+
+        Option(@NonNull String option, @NonNull String extraPart) {
+            this.option = Objects.requireNonNull(option);
+            this.extraPart = Objects.requireNonNull(extraPart);
+        }
     }
 
     /**

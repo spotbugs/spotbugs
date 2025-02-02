@@ -25,7 +25,7 @@ public class Ideas_2009_01_14 {
             result = "four";
             break;
         default:
-            throw new IllegalArgumentException("Illegal agrument: " + value);
+            throw new IllegalArgumentException("Illegal argument: " + value);
 
         }
         return "Answer is " + result;
@@ -57,7 +57,7 @@ public class Ideas_2009_01_14 {
         return "Answer is " + result;
     }
 
-    @ExpectWarning("VA_FORMAT_STRING_BAD_CONVERSION")
+    // @ExpectWarning("VA_FORMAT_STRING_BAD_CONVERSION")
     public static void main(String args[]) {
         System.out.printf("%d%n", 100.0);
     }

@@ -18,6 +18,7 @@
  */
 
 package edu.umd.cs.findbugs.ba;
+
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -67,6 +68,7 @@ import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.detect.UnreadFieldsData;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.ClassName;
 import net.jcip.annotations.NotThreadSafe;
 
@@ -85,7 +87,7 @@ import net.jcip.annotations.NotThreadSafe;
  * @see edu.umd.cs.findbugs.classfile.Global
  */
 @NotThreadSafe
-public class AnalysisContext {
+public class AnalysisContext implements AutoCloseable {
     public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.analysiscontext.debug");
 
     public static final boolean IGNORE_BUILTIN_MODELS = SystemProperties.getBoolean("findbugs.ignoreBuiltinModels");
@@ -185,20 +187,24 @@ public class AnalysisContext {
         bridgeFrom = new IdentityHashMap<>();
     }
 
+    /**
+     * Clear cache and reference in this instances. Cleared {@link AnalysisContext} instance should not be reused.
+     */
     private void clear() {
         boolPropertySet = null;
         databaseInputDir = null;
         databaseOutputDir = null;
+        IO.close(project);
     }
 
     /**
      * Get the AnalysisContext associated with this thread
      */
-    static public AnalysisContext currentAnalysisContext() {
+    public static AnalysisContext currentAnalysisContext() {
         return currentAnalysisContext.get();
     }
 
-    static public XFactory currentXFactory() {
+    public static XFactory currentXFactory() {
         return currentXFactory.get();
     }
 
@@ -270,11 +276,10 @@ public class AnalysisContext {
     }
 
     private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
-        return missing == null || missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
+        return missing == null || missing.isEmpty() || missing.charAt(0) == '[' || missing.endsWith("package-info");
     }
 
-    private static @CheckForNull
-    RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
+    private static @CheckForNull RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
             return null;
@@ -290,7 +295,7 @@ public class AnalysisContext {
      *
      * @see #getLookupFailureCallback()
      */
-    static public void reportMissingClass(ClassNotFoundException e) {
+    public static void reportMissingClass(ClassNotFoundException e) {
         requireNonNull(e, "argument is null");
         String missing = AbstractBugReporter.getMissingClassName(e);
         if (skipReportingMissingClass(missing)) {
@@ -306,12 +311,12 @@ public class AnalysisContext {
         }
     }
 
-    static public void reportMissingClass(edu.umd.cs.findbugs.ba.MissingClassException e) {
+    public static void reportMissingClass(edu.umd.cs.findbugs.ba.MissingClassException e) {
         requireNonNull(e, "argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
-    static public boolean analyzingApplicationClass() {
+    public static boolean analyzingApplicationClass() {
         AnalysisContext context = AnalysisContext.currentAnalysisContext();
         if (context == null) {
             return false;
@@ -323,12 +328,12 @@ public class AnalysisContext {
         return context.isApplicationClass(clazz);
     }
 
-    static public void reportMissingClass(edu.umd.cs.findbugs.classfile.MissingClassException e) {
+    public static void reportMissingClass(edu.umd.cs.findbugs.classfile.MissingClassException e) {
         requireNonNull(e, "argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
-    static public void reportMissingClass(ClassDescriptor c) {
+    public static void reportMissingClass(ClassDescriptor c) {
         requireNonNull(c, "argument is null");
         if (!analyzingApplicationClass()) {
             return;
@@ -349,7 +354,7 @@ public class AnalysisContext {
     /**
      * Report an error
      */
-    static public void logError(String msg, Exception e) {
+    public static void logError(String msg, Exception e) {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
             if (e instanceof NoSuchBugPattern) {
@@ -383,7 +388,7 @@ public class AnalysisContext {
     /**
      * Report an error
      */
-    static public void logError(String msg) {
+    public static void logError(String msg) {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
             return;
@@ -392,9 +397,9 @@ public class AnalysisContext {
     }
 
     public void logAnError(String msg) {
-        RepositoryLookupFailureCallback lookupFailureCallback = getLookupFailureCallback();
-        if (lookupFailureCallback != null) {
-            lookupFailureCallback.logError(msg);
+        RepositoryLookupFailureCallback failureCallback = getLookupFailureCallback();
+        if (failureCallback != null) {
+            failureCallback.logError(msg);
         }
     }
 
@@ -470,7 +475,7 @@ public class AnalysisContext {
             AnalysisContext.logError("Error getting class data for " + desc, e);
             return 10000;
         } catch (CheckedAnalysisException e) {
-            AnalysisContext.logError("Could not get class context for "  + desc, e);
+            AnalysisContext.logError("Could not get class context for " + desc, e);
             return 10000;
         }
     }
@@ -499,7 +504,7 @@ public class AnalysisContext {
             AnalysisContext.logError("Error getting class data for " + desc, e);
             return true;
         } catch (CheckedAnalysisException e) {
-            AnalysisContext.logError("Could not get class context for "  + desc, e);
+            AnalysisContext.logError("Could not get class context for " + desc, e);
             return true;
         }
         return false;
@@ -535,13 +540,13 @@ public class AnalysisContext {
     public static JavaClass lookupSystemClass(@Nonnull String className) throws ClassNotFoundException {
         // TODO: eventually we should move to our own thread-safe repository
         // implementation
-        requireNonNull (className, "className is null");
+        requireNonNull(className, "className is null");
         if (originalRepository == null) {
             throw new IllegalStateException("originalRepository is null");
         }
 
         JavaClass clazz = originalRepository.findClass(className);
-        if(clazz != null){
+        if (clazz != null) {
             return clazz;
         }
         // XXX workaround for system classes missing on Java 9
@@ -725,7 +730,7 @@ public class AnalysisContext {
                 System.out.println("Loading default " + description + " from " + resourceName + " @ "
                         + database.getClass().getResource(resourceName) + " ... ");
             }
-            try(InputStream in = database.getClass().getResourceAsStream(resourceName)){
+            try (InputStream in = database.getClass().getResourceAsStream(resourceName)) {
                 if (in == null) {
                     AnalysisContext.logError("Unable to load " + description + " from resource " + resourceName);
                 } else {
@@ -942,7 +947,7 @@ public class AnalysisContext {
      */
     public JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException {
         try {
-            if (className.length() == 0) {
+            if (className.isEmpty()) {
                 throw new IllegalArgumentException("Class name is empty");
             }
             if (!ClassName.isValidClassName(className)) {
@@ -1086,5 +1091,9 @@ public class AnalysisContext {
 
     }
 
-}
+    @Override
+    public void close() {
+        clear();
+    }
 
+}

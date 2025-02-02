@@ -111,7 +111,7 @@ quietErrors
 reportLevel
   An optional attribute. It specifies the confidence/priority threshold for reporting issues.
   If set to ``low``, confidence is not used to filter bugs.
-  If set to ``medium`` (the default), low confidence issues are supressed.
+  If set to ``medium`` (the default), low confidence issues are suppressed.
   If set to ``high``, only high confidence bugs are reported.
 
 output
@@ -158,8 +158,14 @@ chooseVisitors
 excludeFilter
   Optional attribute. It specifies the filename of a filter specifying bugs to exclude from being reported. See :doc:`filter`.
 
+excludePath
+  An optional nested element. It specifies a path containing filters specifying bugs to exclude from being reported. See :doc:`filter`.
+
 includeFilter
   Optional attribute. It specifies the filename of a filter specifying which bugs are reported. See :doc:`filter`.
+
+includePath
+  An optional nested element. It specifies a path containing filters specifying which bugs are reported. See :doc:`filter`.
 
 projectFile
   Optional attribute. It specifies the name of a project file.

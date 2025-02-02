@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantInterfaceMethodref;
 import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.JavaClass;
@@ -95,13 +96,13 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         // Examine InputStreams, OutputStreams, Readers, and Writers,
         // ignoring byte array, char array, and String variants.
         streamFactoryCollection.add(new IOStreamFactory("java.io.InputStream", new String[] { "java.io.ByteArrayInputStream",
-                "java.io.StringBufferInputStream", "java.io.PipedInputStream" }, "OS_OPEN_STREAM"));
+            "java.io.StringBufferInputStream", "java.io.PipedInputStream" }, "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new IOStreamFactory("java.io.OutputStream", new String[] { "java.io.ByteArrayOutputStream",
-        "java.io.PipedOutputStream" }, "OS_OPEN_STREAM"));
+            "java.io.PipedOutputStream" }, "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new IOStreamFactory("java.io.Reader", new String[] { "java.io.StringReader",
-                "java.io.CharArrayReader", "java.io.PipedReader" }, "OS_OPEN_STREAM"));
+            "java.io.CharArrayReader", "java.io.PipedReader" }, "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new IOStreamFactory("java.io.Writer", new String[] { "java.io.StringWriter",
-                "java.io.CharArrayWriter", "java.io.PipedWriter" }, "OS_OPEN_STREAM"));
+            "java.io.CharArrayWriter", "java.io.PipedWriter" }, "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new IOStreamFactory("java.util.zip.ZipFile", new String[0], "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.lang.Class", "getResourceAsStream",
                 "(Ljava/lang/String;)Ljava/io/InputStream;", "OS_OPEN_STREAM"));
@@ -114,7 +115,8 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newByteChannel",
                 "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/nio/channels/SeekableByteChannel;", "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newByteChannel",
-                "(Ljava/nio/file/Path;Ljava/util/Set;[Ljava/nio/file/attribute/FileAttribute;)Ljava/nio/channels/SeekableByteChannel;", "OS_OPEN_STREAM"));
+                "(Ljava/nio/file/Path;Ljava/util/Set;[Ljava/nio/file/attribute/FileAttribute;)Ljava/nio/channels/SeekableByteChannel;",
+                "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newDirectoryStream",
                 "(Ljava/nio/file/Path;)Ljava/nio/file/DirectoryStream;", "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newDirectoryStream",
@@ -146,6 +148,14 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletResponse", "getOutputStream",
                 "()Ljavax/servlet/ServletOutputStream;"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletResponse", "getWriter",
+                "()Ljava/io/PrintWriter;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletRequest", "getInputStream",
+                "()Ljakarta/servlet/ServletInputStream;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletRequest", "getReader",
+                "()Ljava/io/BufferedReader;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletResponse", "getOutputStream",
+                "()Ljakarta/servlet/ServletOutputStream;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletResponse", "getWriter",
                 "()Ljava/io/PrintWriter;"));
 
         // Ignore System.{in,out,err}
@@ -220,7 +230,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection", "createStatement",
                 "(Ljava/lang/String;[Ljava/lang/String;)Ljava/sql/PreparedStatement;", "ODR_OPEN_DATABASE_RESOURCE"));
 
-        streamFactoryList = streamFactoryCollection.toArray(new StreamFactory[streamFactoryCollection.size()]);
+        streamFactoryList = streamFactoryCollection.toArray(new StreamFactory[0]);
     }
 
     /*
@@ -281,7 +291,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     // class containing one of these words, then we don't run the
     // detector on the class.
     private static final String[] PRESCREEN_CLASS_LIST = { "Stream", "Reader", "Writer", "ZipFile", "JarFile", "DriverManager",
-            "Connection", "Statement", "Files" };
+        "Connection", "Statement", "Files" };
 
     /*
      * (non-Javadoc)
@@ -292,26 +302,32 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
-        JavaClass jclass = classContext.getJavaClass();
+        ConstantPool cp = classContext.getJavaClass().getConstantPool();
 
         // Check to see if the class references any other classes
         // which could be resources we want to track.
         // If we don't find any such classes, we skip analyzing
         // the class. (Note: could do this by method.)
         boolean sawResourceClass = false;
-        for (int i = 0; i < jclass.getConstantPool().getLength(); ++i) {
-            Constant constant = jclass.getConstantPool().getConstant(i);
+        for (int i = 1; i < cp.getLength(); ++i) {
+            Constant constant = cp.getConstant(i);
+            // Quote from the JVM specification: "All eight byte constants take up two spots in the constant pool.
+            // If this is the n'th byte in the constant pool, then the next item will be numbered n+2"
+            // So the indices after CONSTANT_Double and CONSTANT_Long are null, not used and throw ClassFormatException
+            if (constant.getTag() == Const.CONSTANT_Double || constant.getTag() == Const.CONSTANT_Long) {
+                i++;
+            }
             String className = null;
             if (constant instanceof ConstantMethodref) {
                 ConstantMethodref cmr = (ConstantMethodref) constant;
 
                 int classIndex = cmr.getClassIndex();
-                className = jclass.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
+                className = cp.getConstantString(classIndex, Const.CONSTANT_Class);
             } else if (constant instanceof ConstantInterfaceMethodref) {
                 ConstantInterfaceMethodref cmr = (ConstantInterfaceMethodref) constant;
 
                 int classIndex = cmr.getClassIndex();
-                className = jclass.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
+                className = cp.getConstantString(classIndex, Const.CONSTANT_Class);
             }
 
             if (className != null) {
@@ -470,9 +486,9 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
             }
 
             bugAccumulator.accumulateBug(new BugInstance(this, pos.bugType, pos.priority)
-            .addClassAndMethod(methodGen, sourceFile).addTypeOfNamedClass(leakClass)
-            .describe(TypeAnnotation.CLOSEIT_ROLE), SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
-                    sourceFile, stream.getLocation().getHandle()));
+                    .addClassAndMethod(methodGen, sourceFile).addTypeOfNamedClass(leakClass)
+                    .describe(TypeAnnotation.CLOSEIT_ROLE), SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+                            sourceFile, stream.getLocation().getHandle()));
         }
     }
 
@@ -534,4 +550,3 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     // }
 
 }
-

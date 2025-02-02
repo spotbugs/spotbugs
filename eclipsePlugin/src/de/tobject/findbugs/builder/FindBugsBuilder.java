@@ -30,6 +30,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tobject.findbugs.FindBugsJob;
@@ -93,7 +94,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         default: {
 
             FindbugsPlugin.getDefault()
-            .logWarning("UKNOWN BUILD kind" + kind);
+                    .logWarning("UNKNOWN BUILD kind" + kind);
             doBuild(args, monitor, kind);
             break;
         }
@@ -104,6 +105,12 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
     @Override
     protected void clean(IProgressMonitor monitor) throws CoreException {
         MarkerUtil.removeMarkers(getProject());
+    }
+
+    @Override
+    public ISchedulingRule getRule(int kind, Map<String, String> args) {
+        // lock only the current project during analysis, not the complete workspace. that allows other builders to run in parallel
+        return getProject();
     }
 
     /**
@@ -118,9 +125,8 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
      * @param kind
      *            kind the kind of build being requested, see
      *            IncrementalProjectBuilder
-     * @throws CoreException
      */
-    private void doBuild(final Map<?, ?> args, final IProgressMonitor monitor, int kind) throws CoreException {
+    private void doBuild(final Map<?, ?> args, final IProgressMonitor monitor, int kind) {
         boolean incremental = (kind == IncrementalProjectBuilder.INCREMENTAL_BUILD
                 || kind == IncrementalProjectBuilder.AUTO_BUILD);
         IProject project = getProject();
@@ -134,9 +140,9 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
                 files.add(new WorkItem(project));
             } else {
                 files = ResourceUtils.collectIncremental(resourceDelta);
-                if(files.size() == 1){
+                if (files.size() == 1) {
                     IResource corespondingResource = files.get(0).getCorespondingResource();
-                    if(corespondingResource != null) {
+                    if (corespondingResource != null) {
                         resource = corespondingResource;
                     }
                 }
@@ -161,7 +167,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         IPreferenceStore store = FindbugsPlugin.getPluginPreferences(getProject());
         boolean runAsJob = store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB);
         FindBugsJob fbJob = new StartedFromBuilderJob("Finding bugs in " + resource.getName() + "...", resource, resources);
-        if(runAsJob) {
+        if (runAsJob) {
             // run asynchronously, so there might be more similar jobs waiting to run
             if (DEBUG) {
                 FindbugsPlugin.log("cancelSimilarJobs");
@@ -193,7 +199,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
                 && resourceDelta.findMember(FindbugsPlugin.DEFAULT_PREFS_PATH) == null;
     }
 
-    private final static class StartedFromBuilderJob extends FindBugsJob {
+    private static final class StartedFromBuilderJob extends FindBugsJob {
         private final List<WorkItem> resources;
 
         private StartedFromBuilderJob(String name, IResource resource, List<WorkItem> resources) {
@@ -202,7 +208,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         }
 
         @Override
-        protected boolean supportsMulticore(){
+        protected boolean supportsMulticore() {
             return MutexSchedulingRule.MULTICORE;
         }
 

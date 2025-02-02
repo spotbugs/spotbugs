@@ -49,11 +49,11 @@ import edu.umd.cs.findbugs.SystemProperties;
 public class TestDesktopIntegration extends JPanel {
 
     private static String[] propertyNames = { "java.version", "java.vendor", "java.vendor.url", "java.home",
-            "java.vm.specification.version", "java.vm.specification.vendor", "java.vm.specification.name", "java.vm.version",
-            "java.vm.vendor", "java.vm.name", "java.specification.version", "java.specification.vendor",
-            "java.specification.name", "java.class.version", "java.class.path", "java.library.path", "java.io.tmpdir",
-            "java.compiler", "java.ext.dirs", "os.name", "os.arch", "os.version", "file.separator", "path.separator",
-            "line.separator", "user.name", "user.home", "user.dir" };
+        "java.vm.specification.version", "java.vm.specification.vendor", "java.vm.specification.name", "java.vm.version",
+        "java.vm.vendor", "java.vm.name", "java.specification.version", "java.specification.vendor",
+        "java.specification.name", "java.class.version", "java.class.path", "java.library.path", "java.io.tmpdir",
+        "java.compiler", "java.ext.dirs", "os.name", "os.arch", "os.version", "file.separator", "path.separator",
+        "line.separator", "user.name", "user.home", "user.dir" };
 
     public static void main(String args[]) throws Exception {
         String u = SystemProperties.getProperty("findbugs.browserTestURL", "http://findbugs.sourceforge.net/");
@@ -190,7 +190,7 @@ public class TestDesktopIntegration extends JPanel {
             });
 
         } else {
-            exec.disable();
+            exec.setEnabled(false);
         }
 
         if (SHOW_FILE_CHOOSER) {
@@ -208,7 +208,7 @@ public class TestDesktopIntegration extends JPanel {
 
                         writer.println("File uri: " + file.toURI());
 
-                        writer.println("File url: " + file.toURL());
+                        writer.println("File url: " + file.toURI().toURL());
                     } catch (Exception e1) {
                         e1.printStackTrace(writer);
                     }

@@ -407,21 +407,21 @@ java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
   <varlistentry>
     <term><command>-maxHeap <replaceable>サイズ</replaceable></command></term>
     <listitem>
-      <para>Java ヒープサイズの最大値をメガバイト単位で指定します。デフォルトは、 256 です。巨大なプログラムやライブラリを分析するには、もっと大きなメモリー容量が必要になる可能性があります。</para>
+      <para>Java ヒープサイズの最大値をメガバイト単位で指定します。デフォルトは、 256 です。巨大なプログラムやライブラリを解析するには、もっと大きなメモリー容量が必要になる可能性があります。</para>
     </listitem>
   </varlistentry>
 
   <varlistentry>
     <term><command>-debug</command></term>
     <listitem>
-      <para>ディテクタ実行およびクラス分析のトレース情報が標準出力に出力されます。分析が予期せず失敗した際の、トラブルシューティングに有用です。</para>
+      <para>ディテクタ実行およびクラス解析のトレース情報が標準出力に出力されます。解析が予期せず失敗した際の、トラブルシューティングに有用です。</para>
     </listitem>
   </varlistentry>
 
   <varlistentry>
     <term><command>-property</command> <replaceable>name=value</replaceable></term>
     <listitem>
-      <para>このオプションを使用してシステムプロパティーを設定することができます。 &FindBugs; はシステムプロパティーを使用して分析特性の設定を行います。<xref linkend="analysisprops"/> を参照してください。このオプションを複数指定して、複数のシステムプロパティを設定することが可能です。注:  Windows の多くのバージョンでは、 <replaceable>name=value</replaceable> 文字列を引用符で囲む必要があります。</para>
+      <para>このオプションを使用してシステムプロパティーを設定することができます。 &FindBugs; はシステムプロパティーを使用して解析特性の設定を行います。<xref linkend="analysisprops"/> を参照してください。このオプションを複数指定して、複数のシステムプロパティを設定することが可能です。注:  Windows の多くのバージョンでは、 <replaceable>name=value</replaceable> 文字列を引用符で囲む必要があります。</para>
     </listitem>
   </varlistentry>
 
@@ -465,7 +465,7 @@ The second invokes the Command Line Interface (Text UI):
   <varlistentry>
     <term><command>-effort:min</command></term>
     <listitem>
-      <para>このオプションを指定すると、精度を上げるために大量のメモリーを消費する分析が無効になります。&FindBugs; の実行時にメモリー不足になったり、分析を完了するまでに異常に長い時間がかかる場合に試してみてください。</para>
+      <para>このオプションを指定すると、精度を上げるために大量のメモリーを消費する解析が無効になります。&FindBugs; の実行時にメモリー不足になったり、解析を完了するまでに異常に長い時間がかかる場合に試してみてください。</para>
     </listitem>
   </varlistentry>
 
@@ -473,14 +473,14 @@ The second invokes the Command Line Interface (Text UI):
   <varlistentry>
     <term><command>-effort:max</command></term>
     <listitem>
-      <para>精度が高く、より多くのバグを検出する分析を有効にします。ただし、多くのメモリー容量を必要とし、また、完了までの時間が多くかかる可能性があります。</para>
+      <para>精度が高く、より多くのバグを検出する解析を有効にします。ただし、多くのメモリー容量を必要とし、また、完了までの時間が多くかかる可能性があります。</para>
     </listitem>
   </varlistentry>
 
   <varlistentry>
   <term><command>-project</command> <replaceable>project</replaceable></term>
   <listitem>
-    <para>分析するプロジェクトを指定します。指定するプロジェクトファイルには、 GUI を使って作成したものを使用してください。ファイルの拡張子は、一般的には <filename>.fb</filename> または <filename>.fbp</filename> です。</para>
+    <para>解析するプロジェクトを指定します。指定するプロジェクトファイルには、 GUI を使って作成したものを使用してください。ファイルの拡張子は、一般的には <filename>.fb</filename> または <filename>.fbp</filename> です。</para>
   </listitem>
   </varlistentry>
 
@@ -540,9 +540,9 @@ The second invokes the Command Line Interface (Text UI):
   </varlistentry>
 
   <varlistentry>
-    <term><command>-onlyAnalyze</command> <replaceable>com.foobar.MyClass,com.foobar.mypkg.*</replaceable></term>
+    <term><command>-onlyAnalyze</command> <replaceable>com.foobar.MyClass,com.foobar.mypkg.*,!com.foobar.mypkg.ExcludedClass</replaceable></term>
     <listitem>
-      <para>コンマ区切りで指定したクラスおよびパッケージのみに限定して、バグ検出の分析を行うようにします。フィルターと違って、このオプションを使うと一致しないクラスおよびパッケージに対する分析の実行を回避することができます。大きなプロジェクトにおいて、このオプションを活用すると分析にかかる時間を大きく削減することができる可能性があります。(しかしながら、アプリケーションの全体で実行していないために不正確な結果を出してしまうディテクタがある可能性もあります。) クラスはパッケージも含んだ完全な名前を指定する必要があります。また、パッケージは、 Java の <literal>import</literal> 文でパッケージ下のすべてのクラスをインポートするときと同じ方法で指定します。 (すなわち、パッケージの完全な名前に <literal>.*</literal> を付け加えた形です。)<literal>.*</literal> の代わりに <literal>.-</literal> を指定すると、サブパッケージも含めてすべてが分析されます。</para>
+        <para>コンマ区切りで指定したクラスおよびパッケージのみに限定して、バグ検出の解析を行うようにします。フィルターと違って、このオプションを使うと一致しないクラスおよびパッケージに対する解析の実行を回避することができます。大きなプロジェクトにおいて、このオプションを活用すると解析にかかる時間を大きく削減することができる可能性があります。(しかしながら、アプリケーションの全体で実行していないために不正確な結果を出してしまうディテクタがある可能性もあります。) クラスはパッケージも含んだ完全な名前を指定する必要があります。また、パッケージは、 Java の <literal>import</literal> 文でパッケージ下のすべてのクラスをインポートするときと同じ方法で指定します。 (すなわち、パッケージの完全な名前に <literal>.*</literal> を付け加えた形です。)<literal>.*</literal> の代わりに <literal>.-</literal> を指定すると、サブパッケージも含めてすべてが解析されます。<literal>!</literal> で始まる項目 は否定的な意味を持っているため、含まれるのではなく除外されます。 除外は、指定された順序に関係なく、包含よりも優先されます。</para>
     </listitem>
   </varlistentry>
 
@@ -621,35 +621,35 @@ The second invokes the Command Line Interface (Text UI):
   <varlistentry>
   <term><command>-nested</command><replaceable>[:true|false]</replaceable></term>
   <listitem>
-    <para>このオプションは、ファイルやディレクトリーの中で入れ子になった jar および zip ファイルを分析するかどうかを指定します。デフォルトでは、入れ子になった jar および zip ファイルも分析します。入れ子になった jar および zip ファイルの分析するを無効にする場合は、 <command>-nested:false</command> をコマンドライン引数に追加してください。</para>
+    <para>このオプションは、ファイルやディレクトリーの中で入れ子になった jar および zip ファイルを解析するかどうかを指定します。デフォルトでは、入れ子になった jar および zip ファイルも解析します。入れ子になった jar および zip ファイルの解析するを無効にする場合は、 <command>-nested:false</command> をコマンドライン引数に追加してください。</para>
   </listitem>
   </varlistentry>
 
   <varlistentry>
   <term><command>-auxclasspath</command> <replaceable>クラスパス</replaceable></term>
   <listitem>
-    <para>分析時に使用する補助クラスパスを設定します。分析するプログラムで使用するjarファイルやクラスディレクトリーをすべて指定してください。補助クラスパスに指定したクラスは分析の対象にはなりません。</para>
+    <para>解析時に使用する補助クラスパスを設定します。解析するプログラムで使用するjarファイルやクラスディレクトリーをすべて指定してください。補助クラスパスに指定したクラスは解析の対象にはなりません。</para>
   </listitem>
   </varlistentry>
 
   <varlistentry>
   <term><command>-auxclasspathFromInput</command> </term>
   <listitem>
-    <para>分析時に使用する補助クラスパスを標準入力から読み込みます。標準入力の各行が分析時に使用する補助クラスパスに追加されます。</para>
+    <para>解析時に使用する補助クラスパスを標準入力から読み込みます。標準入力の各行が解析時に使用する補助クラスパスに追加されます。</para>
   </listitem>
   </varlistentry>
 
   <varlistentry>
   <term><command>-auxclasspathFromFile</command> <replaceable>ファイルパス</replaceable></term>
   <listitem>
-    <para>分析時に使用する補助クラスパスをファイルから読み込みます。ファイルの各行が分析時に使用する補助クラスパスに追加されます。</para>
+    <para>解析時に使用する補助クラスパスをファイルから読み込みます。ファイルの各行が解析時に使用する補助クラスパスに追加されます。</para>
   </listitem>
   </varlistentry>
 
   <varlistentry>
   <term><command>-analyzeFromFile</command> <replaceable>ファイルパス</replaceable></term>
   <listitem>
-    <para>分析対象ファイルをファイルから読み込みます。ファイルの各行が分析対象クラスパスに追加されます。</para>
+    <para>解析対象ファイルをファイルから読み込みます。ファイルの各行が解析対象クラスパスに追加されます。</para>
   </listitem>
   </varlistentry>
 
@@ -695,30 +695,30 @@ The second invokes the Command Line Interface (Text UI):
 </mediaobject>
 </para>
 
-<para>「Classpath to analyze」の横にある 「Add」ボタンを押すと、バグを分析する java クラスを含んでいる Java アーカイブファイル (zip, jar, ear, or war file) を選択して指定できます。複数の アーカイブ/ディレクトリーを追加することが可能です。</para>
+<para>「Classpath to analyze」の横にある 「Add」ボタンを押すと、バグを解析する java クラスを含んでいる Java アーカイブファイル (zip, jar, ear, or war file) を選択して指定できます。複数の アーカイブ/ディレクトリーを追加することが可能です。</para>
 
-<para>また、分析を行う Java アーカイブのソースコードを含んだソースディレクトリーを指定することもできます。そうすると、バグの可能性があるソースコードの場所が、&FindBugs; 上でハイライトして表示されます。ソースディレクトリーは、Java パッケージ階層のルートディレクトリーを指定する必要があります。例えば、ユーザのアプリケーションが <varname>org.foobar.myapp</varname> パッケージの中にある場合は、 <filename class="directory">org</filename> ディレクトリーの親ディレクトリーをソースディレクトリーリストに指定する必要があります。</para>
+<para>また、解析を行う Java アーカイブのソースコードを含んだソースディレクトリーを指定することもできます。そうすると、バグの可能性があるソースコードの場所が、&FindBugs; 上でハイライトして表示されます。ソースディレクトリーは、Java パッケージ階層のルートディレクトリーを指定する必要があります。例えば、ユーザのアプリケーションが <varname>org.foobar.myapp</varname> パッケージの中にある場合は、 <filename class="directory">org</filename> ディレクトリーの親ディレクトリーをソースディレクトリーリストに指定する必要があります。</para>
 
-<para>もうひとつ、任意指定の手順があります。それは、補助用の Jar ファイルおよびディレクトリーを 「Auxiliary classpath locations」のエントリーに追加することです。分析するアーカイブ/ディレクトリーにも標準の実行時クラスパスにも含まれていないクラスを、分析するアーカイブ/ディレクトリーが参照している場合は、この項目を設定した方がいいでしょう。クラス階層に関する情報を使用するバグディテクタが、 &FindBugs; にはいくつかあります。したがって、&FindBugs; が分析を行うクラスの完全なクラス階層を参照できれば、より正確な分析結果を取得することができます。</para>
+<para>もうひとつ、任意指定の手順があります。それは、補助用の Jar ファイルおよびディレクトリーを 「Auxiliary classpath locations」のエントリーに追加することです。解析するアーカイブ/ディレクトリーにも標準の実行時クラスパスにも含まれていないクラスを、解析するアーカイブ/ディレクトリーが参照している場合は、この項目を設定した方がいいでしょう。クラス階層に関する情報を使用するバグディテクタが、 &FindBugs; にはいくつかあります。したがって、&FindBugs; が解析を行うクラスの完全なクラス階層を参照できれば、より正確な解析結果を取得することができます。</para>
 
 </sect1>
 
 <sect1>
-<title>分析の実行</title>
-<para>アーカイブ、ディレクトリーおよびソースディレクトリーの指定ができれば、「Analyze」ボタンを押して Jar ファイルに含まれるクラスに対する分析を実行します。巨大なプロジェクトを古いコンピュータ上で実行すると、かなりの時間(数十分)がかかることに注意してください。大容量メモリである最近のコンピュータなら、大きなプログラムであっても数分程度で分析できます。</para>
+<title>解析の実行</title>
+<para>アーカイブ、ディレクトリーおよびソースディレクトリーの指定ができれば、「Analyze」ボタンを押して Jar ファイルに含まれるクラスに対する解析を実行します。巨大なプロジェクトを古いコンピュータ上で実行すると、かなりの時間(数十分)がかかることに注意してください。大容量メモリである最近のコンピュータなら、大きなプログラムであっても数分程度で解析できます。</para>
 </sect1>
 
 <sect1>
 <title>結果の閲覧</title>
 
-<para>分析が完了すると、次のような画面が表示されます :<mediaobject>
+<para>解析が完了すると、次のような画面が表示されます :<mediaobject>
   <imageobject>
     <imagedata fileref="example-details.png"/>
   </imageobject>
 </mediaobject>
 </para>
 
-<para>左上のペインにはバグ階層ツリーが表示されます。これは、分析でみつかったバグの検索結果が階層的に表示されたものです。</para>
+<para>左上のペインにはバグ階層ツリーが表示されます。これは、解析でみつかったバグの検索結果が階層的に表示されたものです。</para>
 
 <para>上部のペインでバグ検索結果を選択すると、下部の「Details」ペインにバグの詳細説明が表示されます。更に、ソースがみつかれば、右上のソースコードペインにバグの出現箇所に該当するソースコードが表示されます。上図の例で表示されているバグは、ストリームオブジェクトがクローズされていないというものです。ソースコード・ウィンドウにおいて当該ストリームオブジェクトを生成している行がハイライトされています。</para>
 
@@ -763,7 +763,7 @@ Command Line Interface.
 <chapter id="anttask">
 <title>&FindBugs;&trade; &Ant; タスクの使用方法</title>
 
-<para>この章では、 &FindBugs; を <ulink url="http://ant.apache.org/">&Ant;</ulink> のビルドスクリプトに組み入れる方法について説明します。 <ulink url="http://ant.apache.org/">&Ant;</ulink> は、ビルドや配備を行うことができる Java でよく使用されるツールです。&FindBugs; &Ant; タスクを使用すると、 ビルドスクリプトを作成して機械的に &FindBugs; による Java コードの分析を実行することができます。</para>
+<para>この章では、 &FindBugs; を <ulink url="http://ant.apache.org/">&Ant;</ulink> のビルドスクリプトに組み入れる方法について説明します。 <ulink url="http://ant.apache.org/">&Ant;</ulink> は、ビルドや配備を行うことができる Java でよく使用されるツールです。&FindBugs; &Ant; タスクを使用すると、 ビルドスクリプトを作成して機械的に &FindBugs; による Java コードの解析を実行することができます。</para>
 
 <para>この &Ant; タスクは、 Mike Fagan 氏の多大な貢献によるものです。</para>
 
@@ -784,7 +784,7 @@ Command Line Interface.
   &lt;taskdef name=&quot;findbugs&quot; classname=&quot;edu.umd.cs.findbugs.anttask.FindBugsTask&quot;/&gt;
 </screen>タスク定義は、 <literal>findbugs</literal> 要素を <filename>build.xml</filename> 上に記述したとき、そのタスクの実行に使用されるクラスを指定します。</para>
 
-<para>タスク定義の記述をすれば、<literal>findbugs</literal> タスクを使ってターゲットを定義できます。次に示すのは、 Apache <ulink url="http://jakarta.apache.org/bcel/">BCEL</ulink> ライブラリーを分析する場合を想定した <filename>build.xml</filename> の記述例です。<screen>
+<para>タスク定義の記述をすれば、<literal>findbugs</literal> タスクを使ってターゲットを定義できます。次に示すのは、 Apache <ulink url="http://jakarta.apache.org/bcel/">BCEL</ulink> ライブラリーを解析する場合を想定した <filename>build.xml</filename> の記述例です。<screen>
   &lt;property name=&quot;findbugs.home&quot; value=&quot;/export/home/daveho/work/findbugs&quot; /&gt;
 
   &lt;target name=&quot;findbugs&quot; depends=&quot;jar&quot;&gt;
@@ -837,14 +837,14 @@ Command Line Interface.
   <varlistentry>
     <term><literal>class</literal></term>
     <listitem>
-       <para>任意指定のネストされる要素です。分析の対象となるクラス群を指定します。
+       <para>任意指定のネストされる要素です。解析の対象となるクラス群を指定します。
        <literal>class</literal> 要素には <literal>location</literal> 属性の指定が必須です。
-       分析対象となるアーカイブファイル (jar, zip, 他)、ディレクトリーまたはクラスファイルの名前を記述します。
+       解析対象となるアーカイブファイル (jar, zip, 他)、ディレクトリーまたはクラスファイルの名前を記述します。
        1 つの <literal>findbugs</literal> 要素に対して、複数の <literal>class</literal> 子要素を指定することができます。
        </para>
        <para><literal>class</literal> 要素の指定を置き換えるまたは追加する形で、 &FindBugs; タスクに1個以上の <literal>fileset</literal> 要素を記述することで
-       分析するファイル群を指定することができます。
-       例えば、 fileset において特定のディレクトリにある全ての jar ファイルを分析対象に指定することができます。
+       解析するファイル群を指定することができます。
+       例えば、 fileset において特定のディレクトリにある全ての jar ファイルを解析対象に指定することができます。
        </para>
     </listitem>
   </varlistentry>
@@ -852,14 +852,14 @@ Command Line Interface.
   <varlistentry>
     <term><literal>auxClasspath</literal></term>
     <listitem>
-       <para>任意指定のネストされる要素です。分析対象のライブラリーまたはアプリケーションによって使用されているが分析の対象にはしたくないクラスを含んでいるクラスパス (Jar ファイルまたはディレクトリー) を指定します。  &Ant; の Java タスクにある <literal>classpath</literal> 要素 と同じ方法で指定することができます。</para>
+       <para>任意指定のネストされる要素です。解析対象のライブラリーまたはアプリケーションによって使用されているが解析の対象にはしたくないクラスを含んでいるクラスパス (Jar ファイルまたはディレクトリー) を指定します。  &Ant; の Java タスクにある <literal>classpath</literal> 要素 と同じ方法で指定することができます。</para>
     </listitem>
   </varlistentry>
 
   <varlistentry>
     <term><literal>sourcePath</literal></term>
     <listitem>
-       <para>任意指定のネストされる要素です。分析対象 Java コードのコンパイル時に使用したソースファイルを含んでいるソースディレクトリーへのパスを指定します。ソースパスを指定することにより、生成される XML のバグ出力結果に完全なソース情報をもたせることができ、後になって GUI で参照することができます。</para>
+       <para>任意指定のネストされる要素です。解析対象 Java コードのコンパイル時に使用したソースファイルを含んでいるソースディレクトリーへのパスを指定します。ソースパスを指定することにより、生成される XML のバグ出力結果に完全なソース情報をもたせることができ、後になって GUI で参照することができます。</para>
     </listitem>
   </varlistentry>
 
@@ -873,7 +873,7 @@ Command Line Interface.
   <varlistentry>
     <term><literal>quietErrors</literal></term>
     <listitem>
-       <para>任意指定のブール値属性です。true を設定すると、深刻な分析エラー発生やクラスがみつからないといった情報が &FindBugs; 出力に記録されません。デフォルトは、 false です。</para>
+       <para>任意指定のブール値属性です。true を設定すると、深刻な解析エラー発生やクラスがみつからないといった情報が &FindBugs; 出力に記録されません。デフォルトは、 false です。</para>
     </listitem>
   </varlistentry>
 
@@ -919,14 +919,14 @@ Command Line Interface.
   <varlistentry>
     <term><literal>debug</literal></term>
     <listitem>
-       <para>任意指定のブール値属性です。true に設定すると、 &FindBugs; は 診断情報を出力します。どのクラスを分析しているか、どのパグパターンディテクタが実行されているか、という情報が表示されます。デフォルトは、 false です。</para>
+       <para>任意指定のブール値属性です。true に設定すると、 &FindBugs; は 診断情報を出力します。どのクラスを解析しているか、どのパグパターンディテクタが実行されているか、という情報が表示されます。デフォルトは、 false です。</para>
     </listitem>
   </varlistentry>
 
   <varlistentry>
       <term><literal>effort</literal></term>
       <listitem>
-          <para>分析の活動レベルを設定します。<literal>min</literal> 、<literal>default</literal> または <literal>max</literal> のいずれかの値を設定してください。分析レベルの設定に関する詳細情報は、 <xref linkend="commandLineOptions"/> を参照してください。</para>
+          <para>解析の活動レベルを設定します。<literal>min</literal> 、<literal>default</literal> または <literal>max</literal> のいずれかの値を設定してください。解析レベルの設定に関する詳細情報は、 <xref linkend="commandLineOptions"/> を参照してください。</para>
       </listitem>
   </varlistentry>
 
@@ -990,14 +990,14 @@ Command Line Interface.
   <varlistentry>
     <term><literal>projectFile</literal></term>
     <listitem>
-       <para>任意指定の属性です。プロジェクトファイル名を指定します。プロジェクトファイルは、 &FindBugs; GUI で作成します。分析されるクラス、および、補助クラスパス、ソースディレクトリーが記入されてます。プロジェクトファイルを指定した場合は、 <literal>class</literal> 要素・ <literal>auxClasspath</literal> 属性および <literal>sourcePath</literal> 属性を設定する必要はありません。プロジェクトの作成方法は、 <xref linkend="running"/> を参照してください。</para>
+       <para>任意指定の属性です。プロジェクトファイル名を指定します。プロジェクトファイルは、 &FindBugs; GUI で作成します。解析されるクラス、および、補助クラスパス、ソースディレクトリーが記入されてます。プロジェクトファイルを指定した場合は、 <literal>class</literal> 要素・ <literal>auxClasspath</literal> 属性および <literal>sourcePath</literal> 属性を設定する必要はありません。プロジェクトの作成方法は、 <xref linkend="running"/> を参照してください。</para>
     </listitem>
   </varlistentry>
 
   <varlistentry>
     <term><literal>jvmargs</literal></term>
     <listitem>
-       <para>任意指定の属性です。&FindBugs; を実行している Java 仮想マシンに対して受け渡される引数を指定します。巨大なプログラムを分析する場合に、 JVM が使用するメモリ容量を増やす指定をするためにこの引数を利用する必要があるかもしれません。</para>
+       <para>任意指定の属性です。&FindBugs; を実行している Java 仮想マシンに対して受け渡される引数を指定します。巨大なプログラムを解析する場合に、 JVM が使用するメモリ容量を増やす指定をするためにこの引数を利用する必要があるかもしれません。</para>
     </listitem>
   </varlistentry>
 
@@ -1011,7 +1011,7 @@ Command Line Interface.
   <varlistentry>
     <term><literal>timeout</literal></term>
     <listitem>
-       <para>任意指定の属性です。&FindBugs; を実行している Java プロセス の実行許容時間をミリ秒単位で指定します。時間を超過するとハングアップしていると判断してプロセスが終了されます。デフォルトは、 600,000 ミリ秒 (10 分) です。巨大なプログラムの場合は、 &FindBugs; が分析を完了するまでに 10 分 以上掛かる可能性があることに注意してください。</para>
+       <para>任意指定の属性です。&FindBugs; を実行している Java プロセス の実行許容時間をミリ秒単位で指定します。時間を超過するとハングアップしていると判断してプロセスが終了されます。デフォルトは、 600,000 ミリ秒 (10 分) です。巨大なプログラムの場合は、 &FindBugs; が解析を完了するまでに 10 分 以上掛かる可能性があることに注意してください。</para>
     </listitem>
   </varlistentry>
 
@@ -1032,7 +1032,7 @@ Command Line Interface.
   <varlistentry>
       <term><literal>warningsProperty</literal></term>
       <listitem>
-          <para>任意指定の属性です。&FindBugs; が分析したプログラムにバグ報告が 1 件でもある場合に、「true」が設定されるプロパティーの名前を指定します。</para>
+          <para>任意指定の属性です。&FindBugs; が解析したプログラムにバグ報告が 1 件でもある場合に、「true」が設定されるプロパティーの名前を指定します。</para>
       </listitem>
   </varlistentry>
 
@@ -1053,8 +1053,8 @@ Command Line Interface.
       <term><literal>nested</literal></term>
       <listitem>
           <para>
-              任意指定の属性です。分析対象のファイル・ディレクトリーリストにあるファイル内にネストされた jar および zip ファイルに対する分析を有効化・無効化します。
-              デフォルトでは、ネストされた jar/zip の分析は有効です。
+              任意指定の属性です。解析対象のファイル・ディレクトリーリストにあるファイル内にネストされた jar および zip ファイルに対する解析を有効化・無効化します。
+              デフォルトでは、ネストされた jar/zip の解析は有効です。
           </para>
       </listitem>
   </varlistentry>
@@ -1216,7 +1216,7 @@ Eclipse プラグインでは、 独自の &FindBugs; ディテクタを追加�
 <itemizedlist>
   <listitem>
     <para>
-    Eclipse において &FindBugs; の分析開始後に OutOfMemory エラーダイアログが 出た場合は、
+    Eclipse において &FindBugs; の解析開始後に OutOfMemory エラーダイアログが 出た場合は、
     JVM の使用メモリを増やしてください。すなわち、 eclipse.ini の末尾に以下の記述を追加してください。
     <programlisting>
     -vmargs
@@ -1654,21 +1654,21 @@ Eclipse プラグインでは、 独自の &FindBugs; ディテクタを追加�
 -->
 
 <chapter id="analysisprops">
-<title>分析プロパティー</title>
+<title>解析プロパティー</title>
 
-<para>&FindBugs; は分析する場合にいくつかの観点を持っています。そして、観点をカスタマイズして実行することができます。システムプロパティーを使って、それらのオプションを設定します。この章では、分析オプションの設定方法を説明します。</para>
+<para>&FindBugs; は解析する場合にいくつかの観点を持っています。そして、観点をカスタマイズして実行することができます。システムプロパティーを使って、それらのオプションを設定します。この章では、解析オプションの設定方法を説明します。</para>
 
-<para>分析オプションの主な目的は、 2 つあります。1 番目は、 &FindBugs; に対して分析されるアプリケーションのメソッドの意味を伝えることです。そうすることで &FindBugs; がより正確な結果を出すことができ、誤検出を減らすことができます。2 番目に、分析を行うに当たりその精度を設定できるようにすることです。分析の精度を落とすことで、メモリ使用量と分析時間を減らすことができます。ただし、本当のバグを見逃したり、誤検出の数が増えるという代償があります。</para>
+<para>解析オプションの主な目的は、 2 つあります。1 番目は、 &FindBugs; に対して解析されるアプリケーションのメソッドの意味を伝えることです。そうすることで &FindBugs; がより正確な結果を出すことができ、誤検出を減らすことができます。2 番目に、解析を行うに当たりその精度を設定できるようにすることです。解析の精度を落とすことで、メモリ使用量と解析時間を減らすことができます。ただし、本当のバグを見逃したり、誤検出の数が増えるという代償があります。</para>
 
-<para>コマンドラインオプション <command>-property</command> を使って、分析オプションを設定することができます。次に、例を示します:<screen>
+<para>コマンドラインオプション <command>-property</command> を使って、解析オプションを設定することができます。次に、例を示します:<screen>
 <prompt>$ </prompt><command>findbugs -textui -property &quot;cfg.noprune=true&quot; <replaceable>myApp.jar</replaceable></command>
 </screen>
 </para>
 
-<para>設定することができる分析オプションの一覧を <xref linkend="analysisproptable"/> に示します。</para>
+<para>設定することができる解析オプションの一覧を <xref linkend="analysisproptable"/> に示します。</para>
 
 <table id="analysisproptable">
-<title>設定可能な分析プロパティー</title>
+<title>設定可能な解析プロパティー</title>
 <tgroup cols="3" align="left">
   <thead>
     <row>
@@ -2053,7 +2053,7 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 <chapter id="rejarForAnalysis">
 <title>rejarForAnalysis の使用方法</title>
 
-<para>プロジェクトに多くの jar ファイル があったり、 jar ファイルが多くのディレクトリに点在したりする場合は、 <command>rejarForAnalysis </command> スクリプトを使用すると FindBugs の実行が比較的簡単になります。このスクリプトは、数多い jar ファイルを集めて 1 つの大きな jar ファイルに結合します。そうすると、分析時にFindBugs に jar ファイルを設定することが比較的簡単になります。このスクリプトは、 unix システムの 'find' コマンドと組み合わせるととりわけ有用になります ; 次に例を示します。 <command>find . -name '*.jar' | xargs rejarForAnalysis </command>.</para>
+<para>プロジェクトに多くの jar ファイル があったり、 jar ファイルが多くのディレクトリに点在したりする場合は、 <command>rejarForAnalysis </command> スクリプトを使用すると FindBugs の実行が比較的簡単になります。このスクリプトは、数多い jar ファイルを集めて 1 つの大きな jar ファイルに結合します。そうすると、解析時にFindBugs に jar ファイルを設定することが比較的簡単になります。このスクリプトは、 unix システムの 'find' コマンドと組み合わせるととりわけ有用になります ; 次に例を示します。 <command>find . -name '*.jar' | xargs rejarForAnalysis </command>.</para>
 
 <para>また、 <command>rejarForAnalysis</command> スクリプトは巨大なプロジェクトを複数の jar ファイルに分割することに使用できます。プロジェクトのクラスファイルは、複数の jar ファイルに均等に配分されます。これは、プロジェクト全体に対して FindBugs を実行すると時間とメモリ消費が著しい場合に有用です。プロジェクト全体に対して FindBugs を実行する代わりに、 <command> rejarForAnalysis</command> ですべてのクラスを含む大きな jar ファイルを構築します。続いて、 <command>rejarForAnalysis</command> を再び実行して複数の jar ファイルに分割します。そして、各々の jar ファイルに対して順に FindBugs を実行します。その際、 <command>-auxclasspath</command> に最初に 1 つにまとめた jar ファイルを指定してください。</para>
 
@@ -2081,7 +2081,7 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
   <varlistentry>
     <term><command>-prefix</command> <replaceable>プレフィックス</replaceable></term>
     <listitem>
-       <para>分析するクラス名のプレフィックスを指定します  (例、 edu.umd.cs.) 。</para>
+       <para>解析するクラス名のプレフィックスを指定します  (例、 edu.umd.cs.) 。</para>
     </listitem>
   </varlistentry>
 </variablelist>
@@ -2096,13 +2096,13 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 <chapter id="datamining">
     <title>&FindBugs;&trade; によるデータ・マイニング</title>
 
-<para>バグデータベースへの高機能の問い合わせ機能、および、調査対象のコードの複数のバージョンにわたる警告の追跡記録機能を、 FindBugs は内蔵しています。これらを使って次のようなことができます。すなわち、いつバグが最初持ち込まれたかを捜し出すこと、最終リリース以後持ち込まれた警告の分析を行うこと、または、無限再起ループの数を時間軸でグラフにすることです。</para>
+<para>バグデータベースへの高機能の問い合わせ機能、および、調査対象のコードの複数のバージョンにわたる警告の追跡記録機能を、 FindBugs は内蔵しています。これらを使って次のようなことができます。すなわち、いつバグが最初持ち込まれたかを捜し出すこと、最終リリース以後持ち込まれた警告の解析を行うこと、または、無限再起ループの数を時間軸でグラフにすることです。</para>
 
-<para>これらの技術は、 FindBugs が警告の保存に使う XML 書式を使用します。これらの XML ファイルは、通常、特定の 1 分析に対する警告が入れられています。しかしそれらには、一連のソフトウェアのビルドやバージョンに対する分析結果を格納することもできます。</para>
+<para>これらの技術は、 FindBugs が警告の保存に使う XML 書式を使用します。これらの XML ファイルは、通常、特定の 1 解析に対する警告が入れられています。しかしそれらには、一連のソフトウェアのビルドやバージョンに対する解析結果を格納することもできます。</para>
 
-<para>すべての FindBugs XML バグデータベースには、バージョン名とタイム・スタンプ が入れられています。FindBugs は分析が行われるファイルの更新時刻からタイム・スタンプを計算します (例えば、タイム・スタンプはクラスファイルの生成時刻になるようになっています。分析が行われた時刻ではありません) 。各々のバグデータベースには、バージョン名も入れられています。バージョン名とタイム・スタンプは、 <command>setBugDatabaseInfo</command> (<xref linkend="setBugDatabaseInfo"/>) コマンドを使用して手動で設定することもできます。</para>
+<para>すべての FindBugs XML バグデータベースには、バージョン名とタイム・スタンプ が入れられています。FindBugs は解析が行われるファイルの更新時刻からタイム・スタンプを計算します (例えば、タイム・スタンプはクラスファイルの生成時刻になるようになっています。解析が行われた時刻ではありません) 。各々のバグデータベースには、バージョン名も入れられています。バージョン名とタイム・スタンプは、 <command>setBugDatabaseInfo</command> (<xref linkend="setBugDatabaseInfo"/>) コマンドを使用して手動で設定することもできます。</para>
 
-<para>複数バージョンを格納するバグデータベースにおいては、分析されるコードの各バージョンごとにシーケンス番号が割り当てられます。これらのシーケンス番号は単に 0 から始まる連続する整数値です (例えば、 4 つのコードバージョンを格納するバグデータベースには、バージョン 0~3 が入れられます) 。バグデータベースにはまた、各バージョンの名前とタイム・スタンプがそれぞれ記録されます。<command>filterBugs</command> コマンドを使用すると、シーケンス番号、バージョン名またはタイム・スタンプからバージョンを参照することができます。</para>
+<para>複数バージョンを格納するバグデータベースにおいては、解析されるコードの各バージョンごとにシーケンス番号が割り当てられます。これらのシーケンス番号は単に 0 から始まる連続する整数値です (例えば、 4 つのコードバージョンを格納するバグデータベースには、バージョン 0~3 が入れられます) 。バグデータベースにはまた、各バージョンの名前とタイム・スタンプがそれぞれ記録されます。<command>filterBugs</command> コマンドを使用すると、シーケンス番号、バージョン名またはタイム・スタンプからバージョンを参照することができます。</para>
 
 <para>1 バージョンを格納するバグデータベースの集合から、 1 個の複数バージョンバグデータベースを作成することができます。また、複数バージョンバグデータベースに対して、それ以後に作成された 1 バージョンのバグデータベースを結合することができます。</para>
 
@@ -2131,7 +2131,7 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
             <varlistentry>
                 <term><command><link linkend="unionBugs">unionBugs</link></command></term>
                 <listitem>
-                    <para>別のクラスに対する別個の分析結果を結合します。</para>
+                    <para>別のクラスに対する別個の解析結果を結合します。</para>
                 </listitem>
             </varlistentry>
             <varlistentry>
@@ -2182,9 +2182,9 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
         <sect2 id="unionBugs">
             <title>unionBugs</title>
 
-        <para>分析するのにアプリケーションの jar ファイルを分割している場合、このコマンドを使用することで、別個に生成された XML バグ警告ファイルをすべての警告を含んでいる 1 つの ファイルにすることができます。</para>
+        <para>解析するのにアプリケーションの jar ファイルを分割している場合、このコマンドを使用することで、別個に生成された XML バグ警告ファイルをすべての警告を含んでいる 1 つの ファイルにすることができます。</para>
 
-            <para>同じファイルの異なるバージョンを分析した結果を結合する場合は、このコマンドを<emphasis>使用しないでください</emphasis>。代わりに <command>computeBugHistory</command> を使用してください。</para>
+            <para>同じファイルの異なるバージョンを解析した結果を結合する場合は、このコマンドを<emphasis>使用しないでください</emphasis>。代わりに <command>computeBugHistory</command> を使用してください。</para>
 
             <para>XML ファイルは、コマンドラインで指定してください。結果は、標準出力に送られます。</para>
         </sect2>
@@ -2192,7 +2192,7 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
         <sect2 id="computeBugHistory">
             <title>computeBugHistory</title>
 
-<para>このコマンドを使用することで、分析するソフトウェアの異なるビルドまたはバージョンの情報を含むバグデータベースを生成することができます入力として提供したファイルの 1 番目のファイルから履歴が取得されます。後に続くファイルは 1 バージョンのバグデータベースであるようにしてください (もし、履歴を持っていたとしても無視されます) 。</para>
+<para>このコマンドを使用することで、解析するソフトウェアの異なるビルドまたはバージョンの情報を含むバグデータベースを生成することができます入力として提供したファイルの 1 番目のファイルから履歴が取得されます。後に続くファイルは 1 バージョンのバグデータベースであるようにしてください (もし、履歴を持っていたとしても無視されます) 。</para>
 <para>デフォルトでは、結果は標準出力に送られます。</para>
 
 <para>この機能は、 ant からも使用することができます。まず次に示すように、ビルドファイルに <command>computeBugHistory</command> を taskdef で定義します :</para>
@@ -2370,7 +2370,7 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
                       <row><entry>seq</entry><entry>シーケンス番号 (0 始まりの連続した整数値)</entry></row>
                       <row><entry>version</entry><entry>バージョン名</entry></row>
                       <row><entry>time</entry><entry>リリースされた日時</entry></row>
-                      <row><entry>classes</entry><entry>分析されたクラス数</entry></row>
+                      <row><entry>classes</entry><entry>解析されたクラス数</entry></row>
                       <row><entry>NCSS</entry><entry>コメント文を除いた命令数 (Non Commenting Source Statements)</entry></row>
                       <row><entry>added</entry><entry>前回のバージョンに存在したクラスにおける新規警告数</entry></row>
                       <row><entry>newCode</entry><entry>前回のバージョンに存在しなかったクラスにおける新規警告数</entry></row>
@@ -2518,7 +2518,7 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
                   <tbody>
                       <row><entry>version</entry><entry>バージョン名</entry></row>
                       <row><entry>time</entry><entry>リリースされた日時</entry></row>
-                      <row><entry>classes</entry><entry>分析されたクラス数</entry></row>
+                      <row><entry>classes</entry><entry>解析されたクラス数</entry></row>
                       <row><entry>NCSS</entry><entry>コメント文を除いた命令数 (Non Commenting Source Statements)</entry></row>
                       <row><entry>total</entry><entry>全警告数</entry></row>
                       <row><entry>high</entry><entry>優先度(高)の警告の総数</entry></row>
@@ -2721,7 +2721,7 @@ computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
       <antcall target="mine" />
    </target>
 
-   <!-- 分析を行うタスク-->
+   <!-- 解析を行うタスク-->
    <target name="analyze">
       <!-- asm-util に対して findbugs を実行する -->
       <findbugs home="${findbugs.home}"
@@ -2742,7 +2742,7 @@ computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
 
    <target name="mine">
 
-      <!-- 最新の分析結果に情報を設定する -->
+      <!-- 最新の解析結果に情報を設定する -->
       <setBugDatabaseInfo home="${findbugs.home}"
                             withMessages="true"
                             name="asm-util-3.0.jar"

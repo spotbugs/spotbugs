@@ -37,4 +37,3 @@ import edu.umd.cs.findbugs.classfile.IErrorLogger;
 // TODO: Rename this interface?
 public interface RepositoryLookupFailureCallback extends IErrorLogger {
 }
-

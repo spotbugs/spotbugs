@@ -34,16 +34,17 @@ public abstract class NullnessConversationInstruction extends ConversionInstruct
     }
 
     @Override
-    public Type getType( ConstantPoolGen cp ) {
+    public Type getType(ConstantPoolGen cp) {
         return Type.BOOLEAN;
     }
 
     @Override
-    public int consumeStack( ConstantPoolGen cpg ) {
+    public int consumeStack(ConstantPoolGen cpg) {
         return 1;
     }
+
     @Override
-    public int produceStack( ConstantPoolGen cpg ) {
+    public int produceStack(ConstantPoolGen cpg) {
         return 1;
     }
 
@@ -51,6 +52,7 @@ public abstract class NullnessConversationInstruction extends ConversionInstruct
     public int hashCode() {
         return this.getClass().hashCode();
     }
+
     /**
      * Call corresponding visitor method(s). The order is:
      * Call visitor methods of implemented interfaces first, then
@@ -60,7 +62,7 @@ public abstract class NullnessConversationInstruction extends ConversionInstruct
      * @param v Visitor object
      */
     @Override
-    public void accept( Visitor v ) {
+    public void accept(Visitor v) {
         v.visitTypedInstruction(this);
         v.visitStackProducer(this);
         v.visitStackConsumer(this);

@@ -39,9 +39,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * @author Garvin LeClaire
  */
 public class XDocsBugReporter extends TextUIBugReporter {
-    final private SortedBugCollection bugCollection;
+    private final SortedBugCollection bugCollection;
 
-    final private Project project;
+    private final Project project;
 
     private final Document document;
 
@@ -93,6 +93,16 @@ public class XDocsBugReporter extends TextUIBugReporter {
     }
 
     @Override
+    public void reportMissingClass(ClassDescriptor classDescriptor) {
+        String missing = classDescriptor.getDottedClassName();
+        if (!isValidMissingClassMessage(missing)) {
+            return;
+        }
+        bugCollection.addMissingClass(missing);
+        super.reportMissingClass(classDescriptor);
+    }
+
+    @Override
     public void doReportBug(BugInstance bugInstance) {
         if (bugCollection.add(bugInstance)) {
             printBug(bugInstance);
@@ -121,10 +131,10 @@ public class XDocsBugReporter extends TextUIBugReporter {
     }
 
     private void writeXML(Writer out, Project project) throws IOException {
-        Document document = endDocument(project);
+        Document doc = endDocument(project);
 
         XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
-        writer.write(document);
+        writer.write(doc);
     }
 
     private Document endDocument(Project project) {
@@ -218,10 +228,8 @@ public class XDocsBugReporter extends TextUIBugReporter {
      */
 
     @Override
-    public @Nonnull
-    BugCollection getBugCollection() {
+    public @Nonnull BugCollection getBugCollection() {
         return bugCollection;
     }
 
 }
-

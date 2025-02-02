@@ -30,7 +30,7 @@ package edu.umd.cs.findbugs.ba;
 public abstract class ForwardDataflowAnalysis<Fact> extends AbstractDataflowAnalysis<Fact> {
     private final DepthFirstSearch dfs;
 
-    public ForwardDataflowAnalysis(DepthFirstSearch dfs) {
+    protected ForwardDataflowAnalysis(DepthFirstSearch dfs) {
         if (dfs == null) {
             throw new IllegalArgumentException();
         }
@@ -51,4 +51,3 @@ public abstract class ForwardDataflowAnalysis<Fact> extends AbstractDataflowAnal
         return new ReversePostOrder(cfg, dfs);
     }
 }
-

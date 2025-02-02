@@ -61,6 +61,7 @@ import edu.umd.cs.findbugs.util.ExactStringMatcher;
 import edu.umd.cs.findbugs.util.RegexStringMatcher;
 import edu.umd.cs.findbugs.util.SplitCamelCaseIdentifier;
 import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * Build the ObligationPolicyDatabase used by ObligationAnalysis. We preload the
@@ -140,7 +141,16 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
         database = new ObligationPolicyDatabase();
         addBuiltInPolicies();
-        URL u = DetectorFactoryCollection.getCoreResource("obligationPolicy.db");
+
+        loadDatabase(DetectorFactoryCollection.getCoreResource("obligationPolicy.db"));
+        loadDatabase(getClass().getResource("/edu/umd/cs/findbugs/detect/obligationPolicy.db"));
+
+        scanForResourceTypes();
+
+        Global.getAnalysisCache().eagerlyPutDatabase(ObligationPolicyDatabase.class, database);
+    }
+
+    public void loadDatabase(URL u) {
         try {
             if (u != null) {
                 AuxiliaryObligationPropertyDatabase db = new AuxiliaryObligationPropertyDatabase();
@@ -159,9 +169,6 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         } catch (Exception e) {
             AnalysisContext.logError("Unable to read " + u, e);
         }
-        scanForResourceTypes();
-
-        Global.getAnalysisCache().eagerlyPutDatabase(ObligationPolicyDatabase.class, database);
     }
 
     @Override
@@ -347,7 +354,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
      */
     private void addFileStreamEntries(String kind) {
         Obligation obligation = database.getFactory().addObligation("java.io." + kind);
-        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.io.File" + kind)),
+        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance(Values.DOTTED_JAVA_IO_FILE + kind)),
                 new ExactStringMatcher("<init>"), new RegexStringMatcher(".*"), false, ObligationPolicyDatabaseActionType.ADD,
                 ObligationPolicyDatabaseEntryType.STRONG, obligation));
         database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.io." + kind)),

@@ -40,4 +40,3 @@ public interface CFGBuilder {
      */
     public CFG getCFG();
 }
-

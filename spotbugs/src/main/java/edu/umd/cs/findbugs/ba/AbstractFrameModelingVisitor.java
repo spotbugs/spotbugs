@@ -63,7 +63,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
      * @param cpg
      *            the ConstantPoolGen of the method to be analyzed
      */
-    public AbstractFrameModelingVisitor(ConstantPoolGen cpg) {
+    protected AbstractFrameModelingVisitor(ConstantPoolGen cpg) {
         this.frame = null;
         this.cpg = cpg;
     }
@@ -1092,6 +1092,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     public void visitIXOR(IXOR obj) {
         handleNormalInstruction(obj);
     }
+
     @Override
     public void visitINVOKEDYNAMIC(INVOKEDYNAMIC obj) {
         handleNormalInstruction(obj);
@@ -1277,4 +1278,3 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
         handleNormalInstruction(obj);
     }
 }
-

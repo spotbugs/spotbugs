@@ -76,4 +76,3 @@ public class Store extends FieldAccess {
         return checkConsistent(field, value, bindingSet);
     }
 }
-

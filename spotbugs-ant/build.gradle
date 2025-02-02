@@ -1,50 +1,38 @@
-plugins {
-  id "com.github.spotbugs" version "1.5"
-}
-
+apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
-  compile project(':spotbugs')
-  compile 'org.apache.ant:ant:1.9.4'
+  implementation project(':spotbugs')
+  compileOnly 'org.apache.ant:ant:1.10.15'
+
+  testImplementation 'org.apache.ant:ant:1.10.15'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+  testImplementation 'org.hamcrest:hamcrest:3.0'
 }
 
-javadoc {
+tasks.named('javadoc', Javadoc).configure {
   options.with {
     memberLevel = JavadocMemberLevel.PUBLIC
     docTitle = 'SpotBugs Ant Task Documentation'
   }
 }
 
-jar {
+tasks.named('jar', Jar).configure {
   // To keep backward compatibility, delete version number from jar name
-  archiveName "${baseName}.${extension}"
+  archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
 }
 
-task javadocJar(type: Jar) {
-  classifier = 'javadoc'
-  from javadoc
+java {
+  withJavadocJar()
+  withSourcesJar()
 }
 
-task sourcesJar(type: Jar) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
-}
-
-artifacts {
-  archives jar, javadocJar, sourcesJar
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name 'SpotBugs Ant Task'
-        description 'Ant Task to run SpotBugs'
-      }
-    }
+publishing.publications.maven {
+  pom {
+    name = 'SpotBugs Ant Task'
+    description = 'Ant Task to run SpotBugs'
   }
 }
 
@@ -52,8 +40,3 @@ uploadArchives {
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
 ext.moduleName = 'com.github.spotbugs.ant'
 apply from: "$rootDir/gradle/jigsaw.gradle"
-
-spotbugs {
-  effort = "max"
-  reportLevel = "high"
-}

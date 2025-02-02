@@ -26,7 +26,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import de.tobject.findbugs.util.ProjectUtilities;
 
 /**
- * Callback object responsible for saving the uncomitted state of any
+ * Callback object responsible for saving the uncommitted state of any
  * FindBugs-enabled projects.
  *
  * @author David Hovemeyer

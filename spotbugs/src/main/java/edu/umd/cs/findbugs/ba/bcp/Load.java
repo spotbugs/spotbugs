@@ -76,4 +76,3 @@ public class Load extends FieldAccess {
         return checkConsistent(field, result, bindingSet);
     }
 }
-

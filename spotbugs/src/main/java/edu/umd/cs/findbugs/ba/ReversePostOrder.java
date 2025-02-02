@@ -61,4 +61,3 @@ public class ReversePostOrder extends AbstractBlockOrder {
         super(cfg, new ReversePostfixComparator(dfs));
     }
 }
-

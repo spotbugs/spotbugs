@@ -68,7 +68,7 @@ public class BugContentProvider implements ICommonContentProvider {
 
     public static boolean DEBUG;
 
-    private final static IMarker[] EMPTY = new IMarker[0];
+    private static final IMarker[] EMPTY = new IMarker[0];
 
     private final RefreshJob refreshJob;
 
@@ -364,20 +364,20 @@ public class BugContentProvider implements ICommonContentProvider {
             Identifier id = mapper.getIdentifier(marker);
             if (id == null) {
                 String pluginId = MarkerUtil.getPluginId(marker);
-                if(pluginId.length() == 0 || disabledPlugins.contains(pluginId)){
+                if (pluginId.isEmpty() || disabledPlugins.contains(pluginId)) {
                     // do not report errors for disabled plugins
                     continue;
                 }
                 try {
                     String debugDescription = mapper.getDebugDescription(marker);
-                    if(errorMessages.contains(debugDescription)) {
+                    if (errorMessages.contains(debugDescription)) {
                         continue;
                     }
                     errorMessages.add(debugDescription);
-                    if(FindbugsPlugin.getDefault().isDebugging()){
+                    if (FindbugsPlugin.getDefault().isDebugging()) {
                         FindbugsPlugin.getDefault().logWarning(
-                            "BugContentProvider.createGroups: failed to find " + debugDescription + " for marker on file "
-                                    + marker.getResource());
+                                "BugContentProvider.createGroups: failed to find " + debugDescription + " for marker on file "
+                                        + marker.getResource());
                     }
                 } catch (CoreException e) {
                     FindbugsPlugin.getDefault().logException(e, "Exception on retrieving debug data for: " + mapper.getType());
@@ -385,7 +385,7 @@ public class BugContentProvider implements ICommonContentProvider {
                 continue;
             }
             if (!groupIds.containsKey(id)) {
-                groupIds.put(id, new HashSet<IMarker>());
+                groupIds.put(id, new HashSet<>());
             }
             groupIds.get(id).add(marker);
         }
@@ -411,12 +411,7 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     private IMarker[] getMarkers(IResource resource) {
-        if (resource instanceof IProject) {
-            if (!((IProject) resource).isAccessible()) {
-                return EMPTY;
-            }
-        }
-        if (!resourceFilter.contains(resource)) {
+        if ((resource instanceof IProject && !((IProject) resource).isAccessible()) || !resourceFilter.contains(resource)) {
             return EMPTY;
         }
         return MarkerUtil.getAllMarkers(resource);
@@ -456,7 +451,7 @@ public class BugContentProvider implements ICommonContentProvider {
     protected void initWorkingSet(String workingSetName) {
         IWorkingSet workingSet = null;
 
-        if (workingSetName != null && workingSetName.length() > 0) {
+        if (workingSetName != null && !workingSetName.isEmpty()) {
             IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
             workingSet = workingSetManager.getWorkingSet(workingSetName);
         } /*
@@ -507,8 +502,8 @@ public class BugContentProvider implements ICommonContentProvider {
                 addMarker(changedMarker, changedParents, patternFilter);
                 break;
             default:
-                    FindbugsPlugin.getDefault()
-                    .logWarning("UKNOWN delta change kind" + delta.changeKind);
+                FindbugsPlugin.getDefault()
+                        .logWarning("UNKNOWN delta change kind" + delta.changeKind);
 
             }
         }
@@ -554,10 +549,10 @@ public class BugContentProvider implements ICommonContentProvider {
 
         Identifier id = mapper.getIdentifier(marker);
         if (id == null) {
-            if(FindbugsPlugin.getDefault().isDebugging()){
+            if (FindbugsPlugin.getDefault().isDebugging()) {
                 FindbugsPlugin.getDefault().logWarning(
-                    "BugContentProvider.createPatternGroups: " + "Failed to find bug id of type " + mapper.getType()
-                            + " for marker on file " + marker.getResource());
+                        "BugContentProvider.createPatternGroups: " + "Failed to find bug id of type " + mapper.getType()
+                                + " for marker on file " + marker.getResource());
             }
             return;
         }

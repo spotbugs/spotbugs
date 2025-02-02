@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
+import java.util.Objects;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
@@ -38,7 +39,6 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.EditDistance;
-import edu.umd.cs.findbugs.util.Util;
 
 public class FindSelfComparison extends OpcodeStackDetector {
 
@@ -59,6 +59,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
     int lastMethodCall;
 
     static final boolean DEBUG = SystemProperties.getBoolean("fsc.debug");
+
     @Override
     public void visit(Code obj) {
         if (DEBUG) {
@@ -168,7 +169,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 
         } else if (isReturn(seen)) {
             resetDoubleAssignmentState();
-        } else if (seen == Const.GETFIELD && Util.nullSafeEquals(getXFieldOperand(), putFieldXField)) {
+        } else if (seen == Const.GETFIELD && Objects.equals(getXFieldOperand(), putFieldXField)) {
             OpcodeStack.Item obj = stack.getStackItem(0);
             if (obj.sameValue(putFieldObj)) {
                 resetDoubleAssignmentState();
@@ -198,9 +199,9 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 String sig = getSigConstantOperand();
                 SignatureParser parser = new SignatureParser(sig);
                 int numParameters = parser.getNumParameters();
-                if ((numParameters == 1 ||  seen == Const.INVOKESTATIC && numParameters  == 2)
+                if ((numParameters == 1 || seen == Const.INVOKESTATIC && numParameters == 2)
                         && (booleanComparisonMethod && sig.endsWith(";)Z")
-                                ||  FindSelfComparison2.comparatorMethod(name) && sig.endsWith(";)I"))) {
+                                || FindSelfComparison2.comparatorMethod(name) && sig.endsWith(";)I"))) {
                     checkForSelfOperation(seen, "COMPARISON");
                 }
             }
@@ -293,7 +294,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
                     if (firstPos < lastMethodCall && lastPos - firstPos > 4) {
                         return;
                     }
-                    linesDifference = (lastPos - firstPos)/10;
+                    linesDifference = (lastPos - firstPos) / 10;
                 }
             }
             XField field0 = item0.getXField();
@@ -313,7 +314,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 }
 
                 BugInstance bug = new BugInstance(this, "SA_FIELD_SELF_" + op, priority)
-                .addClassAndMethod(this).addField(field0);
+                        .addClassAndMethod(this).addField(field0);
 
                 if (this.isMethodCall()) {
                     bug.addCalledMethod(this);
@@ -321,12 +322,13 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 bugAccumulator.accumulateBug(bug, this);
             }
 
-            else if (opCode == Const.IXOR && item0.sameValue(item1)) {
+            else if (item0.sameValue(item1)) {
                 LocalVariableAnnotation localVariableAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(this, item0);
                 if (localVariableAnnotation != null) {
                     bugAccumulator.accumulateBug(
-                            new BugInstance(this, "SA_LOCAL_SELF_" + op, linesDifference > 1 ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(this).add(
-                                    localVariableAnnotation), this);
+                            new BugInstance(this, "SA_LOCAL_SELF_" + op, linesDifference > 1 ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(
+                                    this).add(
+                                            localVariableAnnotation), this);
                 }
             }
         }

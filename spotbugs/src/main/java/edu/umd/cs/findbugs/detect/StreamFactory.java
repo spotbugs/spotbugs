@@ -51,4 +51,3 @@ public interface StreamFactory {
     public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
             RepositoryLookupFailureCallback lookupFailureCallback);
 }
-

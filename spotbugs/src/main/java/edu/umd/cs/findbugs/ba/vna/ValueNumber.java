@@ -157,4 +157,3 @@ public class ValueNumber implements Comparable<ValueNumber> {
 
     }
 }
-

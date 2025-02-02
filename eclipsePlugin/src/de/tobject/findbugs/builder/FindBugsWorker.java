@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.dom4j.DocumentException;
@@ -114,7 +115,7 @@ public class FindBugsWorker {
      *             or is not open
      */
     public FindBugsWorker(IProject project, IProgressMonitor monitor) throws CoreException {
-        this((IResource)project, monitor);
+        this((IResource) project, monitor);
     }
 
     /**
@@ -207,7 +208,7 @@ public class FindBugsWorker {
         findBugs.setAnalysisFeatureSettings(userPrefs.getAnalysisFeatureSettings());
         findBugs.setMergeSimilarWarnings(false);
 
-        if(cacheClassData) {
+        if (cacheClassData) {
             FindBugs2Eclipse.checkClassPathChanges(findBugs.getProject().getAuxClasspathEntryList(), project);
         }
 
@@ -303,7 +304,7 @@ public class FindBugsWorker {
      *            fb engine, which will be <b>disposed</b> after the analysis is
      *            done
      */
-    private void runFindBugs(final FindBugs2 findBugs) {
+    private static void runFindBugs(final FindBugs2 findBugs) {
         if (DEBUG) {
             FindbugsPlugin.log("Running findbugs in thread " + Thread.currentThread().getName());
         }
@@ -311,18 +312,38 @@ public class FindBugsWorker {
         try {
             // Perform the analysis! (note: This is not thread-safe)
             findBugs.execute();
-        } catch (InterruptedException e) {
-            if (DEBUG) {
-                FindbugsPlugin.getDefault().logException(e, "Worker interrupted");
+        } catch (Exception e) {
+            if (isInterrupted(e)) {
+                if (DEBUG) {
+                    FindbugsPlugin.getDefault().logException(e, "Worker interrupted");
+                }
+            } else {
+                FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs analysis");
             }
-            Thread.currentThread().interrupt();
-        } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs analysis");
         } finally {
             findBugs.dispose();
         }
 
     }
+
+    private static boolean isInterrupted(Exception e) {
+        if (e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+            return true;
+        }
+        Throwable cause = e.getCause();
+        if (cause instanceof InterruptedException) {
+            return true;
+        }
+        if (cause instanceof ExecutionException) {
+            ExecutionException ee = (ExecutionException) cause;
+            if (ee.getCause() instanceof InterruptedException) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Update the BugCollection for the project.
      *
@@ -339,15 +360,13 @@ public class FindBugsWorker {
 
             st.newPoint("mergeBugCollections");
             SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection, newBugCollection, incremental);
-             resultCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
+            resultCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
             resultCollection.setTimestamp(System.currentTimeMillis());
 
             // will store bugs in the default FB file + Eclipse project session
             // props
             st.newPoint("storeBugCollection");
             FindbugsPlugin.storeBugCollection(project, resultCollection, monitor);
-        } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs results update");
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs results update");
         }
@@ -365,15 +384,13 @@ public class FindBugsWorker {
         // unknown bug instances appearing (merged collection doesn't contain
         // all bugs)
         boolean copyDeadBugs = incremental;
-        SortedBugCollection merged = (SortedBugCollection) (update.mergeCollections(firstCollection, secondCollection,
-                copyDeadBugs, incremental));
-        return merged;
+        return (SortedBugCollection) (update.mergeCollections(firstCollection, secondCollection, copyDeadBugs, incremental));
     }
 
     private Map<String, Boolean> relativeToAbsolute(Map<String, Boolean> map) {
         Map<String, Boolean> resultMap = new TreeMap<>();
         for (Entry<String, Boolean> entry : map.entrySet()) {
-            if(!entry.getValue().booleanValue()) {
+            if (!entry.getValue().booleanValue()) {
                 continue;
             }
             String filePath = entry.getKey();
@@ -465,8 +482,7 @@ public class FindBugsWorker {
             return filePath;
         }
         // since Equinox 3.5 we can use IPath.makeRelativeTo(IPath)
-        IPath relativeTo = filePath.makeRelativeTo(commonPath);
-        return relativeTo;
+        return filePath.makeRelativeTo(commonPath);
     }
 
     /**
@@ -495,7 +511,7 @@ public class FindBugsWorker {
             IClasspathEntry classpathEntry = entries[i];
             if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
                 IPath outputLocation = ResourceUtils.getOutputLocation(classpathEntry, defaultOutputLocation);
-                if(outputLocation == null) {
+                if (outputLocation == null) {
                     continue;
                 }
                 IResource cpeResource = root.findMember(classpathEntry.getPath());
@@ -506,7 +522,7 @@ public class FindBugsWorker {
                 }
                 // TODO not clear if it is absolute in workspace or in global FS
                 IPath srcLocation = ResourceUtils.relativeToAbsolute(classpathEntry.getPath());
-                if(srcLocation != null) {
+                if (srcLocation != null) {
                     srcToOutputMap.put(srcLocation, outputLocation);
                 }
             }

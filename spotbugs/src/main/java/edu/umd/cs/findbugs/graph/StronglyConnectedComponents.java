@@ -17,8 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.17 $
-
 package edu.umd.cs.findbugs.graph;
 
 import java.util.ArrayList;
@@ -196,4 +194,3 @@ public class StronglyConnectedComponents<GraphType extends Graph<EdgeType, Verte
     }
 
 }
-

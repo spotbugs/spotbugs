@@ -185,7 +185,7 @@ public class ClassParser implements ClassParserInterface {
     }
 
     public static void extractReferencedClassesFromSignature(Set<ClassDescriptor> referencedClassSet, String signature) {
-        while (signature.length() > 0) {
+        while (!signature.isEmpty()) {
             int start = signature.indexOf('L');
             if (start < 0) {
                 break;
@@ -227,7 +227,7 @@ public class ClassParser implements ClassParserInterface {
         null, // 14:
         "bi", // 15: CONSTANT_MethodHandle
         "i", // 16: CONSTANT_MethodType
-        null, // 17:
+        "ii", // 17: CONSTANT_Dynamic
         "ii", // 18: CONSTANT_InvokeDynamic
         "i", // 19: CONSTANT_Module
         "i", // 20: CONSTANT_Package
@@ -292,8 +292,7 @@ public class ClassParser implements ClassParserInterface {
      * @return the class name
      * @throws InvalidClassFileFormatException
      */
-    private @SlashedClassName
-    String getClassName(int index) throws InvalidClassFileFormatException {
+    private @SlashedClassName String getClassName(int index) throws InvalidClassFileFormatException {
         if (index == 0) {
             return null;
         }
@@ -303,9 +302,7 @@ public class ClassParser implements ClassParserInterface {
         checkConstantTag(constant, IClassConstants.CONSTANT_Class);
 
         int refIndex = ((Integer) constant.data[0]).intValue();
-        String stringValue = getUtf8String(refIndex);
-
-        return stringValue;
+        return getUtf8String(refIndex);
     }
 
     /**
@@ -395,7 +392,7 @@ public class ClassParser implements ClassParserInterface {
      *
     private MethodDescriptor readMethod(ClassDescriptor thisClassDescriptor) throws InvalidClassFileFormatException, IOException {
         return readFieldOrMethod(thisClassDescriptor, new FieldOrMethodDescriptorCreator<MethodDescriptor>() {
-
+    
             @Override
             public MethodDescriptor create(String className, String name, String signature, int accessFlags) {
                 return DescriptorFactory.instance().getMethodDescriptor(className, name, signature,
@@ -423,7 +420,7 @@ public class ClassParser implements ClassParserInterface {
         int name_index = in.readUnsignedShort();
         int descriptor_index = in.readUnsignedShort();
         int attributes_count = in.readUnsignedShort();
-
+    
         String name = getUtf8String(name_index);
         String signature = getUtf8String(descriptor_index);
         if (attributes_count < 0) {
@@ -432,7 +429,7 @@ public class ClassParser implements ClassParserInterface {
         for (int i = 0; i < attributes_count; i++) {
             readAttribute();
         }
-
+    
         return creator.create(thisClassDescriptor.getClassName(), name, signature, access_flags);
     }*/
 
@@ -445,12 +442,12 @@ public class ClassParser implements ClassParserInterface {
     private void readAttribute() throws IOException, InvalidClassFileFormatException {
         int attribute_name_index = in.readUnsignedShort();
         String attrName = getUtf8String(attribute_name_index);
-
+    
         int attribute_length = in.readInt();
         if (attribute_length < 0) {
             throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
         }
-
+    
         if (attrName.equals("InnerClasses")) {
             readInnerClassesAttribute(attribute_length);
         } else {
@@ -471,13 +468,13 @@ public class ClassParser implements ClassParserInterface {
         if (attribute_length != number_of_classes * 8) {
             throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
         }
-
+    
         for (int i = 0; i < number_of_classes; i++) {
             int inner_class_info_index = in.readUnsignedShort();
             int outer_class_info_index = in.readUnsignedShort();
             int inner_name_index = in.readUnsignedShort();
             int inner_class_access_flags = in.readUnsignedShort();
-
+    
             //            if (outer_class_info_index != 0) {
             //                // Record which class this class is a member of.
             //                this.immediateEnclosingClass = getClassDescriptor(outer_class_info_index);

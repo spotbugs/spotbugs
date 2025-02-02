@@ -80,8 +80,7 @@ public class BugAccumulator {
         performAccumulation = AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.MERGE_SIMILAR_WARNINGS);
     }
 
-    public @CheckForNull
-    SourceLineAnnotation getLastBugLocation() {
+    public @CheckForNull SourceLineAnnotation getLastBugLocation() {
         return lastSourceLine;
     }
 
@@ -195,7 +194,7 @@ public class BugAccumulator {
                 bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
             } /* else if (false && SystemProperties.ASSERTIONS_ENABLED) {
                 AnalysisContext.logError("Skipping duplicated source warning for " + bug.getInstanceHash() + " " + bug.getMessage());
-            }*/
+              }*/
         }
         reporter.reportBug(bug);
     }

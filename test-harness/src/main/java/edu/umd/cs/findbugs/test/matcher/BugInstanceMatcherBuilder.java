@@ -131,7 +131,7 @@ public class BugInstanceMatcherBuilder {
         final ClassFileLocator locator = new ClassFileLocator();
         final File smapFile = new File(locator.getJspFilePath(jspFile) + ".smap");
         if (!smapFile.exists()) {
-            throw new RuntimeException("SMAP File are missing. ("+smapFile+")");
+            throw new RuntimeException("SMAP File are missing. (" + smapFile + ")");
         }
         try {
             //Convert
@@ -139,13 +139,12 @@ public class BugInstanceMatcherBuilder {
             final SmapParser smapParser = new SmapParser(contents);
             final List<Integer> javaLineNumbers = smapParser.getJavaLineNumbers(jspLine);
             if (javaLineNumbers.isEmpty()) {
-                throw new RuntimeException("Unable to find the mapping for the JSP line "+jspLine);
+                throw new RuntimeException("Unable to find the mapping for the JSP line " + jspLine);
             }
 
             return javaLineNumbers;
-        }
-        catch (IOException e) {
-            throw new RuntimeException("Unable to open the smap file.",e);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to open the smap file.", e);
         }
     }
 

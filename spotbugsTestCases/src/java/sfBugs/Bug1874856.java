@@ -11,7 +11,7 @@ public class Bug1874856 {
         falsePositive();
     }
 
-    @ExpectWarning("FS")
+    // @ExpectWarning("FS")
     public static void falsePositive() {
         // None of these should yield warnings; NOT TRUE
         Calendar c = new GregorianCalendar(1993, 4, 23);

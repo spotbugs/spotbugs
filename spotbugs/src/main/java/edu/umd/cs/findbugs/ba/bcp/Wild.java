@@ -104,4 +104,3 @@ public class Wild extends PatternElement {
         return new MatchResult(this, bindingSet);
     }
 }
-

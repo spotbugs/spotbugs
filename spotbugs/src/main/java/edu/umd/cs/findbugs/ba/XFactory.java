@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -61,6 +62,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.SplitCamelCaseIdentifier;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -82,6 +84,10 @@ public class XFactory {
 
     private final Set<XField> emptyArrays = new HashSet<>();
 
+    /**
+     * @deprecated This field is not updated by any code in the project. Will be removed in 5.x release.
+     */
+    @Deprecated
     private final Set<String> calledMethodSignatures = new HashSet<>();
 
     private final Set<MethodDescriptor> functionsThatMightBeMistakenForProcedures = new HashSet<>();
@@ -152,6 +158,7 @@ public class XFactory {
     public boolean isFunctionshatMightBeMistakenForProcedures(MethodDescriptor m) {
         return functionsThatMightBeMistakenForProcedures.contains(m);
     }
+
     public Set<ClassDescriptor> getReflectiveClasses() {
         return reflectiveClasses;
     }
@@ -220,6 +227,10 @@ public class XFactory {
 
     }
 
+    /**
+     * @deprecated This method does not work as expected. Will be removed in 5.x release.
+     */
+    @Deprecated
     public boolean nameAndSignatureIsCalled(XMethod m) {
         return calledMethodSignatures.contains(getDetailedSignature(m));
     }
@@ -372,9 +383,7 @@ public class XFactory {
                 desc = DescriptorFactory.instance().getMethodDescriptor(superClass.getClassName(), desc.getName(),
                         desc.getSignature(), desc.isStatic());
             }
-        } catch (CheckedAnalysisException e) {
-            assert true;
-        } catch (RuntimeException e) {
+        } catch (CheckedAnalysisException | RuntimeException e) {
             assert true;
         }
         UnresolvedXMethod xmethod = new UnresolvedXMethod(originalDescriptor);
@@ -462,7 +471,7 @@ public class XFactory {
         return createXField(fieldDesc);
     }
 
-    public final static boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
+    public static final boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
 
     public static XField createXField(FieldInstruction fieldInstruction, ConstantPoolGen cpg) {
         String className = fieldInstruction.getClassName(cpg);
@@ -536,14 +545,12 @@ public class XFactory {
         return getExactXField(fieldDesc);
     }
 
-    public static @Nonnull
-    XField getExactXField(@SlashedClassName String className, Field f) {
+    public static @Nonnull XField getExactXField(@SlashedClassName String className, Field f) {
         FieldDescriptor fd = DescriptorFactory.instance().getFieldDescriptor(className, f);
         return getExactXField(fd);
     }
 
-    public static @Nonnull
-    XField getExactXField(FieldDescriptor desc) {
+    public static @Nonnull XField getExactXField(FieldDescriptor desc) {
         XFactory xFactory = AnalysisContext.currentXFactory();
 
         XField f = xFactory.fields.get(desc);
@@ -591,9 +598,7 @@ public class XFactory {
                     worklist.add(superClass);
                 }
                 if (originalDescriptor.isStatic()) {
-                    for (ClassDescriptor i : xClass.getInterfaceDescriptorList()) {
-                        worklist.add(i);
-                    }
+                    Collections.addAll(worklist, xClass.getInterfaceDescriptorList());
                 }
 
             }
@@ -624,7 +629,7 @@ public class XFactory {
             // use this method. So *at least* provide a valid class name, which is
             // (don't ask me why) is encoded in the first argument type of the lambda
             // className = invokeInstruction.getArgumentTypes(cpg)[0].toString();
-            className = "java.lang.Object";
+            className = Values.DOTTED_JAVA_LANG_OBJECT;
         }
         return createXMethod(className, methodName, methodSig, invokeInstruction.getOpcode() == Const.INVOKESTATIC);
     }
@@ -640,8 +645,7 @@ public class XFactory {
     public static XMethod createXMethod(PreorderVisitor visitor) {
         JavaClass javaClass = visitor.getThisClass();
         Method method = visitor.getMethod();
-        XMethod m = createXMethod(javaClass, method);
-        return m;
+        return createXMethod(javaClass, method);
     }
 
     /**
@@ -655,8 +659,7 @@ public class XFactory {
     public static XField createXField(PreorderVisitor visitor) {
         JavaClass javaClass = visitor.getThisClass();
         Field field = visitor.getField();
-        XField f = createXField(javaClass, field);
-        return f;
+        return createXField(javaClass, field);
     }
 
     public static XMethod createXMethod(MethodGen methodGen) {
@@ -680,8 +683,7 @@ public class XFactory {
      * @return an XClass object providing information about the class, or null
      *         if the class cannot be found
      */
-    public @CheckForNull
-    XClass getXClass(ClassDescriptor classDescriptor) {
+    public @CheckForNull XClass getXClass(ClassDescriptor classDescriptor) {
         try {
             IAnalysisCache analysisCache = Global.getAnalysisCache();
             return analysisCache.getClassAnalysis(XClass.class, classDescriptor);

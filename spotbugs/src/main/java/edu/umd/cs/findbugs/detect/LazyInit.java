@@ -91,8 +91,8 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 
     static {
         pattern.add(new Load("f", "val").label("start")).add(new IfNull("val").label("test"))
-        .add(new Wild(1, 1).label("createObject").dominatedBy("test"))
-        .add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
+                .add(new Wild(1, 1).label("createObject").dominatedBy("test"))
+                .add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
     }
 
     public LazyInit(BugReporter bugReporter) {
@@ -155,7 +155,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 
     @Override
     public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
         JavaClass javaClass = classContext.getJavaClass();
         MethodGen methodGen = classContext.getMethodGen(method);
         CFG cfg = classContext.getCFG(method);
@@ -382,14 +382,8 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
             return true;
         }
         Instruction instruction = nextHandle.getInstruction();
-        if (instruction instanceof ReturnInstruction) {
-            return false;
-        }
-        if (instruction instanceof IfInstruction) {
-            return false;
-        }
-        return true;
+        return !(instruction instanceof ReturnInstruction
+                || instruction instanceof IfInstruction);
     }
 
 }
-

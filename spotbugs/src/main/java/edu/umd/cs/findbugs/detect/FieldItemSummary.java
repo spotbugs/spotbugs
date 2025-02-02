@@ -86,7 +86,8 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
         }
 
-        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getMethodName()) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
+        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getMethodName()) && Const.CONSTRUCTOR_NAME.equals(
+                getNameConstantOperand())) {
 
             String classOperand = getClassConstantOperand();
             OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);

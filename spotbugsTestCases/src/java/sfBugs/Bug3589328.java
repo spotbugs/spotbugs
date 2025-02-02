@@ -17,9 +17,13 @@ public class Bug3589328 {
     public static class UriToString implements Function<URI, String> {
 
         @Override
-		@NoWarning(value="NP")
-        public String apply(@Nonnull URI input) {
+        @NoWarning(value="NP")
+        public String apply(URI input) {
+          if (input == null) {
+            return null;
+          } else {
             return input.toString();
+          }
         }
     }
 

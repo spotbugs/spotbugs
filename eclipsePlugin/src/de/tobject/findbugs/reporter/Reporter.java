@@ -23,6 +23,7 @@ package de.tobject.findbugs.reporter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -140,7 +141,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     public void reportQueuedErrors() {
         // Report unique errors in order of their sequence
         List<Error> errorList = new ArrayList<>(getQueuedErrors());
-        if (errorList.size() > 0) {
+        if (!errorList.isEmpty()) {
             Collections.sort(errorList, new Comparator<Error>() {
                 @Override
                 public int compare(Error o1, Error o2) {
@@ -158,7 +159,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         }
 
         Set<String> missingClasses = getMissingClasses();
-        if (missingClasses.size() > 0) {
+        if (!missingClasses.isEmpty()) {
             FindBugs2Eclipse.cleanClassClache(project.getProject());
             MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.WARNING,
                     "The following classes needed for SpotBugs analysis on project " + project.getElementName()
@@ -193,8 +194,9 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
         Profiler profiler = stats.getProfiler();
         PrintStream printStream;
+
         try {
-            printStream = new PrintStream(stream, false, "UTF-8");
+            printStream = new PrintStream(stream, false, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e1) {
             // can never happen with UTF-8
             return;
@@ -205,7 +207,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
         printToStream("\nTotal calls:");
         int numClasses = stats.getNumClasses();
-        if(numClasses > 0) {
+        if (numClasses > 0) {
             profiler.report(new Profiler.TotalCallsComparator(profiler), new Profiler.FilterByCalls(numClasses),
                     printStream);
 
@@ -235,9 +237,9 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     public void observeClass(ClassDescriptor classDescriptor) {
         String className = classDescriptor.getDottedClassName();
 
-//        if (DEBUG) {
-//            System.out.println("Observing class: " + className); //$NON-NLS-1$
-//        }
+        //        if (DEBUG) {
+        //            System.out.println("Observing class: " + className); //$NON-NLS-1$
+        //        }
 
         if (monitor.isCanceled()) {
             // causes break in FindBugs main loop

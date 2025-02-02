@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class Naming extends PreorderVisitor implements Detector {
@@ -80,8 +81,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
     boolean classIsPublicOrProtected;
 
-    public static @CheckForNull
-    XMethod definedIn(JavaClass clazz, XMethod m) {
+    public static @CheckForNull XMethod definedIn(JavaClass clazz, XMethod m) {
         for (Method m2 : clazz.getMethods()) {
             if (m.getName().equals(m2.getName()) && m.getSignature().equals(m2.getSignature()) && m.isStatic() == m2.isStatic()) {
                 return XFactory.createXMethod(clazz, m2);
@@ -91,40 +91,19 @@ public class Naming extends PreorderVisitor implements Detector {
     }
 
     public static boolean confusingMethodNamesWrongCapitalization(XMethod m1, XMethod m2) {
-        if (m1.isStatic() != m2.isStatic()) {
-            return false;
-        }
-        if (m1.getClassName().equals(m2.getClassName())) {
-            return false;
-        }
-        if (m1.getName().equals(m2.getName())) {
-            return false;
-        }
-        if (m1.getName().equalsIgnoreCase(m2.getName())
-                && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()))) {
-            return true;
-        }
-        return false;
+        return m1.isStatic() == m2.isStatic()
+                && !m1.getClassName().equals(m2.getClassName())
+                && !m1.getName().equals(m2.getName())
+                && m1.getName().equalsIgnoreCase(m2.getName())
+                && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()));
     }
 
     public static boolean confusingMethodNamesWrongPackage(XMethod m1, XMethod m2) {
-        if (m1.isStatic() != m2.isStatic()) {
-            return false;
-        }
-        if (m1.getClassName().equals(m2.getClassName())) {
-            return false;
-        }
-
-        if (!m1.getName().equals(m2.getName())) {
-            return false;
-        }
-        if (m1.getSignature().equals(m2.getSignature())) {
-            return false;
-        }
-        if (removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()))) {
-            return true;
-        }
-        return false;
+        return m1.isStatic() == m2.isStatic()
+                && !m1.getClassName().equals(m2.getClassName())
+                && m1.getName().equals(m2.getName())
+                && !m1.getSignature().equals(m2.getSignature())
+                && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()));
     }
 
     // map of canonicalName -> Set<XMethod>
@@ -324,7 +303,7 @@ public class Naming extends PreorderVisitor implements Detector {
         }
 
         String superClassName = obj.getSuperclassName();
-        if (!"java.lang.Object".equals(name)) {
+        if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(name)) {
             if (sameSimpleName(superClassName, name)) {
                 bugReporter.reportBug(new BugInstance(this, "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS", HIGH_PRIORITY).addClass(name)
                         .addClass(superClassName));
@@ -340,7 +319,7 @@ public class Naming extends PreorderVisitor implements Detector {
             return;
         }
 
-        if ("java.lang.Object".equals(superClassName) && !visited.contains(superClassName)) {
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superClassName) && !visited.contains(superClassName)) {
             try {
                 visitJavaClass(obj.getSuperClass());
             } catch (ClassNotFoundException e) {
@@ -409,13 +388,13 @@ public class Naming extends PreorderVisitor implements Detector {
 
             bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NAMING_CONVENTION", priority).addClass(this));
         }
-        if (name.endsWith("Exception")) {
-            // Does it ultimately inherit from Throwable?
-            if (!mightInheritFromException(DescriptorFactory.createClassDescriptor(obj))) {
-                // It doens't, so the name is misleading
-                bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
-            }
+        if (name.endsWith("Exception")
+                // Does it ultimately inherit from Throwable?
+                && !mightInheritFromException(DescriptorFactory.createClassDescriptor(obj))) {
+            // It doesn't, so the name is misleading
+            bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
         }
+
 
         int badFieldNames = 0;
         for (Field f : obj.getFields()) {
@@ -452,7 +431,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (badFieldName(obj)) {
             bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", classIsPublicOrProtected
                     && (obj.isPublic() || obj.isProtected()) && !hasBadFieldNames ? NORMAL_PRIORITY : LOW_PRIORITY)
-            .addClass(this).addVisitedField(this));
+                    .addClass(this).addVisitedField(this));
         }
     }
 
@@ -463,12 +442,11 @@ public class Naming extends PreorderVisitor implements Detector {
                 && Character.isLowerCase(fieldName.charAt(1));
     }
 
-    private final static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
+    private static final Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 
 
 
-    private static @CheckForNull
-    String getSignatureOfOuterClass(JavaClass obj) {
+    private static @CheckForNull String getSignatureOfOuterClass(JavaClass obj) {
         for (Field f : obj.getFields()) {
             if (f.getName().startsWith("this$")) {
                 return f.getSignature();
@@ -503,8 +481,7 @@ public class Naming extends PreorderVisitor implements Detector {
         return false;
     }
 
-    private static @CheckForNull
-    Method findVoidConstructor(JavaClass clazz) {
+    private static @CheckForNull Method findVoidConstructor(JavaClass clazz) {
         for (Method m : clazz.getMethods()) {
             if (isVoidConstructor(clazz, m)) {
                 return m;
@@ -565,7 +542,7 @@ public class Naming extends PreorderVisitor implements Detector {
         } else if (badMethodName(mName)) {
             bugReporter.reportBug(new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", classIsPublicOrProtected
                     && (obj.isPublic() || obj.isProtected()) && !hasBadMethodNames ? NORMAL_PRIORITY : LOW_PRIORITY)
-            .addClassAndMethod(this));
+                    .addClassAndMethod(this));
         }
 
         if (obj.isAbstract()) {
@@ -600,11 +577,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
         XMethod xm = getXMethod();
         {
-            TreeSet<XMethod> s = canonicalToXMethod.get(allSmall);
-            if (s == null) {
-                s = new TreeSet<>();
-                canonicalToXMethod.put(allSmall, s);
-            }
+            TreeSet<XMethod> s = canonicalToXMethod.computeIfAbsent(allSmall, k -> new TreeSet<>());
             s.add(xm);
         }
 

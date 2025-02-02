@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
@@ -67,13 +68,13 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
         if (pendingBug != null) {
             if (seen == Const.PUTSTATIC) {
                 String classConstantOperand = getClassConstantOperand();
-                String thisClassName = getThisClass().getClassName().replace('.', '/');
+                String thisClassName = ClassName.toSlashedClassName(getThisClass().getClassName());
                 if (classConstantOperand.equals(thisClassName)) {
                     seenPutStatic = true;
                 }
             } else if (seen == Const.GETSTATIC) {
                 String classConstantOperand = getClassConstantOperand();
-                String thisClassName = getThisClass().getClassName().replace('.', '/');
+                String thisClassName = ClassName.toSlashedClassName(getThisClass().getClassName());
                 if (classConstantOperand.equals(thisClassName)) {
                     seenGetStatic = true;
                 }
@@ -108,7 +109,7 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
             break;
         case 1:
             if (seen == Const.INVOKEVIRTUAL && "getClass".equals(getNameConstantOperand())
-            && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
+                    && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
                 state = 2;
             } else {
                 state = 0;
@@ -131,7 +132,7 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
         case 4:
             if (seen == Const.MONITORENTER) {
                 pendingBug = new BugInstance(this, "WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL", NORMAL_PRIORITY)
-                .addClassAndMethod(this).addSourceLine(this);
+                        .addClassAndMethod(this).addSourceLine(this);
             }
             state = 0;
             seenGetStatic = seenPutStatic = false;

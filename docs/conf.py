@@ -16,10 +16,11 @@ import sys
 import os
 
 html_context = {
-  'version' : '3.1',
-  'full_version' : '3.1.1',
-  'maven_plugin_version' : '3.1.1',
-  'gradle_plugin_version' : '1.6.0'
+  'version' : '4.9',
+  'full_version' : '4.9.0',
+  'maven_plugin_version' : '4.9.0.0',
+  'gradle_plugin_version' : '6.2.0',
+  'archetype_version' : '0.2.3'
 }
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -52,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'spotbugs'
-copyright = u'2016-2017, spotbugs community'
+copyright = u'2016-2022, spotbugs community'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -272,7 +273,7 @@ gettext_compact = False
 gettext_additional_targets = ['raw']
 
 def setup(app):
-    app.add_stylesheet('custom.css')
+    app.add_css_file('custom.css')
 
 sys.path.append(os.path.abspath('extensions'))
 extensions += ['generate_bug_description']
@@ -282,4 +283,5 @@ extensions += ['code-template']
 # URL to distribute SpotBugs package
 # http://www.sphinx-doc.org/en/stable/ext/extlinks.html
 extensions += ['sphinx.ext.extlinks']
-extlinks = {'dist': ('http://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/' + release + '/spotbugs-' + release + '.%s', '')}
+tag = release.replace('-', '_').lower()
+extlinks = {'dist': ('https://github.com/spotbugs/spotbugs/releases/download/' + tag + '/spotbugs-' + release + '.%s', '')}

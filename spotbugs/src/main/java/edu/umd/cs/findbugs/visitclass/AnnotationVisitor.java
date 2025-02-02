@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Annotations;
 import org.apache.bcel.classfile.ArrayElementValue;
 import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.ElementValuePair;
+import org.apache.bcel.classfile.EnumElementValue;
 import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.classfile.ParameterAnnotations;
 import org.apache.bcel.classfile.SimpleElementValue;
@@ -99,6 +100,19 @@ public class AnnotationVisitor extends PreorderVisitor {
         }
     }
 
+    @CheckForNull
+    protected static <E extends Enum<E>> E getAnnotationParameterAsEnum(Map<String, ElementValue> map, String parameter, Class<E> type) {
+        ElementValue ev = map.get(parameter);
+
+        if (ev instanceof EnumElementValue) {
+            String enumValueString = ((EnumElementValue) ev).getEnumValueString();
+
+            return Enum.valueOf(type, enumValueString);
+        }
+
+        return null;
+    }
+
     /**
      * Visit annotation on a method parameter
      *
@@ -121,12 +135,12 @@ public class AnnotationVisitor extends PreorderVisitor {
     }
 
     /*
-
+    
     private static final String RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations";
     private static final String RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations";
     private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
     private static final String RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations";
-
+    
     private Map<String, Object> readAnnotationValues(DataInputStream bytes, int numPairs) throws IOException {
         Map<String, Object> values = new HashMap<String, Object>();
         for (int j = 0; j < numPairs; j++) {
@@ -143,8 +157,8 @@ public class AnnotationVisitor extends PreorderVisitor {
         }
         return values;
     }
-
-
+    
+    
     private @DottedClassName
     String getAnnotationName(DataInputStream bytes) throws IOException {
         int annotationNameIndex = bytes.readUnsignedShort();
@@ -155,8 +169,8 @@ public class AnnotationVisitor extends PreorderVisitor {
         }
         return annotationName;
     }
-
-
+    
+    
     private Object readAnnotationValue(DataInputStream bytes) throws IOException {
         try {
             char tag = (char) bytes.readUnsignedByte();
@@ -265,11 +279,10 @@ public class AnnotationVisitor extends PreorderVisitor {
             for (AnnotationEntry ae : e.getAnnotationEntries()) {
                 boolean runtimeVisible = ae.isRuntimeVisible();
 
-                String name = ClassName.fromFieldSignature(ae.getAnnotationType());
+                String name = ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType());
                 if (name == null) {
                     continue;
                 }
-                name = ClassName.toDottedClassName(name);
                 Map<String, ElementValue> map = new HashMap<>();
                 for (ElementValuePair ev : ae.getElementValuePairs()) {
                     map.put(ev.getNameString(), ev.getValue());
@@ -291,11 +304,10 @@ public class AnnotationVisitor extends PreorderVisitor {
     public void visitAnnotation(Annotations arg0) {
         for (AnnotationEntry ae : arg0.getAnnotationEntries()) {
             boolean runtimeVisible = ae.isRuntimeVisible();
-            String name = ClassName.fromFieldSignature(ae.getAnnotationType());
+            String name = ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType());
             if (name == null) {
                 continue;
             }
-            name = ClassName.toDottedClassName(name);
             Map<String, ElementValue> map = new HashMap<>();
             for (ElementValuePair ev : ae.getElementValuePairs()) {
                 map.put(ev.getNameString(), ev.getValue());

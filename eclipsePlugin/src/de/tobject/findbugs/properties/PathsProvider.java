@@ -50,7 +50,7 @@ import org.eclipse.swt.widgets.Widget;
 import de.tobject.findbugs.builder.FindBugsWorker;
 
 abstract class PathsProvider extends SelectionAdapter implements IStructuredContentProvider,
-    ICheckStateProvider {
+        ICheckStateProvider {
     private static IPath lastUsedPath;
 
     protected final List<IPathElement> paths;
@@ -67,7 +67,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         this.propertyPage = propertyPage;
         this.paths = new ArrayList<>();
         this.viewer = viewer;
-        if(viewer instanceof CheckboxTableViewer) {
+        if (viewer instanceof CheckboxTableViewer) {
             CheckboxTableViewer tv = (CheckboxTableViewer) viewer;
             tv.setCheckStateProvider(this);
             tv.addCheckStateListener(new ICheckStateListener() {
@@ -98,11 +98,11 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
     void setFilters(List<IPathElement> filterFiles) {
         paths.clear();
         paths.addAll(filterFiles);
-        if(viewer instanceof CheckboxTableViewer) {
+        if (viewer instanceof CheckboxTableViewer) {
             CheckboxTableViewer tv = (CheckboxTableViewer) viewer;
             List<IPathElement> checked = new ArrayList<>();
             for (IPathElement pe : paths) {
-                if(pe.isEnabled()) {
+                if (pe.isEnabled()) {
                     checked.add(pe);
                 }
             }
@@ -201,7 +201,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
 
     @Override
     public boolean isChecked(Object element) {
-        if(element instanceof IPathElement) {
+        if (element instanceof IPathElement) {
             IPathElement elt = (IPathElement) element;
             return elt.isEnabled();
         }
@@ -256,7 +256,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         IProject project = propertyPage.getProject();
         Map<String, Boolean> result = new TreeMap<>();
         for (IPathElement path : paths) {
-            if(path.isSystem()) {
+            if (path.isSystem()) {
                 if (!path.isEnabled()) {
                     // only need to remember *disabled* plugins
                     result.put(path.getId(), Boolean.valueOf(false));

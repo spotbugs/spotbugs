@@ -40,13 +40,13 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
 
     public BadAppletConstructor(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        JavaClass appletClass = null;
+        JavaClass appletCls = null;
         try {
-            appletClass = Repository.lookupClass("java.applet.Applet");
+            appletCls = Repository.lookupClass("java.applet.Applet");
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         }
-        this.appletClass = appletClass;
+        this.appletClass = appletCls;
     }
 
     @Override
@@ -86,9 +86,8 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
                     || ("getAppletContext".equals(method) && "()Ljava/applet/AppletContext;".equals(signature))
                     || ("getParameter".equals(method) && "(Ljava/lang/String;)Ljava/lang/String;".equals(signature))) {
                 bugReporter.reportBug(new BugInstance(this, "BAC_BAD_APPLET_CONSTRUCTOR", NORMAL_PRIORITY)
-                .addClassAndMethod(this).addSourceLine(this));
+                        .addClassAndMethod(this).addSourceLine(this));
             }
         }
     }
 }
-

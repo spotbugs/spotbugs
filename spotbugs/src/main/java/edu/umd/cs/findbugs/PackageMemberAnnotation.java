@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -37,10 +40,12 @@ import edu.umd.cs.findbugs.util.ClassName;
 public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLines {
     private static final long serialVersionUID = -8208567669352996892L;
 
-    protected final @DottedClassName
-    String className;
+    @DottedClassName
+    protected final String className;
 
     protected String description;
+
+    private List<String> javaAnnotationNames = new ArrayList<>();
 
     /**
      * Constructor.
@@ -69,12 +74,12 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
      *            name of the class
      */
     protected PackageMemberAnnotation(@DottedClassName String className, String description, String sourceFileName) {
-        if (className.length() == 0) {
+        if (className.isEmpty()) {
             throw new IllegalArgumentException("Empty classname not allowed");
         }
         if (className.indexOf('/') >= 0) {
             assert false : "classname " + className + " should be dotted";
-        className = className.replace('/', '.');
+            className = ClassName.toDottedClassName(className);
         }
         this.className = className;
         this.sourceFileName = sourceFileName;
@@ -87,16 +92,14 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     /**
      * Get the dotted class name.
      */
-    public final @DottedClassName
-    String getClassName() {
+    public final @DottedClassName String getClassName() {
         return className;
     }
 
     /**
      * Get the dotted class name.
      */
-    public final @SlashedClassName
-    String getSlashedClassName() {
+    public final @SlashedClassName String getSlashedClassName() {
         return ClassName.toSlashedClassName(className);
     }
 
@@ -114,8 +117,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     /**
      * Get the package name.
      */
-    public final @DottedClassName
-    String getPackageName() {
+    public final @DottedClassName String getPackageName() {
         int lastDot = className.lastIndexOf('.');
         if (lastDot < 0) {
             return "";
@@ -161,6 +163,20 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     @Override
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * @return the javaAnnotationNames
+     */
+    public List<String> getJavaAnnotationNames() {
+        return javaAnnotationNames;
+    }
+
+    /**
+     * @param aJavaAnnotationNames the javaAnnotationNames to set
+     */
+    public void setJavaAnnotationNames(List<String> aJavaAnnotationNames) {
+        javaAnnotationNames = aJavaAnnotationNames;
     }
 
     /**
@@ -232,4 +248,3 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     }
 
 }
-

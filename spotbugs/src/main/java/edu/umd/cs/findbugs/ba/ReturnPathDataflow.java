@@ -24,4 +24,3 @@ public class ReturnPathDataflow extends Dataflow<ReturnPath, ReturnPathAnalysis>
         super(cfg, analysis);
     }
 }
-

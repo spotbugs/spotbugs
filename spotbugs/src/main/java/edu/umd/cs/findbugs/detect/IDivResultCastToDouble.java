@@ -51,8 +51,8 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
         if ((prevOpCode == Const.I2D || prevOpCode == Const.L2D) && seen == Const.INVOKESTATIC && ClassName.isMathClass(getClassConstantOperand())
                 && "ceil".equals(getNameConstantOperand())) {
             bugAccumulator
-            .accumulateBug(new BugInstance(this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", HIGH_PRIORITY)
-            .addClassAndMethod(this), this);
+                    .accumulateBug(new BugInstance(this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", HIGH_PRIORITY)
+                            .addClassAndMethod(this), this);
             pendingIdivCastToDivBugLocation = null;
         } else if ((prevOpCode == Const.I2F || prevOpCode == Const.L2F) && seen == Const.INVOKESTATIC
                 && ClassName.isMathClass(getClassConstantOperand()) && "round".equals(getNameConstantOperand())) {
@@ -67,7 +67,8 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
             pendingIdivCastToDivBugLocation = null;
         }
 
-        if (prevOpCode == Const.IDIV && (seen == Const.I2D || seen == Const.I2F) || prevOpCode == Const.LDIV && (seen == Const.L2D || seen == Const.L2F)) {
+        if (prevOpCode == Const.IDIV && (seen == Const.I2D || seen == Const.I2F) || prevOpCode == Const.LDIV && (seen == Const.L2D
+                || seen == Const.L2F)) {
             pendingIdivCastToDivBugLocation = SourceLineAnnotation.fromVisitedInstruction(this);
         }
         prevOpCode = seen;

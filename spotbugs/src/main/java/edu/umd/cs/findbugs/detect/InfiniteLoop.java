@@ -170,24 +170,10 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     LinkedList<Jump> forwardJumps = new LinkedList<>();
 
-    void purgeForwardJumps(int before) {
-        if (true) {
-            return;
-            /*
-        for (Iterator<Jump> i = forwardJumps.iterator(); i.hasNext();) {
-            Jump j = i.next();
-            if (j.to < before)
-                i.remove();
-        }
-             */
-        }
-    }
-
     void addForwardJump(int from, int to) {
         if (from >= to) {
             return;
         }
-        purgeForwardJumps(from);
         forwardJumps.add(new Jump(from, to));
     }
 
@@ -259,7 +245,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
                         continue backwardBranchLoop;
                     }
                     bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from))
-                    .addSourceLine(lastChange).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
+                            .addSourceLine(lastChange).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
                 }
                 int reg1 = fcb.item1.getRegisterNumber();
                 if (reg1 >= 0 && reg1 != reg0 && fcb.item1.getConstant() == null) {
@@ -271,7 +257,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
                         continue backwardBranchLoop;
                     }
                     bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from))
-                    .addSourceLine(lastChange).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
+                            .addSourceLine(lastChange).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
                 }
                 boolean reg1Invariant = true;
                 if (reg1 >= 0) {
@@ -295,10 +281,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
         if (reg >= 0) {
             return bb.invariantRegisters.contains(reg) || reg >= bb.numLastUpdates;
         }
-        if (item0.getConstant() != null) {
-            return true;
-        }
-        return false;
+        return item0.getConstant() != null;
     }
 
     @Override
@@ -307,10 +290,11 @@ public class InfiniteLoop extends OpcodeStackDetector {
     }
 
     static final boolean DEBUG = false;
+
     @Override
     public void sawOpcode(int seen) {
         if (DEBUG) {
-            System.out.printf("%3d %-15s %s%n", getPC(),  Const.getOpcodeName(seen), stack);
+            System.out.printf("%3d %-15s %s%n", getPC(), Const.getOpcodeName(seen), stack);
         }
         if (isRegisterStore()) {
             regModifiedAt(getRegisterOperand(), getPC());
@@ -319,7 +303,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
         case Const.GOTO:
             if (getBranchOffset() < 0) {
                 BackwardsBranch bb = new BackwardsBranch(stack, getPC(), getBranchTarget());
-                if (bb.invariantRegisters.size() > 0) {
+                if (!bb.invariantRegisters.isEmpty()) {
                     backwardBranches.add(bb);
                 }
                 addBackwardsReach();
@@ -388,7 +372,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
                 int reg0 = item0.getRegisterNumber();
                 if (reg0 >= 0) {
                     bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target))
-                    .addSourceLine(this, since0);
+                            .addSourceLine(this, since0);
                 }
                 if (reg0 < 0 || !isRegModified(reg0, target, getPC())) {
                     reportPossibleBug(bug);
@@ -396,7 +380,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
             }
         }
-        break;
+            break;
         case Const.IF_ACMPEQ:
         case Const.IF_ACMPNE:
         case Const.IF_ICMPNE:
@@ -435,7 +419,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
             }
 
         }
-        break;
+            break;
         default:
             break;
         }
@@ -482,10 +466,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
         if (reg >= 0) {
             return stack.getLastUpdate(reg) < getBackwardsReach(branchTarget);
         }
-        if (item1.getConstant() != null) {
-            return true;
-        }
-        return false;
+        return item1.getConstant() != null;
     }
 
     private int constantSince(Item item1) {

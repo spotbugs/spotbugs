@@ -25,7 +25,6 @@ import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -57,7 +56,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, ValueNumberFrame> {
 
-    private final static boolean TRACE =  SystemProperties.getBoolean("vna.trace");
+    private static final boolean TRACE = SystemProperties.getBoolean("vna.trace");
 
     public static final boolean DEBUG = TRACE || SystemProperties.getBoolean("vna.debug");
 
@@ -163,9 +162,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
         SignatureParser sigParser = new SignatureParser(methodGen.getSignature());
         int p = 0;
-        int slotOffset =  methodGen.isStatic() ? 0 : 1;
+        int slotOffset = methodGen.isStatic() ? 0 : 1;
 
-        for ( String paramSig : sigParser.parameterSignatures()) {
+        for (String paramSig : sigParser.parameterSignatures()) {
             if (p == param) {
                 return getEntryValue(slotOffset);
             }
@@ -197,14 +196,14 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     @Override
     public void transfer(BasicBlock basicBlock, InstructionHandle end, ValueNumberFrame start, ValueNumberFrame result)
             throws DataflowAnalysisException {
-        if(basicBlock.isExceptionThrower() && isFactValid(start)) {
+        if (basicBlock.isExceptionThrower() && isFactValid(start)) {
             /* If exceptionThrower is invoke instruction then it's possible that
              * it was partially executed before an exception occurred
              * So we have to kill available loads when control is transferred to the catch block
              */
             InstructionHandle handle = basicBlock.getExceptionThrower();
             Instruction inst = handle.getInstruction();
-            if(inst instanceof InvokeInstruction || inst instanceof INVOKEDYNAMIC) {
+            if (inst instanceof InvokeInstruction) {
                 copy(start, result);
                 visitor.setFrameAndLocation(result, new Location(handle, basicBlock));
                 visitor.setHandle(handle);
@@ -328,10 +327,10 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         if (fact == null) {
             if (TRACE) {
                 System.out
-                .println("Initialized fact after " + location + " @ "
-                        + Integer.toHexString(System.identityHashCode(location)) + " in "
-                        + Integer.toHexString(System.identityHashCode(this)) + " : "
-                        + factAfterLocationMap.containsKey(location));
+                        .println("Initialized fact after " + location + " @ "
+                                + Integer.toHexString(System.identityHashCode(location)) + " in "
+                                + Integer.toHexString(System.identityHashCode(this)) + " : "
+                                + factAfterLocationMap.containsKey(location));
             }
 
             fact = createFact();
@@ -354,15 +353,15 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     /*
     private static class ValueCompacter {
         public final BitSet valuesUsed;
-
+    
         public int numValuesUsed;
-
+    
         public final int[] discovered;
-
+    
         public ValueCompacter(int origNumValuesAllocated) {
             valuesUsed = new BitSet();
             numValuesUsed = 0;
-
+    
             // The "discovered" array tells us the mapping of old value numbers
             // to new (which are based on order of discovery). Negative values
             // specify value numbers which are not actually used (and thus can
@@ -372,15 +371,15 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
                 discovered[i] = -1;
             }
         }
-
+    
         public boolean isUsed(int number) {
             return valuesUsed.get(number);
         }
-
+    
         public void setUsed(int number) {
             valuesUsed.set(number, true);
         }
-
+    
         public int allocateValue() {
             return numValuesUsed++;
         }
@@ -404,34 +403,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
      */
     @Deprecated
     public void compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis> dataflow) {
-        if (true) {
-            throw new UnsupportedOperationException();
-        }
-        /*
-        ValueCompacter compacter = new ValueCompacter(factory.getNumValuesAllocated());
-
-        // We can get all extant Frames by looking at the values in
-        // the location to value map, and also the block result values.
-        for (Iterator<ValueNumberFrame> i = factIterator(); i.hasNext();) {
-            ValueNumberFrame frame = i.next();
-            markFrameValues(frame, compacter);
-        }
-        for (Iterator<ValueNumberFrame> i = resultFactIterator(); i.hasNext();) {
-            ValueNumberFrame frame = i.next();
-            markFrameValues(frame, compacter);
-        }
-
-        int before = factory.getNumValuesAllocated();
-
-        // Now the factory can modify the ValueNumbers.
-        factory.compact(compacter.discovered, compacter.numValuesUsed);
-
-        int after = factory.getNumValuesAllocated();
-
-        if (DEBUG && after < before && before > 0) {
-            System.out.println("Value compaction: " + after + "/" + before + " (" + ((after * 100) / before) + "%)");
-        }
-         */
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -442,11 +414,11 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         if (!frame.isValid()) {
             return;
         }
-
+    
         for (int j = 0; j < frame.getNumSlots(); ++j) {
             ValueNumber value = frame.getValue(j);
             int number = value.getNumber();
-
+    
             if (!compacter.isUsed(number)) {
                 compacter.discovered[number] = compacter.allocateValue();
                 compacter.setUsed(number);
@@ -487,9 +459,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         return valueNumber;
     }
 
-    public @CheckForNull
-    @DottedClassName
-    String getClassName(ValueNumber v) {
+    public @CheckForNull @DottedClassName String getClassName(ValueNumber v) {
         return factory.getClassName(v);
     }
 }
