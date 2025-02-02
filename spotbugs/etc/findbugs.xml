@@ -690,7 +690,10 @@
                     reports="ENV_USE_PROPERTY_INSTEAD_OF_ENV"/>
           <Detector class="edu.umd.cs.findbugs.detect.MultipleInstantiationsOfSingletons" speed="fast"
                     reports="SING_SINGLETON_IMPLEMENTS_CLONEABLE,SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE,SING_SINGLETON_IMPLEMENTS_CLONE_METHOD,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR,SING_SINGLETON_IMPLEMENTS_SERIALIZABLE,SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" />
-    <!-- Bug Categories -->
+          <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod" speed="fast"
+                    reports="HSM_HIDING_METHOD"/>
+
+          <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
 
           <!-- Bug Codes -->
@@ -722,6 +725,7 @@
           <BugCode abbrev="ASE"/>
           <BugCode abbrev="VSC"/>
           <BugCode abbrev="DA"/>
+          <BugCode abbrev="HSM"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
           <BugPattern abbrev="AA" type="AA_ASSERTION_OF_ARGUMENTS" category="BAD_PRACTICE" />
@@ -1337,4 +1341,5 @@
           <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE" category="CORRECTNESS" />
           <BugPattern abbrev="SING" type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" category="CORRECTNESS" />
           <BugPattern abbrev="ENV" type="ENV_USE_PROPERTY_INSTEAD_OF_ENV" category="BAD_PRACTICE" />
+          <BugPattern abbrev="HSM" type="HSM_HIDING_METHOD" category="CORRECTNESS"/>
 </FindbugsPlugin>
