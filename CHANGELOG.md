@@ -5,12 +5,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2024-??-??
+## Unreleased - 2025-??-??
 ### Added
-- Updated the `SuppressFBWarnings` annotation to support finer grained bug suppressions ([#3102](https://github.com/spotbugs/spotbugs/pull/3102))
-- SimpleDateFormat, DateTimeFormatter, FastDateFormat string check for bad combinations of flag formatting ([#637](https://github.com/spotbugs/spotbugs/issues/637))
-- New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
-  - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
+- New detector `SharedVariableAtomicityDetector` for new bug types `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE`, `AT_NONATOMIC_64BIT_PRIMITIVE` and `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` (See SEI CERT rules [VNA00-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables), [VNA02-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic) and [VNA05-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA05-J.+Ensure+atomicity+when+reading+and+writing+64-bit+values)).
 - New detector `FindImproperSynchronization` and introduced new bug types:
   - `US_UNSAFE_METHOD_SYNCHRONIZATION` is reported when using synchronized methods with the class' accessible intrinsic lock,
   - `US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION` is reported when using static synchronized methods with the class' exposed intrinsic lock,
@@ -22,6 +19,23 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION` is reported when the backing collection of a lock is made accessible, with methods that update or return the lock, to the outside,
   - `USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION` is reported when the backing collection of a lock can be altered by subclasses.
     (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code#:~:text=LCK00%2DJ%2DEX2,lock%20object%20inadvertently.) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
+
+### Fixed
+- Fixed the parsing of generics methods in `ThrowingExceptions` ([#3267](https://github.com/spotbugs/spotbugs/issues/3267))
+- Accept the 1st parameter of `java.util.concurrent.CompletableFuture`'s `completeOnTimeout()`, `getNow()` and `obtrudeValue()` functions as nullable ([#1001](https://github.com/spotbugs/spotbugs/issues/1001)).
+- Fixed the an analysis error when `FindReturnRef` was checking instructions corresponding to a CFG branch that was optimized away ([#3266](https://github.com/spotbugs/spotbugs/issues/3266))
+- Added execute file permission to files in the distribution archive ([#3274](https://github.com/spotbugs/spotbugs/issues/3274))
+- Fixed a stack overflow in  `MultipleInstantiationsOfSingletons` when a singleton initializer makes recursive calls ([#3280](https://github.com/spotbugs/spotbugs/issues/3280))
+- Fixed NPE in  `FindReturnRef` on inner class fields ([#3283](https://github.com/spotbugs/spotbugs/issues/3283))
+- Fixed NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE false positive when add edu.umd.cs.findbugs.annotations.Nullable ([#3243](https://github.com/spotbugs/spotbugs/issues/3243))
+
+## 4.9.0 - 2025-01-15
+### Added
+- Updated the `SuppressFBWarnings` annotation to support finer grained bug suppressions ([#3102](https://github.com/spotbugs/spotbugs/pull/3102))
+- SimpleDateFormat, DateTimeFormatter, FastDateFormat string check for bad combinations of flag formatting ([#637](https://github.com/spotbugs/spotbugs/issues/637))
+- New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
+  - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
+- New detector `FindHiddenMethod` for bug type `HSM_HIDING_METHOD`. This bug is reported whenever a subclass method hides the static method of super class. (See [SEI CERT MET07-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface)).
 
 ### Fixed
 - Do not consider Records as Singletons ([#2981](https://github.com/spotbugs/spotbugs/issues/2981))
@@ -67,6 +81,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Rename shadowing fields ([#3221](https://github.com/spotbugs/spotbugs/pull/3221))
 - Combine catch blocks with the same body ([#3223](https://github.com/spotbugs/spotbugs/pull/3223))
 - Merge conditions of nested ifs ([#3231](https://github.com/spotbugs/spotbugs/pull/3231))
+- Use non deprecated 'getDottedClassName' instead of 'toDottedClassName'([#3251](https://github.com/spotbugs/spotbugs/pull/3251))
+- Use try with resources where possible ([#3253](https://github.com/spotbugs/spotbugs/pull/3253))
 
 ### Changed
 - Bump up Java version to 11

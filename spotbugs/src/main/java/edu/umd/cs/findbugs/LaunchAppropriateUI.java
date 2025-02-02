@@ -193,7 +193,7 @@ public class LaunchAppropriateUI {
      *            command line arguments
      * @throws java.lang.Exception
      */
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         LaunchAppropriateUI launcher = new LaunchAppropriateUI(args);
         launcher.launch();
     }

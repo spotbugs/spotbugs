@@ -16,7 +16,7 @@ sourceSets {
 dependencies {
   implementation 'jakarta.servlet:jakarta.servlet-api:4.0.4'
   implementation 'jakarta.ejb:jakarta.ejb-api:3.2.6'
-  implementation 'com.google.code.gson:gson:2.11.0'
+  implementation 'com.google.code.gson:gson:2.12.1'
   implementation 'com.google.guava:guava:33.4.0-jre'
   implementation libs.guice
   implementation libs.guice.assistedinject
@@ -35,7 +35,7 @@ dependencies {
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
-  implementation 'org.apache.groovy:groovy-all:4.0.24'
+  implementation 'org.apache.groovy:groovy-all:4.0.25'
   implementation 'org.apache.commons:commons-lang3:3.17.0'
   implementation 'org.mockito:mockito-core:5.15.2'
 }
@@ -57,7 +57,7 @@ tasks.withType(JavaCompile).configureEach {
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
 tasks.named('javadoc', Javadoc).configure {
   // This is supposed to enable everything except "missing" but doesn't work with gradle
-  // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
+  // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
   options.addBooleanOption('Xdoclint:all,-missing', true)
 
   // TODO remove command and warning below if the doclint can be properly configured
