@@ -8,15 +8,19 @@ tasks.withType(Javadoc).configureEach {
     options.encoding = 'UTF-8'
 }
 tasks.named('compileJava', JavaCompile).configure {
-    options.release = 8
+    options.release = 11
 }
 
 // make the build reproducible https://reproducible-builds.org/
 tasks.withType(AbstractArchiveTask).configureEach {
   preserveFileTimestamps = false
   reproducibleFileOrder = true
-  dirMode = 0775
-  fileMode = 0664
+  dirPermissions{
+    unix (0775)
+  }
+  filePermissions{
+    unix (0664)
+  }
 }
 
 def classLoader = plugins['com.github.spotbugs'].class.classLoader

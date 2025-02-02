@@ -141,7 +141,16 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
         database = new ObligationPolicyDatabase();
         addBuiltInPolicies();
-        URL u = DetectorFactoryCollection.getCoreResource("obligationPolicy.db");
+
+        loadDatabase(DetectorFactoryCollection.getCoreResource("obligationPolicy.db"));
+        loadDatabase(getClass().getResource("/edu/umd/cs/findbugs/detect/obligationPolicy.db"));
+
+        scanForResourceTypes();
+
+        Global.getAnalysisCache().eagerlyPutDatabase(ObligationPolicyDatabase.class, database);
+    }
+
+    public void loadDatabase(URL u) {
         try {
             if (u != null) {
                 AuxiliaryObligationPropertyDatabase db = new AuxiliaryObligationPropertyDatabase();
@@ -160,9 +169,6 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         } catch (Exception e) {
             AnalysisContext.logError("Unable to read " + u, e);
         }
-        scanForResourceTypes();
-
-        Global.getAnalysisCache().eagerlyPutDatabase(ObligationPolicyDatabase.class, database);
     }
 
     @Override

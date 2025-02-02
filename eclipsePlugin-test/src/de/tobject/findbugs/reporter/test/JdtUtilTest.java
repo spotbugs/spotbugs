@@ -90,13 +90,11 @@ class JdtUtilTest extends AbstractPluginTest {
     }
 
     protected IType getTypeC() throws JavaModelException {
-        IType type = getJavaProject().findType("C");
-        return type;
+        return getJavaProject().findType("C");
     }
 
     protected IType getTypeE() throws JavaModelException {
-        IType type = getJavaProject().findType("C.E");
-        return type;
+        return getJavaProject().findType("C.E");
     }
 
     private void doNullTest(IType parentType, String anonymousClassNumber) {

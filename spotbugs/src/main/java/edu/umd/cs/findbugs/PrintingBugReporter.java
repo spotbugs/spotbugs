@@ -171,7 +171,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
         boolean bugsReported = false;
         RuntimeException storedException = null;
 
-        Bag<String> lowRank = new Bag<>(new TreeMap<String, Integer>());
+        Bag<String> lowRank = new Bag<>(new TreeMap<>());
         for (BugInstance warning : bugCollection.getCollection()) {
             if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
                 int rank = warning.getBugRank();

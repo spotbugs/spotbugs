@@ -17,7 +17,7 @@ class ClassPathBuilderTest {
 
     @Test
     void nestedTraversalDisabled(SpotBugsRunner spotbugs) {
-        BugCollection results = spotbugs.performAnalysis((engine) -> {
+        BugCollection results = spotbugs.performAnalysis(engine -> {
             engine.setScanNestedArchives(false);
             engine.setNoClassOk(true);
         }, Paths.get("../spotbugsTestCases/archives/nestedArchive.jar"));
@@ -27,7 +27,7 @@ class ClassPathBuilderTest {
 
     @Test
     void nestedTraversalEnabled(SpotBugsRunner spotbugs) {
-        BugCollection results = spotbugs.performAnalysis((engine) -> engine.setScanNestedArchives(true),
+        BugCollection results = spotbugs.performAnalysis(engine -> engine.setScanNestedArchives(true),
                 Paths.get("../spotbugsTestCases/archives/nestedArchive.jar"));
         AppVersion appInformation = results.getCurrentAppVersion();
         assertThat(appInformation.getNumClasses(), equalTo(5));

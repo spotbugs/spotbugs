@@ -10,6 +10,8 @@ dependencies {
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation project(':spotbugs')
   testImplementation 'org.junit.jupiter:junit-jupiter-api'
+  testImplementation 'org.junit.jupiter:junit-jupiter'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('javadoc', Javadoc).configure {
@@ -24,6 +26,8 @@ java {
 }
 
 test {
+  dependsOn(":test-harness-jupiter:spotbugsMain")
+  dependsOn(":test-harness-jupiter:spotbugsTest")
   useJUnitPlatform()
 }
 

@@ -8,8 +8,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest, macos-14]
-        java: [11, 17, 21]
+        os: [ubuntu-latest, windows-latest, macos-13]
+        java: [11, 17, 21, 23]
       max-parallel: 6
     runs-on: ${{ matrix.os }}
     continue-on-error: true
@@ -24,7 +24,7 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: gradle
-      - uses: gradle/wrapper-validation-action@v2
+      - uses: gradle/actions/wrapper-validation@v4
       - name: Download Eclipse on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: |

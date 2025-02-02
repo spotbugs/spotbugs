@@ -147,8 +147,7 @@ public class FindBugsAction implements IObjectActionDelegate {
         if (resource == null) {
             return null;
         }
-        IProject project = resource.getProject();
-        return project;
+        return resource.getProject();
     }
 
     protected String getDialogSettingsId() {
@@ -249,7 +248,7 @@ public class FindBugsAction implements IObjectActionDelegate {
         }
     }
 
-    private final static class StartedFromViewJob extends FindBugsJob {
+    private static final class StartedFromViewJob extends FindBugsJob {
         private final List<WorkItem> resources;
 
         private final IResource resource;

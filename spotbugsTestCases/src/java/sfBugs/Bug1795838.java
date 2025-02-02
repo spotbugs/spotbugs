@@ -4,7 +4,7 @@ package sfBugs;
  * Submitted By: Heiko W.Rupp - pilhuhn Summary: (?) NPE and NFE concerning
  * types like Integer not found
  *
- * The attache file contains three Exception throwing locations that all are not
+ * The attached file contains three Exception throwing locations that all are not
  * detected.
  *
  * The first one is from autounboxing NULL as Integer into an int. The second

@@ -52,11 +52,11 @@ import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LRETURN;
 import org.apache.bcel.generic.LSTORE;
 import org.apache.bcel.generic.LoadInstruction;
-import org.apache.bcel.generic.LOOKUPSWITCH;
 import org.apache.bcel.generic.MULTIANEWARRAY;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.StoreInstruction;
 import org.apache.bcel.generic.Type;
 
@@ -121,7 +121,7 @@ public class FindDeadLocalStores implements Detector {
         if (exclLocalsProperty != null) {
             for (String s : exclLocalsProperty.split(",")) {
                 String s2 = s.trim();
-                if (s2.length() > 0) {
+                if (!s2.isEmpty()) {
                     EXCLUDED_LOCALS.add(s2);
                 }
             }
@@ -196,9 +196,7 @@ public class FindDeadLocalStores implements Detector {
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (DataflowAnalysisException e) {
-                bugReporter.logError("Error analyzing " + method.toString(), e);
-            } catch (CFGBuilderException e) {
+            } catch (DataflowAnalysisException | CFGBuilderException e) {
                 bugReporter.logError("Error analyzing " + method.toString(), e);
             }
         }
@@ -276,8 +274,8 @@ public class FindDeadLocalStores implements Detector {
                     switchHandler.sawInvokeDynamic(pc, invokeMethodName);
 
                     continue;
-                } else if (handle.getInstruction() instanceof LOOKUPSWITCH) {
-                    LOOKUPSWITCH switchInstruction = (LOOKUPSWITCH) handle.getInstruction();
+                } else if (handle.getInstruction() instanceof Select) {
+                    Select switchInstruction = (Select) handle.getInstruction();
                     int[] indices = switchInstruction.getIndices();
 
                     switchHandler.enterSwitch(switchInstruction.getOpcode(),
@@ -316,10 +314,8 @@ public class FindDeadLocalStores implements Detector {
                 LocalVariableAnnotation lvAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);
 
                 String sourceFileName = javaClass.getSourceFileName();
-                if (LocalVariableAnnotation.UNKNOWN_NAME.equals(lvAnnotation.getName())) {
-                    if (sourceFileName.endsWith(".groovy")) {
-                        continue;
-                    }
+                if (LocalVariableAnnotation.UNKNOWN_NAME.equals(lvAnnotation.getName()) && sourceFileName.endsWith(".groovy")) {
+                    continue;
                 }
 
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
@@ -414,7 +410,7 @@ public class FindDeadLocalStores implements Detector {
                                     Object value = ((LDC) instruction2).getValue(methodGen.getConstantPool());
                                     if (value instanceof String) {
                                         String n = (String) value;
-                                        if (n.length() > 0) {
+                                        if (!n.isEmpty()) {
                                             initializationOf = ClassName.toSignature(n);
                                         }
                                     }

@@ -34,7 +34,6 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
@@ -131,7 +130,6 @@ class SarifBugReporterTest {
     void testRuleWithArguments() {
         // given
         final String EXPECTED_BUG_TYPE = "BUG_TYPE";
-        final int EXPECTED_PRIORITY = Priorities.NORMAL_PRIORITY;
         final String EXPECTED_DESCRIPTION = "describing about this bug type...";
         BugPattern bugPattern = new BugPattern(EXPECTED_BUG_TYPE, "abbrev", "category", false, EXPECTED_DESCRIPTION,
                 "describing about this bug type with value {0}...", "detailText", null, 0);
@@ -170,7 +168,6 @@ class SarifBugReporterTest {
     void testRuleWithInvalidArguments() {
         // given
         final String EXPECTED_BUG_TYPE = "BUG_TYPE";
-        final int EXPECTED_PRIORITY = Priorities.NORMAL_PRIORITY;
         final String EXPECTED_DESCRIPTION = "describing about this bug type...";
         BugPattern bugPattern = new BugPattern(EXPECTED_BUG_TYPE, "abbrev", "category", false, EXPECTED_DESCRIPTION,
                 "describing about this bug type with value {1234}...", "detailText", null, 0);
@@ -310,7 +307,7 @@ class SarifBugReporterTest {
     }
 
     @Test
-    void testExtensions() throws PluginException {
+    void testExtensions() {
         PluginLoader pluginLoader = DetectorFactoryCollection.instance().getCorePlugin().getPluginLoader();
         Plugin plugin = new Plugin("pluginId", "version", null, pluginLoader, true, false);
         DetectorFactoryCollection dfc = new DetectorFactoryCollection(plugin);

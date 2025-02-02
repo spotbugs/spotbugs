@@ -23,7 +23,7 @@ class VersionInsensitiveBugComparatorTest {
 
         @Override
         public void accept(BugAnnotationVisitor visitor) {
-            ;
+
         }
 
         @Override

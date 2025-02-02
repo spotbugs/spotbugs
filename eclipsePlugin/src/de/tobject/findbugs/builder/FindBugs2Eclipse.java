@@ -258,10 +258,10 @@ public class FindBugs2Eclipse extends FindBugs2 {
         SoftReference<List<String>> wr = auxClassPaths.get(project);
         List<String> oldAuxCp = wr != null ? wr.get() : null;
         if (oldAuxCp != null && !oldAuxCp.equals(auxClassPath)) {
-            auxClassPaths.put(project, new SoftReference<List<String>>(new ArrayList<>(auxClassPath)));
+            auxClassPaths.put(project, new SoftReference<>(new ArrayList<>(auxClassPath)));
             classAnalysisCache.remove(project);
         } else if (oldAuxCp == null) {
-            auxClassPaths.put(project, new SoftReference<List<String>>(new ArrayList<>(auxClassPath)));
+            auxClassPaths.put(project, new SoftReference<>(new ArrayList<>(auxClassPath)));
         }
     }
 }

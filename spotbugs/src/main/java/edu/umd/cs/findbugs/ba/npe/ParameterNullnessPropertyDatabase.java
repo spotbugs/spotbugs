@@ -43,8 +43,7 @@ public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<Pa
     protected ParameterProperty decodeProperty(String propStr) throws PropertyDatabaseFormatException {
         try {
             int unconditionalDerefSet = Integer.parseInt(propStr);
-            ParameterProperty prop = new ParameterProperty(unconditionalDerefSet);
-            return prop;
+            return new ParameterProperty(unconditionalDerefSet);
         } catch (NumberFormatException e) {
             throw new PropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
         }

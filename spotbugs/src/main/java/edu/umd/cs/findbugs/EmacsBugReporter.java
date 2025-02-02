@@ -128,7 +128,3 @@ public class EmacsBugReporter extends TextUIBugReporter {
     }
 
 }
-
-/*
- * Local Variables: eval: (c-set-style "bsd") End:
- */

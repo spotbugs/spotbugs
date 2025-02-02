@@ -49,6 +49,11 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @author Tomás Pollak
  */
 class PropertiesPageTest extends AbstractFindBugsTest {
+
+    private UserPreferences originalProjectPreferences;
+
+    private UserPreferences originalWorkspacePreferences;
+
     @BeforeAll
     static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
@@ -58,10 +63,6 @@ class PropertiesPageTest extends AbstractFindBugsTest {
     static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
-
-    private UserPreferences originalProjectPreferences;
-
-    private UserPreferences originalWorkspacePreferences;
 
     @Override
     public void setUp() throws Exception {
@@ -490,8 +491,7 @@ class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     private FindbugsPropertyPageTestSubclass createWorkspacePropertiesPage() {
-        FindbugsPropertyPageTestSubclass page = new FindbugsPropertyPageTestSubclass();
-        return page;
+        return new FindbugsPropertyPageTestSubclass();
     }
 
     private String getBugsFileProjectRelativePath() {
@@ -503,8 +503,7 @@ class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     private Shell getParentShell() {
-        Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        return shell;
+        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
     }
 
     private UserPreferences getWorkspacePreferences() {

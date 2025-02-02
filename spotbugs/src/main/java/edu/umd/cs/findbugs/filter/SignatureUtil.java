@@ -29,6 +29,11 @@ import java.util.regex.Pattern;
  */
 public class SignatureUtil {
 
+    /**
+     * @param params The parameters for this method signature, or null, for instance <code>int, long</code>
+     * @param returns The return for this method signature, or null, for instance <code>double</code>
+     * @return The method signature or (in case either <code>params</code> or <code>returns</code> are null) a regex pattern matching the signatures. When a regex is returned the first character will be '~'.
+     */
     public static String createMethodSignature(String params, String returns) {
         if (params == null && returns == null) {
             return null;
@@ -42,7 +47,7 @@ public class SignatureUtil {
 
             StringTokenizer tok = new StringTokenizer(params, " \t\n\r\f,");
             while (tok.hasMoreTokens()) {
-                String param = typeToSignature(tok.nextToken());
+                String param = typeToSignature(tok.nextToken(), returns == null);
                 buf.append(param);
             }
             pString = buf.toString();
@@ -50,7 +55,7 @@ public class SignatureUtil {
         if (returns == null) {
             rString = ".*";
         } else {
-            rString = typeToSignature(returns);
+            rString = typeToSignature(returns, params == null);
         }
         if (params == null || returns == null) {
             String result = "~\\(" + pString + "\\)" + rString;
@@ -66,12 +71,18 @@ public class SignatureUtil {
         if (type == null) {
             return null;
         }
-        return typeToSignature(type);
+        return typeToSignature(type, false);
     }
 
-    private static String typeToSignature(String type) {
+    private static String typeToSignature(String type, boolean regex) {
         if (type.endsWith("[]")) {
-            return "[" + typeToSignature(type.substring(0, type.length() - 2));
+            String typeString = "[" + typeToSignature(type.substring(0, type.length() - 2), regex);
+            if (regex) {
+                // When we're building a regex we need to escape the '[' or it will be processed as a regex group
+                return "\\" + typeString;
+            } else {
+                return typeString;
+            }
         } else {
             return scalarTypeToSignature(type);
         }

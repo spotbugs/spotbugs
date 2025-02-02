@@ -63,7 +63,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("se.debug");
 
-    final static boolean reportTransientFieldOfNonSerializableClass = SystemProperties
+    static final boolean reportTransientFieldOfNonSerializableClass = SystemProperties
             .getBoolean("reportTransientFieldOfNonSerializableClass");
 
     boolean sawSerialVersionUID;
@@ -169,9 +169,6 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void visit(JavaClass obj) {
-        String superClassname = obj.getSuperclassName();
-        // System.out.println("superclass of " + getClassName() + " is " +
-        // superClassname);
         isEnum = Subtypes2.isEnum(obj);
         isRecord = Subtypes2.isRecord(obj);
 
@@ -382,8 +379,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 }
 
                 try {
-                    double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldX.getSignature());
-                    if (isSerializable < 0.6) {
+                    double serializableValue = DeepSubtypeAnalysis.isDeepSerializable(fieldX.getSignature());
+                    if (serializableValue < 0.6) {
                         priority++;
                     }
                 } catch (ClassNotFoundException e1) {
@@ -602,8 +599,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
                             if (classStored == null) {
                                 return;
                             }
-                            double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(classStored);
-                            if (isSerializable <= 0.2) {
+                            double serializableValue = DeepSubtypeAnalysis.isDeepSerializable(classStored);
+                            if (serializableValue <= 0.2) {
                                 XField f = fieldsThatMightBeAProblem.get(nameOfField);
 
                                 String sig = f.getSignature();
@@ -617,7 +614,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                     if (!Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                                         bias = 1.0;
                                     }
-                                    int priority = computePriority(isSerializable, bias);
+                                    int priority = computePriority(serializableValue, bias);
 
                                     fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_STORE", priority)
                                             .addClass(getThisClass().getClassName()).addField(f).addType(genSig)
@@ -653,6 +650,10 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void visit(Field obj) {
+        if (isEnum || isRecord) {
+            return;
+        }
+
         int flags = obj.getAccessFlags();
         String genericSignature = obj.getGenericSignature();
         if (genericSignature != null && genericSignature.startsWith("T")) {
@@ -704,21 +705,21 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 try {
                     ReferenceType rtype = (ReferenceType) type;
 
-                    double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(rtype);
+                    double serializableValue = DeepSubtypeAnalysis.isDeepSerializable(rtype);
                     if (DEBUG) {
-                        System.out.println("  isSerializable: " + isSerializable);
+                        System.out.println("  isSerializable: " + serializableValue);
                     }
-                    if (isSerializable < 1.0) {
+                    if (serializableValue < 1.0) {
                         fieldsThatMightBeAProblem.put(obj.getName(), xfield);
                     }
-                    if (isSerializable < 0.9) {
+                    if (serializableValue < 0.9) {
                         ReferenceType problemType = DeepSubtypeAnalysis.getLeastSerializableTypeComponent(rtype);
 
                         // Priority is LOW for GUI classes (unless explicitly marked
                         // Serializable),
                         // HIGH if the class directly implements Serializable,
                         // NORMAL otherwise.
-                        int priority = computePriority(isSerializable, 0);
+                        int priority = computePriority(serializableValue, 0);
                         if (!strongEvidenceForIntendedSerialization()) {
                             if (obj.getName().startsWith("this$")) {
                                 priority = Math.max(priority, NORMAL_PRIORITY);
@@ -738,7 +739,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         }
                         if (DEBUG) {
                             System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName() + " " + obj.getName() + " "
-                                    + isSerializable + " " + implementsSerializableDirectly + " " + sawSerialVersionUID + " "
+                                    + serializableValue + " " + implementsSerializableDirectly + " " + sawSerialVersionUID + " "
                                     + isGUIClass + " " + isEjbImplClass);
                             // Report is queued until after the entire class has been
                             // seen.
@@ -747,7 +748,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         if ("this$0".equals(obj.getName())) {
                             fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_INNER_CLASS", priority).addClass(getThisClass()
                                     .getClassName()));
-                        } else if (isSerializable < 0.9) {
+                        } else if (serializableValue < 0.9) {
                             fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
                                     .addClass(getThisClass().getClassName())
                                     .addField(xfield).addType(problemType)

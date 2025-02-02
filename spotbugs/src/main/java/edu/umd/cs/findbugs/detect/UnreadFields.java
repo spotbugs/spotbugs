@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -100,6 +99,7 @@ public class UnreadFields extends OpcodeStackDetector {
     private static final List<String> INITIALIZER_ANNOTATIONS = Arrays.asList(
             "Ljakarta/annotation/PostConstruct;",
             "Ljavax/annotation/PostConstruct;",
+            "Lorg/testng/annotations/BeforeClass;",
             "Lorg/junit/jupiter/api/BeforeAll;",
             "Lorg/junit/jupiter/api/BeforeEach;",
             "Lorg/junit/Before;",

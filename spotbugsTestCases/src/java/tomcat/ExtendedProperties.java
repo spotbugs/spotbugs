@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ExtendedProperties extends Properties {
+    private static final long serialVersionUID = 1L;
+
     String file;
 
     String basePath;
@@ -24,8 +26,9 @@ public class ExtendedProperties extends Properties {
         basePath = new File(file).getAbsolutePath();
         basePath = basePath.substring(0, basePath.lastIndexOf(fileSeparator) + 1);
 
-        FileInputStream fileInputStream = new FileInputStream(file);
-        // this.load(fileInputStream);
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            // this.load(fileInputStream);
+        }
 
         if (defaultFile != null) {
             defaults = new ExtendedProperties(defaultFile);

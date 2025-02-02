@@ -83,7 +83,7 @@ public class UnionBugs2 extends AbstractFindBugsTask {
             throw new BuildException("to attribute is required", getLocation());
         }
 
-        if (fileSets.size() < 1) {
+        if (fileSets.isEmpty()) {
             throw new BuildException("fileset is required");
         }
     }

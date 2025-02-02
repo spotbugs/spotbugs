@@ -87,7 +87,7 @@ public class SwitchHandler {
         int size = switchOffsetStack.size();
         while (--size >= 0) {
             SwitchDetails existingDetail = switchOffsetStack.get(size);
-            if (details.switchPC > (existingDetail.switchPC + existingDetail.swOffsets[existingDetail.swOffsets.length - 1])) {
+            if (details.switchPC > (existingDetail.switchPC + existingDetail.getLastOffset())) {
                 switchOffsetStack.remove(size);
             }
         }
@@ -243,10 +243,10 @@ public class SwitchHandler {
             switchPC = pc;
             int uniqueOffsets = 0;
             int lastValue = -1;
-            int maxOffset = defOffset;
+            int maxoffset = defOffset;
             for (int offset : offsets) {
-                if (maxOffset < offset) {
-                    maxOffset = offset;
+                if (maxoffset < offset) {
+                    maxoffset = offset;
                 }
                 if (offset == defOffset) {
                     exhaustive = false;
@@ -257,7 +257,7 @@ public class SwitchHandler {
                 }
             }
 
-            this.maxOffset = maxOffset;
+            this.maxOffset = maxoffset;
             swOffsets = new int[uniqueOffsets];
             int insertPos = 0;
             lastValue = -1;
@@ -289,6 +289,10 @@ public class SwitchHandler {
                 return Short.MIN_VALUE;
             }
             return switchPC + defaultOffset;
+        }
+
+        private int getLastOffset() {
+            return swOffsets.length > 0 ? swOffsets[swOffsets.length - 1] : 0;
         }
     }
 }

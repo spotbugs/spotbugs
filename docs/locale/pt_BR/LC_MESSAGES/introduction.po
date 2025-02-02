@@ -50,11 +50,11 @@ msgstr "Requisitos"
 #: ../../introduction.rst:14
 msgid ""
 "To use SpotBugs, you need a runtime environment compatible with Java "
-"version 1.8 or later. SpotBugs is platform independent, and is known to "
+"version 11 or later. SpotBugs is platform independent, and is known to "
 "run on GNU/Linux, Windows, and MacOS X platforms."
 msgstr ""
 "Para usar SpotBugs, você precisa de um ambiente compatível com Java "
-"versão 1.8 ou posterior. SpotBugs é uma plataforma independente, e é conhecida por "
+"versão 11 ou posterior. SpotBugs é uma plataforma independente, e é conhecida por "
 "rodar nas plataformas GNU/Linux, Windows, e MacOS X."
 
 #: ../../introduction.rst:17
@@ -70,8 +70,8 @@ msgid "Supported Java version"
 msgstr "Versões Java suportadas"
 
 #: ../../introduction.rst:23
-msgid "SpotBugs is built by JDK8, and run on JRE8 and newer versions."
-msgstr "SpotBugs é construído pelo JDK8 e executado no JRE8 ou versões posteriores."
+msgid "SpotBugs is built by JDK11, and run on JRE11 and newer versions."
+msgstr "SpotBugs é construído pelo JDK11 e executado no JRE11 ou versões posteriores."
 
 #: ../../introduction.rst:25
 msgid ""

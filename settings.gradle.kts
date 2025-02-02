@@ -1,5 +1,5 @@
 plugins {
-  id("com.gradle.enterprise") version "3.17.1"
+  id("com.gradle.develocity") version "3.19.1"
 }
 
 include(":eclipsePlugin")
@@ -16,9 +16,9 @@ include(":test-harness-jupiter")
 
 rootProject.name = "spotbugs"
 
-gradleEnterprise {
+develocity {
   buildScan {
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
+    termsOfUseUrl = "https://gradle.com/terms-of-service"
+    termsOfUseAgree = "yes"
   }
 }

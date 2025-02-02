@@ -250,11 +250,9 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
             }
             bugReporter.reportBug(bug);
         }
-        if (!hasCompareToObject && !hasCompareToBridgeMethod && hasCompareToSelf) {
-            if (!extendsObject) {
-                bugReporter.reportBug(new BugInstance(this, "CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName())
-                        .addMethod(compareToMethod));
-            }
+        if (!hasCompareToObject && !hasCompareToBridgeMethod && hasCompareToSelf && !extendsObject) {
+            bugReporter.reportBug(new BugInstance(this, "CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName())
+                    .addMethod(compareToMethod));
         }
 
         // if (!hasFields) return;
