@@ -76,7 +76,7 @@ public class FileBugHash {
 
             String packagePath = ClassName.toSlashedClassName(source.getPackageName());
             String key;
-            if (packagePath.length() == 0) {
+            if (packagePath.isEmpty()) {
                 key = source.getSourceFile();
             } else {
                 key = packagePath + "/" + source.getSourceFile();

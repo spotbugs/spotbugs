@@ -65,21 +65,21 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 
     private Action actionShowPerspective;
 
-    public AbstractFindbugsView() {
+    protected AbstractFindbugsView() {
         super();
     }
 
     /**
      * activates view if it is not visible
      */
-    final protected void activate() {
+    protected final void activate() {
         if (!isVisible()) {
             getSite().getPage().activate(this);
         }
     }
 
     @Override
-    final public boolean isVisible() {
+    public final boolean isVisible() {
         return getSite().getPage().isPartVisible(this);
     }
 
@@ -115,7 +115,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         contributeToActionBars();
     }
 
-    final public Composite getRootControl() {
+    public final Composite getRootControl() {
         return root;
     }
 
@@ -123,7 +123,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
      * @param parent
      * @return
      */
-    abstract protected Composite createRootControl(Composite parent);
+    protected abstract Composite createRootControl(Composite parent);
 
     private void hookContextMenu() {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
@@ -216,9 +216,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
      * @return IWorkbenchSiteProgressService or <code>null</code>.
      */
     protected IWorkbenchSiteProgressService getProgressService() {
-        IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) getSite().getAdapter(
-                IWorkbenchSiteProgressService.class);
-        return service;
+        return getSite().getAdapter(IWorkbenchSiteProgressService.class);
     }
 
     /**

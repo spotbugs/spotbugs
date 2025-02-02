@@ -191,7 +191,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     /**
      * @author pugh
      */
-    private final static class SpecialTypeAnalysis extends TypeAnalysis {
+    private static final class SpecialTypeAnalysis extends TypeAnalysis {
 
         private SpecialTypeAnalysis(Method method, MethodGen methodGen, CFG cfg, DepthFirstSearch dfs, TypeMerger typeMerger,
                 TypeFrameModelingVisitor visitor, RepositoryLookupFailureCallback lookupFailureCallback,
@@ -476,7 +476,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             Type type = obj.getType(getCPG());
             if (isString(type)) {
                 Object value = obj.getValue(getCPG());
-                if (value instanceof String && ((String) value).length() == 0) {
+                if (value instanceof String && ((String) value).isEmpty()) {
                     pushValue(emptyStringTypeInstance);
                 } else {
                     pushValue(staticStringTypeInstance);
@@ -1250,7 +1250,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) {
             String lhsSig = lhsType_.getSignature();
             String rhsSig = rhsType_.getSignature();
-            boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, new HashSet<XMethod>());
+            boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, new HashSet<>());
             if (allOk) {
                 priorityModifier += 2;
             }
@@ -1319,10 +1319,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         String invoked = inv.getClassName(cpg);
         String methodName = inv.getMethodName(cpg);
         String methodSig = inv.getSignature(cpg);
-        MethodDescriptor invokedMethod =
-                DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(invoked), methodName, methodSig,
-                        inv instanceof INVOKESTATIC);
-        return invokedMethod;
+        return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(invoked), methodName, methodSig,
+                inv instanceof INVOKESTATIC);
     }
 
     private boolean checkForWeirdEquals(String lhsSig, String rhsSig, Set<XMethod> targets) {
@@ -1335,7 +1333,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
             targets.addAll(Hierarchy2.resolveVirtualMethodCallTargets(expectedClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
                     false, false));
-            allOk = targets.size() > 0;
+            allOk = !targets.isEmpty();
             for (XMethod m2 : targets) {
                 if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), actualClassDescriptor)) {
                     allOk = false;

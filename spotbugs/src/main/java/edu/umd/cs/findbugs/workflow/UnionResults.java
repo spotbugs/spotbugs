@@ -95,13 +95,13 @@ public class UnionResults {
         // detector plugins
     }
 
-    static public SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
+    public static SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
         SortedBugCollection result = origCollection.duplicate();
         merge(null, result, newCollection);
         return result;
     }
 
-    static public void merge(HashSet<String> hashes, SortedBugCollection into, SortedBugCollection from) {
+    public static void merge(HashSet<String> hashes, SortedBugCollection into, SortedBugCollection from) {
 
         for (BugInstance bugInstance : from.getCollection()) {
             if (hashes == null || hashes.add(bugInstance.getInstanceHash())) {
@@ -165,9 +165,7 @@ public class UnionResults {
                     results = more.createEmptyCollectionWithMetadata();
                 }
                 merge(hashes, results, more);
-            } catch (IOException e) {
-                System.err.println("Trouble reading/parsing " + fileName);
-            } catch (DocumentException e) {
+            } catch (IOException | DocumentException e) {
                 System.err.println("Trouble reading/parsing " + fileName);
             }
         }

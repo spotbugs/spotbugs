@@ -140,7 +140,7 @@ public class FilterBugsDialog extends SelectionDialog {
         }
     }
 
-    private final static class TreeLabelProvider implements ILabelProvider {
+    private static final class TreeLabelProvider implements ILabelProvider {
         @Override
         public Image getImage(Object element) {
             return null;
@@ -201,8 +201,7 @@ public class FilterBugsDialog extends SelectionDialog {
 
         public boolean isFiltering() {
             String filterString = getFilterString();
-            boolean yes = filterString != null && filterString.length() > 0 && !filterString.equals(getInitialText());
-            return yes;
+            return filterString != null && !filterString.isEmpty() && !filterString.equals(getInitialText());
         }
     }
 
@@ -336,11 +335,9 @@ public class FilterBugsDialog extends SelectionDialog {
     public boolean close() {
         String text = selectedIds.getText();
         String computed = getSelectedIds();
-        if (text.length() > 0 && !computed.equals(text)) {
-            // allow to specify filters using text area (no validation checks
-            // yet)
-            // TODO validate text entered by user and throw away
-            // invalide/duplicated entries
+        if (!text.isEmpty() && !computed.equals(text)) {
+            // allow to specify filters using text area (no validation checks yet)
+            // TODO validate text entered by user and throw away invalid/duplicated entries
             selectedAsText = text;
         } else {
             selectedAsText = computed;
@@ -462,8 +459,7 @@ public class FilterBugsDialog extends SelectionDialog {
                 }
             }
         } else {
-            // TODO currently it checks for all existing, but it should check
-            // only visible
+            // TODO currently it checks for all existing, but it should check only visible
             Object[] elements = checkList.getVisibleExpandedElements();
             List<Object> list = Arrays.asList(checkedElements);
             for (Object object : elements) {
@@ -492,7 +488,7 @@ public class FilterBugsDialog extends SelectionDialog {
         final ContainerCheckedTreeViewer viewer = new ContainerCheckedTreeViewer(parent, style | SWT.SINGLE | SWT.BORDER
                 | SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE) {
             /**
-             * Overriden to re-set checked state of elements after filter change
+             * Overridden to re-set checked state of elements after filter change
              */
             @Override
             public void refresh(boolean updateLabels) {
@@ -652,7 +648,7 @@ public class FilterBugsDialog extends SelectionDialog {
         sb.append("<p>Contributed by plugin: ").append(plugin.getPluginId());
         sb.append("<p>Provider: ").append(plugin.getProvider());
         String website = plugin.getWebsite();
-        if (website != null && website.length() > 0) {
+        if (website != null && !website.isEmpty()) {
             sb.append(" (").append(website).append(")");
         }
     }

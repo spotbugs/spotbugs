@@ -98,7 +98,7 @@ import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 public final class MarkerUtil {
     // group 1 matches class name for all except anonymous classes,
     // group 2 matches the number part of the anonymous class
-    final static Pattern fullName = Pattern.compile("^(.+?)(([$+][0-9].*)?)");
+    static final Pattern fullName = Pattern.compile("^(.+?)(([$+][0-9].*)?)");
 
     private static final IMarker[] EMPTY = new IMarker[0];
 
@@ -209,24 +209,24 @@ public final class MarkerUtil {
 
         int startLine = DONT_KNOW_LINE;
 
-        // only update if we don't already tried it
-        if (primaryLine != DONT_KNOW_LINE) {
-            // XXX "first line of a file" is too simplistic. What if we have inner types?
-            if (primaryLine <= 1 && type instanceof IType) {
-                IType iType = (IType) type;
-                try {
-                    startLine = getLineStart(iType);
-                    if (startLine > 0) {
-                        if (Reporter.DEBUG) {
-                            System.out.println("4. Fixed start line to: " + startLine + " on " + type.getElementName());
-                        }
+        // only update if we didn't already try it
+        if (primaryLine != DONT_KNOW_LINE
+                // XXX "first line of a file" is too simplistic. What if we have inner types?
+                && primaryLine <= 1 && type instanceof IType) {
+            IType iType = (IType) type;
+            try {
+                startLine = getLineStart(iType);
+                if (startLine > 0) {
+                    if (Reporter.DEBUG) {
+                        System.out.println("4. Fixed start line to: " + startLine + " on " + type.getElementName());
                     }
-                } catch (JavaModelException e1) {
-                    FindbugsPlugin.getDefault().logException(e1, "Could not find source line for Java type " + type
-                            + "for SpotBugs warning: " + bug);
                 }
+            } catch (JavaModelException e1) {
+                FindbugsPlugin.getDefault().logException(e1, "Could not find source line for Java type " + type
+                        + "for SpotBugs warning: " + bug);
             }
         }
+
 
         if (primaryLine <= 0 && startLine <= 0) {
             // We have to provide line number, otherwise editor wouldn't show it
@@ -287,7 +287,7 @@ public final class MarkerUtil {
         Matcher m = fullName.matcher(qualifiedClassName);
         IType type;
         String innerName = null;
-        if (m.matches() && m.group(2).length() > 0) {
+        if (m.matches() && !m.group(2).isEmpty()) {
 
             String outerQualifiedClassName = m.group(1).replace('$', '.');
             innerName = m.group(2).substring(1);
@@ -305,16 +305,11 @@ public final class MarkerUtil {
             // second argument is required to find also secondary types
             type = project.findType(qualifiedClassName.replace('$', '.'), (IProgressMonitor) null);
 
-            // for inner classes, some detectors does not properly report source
-            // lines:
-            // instead of reporting the first line of inner class, they report
-            // first line of parent class
-            // in this case we will try to fix this here and point to the right
-            // start line
-            if (type != null && type.isMember()) {
-                if (!hasLineInfo(primarySourceLineAnnotation)) {
-                    completeInnerClassInfo(qualifiedClassName, type.getElementName(), type, bug);
-                }
+            // for inner classes, some detectors does not properly report source lines:
+            // instead of reporting the first line of inner class, they report first line of parent class
+            // in this case we will try to fix this here and point to the right start line
+            if (type != null && type.isMember() && !hasLineInfo(primarySourceLineAnnotation)) {
+                completeInnerClassInfo(qualifiedClassName, type.getElementName(), type, bug);
             }
         }
 
@@ -396,7 +391,7 @@ public final class MarkerUtil {
         int lineNbr = findChildSourceLine(type, innerName, bug);
         if (lineNbr > 0) {
             String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
-            if (sourceFileStr != null && sourceFileStr.length() > 0) {
+            if (sourceFileStr != null && !sourceFileStr.isEmpty()) {
                 bug.addSourceLine(new SourceLineAnnotation(qualifiedClassName, sourceFileStr, lineNbr, lineNbr, 0, 0));
                 if (Reporter.DEBUG) {
                     System.out.println("1. Fixed start line to: " + lineNbr + " on " + qualifiedClassName + "$" + innerName);
@@ -503,10 +498,8 @@ public final class MarkerUtil {
 
     private static int findInnerClassSourceLine(IJavaElement type, String name) throws JavaModelException {
         String elemName = type.getElementName();
-        if (name.equals(elemName)) {
-            if (type instanceof IType) {
-                return getLineStart((IType) type);
-            }
+        if (name.equals(elemName) && (type instanceof IType)) {
+            return getLineStart((IType) type);
         }
         if (type instanceof IParent) {
             IJavaElement[] children = ((IParent) type).getChildren();
@@ -1016,11 +1009,9 @@ public final class MarkerUtil {
      */
     @Nonnull
     public static IMarker[] getMarkers(IResource fileOrFolder, int depth) {
-        if (fileOrFolder.getType() == IResource.PROJECT) {
-            if (!fileOrFolder.isAccessible()) {
-                // user just closed the project decorator is working on, avoid exception here
-                return EMPTY;
-            }
+        if (fileOrFolder.getType() == IResource.PROJECT && !fileOrFolder.isAccessible()) {
+            // user just closed the project decorator is working on, avoid exception here
+            return EMPTY;
         }
         try {
             return fileOrFolder.findMarkers(FindBugsMarker.NAME, true, depth);

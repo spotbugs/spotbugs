@@ -238,7 +238,7 @@ public class DiscoverSourceDirectories {
 
         // Find all directories underneath the root source directory
         progress.startRecursiveDirectorySearch();
-        RecursiveFileSearch rfs = new RecursiveFileSearch(rootSourceDirectory, pathname -> pathname.isDirectory());
+        RecursiveFileSearch rfs = new RecursiveFileSearch(rootSourceDirectory, File::isDirectory);
         rfs.search();
         progress.doneRecursiveDirectorySearch();
         List<String> candidateSourceDirList = rfs.getDirectoriesScanned();
@@ -309,11 +309,9 @@ public class DiscoverSourceDirectories {
                 packageName += "/";
             }
 
-            String fullyQualifiedSourceFile = packageName + sourceFile;
-
-            return fullyQualifiedSourceFile;
+            return packageName + sourceFile;
         } catch (CheckedAnalysisException e) {
-            errorLogger.logError("Could scan class " + classDesc.toDottedClassName(), e);
+            errorLogger.logError("Could scan class " + classDesc.getDottedClassName(), e);
             throw e;
         } finally {
             progress.finishClass();
@@ -332,10 +330,8 @@ public class DiscoverSourceDirectories {
             try {
                 String fullyQualifiedSourceFileName = findFullyQualifiedSourceFileName(classPath, classDesc);
                 fullyQualifiedSourceFileNameList.add(fullyQualifiedSourceFileName);
-            } catch (IOException e) {
-                errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
-            } catch (CheckedAnalysisException e) {
-                errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
+            } catch (IOException | CheckedAnalysisException e) {
+                errorLogger.logError("Couldn't scan class " + classDesc.getDottedClassName(), e);
             }
         }
 
@@ -404,7 +400,7 @@ public class DiscoverSourceDirectories {
 
             @Override
             public void reportMissingClass(ClassDescriptor classDescriptor) {
-                logError("Missing class: " + classDescriptor.toDottedClassName());
+                logError("Missing class: " + classDescriptor.getDottedClassName());
             }
 
             @Override

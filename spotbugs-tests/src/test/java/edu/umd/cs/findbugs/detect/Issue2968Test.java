@@ -9,7 +9,6 @@ class Issue2968Test extends AbstractIntegrationTest {
     void testIssue() {
         performAnalysis(
                 "ghIssues/Issue2968.class",
-                "ghIssues/Issue2968$1.class",
                 "ghIssues/Issue2968$TestIf.class",
                 "ghIssues/Issue2968$CommonException.class",
                 "ghIssues/Issue2968$ActualException.class",

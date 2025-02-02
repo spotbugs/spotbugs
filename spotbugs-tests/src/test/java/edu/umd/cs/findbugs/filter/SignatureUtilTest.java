@@ -63,4 +63,15 @@ class SignatureUtilTest {
         assertThat(SignatureUtil.createMethodSignature(null, "long"), is("~\\(.*\\)J"));
         assertThat(SignatureUtil.createMethodSignature("", null), is("~\\(\\).*"));
     }
+
+    /**
+     * If the method signature is a regex and there are array types we should escape the '[' or it we be processed as a regex group start.
+     *
+     * @see NameMatch This class uses {@code ~} to judge signature is regexp or not.
+     */
+    @Test
+    void testCreateMethodSignatureWithArrayTypes() {
+        assertThat(SignatureUtil.createMethodSignature(null, "long[]"), is("~\\(.*\\)\\[J"));
+        assertThat(SignatureUtil.createMethodSignature("byte[], short, byte", null), is("~\\(\\[BSB\\).*"));
+    }
 }

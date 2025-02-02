@@ -155,7 +155,7 @@ public class Analyze {
      *            Known type of object
      * @param y
      *            Type queried about
-     * @return 0 - 1 value indicating probablility
+     * @return 0 - 1 value indicating probability
      */
 
     public static double deepInstanceOf(@DottedClassName String x, @DottedClassName String y) throws ClassNotFoundException {

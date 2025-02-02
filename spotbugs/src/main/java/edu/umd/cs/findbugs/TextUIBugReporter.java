@@ -47,11 +47,13 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
 
     private boolean applySuppressions = false;
 
+    private String outputTarget;
+
     static final String OTHER_CATEGORY_ABBREV = "X";
 
     protected PrintWriter outputStream = UTF8.printWriter(System.out, true);
 
-    public TextUIBugReporter() {
+    protected TextUIBugReporter() {
         reportStackTrace = true;
     }
 
@@ -144,7 +146,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
 
     @Override
     public void reportQueuedErrors() {
-        boolean errors = analysisErrors || missingClasses || getQueuedErrors().size() > 0;
+        boolean errors = analysisErrors || missingClasses || !getQueuedErrors().isEmpty();
         analysisErrors = missingClasses = false;
         super.reportQueuedErrors();
         if (errors) {
@@ -239,6 +241,19 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
             }
         }
     }
+
+    public String getOutputTarget() {
+        return this.outputTarget;
+    }
+
+    public void setOutputTarget(String key) {
+        this.outputTarget = key;
+    }
+
+    public boolean isDuplicateOf(TextUIBugReporter other) {
+        return outputTarget != null && outputTarget.equals(other.outputTarget);
+    }
+
 
     public boolean isApplySuppressions() {
         return applySuppressions;

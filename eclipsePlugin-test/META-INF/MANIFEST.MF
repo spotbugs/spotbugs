@@ -15,6 +15,6 @@ Require-Bundle: com.github.spotbugs.plugin.eclipse,
  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

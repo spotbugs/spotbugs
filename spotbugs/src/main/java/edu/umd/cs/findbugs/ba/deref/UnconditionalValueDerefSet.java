@@ -285,8 +285,7 @@ public class UnconditionalValueDerefSet {
      * @return the set of dereference Locations
      */
     public Set<Location> getDerefLocationSet(ValueNumber vn) {
-        Set<Location> derefLocationSet = derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
-        return derefLocationSet;
+        return derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
     }
 
     /**

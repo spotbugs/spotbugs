@@ -135,7 +135,7 @@ public class GenericObjectType extends ObjectType {
      *         isVariable() is falses
      */
     public boolean hasParameters() {
-        return parameters != null && parameters.size() > 0;
+        return parameters != null && !parameters.isEmpty();
     }
 
     /**
@@ -203,7 +203,7 @@ public class GenericObjectType extends ObjectType {
         super(class_name);
         variable = null;
         extension = null;
-        if (parameters == null || parameters.size() == 0) {
+        if (parameters == null || parameters.isEmpty()) {
             throw new IllegalStateException("argument 'parameters' must contain at least 1 parameter");
         }
         this.parameters = parameters;

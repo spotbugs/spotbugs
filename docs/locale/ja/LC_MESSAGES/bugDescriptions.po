@@ -3978,7 +3978,7 @@ msgstr ""
 #: ../../generated/bugDescriptionList.inc:3908
 msgid ""
 "    <p>\n"
-"This partical method invocation doesn't make sense, for reasons that "
+"This partial method invocation doesn't make sense, for reasons that "
 "should be apparent from inspection.\n"
 "</p>"
 msgstr ""

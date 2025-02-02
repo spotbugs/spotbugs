@@ -6,7 +6,7 @@ import java.util.Set;
 public class Bug1176 {
 
     public static void main(final String[] args) {
-        final Set<String> strings = new HashSet<String>();
+        final Set<String> strings = new HashSet<>();
         for (final String string : strings) {
             System.out.println(string);
         }

@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
@@ -20,16 +21,16 @@ import java.util.stream.Collectors;
 class SarifException {
     @NonNull
     final String kind;
-    @NonNull
+    @Nullable
     final String message;
     @NonNull
     final Stack stack;
     @NonNull
     final List<SarifException> innerExceptions;
 
-    SarifException(@NonNull String kind, @NonNull String message, @NonNull Stack stack, @NonNull List<SarifException> innerExceptions) {
+    SarifException(@NonNull String kind, @Nullable String message, @NonNull Stack stack, @NonNull List<SarifException> innerExceptions) {
         this.kind = Objects.requireNonNull(kind);
-        this.message = Objects.requireNonNull(message);
+        this.message = message;
         this.stack = Objects.requireNonNull(stack);
         this.innerExceptions = Collections.unmodifiableList(Objects.requireNonNull(innerExceptions));
     }
@@ -37,9 +38,6 @@ class SarifException {
     @NonNull
     static SarifException fromThrowable(@NonNull Throwable throwable, @NonNull SourceFinder sourceFinder, @NonNull Map<URI, String> baseToId) {
         String message = throwable.getMessage();
-        if (message == null) {
-            message = "no message given";
-        }
         List<Throwable> innerThrowables = new ArrayList<>();
         innerThrowables.add(throwable.getCause());
         innerThrowables.addAll(Arrays.asList(throwable.getSuppressed()));
@@ -51,12 +49,11 @@ class SarifException {
     }
 
     JsonObject toJsonObject() {
-        JsonObject textJson = new JsonObject();
-        textJson.addProperty("text", message);
-
         JsonObject result = new JsonObject();
         result.addProperty("kind", kind);
-        result.add("message", textJson);
+        if (message != null) {
+            result.addProperty("message", message);
+        }
         result.add("stack", stack.toJsonObject());
 
         JsonArray exceptionArray = new JsonArray();

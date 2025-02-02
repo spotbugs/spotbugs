@@ -33,7 +33,7 @@ import javax.annotation.CheckForNull;
  */
 public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<ValueType>> extends
         ForwardDataflowAnalysis<FrameType> {
-    public FrameDataflowAnalysis(DepthFirstSearch dfs) {
+    protected FrameDataflowAnalysis(DepthFirstSearch dfs) {
         super(dfs);
     }
 
@@ -164,7 +164,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
      *            modifyFrame() is being called
      * @return a modifiable copy of fact
      */
-    final protected FrameType modifyFrame(FrameType orig, @CheckForNull FrameType copy) {
+    protected final FrameType modifyFrame(FrameType orig, @CheckForNull FrameType copy) {
         if (copy == null) {
             copy = createFact();
             copy.copyFrom(orig);

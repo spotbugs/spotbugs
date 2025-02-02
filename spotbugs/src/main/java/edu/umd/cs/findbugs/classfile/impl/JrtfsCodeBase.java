@@ -116,7 +116,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
                     e.printStackTrace();
                 }
             });
-        } ;
+        }
         return packageToModule;
     }
 

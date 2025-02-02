@@ -49,13 +49,13 @@ public @interface SlashedClassName {
     When when() default When.ALWAYS;
 
     static class Checker implements TypeQualifierValidator<SlashedClassName> {
-        final static String simpleName = "(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|\\$)*)";
+        static final String simpleName = "(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|\\$)*)";
 
-        final static String slashedClassName = simpleName + "(/" + simpleName + ")*";
+        static final String slashedClassName = simpleName + "(/" + simpleName + ")*";
 
-        final static Pattern simplePattern = Pattern.compile(simpleName);
+        static final Pattern simplePattern = Pattern.compile(simpleName);
 
-        final static Pattern pattern = Pattern.compile(slashedClassName);
+        static final Pattern pattern = Pattern.compile(slashedClassName);
 
         @Override
         @Nonnull
