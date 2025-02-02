@@ -2,18 +2,15 @@ apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
-// This library is consumed by lot of clients
-// It should be compiled with lowest possible JLS level
 tasks.named('compileJava', JavaCompile).configure {
-  sourceCompatibility = 1.5
-  targetCompatibility = 1.5
+    options.release = 11
 }
 
 eclipse {
   jdt {
-    sourceCompatibility = 1.5
-    targetCompatibility = 1.5
-    javaRuntimeName = "J2SE-1.5"
+    sourceCompatibility = 11
+    targetCompatibility = 11
+    javaRuntimeName = "JavaSE-11"
   }
 }
 
@@ -26,7 +23,7 @@ def manifestSpec = java.manifest {
                'Bundle-SymbolicName': 'spotbugs-annotations',
                'Bundle-Version': project.version.replace('-', '.'),
                'Export-Package': 'edu.umd.cs.findbugs.annotations',
-               'Bundle-RequiredExecutionEnvironment': 'J2SE-1.5',
+               'Bundle-RequiredExecutionEnvironment': 'JavaSE-11',
                'Bundle-ManifestVersion': '2'
 }
 
@@ -44,7 +41,7 @@ def jar = tasks.named('jar', Jar) {
                'Bundle-SymbolicName': 'spotbugs-annotations',
                'Bundle-Version': project.version.replace('-', '.'),
                'Export-Package': 'edu.umd.cs.findbugs.annotations',
-               'Bundle-RequiredExecutionEnvironment': 'J2SE-1.5',
+               'Bundle-RequiredExecutionEnvironment': 'JavaSE-11',
                'Bundle-ManifestVersion': '2'
   }
 }
@@ -56,7 +53,7 @@ tasks.named('javadoc', Javadoc).configure {
   }
   doFirst {
     // This is supposed to enable everything except "missing" but doesn't work with gradle
-    // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
+    // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
     options.addBooleanOption('Xdoclint:all,-missing', true)
   }
   doLast {

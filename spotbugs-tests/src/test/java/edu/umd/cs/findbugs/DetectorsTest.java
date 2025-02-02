@@ -89,7 +89,7 @@ class DetectorsTest {
     }
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         loadFindbugsPlugin();
     }
 

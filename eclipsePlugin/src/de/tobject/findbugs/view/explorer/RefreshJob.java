@@ -195,7 +195,7 @@ class RefreshJob extends Job implements IViewerRefreshJob {
     /**
      * Sorts the removed delta's first. This allows more optimized refresh
      */
-    private final static class RemovedFirstComparator implements Comparator<DeltaInfo> {
+    private static final class RemovedFirstComparator implements Comparator<DeltaInfo> {
         @Override
         public int compare(DeltaInfo o1, DeltaInfo o2) {
             if (o1.changeKind == o2.changeKind) {

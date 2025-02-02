@@ -59,7 +59,7 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
      * @param ignoreExceptionEdges
      *            true if exception edges should be ignored
      */
-    public AbstractDominatorsAnalysis(CFG cfg, final boolean ignoreExceptionEdges) {
+    protected AbstractDominatorsAnalysis(CFG cfg, final boolean ignoreExceptionEdges) {
         this(cfg, edge -> {
             return !(ignoreExceptionEdges && edge.isExceptionEdge());
         });
@@ -73,7 +73,7 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
      * @param edgeChooser
      *            EdgeChooser to choose which Edges to consider significant
      */
-    public AbstractDominatorsAnalysis(CFG cfg, EdgeChooser edgeChooser) {
+    protected AbstractDominatorsAnalysis(CFG cfg, EdgeChooser edgeChooser) {
         this.cfg = cfg;
         this.edgeChooser = edgeChooser;
     }

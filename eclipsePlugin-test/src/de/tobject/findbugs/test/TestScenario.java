@@ -41,7 +41,7 @@ public enum TestScenario {
 
     private boolean usesJUnit;
 
-    private final Map<String, Integer> visibleBugsHistogram = new HashMap<String, Integer>();
+    private final Map<String, Integer> visibleBugsHistogram = new HashMap<>();
 
     private int visibleBugsCount;
 

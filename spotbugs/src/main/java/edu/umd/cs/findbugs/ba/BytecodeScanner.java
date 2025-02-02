@@ -290,7 +290,7 @@ public class BytecodeScanner {
                     index += 5;
                     wide = false;
                 } else {
-                    // Skip opcode, one byte index, and one byte immedate value.
+                    // Skip opcode, one byte index, and one byte immediate value.
                     index += 3;
                 }
                 break;

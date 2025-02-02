@@ -330,10 +330,9 @@ public class Util {
         return s;
     }
 
-    static public @Nonnull MessageDigest getMD5Digest() {
+    public static @Nonnull MessageDigest getMD5Digest() {
         try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            return digest;
+            return MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             throw new Error("Unable to get MD5 digest", e);
         }

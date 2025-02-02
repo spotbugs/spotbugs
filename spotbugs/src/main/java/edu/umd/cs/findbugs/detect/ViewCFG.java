@@ -112,9 +112,6 @@ public class ViewCFG implements Detector {
             BasicBlock src = edge.getSource();
             BasicBlock tgt = edge.getTarget();
             switch (edge.getType()) {
-            default:
-                out.println("  Node" + src.getLabel() + " -> Node" + tgt.getLabel() + ";");
-                break;
             case IFCMP_EDGE:
                 out.println("  Node" + src.getLabel() + " -> Node" + tgt.getLabel() +
                         " [shape=plaintext label=\" True branch\"];");
@@ -160,6 +157,9 @@ public class ViewCFG implements Detector {
             case GOTO_EDGE:
                 out.println("  Node" + src.getLabel() + " -> Node" + tgt.getLabel() +
                         " [shape=plaintext label=\" GOTO statement\"];");
+                break;
+            default:
+                out.println("  Node" + src.getLabel() + " -> Node" + tgt.getLabel() + ";");
                 break;
             }
         }

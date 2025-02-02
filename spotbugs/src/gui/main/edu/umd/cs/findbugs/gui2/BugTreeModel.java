@@ -461,7 +461,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     // new BugSet?
     {
         if (TRACE) {
-            System.out.println("Reseting data in bug tree model");
+            System.out.println("Resetting data in bug tree model");
         }
         bugSet = new BugSet(bugSet);
     }

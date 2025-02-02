@@ -60,7 +60,7 @@ class Location {
         }
 
         JsonArray logicalLocationArray = new JsonArray();
-        logicalLocations.stream().map(LogicalLocation::toJsonObject).forEach(logicalLocation -> logicalLocationArray.add(logicalLocation));
+        logicalLocations.stream().map(LogicalLocation::toJsonObject).forEach(logicalLocationArray::add);
         if (logicalLocationArray.size() > 0) {
             result.add("logicalLocations", logicalLocationArray);
         }
@@ -288,7 +288,7 @@ class Location {
 
         JsonObject toJsonObject() {
             JsonObject propertiesBag = new JsonObject();
-            properties.forEach((k, v) -> propertiesBag.addProperty(k, v));
+            properties.forEach(propertiesBag::addProperty);
             JsonObject locationJson = new JsonObject();
             locationJson.addProperty("name", name);
             if (decoratedName != null) {

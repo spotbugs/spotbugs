@@ -68,7 +68,8 @@ public class TypeQualifierResolver {
     };
 
     private static final ClassDescriptor[] NULLABLE_CLASS_DESCRIPTORS = new ClassDescriptor[] {
-        DescriptorFactory.createClassDescriptor("edu/umd/cs/findbugs/annotations/Nullable"),
+        // intentionally ignored, semantics is different to other Nullable annotations, see <a href="https://github.com/spotbugs/spotbugs/issues/3243">#3243</a>
+        // DescriptorFactory.createClassDescriptor("edu/umd/cs/findbugs/annotations/Nullable"),
         DescriptorFactory.createClassDescriptor("android/support/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("androidx/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable"),
@@ -91,7 +92,7 @@ public class TypeQualifierResolver {
      */
     public static Collection<AnnotationValue> resolveTypeQualifiers(AnnotationValue value) {
         LinkedList<AnnotationValue> result = new LinkedList<>();
-        resolveTypeQualifierNicknames(value, result, new LinkedList<ClassDescriptor>());
+        resolveTypeQualifierNicknames(value, result, new LinkedList<>());
         return result;
     }
 
@@ -233,7 +234,7 @@ public class TypeQualifierResolver {
                     if (e.desc.equals(elementTypeDescriptor) && e.value.equals(defaultFor.name())) {
                         for (ClassDescriptor d : c.getAnnotationDescriptors()) {
                             if (!d.equals(typeQualifierDefault)) {
-                                resolveTypeQualifierNicknames(c.getAnnotation(d), result, new LinkedList<ClassDescriptor>());
+                                resolveTypeQualifierNicknames(c.getAnnotation(d), result, new LinkedList<>());
                             }
                         }
                         break;

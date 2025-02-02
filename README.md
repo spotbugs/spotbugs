@@ -17,7 +17,7 @@ More information at the [official website](https://spotbugs.github.io/). A lot o
 
 SpotBugs is built using [Gradle](https://gradle.org). The recommended way to obtain it is to simply run the `gradlew` (or `gradlew.bat`) wrapper, which will automatically download and run the correct version as needed (using the settings in `gradle/wrapper/gradle-wrapper.properties`).
 
-Building SpotBugs requires JDK 21 to run all the tests (using SpotBugs requires JDK 8 or above).
+Building SpotBugs requires JDK 21 to run all the tests (using SpotBugs requires JDK 11 or above, but it can analyze code compiled with older versions).
 
 To see a list of build options, run `gradle tasks` (or `gradlew tasks`). The `build` task will perform a full build and test.
 

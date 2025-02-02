@@ -4,15 +4,15 @@ apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
 
 tasks.named('compileJava', JavaCompile).configure {
-    options.release = 8
+    options.release = 11
 }
 
-// Force Eclipse use Java 1.8, otherwise it will get Java 17 (!) from gradle
+// Force Eclipse use Java 11, otherwise it will get Java 17 (!) from gradle
 eclipse {
   jdt {
-    sourceCompatibility = 8
-    targetCompatibility = 8
-    javaRuntimeName = "JavaSE-1.8"
+    sourceCompatibility = 11
+    targetCompatibility = 11
+    javaRuntimeName = "JavaSE-11"
   }
 }
 
@@ -80,7 +80,7 @@ dependencies {
   }
   implementation 'jaxen:jaxen:2.0.0' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
   api 'org.apache.commons:commons-lang3:3.17.0'
-  api 'org.apache.commons:commons-text:1.10.0'
+  api 'org.apache.commons:commons-text:1.13.0'
   api 'org.slf4j:slf4j-api:2.0.16'
   implementation 'net.sf.saxon:Saxon-HE:12.5'
   implementation libs.log4j.core
@@ -92,7 +92,7 @@ dependencies {
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   api project(':spotbugs-annotations')
 
-  api "com.google.code.gson:gson:2.11.0"
+  api "com.google.code.gson:gson:2.12.1"
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
@@ -103,7 +103,7 @@ clean {
 }
 
 tasks.named('compileGuiJava', JavaCompile).configure {
-  options.release = 8
+  options.release = 11
 }
 
 tasks.withType(Jar).configureEach {
@@ -224,7 +224,7 @@ def scripts = tasks.register('scripts', Copy) {
   }
 
   into(layout.buildDirectory.dir("bin"))
-  duplicatesStrategy DuplicatesStrategy.FAIL
+  duplicatesStrategy = DuplicatesStrategy.FAIL
   filePermissions{
     unix (0755)
   }
@@ -234,7 +234,7 @@ def scripts = tasks.register('scripts', Copy) {
 javadoc {
   doFirst {
     // This is supposed to enable everything except "missing" but doesn't work with gradle
-    // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
+    // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
     options.addBooleanOption('Xdoclint:all,-missing', true)
 
     // TODO remove command and warning below if the doclint can be properly configured
@@ -256,6 +256,9 @@ distributions {
     contents {
       from(scripts) {
         into 'bin'
+        filePermissions {
+          unix(0755)
+        }
       }
       from 'README.txt'
       from ('plugin') {

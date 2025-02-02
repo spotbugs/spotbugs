@@ -626,15 +626,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             @Override
             public void visitInnerClass(String name, String outerName, String innerName, int access) {
-                if (name.equals(slashedClassName) && outerName != null) {
-                    if (cBuilder instanceof ClassInfo.Builder) {
-                        ClassDescriptor outerClassDescriptor = DescriptorFactory.createClassDescriptor(outerName);
-                        ((ClassInfo.Builder) cBuilder).setImmediateEnclosingClass(outerClassDescriptor);
-                        ((ClassInfo.Builder) cBuilder).setAccessFlags(access);
-                    }
-
+                if (name.equals(slashedClassName) && outerName != null && cBuilder instanceof ClassInfo.Builder) {
+                    ClassDescriptor outerClassDescriptor = DescriptorFactory.createClassDescriptor(outerName);
+                    ((ClassInfo.Builder) cBuilder).setImmediateEnclosingClass(outerClassDescriptor);
+                    ((ClassInfo.Builder) cBuilder).setAccessFlags(access);
                 }
-
             }
 
             @Override

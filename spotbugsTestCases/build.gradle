@@ -16,8 +16,8 @@ sourceSets {
 dependencies {
   implementation 'jakarta.servlet:jakarta.servlet-api:4.0.4'
   implementation 'jakarta.ejb:jakarta.ejb-api:3.2.6'
-  implementation 'com.google.code.gson:gson:2.11.0'
-  implementation 'com.google.guava:guava:33.3.1-jre'
+  implementation 'com.google.code.gson:gson:2.12.1'
+  implementation 'com.google.guava:guava:33.4.0-jre'
   implementation libs.guice
   implementation libs.guice.assistedinject
   implementation libs.guice.servlet
@@ -26,17 +26,18 @@ dependencies {
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
   implementation 'org.springframework:spring-core:5.3.39'
   compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5'
-  implementation 'org.checkerframework:checker-qual:3.48.0'
+  implementation 'org.checkerframework:checker-qual:3.48.4'
+  implementation 'com.sun.xml.bind:jaxb-impl:4.0.5'
 
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.11.2'
-  implementation 'org.junit.jupiter:junit-jupiter-params:5.11.2'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+  implementation 'org.junit.jupiter:junit-jupiter-params:5.11.4'
   implementation 'org.testng:testng:7.10.2'
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
-  implementation 'org.apache.groovy:groovy-all:4.0.23'
+  implementation 'org.apache.groovy:groovy-all:4.0.25'
   implementation 'org.apache.commons:commons-lang3:3.17.0'
-  implementation 'org.mockito:mockito-core:5.14.1'
+  implementation 'org.mockito:mockito-core:5.15.2'
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -56,7 +57,7 @@ tasks.withType(JavaCompile).configureEach {
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
 tasks.named('javadoc', Javadoc).configure {
   // This is supposed to enable everything except "missing" but doesn't work with gradle
-  // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
+  // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
   options.addBooleanOption('Xdoclint:all,-missing', true)
 
   // TODO remove command and warning below if the doclint can be properly configured

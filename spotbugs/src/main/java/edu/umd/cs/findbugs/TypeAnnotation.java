@@ -49,7 +49,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 
     public static final String UNHASHABLE_ROLE = "TYPE_UNHASHABLE";
 
-    final private String descriptor; // jvm type descriptor, such as "[I"
+    private final String descriptor; // jvm type descriptor, such as "[I"
 
     private String roleDescription;
 

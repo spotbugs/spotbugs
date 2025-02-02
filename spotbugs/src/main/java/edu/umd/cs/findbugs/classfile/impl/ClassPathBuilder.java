@@ -544,8 +544,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
         File dir = new File(extDir);
         File[] fileList = dir.listFiles((FileFilter) pathname -> {
             String path = pathname.getPath();
-            boolean isArchive = Archive.isArchiveFileName(path);
-            return isArchive;
+            return Archive.isArchiveFileName(path);
         });
         if (fileList == null) {
             return;
@@ -735,9 +734,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
             if (!trueResourceName.equals(entry.getResourceName())) {
                 entry.overrideResourceName(trueResourceName);
             }
-        } catch (IOException e) {
-            errorLogger.logError("Invalid class resource " + entry.getResourceName() + " in " + entry, e);
-        } catch (InvalidClassFileFormatException e) {
+        } catch (IOException | InvalidClassFileFormatException e) {
             errorLogger.logError("Invalid class resource " + entry.getResourceName() + " in " + entry, e);
         } finally {
             IO.close(in);

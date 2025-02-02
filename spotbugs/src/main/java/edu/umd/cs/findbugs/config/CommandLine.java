@@ -64,7 +64,7 @@ public abstract class CommandLine {
 
     int maxWidth;
 
-    public CommandLine() {
+    protected CommandLine() {
         this.unlistedOptions = new HashSet<>();
         this.optionList = new LinkedList<>();
         this.optionGroups = new HashMap<>();
@@ -272,9 +272,7 @@ public abstract class CommandLine {
             return count;
         } catch (HelpRequestedException e) {
             // fall through
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             e.printStackTrace();
         }
         System.out.println(usage);

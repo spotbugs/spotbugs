@@ -107,7 +107,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
                     .addClassAndMethod(this).addCalledMethod(this).addString(message).describe(StringAnnotation.ERROR_MSG_ROLE)
                     .addString(regex).describe(StringAnnotation.REGEX_ROLE);
             String options = getOptions(flags);
-            if (options.length() > 0) {
+            if (!options.isEmpty()) {
                 bug.addString("Regex flags: " + options).describe(StringAnnotation.STRING_MESSAGE);
             }
             bug.addSourceLine(this);

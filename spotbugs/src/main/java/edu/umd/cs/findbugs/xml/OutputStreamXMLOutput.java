@@ -169,7 +169,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     private void emitTag(String tagName, String attributes, boolean close) throws IOException {
         startTag(tagName);
         attributes = attributes.trim();
-        if (attributes.length() > 0) {
+        if (!attributes.isEmpty()) {
             out.write(" ");
             out.write(attributes);
         }

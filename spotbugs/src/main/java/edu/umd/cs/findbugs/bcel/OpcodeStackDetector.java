@@ -33,11 +33,11 @@ import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
  *
  * @see BytecodeScanningDetector
  */
-abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
+public abstract class OpcodeStackDetector extends BytecodeScanningDetector {
 
     private final boolean isUsingCustomUserValue;
 
-    public OpcodeStackDetector() {
+    protected OpcodeStackDetector() {
         super();
         isUsingCustomUserValue = getClass().isAnnotationPresent(OpcodeStack.CustomUserValue.class);
     }
@@ -91,7 +91,7 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
      * @see #beforeOpcode(int)
      */
     @Override
-    abstract public void sawOpcode(int seen);
+    public abstract void sawOpcode(int seen);
 
     /**
      * @return true if this detector is annotated with  {@link edu.umd.cs.findbugs.OpcodeStack.CustomUserValue}

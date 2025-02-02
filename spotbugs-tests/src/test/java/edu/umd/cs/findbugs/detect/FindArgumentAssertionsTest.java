@@ -46,7 +46,7 @@ class FindArgumentAssertionsTest extends AbstractIntegrationTest {
         assertNoBugInMethod(BUG_TYPE, "ArgumentAssertions", "privateFinalMethod");
         assertNoBugInMethod(BUG_TYPE, "ArgumentAssertions", "privateStaticMethod");
         assertDABug("assertingArgInFor", 198);
-        // assertDABug("lambda$assertingArgInStream$0", 206); // assertations inside streams are not supported yet
+        // assertDABug("lambda$assertingArgInStream$0", 206); // assertions inside streams are not supported yet
     }
 
     private void assertDABug(String method, int line) {
