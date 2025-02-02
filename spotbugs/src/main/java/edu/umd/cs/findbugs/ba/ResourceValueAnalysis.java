@@ -187,7 +187,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                         ResourceValue topValue = frameAtIf.getValue(frameAtIf.getNumSlots() - 1);
 
                         if (topValue.isInstance()
-                                && ((isNullCheck && edgeType == IFCMP_EDGE) || (isNonNullCheck && edgeType == FALL_THROUGH_EDGE)) {
+                                && ((isNullCheck && edgeType == IFCMP_EDGE) || (isNonNullCheck && edgeType == FALL_THROUGH_EDGE))) {
                             // System.out.println("**** making resource nonexistent on edge "+edge.getId());
                             tmpFact = modifyFrame(fact, tmpFact);
                             tmpFact.setStatus(ResourceValueFrame.State.NONEXISTENT);
