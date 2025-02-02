@@ -2,9 +2,9 @@
 apply plugin: 'checkstyle'
 
 checkstyle {
-  toolVersion '10.21.2'
-  ignoreFailures false
-  configFile file("$rootDir/spotbugs/etc/checkstyle.xml") // TODO : This config file is lame and should be moved out...
+  toolVersion = '10.21.2'
+  ignoreFailures = false
+  configFile = file("$rootDir/spotbugs/etc/checkstyle.xml") // TODO : This config file is lame and should be moved out...
 }
 
 tasks.register('checkstyle') {
