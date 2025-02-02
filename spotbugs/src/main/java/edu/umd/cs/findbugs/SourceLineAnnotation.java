@@ -100,17 +100,18 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     private String description;
 
-    final private @DottedClassName String className;
+    @DottedClassName
+    private final String className;
 
     private String sourceFile;
 
-    final private int startLine;
+    private final int startLine;
 
-    final private int endLine;
+    private final int endLine;
 
-    final private int startBytecode;
+    private final int startBytecode;
 
-    final private int endBytecode;
+    private final int endBytecode;
 
     private boolean synthetic;
 
@@ -212,9 +213,8 @@ public class SourceLineAnnotation implements BugAnnotation {
      */
     @Nonnull
     public static SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile, int startBytecode, int endBytecode) {
-        SourceLineAnnotation result = new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
+        return new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
         // result.setDescription("SOURCE_LINE_UNKNOWN");
-        return result;
     }
 
     /**
@@ -226,10 +226,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @return the SourceLineAnnotation
      */
     public static SourceLineAnnotation fromVisitedMethod(PreorderVisitor visitor) {
-
-        SourceLineAnnotation sourceLines = getSourceAnnotationForMethod(visitor.getDottedClassName(), visitor.getMethodName(),
-                visitor.getMethodSig());
-        return sourceLines;
+        return getSourceAnnotationForMethod(visitor.getDottedClassName(), visitor.getMethodName(), visitor.getMethodSig());
     }
 
     /**
@@ -346,7 +343,7 @@ public class SourceLineAnnotation implements BugAnnotation {
                 }
                 if (firstLine < Integer.MAX_VALUE) {
 
-                    result = new SourceLineAnnotation(methodDescriptor.getClassDescriptor().toDottedClassName(), sourceFile,
+                    result = new SourceLineAnnotation(methodDescriptor.getClassDescriptor().getDottedClassName(), sourceFile,
                             firstLine, firstLine, bytecode, bytecode);
                 }
             }
@@ -355,7 +352,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
 
         if (result == null) {
-            result = createUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
+            result = createUnknown(methodDescriptor.getClassDescriptor().getDottedClassName());
         }
         return result;
     }
@@ -428,7 +425,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @param methodDescriptor
      *            MethodDescriptor identifying analyzed method
      * @param location
-     *            Location of instruction within analyed method
+     *            Location of instruction within analyzed method
      * @return SourceLineAnnotation describing visited instruction
      */
     public static SourceLineAnnotation fromVisitedInstruction(MethodDescriptor methodDescriptor, Location location) {
@@ -442,7 +439,7 @@ public class SourceLineAnnotation implements BugAnnotation {
             Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
             return fromVisitedInstruction(jclass, method, position);
         } catch (CheckedAnalysisException e) {
-            return createReallyUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
+            return createReallyUnknown(methodDescriptor.getClassDescriptor().getDottedClassName());
         }
     }
 
@@ -947,8 +944,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         if (classname.indexOf('.') > 0) {
             packageName = classname.substring(0, 1 + classname.lastIndexOf('.'));
         }
-        String sourcePath = packageName.replace('.', CANONICAL_PACKAGE_SEPARATOR) + sourceFile;
-        return sourcePath;
+        return packageName.replace('.', CANONICAL_PACKAGE_SEPARATOR) + sourceFile;
     }
 
     /**

@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Annotations;
 import org.apache.bcel.classfile.ArrayElementValue;
 import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.ElementValuePair;
+import org.apache.bcel.classfile.EnumElementValue;
 import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.classfile.ParameterAnnotations;
 import org.apache.bcel.classfile.SimpleElementValue;
@@ -97,6 +98,19 @@ public class AnnotationVisitor extends PreorderVisitor {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    @CheckForNull
+    protected static <E extends Enum<E>> E getAnnotationParameterAsEnum(Map<String, ElementValue> map, String parameter, Class<E> type) {
+        ElementValue ev = map.get(parameter);
+
+        if (ev instanceof EnumElementValue) {
+            String enumValueString = ((EnumElementValue) ev).getEnumValueString();
+
+            return Enum.valueOf(type, enumValueString);
+        }
+
+        return null;
     }
 
     /**
@@ -265,11 +279,10 @@ public class AnnotationVisitor extends PreorderVisitor {
             for (AnnotationEntry ae : e.getAnnotationEntries()) {
                 boolean runtimeVisible = ae.isRuntimeVisible();
 
-                String name = ClassName.fromFieldSignature(ae.getAnnotationType());
+                String name = ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType());
                 if (name == null) {
                     continue;
                 }
-                name = ClassName.toDottedClassName(name);
                 Map<String, ElementValue> map = new HashMap<>();
                 for (ElementValuePair ev : ae.getElementValuePairs()) {
                     map.put(ev.getNameString(), ev.getValue());
@@ -291,11 +304,10 @@ public class AnnotationVisitor extends PreorderVisitor {
     public void visitAnnotation(Annotations arg0) {
         for (AnnotationEntry ae : arg0.getAnnotationEntries()) {
             boolean runtimeVisible = ae.isRuntimeVisible();
-            String name = ClassName.fromFieldSignature(ae.getAnnotationType());
+            String name = ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType());
             if (name == null) {
                 continue;
             }
-            name = ClassName.toDottedClassName(name);
             Map<String, ElementValue> map = new HashMap<>();
             for (ElementValuePair ev : ae.getElementValuePairs()) {
                 map.put(ev.getNameString(), ev.getValue());

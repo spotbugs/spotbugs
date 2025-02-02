@@ -66,9 +66,7 @@ public class LoadOfKnownNullValue implements Detector {
                     // report
                     bugReporter.logError("skipping unprofitable method in " + getClass().getName());
                 }
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
             }
             bugAccumulator.reportAccumulatedBugs();
@@ -210,6 +208,11 @@ public class LoadOfKnownNullValue implements Detector {
                     // System.out.println("Inverted line");
                     continue;
                 }
+
+                if (FindNullDeref.isGeneratedCodeInCatchBlock(method, location.getHandle().getPosition())) {
+                    continue;
+                }
+
                 int priority = NORMAL_PRIORITY;
                 if (!v.isChecked()) {
                     priority++;
@@ -235,10 +238,7 @@ public class LoadOfKnownNullValue implements Detector {
                         }
 
                     }
-                } catch (DataflowAnalysisException e) {
-                    // ignore
-                } catch (CFGBuilderException e) {
-                    // ignore
+                } catch (DataflowAnalysisException | CFGBuilderException ignored) {
                 }
 
                 // System.out.println("lineMentionedMultipleTimes: " +

@@ -27,6 +27,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
@@ -164,7 +165,7 @@ public class ObligationFactory {
 
     public Obligation addObligation(@DottedClassName String className) {
         int nextId = classNameToObligationMap.size();
-        slashedClassNames.add(className.replace('.', '/'));
+        slashedClassNames.add(ClassName.toSlashedClassName(className));
         Obligation obligation = new Obligation(className, nextId);
         if (classNameToObligationMap.put(className, obligation) != null) {
             throw new IllegalStateException("Obligation " + className + " added multiple times");

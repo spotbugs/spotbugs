@@ -1,14 +1,14 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.xml.XMLOutput;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class VersionInsensitiveBugComparatorTest {
+class VersionInsensitiveBugComparatorTest {
     static class MyBugAnnotation implements BugAnnotation {
         private String desc;
 
@@ -23,7 +23,7 @@ public class VersionInsensitiveBugComparatorTest {
 
         @Override
         public void accept(BugAnnotationVisitor visitor) {
-            ;
+
         }
 
         @Override
@@ -72,7 +72,7 @@ public class VersionInsensitiveBugComparatorTest {
     }
 
     @Test
-    public void compare1() {
+    void compare1() {
         BugInstance lbi = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
         BugInstance rbi = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
 
@@ -89,11 +89,11 @@ public class VersionInsensitiveBugComparatorTest {
         rbi.addAnnotations(rlist);
 
         VersionInsensitiveBugComparator cmp = new VersionInsensitiveBugComparator();
-        Assert.assertEquals(cmp.compare(lbi, rbi), -cmp.compare(rbi, lbi));
+        Assertions.assertEquals(cmp.compare(lbi, rbi), -cmp.compare(rbi, lbi));
     }
 
     @Test
-    public void compare2() {
+    void compare2() {
         BugInstance bi1 = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
         BugInstance bi2 = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
         BugInstance bi3 = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
@@ -116,15 +116,15 @@ public class VersionInsensitiveBugComparatorTest {
 
         VersionInsensitiveBugComparator cmp = new VersionInsensitiveBugComparator();
         // Because
-        Assert.assertTrue(cmp.compare(bi3, bi2) > 0);
-        Assert.assertTrue(cmp.compare(bi2, bi1) > 0);
+        Assertions.assertTrue(cmp.compare(bi3, bi2) > 0);
+        Assertions.assertTrue(cmp.compare(bi2, bi1) > 0);
 
         // So
-        Assert.assertTrue(cmp.compare(bi3, bi1) > 0);
+        Assertions.assertTrue(cmp.compare(bi3, bi1) > 0);
     }
 
     @Test
-    public void compare3() {
+    void compare3() {
         BugInstance bi1 = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
         BugInstance bi2 = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
         BugInstance bi3 = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
@@ -148,9 +148,9 @@ public class VersionInsensitiveBugComparatorTest {
         VersionInsensitiveBugComparator cmp = new VersionInsensitiveBugComparator();
 
         // because
-        Assert.assertTrue(cmp.compare(bi1, bi2) == 0);
-        Assert.assertTrue(cmp.compare(bi1, bi3) < 0);
+        Assertions.assertTrue(cmp.compare(bi1, bi2) == 0);
+        Assertions.assertTrue(cmp.compare(bi1, bi3) < 0);
         // so
-        Assert.assertTrue(cmp.compare(bi2, bi3) < 0);
+        Assertions.assertTrue(cmp.compare(bi2, bi3) < 0);
     }
 }

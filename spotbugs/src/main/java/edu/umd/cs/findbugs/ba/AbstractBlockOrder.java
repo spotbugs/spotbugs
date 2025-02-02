@@ -35,7 +35,7 @@ public abstract class AbstractBlockOrder implements BlockOrder {
     private final ArrayList<BasicBlock> blockList;
     private final Comparator<BasicBlock> comparator;
 
-    public AbstractBlockOrder(CFG cfg, Comparator<BasicBlock> comparator) {
+    protected AbstractBlockOrder(CFG cfg, Comparator<BasicBlock> comparator) {
         this.comparator = comparator;
 
         // Put the blocks in an array

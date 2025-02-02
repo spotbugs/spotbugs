@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantInterfaceMethodref;
 import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.JavaClass;
@@ -301,26 +302,32 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
-        JavaClass jclass = classContext.getJavaClass();
+        ConstantPool cp = classContext.getJavaClass().getConstantPool();
 
         // Check to see if the class references any other classes
         // which could be resources we want to track.
         // If we don't find any such classes, we skip analyzing
         // the class. (Note: could do this by method.)
         boolean sawResourceClass = false;
-        for (int i = 0; i < jclass.getConstantPool().getLength(); ++i) {
-            Constant constant = jclass.getConstantPool().getConstant(i);
+        for (int i = 1; i < cp.getLength(); ++i) {
+            Constant constant = cp.getConstant(i);
+            // Quote from the JVM specification: "All eight byte constants take up two spots in the constant pool.
+            // If this is the n'th byte in the constant pool, then the next item will be numbered n+2"
+            // So the indices after CONSTANT_Double and CONSTANT_Long are null, not used and throw ClassFormatException
+            if (constant.getTag() == Const.CONSTANT_Double || constant.getTag() == Const.CONSTANT_Long) {
+                i++;
+            }
             String className = null;
             if (constant instanceof ConstantMethodref) {
                 ConstantMethodref cmr = (ConstantMethodref) constant;
 
                 int classIndex = cmr.getClassIndex();
-                className = jclass.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
+                className = cp.getConstantString(classIndex, Const.CONSTANT_Class);
             } else if (constant instanceof ConstantInterfaceMethodref) {
                 ConstantInterfaceMethodref cmr = (ConstantInterfaceMethodref) constant;
 
                 int classIndex = cmr.getClassIndex();
-                className = jclass.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
+                className = cp.getConstantString(classIndex, Const.CONSTANT_Class);
             }
 
             if (className != null) {

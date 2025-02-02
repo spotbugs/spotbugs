@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -60,7 +61,7 @@ public class FileBugHash {
                 if (path.indexOf('.') == -1) {
                     path = cStat.getSourceFile();
                 } else {
-                    path = path.substring(0, path.lastIndexOf('.') + 1).replace('.', '/') + cStat.getSourceFile();
+                    path = ClassName.toSlashedClassName(path.substring(0, path.lastIndexOf('.') + 1)) + cStat.getSourceFile();
                 }
                 counts.put(path, 0);
                 Integer size = sizes.get(path);
@@ -73,9 +74,9 @@ public class FileBugHash {
         for (BugInstance bug : bugs.getCollection()) {
             SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
 
-            String packagePath = source.getPackageName().replace('.', '/');
+            String packagePath = ClassName.toSlashedClassName(source.getPackageName());
             String key;
-            if (packagePath.length() == 0) {
+            if (packagePath.isEmpty()) {
                 key = source.getSourceFile();
             } else {
                 key = packagePath + "/" + source.getSourceFile();

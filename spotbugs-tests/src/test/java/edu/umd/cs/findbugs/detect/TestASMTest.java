@@ -1,67 +1,27 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
+class TestASMTest extends AbstractIntegrationTest {
 
-public class TestASMTest extends AbstractIntegrationTest {
     @Test
-    public void test() {
+    void testASM() {
         performAnalysis("TestASM.class");
 
-        assertNumOfBugs(1, "NM_METHOD_NAMING_CONVENTION");
-        assertNumOfBugs(6, "NM_FIELD_NAMING_CONVENTION");
+        assertBugTypeCount("NM_METHOD_NAMING_CONVENTION", 1);
+        assertBugTypeCount("NM_FIELD_NAMING_CONVENTION", 6);
         // It is reported both by TestASM and IDivResultCastToDouble
-        assertNumOfBugs(2, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL");
+        assertBugTypeCount("ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", 2);
 
-        assertMethodNamingBug("BadMethodName");
-        assertFieldNamingBug("badFieldNamePublicStaticFinal");
-        assertFieldNamingBug("BadFieldNamePublicStatic");
-        assertFieldNamingBug("BadFieldNamePublic");
-        assertFieldNamingBug("BadFieldNameProtectedStatic");
-        assertFieldNamingBug("BadFieldNameProtected");
-        assertFieldNamingBug("BadFieldNamePrivate");
-        assertMethodNamingBug("BadMethodName");
-        assertCastBug("BadMethodName");
-    }
-
-    private void assertNumOfBugs(int num, String bugType) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType).build();
-        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertMethodNamingBug(String method) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("NM_METHOD_NAMING_CONVENTION")
-                .inClass("TestASM")
-                .inMethod(method)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
-    }
-
-    private void assertFieldNamingBug(String field) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("NM_FIELD_NAMING_CONVENTION")
-                .inClass("TestASM")
-                .atField(field)
-                .build();
-        BugCollection bc = getBugCollection();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
-    }
-
-    private void assertCastBug(String method) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL")
-                .inClass("TestASM")
-                .inMethod(method)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+        assertBugInMethod("NM_METHOD_NAMING_CONVENTION", "TestASM", "BadMethodName");
+        assertBugAtField("NM_FIELD_NAMING_CONVENTION", "TestASM", "badFieldNamePublicStaticFinal");
+        assertBugAtField("NM_FIELD_NAMING_CONVENTION", "TestASM", "BadFieldNamePublicStatic");
+        assertBugAtField("NM_FIELD_NAMING_CONVENTION", "TestASM", "BadFieldNamePublic");
+        assertBugAtField("NM_FIELD_NAMING_CONVENTION", "TestASM", "BadFieldNameProtectedStatic");
+        assertBugAtField("NM_FIELD_NAMING_CONVENTION", "TestASM", "BadFieldNameProtected");
+        assertBugAtField("NM_FIELD_NAMING_CONVENTION", "TestASM", "BadFieldNamePrivate");
+        assertBugInMethod("NM_METHOD_NAMING_CONVENTION", "TestASM", "BadMethodName");
+        assertBugInMethod("ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", "TestASM", "BadMethodName");
     }
 }

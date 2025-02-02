@@ -48,7 +48,7 @@ public abstract class ClassName {
     }
 
     public static String toSignature(@SlashedClassName String className) {
-        if (className.length() == 0) {
+        if (className.isEmpty()) {
             throw new IllegalArgumentException("classname can't be empty");
         }
         if (className.charAt(0) == '[' || className.endsWith(";")) {
@@ -134,6 +134,24 @@ public abstract class ClassName {
             return className.replace('/', '.');
         }
         return className;
+    }
+
+    /**
+     * Converts from signature to dotted class name
+     * (e.g., from Ljava/lang/String; to java.lang.String).
+     * Returns null if it is the signature for an array or primitive type.
+     *
+     * @param signature a class signature
+     * @return the class of the signature in dotted format
+     */
+    @DottedClassName
+    public static @CheckForNull String fromFieldSignatureToDottedClassName(String signature) {
+        String slashedClassName = ClassName.fromFieldSignature(signature);
+        if (slashedClassName == null) {
+            return null;
+        }
+
+        return toDottedClassName(slashedClassName);
     }
 
     /**
@@ -225,7 +243,16 @@ public abstract class ClassName {
                 isValidBinaryClassName(className.substring(1, className.length() - 1));
     }
 
-    private static boolean isValidBaseTypeFieldDescriptor(String className) {
+    /**
+     * Determines whether a class name is a valid array field descriptor as per
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.2">
+     * JVMS (Java SE 8 Edition) 4.3.2</a>
+     *
+     * @param className a class name to test for validity - must be non-{@code null} and non-empty.
+     * @return {@code true} if {@code className} is a valid basetype field descriptor as
+     *          per JVMS 4.3.2, otherwise {@code false}
+     */
+    public static boolean isValidBaseTypeFieldDescriptor(String className) {
         return "B".equals(className) ||
                 "C".equals(className) ||
                 "D".equals(className) ||
@@ -323,7 +350,7 @@ public abstract class ClassName {
         }
 
         for (String p : pp) {
-            if (p.length() > 0 && (StringUtils.containsIgnoreCase(className, p) || fuzzyMatch(className, p))) {
+            if (!p.isEmpty() && (StringUtils.containsIgnoreCase(className, p) || fuzzyMatch(className, p))) {
                 return true;
             }
         }
@@ -338,7 +365,7 @@ public abstract class ClassName {
      * edits (insertions, deletions or substitutions). This limit also speeds up the computation.
      * <p>
      * For more information on the Levenshtein distance see
-     * <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Wikipedia</a> and the 
+     * <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Wikipedia</a> and the
      * <a href="https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/similarity/LevenshteinDistance.html">Apache Commons Text JavaDoc</a>.
      *
      * @param className    the full class name

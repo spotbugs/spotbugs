@@ -19,16 +19,14 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Arrays;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author David Hovemeyer
  */
-public class MethodHashTest {
+class MethodHashTest {
 
     byte[] hash;
 
@@ -44,14 +42,8 @@ public class MethodHashTest {
 
     byte[] longerHash;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see junit.framework.TestCase#setUp()
-     */
-
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         hash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF };
         s = "0604deadbeef";
         sameHash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF };
@@ -62,40 +54,40 @@ public class MethodHashTest {
     }
 
     @Test
-    public void testHashToString() {
+    void testHashToString() {
         String s2 = ClassHash.hashToString(hash);
-        Assert.assertEquals(s, s2);
+        Assertions.assertEquals(s, s2);
     }
 
     @Test
-    public void testStringToHash() {
+    void testStringToHash() {
         byte[] hash2 = ClassHash.stringToHash(s);
-        Assert.assertTrue(Arrays.equals(hash, hash2));
+        Assertions.assertArrayEquals(hash, hash2);
     }
 
     @Test
-    public void testSame() {
-        Assert.assertTrue(MethodHash.compareHashes(hash, sameHash) == 0);
-        Assert.assertTrue(MethodHash.compareHashes(sameHash, hash) == 0);
+    void testSame() {
+        Assertions.assertEquals(0, MethodHash.compareHashes(hash, sameHash));
+        Assertions.assertEquals(0, MethodHash.compareHashes(sameHash, hash));
     }
 
     @Test
-    public void testGreater() {
-        Assert.assertTrue(MethodHash.compareHashes(hash, greaterHash) < 0);
+    void testGreater() {
+        Assertions.assertTrue(MethodHash.compareHashes(hash, greaterHash) < 0);
     }
 
     @Test
-    public void testLesser() {
-        Assert.assertTrue(MethodHash.compareHashes(hash, lesserHash) > 0);
+    void testLesser() {
+        Assertions.assertTrue(MethodHash.compareHashes(hash, lesserHash) > 0);
     }
 
     @Test
-    public void testShorter() {
-        Assert.assertTrue(MethodHash.compareHashes(hash, shorterHash) > 0);
+    void testShorter() {
+        Assertions.assertTrue(MethodHash.compareHashes(hash, shorterHash) > 0);
     }
 
     @Test
-    public void testLonger() {
-        Assert.assertTrue(MethodHash.compareHashes(hash, longerHash) < 0);
+    void testLonger() {
+        Assertions.assertTrue(MethodHash.compareHashes(hash, longerHash) < 0);
     }
 }

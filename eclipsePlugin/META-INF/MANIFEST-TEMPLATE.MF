@@ -30,7 +30,7 @@ Require-Bundle: org.eclipse.ui.workbench.texteditor,
  spotbugs-annotations;resolution:=optional;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: registered
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: de.tobject.findbugs,
  de.tobject.findbugs.actions,
  de.tobject.findbugs.adapters,
@@ -97,9 +97,6 @@ Export-Package: de.tobject.findbugs,
  edu.umd.cs.findbugs.visitclass,
  edu.umd.cs.findbugs.workflow,
  edu.umd.cs.findbugs.xml,
- javax.annotation,
- javax.annotation.concurrent,
- javax.annotation.meta,
  org.apache.bcel,
  org.apache.bcel.classfile,
  org.apache.bcel.generic,

@@ -18,21 +18,22 @@
  */
 package edu.umd.cs.findbugs.filter;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @since 3.1
  */
-public class SignatureUtilTest {
+class SignatureUtilTest {
+
     /**
      * Return {@code null} if given parameter is null, otherwise signature of given type.
      */
     @Test
-    public void testCreateFieldSignature() {
+    void testCreateFieldSignature() {
         assertThat(SignatureUtil.createFieldSignature(null), is(nullValue()));
         assertThat(SignatureUtil.createFieldSignature("int"), is("I"));
         assertThat(SignatureUtil.createFieldSignature("double[]"), is("[D"));
@@ -44,7 +45,7 @@ public class SignatureUtilTest {
      * comma. Even though first parameter contains multiple values, generated signature does not separate them by comma.
      */
     @Test
-    public void testCreateMethodSignature() {
+    void testCreateMethodSignature() {
         assertThat(SignatureUtil.createMethodSignature("", "void"), is("()V"));
         assertThat(SignatureUtil.createMethodSignature("byte,\r\nchar, \tboolean", "void"), is("(BCZ)V"));
         assertThat(SignatureUtil.createMethodSignature("float", "java.lang.String[]"), is("(F)[Ljava/lang/String;"));
@@ -57,9 +58,20 @@ public class SignatureUtilTest {
      * @see NameMatch This class uses {@code ~} to judge signature is regexp or not.
      */
     @Test
-    public void testCreateMethodSignatureWithNull() {
+    void testCreateMethodSignatureWithNull() {
         assertThat(SignatureUtil.createMethodSignature(null, null), is(nullValue()));
         assertThat(SignatureUtil.createMethodSignature(null, "long"), is("~\\(.*\\)J"));
         assertThat(SignatureUtil.createMethodSignature("", null), is("~\\(\\).*"));
+    }
+
+    /**
+     * If the method signature is a regex and there are array types we should escape the '[' or it we be processed as a regex group start.
+     *
+     * @see NameMatch This class uses {@code ~} to judge signature is regexp or not.
+     */
+    @Test
+    void testCreateMethodSignatureWithArrayTypes() {
+        assertThat(SignatureUtil.createMethodSignature(null, "long[]"), is("~\\(.*\\)\\[J"));
+        assertThat(SignatureUtil.createMethodSignature("byte[], short, byte", null), is("~\\(\\[BSB\\).*"));
     }
 }

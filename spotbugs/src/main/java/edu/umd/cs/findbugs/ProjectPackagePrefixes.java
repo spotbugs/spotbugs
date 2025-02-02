@@ -35,18 +35,29 @@ import java.util.regex.Pattern;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * @author pwilliam
  */
 public class ProjectPackagePrefixes {
 
+    Map<String, PrefixFilter> map = new HashMap<>();
+
+    Map<Set<String>, Integer> count = new HashMap<>();
+
+    Map<String, Integer> missingProjectCount = new TreeMap<>();
+
+    Map<String, Integer> rawPackageCount = new TreeMap<>();
+
+    int totalCount = 0;
+
     public static class PrefixFilter {
         final String[] parts;
 
         PrefixFilter(String prefixes) {
-            prefixes = prefixes.replace('/', '.').trim();
-            if (prefixes.length() == 0) {
+            prefixes = ClassName.toDottedClassName(prefixes).trim();
+            if (prefixes.isEmpty()) {
                 parts = new String[0];
             } else {
                 parts = prefixes.split("[ ,:]+");
@@ -58,7 +69,7 @@ public class ProjectPackagePrefixes {
                 return true;
             }
             for (String p : parts) {
-                if (p.length() > 0 && className.startsWith(p)) {
+                if (!p.isEmpty() && className.startsWith(p)) {
                     return true;
                 }
             }
@@ -77,16 +88,6 @@ public class ProjectPackagePrefixes {
         return map.size();
     }
 
-    Map<String, PrefixFilter> map = new HashMap<>();
-
-    Map<Set<String>, Integer> count = new HashMap<>();
-
-    Map<String, Integer> missingProjectCount = new TreeMap<>();
-
-    Map<String, Integer> rawPackageCount = new TreeMap<>();
-
-    int totalCount = 0;
-
     public void countBug(BugInstance b) {
         String packageName = b.getPrimaryClass().getPackageName();
 
@@ -101,7 +102,7 @@ public class ProjectPackagePrefixes {
         TreeSet<String> results = getProjects(packageName);
         incrementCount(count, results);
         incrementCount(rawPackageCount, packageName);
-        if (results.size() == 0) {
+        if (results.isEmpty()) {
             incrementCount(missingProjectCount, packageName);
         }
     }
@@ -158,7 +159,7 @@ public class ProjectPackagePrefixes {
         System.out.println("Count by package for items not associated with a project");
 
         Set<String> packages = missingProjectCount.keySet();
-        for (int count = 0; count < 3; count++) {
+        for (int j = 0; j < 3; j++) {
             HashSet<String> extraSuperPackages = new HashSet<>();
 
             for (String p1 : packages) {

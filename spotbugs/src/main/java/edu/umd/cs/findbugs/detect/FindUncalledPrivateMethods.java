@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -32,6 +33,7 @@ import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -56,6 +58,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
     private HashSet<MethodAnnotation> definedPrivateMethods, calledMethods;
 
     private HashSet<String> calledMethodNames;
+    private Set<String> jUnitSourceMethodNames;
 
     public FindUncalledPrivateMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -63,6 +66,31 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 
     @Override
     public void visitMethod(Method obj) {
+        for (AnnotationEntry a : obj.getAnnotationEntries()) {
+            String typeName = a.getAnnotationType();
+            if ("Lorg/junit/jupiter/params/provider/MethodSource;".equals(typeName)) {
+                boolean hasValue = false;
+                for (ElementValuePair pair : a.getElementValuePairs()) {
+                    if ("value".equals(pair.getNameString())) {
+                        String sourceMethodName = pair.getValue().stringifyValue();
+                        if (sourceMethodName.length() > 2) {
+                            // Remove the leading '{' and trailing '}'
+                            sourceMethodName = sourceMethodName.substring(1, sourceMethodName.length() - 1);
+                            for (String name : sourceMethodName.split(",")) {
+                                jUnitSourceMethodNames.add(name);
+                                hasValue = true;
+                            }
+                        }
+                    }
+                }
+
+                if (!hasValue) {
+                    // In case there's no value JUnit will look for a method with the same name
+                    jUnitSourceMethodNames.add(obj.getName());
+                }
+            }
+        }
+
         if (!obj.isPrivate() || obj.isSynthetic()) {
             return;
         }
@@ -92,8 +120,8 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         case Const.INVOKESPECIAL:
         case Const.INVOKESTATIC:
             if (getDottedClassConstantOperand().equals(className)) {
-                String className = getDottedClassConstantOperand();
-                MethodAnnotation called = new MethodAnnotation(className, getNameConstantOperand(), getSigConstantOperand(),
+                String clsName = getDottedClassConstantOperand();
+                MethodAnnotation called = new MethodAnnotation(clsName, getNameConstantOperand(), getSigConstantOperand(),
                         seen == Const.INVOKESTATIC);
                 calledMethods.add(called);
                 calledMethodNames.add(getNameConstantOperand().toLowerCase());
@@ -109,6 +137,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         definedPrivateMethods = new HashSet<>();
         calledMethods = new HashSet<>();
         calledMethodNames = new HashSet<>();
+        jUnitSourceMethodNames = new HashSet<>();
         JavaClass javaClass = classContext.getJavaClass();
         className = javaClass.getClassName();
         String[] parts = className.split("[$+.]");
@@ -126,11 +155,11 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                 if (kind >= 5 && kind <= 9) {
                     Constant ref = cp.getConstant(((ConstantMethodHandle) constant).getReferenceIndex());
                     if (ref instanceof ConstantCP) {
-                        String className = cp.getConstantString(((ConstantCP) ref).getClassIndex(), Const.CONSTANT_Class);
+                        String clsName = cp.getConstantString(((ConstantCP) ref).getClassIndex(), Const.CONSTANT_Class);
                         ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(((ConstantCP) ref).getNameAndTypeIndex());
                         String name = ((ConstantUtf8) cp.getConstant(nameAndType.getNameIndex())).getBytes();
                         String signature = ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
-                        MethodAnnotation called = new MethodAnnotation(ClassName.toDottedClassName(className), name, signature,
+                        MethodAnnotation called = new MethodAnnotation(ClassName.toDottedClassName(clsName), name, signature,
                                 kind == 6 /* invokestatic */);
                         calledMethods.add(called);
                         calledMethodNames.add(name.toLowerCase());
@@ -148,6 +177,9 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
             int priority = LOW_PRIORITY;
             String methodName = m.getMethodName();
             if (methodName.equals(simpleClassName) && "()V".equals(m.getMethodSignature())) {
+                continue;
+            }
+            if (m.isStatic() && m.toXMethod().getNumParams() == 0 && jUnitSourceMethodNames.contains(methodName)) {
                 continue;
             }
             if (methodName.length() > 1 && calledMethodNames.contains(methodName.toLowerCase())) {
@@ -206,6 +238,6 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 
     private static String getClassName(JavaClass c, int classIndex) {
         String name = c.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
-        return ClassName.extractClassName(name).replace('/', '.');
+        return ClassName.toDottedClassName(ClassName.extractClassName(name));
     }
 }

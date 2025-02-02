@@ -68,7 +68,7 @@ public class BugContentProvider implements ICommonContentProvider {
 
     public static boolean DEBUG;
 
-    private final static IMarker[] EMPTY = new IMarker[0];
+    private static final IMarker[] EMPTY = new IMarker[0];
 
     private final RefreshJob refreshJob;
 
@@ -364,7 +364,7 @@ public class BugContentProvider implements ICommonContentProvider {
             Identifier id = mapper.getIdentifier(marker);
             if (id == null) {
                 String pluginId = MarkerUtil.getPluginId(marker);
-                if (pluginId.length() == 0 || disabledPlugins.contains(pluginId)) {
+                if (pluginId.isEmpty() || disabledPlugins.contains(pluginId)) {
                     // do not report errors for disabled plugins
                     continue;
                 }
@@ -385,7 +385,7 @@ public class BugContentProvider implements ICommonContentProvider {
                 continue;
             }
             if (!groupIds.containsKey(id)) {
-                groupIds.put(id, new HashSet<IMarker>());
+                groupIds.put(id, new HashSet<>());
             }
             groupIds.get(id).add(marker);
         }
@@ -411,12 +411,7 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     private IMarker[] getMarkers(IResource resource) {
-        if (resource instanceof IProject) {
-            if (!((IProject) resource).isAccessible()) {
-                return EMPTY;
-            }
-        }
-        if (!resourceFilter.contains(resource)) {
+        if ((resource instanceof IProject && !((IProject) resource).isAccessible()) || !resourceFilter.contains(resource)) {
             return EMPTY;
         }
         return MarkerUtil.getAllMarkers(resource);
@@ -456,7 +451,7 @@ public class BugContentProvider implements ICommonContentProvider {
     protected void initWorkingSet(String workingSetName) {
         IWorkingSet workingSet = null;
 
-        if (workingSetName != null && workingSetName.length() > 0) {
+        if (workingSetName != null && !workingSetName.isEmpty()) {
             IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
             workingSet = workingSetManager.getWorkingSet(workingSetName);
         } /*
@@ -508,7 +503,7 @@ public class BugContentProvider implements ICommonContentProvider {
                 break;
             default:
                 FindbugsPlugin.getDefault()
-                        .logWarning("UKNOWN delta change kind" + delta.changeKind);
+                        .logWarning("UNKNOWN delta change kind" + delta.changeKind);
 
             }
         }

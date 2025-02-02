@@ -18,8 +18,8 @@
  */
 package de.tobject.findbugs.quickfix.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,11 +33,10 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.views.markers.WorkbenchMarkerResolution;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.test.AbstractQuickfixTest;
@@ -50,16 +49,15 @@ import edu.umd.cs.findbugs.config.ProjectFilterSettings;
  * @author Kevin Lubick
  *
  */
-public class QuickfixMulti extends AbstractQuickfixTest {
-
+class QuickfixMulti extends AbstractQuickfixTest {
 
     @Override
     protected TestScenario getTestScenario() {
         return TestScenario.MULTIQUICKFIX;
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+    @BeforeAll
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.MULTIQUICKFIX);
     }
 
@@ -74,7 +72,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
 
 
     @Test
-    public void testMultiUseValueOf() throws Exception {
+    void testMultiUseValueOf() throws Exception {
         QuickFixTestPackager packager = new QuickFixTestPackager();
         packager.addBugPatterns("DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR",
                 "DM_FP_NUMBER_CTOR");
@@ -103,7 +101,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         markers = filterMarkers(markers, packages);
         sortMarkers(markers);
 
-        assertEquals("Too many or too few markers", packages.size(), markers.length);
+        assertEquals(packages.size(), markers.length, "Too many or too few markers");
 
         assertPresentBugPatterns(packages, markers);
         assertPresentLabels(packages, markers);
@@ -119,7 +117,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         checkJavaFiles(project.members());
     }
 
-    private void checkJavaFiles(IResource[] iResources) throws CoreException, IOException, JavaModelException {
+    private void checkJavaFiles(IResource[] iResources) throws CoreException, IOException {
         for (IResource resource : iResources) {
             if (resource instanceof IFile) {
                 String fileName = resource.getName();

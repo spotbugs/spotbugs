@@ -51,9 +51,9 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
      * platform encoding.
      */
     static class DefaultEncodingAnnotation extends AnnotationEnumeration<DefaultEncodingAnnotation> {
-        public final static DefaultEncodingAnnotation DEFAULT_ENCODING = new DefaultEncodingAnnotation("DefaultEncoding", 1);
+        public static final DefaultEncodingAnnotation DEFAULT_ENCODING = new DefaultEncodingAnnotation("DefaultEncoding", 1);
 
-        private final static DefaultEncodingAnnotation[] myValues = { DEFAULT_ENCODING };
+        private static final DefaultEncodingAnnotation[] myValues = { DEFAULT_ENCODING };
 
         public static DefaultEncodingAnnotation[] values() {
             return myValues.clone();
@@ -138,19 +138,6 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
             addMethodAnnotation("java.util.Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/io/File;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.util.Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/io/OutputStream;)V", false,
-                    DefaultEncodingAnnotation.DEFAULT_ENCODING);
-
-            addMethodAnnotation("java.nio.file.Files", "readString", "(Ljava/nio/file/Path;)Ljava/lang/String;", true,
-                    DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.nio.file.Files", "readAllLines", "(Ljava/nio/file/Path;)Ljava/util/List;", true,
-                    DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.nio.file.Files", "writeString",
-                    "(Ljava/nio/file/Path;Ljava/lang/CharSequence;[Ljava/nio/file/OpenOption;)Ljava/nio/file/Path;", true,
-                    DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.nio.file.Files", "newBufferedReader", "(Ljava/nio/file/Path;)Ljava/io/BufferedReader;", true,
-                    DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.nio.file.Files", "newBufferedWriter",
-                    "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/BufferedWriter;", true,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
         }
 

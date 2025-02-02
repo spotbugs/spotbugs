@@ -34,7 +34,7 @@ public enum BugRankCategory {
     public final int maxRank;
 
     @Nonnull
-    static public BugRankCategory getRank(int rank) {
+    public static BugRankCategory getRank(int rank) {
         for (BugRankCategory c : values()) {
             if (rank <= c.maxRank) {
                 return c;

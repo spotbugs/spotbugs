@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,7 +111,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
 
     final HashSet<String> nonHashableClasses;
 
-    final Map<String, BugInstance> potentialBugs;
+    final Map<PotentialBugKey, BugInstance> potentialBugs;
 
     private final BugReporter bugReporter;
 
@@ -249,11 +250,9 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
             }
             bugReporter.reportBug(bug);
         }
-        if (!hasCompareToObject && !hasCompareToBridgeMethod && hasCompareToSelf) {
-            if (!extendsObject) {
-                bugReporter.reportBug(new BugInstance(this, "CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName())
-                        .addMethod(compareToMethod));
-            }
+        if (!hasCompareToObject && !hasCompareToBridgeMethod && hasCompareToSelf && !extendsObject) {
+            bugReporter.reportBug(new BugInstance(this, "CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName())
+                    .addMethod(compareToMethod));
         }
 
         // if (!hasFields) return;
@@ -563,11 +562,12 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         if (type.isAbstract() || type.isInterface()) {
             priority++;
         }
-        potentialBugs.put(
-                type.getClassName(),
-                new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS", priority).addClassAndMethod(this)
-                        .addTypeOfNamedClass(type.getClassName()).describe(TypeAnnotation.UNHASHABLE_ROLE).addCalledMethod(this)
-                        .addSourceLine(this));
+
+        BugInstance bugInstance = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS", priority).addClassAndMethod(this)
+                .addTypeOfNamedClass(type.getClassName()).describe(TypeAnnotation.UNHASHABLE_ROLE).addCalledMethod(this)
+                .addSourceLine(this);
+        PotentialBugKey key = new PotentialBugKey(type.getClassName(), bugInstance);
+        potentialBugs.put(key, bugInstance);
     }
 
     @CheckForNull
@@ -575,16 +575,16 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
     String findHashedClassInSignature(String sig) {
         Matcher m = mapPattern.matcher(sig);
         if (m.find()) {
-            return m.group(1).replace('/', '.');
+            return ClassName.toDottedClassName(m.group(1));
         }
         m = hashTablePattern.matcher(sig);
         if (m.find()) {
-            return m.group(1).replace('/', '.');
+            return ClassName.toDottedClassName(m.group(1));
         }
 
         m = setPattern.matcher(sig);
         if (m.find()) {
-            return m.group(1).replace('/', '.');
+            return ClassName.toDottedClassName(m.group(1));
         }
         return null;
 
@@ -638,18 +638,52 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
             bug = new BugInstance(this, "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS", priority).addClass(this)
                     .addClass(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
         }
-        potentialBugs.put(className, bug);
+        PotentialBugKey key = new PotentialBugKey(className, bug);
+        potentialBugs.put(key, bug);
     }
 
     @Override
     public void report() {
-        for (Map.Entry<String, BugInstance> e : potentialBugs.entrySet()) {
-            if (!isHashableClassName(e.getKey())) {
+        for (Map.Entry<PotentialBugKey, BugInstance> e : potentialBugs.entrySet()) {
+            if (!isHashableClassName(e.getKey().className)) {
                 BugInstance bug = e.getValue();
 
                 bugReporter.reportBug(bug);
             }
         }
 
+    }
+
+    private static class PotentialBugKey {
+        private final String className;
+        private final String bugType;
+
+        public PotentialBugKey(String className, BugInstance bugInstance) {
+            this.className = className;
+            this.bugType = bugInstance.getType();
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(bugType, className);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+
+            if (obj == null) {
+                return false;
+            }
+
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+
+            PotentialBugKey other = (PotentialBugKey) obj;
+            return Objects.equals(bugType, other.bugType) && Objects.equals(className, other.className);
+        }
     }
 }

@@ -87,29 +87,27 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 
     @Override
     public void sawOpcode(int seen) {
-        if (ifInstructionSet.get(seen)) {
-            if (getBranchTarget() == getBranchFallThrough()) {
-                int priority = NORMAL_PRIORITY;
+        if (ifInstructionSet.get(seen) && getBranchTarget() == getBranchFallThrough()) {
+            int priority = NORMAL_PRIORITY;
 
-                LineNumberTable lineNumbers = getCode().getLineNumberTable();
-                if (lineNumbers != null) {
-                    int branchLineNumber = lineNumbers.getSourceLine(getPC());
-                    int targetLineNumber = lineNumbers.getSourceLine(getBranchFallThrough());
-                    int nextLine = getNextSourceLine(lineNumbers, branchLineNumber);
+            LineNumberTable lineNumbers = getCode().getLineNumberTable();
+            if (lineNumbers != null) {
+                int branchLineNumber = lineNumbers.getSourceLine(getPC());
+                int targetLineNumber = lineNumbers.getSourceLine(getBranchFallThrough());
+                int nextLine = getNextSourceLine(lineNumbers, branchLineNumber);
 
-                    if (branchLineNumber + 1 == targetLineNumber || branchLineNumber == targetLineNumber
-                            && nextLine == branchLineNumber + 1) {
-                        priority = HIGH_PRIORITY;
-                    } else if (branchLineNumber + 2 < Math.max(targetLineNumber, nextLine)) {
-                        priority = LOW_PRIORITY;
-                    }
-                } else {
+                if (branchLineNumber + 1 == targetLineNumber || branchLineNumber == targetLineNumber
+                        && nextLine == branchLineNumber + 1) {
+                    priority = HIGH_PRIORITY;
+                } else if (branchLineNumber + 2 < Math.max(targetLineNumber, nextLine)) {
                     priority = LOW_PRIORITY;
                 }
-                bugAccumulator.accumulateBug(new BugInstance(this,
-                        priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
-                                .addClassAndMethod(this), this);
+            } else {
+                priority = LOW_PRIORITY;
             }
+            bugAccumulator.accumulateBug(new BugInstance(this,
+                    priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
+                    .addClassAndMethod(this), this);
         }
     }
 

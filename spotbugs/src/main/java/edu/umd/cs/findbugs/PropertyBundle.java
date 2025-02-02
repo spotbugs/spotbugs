@@ -138,8 +138,7 @@ public class PropertyBundle {
                 return defaultValue;
             }
             result = toBoolean(value);
-        } catch (IllegalArgumentException e) {
-        } catch (NullPointerException e) {
+        } catch (IllegalArgumentException | NullPointerException ignored) {
         }
         return result;
     }
@@ -231,8 +230,7 @@ public class PropertyBundle {
         if (!m.matches()) {
             return u;
         }
-        String result = String.format(getRewriter().urlRewriteFormat, m.group(1));
-        return result;
+        return String.format(getRewriter().urlRewriteFormat, m.group(1));
     }
 
 }

@@ -3,8 +3,8 @@ package edu.umd.cs.findbugs.anttask;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.FileSet;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -14,9 +14,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class UnionBugs2Test {
+class UnionBugs2Test {
+
     @Test
-    public void testWriteXmlFilePathArgsToTextFile() {
+    void testWriteXmlFilePathArgsToTextFile() {
         //Prepare
         UnionBugs2 unionBugs2 = new UnionBugs2();
         unionBugs2.setProject(new Project());
@@ -34,11 +35,11 @@ public class UnionBugs2Test {
         //Verify
         String[] arguments = commandLine.getJavaCommand().getArguments();
         Optional<String> textFileArgument = Stream.of(arguments).filter(s -> s.contains("spotbugs-argument-file") && s.endsWith(".txt")).findFirst();
-        Assert.assertTrue("Arguments are supposed to be compiled into text file.", textFileArgument.isPresent());
+        Assertions.assertTrue(textFileArgument.isPresent(), "Arguments are supposed to be compiled into text file.");
         String textFile = textFileArgument.get();
         List<String> xmlPaths = readArgumentsFile(textFile);
-        Assert.assertTrue(xmlPaths.stream().anyMatch(s -> s.contains("findbugsExclusionTest.xml")));
-        Assert.assertTrue(xmlPaths.stream().anyMatch(s -> s.contains("findbugsExclusionTest2.xml")));
+        Assertions.assertTrue(xmlPaths.stream().anyMatch(s -> s.contains("findbugsExclusionTest.xml")));
+        Assertions.assertTrue(xmlPaths.stream().anyMatch(s -> s.contains("findbugsExclusionTest2.xml")));
 
         //Cleanup
         try {
@@ -55,8 +56,6 @@ public class UnionBugs2Test {
             while ((next = reader.readLine()) != null) {
                 compiledXmlFiles.add(next);
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,58 +1,37 @@
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Test;
+import edu.umd.cs.findbugs.AbstractIntegrationTest;
+import org.junit.jupiter.api.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
+class FindPublicAttributesTest extends AbstractIntegrationTest {
 
-public class FindPublicAttributesTest extends AbstractIntegrationTest {
     private static final String PRIMITIVE_PUBLIC = "PA_PUBLIC_PRIMITIVE_ATTRIBUTE";
     private static final String MUTABLE_PUBLIC = "PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE";
     private static final String ARRAY_PUBLIC = "PA_PUBLIC_ARRAY_ATTRIBUTE";
 
     @Test
-    public void testPublicAttributesChecks() {
+    void testPublicAttributesChecks() {
         performAnalysis("PublicAttributesTest.class");
 
-        assertNumOfBugs(PRIMITIVE_PUBLIC, 3);
-        assertNumOfBugs(ARRAY_PUBLIC, 4);
-        assertNumOfBugs(MUTABLE_PUBLIC, 1);
+        assertBugTypeCount(PRIMITIVE_PUBLIC, 3);
+        assertBugTypeCount(ARRAY_PUBLIC, 4);
+        assertBugTypeCount(MUTABLE_PUBLIC, 1);
 
-        assertBugTypeAtField(PRIMITIVE_PUBLIC, "attr1", 11);
-        assertBugTypeAtField(PRIMITIVE_PUBLIC, "attr2", 42);
-        assertBugTypeAtField(PRIMITIVE_PUBLIC, "sattr1", 15);
-        assertBugTypeAtField(MUTABLE_PUBLIC, "hm", 20);
-        assertBugTypeAtField(ARRAY_PUBLIC, "items", 28);
-        assertBugTypeAtField(ARRAY_PUBLIC, "nitems", 48);
-        assertBugTypeAtField(ARRAY_PUBLIC, "sitems", 32);
-        assertBugTypeAtField(ARRAY_PUBLIC, "SFITEMS", 34);
+        assertBugAtFieldAtLine(PRIMITIVE_PUBLIC, "PublicAttributesTest", "attr1", 11);
+        assertBugAtFieldAtLine(PRIMITIVE_PUBLIC, "PublicAttributesTest", "attr2", 42);
+        assertBugAtFieldAtLine(PRIMITIVE_PUBLIC, "PublicAttributesTest", "sattr1", 15);
+        assertBugAtFieldAtLine(MUTABLE_PUBLIC, "PublicAttributesTest", "hm", 20);
+        assertBugAtFieldAtLine(ARRAY_PUBLIC, "PublicAttributesTest", "items", 28);
+        assertBugAtFieldAtLine(ARRAY_PUBLIC, "PublicAttributesTest", "nitems", 48);
+        assertBugAtFieldAtLine(ARRAY_PUBLIC, "PublicAttributesTest", "sitems", 32);
+        assertBugAtFieldAtLine(ARRAY_PUBLIC, "PublicAttributesTest", "SFITEMS", 34);
     }
 
     @Test
-    public void testGoodPublicAttributesChecks() {
+    void testGoodPublicAttributesChecks() {
         performAnalysis("PublicAttributesNegativeTest.class");
-        assertNumOfBugs(PRIMITIVE_PUBLIC, 0);
-        assertNumOfBugs(ARRAY_PUBLIC, 0);
-        assertNumOfBugs(MUTABLE_PUBLIC, 0);
-    }
-
-    private void assertNumOfBugs(String bugtype, int num) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugtype).build();
-        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertBugTypeAtField(String bugtype, String field, int line) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugtype)
-                .inClass("PublicAttributesTest")
-                .atField(field)
-                .atLine(line)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+        assertBugTypeCount(PRIMITIVE_PUBLIC, 0);
+        assertBugTypeCount(ARRAY_PUBLIC, 0);
+        assertBugTypeCount(MUTABLE_PUBLIC, 0);
     }
 }

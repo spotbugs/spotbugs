@@ -18,24 +18,21 @@
  */
 package edu.umd.cs.findbugs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class CurrentThreadExecutorServiceTest {
-    @Rule
-    public ExpectedException expected = ExpectedException.none();
+class CurrentThreadExecutorServiceTest {
 
     @Test
-    public void test() throws InterruptedException {
+    void testCurrentThread() throws InterruptedException {
         Thread currentThread = Thread.currentThread();
         ExecutorService executorService = new CurrentThreadExecutorService();
         AtomicBoolean isCalled = new AtomicBoolean();
@@ -54,19 +51,21 @@ public class CurrentThreadExecutorServiceTest {
     }
 
     @Test
-    public void testCloseTwice() {
+    void testCloseTwice() {
         ExecutorService executorService = new CurrentThreadExecutorService();
         List<Runnable> remaining = executorService.shutdownNow();
         assertTrue(remaining.isEmpty());
 
-        expected.expect(IllegalStateException.class);
-        executorService.shutdown();
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            executorService.shutdown();
+        });
     }
 
     @Test
-    public void awaitTerminationWithoutShutdown() throws InterruptedException {
+    void awaitTerminationWithoutShutdown() {
         ExecutorService executorService = new CurrentThreadExecutorService();
-        expected.expect(IllegalStateException.class);
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            executorService.awaitTermination(1, TimeUnit.SECONDS);
+        });
     }
 }

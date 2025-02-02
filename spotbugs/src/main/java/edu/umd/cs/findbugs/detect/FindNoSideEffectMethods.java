@@ -359,6 +359,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         if (method.isAbstract() || method.isInterface()) {
             if (!sawImplementation
                     || getClassName().endsWith("Visitor") || getClassName().endsWith("Listener")
+                    || getClassName().endsWith("Builder")
                     || getClassName().startsWith("java/sql/")
                     || (getClassName().equals("java/util/concurrent/Future") && !method.getName().startsWith("is"))
                     || (getClassName().equals("java/lang/Process") && method.getName().equals("exitValue"))) {
@@ -496,12 +497,10 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     public void sawOpcode(int seen) {
         if (!allowedFields.isEmpty() && seen == Const.PUTFIELD) {
             Item objItem = getStack().getStackItem(1);
-            if (objItem.getRegisterNumber() == 0) {
-                if (allowedFields.contains(getFieldDescriptorOperand())) {
-                    Item valueItem = getStack().getStackItem(0);
-                    if (!isNew(valueItem) && !valueItem.isNull()) {
-                        allowedFields.remove(getFieldDescriptorOperand());
-                    }
+            if (objItem.getRegisterNumber() == 0 && allowedFields.contains(getFieldDescriptorOperand())) {
+                Item valueItem = getStack().getStackItem(0);
+                if (!isNew(valueItem) && !valueItem.isNull()) {
+                    allowedFields.remove(getFieldDescriptorOperand());
                 }
             }
         }
@@ -538,10 +537,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             break;
         }
         case Const.PUTSTATIC:
-            if (classInit) {
-                if (getClassConstantOperand().equals(getClassName())) {
-                    break;
-                }
+            if (classInit && getClassConstantOperand().equals(getClassName())) {
+                break;
             }
             status = SideEffectStatus.SIDE_EFFECT;
             break;
@@ -898,14 +895,12 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                          */
                         continue;
                     }
-                    if (m.isStatic() || m.getName().equals(Const.CONSTRUCTOR_NAME)) {
-                        if (sideEffectClinit.contains(m.getSlashedClassName())) {
-                            /* Skip static methods and constructors for classes which have
-                             * side-effect class initializer
-                             */
-                            noSideEffectMethods.add(m, MethodSideEffectStatus.SE_CLINIT);
-                            continue;
-                        }
+                    if ((m.isStatic() || m.getName().equals(Const.CONSTRUCTOR_NAME)) && sideEffectClinit.contains(m.getSlashedClassName())) {
+                        /* Skip static methods and constructors for classes which have
+                         * side-effect class initializer
+                         */
+                        noSideEffectMethods.add(m, MethodSideEffectStatus.SE_CLINIT);
+                        continue;
                     }
                     if (m.equals(CLASS_GET_NAME) // used sometimes to trigger class loading
                             || m.equals(HASH_CODE) // found intended hashCode call several times in different projects, need further research
@@ -914,16 +909,13 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                         continue;
                     }
                     if (m.isStatic() && getStaticMethods.contains(m) && !m.getSlashedClassName().startsWith("java/")) {
-                        String returnSlashedClassName = ClassName.fromFieldSignature(returnType);
-                        if (returnSlashedClassName != null) {
-                            String returnClass = ClassName.toDottedClassName(returnSlashedClassName);
-                            if (ClassName.extractPackageName(returnClass).equals(m.getClassDescriptor().getPackageName())) {
-                                /* Skip methods which only retrieve static field from the same package
-                                 * As they as often used to trigger class initialization
-                                 */
-                                noSideEffectMethods.add(m, MethodSideEffectStatus.NSE_EX);
-                                continue;
-                            }
+                        String returnClass = ClassName.fromFieldSignatureToDottedClassName(returnType);
+                        if (returnClass != null && ClassName.extractPackageName(returnClass).equals(m.getClassDescriptor().getPackageName())) {
+                            /* Skip methods which only retrieve static field from the same package
+                             * As they as often used to trigger class initialization
+                             */
+                            noSideEffectMethods.add(m, MethodSideEffectStatus.NSE_EX);
+                            continue;
                         }
                     }
                     noSideEffectMethods.add(m, MethodSideEffectStatus.NSE);
@@ -963,10 +955,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             try {
                 XClass xClass = subtype.getXClass();
                 XMethod subMethod = xClass.findMatchingMethod(xMethod.getMethodDescriptor());
-                if (subMethod != null) {
-                    if (!subMethod.isAbstract()) {
-                        return true;
-                    }
+                if (subMethod != null && !subMethod.isAbstract()) {
+                    return true;
                 }
             } catch (CheckedAnalysisException e) {
                 // ignore

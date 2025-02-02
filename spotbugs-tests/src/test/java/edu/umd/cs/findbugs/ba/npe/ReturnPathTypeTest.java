@@ -19,9 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 
@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
  *
  * @author David Hovemeyer
  */
-public class ReturnPathTypeTest {
+class ReturnPathTypeTest {
 
     ReturnPathType top;
 
@@ -38,8 +38,8 @@ public class ReturnPathTypeTest {
 
     ReturnPathType abnormal;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         top = new ReturnPathType();
         normal = new ReturnPathType();
         normal.setCanReturnNormally(true);
@@ -48,76 +48,76 @@ public class ReturnPathTypeTest {
     }
 
     @Test
-    public void testTop() throws Exception {
-        Assert.assertFalse(top.isValid());
-        Assert.assertTrue(top.isTop());
+    void testTop() throws Exception {
+        Assertions.assertFalse(top.isValid());
+        Assertions.assertTrue(top.isTop());
         try {
             top.canReturnNormally();// should throw exception
-            Assert.assertTrue(false);
+            Assertions.assertTrue(false);
         } catch (DataflowAnalysisException e) {
             // Good
         }
     }
 
     @Test
-    public void testCanReturnNormally() throws Exception {
-        Assert.assertTrue(normal.isValid());
-        Assert.assertTrue(normal.canReturnNormally());
+    void testCanReturnNormally() throws Exception {
+        Assertions.assertTrue(normal.isValid());
+        Assertions.assertTrue(normal.canReturnNormally());
     }
 
     @Test
-    public void testCannotReturnNormally() throws Exception {
-        Assert.assertTrue(abnormal.isValid());
-        Assert.assertFalse(abnormal.canReturnNormally());
+    void testCannotReturnNormally() throws Exception {
+        Assertions.assertTrue(abnormal.isValid());
+        Assertions.assertFalse(abnormal.canReturnNormally());
     }
 
     @Test
-    public void testMergeWithTop() throws Exception {
+    void testMergeWithTop() throws Exception {
         normal.mergeWith(top);
-        Assert.assertTrue(normal.canReturnNormally());
+        Assertions.assertTrue(normal.canReturnNormally());
         abnormal.mergeWith(top);
-        Assert.assertFalse(abnormal.canReturnNormally());
+        Assertions.assertFalse(abnormal.canReturnNormally());
     }
 
     @Test
-    public void testTopMergeWithNormalReturn() throws Exception {
+    void testTopMergeWithNormalReturn() throws Exception {
         top.mergeWith(normal);
-        Assert.assertTrue(top.canReturnNormally());
+        Assertions.assertTrue(top.canReturnNormally());
     }
 
     @Test
-    public void testTopMergeWithAbnormalReturn() throws Exception {
+    void testTopMergeWithAbnormalReturn() throws Exception {
         top.mergeWith(abnormal);
-        Assert.assertFalse(top.canReturnNormally());
+        Assertions.assertFalse(top.canReturnNormally());
     }
 
     @Test
-    public void testNormalMergeWIthAbnormal() throws Exception {
+    void testNormalMergeWIthAbnormal() throws Exception {
         normal.mergeWith(abnormal);
-        Assert.assertTrue(normal.canReturnNormally());
+        Assertions.assertTrue(normal.canReturnNormally());
     }
 
     @Test
-    public void testAbnormalMergeWithNormal() throws Exception {
+    void testAbnormalMergeWithNormal() throws Exception {
         abnormal.mergeWith(normal);
-        Assert.assertTrue(abnormal.canReturnNormally());
+        Assertions.assertTrue(abnormal.canReturnNormally());
     }
 
     @Test
-    public void testNormalMergeWithNormal() throws Exception {
+    void testNormalMergeWithNormal() throws Exception {
         ReturnPathType otherNormal = new ReturnPathType();
         otherNormal.setCanReturnNormally(true);
 
         normal.mergeWith(otherNormal);
-        Assert.assertTrue(normal.canReturnNormally());
+        Assertions.assertTrue(normal.canReturnNormally());
     }
 
     @Test
-    public void testAbnormalMergeWithAbnormal() throws Exception {
+    void testAbnormalMergeWithAbnormal() throws Exception {
         ReturnPathType otherAbnormal = new ReturnPathType();
         otherAbnormal.setCanReturnNormally(false);
 
         abnormal.mergeWith(otherAbnormal);
-        Assert.assertFalse(abnormal.canReturnNormally());
+        Assertions.assertFalse(abnormal.canReturnNormally());
     }
 }

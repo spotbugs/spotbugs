@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -91,7 +92,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
         super(className, DEFAULT_ROLE);
         if (fieldSig.indexOf('.') >= 0) {
             assert false : "signatures should not be dotted: " + fieldSig;
-            fieldSig = fieldSig.replace('.', '/');
+            fieldSig = ClassName.toSlashedClassName(fieldSig);
         }
         this.fieldName = fieldName;
         this.fieldSig = fieldSig;
@@ -301,7 +302,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
         String givenPackageName = primaryClass.getPackageName();
         String thisPackageName = this.getPackageName();
         if (thisPackageName.equals(givenPackageName)) {
-            if (thisPackageName.length() == 0) {
+            if (thisPackageName.isEmpty()) {
                 return fieldName;
             } else {
                 return className.substring(thisPackageName.length() + 1) + "." + fieldName;

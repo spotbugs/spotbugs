@@ -1,42 +1,21 @@
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class FindPotentialSecurityCheckBasedOnUntrustedSourceTest extends AbstractIntegrationTest {
+class FindPotentialSecurityCheckBasedOnUntrustedSourceTest extends AbstractIntegrationTest {
 
     @Test
-    public void test() throws Exception {
+    void testUntrustedSources() {
         performAnalysis("PotentialSecurityCheckBasedOnUntrustedSource.class",
                 "PotentialSecurityCheckBasedOnUntrustedSource$1.class",
                 "PotentialSecurityCheckBasedOnUntrustedSource$2.class");
 
-        assertNumOfUSCBugs(2);
-        assertUSCBug("badOpenFile", 11);
-        assertUSCBug("badOpenFileLambda", 40);
-    }
+        final String bugType = "USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE";
 
-    private void assertNumOfUSCBugs(int num) throws Exception {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE").build();
-        assertThat(getBugCollection(), containsExactly(num, bugTypeMatcher));
-    }
-
-    private void assertUSCBug(String methodName, int line) throws Exception {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE")
-                .inClass("PotentialSecurityCheckBasedOnUntrustedSource")
-                .inMethod(methodName)
-                .atLine(line)
-                .build();
-
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+        assertBugTypeCount(bugType, 2);
+        assertBugInMethodAtLine(bugType, "PotentialSecurityCheckBasedOnUntrustedSource", "badOpenFile", 11);
+        assertBugInMethodAtLine(bugType, "PotentialSecurityCheckBasedOnUntrustedSource", "badOpenFileLambda", 40);
     }
 }

@@ -18,8 +18,8 @@
  */
 package de.tobject.findbugs.view.test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IViewPart;
@@ -27,9 +27,9 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 import de.tobject.findbugs.test.AbstractPluginTest;
@@ -40,21 +40,22 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class FindBugsPerspectiveTest extends AbstractFindBugsTest {
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        setUpTestProject(TestScenario.DEFAULT);
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws CoreException {
-        tearDownTestProject();
-    }
+class FindBugsPerspectiveTest extends AbstractFindBugsTest {
 
     private static final String FINDBUGS_PERSPECTIVE_ID = "de.tobject.findbugs.FindBugsPerspective";
 
+    @BeforeAll
+    static void setUpClass() throws Exception {
+        setUpTestProject(TestScenario.DEFAULT);
+    }
+
+    @AfterAll
+    static void tearDownClass() throws CoreException {
+        tearDownTestProject();
+    }
+
     @Test
-    public void testShowPerspective() throws WorkbenchException {
+    void testShowPerspective() throws WorkbenchException {
         // Show the perspective
         IWorkbenchPage page = showFindBugsPerspective();
 
@@ -69,7 +70,6 @@ public class FindBugsPerspectiveTest extends AbstractFindBugsTest {
 
     private IWorkbenchPage showFindBugsPerspective() throws WorkbenchException {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        IWorkbenchPage page = PlatformUI.getWorkbench().showPerspective(FINDBUGS_PERSPECTIVE_ID, window);
-        return page;
+        return PlatformUI.getWorkbench().showPerspective(FINDBUGS_PERSPECTIVE_ID, window);
     }
 }

@@ -1,11 +1,12 @@
 package edu.umd.cs.findbugs.nullness;
 
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.test.SpotBugsRule;
+import edu.umd.cs.findbugs.test.SpotBugsExtension;
+import edu.umd.cs.findbugs.test.SpotBugsRunner;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.nio.file.Paths;
 
@@ -18,19 +19,18 @@ import static org.hamcrest.Matchers.emptyIterable;
  *
  * @author HoelzelJon
  */
-public class AvroNullabilityTest {
-    @Rule
-    public SpotBugsRule spotbugs = new SpotBugsRule();
+@ExtendWith(SpotBugsExtension.class)
+class AvroNullabilityTest {
 
     @Test
-    public void checkedAvroNullableReturn_isOk() {
+    void checkedAvroNullableReturn_isOk(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/CheckedAvroNullableReturn.class"));
         assertThat(bugCollection, emptyIterable());
     }
 
     @Test
-    public void uncheckedAvroNullableReturn_isDetected() {
+    void uncheckedAvroNullableReturn_isDetected(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/UncheckedAvroNullableReturn.class"));
 

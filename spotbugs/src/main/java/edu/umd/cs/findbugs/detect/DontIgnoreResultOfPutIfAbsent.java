@@ -120,15 +120,13 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (DataflowAnalysisException e) {
-                bugReporter.logError("Error analyzing " + method.toString(), e);
-            } catch (CFGBuilderException e) {
+            } catch (DataflowAnalysisException | CFGBuilderException e) {
                 bugReporter.logError("Error analyzing " + method.toString(), e);
             }
         }
     }
 
-    final static boolean DEBUG = false;
+    static final boolean DEBUG = false;
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
     static HashSet<String> immutableClassNames = new HashSet<>();
@@ -232,7 +230,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                             && !(invoke instanceof INVOKESTATIC)) {
                         TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
                         Type objType = typeFrame.getStackValue(2);
-                        if (extendsConcurrentMap(ClassName.toDottedClassName(ClassName.fromFieldSignature(objType.getSignature())))) {
+                        if (extendsConcurrentMap(ClassName.fromFieldSignatureToDottedClassName(objType.getSignature()))) {
                             InstructionHandle next = handle.getNext();
                             boolean isIgnored = next != null && next.getInstruction() instanceof POP;
                             //                        boolean isImmediateNullTest = next != null

@@ -10,13 +10,15 @@ dependencies {
   api project(':spotbugs-annotations')
   implementation project(':spotbugsTestCases')
   implementation project(':test-harness')
+  implementation project(':test-harness-jupiter')
 
-  implementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
-  implementation 'org.hamcrest:hamcrest-core:2.2'
-  implementation 'org.apache.ant:ant:1.10.13'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+  implementation 'org.junit.jupiter:junit-jupiter-params:5.11.4'
+  implementation 'org.hamcrest:hamcrest:3.0'
+  implementation 'org.apache.ant:ant:1.10.15'
   implementation libs.log4j.core
   implementation libs.log4j.slf4j2.impl
-  implementation 'com.google.errorprone:error_prone_annotations:2.21.1'
+  implementation 'com.google.errorprone:error_prone_annotations:2.36.0'
   implementation files(project(":spotbugs").sourceSets.gui.output)
 }
 
@@ -37,12 +39,13 @@ tasks.named('jacocoTestReport', JacocoReport).configure {
   dependsOn('unstableTest')
   additionalSourceDirs.setFrom files(project(':spotbugs').sourceSets.main.java.srcDirs)
   additionalClassDirs.setFrom files(project(':spotbugs').sourceSets.main.output.classesDirs)
-  executionData.setFrom files("$buildDir/jacoco/unstableTest.exec", "$buildDir/jacoco/test.exec")
+  executionData.setFrom files(layout.buildDirectory.file("jacoco/unstableTest.exec"), layout.buildDirectory.file("jacoco/test.exec"))
 }
 
 // Tests below fail if executed with other tests
 // So we run them before all other tests are executed
 task unstableTest(type: Test) {
+  useJUnitPlatform()
   filter {
     includeTestsMatching "PlaceholderTest"
     includeTestsMatching "MutableClassesTest"
@@ -54,6 +57,7 @@ task unstableTest(type: Test) {
 
 test {
   dependsOn ':spotbugsTestCases:build', 'unstableTest'
+  useJUnitPlatform()
   filter {
     excludeTestsMatching "PlaceholderTest"
     excludeTestsMatching "MutableClassesTest"

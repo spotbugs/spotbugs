@@ -178,7 +178,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
         String hostApp = System.getProperty(PROP_FINDBUGS_HOST_APP);
         String hostAppVersion = null;
-        if (hostApp == null || hostApp.trim().length() <= 0) {
+        if (hostApp == null || hostApp.trim().isEmpty()) {
             hostApp = "FindBugs TextUI";
             hostAppVersion = System.getProperty(PROP_FINDBUGS_HOST_APP_VERSION);
         }
@@ -281,7 +281,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                         @Override
                         public void reportBug(@Nonnull BugInstance bugInstance) {
                             String className = bugInstance.getPrimaryClass().getClassName();
-                            String resourceName = className.replace('.', '/') + ".class";
+                            String resourceName = ClassName.toSlashedClassName(className) + ".class";
                             if (classScreener.matches(resourceName)) {
                                 this.getDelegate().reportBug(bugInstance);
                             }
@@ -294,7 +294,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     bugReporter = new FilterBugReporter(bugReporter, m, false);
                 }
 
-                if (appClassList.size() == 0) {
+                if (appClassList.isEmpty()) {
                     Map<String, ICodeBaseEntry> codebase = classPath.getApplicationCodebaseEntries();
                     if (analysisOptions.noClassOk) {
                         System.err.println("No classfiles specified; output will have no warnings");
@@ -662,12 +662,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 try {
                     IAnalysisEngineRegistrar engineRegistrar = engineRegistrarClass.newInstance();
                     engineRegistrar.registerAnalysisEngines(analysisCache);
-                } catch (InstantiationException e) {
-                    IOException ioe = new IOException("Could not create analysis engine registrar for plugin "
-                            + plugin.getPluginId());
-                    ioe.initCause(e);
-                    throw ioe;
-                } catch (IllegalAccessException e) {
+                } catch (InstantiationException | IllegalAccessException e) {
                     IOException ioe = new IOException("Could not create analysis engine registrar for plugin "
                             + plugin.getPluginId());
                     ioe.initCause(e);
@@ -999,10 +994,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 try {
                     XClass info = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
                     factory.intern(info);
-                } catch (CheckedAnalysisException e) {
-                    AnalysisContext.logError("Couldn't get class info for " + desc, e);
-                    badClasses.add(desc);
-                } catch (RuntimeException e) {
+                } catch (CheckedAnalysisException | RuntimeException e) {
                     AnalysisContext.logError("Couldn't get class info for " + desc, e);
                     badClasses.add(desc);
                 }
@@ -1122,7 +1114,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                                 LOG.warn("Thread interrupted during analysis", e);
                                 Thread.currentThread().interrupt();
                             } catch (ExecutionException e) {
-                                throw new AnalysisException("Exeption was thrown during analysis", e);
+                                throw new AnalysisException("Exception was thrown during analysis", e);
                             }
                         });
                         if (Thread.interrupted()) {
@@ -1197,7 +1189,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
      */
     private void logRecoverableException(ClassDescriptor classDescriptor, Detector2 detector, Throwable e) {
         bugReporter.logError(
-                "Exception analyzing " + classDescriptor.toDottedClassName() + " using detector "
+                "Exception analyzing " + classDescriptor.getDottedClassName() + " using detector "
                         + detector.getDetectorClassName(), e);
     }
 

@@ -92,7 +92,7 @@ public class PermissionsSuper extends OpcodeStackDetector {
             }
             bugAccumulator.accumulateBug(new BugInstance(this,
                     "PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS", NORMAL_PRIORITY)
-                            .addClassAndMethod(this), this);
+                    .addClassAndMethod(this), this);
         }
     }
 }

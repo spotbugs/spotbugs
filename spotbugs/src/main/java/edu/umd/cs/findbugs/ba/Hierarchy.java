@@ -502,10 +502,7 @@ public class Hierarchy {
         for (Method method : methodList) {
             if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)
                     && accessFlagsAreConcrete(method.getAccessFlags())) {
-                JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
-
-                return m;
-
+                return new JavaClassAndMethod(javaClass, method);
             }
         }
         if (DEBUG_METHOD_LOOKUP) {
@@ -838,24 +835,20 @@ public class Hierarchy {
                 && (upperBound == null || !upperBound.getJavaClass().isFinal() && !upperBound.getMethod().isFinal())
                 && !receiverTypeIsExact;
 
-        if (virtualCall) {
-            if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(receiverClassName)) {
-
-                // This is a true virtual call: assume that any concrete
-                // subtype method may be called.
-                Set<ClassDescriptor> subTypeSet = analysisContext.getSubtypes2().getSubtypes(receiverDesc);
-                for (ClassDescriptor subtype : subTypeSet) {
-                    XMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, false);
-                    if (concreteSubtypeMethod != null && (concreteSubtypeMethod.getAccessFlags() & Const.ACC_ABSTRACT) == 0) {
-                        result.add(new JavaClassAndMethod(concreteSubtypeMethod));
-                    }
+        if (virtualCall && !Values.DOTTED_JAVA_LANG_OBJECT.equals(receiverClassName)) {
+            // This is a true virtual call: assume that any concrete
+            // subtype method may be called.
+            Set<ClassDescriptor> subTypeSet = analysisContext.getSubtypes2().getSubtypes(receiverDesc);
+            for (ClassDescriptor subtype : subTypeSet) {
+                XMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, false);
+                if (concreteSubtypeMethod != null && (concreteSubtypeMethod.getAccessFlags() & Const.ACC_ABSTRACT) == 0) {
+                    result.add(new JavaClassAndMethod(concreteSubtypeMethod));
                 }
-                if (false && subTypeSet.size() > 500) {
-                    new RuntimeException(receiverClassName + " has " + subTypeSet.size() + " subclasses, " + result.size()
-                            + " of which implement " + methodName + methodSig + " " + invokeInstruction)
-                                    .printStackTrace(System.out);
-                }
-
+            }
+            if (false && subTypeSet.size() > 500) {
+                new RuntimeException(receiverClassName + " has " + subTypeSet.size() + " subclasses, " + result.size()
+                        + " of which implement " + methodName + methodSig + " " + invokeInstruction)
+                        .printStackTrace(System.out);
             }
         }
         return result;

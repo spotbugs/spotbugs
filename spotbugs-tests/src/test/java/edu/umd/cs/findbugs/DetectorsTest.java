@@ -18,7 +18,7 @@
  */
 package edu.umd.cs.findbugs;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,11 +26,11 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 
 // TODO : Rewrite tests using matchers
 @Deprecated
-public class DetectorsTest {
+class DetectorsTest {
 
     private static final String FB_UNEXPECTED_WARNING = "FB_UNEXPECTED_WARNING";
 
@@ -67,29 +67,29 @@ public class DetectorsTest {
     /** detectors which are disabled by default but which must be used in test */
     private final String[] enabledDetectors = { "CheckExpectedWarnings", "InefficientMemberAccess", "EmptyZipFileEntry" };
 
-    public File getFindbugsTestCases() {
+    private File getFindbugsTestCases() {
         if (spotbugsTestCases != null) {
             return spotbugsTestCases;
         }
         File f = new File(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
-        Assume.assumeTrue(f.exists());
-        Assume.assumeTrue(f.isDirectory());
-        Assume.assumeTrue(f.canRead());
+        Assumptions.assumeTrue(f.exists());
+        Assumptions.assumeTrue(f.isDirectory());
+        Assumptions.assumeTrue(f.canRead());
 
         spotbugsTestCases = f;
         return f;
     }
 
-    public File getFindbugsTestCasesFile(String path) {
+    private File getFindbugsTestCasesFile(String path) {
         File f = new File(getFindbugsTestCases(), path);
-        Assume.assumeTrue(f.exists());
-        Assume.assumeTrue(f.canRead());
+        Assumptions.assumeTrue(f.exists());
+        Assumptions.assumeTrue(f.canRead());
 
         return f;
     }
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         loadFindbugsPlugin();
     }
 
@@ -97,14 +97,14 @@ public class DetectorsTest {
      * Test for expected warnings on javac compiler generated classes
      */
     @Test
-    public void testAllRegressionFilesJavac() throws IOException, InterruptedException {
+    void testAllRegressionFilesJavac() throws IOException, InterruptedException {
         setUpEngine("build/classes/java/main/");
 
         engine.execute();
 
         // If there are zero bugs, then something's wrong
-        assertFalse("No bugs were reported. Something is wrong with the configuration", bugReporter.getBugCollection()
-                .getCollection().isEmpty());
+        assertFalse(bugReporter.getBugCollection().getCollection().isEmpty(),
+                "No bugs were reported. Something is wrong with the configuration");
     }
 
     /**
@@ -115,7 +115,7 @@ public class DetectorsTest {
      * ecj command line compiler and *always* validate both bytecode kinds.
      */
     @Test
-    public void testAllRegressionFilesEcj() throws IOException, InterruptedException {
+    void testAllRegressionFilesEcj() throws IOException, InterruptedException {
         setUpEngine("classesEclipse/");
 
         engine.execute();
@@ -127,8 +127,8 @@ public class DetectorsTest {
         }
     }
 
-    @After
-    public void checkForUnexpectedBugs() {
+    @AfterEach
+    void checkForUnexpectedBugs() {
         List<BugInstance> unexpectedBugs = new ArrayList<>();
         for (BugInstance bug : bugReporter.getBugCollection()) {
             if (isUnexpectedBug(bug) && bug.getPriority() == Priorities.HIGH_PRIORITY) {
@@ -139,7 +139,7 @@ public class DetectorsTest {
         }
 
         if (!unexpectedBugs.isEmpty()) {
-            Assert.fail("Unexpected bugs (" + unexpectedBugs.size() + "):" + getBugsLocations(unexpectedBugs));
+            Assertions.fail("Unexpected bugs (" + unexpectedBugs.size() + "):" + getBugsLocations(unexpectedBugs));
         }
     }
 
@@ -157,8 +157,15 @@ public class DetectorsTest {
             }
             StringAnnotation pattern = (StringAnnotation) bugInstance.getAnnotations().get(2);
             message.append(pattern.getValue());
-            message.append(" ");
-            message.append(bugInstance.getPrimarySourceLineAnnotation());
+
+            if (bugInstance.getPrimarySourceLineAnnotation() != null) {
+                message.append(" ");
+                message.append(bugInstance.getPrimarySourceLineAnnotation());
+                // several samples might have the same file name such as TestNonNull2.java, add the path here
+                message.append(" (");
+                message.append(bugInstance.getPrimarySourceLineAnnotation().getRealSourcePath());
+                message.append(")");
+            }
         }
         return message.toString();
     }

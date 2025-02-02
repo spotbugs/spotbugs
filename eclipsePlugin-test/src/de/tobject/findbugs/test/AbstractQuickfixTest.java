@@ -18,9 +18,9 @@
  */
 package de.tobject.findbugs.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,9 +42,9 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolutionGenerator2;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.FindbugsTestPlugin;
@@ -63,7 +63,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     private IMarkerResolutionGenerator2 resolutionGenerator;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -75,7 +75,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws CoreException {
         resolutionGenerator = null;
 
@@ -105,7 +105,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
         // Assert the expected markers are present
         IMarker[] markers = getInputFileMarkers(classFileName);
-        assertEquals("Too many or too few markers", packages.size(), markers.length);
+        assertEquals(packages.size(), markers.length, "Too many or too few markers");
 
         sortMarkers(markers);
 
@@ -129,7 +129,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     }
 
     protected void sortMarkers(IMarker[] markers) {
-        Arrays.sort(markers, new Comparator<IMarker>() {
+        Arrays.sort(markers, new Comparator<>() {
 
             @Override
             public int compare(IMarker marker1, IMarker marker2) {
@@ -178,7 +178,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
                 }
             }
         }
-        Assert.fail("No resolution of class " + resolutionClass);
+        Assertions.fail("No resolution of class " + resolutionClass);
     }
 
     protected void assertAllMarkersHaveResolutions(IMarker[] markers) {
@@ -220,7 +220,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         for (int i = 0; i < packages.size(); i++) {
             int lineNumber = MarkerUtil.findPrimaryLineForMaker(markers[i]);
             if (packages.get(i).lineNumber != QuickFixTestPackage.LINE_NUMBER_NOT_SPECIFIED) {
-                assertEquals("Line number should match", packages.get(i).lineNumber, lineNumber);
+                assertEquals(packages.get(i).lineNumber, lineNumber, "Line number should match");
             }
         }
     }
@@ -234,12 +234,12 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
             List<String> expectedLabels = new ArrayList<>(packages.get(i).expectedLabels);
             IMarkerResolution[] resolutions = getResolutionGenerator().getResolutions(marker);
 
-            assertEquals("The expected number of resolutions available was wrong", expectedLabels.size(), resolutions.length);
+            assertEquals(expectedLabels.size(), resolutions.length, "The expected number of resolutions available was wrong");
 
             for (int j = 0; j < resolutions.length; j++) {
                 BugResolution resolution = (BugResolution) resolutions[j];
                 String label = resolution.getLabel();
-                assertTrue("Should have seen label: " + label, expectedLabels.contains(label));
+                assertTrue(expectedLabels.contains(label), "Should have seen label: " + label);
                 expectedLabels.remove(label);
             }
         }
@@ -287,8 +287,8 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     public static class QuickFixTestPackage {
 
         public static final int LINE_NUMBER_NOT_SPECIFIED = -1; //TODO remove this after updating current tests
-        public String expectedPattern = null;
-        public List<String> expectedLabels = null;
+        public String expectedPattern;
+        public List<String> expectedLabels;
         public int lineNumber = LINE_NUMBER_NOT_SPECIFIED;
 
         @Override

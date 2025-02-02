@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.objectweb.asm.ClassReader;
 
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
@@ -54,6 +55,18 @@ import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
  */
 public class DiscoverSourceDirectories {
     private static boolean DEBUG = SystemProperties.getBoolean("findbugs.dsd.debug");
+
+    private Project project;
+
+    private String rootSourceDirectory;
+
+    private boolean scanForNestedArchives;
+
+    private IErrorLogger errorLogger;
+
+    private Progress progress;
+
+    private final List<String> discoveredSourceDirectoryList;
 
     /**
      * Progress callback interface for reporting the progress of source
@@ -136,18 +149,6 @@ public class DiscoverSourceDirectories {
         }
 
     }
-
-    private Project project;
-
-    private String rootSourceDirectory;
-
-    private boolean scanForNestedArchives;
-
-    private IErrorLogger errorLogger;
-
-    private Progress progress;
-
-    private final List<String> discoveredSourceDirectoryList;
 
     /**
      * Constructor.
@@ -237,7 +238,7 @@ public class DiscoverSourceDirectories {
 
         // Find all directories underneath the root source directory
         progress.startRecursiveDirectorySearch();
-        RecursiveFileSearch rfs = new RecursiveFileSearch(rootSourceDirectory, pathname -> pathname.isDirectory());
+        RecursiveFileSearch rfs = new RecursiveFileSearch(rootSourceDirectory, File::isDirectory);
         rfs.search();
         progress.doneRecursiveDirectorySearch();
         List<String> candidateSourceDirList = rfs.getDirectoriesScanned();
@@ -304,15 +305,13 @@ public class DiscoverSourceDirectories {
             String sourceFile = classInfo.getSource();
 
             if (!"".equals(packageName)) {
-                packageName = packageName.replace('.', '/');
+                packageName = ClassName.toSlashedClassName(packageName);
                 packageName += "/";
             }
 
-            String fullyQualifiedSourceFile = packageName + sourceFile;
-
-            return fullyQualifiedSourceFile;
+            return packageName + sourceFile;
         } catch (CheckedAnalysisException e) {
-            errorLogger.logError("Could scan class " + classDesc.toDottedClassName(), e);
+            errorLogger.logError("Could scan class " + classDesc.getDottedClassName(), e);
             throw e;
         } finally {
             progress.finishClass();
@@ -331,10 +330,8 @@ public class DiscoverSourceDirectories {
             try {
                 String fullyQualifiedSourceFileName = findFullyQualifiedSourceFileName(classPath, classDesc);
                 fullyQualifiedSourceFileNameList.add(fullyQualifiedSourceFileName);
-            } catch (IOException e) {
-                errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
-            } catch (CheckedAnalysisException e) {
-                errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
+            } catch (IOException | CheckedAnalysisException e) {
+                errorLogger.logError("Couldn't scan class " + classDesc.getDottedClassName(), e);
             }
         }
 
@@ -403,7 +400,7 @@ public class DiscoverSourceDirectories {
 
             @Override
             public void reportMissingClass(ClassDescriptor classDescriptor) {
-                logError("Missing class: " + classDescriptor.toDottedClassName());
+                logError("Missing class: " + classDescriptor.getDottedClassName());
             }
 
             @Override

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import java.util.regex.Pattern;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantValue;
@@ -78,6 +80,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -92,6 +95,28 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class UnreadFields extends OpcodeStackDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
+
+    private static final List<String> INITIALIZER_ANNOTATIONS = Arrays.asList(
+            "Ljakarta/annotation/PostConstruct;",
+            "Ljavax/annotation/PostConstruct;",
+            "Lorg/testng/annotations/BeforeClass;",
+            "Lorg/junit/jupiter/api/BeforeAll;",
+            "Lorg/junit/jupiter/api/BeforeEach;",
+            "Lorg/junit/Before;",
+            "Lorg/junit/BeforeClass;");
+
+    /**
+     * A list of annotations for fields that might be read by frameworks, even though they are private
+     */
+    private static final List<ClassDescriptor> READ_BY_FRAMEWORK_ANNOTATIONS = Arrays.asList(
+            DescriptorFactory.createClassDescriptor("com/google/gson/annotations/SerializedName"),
+            DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlElement"),
+            DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlAttribute"),
+            DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlValue"),
+            DescriptorFactory.createClassDescriptor("jakarta/xml/bind/annotation/XmlElement"),
+            DescriptorFactory.createClassDescriptor("jakarta/xml/bind/annotation/XmlAttribute"),
+            DescriptorFactory.createClassDescriptor("jakarta/xml/bind/annotation/XmlValue"),
+            DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/extension/RegisterExtension"));
 
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isContainerField(XField)} instead
@@ -116,6 +141,8 @@ public class UnreadFields extends OpcodeStackDetector {
     boolean publicOrProtectedConstructor;
 
     private final Map<String, List<BugAnnotation>> anonymousClassAnnotation = new HashMap<>();
+
+    private final ClassDescriptor junitNestedAnnotation = DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/Nested");
 
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#getReadFields()} instead
@@ -215,6 +242,10 @@ public class UnreadFields extends OpcodeStackDetector {
             data.innerClassCannotBeStatic.add(getDottedClassName());
             // System.out.println("hicfsc: " + betterSuperclassName);
             data.innerClassCannotBeStatic.add(getDottedSuperclassName());
+        }
+        if (getXClass().getAnnotation(junitNestedAnnotation) != null) {
+            // This class is a JUnit nested test, it can't be static
+            data.innerClassCannotBeStatic.add(getDottedClassName());
         }
         // Does this class directly implement Serializable?
         String[] interface_names = obj.getInterfaceNames();
@@ -457,7 +488,7 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldSignature = (String) stack.getStackItem(1).getConstant();
             String fieldClass = (String) stack.getStackItem(2).getConstant();
             if (fieldName != null && fieldSignature != null && fieldClass != null) {
-                XField f = XFactory.createXField(fieldClass.replace('/', '.'), fieldName, ClassName.toSignature(fieldSignature),
+                XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, ClassName.toSignature(fieldSignature),
                         false);
                 data.reflectiveFields.add(f);
             }
@@ -468,7 +499,7 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldName = (String) stack.getStackItem(0).getConstant();
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
-                XField f = XFactory.createXField(fieldClass.replace('/', '.'), fieldName, "I", false);
+                XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "I", false);
                 data.reflectiveFields.add(f);
             }
 
@@ -478,7 +509,7 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldName = (String) stack.getStackItem(0).getConstant();
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
-                XField f = XFactory.createXField(fieldClass.replace('/', '.'), fieldName, "J", false);
+                XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "J", false);
                 data.reflectiveFields.add(f);
             }
 
@@ -787,7 +818,7 @@ public class UnreadFields extends OpcodeStackDetector {
             boolean isConstructor = Const.CONSTRUCTOR_NAME.equals(getMethodName()) || Const.STATIC_INITIALIZER_NAME.equals(getMethodName());
             if (getMethod().isStatic() == f.isStatic()
                     && (isConstructor || data.calledFromConstructors.contains(getMethodName() + ":" + getMethodSig())
-                            || "init".equals(getMethodName()) || "initialize".equals(getMethodName())
+                            || isInitializerMethod()
                             || getMethod().isPrivate())) {
 
                 if (isConstructor) {
@@ -808,6 +839,27 @@ public class UnreadFields extends OpcodeStackDetector {
         }
         previousPreviousOpcode = previousOpcode;
         previousOpcode = seen;
+    }
+
+    /**
+     *
+     * @return true if the method is considered to be an initializer method. Fields might be initialized outside of a constructor,
+     * for instance through JUnit's BeforeEach
+     */
+    private boolean isInitializerMethod() {
+        if ("init".equals(getMethodName()) || "initialize".equals(getMethodName())) {
+            return true;
+        }
+
+        for (AnnotationEntry a : getMethod().getAnnotationEntries()) {
+            String typeName = a.getAnnotationType();
+
+            if (INITIALIZER_ANNOTATIONS.contains(typeName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -1095,6 +1147,7 @@ public class UnreadFields extends OpcodeStackDetector {
             if (dontComplainAbout.matcher(fieldName).find()) {
                 continue;
             }
+
             if (lastDollar >= 0 && (fieldName.startsWith("this$") || fieldName.startsWith("this+"))) {
                 String outerClassName = className.substring(0, lastDollar);
 
@@ -1215,6 +1268,8 @@ public class UnreadFields extends OpcodeStackDetector {
                     bugReporter.reportBug(new BugInstance(this,
                             (f.isPublic() || f.isProtected()) ? "UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" : "UUF_UNUSED_FIELD",
                             priority).addClass(className).addField(f).lowerPriorityIfDeprecated());
+                } else if (containsSpecialAnnotation(f.getAnnotations())) {
+                    continue;
                 } else if (f.getName().toLowerCase().indexOf("guardian") < 0) {
                     int priority = NORMAL_PRIORITY;
                     if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
@@ -1248,4 +1303,19 @@ public class UnreadFields extends OpcodeStackDetector {
         return instance;
     }
 
+    /**
+     * Checks whether the collection of annotations associated with a given element include annotations that indicate
+     * the "URF_UNREAD_FIELD" detector should be skipped.
+     * @param annotationsToCheck Collections of annotations associated with given element.
+     * @return If true, "URF_UNREAD_FIELD" detector should be ignored for given field.
+     * @see <a href="https://github.com/spotbugs/spotbugs/issues/574">GitHub issue</a>
+     */
+    public static boolean containsSpecialAnnotation(Collection<AnnotationValue> annotationsToCheck) {
+        for (AnnotationValue annotationValue : annotationsToCheck) {
+            if (READ_BY_FRAMEWORK_ANNOTATIONS.contains(annotationValue.getAnnotationClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

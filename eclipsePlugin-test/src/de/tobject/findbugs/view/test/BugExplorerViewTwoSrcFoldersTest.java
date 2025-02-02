@@ -18,13 +18,13 @@
  */
 package de.tobject.findbugs.view.test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.test.TestScenario;
 import de.tobject.findbugs.view.explorer.GroupType;
@@ -35,19 +35,20 @@ import de.tobject.findbugs.view.explorer.GroupType;
  *
  * @author Tomás Pollak
  */
-public class BugExplorerViewTwoSrcFoldersTest extends AbstractBugExplorerViewTest {
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+class BugExplorerViewTwoSrcFoldersTest extends AbstractBugExplorerViewTest {
+
+    @BeforeAll
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.TWO_SRC_FOLDERS);
     }
 
-    @AfterClass
-    public static void tearDownClass() throws CoreException {
+    @AfterAll
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testViewContents_runTwice_onceOnSrcFolder() throws CoreException {
+    void testViewContents_runTwice_onceOnSrcFolder() throws CoreException {
         // Run Findbugs on the entire project
         work(createFindBugsWorker());
 
@@ -93,8 +94,7 @@ public class BugExplorerViewTwoSrcFoldersTest extends AbstractBugExplorerViewTes
                 setOf(expectedMarker2));
         ExpectedViewElement expectedPattern3 = new ExpectedViewBugGroup(GroupType.Pattern, null, setOf(expectedMarker3),
                 setOf(expectedMarker3));
-        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
+        return new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
                 expectedPattern2, expectedPattern3), setOf(expectedMarker1, expectedMarker2, expectedMarker3));
-        return expectedProject;
     }
 }

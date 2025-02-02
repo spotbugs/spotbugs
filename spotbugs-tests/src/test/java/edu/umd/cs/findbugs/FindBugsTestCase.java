@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import edu.umd.cs.findbugs.config.UserPreferences;
-import junit.framework.TestCase;
 
 /**
  * Abstract base class for TestCase classes that need to run in the context of a
@@ -37,7 +36,7 @@ import junit.framework.TestCase;
  *
  * @author David Hovemeyer
  */
-public abstract class FindBugsTestCase extends TestCase {
+public abstract class FindBugsTestCase {
     /**
      * Data of an empty class in the default package called "Empty".
      */

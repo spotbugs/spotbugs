@@ -72,9 +72,7 @@ public class DumbMethodInvocations implements Detector {
                     // report
                     bugReporter.logError("skipping unprofitable method in " + getClass().getName());
                 }
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
             }
         }
@@ -110,7 +108,7 @@ public class DumbMethodInvocations implements Detector {
                     Constant operandValue = frame.getArgument(iins, cpg, paramNumber, parser);
                     if (operandValue.isConstantString()) {
                         String password = operandValue.getConstantString();
-                        if (password.length() == 0) {
+                        if (password.isEmpty()) {
                             bugAccumulator.accumulateBug(new BugInstance(this, "DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
                                     .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                         } else {

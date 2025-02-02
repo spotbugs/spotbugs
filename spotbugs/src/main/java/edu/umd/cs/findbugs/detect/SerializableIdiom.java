@@ -24,10 +24,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -63,7 +63,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("se.debug");
 
-    final static boolean reportTransientFieldOfNonSerializableClass = SystemProperties
+    static final boolean reportTransientFieldOfNonSerializableClass = SystemProperties
             .getBoolean("reportTransientFieldOfNonSerializableClass");
 
     boolean sawSerialVersionUID;
@@ -77,6 +77,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
     boolean isEjbImplClass;
 
     boolean isJSPClass;
+
+    boolean isRecord;
 
     boolean foundSynthetic;
 
@@ -102,9 +104,13 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     private final Map<XField, BugInstance> optionalBugsInReadExternal = new HashMap();
 
-    private Optional<XField> initializedCheckerVariable = Optional.empty();
+    private Set<XField> initializedCheckerVariables = new HashSet<>();
 
-    private boolean sawReadExternalExit = false;
+    private int initializeCheckerBranchTarget;
+
+    private boolean sawReadExternalBranchExit;
+
+    private boolean sawReadExternalExit;
 
     private boolean sawReadExternal;
 
@@ -163,11 +169,10 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void visit(JavaClass obj) {
-        String superClassname = obj.getSuperclassName();
-        // System.out.println("superclass of " + getClassName() + " is " +
-        // superClassname);
-        isEnum = "java.lang.Enum".equals(superClassname);
-        if (isEnum) {
+        isEnum = Subtypes2.isEnum(obj);
+        isRecord = Subtypes2.isRecord(obj);
+
+        if (isEnum || isRecord) {
             return;
         }
         int flags = obj.getAccessFlags();
@@ -188,6 +193,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
         isGUIClass = false;
         isEjbImplClass = false;
         isJSPClass = false;
+        isRecord = false;
         seenTransientField = false;
         // boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
         fieldsThatMightBeAProblem.clear();
@@ -326,7 +332,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void visitAfter(JavaClass obj) {
-        if (isEnum) {
+        if (isEnum || isRecord) {
             return;
         }
         if (DEBUG) {
@@ -373,8 +379,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 }
 
                 try {
-                    double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldX.getSignature());
-                    if (isSerializable < 0.6) {
+                    double serializableValue = DeepSubtypeAnalysis.isDeepSerializable(fieldX.getSignature());
+                    if (serializableValue < 0.6) {
                         priority++;
                     }
                 } catch (ClassNotFoundException e1) {
@@ -422,8 +428,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
             bugReporter.reportBug(new BugInstance(this, "WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
         }
 
-        if (isExternalizable && sawReadExternal && !optionalBugsInReadExternal.isEmpty() && initializedCheckerVariable.isPresent()
-                && !optionalBugsInReadExternal.containsKey(initializedCheckerVariable.get())) {
+        if (isExternalizable && sawReadExternal && !optionalBugsInReadExternal.isEmpty() && !initializedCheckerVariables.isEmpty()
+                && initializedCheckerVariables.stream().noneMatch(optionalBugsInReadExternal::containsKey)) {
             optionalBugsInReadExternal.values().forEach(bugReporter::reportBug);
         }
     }
@@ -548,10 +554,14 @@ public class SerializableIdiom extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if ("readExternal".equals(getMethodName())) {
-            if (seen == Const.IFEQ || seen == Const.IFNE) {
-                initializedCheckerVariable = Optional.ofNullable(stack.getStackItem(0).getXField());
-            } else if (seen == Const.ATHROW || seen == Const.RETURN) {
+            if ((seen == Const.IFEQ || seen == Const.IFNE || seen == Const.IFNULL || seen == Const.IFNONNULL) && isBranch(seen)) {
+                initializedCheckerVariables.add(stack.getStackItem(0).getXField());
+                initializeCheckerBranchTarget = getBranchTarget();
+            } else if (seen == Const.ATHROW || isReturn(seen)) {
                 sawReadExternalExit = true;
+                if (getPC() < initializeCheckerBranchTarget) {
+                    sawReadExternalBranchExit = true;
+                }
             }
         }
 
@@ -589,8 +599,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
                             if (classStored == null) {
                                 return;
                             }
-                            double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(classStored);
-                            if (isSerializable <= 0.2) {
+                            double serializableValue = DeepSubtypeAnalysis.isDeepSerializable(classStored);
+                            if (serializableValue <= 0.2) {
                                 XField f = fieldsThatMightBeAProblem.get(nameOfField);
 
                                 String sig = f.getSignature();
@@ -598,13 +608,13 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                 // sig);
                                 // System.out.println("Class stored: " +
                                 // classStored.getClassName());
-                                String genSig = "L" + classStored.getClassName().replace('.', '/') + ";";
+                                String genSig = "L" + ClassName.toSlashedClassName(classStored.getClassName()) + ";";
                                 if (!sig.equals(genSig)) {
                                     double bias = 0.0;
                                     if (!Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                                         bias = 1.0;
                                     }
-                                    int priority = computePriority(isSerializable, bias);
+                                    int priority = computePriority(serializableValue, bias);
 
                                     fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_STORE", priority)
                                             .addClass(getThisClass().getClassName()).addField(f).addType(genSig)
@@ -616,14 +626,20 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         }
                     }
 
-                    if ("readExternal".equals(getMethodName())) {
+                    if ("readExternal".equals(getMethodName()) && !sawReadExternalBranchExit) {
                         BugInstance bug = new BugInstance(this, "SE_PREVENT_EXT_OBJ_OVERWRITE", LOW_PRIORITY)
                                 .addClassAndMethod(this)
                                 .addField(xField)
                                 .addSourceLine(this);
                         // Collect the bugs and report them later, if the initializedCheckerVariable's value won't be changed
-                        optionalBugsInReadExternal.put(xField, bug);
-                        if (!initializedCheckerVariable.isPresent() || sawReadExternalExit) {
+                        if (initializedCheckerVariables.contains(xField)) {
+                            if (getPC() < initializeCheckerBranchTarget) {
+                                optionalBugsInReadExternal.clear();
+                            }
+                        } else {
+                            optionalBugsInReadExternal.put(xField, bug);
+                        }
+                        if (initializedCheckerVariables.isEmpty() || sawReadExternalExit) {
                             bugReporter.reportBug(bug);
                         }
                     }
@@ -634,6 +650,10 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void visit(Field obj) {
+        if (isEnum || isRecord) {
+            return;
+        }
+
         int flags = obj.getAccessFlags();
         String genericSignature = obj.getGenericSignature();
         if (genericSignature != null && genericSignature.startsWith("T")) {
@@ -685,21 +705,21 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 try {
                     ReferenceType rtype = (ReferenceType) type;
 
-                    double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(rtype);
+                    double serializableValue = DeepSubtypeAnalysis.isDeepSerializable(rtype);
                     if (DEBUG) {
-                        System.out.println("  isSerializable: " + isSerializable);
+                        System.out.println("  isSerializable: " + serializableValue);
                     }
-                    if (isSerializable < 1.0) {
+                    if (serializableValue < 1.0) {
                         fieldsThatMightBeAProblem.put(obj.getName(), xfield);
                     }
-                    if (isSerializable < 0.9) {
+                    if (serializableValue < 0.9) {
                         ReferenceType problemType = DeepSubtypeAnalysis.getLeastSerializableTypeComponent(rtype);
 
                         // Priority is LOW for GUI classes (unless explicitly marked
                         // Serializable),
                         // HIGH if the class directly implements Serializable,
                         // NORMAL otherwise.
-                        int priority = computePriority(isSerializable, 0);
+                        int priority = computePriority(serializableValue, 0);
                         if (!strongEvidenceForIntendedSerialization()) {
                             if (obj.getName().startsWith("this$")) {
                                 priority = Math.max(priority, NORMAL_PRIORITY);
@@ -719,7 +739,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         }
                         if (DEBUG) {
                             System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName() + " " + obj.getName() + " "
-                                    + isSerializable + " " + implementsSerializableDirectly + " " + sawSerialVersionUID + " "
+                                    + serializableValue + " " + implementsSerializableDirectly + " " + sawSerialVersionUID + " "
                                     + isGUIClass + " " + isEjbImplClass);
                             // Report is queued until after the entire class has been
                             // seen.
@@ -728,7 +748,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         if ("this$0".equals(obj.getName())) {
                             fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_INNER_CLASS", priority).addClass(getThisClass()
                                     .getClassName()));
-                        } else if (isSerializable < 0.9) {
+                        } else if (serializableValue < 0.9) {
                             fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
                                     .addClass(getThisClass().getClassName())
                                     .addField(xfield).addType(problemType)

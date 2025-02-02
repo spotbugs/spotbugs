@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.JavaClass;
@@ -39,6 +40,7 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.PackageWarningSuppressor;
 import edu.umd.cs.findbugs.ParameterWarningSuppressor;
 import edu.umd.cs.findbugs.SuppressionMatcher;
+import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
@@ -86,11 +88,13 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
             return;
         }
         String[] suppressed = getAnnotationParameterAsStringArray(map, "value");
+        SuppressMatchType matchType = getAnnotationParameterAsEnum(map, "matchType", SuppressMatchType.class);
+
         if (suppressed == null || suppressed.length == 0) {
-            suppressWarning(null);
+            suppressWarning(null, matchType);
         } else {
             for (String s : suppressed) {
-                suppressWarning(s);
+                suppressWarning(s, matchType);
             }
         }
     }
@@ -110,35 +114,37 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
         }
 
         String[] suppressed = getAnnotationParameterAsStringArray(map, "value");
+        SuppressMatchType matchType = getAnnotationParameterAsEnum(map, "matchType", SuppressMatchType.class);
+
         if (suppressed == null || suppressed.length == 0) {
-            suppressWarning(p, null);
+            suppressWarning(p, null, matchType);
         } else {
             for (String s : suppressed) {
-                suppressWarning(p, s);
+                suppressWarning(p, s, matchType);
             }
         }
     }
 
-    private void suppressWarning(int parameter, String pattern) {
+    private void suppressWarning(int parameter, String pattern, SuppressMatchType matchType) {
         String className = getDottedClassName();
         ClassAnnotation clazz = new ClassAnnotation(className);
-        suppressionMatcher.addSuppressor(new ParameterWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this),
+        suppressionMatcher.addSuppressor(new ParameterWarningSuppressor(pattern, matchType, clazz, MethodAnnotation.fromVisitedMethod(this),
                 parameter));
 
     }
 
-    private void suppressWarning(String pattern) {
+    private void suppressWarning(String pattern, SuppressMatchType matchType) {
         String className = getDottedClassName();
         ClassAnnotation clazz = new ClassAnnotation(className);
         if (className.endsWith(".package-info")) {
-            suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, getPackageName().replace('/', '.')));
+            suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, matchType, ClassName.toDottedClassName(getPackageName())));
         } else if (visitingMethod()) {
             suppressionMatcher
-                    .addSuppressor(new MethodWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this)));
+                    .addSuppressor(new MethodWarningSuppressor(pattern, matchType, clazz, MethodAnnotation.fromVisitedMethod(this)));
         } else if (visitingField()) {
-            suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, clazz, FieldAnnotation.fromVisitedField(this)));
+            suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, matchType, clazz, FieldAnnotation.fromVisitedField(this)));
         } else {
-            suppressionMatcher.addSuppressor(new ClassWarningSuppressor(pattern, clazz));
+            suppressionMatcher.addSuppressor(new ClassWarningSuppressor(pattern, matchType, clazz));
         }
     }
 

@@ -109,7 +109,7 @@ public enum GroupType {
         @Override
         String getShortDescription(IPackageFragment id) {
             String name = id.getElementName();
-            if (name == null || name.length() == 0) {
+            if (name == null || name.isEmpty()) {
                 name = "default package";
             }
             return name;

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
@@ -46,7 +47,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
 
     private int largestBranchTarget;
 
-    private final static boolean DEBUG = SystemProperties.getBoolean("irl.debug");
+    private static final boolean DEBUG = SystemProperties.getBoolean("irl.debug");
 
     public InfiniteRecursiveLoop(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -125,7 +126,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                 System.out.println("vs. " + getClassName() + "." + getMethodName() + " : " + getMethodSig());
 
             }
-            if (xMethod.getClassName().replace('.', '/').equals(getClassName()) || seen == Const.INVOKEINTERFACE) {
+            if (ClassName.toSlashedClassName(xMethod.getClassName()).equals(getClassName()) || seen == Const.INVOKEINTERFACE) {
                 // Invocation of same method
                 // Now need to see if parameters are the same
                 int firstParameter = 0;
@@ -151,7 +152,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
 
                 boolean sameMethod = seen == Const.INVOKESTATIC || Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
                 if (!sameMethod) {
-                    // Have to check if first parmeter is the same
+                    // Have to check if first parameter is the same
                     // know there must be a this argument
                     if (DEBUG) {
                         System.out.println("Stack is " + stack);

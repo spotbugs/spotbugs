@@ -26,6 +26,7 @@ import java.util.HashSet;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -83,7 +84,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
             if ("".equals(pkgName)) {
                 fullPath = line.getSourceFile();
             } else {
-                fullPath = pkgName.replace('.', '/') + "/" + line.getSourceFile();
+                fullPath = ClassName.toSlashedClassName(pkgName) + "/" + line.getSourceFile();
             }
         }
         outputStream.print(fullPath + ":" + lineStart + ":" + lineEnd + " " + bugInstance.getMessage());
@@ -127,7 +128,3 @@ public class EmacsBugReporter extends TextUIBugReporter {
     }
 
 }
-
-/*
- * Local Variables: eval: (c-set-style "bsd") End:
- */

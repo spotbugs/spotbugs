@@ -33,14 +33,14 @@ public abstract class AbstractAssertDetector extends OpcodeStackDetector {
 
     protected boolean inAssert = false;
 
-    public AbstractAssertDetector(BugReporter bugReporter) {
+    protected AbstractAssertDetector(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
      * Implement this method in a concrete detector
      */
-    abstract protected void detect(int seen);
+    protected abstract void detect(int seen);
 
     /**
      * Searches for assertion opening, and closing points.

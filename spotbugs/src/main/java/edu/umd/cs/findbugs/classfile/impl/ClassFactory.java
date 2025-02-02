@@ -147,7 +147,6 @@ public class ClassFactory implements IClassFactory {
      */
     @Override
     public IAnalysisCache createAnalysisCache(IClassPath classPath, BugReporter errorLogger) {
-        IAnalysisCache analysisCache = new AnalysisCache(classPath, errorLogger);
-        return analysisCache;
+        return new AnalysisCache(classPath, errorLogger);
     }
 }
