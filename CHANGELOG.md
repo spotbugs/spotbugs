@@ -61,6 +61,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Add relevant CWE ids to bugs and refer the CWEs in the bug messages ([#3354](https://github.com/spotbugs/spotbugs/pull/3354)).
 - Replace `LOCAL_VARIABLE_UNKNOWN` with exact method name for `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` ([#3485](https://github.com/spotbugs/spotbugs/pull/3485))
 
+### Added
+
+- New detector `AtomicOperationsCombinedDetector` and introduced new bug types:
+  - `AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC` is reported in case of combined atomic operations are not synchronized.
+  - `AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION` is reported when an atomic operation is not synchronized, but should be because of thread safety.
+
 ### Fixed
 - Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))
 - Do not report `US_USELESS_SUPPRESSION_ON_*` on methods, fields, parameters, packages or classes with an `*.Generated` annotation with retention >= class ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))([#3409](https://github.com/spotbugs/spotbugs/pull/3409))
@@ -132,11 +138,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 - New detector `SharedVariableAtomicityDetector` for new bug types `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE`, `AT_NONATOMIC_64BIT_PRIMITIVE` and `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` (See SEI CERT rules [VNA00-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables), [VNA02-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic) and [VNA05-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA05-J.+Ensure+atomicity+when+reading+and+writing+64-bit+values)).
 - New detector `FindHiddenMethod` for bug type `HSM_HIDING_METHOD`. This bug is reported whenever a subclass method hides the static method of super class. (See [SEI CERT MET07-J](https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface)).
-- New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
-  - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
-- New detector `AtomicOperationsCombinedDetector` and introduced new bug types:
-  - `AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC` is reported in case of combined atomic operations are not synchronized.
-  - `AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION` is reported when an atomic operation is not synchronized, but should be because of thread safety.
 
 ### Fixed
 - Fixed the parsing of generics methods in `ThrowingExceptions` ([#3267](https://github.com/spotbugs/spotbugs/issues/3267))
