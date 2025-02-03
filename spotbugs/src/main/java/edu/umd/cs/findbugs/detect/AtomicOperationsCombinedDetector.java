@@ -143,9 +143,11 @@ public class AtomicOperationsCombinedDetector implements Detector {
 
             if (instruction instanceof PUTFIELD) {
                 OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, handle.getPosition());
-                OpcodeStack.Item stackItem = stack.getStackItem(0);
-                if (isAtomicField(stackItem.getReturnValueOf())) {
-                    fieldsForAtomicityCheck.add(XFactory.createXField((FieldInstruction) instruction, cpg));
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item stackItem = stack.getStackItem(0);
+                    if (isAtomicField(stackItem.getReturnValueOf())) {
+                        fieldsForAtomicityCheck.add(XFactory.createXField((FieldInstruction) instruction, cpg));
+                    }
                 }
             }
         }
@@ -223,7 +225,7 @@ public class AtomicOperationsCombinedDetector implements Detector {
     }
 
     private Optional<XField> findFieldRequiringAtomicityCheck(OpcodeStack stack) {
-        if (stack.getStackDepth() > 1 && stack.getStackItem(0).getReturnValueOf() != null) {
+        if (stack.getStackDepth() > 0 && stack.getStackItem(0).getReturnValueOf() != null) {
             return Optional.empty();
         }
         return IntStream.range(0, stack.getStackDepth())
