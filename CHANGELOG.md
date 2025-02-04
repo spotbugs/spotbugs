@@ -7,6 +7,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 
+### Removed
+- Removed `TLW_TWO_LOCK_NOTIFY`, `LI_LAZY_INIT_INSTANCE`, `BRSA_BAD_RESULTSET_ACCESS` and `BC_NULL_INSTANCEOF` deprecated bug patterns.
+
 ## 4.9.1 - 2025-02-02
 ### Added
 - New detector `SharedVariableAtomicityDetector` for new bug types `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE`, `AT_NONATOMIC_64BIT_PRIMITIVE` and `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` (See SEI CERT rules [VNA00-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables), [VNA02-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic) and [VNA05-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA05-J.+Ensure+atomicity+when+reading+and+writing+64-bit+values)).
@@ -20,9 +23,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed a stack overflow in `MultipleInstantiationsOfSingletons` when a singleton initializer makes recursive calls ([#3280](https://github.com/spotbugs/spotbugs/issues/3280))
 - Fixed NPE in `FindReturnRef` on inner class fields ([#3283](https://github.com/spotbugs/spotbugs/issues/3283))
 - Fixed NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE false positive when add edu.umd.cs.findbugs.annotations.Nullable ([#3243](https://github.com/spotbugs/spotbugs/issues/3243))
-
-### Removed
-- Removed `TLW_TWO_LOCK_NOTIFY`, `LI_LAZY_INIT_INSTANCE`, `BRSA_BAD_RESULTSET_ACCESS` and `BC_NULL_INSTANCEOF` deprecated bug patterns, 
 
 ## 4.9.0 - 2025-01-15
 ### Added
