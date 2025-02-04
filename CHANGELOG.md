@@ -21,6 +21,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed NPE in `FindReturnRef` on inner class fields ([#3283](https://github.com/spotbugs/spotbugs/issues/3283))
 - Fixed NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE false positive when add edu.umd.cs.findbugs.annotations.Nullable ([#3243](https://github.com/spotbugs/spotbugs/issues/3243))
 
+### Removed
+- Removed `TLW_TWO_LOCK_NOTIFY`, `LI_LAZY_INIT_INSTANCE`, `BRSA_BAD_RESULTSET_ACCESS` and `BC_NULL_INSTANCEOF` deprecated bug patterns, 
+
 ## 4.9.0 - 2025-01-15
 ### Added
 - Updated the `SuppressFBWarnings` annotation to support finer grained bug suppressions ([#3102](https://github.com/spotbugs/spotbugs/pull/3102))
