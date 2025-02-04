@@ -8,7 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2025-??-??
 
 ### Removed
-- Removed `TLW_TWO_LOCK_NOTIFY`, `LI_LAZY_INIT_INSTANCE`, `BRSA_BAD_RESULTSET_ACCESS` and `BC_NULL_INSTANCEOF` deprecated bug patterns.
+- Removed the `TLW_TWO_LOCK_NOTIFY`, `LI_LAZY_INIT_INSTANCE`, `BRSA_BAD_RESULTSET_ACCESS`, `BC_NULL_INSTANCEOF`, `NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` and `RCN_REDUNDANT_CHECKED_NULL_COMPARISON` deprecated bug patterns.
 
 ## 4.9.1 - 2025-02-02
 ### Added
