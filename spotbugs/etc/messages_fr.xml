@@ -2117,15 +2117,6 @@ Si c'est bien le cas, retirez la déclaration d'une valeur de retour.</p>
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" deprecated="true">
-  <ShortDescription>Lecture d'un champ non initalisé dans le constructeur</ShortDescription>
-  <LongDescription>Lecture d'un champ non initalisé dans le constructeur {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Lecture d'un champ qui n'est jamais initialisé dans aucun constructeur, et qui sera <code>null</code> une fois l'initialisation de l'objet terminée. Ce peut être un erreur de code, ou bien la classe contenant le champ est construite de telle manière que le champ est écrit en fonction de l'appel de méthodes dans un certain ordre (un peu délicat mais pas nécessairement mauvais).</p>
-]]>
-  </Details>
- </BugPattern>
  <BugPattern type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
   <ShortDescription>Champ non initialisé dans le constructeur</ShortDescription>
   <LongDescription>Le champ n'est pas initialisé dans le constructeur {1}</LongDescription>
@@ -2419,20 +2410,6 @@ if (argv.length == 1);
   <Details>
 <![CDATA[
 <p>Cette méthode contient une comparaison entre une référence connue pour être non nulle avec une autre référence connue pour être à <code>null</code>.</p>
-]]>
-  </Details>
- </BugPattern>
- <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">
-  <ShortDescription>Comparaison redondante à null d'une valeur préalablement vérifiée</ShortDescription>
-  <LongDescription>Comparaison redondante à null d'une valeur préalablement vérifiée dans {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Cette méthode contient une comparaison redondante d'une référence à <code>null</code>. Deux types de comparaisons redondantes sont signalés :</p>
-<ul>
-<li>les deux valeurs sont définitivement à <code>null</code></li>
-<li>une valeur est définitivement à <code>null</code> et l'autre ne pourra jamais l'être</li>
-</ul>
-<p>Cette alarme signale généralement qu'une variable connue pour être différente de <code>null</code> est comparée avec <code>null</code>. Bien que le test ne soit pas nécessaire, ce peut-être un simple cas de programmation défensive.</p>
 ]]>
   </Details>
  </BugPattern>

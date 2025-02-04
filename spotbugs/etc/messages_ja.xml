@@ -6197,27 +6197,6 @@ dateString = dateString.trim();
     </Details>
   </BugPattern>
 
-  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true"> <!-- deprecated in favor of two separate RCN_ patterns -->
-    <ShortDescription>Redundant comparison to null of previously checked value</ShortDescription>
-    <LongDescription>Redundant comparison to null of previously checked {2} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p> This method contains a redundant comparison of a reference value
-to null. Two types of redundant comparison are reported:
-</p>
-<ul>
-<li> Both values compared are definitely null</li>
-<li> One value is definitely null and the other is definitely not null</li>
-</ul>
-
-<p> This particular warning generally indicates that a
-value known not to be null was checked against null.
-While the check is not necessary, it may simply be a case
-of defensive programming.</p>
-]]>
-    </Details>
-  </BugPattern>
-
   <BugPattern type="UL_UNRELEASED_LOCK">
     <ShortDescription>すべての経路でロックが解除されないメソッド</ShortDescription>
     <LongDescription>{1} は，すべての経路でロックが解除されません。</LongDescription>
