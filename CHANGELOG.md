@@ -7,6 +7,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 
+### Fixed
+- Fixed html bug descriptions for AT_STALE_THREAD_WRITE_OF_PRIMITIVE and AT_NONATOMIC_64BIT_PRIMITIVE ([#3303](https://github.com/spotbugs/spotbugs/issues/3303))
+
+
 ### Removed
 - Removed the `TLW_TWO_LOCK_NOTIFY`, `LI_LAZY_INIT_INSTANCE`, `BRSA_BAD_RESULTSET_ACCESS`, `BC_NULL_INSTANCEOF`, `NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` and `RCN_REDUNDANT_CHECKED_NULL_COMPARISON` deprecated bug patterns.
 
