@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 
 public class MethodWarningSuppressor extends ClassWarningSuppressor {
 
-    private final static String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_METHOD";
+    private static final String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_METHOD";
 
     MethodAnnotation method;
 

@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 
 public class PackageWarningSuppressor extends WarningSuppressor {
 
-    private final static String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_PACKAGE";
+    private static final String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_PACKAGE";
 
     String packageName;
 

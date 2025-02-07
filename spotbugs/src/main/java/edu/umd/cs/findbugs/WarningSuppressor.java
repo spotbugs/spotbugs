@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public abstract class WarningSuppressor implements Matcher {
 
-    protected final static String USELESS_SUPPRESSION_ABB = "US";
+    protected static final String USELESS_SUPPRESSION_ABB = "US";
     protected static final int PRIORITY = Priorities.NORMAL_PRIORITY;
 
     static final boolean DEBUG = SystemProperties.getBoolean("warning.suppressor");
