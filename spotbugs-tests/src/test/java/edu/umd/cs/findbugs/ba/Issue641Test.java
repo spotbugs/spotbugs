@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.SortedBugCollection;
 import org.junit.jupiter.api.Test;
 
 
@@ -11,7 +10,6 @@ class Issue641Test extends AbstractIntegrationTest {
     void testUselessSuppression() {
         performAnalysis("suppression/Issue641.class",
                 "suppression/Issue641$1.class");
-        SortedBugCollection bugCollection = (SortedBugCollection) getBugCollection();
 
         assertBugInClass("US_USELESS_SUPPRESSION_ON_CLASS", "suppression.Issue641");
         assertBugAtField("US_USELESS_SUPPRESSION_ON_FIELD", "suppression.Issue641", "field");
