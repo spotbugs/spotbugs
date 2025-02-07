@@ -14,15 +14,21 @@ class WarningSuppressorTest extends AbstractIntegrationTest {
     void testIssue() {
         performAnalysis("suppress/SuppressedBugs.class");
 
+        // We're also getting many (true positive) US_USELESS_SUPPRESSION_ON_METHOD for this sample code
+
         assertMethodBugsCount("suppressedNpePrefix", 0);
-        assertMethodBugsCount("nonSuppressedNpePrefix", 2);
+        assertBugInMethodAtLine("NP_ALWAYS_NULL", "suppress.SuppressedBugs", "nonSuppressedNpePrefix", 19);
+        assertBugInMethodAtLine("NP_LOAD_OF_KNOWN_NULL_VALUE", "suppress.SuppressedBugs", "nonSuppressedNpePrefix", 19);
 
         assertMethodBugsCount("suppressedNpeExact", 0);
-        assertMethodBugsCount("nonSuppressedNpeExact", 2);
-        assertMethodBugsCount("nonSuppressedNpeExactDifferentCase", 2);
+        assertBugInMethodAtLine("NP_ALWAYS_NULL", "suppress.SuppressedBugs", "nonSuppressedNpeExact", 33);
+        assertBugInMethodAtLine("NP_LOAD_OF_KNOWN_NULL_VALUE", "suppress.SuppressedBugs", "nonSuppressedNpeExact", 33);
+        assertBugInMethodAtLine("NP_ALWAYS_NULL", "suppress.SuppressedBugs", "nonSuppressedNpeExactDifferentCase", 41);
+        assertBugInMethodAtLine("NP_LOAD_OF_KNOWN_NULL_VALUE", "suppress.SuppressedBugs", "nonSuppressedNpeExactDifferentCase", 41);
 
         assertMethodBugsCount("suppressedNpeRegex", 0);
-        assertMethodBugsCount("nonSuppressedNpeRegex", 2);
+        assertBugInMethodAtLine("NP_ALWAYS_NULL", "suppress.SuppressedBugs", "nonSuppressedNpeRegex", 55);
+        assertBugInMethodAtLine("NP_LOAD_OF_KNOWN_NULL_VALUE", "suppress.SuppressedBugs", "nonSuppressedNpeRegex", 55);
     }
 
     private void assertMethodBugsCount(String methodName, int expectedCount) {

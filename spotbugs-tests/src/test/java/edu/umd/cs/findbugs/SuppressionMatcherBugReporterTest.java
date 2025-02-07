@@ -1,15 +1,15 @@
 package edu.umd.cs.findbugs;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SuppressionMatcherBugReporterTest {
+@ExtendWith(MockitoExtension.class)
+class SuppressionMatcherBugReporterTest {
 
     @Mock
     private SuppressionMatcher matcher;
@@ -21,7 +21,7 @@ public class SuppressionMatcherBugReporterTest {
     SuppressionMatcherBugReporter reporter;
 
     @Test
-    public void shouldNotCallUpstreamReporterIfBugSuppressed() {
+    void shouldNotCallUpstreamReporterIfBugSuppressed() {
         // given
         BugInstance suppressed = mock(BugInstance.class);
         when(matcher.match(suppressed)).thenReturn(true);
@@ -33,7 +33,7 @@ public class SuppressionMatcherBugReporterTest {
     }
 
     @Test
-    public void shouldCallUpstreamReporterIfBugNotSuppressed() {
+    void shouldCallUpstreamReporterIfBugNotSuppressed() {
         // given
         BugInstance reported = mock(BugInstance.class);
         when(matcher.match(reported)).thenReturn(false);
@@ -45,7 +45,7 @@ public class SuppressionMatcherBugReporterTest {
     }
 
     @Test
-    public void shouldCallMatcherAndUpstreamReporterOnFinish() {
+    void shouldCallMatcherAndUpstreamReporterOnFinish() {
         // when
         reporter.finish();
         // then

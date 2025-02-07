@@ -1,18 +1,18 @@
 package edu.umd.cs.findbugs;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SuppressionMatcherMockedTest {
+@ExtendWith(MockitoExtension.class)
+class SuppressionMatcherMockedTest {
 
     @Mock
     private ClassAnnotation classAnnotation;
@@ -29,21 +29,21 @@ public class SuppressionMatcherMockedTest {
     @Mock
     private BugReporter bugReporter;
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         when(suppressor.getClassAnnotation().getTopLevelClass()).thenReturn(classAnnotation);
         when(bugInstance.getPrimaryClass().getTopLevelClass()).thenReturn(classAnnotation);
     }
 
     @Test
-    public void shouldMatchBugInstance() {
+    void shouldMatchBugInstance() {
         // given
         when(suppressor.match(bugInstance)).thenReturn(true);
         SuppressionMatcher matcher = new SuppressionMatcher();
         // when
         matcher.addSuppressor(suppressor);
         // then
-        assertTrue("Should match BugInstance", matcher.match(bugInstance));
+        assertTrue(matcher.match(bugInstance), "Should match BugInstance");
         // and when
         matcher.validateSuppressionUsage(bugReporter);
         // then
@@ -51,7 +51,7 @@ public class SuppressionMatcherMockedTest {
     }
 
     @Test
-    public void shouldNotMatchBugInstance() {
+    void shouldNotMatchBugInstance() {
         // given
         when(suppressor.match(bugInstance)).thenReturn(false);
         when(suppressor.buildUselessSuppressionBugInstance()).thenReturn(uselessSuppressionBugInstance);
@@ -59,7 +59,7 @@ public class SuppressionMatcherMockedTest {
         // when
         matcher.addSuppressor(suppressor);
         // then
-        assertFalse("Should match BugInstance", matcher.match(bugInstance));
+        assertFalse(matcher.match(bugInstance), "Should match BugInstance");
         // and when
         matcher.validateSuppressionUsage(bugReporter);
         // then
