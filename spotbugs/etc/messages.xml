@@ -9448,7 +9448,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     <LongDescription>Suppressing annotation on the class {0} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
-      Suppressing annotations should be removed from the source code as soon as they are no more needed.
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
       Leaving them may result in accidental warnings suppression.
       </p>]]>
     </Details>
@@ -9459,7 +9459,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     <LongDescription>Suppressing annotation on the field {1} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
-      Suppressing annotations should be removed from the source code as soon as they are no more needed.
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
       Leaving them may result in accidental warnings suppression.
       </p>]]>
     </Details>
@@ -9470,7 +9470,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     <LongDescription>Suppressing annotation on the method {1} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
-      Suppressing annotations should be removed from the source code as soon as they are no more needed.
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
       Leaving them may result in accidental warnings suppression.
       </p>]]>
     </Details>
@@ -9481,7 +9481,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     <LongDescription>Suppressing annotation on the parameter {2} of the method {1} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
-      Suppressing annotations should be removed from the source code as soon as they are no more needed.
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
       Leaving them may result in accidental warnings suppression.
       </p>]]>
     </Details>
@@ -9492,7 +9492,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     <LongDescription>Suppressing annotation on the package {0} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
-      Suppressing annotations should be removed from the source code as soon as they are no more needed.
+      Suppressing annotation <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
       Leaving them may result in accidental warnings suppression.
       </p>]]>
     </Details>
