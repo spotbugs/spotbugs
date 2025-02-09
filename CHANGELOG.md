@@ -30,6 +30,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 - Updated the `SuppressFBWarnings` annotation to support finer grained bug suppressions ([#3102](https://github.com/spotbugs/spotbugs/pull/3102))
 - SimpleDateFormat, DateTimeFormatter, FastDateFormat string check for bad combinations of flag formatting ([#637](https://github.com/spotbugs/spotbugs/issues/637))
+- Make TypeQualifierResolver recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3156](https://github.com/spotbugs/spotbugs/pull/3156))
 - New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
   - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
 
