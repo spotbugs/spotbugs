@@ -11,6 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed html bug descriptions for AT_STALE_THREAD_WRITE_OF_PRIMITIVE and AT_NONATOMIC_64BIT_PRIMITIVE ([#3303](https://github.com/spotbugs/spotbugs/issues/3303))
 - Fixed an `HSM_HIDING_METHOD` false positive when ECJ generates a synthetic method for an enum switch ([#3305](https://github.com/spotbugs/spotbugs/issues/3305))
 - Fix `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` false negatives, detector depending on method order.
+- Fix `THROWS_METHOD_THROWS_CLAUSE_THROWABLE` reported in a method calling `MethodHandle.invokeExact` due to its polymorphic signature ([#3309](https://github.com/spotbugs/spotbugs/issues/3309))
 
 ## 4.9.1 - 2025-02-02
 ### Added

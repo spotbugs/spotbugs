@@ -231,6 +231,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     final boolean isStub;
 
+    final boolean hasPolymorphicSignature;
+
     final String methodSourceSignature;
 
     final @CheckForNull String[] exceptions;
@@ -318,6 +320,17 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         this.isStub = isStub;
         this.methodCallCount = methodCallCount;
         this.variableIsSynthetic = variableIsSynthetic;
+        this.hasPolymorphicSignature = computeHasPolymorphicSignature(methodAnnotations);
+    }
+
+    private boolean computeHasPolymorphicSignature(Map<ClassDescriptor, AnnotationValue> methodAnnotations) {
+        for (ClassDescriptor annotationDescriptor : methodAnnotations.keySet()) {
+            if ("java.lang.invoke.MethodHandle$PolymorphicSignature".equals(annotationDescriptor.getDottedClassName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -692,5 +705,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             return XFactory.createXMethod(access);
         }
         return this;
+    }
+
+    @Override
+    public boolean hasPolymorphicSignature() {
+        return hasPolymorphicSignature;
     }
 }
