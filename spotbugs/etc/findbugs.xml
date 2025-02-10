@@ -648,6 +648,8 @@
                     reports="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"/>
           <Detector class="edu.umd.cs.findbugs.detect.ResourceInMultipleThreadsDetector" speed="fast"
                     reports="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.AtomicOperationsCombinedDetector"
+                    reports="AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC,AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION"/>
           <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings"
                     reports="FB_UNEXPECTED_WARNING,FB_MISSING_EXPECTED_WARNING" disabled="true"
                     hidden="false"/>
@@ -738,6 +740,8 @@
           <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
                     category="MT_CORRECTNESS"/>
           <BugPattern abbrev="AT" type="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="AT" type="AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="AT" type="AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY" cweid="81"/>
           <BugPattern abbrev="SKIPPED" type="SKIPPED_CLASS_TOO_BIG" category="EXPERIMENTAL"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER"
