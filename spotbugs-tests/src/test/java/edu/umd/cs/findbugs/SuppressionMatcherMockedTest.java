@@ -59,7 +59,7 @@ class SuppressionMatcherMockedTest {
         // when
         matcher.addSuppressor(suppressor);
         // then
-        assertFalse(matcher.match(bugInstance), "Should match BugInstance");
+        assertFalse(matcher.match(bugInstance), "Should not match BugInstance");
         // and when
         matcher.validateSuppressionUsage(bugReporter);
         // then
