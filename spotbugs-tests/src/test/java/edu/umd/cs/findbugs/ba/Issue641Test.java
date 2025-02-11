@@ -11,13 +11,14 @@ class Issue641Test extends AbstractIntegrationTest {
         performAnalysis("suppression/Issue641.class",
                 "suppression/Issue641$1.class");
 
-        assertBugInClass("US_USELESS_SUPPRESSION_ON_CLASS", "suppression.Issue641");
+        assertBugInClassCount("US_USELESS_SUPPRESSION_ON_CLASS", "suppression.Issue641", 1);
+
         assertBugAtField("US_USELESS_SUPPRESSION_ON_FIELD", "suppression.Issue641", "field");
         assertNoBugAtField("US_USELESS_SUPPRESSION_ON_FIELD", "suppression.Issue641", "field2");
         assertNoBugAtField("US_USELESS_SUPPRESSION_ON_FIELD", "suppression.Issue641", "field3");
         assertNoBugAtField("US_USELESS_SUPPRESSION_ON_FIELD", "suppression.Issue641", "field4");
 
-        assertBugInMethod("US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER", "suppression.Issue641", "setField");
+        assertBugInMethodCount("US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER", "suppression.Issue641", "setField", 1);
 
         assertNoBugInMethod("NP_IMMEDIATE_DEREFERENCE_OF_READLINE", "suppression.Issue641", "readLine");
 
@@ -25,6 +26,6 @@ class Issue641Test extends AbstractIntegrationTest {
         assertNoBugInMethod("UC_USELESS_VOID_METHOD", "suppression.Issue641$1", "lockObject");
         assertNoBugInMethod("UPM_UNCALLED_PRIVATE_METHOD", "suppression.Issue641$1", "lockObject");
 
-        assertBugInMethod("US_USELESS_SUPPRESSION_ON_METHOD", "suppression.Issue641", "decrement");
+        assertBugInMethodCount("US_USELESS_SUPPRESSION_ON_METHOD", "suppression.Issue641", "decrement", 1);
     }
 }
