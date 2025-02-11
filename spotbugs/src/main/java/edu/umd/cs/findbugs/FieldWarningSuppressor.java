@@ -4,6 +4,8 @@ import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 
 public class FieldWarningSuppressor extends ClassWarningSuppressor {
 
+    private static final String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_FIELD";
+
     FieldAnnotation field;
 
     public FieldWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, FieldAnnotation field) {
@@ -32,5 +34,12 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
             System.out.println("Suppressing " + bugInstance);
         }
         return true;
+    }
+
+    @Override
+    public BugInstance buildUselessSuppressionBugInstance() {
+        return new BugInstance(BUG_TYPE, PRIORITY)
+                .addClass(clazz.getClassDescriptor())
+                .addField(field);
     }
 }

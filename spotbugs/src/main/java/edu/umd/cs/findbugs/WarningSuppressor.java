@@ -9,6 +9,9 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public abstract class WarningSuppressor implements Matcher {
 
+    protected static final String USELESS_SUPPRESSION_ABB = "US";
+    protected static final int PRIORITY = Priorities.NORMAL_PRIORITY;
+
     static final boolean DEBUG = SystemProperties.getBoolean("warning.suppressor");
 
     protected final String bugPattern;
@@ -36,6 +39,9 @@ public abstract class WarningSuppressor implements Matcher {
             System.out.println("    type:" + bugInstance.getType());
             System.out.println(" against: " + bugPattern);
 
+        }
+        if (USELESS_SUPPRESSION_ABB.equals(bugInstance.getAbbrev())) {
+            return false;
         }
 
         if (bugPattern != null) {
@@ -71,6 +77,8 @@ public abstract class WarningSuppressor implements Matcher {
         }
         return true;
     }
+
+    public abstract BugInstance buildUselessSuppressionBugInstance();
 
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {

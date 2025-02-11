@@ -4,6 +4,8 @@ import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 
 public class MethodWarningSuppressor extends ClassWarningSuppressor {
 
+    private static final String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_METHOD";
+
     MethodAnnotation method;
 
     public MethodWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, MethodAnnotation method) {
@@ -26,5 +28,12 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
             System.out.println("Suppressing " + bugInstance);
         }
         return true;
+    }
+
+    @Override
+    public BugInstance buildUselessSuppressionBugInstance() {
+        return new BugInstance(BUG_TYPE, PRIORITY)
+                .addClass(clazz.getClassDescriptor())
+                .addMethod(method);
     }
 }
