@@ -10,6 +10,6 @@ class Issue3310Test extends AbstractIntegrationTest {
         performAnalysis("ghIssues/Issue3310.class",
                 "ghIssues/Issue3310$Result.class");
 
-        assertNoBugInClass("AT_STALE_THREAD_WRITE_OF_PRIMITIVE", "Issue3310");
+        assertNoBugType("AT_STALE_THREAD_WRITE_OF_PRIMITIVE");
     }
 }
