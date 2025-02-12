@@ -1,6 +1,5 @@
 package ghIssues;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Map;
 
 public class Issue3310 {
@@ -19,10 +18,6 @@ public class Issue3310 {
 		} else {
 			return null;
 		}
-	}
-
-	public void setX(int x) {
-		this.x = x;
 	}
 
 	public static class Result {
