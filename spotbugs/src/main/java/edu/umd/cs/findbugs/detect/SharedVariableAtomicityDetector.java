@@ -157,7 +157,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     }
 
     private void addNonFinalFields(XField field, XMethod method, Map<XMethod, Set<XField>> map) {
-        if (field != null && !field.isFinal()) {
+        if (field != null && !field.isFinal() && !field.isSynthetic()) {
             map.computeIfAbsent(method, k -> new HashSet<>()).add(field);
         }
     }
@@ -191,12 +191,12 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private void checkAndReportBug(int seen, XMethod method) {
         if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
             XField field = getXFieldOperand();
-            if (field != null) {
+            if (field != null && !field.isSynthetic()) {
                 relevantFields.add(field);
             }
         } else if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
             XField field = getXFieldOperand();
-            if (field != null && !field.isFinal()) {
+            if (field != null && !field.isFinal() && !field.isSynthetic()) {
                 boolean fieldReadInOtherMethod = mapContainsFieldWithOtherMethod(field, method, readFieldsByMethods);
                 if (fieldReadInOtherMethod) {
                     if (!relevantFields.isEmpty() && relevantFields.contains(field) && isPrimitiveOrItsBoxingType(field.getSignature())) {

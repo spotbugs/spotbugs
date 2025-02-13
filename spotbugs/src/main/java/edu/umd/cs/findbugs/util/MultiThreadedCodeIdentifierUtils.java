@@ -66,6 +66,11 @@ public class MultiThreadedCodeIdentifierUtils {
     }
 
     public static boolean isMethodMultiThreaded(Method method, ClassContext classContext) {
+        // TODO: probably should check that as well to avoid false positives?
+        // if (method.isSynthetic()) {
+        // return false;
+        // }
+
         if (method.isSynchronized()) {
             return true;
         }
@@ -118,6 +123,9 @@ public class MultiThreadedCodeIdentifierUtils {
     }
 
     private static boolean isFieldIndicatingMultiThreadedContainer(Field field) {
+        if (field.isSynthetic()) {
+            return false;
+        }
         return field.isVolatile() || isFromAtomicPackage(field.getSignature())
                 || isInstanceOfLock(ClassName.fromFieldSignatureToDottedClassName(field.getSignature()));
     }
