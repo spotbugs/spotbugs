@@ -157,7 +157,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     }
 
     private void addNonFinalFieldsOfClass(XField field, XMethod method, Map<XMethod, Set<XField>> map) {
-        if (field != null && !field.isFinal() && field.getClassDescriptor().equals(method.getClassDescriptor())) {
+        if (field != null && !field.isFinal() && !field.isSynthetic() && field.getClassDescriptor().equals(method.getClassDescriptor())) {
             map.computeIfAbsent(method, k -> new HashSet<>()).add(field);
         }
     }
@@ -191,7 +191,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private void checkAndReportBug(int seen, XMethod method) {
         if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
             XField field = getXFieldOperand();
-            if (field != null) {
+            if (field != null && !field.isSynthetic()) {
                 relevantFields.add(field);
             }
         } else if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
