@@ -412,9 +412,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 
         int combinedFlags = aFlags & bFlags;
 
-        if (!(a.isNullOnSomePath() || a.isDefinitelyNull()) && b.isException()) {
-            combinedFlags |= EXCEPTION;
-        } else if (!(b.isNullOnSomePath() || b.isDefinitelyNull()) && a.isException()) {
+        if ((!(a.isNullOnSomePath() || a.isDefinitelyNull()) && b.isException())
+                || (!(b.isNullOnSomePath() || b.isDefinitelyNull()) && a.isException())) {
             combinedFlags |= EXCEPTION;
         }
 

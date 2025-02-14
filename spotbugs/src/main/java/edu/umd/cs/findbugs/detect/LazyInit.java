@@ -349,10 +349,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
             return;
         }
         int priority = LOW_PRIORITY;
-        boolean isDefaultAccess = (method.getAccessFlags() & (Const.ACC_PUBLIC | Const.ACC_PRIVATE | Const.ACC_PROTECTED)) == 0;
-        if (method.isPublic()) {
-            priority = NORMAL_PRIORITY;
-        } else if (method.isProtected() || isDefaultAccess) {
+        if (!method.isPrivate()) {
             priority = NORMAL_PRIORITY;
         }
         if (signature.startsWith("[") || signature.startsWith("Ljava/util/")) {
