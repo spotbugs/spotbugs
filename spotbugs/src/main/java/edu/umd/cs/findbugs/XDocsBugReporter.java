@@ -49,15 +49,11 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
     private static final String ROOT_ELEMENT_NAME = "BugCollection";
 
-    private static final String PROJECT_ELEMENT_NAME = "Project";
-
     private static final String ERRORS_ELEMENT_NAME = "Errors";
 
     private static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError";
 
     private static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
-
-    private static final String SUMMARY_HTML_ELEMENT_NAME = "SummaryHTML";
 
     private static final String ELEMENT_NAME = "BugInstance";
 

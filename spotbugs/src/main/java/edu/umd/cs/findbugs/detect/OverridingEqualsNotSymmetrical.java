@@ -56,8 +56,6 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     private static final String EQUALS_SIGNATURE = "(Ljava/lang/Object;)Z";
 
-    private static final String STATIC_EQUALS_SIGNATURE = "(Ljava/lang/Object;Ljava/lang/Object;)Z";
-
     Map<ClassDescriptor, Set<ClassDescriptor>> classesWithGetClassBasedEquals = new HashMap<>();
 
     Map<ClassDescriptor, Set<ClassDescriptor>> classesWithInstanceOfBasedEquals = new HashMap<>();
