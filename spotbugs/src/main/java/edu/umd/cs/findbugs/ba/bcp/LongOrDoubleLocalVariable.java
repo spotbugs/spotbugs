@@ -22,7 +22,8 @@ package edu.umd.cs.findbugs.ba.bcp;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 public class LongOrDoubleLocalVariable implements Variable {
-    private final ValueNumber topValue, nextValue;
+    private final ValueNumber topValue;
+    private final ValueNumber nextValue;
 
     public LongOrDoubleLocalVariable(ValueNumber topValue, ValueNumber nextValue) {
         this.topValue = topValue;

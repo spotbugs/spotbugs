@@ -66,7 +66,9 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
 
     private boolean opcodeIsWide;
 
-    private int PC, nextPC;
+    private int PC;
+
+    private int nextPC;
 
     private int branchOffset;
 

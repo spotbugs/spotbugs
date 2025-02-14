@@ -141,7 +141,8 @@ public class RedundantConditions implements Detector {
                 InstructionHandle deadNext = deadHandle.getNext();
                 InstructionHandle liveNext = liveHandle.getNext();
                 if (deadNext != null && liveNext != null) {
-                    InstructionHandle middle, after;
+                    InstructionHandle middle;
+                    InstructionHandle after;
                     if (deadNext.getNext() == liveHandle) {
                         middle = deadNext;
                         after = liveNext;

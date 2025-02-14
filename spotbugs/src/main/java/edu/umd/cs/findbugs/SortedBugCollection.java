@@ -106,7 +106,8 @@ public class SortedBugCollection implements BugCollection {
 
     private boolean applySuppressions;
 
-    long timeStartedLoading, timeFinishedLoading;
+    long timeStartedLoading;
+    long timeFinishedLoading;
 
     String dataSource = "";
 

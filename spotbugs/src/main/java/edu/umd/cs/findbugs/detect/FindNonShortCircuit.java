@@ -54,11 +54,19 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
 
     boolean sawDangerOld;
 
-    boolean sawNumericTest, sawNumericTestOld, sawNumericTestVeryOld;
+    boolean sawNumericTest;
 
-    boolean sawArrayDanger, sawArrayDangerOld;
+    boolean sawNumericTestOld;
 
-    boolean sawMethodCall, sawMethodCallOld;
+    boolean sawNumericTestVeryOld;
+
+    boolean sawArrayDanger;
+
+    boolean sawArrayDangerOld;
+
+    boolean sawMethodCall;
+
+    boolean sawMethodCallOld;
 
     private final BugAccumulator bugAccumulator;
 

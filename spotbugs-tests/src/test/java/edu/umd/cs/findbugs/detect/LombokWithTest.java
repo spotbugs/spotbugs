@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 /**
  *
  */
-public class LombokWithTest extends AbstractIntegrationTest {
+class LombokWithTest extends AbstractIntegrationTest {
 
     @Test
     void testIssue() {

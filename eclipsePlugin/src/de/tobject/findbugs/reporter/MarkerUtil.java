@@ -672,12 +672,8 @@ public final class MarkerUtil {
                 }
                 String stringId = (String) elementId;
                 if (!recursive) {
-                    if (stringId.equals(id)) {
-                        // exact match
-                        markers.add(marker);
-                    } else if (isDirectChild(id, stringId)) {
-                        // direct child: class in the package, but not in the
-                        // sub-package
+                    if (stringId.equals(id) || isDirectChild(id, stringId)) {
+                        // exact match or direct child: class in the package, but not in the sub-package
                         markers.add(marker);
                     }
                 } else if (stringId.startsWith(id)) {

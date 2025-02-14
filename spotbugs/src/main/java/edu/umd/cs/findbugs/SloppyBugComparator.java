@@ -116,7 +116,8 @@ public class SloppyBugComparator implements WarningComparator {
         // Bug abbrevs must match
         BugPattern lhsPattern = lhs.getBugPattern();
         BugPattern rhsPattern = rhs.getBugPattern();
-        String lhsAbbrev, rhsAbbrev;
+        String lhsAbbrev;
+        String rhsAbbrev;
         lhsAbbrev = lhsPattern.getAbbrev();
         rhsAbbrev = rhsPattern.getAbbrev();
         cmp = lhsAbbrev.compareTo(rhsAbbrev);

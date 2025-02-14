@@ -421,10 +421,8 @@ public class RejarClassesForAnalysis {
                     classFileFound = true;
                     long timestamp = ze.getTime();
                     Long oldTimestamp = copied.get(name);
-                    if (oldTimestamp == null) {
-                        copied.put(name, timestamp);
-                        copyFrom.put(name, f);
-                    } else if (!commandLine.ignoreTimestamps && oldTimestamp < timestamp) {
+                    if (oldTimestamp == null
+                            || (!commandLine.ignoreTimestamps && oldTimestamp < timestamp)) {
                         copied.put(name, timestamp);
                         copyFrom.put(name, f);
                     }

@@ -27,7 +27,9 @@ package edu.umd.cs.findbugs.ba.bcp;
  * @see PatternMatcher
  */
 public class ByteCodePattern {
-    private PatternElement first, last;
+    private PatternElement first;
+
+    private PatternElement last;
 
     private int interElementWild;
 

@@ -411,7 +411,8 @@ public class Subtypes2 {
         return false;
     }
 
-    ClassDescriptor prevSubDesc, prevSuperDesc;
+    ClassDescriptor prevSubDesc;
+    ClassDescriptor prevSuperDesc;
     boolean prevResult;
 
     public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor superDesc) throws ClassNotFoundException {
@@ -660,7 +661,8 @@ public class Subtypes2 {
         boolean bBaseTypeIsPrimitive = (bArrType.getBasicType() instanceof BasicType);
 
         if (aBaseTypeIsPrimitive || bBaseTypeIsPrimitive) {
-            int minDimensions, maxDimensions;
+            int minDimensions;
+            int maxDimensions;
             if (aArrType.getDimensions() < bArrType.getDimensions()) {
                 minDimensions = aArrType.getDimensions();
                 maxDimensions = bArrType.getDimensions();

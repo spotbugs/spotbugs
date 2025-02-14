@@ -506,9 +506,7 @@ public class Naming extends PreorderVisitor implements Detector {
             Method realVoidConstructor = findVoidConstructor(getThisClass());
             if (code != null && !markedAsNotUsable(obj)) {
                 int priority = NORMAL_PRIORITY;
-                if (codeDoesSomething(code)) {
-                    priority--;
-                } else if (!obj.isPublic() && getThisClass().isPublic()) {
+                if (codeDoesSomething(code) || (!obj.isPublic() && getThisClass().isPublic())) {
                     priority--;
                 }
                 boolean instanceMembers = false;

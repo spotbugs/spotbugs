@@ -55,7 +55,8 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 
     private String className;
 
-    private HashSet<MethodAnnotation> definedPrivateMethods, calledMethods;
+    private HashSet<MethodAnnotation> definedPrivateMethods;
+    private HashSet<MethodAnnotation> calledMethods;
 
     private HashSet<String> calledMethodNames;
     private Set<String> jUnitSourceMethodNames;
