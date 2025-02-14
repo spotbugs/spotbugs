@@ -169,7 +169,11 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
         bugAccumulator.reportAccumulatedBugs();
     }
 
-    boolean sawInstanceOf, sawInstanceOfSupertype, sawCheckedCast;
+    boolean sawInstanceOf;
+
+    boolean sawInstanceOfSupertype;
+
+    boolean sawCheckedCast;
 
     boolean sawGetClass;
 
@@ -183,11 +187,15 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     boolean sawInitialIdentityCheck;
 
-    boolean alwaysTrue, alwaysFalse;
+    boolean alwaysTrue;
+
+    boolean alwaysFalse;
 
     int equalsCalls;
 
-    boolean sawGoodEqualsClass, sawBadEqualsClass;
+    boolean sawGoodEqualsClass;
+
+    boolean sawBadEqualsClass;
 
     boolean sawCompare;
 

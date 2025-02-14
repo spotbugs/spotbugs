@@ -48,7 +48,9 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 
     private final ClassDescriptor cloneDescriptor = DescriptorFactory.createClassDescriptor(java.lang.Cloneable.class);
 
-    boolean isCloneable, hasCloneMethod;
+    boolean isCloneable;
+
+    boolean hasCloneMethod;
 
     boolean cloneIsDeprecated;
 

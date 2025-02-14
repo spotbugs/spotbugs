@@ -164,7 +164,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
      * along paths where an obligation appears to be leaked.
      */
     private static class PossibleObligationTransfer {
-        Obligation consumed, produced;
+        Obligation consumed;
+        Obligation produced;
 
         public PossibleObligationTransfer(@Nonnull Obligation consumed, @Nonnull Obligation produced) {
             this.consumed = consumed;

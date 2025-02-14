@@ -72,7 +72,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
         final @SlashedClassName String className;
 
-        final String methodName, methodSignature;
+        final String methodName;
+
+        final String methodSignature;
 
         String[] exceptions;
 

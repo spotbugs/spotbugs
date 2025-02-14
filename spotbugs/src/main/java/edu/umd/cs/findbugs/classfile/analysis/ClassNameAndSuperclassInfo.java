@@ -49,7 +49,9 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
 
     private final Set<ClassDescriptor> calledClassDescriptors;
 
-    private final int majorVersion, minorVersion;
+    private final int majorVersion;
+
+    private final int minorVersion;
 
     public static class Builder {
         ClassDescriptor classDescriptor;
@@ -62,7 +64,9 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
 
         int accessFlags;
 
-        int majorVersion, minorVersion;
+        int majorVersion;
+
+        int minorVersion;
 
         Collection<ClassDescriptor> referencedClassDescriptorList;
 

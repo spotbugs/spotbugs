@@ -268,7 +268,8 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
         // or if the extent does not appear to create a new object.
         LockDataflow lockDataflow = classContext.getLockDataflow(method);
         LockSet lockSet = null;
-        boolean sawNEW = false, sawINVOKE = false;
+        boolean sawNEW = false;
+        boolean sawINVOKE = false;
         for (BasicBlock block : cfg.getBlocks(extent)) {
             for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext();) {
                 InstructionHandle handle = j.next();
