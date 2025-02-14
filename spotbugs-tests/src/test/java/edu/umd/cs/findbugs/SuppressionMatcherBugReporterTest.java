@@ -12,6 +12,9 @@ import static org.mockito.Mockito.*;
 class SuppressionMatcherBugReporterTest {
 
     @Mock
+    private BugInstance bugInstance;
+
+    @Mock
     private SuppressionMatcher matcher;
 
     @Mock
@@ -23,25 +26,23 @@ class SuppressionMatcherBugReporterTest {
     @Test
     void shouldNotCallUpstreamReporterIfBugSuppressed() {
         // given
-        BugInstance suppressed = mock(BugInstance.class);
-        when(matcher.match(suppressed)).thenReturn(true);
+        when(matcher.match(bugInstance)).thenReturn(true);
         // when
-        reporter.reportBug(suppressed);
+        reporter.reportBug(bugInstance);
         // then
-        verify(matcher).match(suppressed);
+        verify(matcher).match(bugInstance);
         verifyNoInteractions(upstreamReporter);
     }
 
     @Test
     void shouldCallUpstreamReporterIfBugNotSuppressed() {
         // given
-        BugInstance reported = mock(BugInstance.class);
-        when(matcher.match(reported)).thenReturn(false);
+        when(matcher.match(bugInstance)).thenReturn(false);
         // when
-        reporter.reportBug(reported);
+        reporter.reportBug(bugInstance);
         // then
-        verify(matcher).match(reported);
-        verify(upstreamReporter).reportBug(reported);
+        verify(matcher).match(bugInstance);
+        verify(upstreamReporter).reportBug(bugInstance);
     }
 
     @Test
