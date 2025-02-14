@@ -140,13 +140,13 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
 
     private void collectFieldReadsAndInnerMethodCalls(int seen, XMethod method) {
         if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
-            addNonFinalFields(getXFieldOperand(), method, readFieldsByMethods);
+            addNonFinalFieldsOfClass(getXFieldOperand(), method, readFieldsByMethods);
 
         } else if (seen == Const.IFGE || seen == Const.IFGT || seen == Const.IFLT || seen == Const.IFLE || seen == Const.IFNE || seen == Const.IFEQ) {
-            XField lhs = stack.getStackItem(0).getXField();
+            XField lhs = stack.getStackDepth() > 0 ? stack.getStackItem(0).getXField() : null;
             XField rhs = stack.getStackDepth() > 1 ? stack.getStackItem(1).getXField() : null;
-            addNonFinalFields(lhs, method, readFieldsByMethods);
-            addNonFinalFields(rhs, method, readFieldsByMethods);
+            addNonFinalFieldsOfClass(lhs, method, readFieldsByMethods);
+            addNonFinalFieldsOfClass(rhs, method, readFieldsByMethods);
 
         } else if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESTATIC) {
             XMethod calledMethod = getXMethodOperand();
@@ -156,8 +156,8 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
         }
     }
 
-    private void addNonFinalFields(XField field, XMethod method, Map<XMethod, Set<XField>> map) {
-        if (field != null && !field.isFinal()) {
+    private void addNonFinalFieldsOfClass(XField field, XMethod method, Map<XMethod, Set<XField>> map) {
+        if (field != null && !field.isFinal() && !field.isSynthetic() && field.getClassDescriptor().equals(method.getClassDescriptor())) {
             map.computeIfAbsent(method, k -> new HashSet<>()).add(field);
         }
     }
@@ -191,12 +191,12 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private void checkAndReportBug(int seen, XMethod method) {
         if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
             XField field = getXFieldOperand();
-            if (field != null) {
+            if (field != null && !field.isSynthetic()) {
                 relevantFields.add(field);
             }
         } else if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
             XField field = getXFieldOperand();
-            if (field != null && !field.isFinal()) {
+            if (field != null && !field.isFinal() && !field.isSynthetic() && field.getClassDescriptor().equals(method.getClassDescriptor())) {
                 boolean fieldReadInOtherMethod = mapContainsFieldWithOtherMethod(field, method, readFieldsByMethods);
                 if (fieldReadInOtherMethod) {
                     if (!relevantFields.isEmpty() && relevantFields.contains(field) && isPrimitiveOrItsBoxingType(field.getSignature())) {

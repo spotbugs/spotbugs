@@ -35,6 +35,7 @@ import javax.annotation.Nonnull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -686,6 +687,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 continue;
             }
 
+            if (isLombokWithMethod(method)) {
+                continue;
+            }
+
             if (DEBUG) {
                 System.out.println("FindRefComparison: analyzing " + SignatureConverter.convertMethodSignature(methodGen));
             }
@@ -701,6 +706,25 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             bugAccumulator.reportAccumulatedBugs();
         }
 
+    }
+
+    /**
+     * Lombok's "with" methods include an == comparison reported as RC_REF_COMPARISON.
+     * @return <code>true</code> if the method is generated with Lombok's <code>@With</code> annotation
+     */
+    private boolean isLombokWithMethod(Method method) {
+        if (!method.getName().startsWith("with")) {
+            return false;
+        }
+
+        for (AnnotationEntry a : method.getAnnotationEntries()) {
+            String typeName = a.getAnnotationType();
+            if ("Llombok/Generated;".equals(typeName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
