@@ -27,5 +27,9 @@ class Issue641Test extends AbstractIntegrationTest {
         assertNoBugInMethod("UPM_UNCALLED_PRIVATE_METHOD", "suppression.Issue641$1", "lockObject");
 
         assertBugInMethodCount("US_USELESS_SUPPRESSION_ON_METHOD", "suppression.Issue641", "decrement", 1);
+
+        assertBugTypeCount("US_USELESS_SUPPRESSION_ON_CLASS", 1);
+        assertBugTypeCount("US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER", 1);
+        assertBugTypeCount("US_USELESS_SUPPRESSION_ON_METHOD", 1);
     }
 }
