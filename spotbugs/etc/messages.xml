@@ -9386,6 +9386,8 @@ Using floating-point variables should not be used as loop counters, as they are 
       <![CDATA[<p>
       Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
       Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
       </p>]]>
     </Details>
   </BugPattern>
@@ -9397,6 +9399,8 @@ Using floating-point variables should not be used as loop counters, as they are 
       <![CDATA[<p>
       Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
       Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
       </p>]]>
     </Details>
   </BugPattern>
@@ -9408,6 +9412,8 @@ Using floating-point variables should not be used as loop counters, as they are 
       <![CDATA[<p>
       Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
       Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
       </p>]]>
     </Details>
   </BugPattern>
@@ -9419,6 +9425,8 @@ Using floating-point variables should not be used as loop counters, as they are 
       <![CDATA[<p>
       Suppressing annotation <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
       Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
       </p>]]>
     </Details>
   </BugPattern>
