@@ -46,7 +46,13 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
 
     private final LinkedList<Target> targetList;
 
-    private boolean isBranch, isReturn, isThrow, isExit;
+    private boolean isBranch;
+
+    private boolean isReturn;
+
+    private boolean isThrow;
+
+    private boolean isExit;
 
     /**
      * Constructor.

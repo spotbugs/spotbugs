@@ -109,7 +109,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
     }
 
     private void findIfElseDuplicates(CFG cfg, Method method, BasicBlock bb) {
-        BasicBlock thenBB = null, elseBB = null;
+        BasicBlock thenBB = null;
+
+        BasicBlock elseBB = null;
 
         Iterator<Edge> iei = cfg.outgoingEdgeIterator(bb);
         while (iei.hasNext()) {

@@ -539,7 +539,8 @@ public class FindInconsistentSync2 implements Detector {
                 propertySet.addProperty(InconsistentSyncWarningProperty.NO_LOCAL_LOCKS);
             }
 
-            int freq, printFreq;
+            int freq;
+            int printFreq;
             if (locked + unlocked > 0) {
                 freq = (100 * locked) / (locked + unlocked);
                 printFreq = (100 * locked) / (locked + unlocked + numNullCheckUnlocked);

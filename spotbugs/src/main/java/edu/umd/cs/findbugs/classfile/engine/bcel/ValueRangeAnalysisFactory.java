@@ -75,7 +75,8 @@ import edu.umd.cs.findbugs.classfile.engine.bcel.FinallyDuplicatesInfoFactory.Fi
  */
 public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRangeAnalysisFactory.ValueRangeAnalysis> {
     private static class TypeLongRange {
-        long min, max;
+        long min;
+        long max;
         String signature;
 
         public TypeLongRange(long min, long max, String signature) {
@@ -321,8 +322,10 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
 
     private static class Branch {
         final LongRangeSet trueSet;
-        final LongRangeSet trueReachedSet, falseReachedSet;
-        final String trueCondition, falseCondition;
+        final LongRangeSet trueReachedSet;
+        final LongRangeSet falseReachedSet;
+        final String trueCondition;
+        final String falseCondition;
         final Number number;
         final Set<Long> numbers = new HashSet<>();
         final String varName;
@@ -477,7 +480,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             if (inst instanceof LoadInstruction) {
                 int index = ((LoadInstruction) inst).getIndex();
                 LocalVariable lv = lvTable == null ? null : lvTable.getLocalVariable(index, ih.getPosition());
-                String name, signature;
+                String name;
+                String signature;
                 if (lv == null) {
                     name = "local$" + index;
                     if (types.containsKey(index)) {
@@ -746,7 +750,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                     BasicBlock trueTarget = edge.getTarget();
                     BasicBlock falseTarget = cfg.getSuccessorWithEdgeType(edge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
                     String condition;
-                    BasicBlock deadTarget, aliveTarget;
+                    BasicBlock deadTarget;
+                    BasicBlock aliveTarget;
                     if (branch.trueReachedSet.isEmpty()) {
                         condition = branch.varName + " " + branch.falseCondition;
                         deadTarget = trueTarget;
