@@ -83,6 +83,7 @@ public class ClassFactory implements IClassFactory {
         // It's not fatal if we can't.
         try {
             pathName = new File(pathName).getCanonicalPath();
+            return FilesystemCodeBaseLocator.fromCanonicalPath(pathName);
         } catch (IOException e) {
             // Ignore
         }
