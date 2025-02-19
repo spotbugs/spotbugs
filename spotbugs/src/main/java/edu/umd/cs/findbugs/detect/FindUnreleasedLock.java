@@ -108,7 +108,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             final ConstantPoolGen cpg = getCPG();
             final ResourceValueFrame frame = getFrame();
 
-            int status = -1;
+            ResourceValueFrame.State status = ResourceValueFrame.State.NONEXISTENT;
+            boolean updated = false;
 
             if (DEBUG) {
                 System.out.println("PC : " + handle.getPosition() + " " + ins);
@@ -123,12 +124,14 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             // Is a lock acquired or released by this instruction?
             Location creationPoint = lock.getLocation();
             if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
-                status = ResourceValueFrame.OPEN;
+                status = ResourceValueFrame.State.OPEN;
+                updated = true;
                 if (DEBUG) {
                     System.out.println("OPEN");
                 }
             } else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, lock, frame)) {
-                status = ResourceValueFrame.CLOSED;
+                status = ResourceValueFrame.State.CLOSED;
+                updated = true;
                 if (DEBUG) {
                     System.out.println("CLOSE");
                 }
@@ -166,7 +169,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             }
 
             // If needed, update frame status
-            if (status != -1) {
+            if (updated) {
                 frame.setStatus(status);
             }
             if (DEBUG) {
@@ -431,12 +434,13 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
         if (DEBUG) {
             System.out.println("Resource value at exit: " + exitFrame);
         }
-        int exitStatus = exitFrame.getStatus();
+        ResourceValueFrame.State exitStatus = exitFrame.getStatus();
 
-        if (exitStatus == ResourceValueFrame.OPEN || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
+        if (exitStatus == ResourceValueFrame.State.OPEN ||
+                exitStatus == ResourceValueFrame.State.OPEN_ON_EXCEPTION_PATH) {
             String bugType;
             int priority;
-            if (exitStatus == ResourceValueFrame.OPEN) {
+            if (exitStatus == ResourceValueFrame.State.OPEN) {
                 bugType = "UL_UNRELEASED_LOCK";
                 priority = HIGH_PRIORITY;
             } else {
