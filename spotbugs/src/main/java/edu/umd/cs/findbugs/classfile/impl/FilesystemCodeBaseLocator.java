@@ -34,35 +34,13 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
     private final String pathName;
 
     public FilesystemCodeBaseLocator(String pathName) {
-        this(pathName, true);
-    }
-
-    /**
-     * @param canonicalizePathName Since {@link File#getCanonicalPath()} is expensive we do not want to call it twice. When the path was already canonicalized we want to skip this step.
-     */
-    private FilesystemCodeBaseLocator(String pathName, boolean canonicalizePathName) {
-        if (canonicalizePathName) {
-            this.pathName = canonicalizePathName(pathName);
-        } else {
-            this.pathName = pathName;
-        }
-    }
-
-    private static String canonicalizePathName(String pathName) {
         File file = new File(pathName);
         try {
             pathName = file.getCanonicalPath();
         } catch (IOException e) {
             assert true;
         }
-        return pathName;
-    }
-
-    /**
-     * @param canonicalPathName An already canonicalized path name
-     */
-    public static FilesystemCodeBaseLocator fromCanonicalPath(String canonicalPathName) {
-        return new FilesystemCodeBaseLocator(canonicalPathName, false);
+        this.pathName = pathName;
     }
 
     /**
