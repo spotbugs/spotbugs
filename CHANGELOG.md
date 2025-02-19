@@ -16,6 +16,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` false positive for ECJ compiled enum switches ([#3316](https://github.com/spotbugs/spotbugs/issues/3316))
 - Fix `RC_REF_COMPARISON` false positive with Lombok With annotation ([#3319](https://github.com/spotbugs/spotbugs/pull/3319))
 - Avoid calling File.getCanonicalPath twice to improve performance ([#3325](https://github.com/spotbugs/spotbugs/pull/3325))
+- Fix `MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR` and `MC_OVERRIDABLE_METHOD_CALL_IN_CLONE` false positive when the overridable method is outside the class ([#3328](https://github.com/spotbugs/spotbugs/issues/3328)).
 
 ### Removed
 - Removed the `TLW_TWO_LOCK_NOTIFY`, `LI_LAZY_INIT_INSTANCE`, `BRSA_BAD_RESULTSET_ACCESS`, `BC_NULL_INSTANCEOF`, `NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` and `RCN_REDUNDANT_CHECKED_NULL_COMPARISON` deprecated bug patterns.

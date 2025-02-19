@@ -8790,7 +8790,7 @@ object explicitly.</p>
 
   <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR">
     <ShortDescription>An overridable method is called from a constructor</ShortDescription>
-    <LongDescription>Overridable method {2} is called from constructor {1}.</LongDescription>
+    <LongDescription>Overridable method {2.nameAndSignature} is called from constructor {1}.</LongDescription>
     <Details>
       <![CDATA[<p>
       Calling an overridable method during in a constructor may result in the use of uninitialized data. It may also
@@ -8804,7 +8804,7 @@ object explicitly.</p>
 
   <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_CLONE">
     <ShortDescription>An overridable method is called from the clone() method.</ShortDescription>
-    <LongDescription>Overridable method {2} is called from method clone() in class {0}.</LongDescription>
+    <LongDescription>Overridable method {2.nameAndSignature} is called from method clone() in class {0}.</LongDescription>
     <Details>
       <![CDATA[<p>
       Calling overridable methods from the clone() method is insecure because a subclass could override the method,
@@ -8818,7 +8818,7 @@ object explicitly.</p>
   </BugPattern>
   <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT">
     <ShortDescription>An overridable method is called from the readObject method.</ShortDescription>
-    <LongDescription>Overridable method {2} is called from readObject.</LongDescription>
+    <LongDescription>Overridable method {2.nameAndSignature} is called from readObject.</LongDescription>
     <Details>
       <![CDATA[<p>
       The readObject() method must not call any overridable methods. Invoking overridable methods from the readObject()
