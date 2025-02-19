@@ -130,7 +130,7 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
 
         checkNoBug();
     }
-    
+
     @Test
     void testFinalClassInheritedMethodReference2() {
         performAnalysis("overridableMethodCall/DirectCase2.class");
