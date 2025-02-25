@@ -99,7 +99,7 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
     }
 
     public static class StringPassthruDatabase {
-        private static final List<MethodDescriptor> FILENAME_STRING_METHODS = Arrays.asList(
+        private static final List<MethodDescriptor> FILENAME_STRING_METHODS = List.of(
                 new MethodDescriptor("java/io/File", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
                 new MethodDescriptor("java/io/File", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
                 new MethodDescriptor("java/io/RandomAccessFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),

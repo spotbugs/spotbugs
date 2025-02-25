@@ -20,8 +20,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.bcel.Const;
@@ -129,13 +129,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     static final boolean DEBUG = false;
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-    static HashSet<String> immutableClassNames = new HashSet<>();
-    static {
-        immutableClassNames.add("java/lang/Integer");
-        immutableClassNames.add("java/lang/Long");
-        immutableClassNames.add("java/lang/String");
-        immutableClassNames.add("java/util/Comparator");
-    }
+    static final Set<String> immutableClassNames = Set.of("java/lang/Integer", "java/lang/Long", "java/lang/String", "java/util/Comparator");
 
     private static int getPriorityForBeingMutable(Type type) {
         if (type instanceof ArrayType) {
