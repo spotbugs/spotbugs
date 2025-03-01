@@ -4,6 +4,8 @@ import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 
 public class PackageWarningSuppressor extends WarningSuppressor {
 
+    private static final String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_PACKAGE";
+
     String packageName;
 
     public PackageWarningSuppressor(String bugPattern, SuppressMatchType matchType, String packageName) {
@@ -30,5 +32,10 @@ public class PackageWarningSuppressor extends WarningSuppressor {
         String className = primaryClassAnnotation.getClassName();
 
         return className.startsWith(packageName);
+    }
+
+    @Override
+    public BugInstance buildUselessSuppressionBugInstance() {
+        return new BugInstance(BUG_TYPE, PRIORITY).addClass(packageName);
     }
 }
