@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 
+## 4.9.2 - 2025-03-01
 ### Added
 
 - Reporting useless `@SuppressFBWarnings` annotations ([#641](https://github.com/spotbugs/spotbugs/issues/641))
