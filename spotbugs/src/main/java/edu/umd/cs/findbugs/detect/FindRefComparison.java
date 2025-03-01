@@ -137,18 +137,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
      * Classes that are suspicious if compared by reference.
      */
     @StaticConstant
-    private static final HashSet<String> DEFAULT_SUSPICIOUS_SET = new HashSet<>();
-
-    static {
-        DEFAULT_SUSPICIOUS_SET.add("java.lang.Boolean");
-        DEFAULT_SUSPICIOUS_SET.add("java.lang.Byte");
-        DEFAULT_SUSPICIOUS_SET.add("java.lang.Character");
-        DEFAULT_SUSPICIOUS_SET.add("java.lang.Double");
-        DEFAULT_SUSPICIOUS_SET.add("java.lang.Float");
-        DEFAULT_SUSPICIOUS_SET.add(Values.DOTTED_JAVA_LANG_INTEGER);
-        DEFAULT_SUSPICIOUS_SET.add("java.lang.Long");
-        DEFAULT_SUSPICIOUS_SET.add("java.lang.Short");
-    }
+    private static final Set<String> DEFAULT_SUSPICIOUS_SET = Set.of("java.lang.Boolean", "java.lang.Byte", "java.lang.Character", "java.lang.Double",
+            "java.lang.Float", Values.DOTTED_JAVA_LANG_INTEGER, "java.lang.Long", "java.lang.Short");
 
     /**
      * Set of opcodes that invoke instance methods on an object.

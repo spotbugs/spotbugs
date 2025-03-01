@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -96,7 +95,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class UnreadFields extends OpcodeStackDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
 
-    private static final List<String> INITIALIZER_ANNOTATIONS = Arrays.asList(
+    private static final List<String> INITIALIZER_ANNOTATIONS = List.of(
             "Ljakarta/annotation/PostConstruct;",
             "Ljavax/annotation/PostConstruct;",
             "Lorg/testng/annotations/BeforeClass;",
@@ -108,7 +107,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * A list of annotations for fields that might be read by frameworks, even though they are private
      */
-    private static final List<ClassDescriptor> READ_BY_FRAMEWORK_ANNOTATIONS = Arrays.asList(
+    private static final List<ClassDescriptor> READ_BY_FRAMEWORK_ANNOTATIONS = List.of(
             DescriptorFactory.createClassDescriptor("com/google/gson/annotations/SerializedName"),
             DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlElement"),
             DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlAttribute"),

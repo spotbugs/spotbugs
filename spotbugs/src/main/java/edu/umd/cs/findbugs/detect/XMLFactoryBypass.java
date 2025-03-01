@@ -37,22 +37,9 @@ public class XMLFactoryBypass extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
 
     @StaticConstant
-    private static final Set<String> xmlInterfaces = new HashSet<String>() {
-        static final long serialVersionUID = -9117982073509840017L;
-        {
-            add("javax.xml.parsers.DocumentBuilder");
-            add("org.w3c.dom.Document");
-            add("javax.xml.parsers.SAXParser");
-            add("org.xml.sax.XMLReader");
-            add("org.xml.sax.XMLFilter");
-            add("javax.xml.transform.Transformer");
-            add("org.w3c.dom.Attr");
-            add("org.w3c.dom.CDATASection");
-            add("org.w3c.dom.Comment");
-            add("org.w3c.dom.Element");
-            add("org.w3c.dom.Text");
-        }
-    };
+    private static final Set<String> xmlInterfaces = Set.of("javax.xml.parsers.DocumentBuilder", "org.w3c.dom.Document",
+            "javax.xml.parsers.SAXParser", "org.xml.sax.XMLReader", "org.xml.sax.XMLFilter", "javax.xml.transform.Transformer", "org.w3c.dom.Attr",
+            "org.w3c.dom.CDATASection", "org.w3c.dom.Comment", "org.w3c.dom.Element", "org.w3c.dom.Text");
 
     private final Set<String> rejectedXMLClasses = new HashSet<>();
 

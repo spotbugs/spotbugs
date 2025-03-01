@@ -18,8 +18,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.Const;
@@ -34,22 +32,19 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class UnnecessaryEnvUsage extends OpcodeStackDetector {
-    private static final Map<String, String> envvarPropertyMap = Collections.unmodifiableMap(new HashMap<String, String>() {
-        {
-            put("JAVA_HOME", "java.home");
-            put("JAVA_VERSION", "java.version");
-            put("TEMP", "java.io.tmpdir");
-            put("TMP", "java.io.tmpdir");
-            put("PROCESSOR_ARCHITECTURE", "os.arch");
-            put("OS", "os.name");
-            put("USER", "user.name");
-            put("USERNAME", "user.name");
-            put("HOME", "user.home");
-            put("HOMEPATH", "user.home");
-            put("CD", "user.dir");
-            put("PWD", "user.dir");
-        }
-    });
+    private static final Map<String, String> envvarPropertyMap = Map.ofEntries(
+            Map.entry("JAVA_HOME", "java.home"),
+            Map.entry("JAVA_VERSION", "java.version"),
+            Map.entry("TEMP", "java.io.tmpdir"),
+            Map.entry("TMP", "java.io.tmpdir"),
+            Map.entry("PROCESSOR_ARCHITECTURE", "os.arch"),
+            Map.entry("OS", "os.name"),
+            Map.entry("USER", "user.name"),
+            Map.entry("USERNAME", "user.name"),
+            Map.entry("HOME", "user.home"),
+            Map.entry("HOMEPATH", "user.home"),
+            Map.entry("CD", "user.dir"),
+            Map.entry("PWD", "user.dir"));
 
     private final BugAccumulator bugAccumulator;
 

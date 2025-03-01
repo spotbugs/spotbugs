@@ -19,10 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.model.ClassNameRewriter;
@@ -310,42 +310,37 @@ public class FuzzyBugComparator implements WarningComparator {
 
     // See "FindBugsAnnotationDescriptions.properties"
     @StaticConstant
-    private static final HashSet<String> significantDescriptionSet = new HashSet<>();
-    static {
-        // Classes, methods, and fields are significant.
-        significantDescriptionSet.add("CLASS_DEFAULT");
-        significantDescriptionSet.add("CLASS_EXCEPTION");
-        significantDescriptionSet.add("CLASS_REFTYPE");
-        significantDescriptionSet.add(ClassAnnotation.SUPERCLASS_ROLE);
-        significantDescriptionSet.add(ClassAnnotation.IMPLEMENTED_INTERFACE_ROLE);
-        significantDescriptionSet.add(ClassAnnotation.INTERFACE_ROLE);
-        significantDescriptionSet.add("METHOD_DEFAULT");
-        significantDescriptionSet.add(MethodAnnotation.METHOD_CALLED);
-        significantDescriptionSet.add("METHOD_DANGEROUS_TARGET"); // but do NOT
-        // use safe
-        // targets
-        significantDescriptionSet.add("METHOD_DECLARED_NONNULL");
-        significantDescriptionSet.add("FIELD_DEFAULT");
-        significantDescriptionSet.add("FIELD_ON");
-        significantDescriptionSet.add("FIELD_SUPER");
-        significantDescriptionSet.add("FIELD_MASKED");
-        significantDescriptionSet.add("FIELD_MASKING");
-        significantDescriptionSet.add("FIELD_STORED");
-        significantDescriptionSet.add("TYPE_DEFAULT");
-        significantDescriptionSet.add("TYPE_EXPECTED");
-        significantDescriptionSet.add("TYPE_FOUND");
+    private static final Set<String> significantDescriptionSet = Set.of(
+            // Classes, methods, and fields are significant.
+            "CLASS_DEFAULT",
+            "CLASS_EXCEPTION",
+            "CLASS_REFTYPE",
+            ClassAnnotation.SUPERCLASS_ROLE,
+            ClassAnnotation.IMPLEMENTED_INTERFACE_ROLE,
+            ClassAnnotation.INTERFACE_ROLE,
+            "METHOD_DEFAULT",
+            MethodAnnotation.METHOD_CALLED,
+            "METHOD_DANGEROUS_TARGET", // but do NOT use safe targets
+            "METHOD_DECLARED_NONNULL",
+            "FIELD_DEFAULT",
+            "FIELD_ON",
+            "FIELD_SUPER",
+            "FIELD_MASKED",
+            "FIELD_MASKING",
+            "FIELD_STORED",
+            "TYPE_DEFAULT",
+            "TYPE_EXPECTED",
+            "TYPE_FOUND",
 
-        significantDescriptionSet.add("LOCAL_VARIABLE_NAMED");
+            "LOCAL_VARIABLE_NAMED",
 
-        // Many int annotations are NOT significant: e.g., sync %, biased locked
-        // %, bytecode offset, etc.
-        // The null parameter annotations, however, are definitely significant.
-        significantDescriptionSet.add("INT_NULL_ARG");
-        significantDescriptionSet.add("INT_MAYBE_NULL_ARG");
-        significantDescriptionSet.add("INT_NONNULL_PARAM");
-        // Only DEFAULT source line annotations are significant.
-        significantDescriptionSet.add("SOURCE_LINE_DEFAULT");
-    }
+            // Many int annotations are NOT significant: e.g., sync %, biased locked %, bytecode offset, etc.
+            // The null parameter annotations, however, are definitely significant.
+            "INT_NULL_ARG",
+            "INT_MAYBE_NULL_ARG",
+            "INT_NONNULL_PARAM",
+            // Only DEFAULT source line annotations are significant.
+            "SOURCE_LINE_DEFAULT");
 
     public static boolean ignore(BugAnnotation annotation) {
         return !significantDescriptionSet.contains(annotation.getDescription());
