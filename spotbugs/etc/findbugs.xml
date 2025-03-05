@@ -298,6 +298,8 @@
           <Detector class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" speed="fast"
                     reports="" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" speed="fast"
+                    reports="" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.UselessSuppressionDetector" speed="fast"
                     reports="US_USELESS_SUPPRESSION_ON_CLASS,US_USELESS_SUPPRESSION_ON_FIELD,US_USELESS_SUPPRESSION_ON_METHOD,US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER,US_USELESS_SUPPRESSION_ON_PACKAGE"
                     hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" speed="fast"

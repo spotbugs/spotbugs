@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +51,7 @@ class SuppressionMatcherBugReporterTest {
         // when
         reporter.finish();
         // then
-        verify(matcher).validateSuppressionUsage(reporter);
+        verify(matcher).validateSuppressionUsage(eq(reporter), any());
         verify(upstreamReporter).finish();
     }
 }
