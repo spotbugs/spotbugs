@@ -6,6 +6,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Added
+
+- Introduced `UselessSuppressionDetector` to report the useless annotations instead of `NoteSuppressedWarnings` ([#3348](https://github.com/spotbugs/spotbugs/issues/3348))
 
 ## 4.9.2 - 2025-03-01
 ### Added

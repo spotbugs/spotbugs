@@ -1875,6 +1875,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.UselessSuppressionDetector">
+    <Details>
+      <![CDATA[
+            <p> Looks for unnecessary uses of the edu.umd.cs.findbugs.annotations.NoteSuppressWarnings annotation.</p>
+      ]]>
+    </Details>
+  </Detector>
 
   <!--
   **********************************************************************
