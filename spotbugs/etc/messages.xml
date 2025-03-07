@@ -2070,7 +2070,8 @@ While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the
       <![CDATA[
     <p>This code creates a database connect using a blank or empty password. This indicates that the database is not protected by a password.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/259.html">CWE-259: Use of Hard-coded Password</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2082,7 +2083,8 @@ While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the
     <p>This code creates a database connect using a hardcoded, constant password. Anyone with access to either the source code or the compiled code can
     easily learn the password.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/259.html">CWE-259: Use of Hard-coded Password</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2099,7 +2101,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
 vulnerabilities that SpotBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/113.html">CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Request/Response Splitting')</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2116,7 +2119,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
 vulnerabilities that SpotBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/113.html">CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Request/Response Splitting')</a>.
+<\p>
 ]]>
         </Details>
   </BugPattern>
@@ -2137,7 +2141,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
 vulnerabilities that SpotBugs doesn't report. If you are concerned about relative path traversal, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/23.html">CWE-23: Relative Path Traversal</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2156,7 +2161,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
 vulnerabilities that SpotBugs doesn't report. If you are concerned about absolute path traversal, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/36.html">CWE-36: Absolute Path Traversal</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2174,7 +2180,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more cross si
 vulnerabilities that SpotBugs doesn't report. If you are concerned about cross site scripting, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/79.html">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2194,7 +2201,9 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more cross si
 vulnerabilities that SpotBugs doesn't report. If you are concerned about cross site scripting, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/81.html">CWE-81: Improper Neutralization of Script in an Error Message Web Page</a>
+and <a href="https://cwe.mitre.org/data/definitions/79.html">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2211,6 +2220,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more cross si
 vulnerabilities that SpotBugs doesn't report. If you are concerned about cross site scripting, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/79.html">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2249,6 +2260,9 @@ throwing an exception).</p>
 <![CDATA[
 <p>This method unconditionally invokes itself. This would seem to indicate
 an infinite recursive loop that will result in a stack overflow.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/674.html">CWE-674: Uncontrolled Recursion</a>
+and <a href="https://cwe.mitre.org/data/definitions/835.html">CWE-835: Loop with Unreachable Exit Condition ('Infinite Loop')</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2717,6 +2731,8 @@ Consider using <code>java.net.URI</code> instead.
    should only been done when it is appropriate. Such calls make it
    hard or impossible for your code to be invoked by other code.
    Consider throwing a RuntimeException instead.</p>
+   <p>See <a href="https://cwe.mitre.org/data/definitions/382.html">CWE-382: J2EE Bad Practices: Use of System.exit()</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2894,6 +2910,8 @@ to immediately undo the work of the boxing.
 <![CDATA[
   <p>A primitive boxed value constructed and then immediately converted into a different primitive type
 (e.g., <code>new Double(d).intValue()</code>). Just perform direct primitive coercion (e.g., <code>(int) d</code>).</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3008,6 +3026,8 @@ to be dynamically generated. Consider using
 a prepared statement instead. It is more efficient and less vulnerable to
 SQL injection attacks.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/89.html">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3020,6 +3040,8 @@ SQL injection attacks.
 If unchecked, tainted data from a user is used in building this String, SQL injection could
 be used to make the prepared statement do something unexpected and undesirable.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/89.html">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3043,7 +3065,8 @@ be used to make the prepared statement do something unexpected and undesirable.
   This idiom is not correct according to the semantics of the Java memory
   model.&nbsp; For more information, see the web page
   <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
-  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.</p>
+  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a> and
+  <a href="https://cwe.mitre.org/data/definitions/609.html">CWE-609: Double-Checked Locking</a>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3058,6 +3081,8 @@ be used to make the prepared statement do something unexpected and undesirable.
   <p>To fix this problem consider storing the object into the local variable first
   and save it to the volatile field only after it's fully constructed.
   </p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/609.html">CWE-609: Double-Checked Locking</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3089,6 +3114,8 @@ method.</p>
 <![CDATA[
   <p> A class's <code>finalize()</code> method should have protected access,
    not public.</p>
+   <p>See <a href="https://cwe.mitre.org/data/definitions/583.html">CWE-583: finalize() Method Declared Public</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3111,6 +3138,8 @@ method.</p>
   effect of any finalizer defined by its superclass.&nbsp; Any finalizer
   actions defined for the superclass will not be performed.&nbsp;
   Unless this is intended, delete this method.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/568.html">CWE-568: finalize() Method Without super.finalize()</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3134,6 +3163,8 @@ method.</p>
   superclass's <code>finalize()</code> method.&nbsp; So, any finalizer
   actions defined for the superclass will not be performed.&nbsp;
   Add a call to <code>super.finalize()</code>.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/568.html">CWE-568: finalize() Method Without super.finalize()</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3149,6 +3180,8 @@ method.</p>
 finalize method on all the finalizable object, possibly at the same time in different threads.
 Thus, it is a particularly bad idea, in the finalize method for a class X, invoke finalize
 on objects referenced by X, because they may already be getting finalized in a separate thread.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/586.html">CWE-586: Explicit Call to Finalize()</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3720,6 +3753,8 @@ Thus, having a mutable instance field generally creates race conditions.
    the mutable object would compromise security or other
    important properties, you will need to do something different.
   Returning a new copy of the object is better approach in many situations.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/374.html">CWE-374: Passing Mutable Objects to an Untrusted Method</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3735,6 +3770,8 @@ Thus, having a mutable instance field generally creates race conditions.
    the mutable object would compromise security or other
    important properties, you will need to do something different.
   Storing a copy of the object is better approach in many situations.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/374.html">CWE-374: Passing Mutable Objects to an Untrusted Method</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3779,6 +3816,8 @@ Thus, having a mutable instance field generally creates race conditions.
    important properties, you will need to do something different.
   Returning a read-only buffer (using its asReadOnly() method) or copying the array to a new buffer (using its put()
   method) is a better approach in many situations.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/374.html">CWE-374: Passing Mutable Objects to an Untrusted Method</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3794,6 +3833,8 @@ Thus, having a mutable instance field generally creates race conditions.
    the array would compromise security or other
    important properties, you will need to do something different.
   Storing a copy of the array is a better approach in many situations.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/374.html">CWE-374: Passing Mutable Objects to an Untrusted Method</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3820,6 +3861,8 @@ Thus, having a mutable instance field generally creates race conditions.
   In general, classes implement the <code>Runnable</code> interface because
   they are going to have their <code>run()</code> method invoked in a new thread,
   in which case <code>Thread.start()</code> is the right method to call.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/572.html">CWE-572: Call to Thread run() instead of start()</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -4135,6 +4178,8 @@ than most people recognize, and empty synchronized blocks
 are almost never a better solution
 than less contrived solutions.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/585.html">CWE-585: Empty Synchronized Block</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -4779,6 +4824,8 @@ is generally easy and good defensive programming.
 <![CDATA[
   <p> This method contains a switch statement where one case branch will fall through to the next case.
   Usually you need to end this case with a break or return.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/484.html">CWE-484: Omitted Break Statement in Switch</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -4803,6 +4850,8 @@ cases.
   <p> A value stored in the previous switch case is overwritten here due to a switch fall through. It is likely that
     you forgot to put a break or return at the end of the previous case.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/484.html">CWE-484: Omitted Break Statement in Switch</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -4815,6 +4864,8 @@ cases.
     an exception is thrown. It is likely that
     you forgot to put a break or return at the end of the previous case.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/484.html">CWE-484: Omitted Break Statement in Switch</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -5425,6 +5476,8 @@ throwing an Exception).
 If you don't check the result, you won't notice if the method invocation
 signals unexpected behavior by returning an atypical return value.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/253.html">CWE-253: Incorrect Check of Function Return Value</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -6490,6 +6543,8 @@ You can make the field volatile to correct the problem.
 For more information, see the
 <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a>.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/543.html">CWE-543: Use of Singleton Pattern Without Synchronization in a Multithreaded Context</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -6508,6 +6563,8 @@ any other thread from accessing the stored object until it is fully initialized.
 <p>Even if you feel confident that the method is never called by multiple
 threads, it might be better to not set the static field until the value
 you are setting it to is fully populated/initialized.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/543.html">CWE-543: Use of Singleton Pattern Without Synchronization in a Multithreaded Context</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -6937,6 +6994,8 @@ is overwritten here. This often indicates a mistaken belief that
 the write to the parameter will be conveyed back to
 the caller.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7100,6 +7159,9 @@ does not need to be created, just access the static methods directly using the c
     ... deal with all non-runtime exceptions ...
 }
 </code></pre>
+<\p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/396.html">CWE-396: Declaration of Catch for Generic Exception</a>.
+<\p>
   ]]>
      </Details>
   </BugPattern>
@@ -7459,6 +7521,8 @@ double value2 = x / (double) y;
 This code seems to be storing a non-serializable object into an HttpSession.
 If this session is passivated or migrated, an error will result.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/579.html">CWE-579: J2EE Bad Practices: Non-serializable Object Stored in Session</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7674,6 +7738,8 @@ an indication of some misunderstanding or some other logic error.
 If you really want to test the value for being null, perhaps it would be clearer to do
 better to do a null test rather than an instanceof test.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/571.html">CWE-571: Expression is Always True</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -8086,6 +8152,8 @@ and the next method is supposed to change the state of the iterator.
       an if or while expression. Most probably this was supposed to be a boolean comparison using
       ==, not an assignment using =.
       </p>
+      <p>See <a href="https://cwe.mitre.org/data/definitions/481.html">CWE-481: Assigning instead of Comparing</a>.
+      <\p>
       ]]>
     </Details>
   </BugPattern>
