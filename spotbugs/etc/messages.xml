@@ -2609,6 +2609,8 @@ will need to be changed in order to compile it in later versions of Java.</p>
   <p> This method might drop an exception.&nbsp; In general, exceptions
   should be handled or reported in some way, or they should be thrown
   out of the method.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/754.html">CWE-754: Improper Check for Unusual or Exceptional Conditions</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -2620,6 +2622,8 @@ will need to be changed in order to compile it in later versions of Java.</p>
   <p> This method might ignore an exception.&nbsp; In general, exceptions
   should be handled or reported in some way, or they should be thrown
   out of the method.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/754.html">CWE-754: Improper Check for Unusual or Exceptional Conditions</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -3694,6 +3698,8 @@ using the <code>equals(Object)</code> method instead.</p>
 <![CDATA[
   <p> This field is annotated with net.jcip.annotations.GuardedBy or javax.annotation.concurrent.GuardedBy,
 but can be accessed in a way that seems to violate those annotations.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/366.html">CWE-366: Race Condition within a Thread</a>.
+<\p>
 ]]>
 </Details>
   </BugPattern>
@@ -3740,7 +3746,8 @@ Thus, having a mutable instance field generally creates race conditions.
   a lock is held.&nbsp; Also, even when the detector is accurate in
   distinguishing locked vs. unlocked accesses, the code in question may still
   be correct.</p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/366.html">CWE-366: Race Condition within a Thread</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7092,6 +7099,8 @@ Often, this indicates an error, because the value computed is never
 used. There is a field with the same name as the local variable. Did you
 mean to assign to that variable instead?
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7111,6 +7120,8 @@ Note that Sun's javac compiler often generates dead stores for
 final local variables. Because SpotBugs is a bytecode-based tool,
 there is no easy way to eliminate these false positives.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7124,6 +7135,8 @@ there is no easy way to eliminate these false positives.
 This statement assigns to a local variable in a return statement. This assignment
 has no effect. Please verify that this statement does the right thing.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7137,6 +7150,8 @@ A postfix increment/decrement does not impact the value of the expression,
 so this increment/decrement has no effect.
 Please verify that this statement does the right thing.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7158,6 +7173,8 @@ In Java 5 and later, it does not.
 <p>See Oracle's <a href="http://www.oracle.com/technetwork/java/javase/compatibility-137462.html#literal">article on Java SE compatibility</a>
 for more details and examples, and suggestions on how to force class initialization in Java 5+.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7170,6 +7187,8 @@ for more details and examples, and suggestions on how to force class initializat
 read. This store may have been introduced to assist the garbage collector, but
 as of Java SE 6.0, this is no longer needed or useful.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7501,6 +7520,8 @@ or
 <pre><code>static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
 long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7529,6 +7550,8 @@ Date getDate(int seconds) { return new Date(seconds * 1000L); }
 // better, works for all dates
 Date getDate(long seconds) { return new Date(seconds * 1000); }
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7547,7 +7570,8 @@ It is likely that the operation that generated the value to be passed
 to Math.round was intended to be performed using
 floating point arithmetic.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7567,7 +7591,8 @@ It is likely that the operation that generated the value to be passed
 to Math.ceil was intended to be performed using double precision
 floating point arithmetic.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7593,6 +7618,8 @@ double value1 = x / y;
 // Right: yields result 0.4
 double value2 = x / (double) y;
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7897,6 +7924,8 @@ For example
 <p>
 Consider using <code>s.replace(".", "/")</code> or <code>s.split("\\.")</code> instead.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/185.html">CWE-185: Incorrect Regular Expression</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7910,6 +7939,8 @@ The code here uses a regular expression that is invalid according to the syntax
 for regular expressions. This statement will throw a PatternSyntaxException when
 executed.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/185.html">CWE-185: Incorrect Regular Expression</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7927,6 +7958,8 @@ regular expression as an escape character. Among other options, you can just use
 <code>File.separator</code>
 
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/185.html">CWE-185: Incorrect Regular Expression</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7940,6 +7973,8 @@ The code performs an increment/decrement operation (e.g., <code>i++</code> / <co
 immediately overwrites it. For example, <code>i = i++</code> / <code>i = i--</code> immediately
 overwrites the incremented/decremented value with the original value.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
@@ -7954,6 +7989,8 @@ cast to a short or byte, which discards the upper bits of the result.
 Since the upper bits are discarded, there may be no difference between
 a signed and unsigned right shift (depending upon the size of the shift).
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+<\p>
 ]]>
     </Details>
   </BugPattern>
