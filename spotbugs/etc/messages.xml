@@ -1937,7 +1937,7 @@ factory pattern to create these objects.</p>
     <Details>
       <![CDATA[
     <p>It's recommended to use the predefined library constant for code clarity and better precision.</p>
-    <p>See <a href="https://cwe.mitre.org/data/definitions/1106.html"CWE-1106: Insufficient Use of Symbolic Constants</a>.<\p>
+    <p>See <a href="https://cwe.mitre.org/data/definitions/1106.html">CWE-1106: Insufficient Use of Symbolic Constants</a>.<\p>
 ]]>
     </Details>
   </BugPattern>
