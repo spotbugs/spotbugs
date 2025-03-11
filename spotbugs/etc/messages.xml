@@ -7342,7 +7342,6 @@ does not need to be created, just access the static methods directly using the c
     ... deal with all non-runtime exceptions ...
 }
 </code></pre>
-<\p>
 <p>See <a href="https://cwe.mitre.org/data/definitions/396.html">CWE-396: Declaration of Catch for Generic Exception</a>.
 <\p>
   ]]>
