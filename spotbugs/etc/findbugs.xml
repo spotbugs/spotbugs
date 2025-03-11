@@ -1287,10 +1287,10 @@
           <BugPattern abbrev="FB" type="FB_UNEXPECTED_WARNING" category="CORRECTNESS"/>
           <BugPattern abbrev="FB" type="FB_MISSING_EXPECTED_WARNING" category="CORRECTNESS"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED"
-                    category="MT_CORRECTNESS"/>
+                    category="MT_CORRECTNESS" cweid="252"/>
           <BugPattern abbrev="LG" type="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"
                     category="EXPERIMENTAL"/>
-          <BugPattern abbrev="Dm" type="DM_DEFAULT_ENCODING" category="I18N" />
+          <BugPattern abbrev="Dm" type="DM_DEFAULT_ENCODING" category="I18N" cweid="173"/>
           <BugPattern abbrev="NP" type="NP_METHOD_RETURN_RELAXING_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="STYLE" deprecated="true" />
@@ -1301,7 +1301,7 @@
           <BugPattern abbrev="MC" type="MC_OVERRIDABLE_METHOD_CALL_IN_CLONE" category="MALICIOUS_CODE" />
           <BugPattern abbrev="MC" type="MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT" category="MALICIOUS_CODE" />
           <BugPattern abbrev="SSD" type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA" category="MT_CORRECTNESS" cweid="667"/>
-          <BugPattern abbrev="FL" type="FL_FLOATS_AS_LOOP_COUNTERS" category="CORRECTNESS" />
+          <BugPattern abbrev="FL" type="FL_FLOATS_AS_LOOP_COUNTERS" category="CORRECTNESS" cweid="1339"/>
           <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION" category="BAD_PRACTICE" cweid="397"/>
           <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION" category="BAD_PRACTICE" cweid="397"/>
           <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_CLAUSE_THROWABLE" category="BAD_PRACTICE" cweid="397"/>
