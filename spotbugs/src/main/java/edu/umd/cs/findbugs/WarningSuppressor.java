@@ -79,6 +79,13 @@ public abstract class WarningSuppressor implements Matcher {
         return true;
     }
 
+    /**
+     * @return true if useless suppressions should be reported.
+     */
+    public boolean isUselessSuppressionReportable() {
+        return true;
+    }
+
     public abstract BugInstance buildUselessSuppressionBugInstance(UselessSuppressionDetector detector);
 
     @Override
