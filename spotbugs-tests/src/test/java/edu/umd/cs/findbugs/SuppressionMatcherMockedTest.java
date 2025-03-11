@@ -57,6 +57,8 @@ class SuppressionMatcherMockedTest {
         // given
         when(suppressor.match(bugInstance)).thenReturn(false);
         when(suppressor.buildUselessSuppressionBugInstance(any())).thenReturn(uselessSuppressionBugInstance);
+        when(suppressor.isUselessSuppressionReportable()).thenReturn(true);
+
         SuppressionMatcher matcher = new SuppressionMatcher();
         // when
         matcher.addSuppressor(suppressor);
