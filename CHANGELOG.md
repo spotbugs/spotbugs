@@ -7,12 +7,13 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 ### Added
-
 - Introduced `UselessSuppressionDetector` to report the useless annotations instead of `NoteSuppressedWarnings` ([#3348](https://github.com/spotbugs/spotbugs/issues/3348))
+
+### Changed
+- Add relevant CWE ids to bugs and refer the CWEs in the bug messages ([#3354](https://github.com/spotbugs/spotbugs/pull/3354)).
 
 ## 4.9.2 - 2025-03-01
 ### Added
-
 - Reporting useless `@SuppressFBWarnings` annotations ([#641](https://github.com/spotbugs/spotbugs/issues/641))
 
 ### Fixed
