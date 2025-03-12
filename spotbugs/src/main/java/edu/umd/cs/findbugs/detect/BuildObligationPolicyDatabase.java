@@ -282,11 +282,6 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         }
     }
 
-    @Override
-    public String getDetectorClassName() {
-        return this.getClass().getName();
-    }
-
     private void addBuiltInPolicies() {
 
         // Add the database entries describing methods that add and delete
