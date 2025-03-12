@@ -9,12 +9,12 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class FindImproperSynchronizationWithAccessibleBackingCollectionsTest extends AbstractIntegrationTest {
-    private static final String METHOD_BUG = "US_UNSAFE_METHOD_SYNCHRONIZATION";
-    private static final String STATIC_METHOD_BUG = "US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION";
-    private static final String OBJECT_BUG = "US_UNSAFE_OBJECT_SYNCHRONIZATION";
-    private static final String ACCESSIBLE_OBJECT_BUG = "US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION";
-    private static final String INHERITABLE_OBJECT_BUG = "US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION";
-    private static final String EXPOSED_LOCK_OBJECT_BUG = "US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION";
+    private static final String METHOD_BUG = "USO_UNSAFE_METHOD_SYNCHRONIZATION";
+    private static final String STATIC_METHOD_BUG = "USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION";
+    private static final String OBJECT_BUG = "USO_UNSAFE_OBJECT_SYNCHRONIZATION";
+    private static final String ACCESSIBLE_OBJECT_BUG = "USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION";
+    private static final String INHERITABLE_OBJECT_BUG = "USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION";
+    private static final String EXPOSED_LOCK_OBJECT_BUG = "USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION";
     private static final String BAD_BACKING_COLLECTION = "USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION";
     private static final String ACCESSIBLE_BACKING_COLLECTION = "USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION";
     private static final String INHERITABLE_BACKING_COLLECTION = "USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION";

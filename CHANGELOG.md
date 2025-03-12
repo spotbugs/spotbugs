@@ -10,12 +10,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 - Introduced `UselessSuppressionDetector` to report the useless annotations instead of `NoteSuppressedWarnings` ([#3348](https://github.com/spotbugs/spotbugs/issues/3348))
 - New detector `FindImproperSynchronization` and introduced new bug types:
-  - `US_UNSAFE_METHOD_SYNCHRONIZATION` is reported when using synchronized methods with the class' accessible intrinsic lock,
-  - `US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION` is reported when using static synchronized methods with the class' exposed intrinsic lock,
-  - `US_UNSAFE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is visible from the outside,
-  - `US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside,
-  - `US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is can be altered by subclasses,
-  - `US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is later exposed in the subclasses.
+  - `USO_UNSAFE_METHOD_SYNCHRONIZATION` is reported when using synchronized methods with the class' accessible intrinsic lock,
+  - `USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION` is reported when using static synchronized methods with the class' exposed intrinsic lock,
+  - `USO_UNSAFE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is visible from the outside,
+  - `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside,
+  - `USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is can be altered by subclasses,
+  - `USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is later exposed in the subclasses.
   - `USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION` is reported when the backing collection of a lock is visible from the outside,
   - `USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION` is reported when the backing collection of a lock is made accessible, with methods that update or return the lock, to the outside,
   - `USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION` is reported when the backing collection of a lock can be altered by subclasses.

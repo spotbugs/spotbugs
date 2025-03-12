@@ -32,7 +32,6 @@ import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -186,7 +185,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
         if (xMethod.isPublic() && xMethod.isSynchronized()) {
             if (xMethod.isStatic()) {
                 bugReporter.reportBug(new BugInstance(
-                        this, "US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION", NORMAL_PRIORITY)
+                        this, "USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION", NORMAL_PRIORITY)
                         .addClassAndMethod(this));
             }
             synchronizedMethods.add(xMethod);
@@ -201,7 +200,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
             return;
         }
 
-        SignatureParser signature = new SignatureParser(xMethod.getSignature());
+        GenericSignatureParser signature = new GenericSignatureParser(xMethod.getSignature());
         String returnType = signature.getReturnTypeSignature();
         String javaStyleClassType = "L" + getClassName() + ";";
         if (returnType.equals(javaStyleClassType)) {
@@ -342,7 +341,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
             String exposingMethodsMessage = buildMethodsMessage(exposingMethods);
             for (XMethod synchronizedMethod : synchronizedMethods) {
                 bugReporter.reportBug(new BugInstance(
-                        this, "US_UNSAFE_METHOD_SYNCHRONIZATION", NORMAL_PRIORITY)
+                        this, "USO_UNSAFE_METHOD_SYNCHRONIZATION", NORMAL_PRIORITY)
                         .addClassAndMethod(synchronizedMethod)
                         .addString(exposingMethodsMessage));
             }
@@ -676,7 +675,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
         String exposingMethodsMessage = buildMethodsMessage(exposingMethods);
         for (XMethod lockUsingMethod : lockUsingMethods) {
             bugReporter.reportBug(new BugInstance(
-                    this, "US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY)
+                    this, "USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY)
                     .addClass(this)
                     .addMethod(lockUsingMethod)
                     .addField(lock)
@@ -688,7 +687,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
         if (!definedLockAccessors.isEmpty()) {
             String problematicMethods = buildMethodsMessage(definedLockAccessors);
             bugReporter.reportBug(new BugInstance(
-                    this, "US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY)
+                    this, "USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY)
                     .addClass(this)
                     .addMethod(synchronizedMethods.get(lock))
                     .addField(lock)
@@ -699,7 +698,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
     private void reportInheritedObjectBugs(XField lock, Collection<XMethod> synchronizedMethods) {
         for (XMethod synchronizedMethod : synchronizedMethods) {
             bugReporter.reportBug(new BugInstance(
-                    this, "US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION", LOW_PRIORITY)
+                    this, "USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION", LOW_PRIORITY)
                     .addClass(this)
                     .addMethod(synchronizedMethod)
                     .addField(lock));
@@ -709,7 +708,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
     private void reportObjectBugs(XField lock, Collection<XMethod> synchronizedMethods) {
         for (XMethod synchronizedMethod : synchronizedMethods) {
             bugReporter.reportBug(new BugInstance(
-                    this, "US_UNSAFE_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY)
+                    this, "USO_UNSAFE_OBJECT_SYNCHRONIZATION", NORMAL_PRIORITY)
                     .addClass(this)
                     .addMethod(synchronizedMethod)
                     .addField(lock));

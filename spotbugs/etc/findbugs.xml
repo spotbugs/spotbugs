@@ -693,12 +693,12 @@
                     reports="ENV_USE_PROPERTY_INSTEAD_OF_ENV"/>
           <Detector class="edu.umd.cs.findbugs.detect.MultipleInstantiationsOfSingletons" speed="fast"
                     reports="SING_SINGLETON_IMPLEMENTS_CLONEABLE,SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE,SING_SINGLETON_IMPLEMENTS_CLONE_METHOD,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR,SING_SINGLETON_IMPLEMENTS_SERIALIZABLE,SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" />
-          <Detector class="edu.umd.cs.findbugs.detect.FindImproperSynchronization" speed="fast"
-                    reports="US_UNSAFE_METHOD_SYNCHRONIZATION,US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION,US_UNSAFE_OBJECT_SYNCHRONIZATION,US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION,US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION,US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION,USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION,USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION,USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION"/>
           <Detector class="edu.umd.cs.findbugs.detect.SharedVariableAtomicityDetector"
                     reports="AT_NONATOMIC_64BIT_PRIMITIVE,AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE,AT_STALE_THREAD_WRITE_OF_PRIMITIVE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod" speed="fast"
                     reports="HSM_HIDING_METHOD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindImproperSynchronization" speed="fast"
+                    reports="USO_UNSAFE_METHOD_SYNCHRONIZATION,USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION,USO_UNSAFE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION,USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION,USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION,USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION"/>
 
           <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
@@ -1336,15 +1336,6 @@
           <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE" category="CORRECTNESS" />
           <BugPattern abbrev="SING" type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" category="CORRECTNESS" />
           <BugPattern abbrev="ENV" type="ENV_USE_PROPERTY_INSTEAD_OF_ENV" category="BAD_PRACTICE" />
-          <BugPattern abbrev="US" type="US_UNSAFE_METHOD_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
-          <BugPattern abbrev="US" type="US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
-          <BugPattern abbrev="US" type="US_UNSAFE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
-          <BugPattern abbrev="US" type="US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
-          <BugPattern abbrev="US" type="US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
-          <BugPattern abbrev="US" type="US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
-          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION" category="SECURITY" />
-          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION" category="SECURITY" />
-          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION" category="SECURITY" />
           <BugPattern abbrev="AT" type="AT_NONATOMIC_64BIT_PRIMITIVE" category="MT_CORRECTNESS" />
           <BugPattern abbrev="AT" type="AT_STALE_THREAD_WRITE_OF_PRIMITIVE" category="MT_CORRECTNESS" />
           <BugPattern abbrev="AT" type="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE" category="MT_CORRECTNESS"/>
@@ -1354,4 +1345,13 @@
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD" category="STYLE"/>
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER" category="STYLE"/>
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_PACKAGE" category="STYLE"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_METHOD_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION" category="SECURITY" />
+          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION" category="SECURITY" />
+          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION" category="SECURITY" />
 </FindbugsPlugin>
