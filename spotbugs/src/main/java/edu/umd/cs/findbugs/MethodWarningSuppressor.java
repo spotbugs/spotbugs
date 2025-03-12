@@ -7,11 +7,14 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
 
     private static final String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_METHOD";
 
-    MethodAnnotation method;
+    private final MethodAnnotation method;
+    private final boolean syntheticMethod;
 
-    public MethodWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, MethodAnnotation method) {
+    public MethodWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, MethodAnnotation method,
+            boolean syntheticMethod) {
         super(bugPattern, matchType, clazz);
         this.method = method;
+        this.syntheticMethod = syntheticMethod;
     }
 
     @Override
@@ -36,5 +39,10 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
         return new BugInstance(detector, BUG_TYPE, PRIORITY)
                 .addClass(clazz.getClassDescriptor())
                 .addMethod(method);
+    }
+
+    @Override
+    public boolean isUselessSuppressionReportable() {
+        return !syntheticMethod;
     }
 }

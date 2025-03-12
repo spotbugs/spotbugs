@@ -66,7 +66,7 @@ class SuppressionMatcherTest {
         // given
         MethodAnnotation method = new MethodAnnotation(CLASS_NAME, "test", "bool test()", false);
         BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 1).addClass(CLASS_NAME).addMethod(method);
-        matcher.addSuppressor(new MethodWarningSuppressor("UUF_UNUSED_FIELD", SuppressMatchType.DEFAULT, CLASS_ANNOTATION, method));
+        matcher.addSuppressor(new MethodWarningSuppressor("UUF_UNUSED_FIELD", SuppressMatchType.DEFAULT, CLASS_ANNOTATION, method, false));
         // when
         boolean matched = matcher.match(bug);
         // then
