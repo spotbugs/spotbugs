@@ -1583,15 +1583,6 @@ public int hashCode() {
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true">
-  <ShortDescription>Notify avec deux verrous en cours</ShortDescription>
-  <LongDescription>notify() ou notifyAll*() avec deux verrous en cours dans {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Le code appelle <code>notify()</code> ou <code>notifyAll()</code> alors que deux verrous sans en cours. Si cette notification tente de réveiller un <code>wait()</code> basé sur les mêmes verrous cela peut provoquer un inter-blocage puisque le <code>wait()</code> ne libérera qu'un des verrous et que le <code>notify()</code> ne pourra pas récupérer l'autre verrou et échouera. Si il y a aussi une alarme sur un <code>wait()</code> avec deux verrous, la probabilité d'une erreur est plutôt élevée.</p>
-]]>
-  </Details>
- </BugPattern>
  <BugPattern type="UW_UNCOND_WAIT">
   <ShortDescription>Méthode contenant un wait() non conditionné</ShortDescription>
   <LongDescription>La méthode {1} contient un wait() non conditionné</LongDescription>
@@ -2126,15 +2117,6 @@ Si c'est bien le cas, retirez la déclaration d'une valeur de retour.</p>
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" deprecated="true">
-  <ShortDescription>Lecture d'un champ non initalisé dans le constructeur</ShortDescription>
-  <LongDescription>Lecture d'un champ non initalisé dans le constructeur {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Lecture d'un champ qui n'est jamais initialisé dans aucun constructeur, et qui sera <code>null</code> une fois l'initialisation de l'objet terminée. Ce peut être un erreur de code, ou bien la classe contenant le champ est construite de telle manière que le champ est écrit en fonction de l'appel de méthodes dans un certain ordre (un peu délicat mais pas nécessairement mauvais).</p>
-]]>
-  </Details>
- </BugPattern>
  <BugPattern type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
   <ShortDescription>Champ non initialisé dans le constructeur</ShortDescription>
   <LongDescription>Le champ n'est pas initialisé dans le constructeur {1}</LongDescription>
@@ -2431,20 +2413,6 @@ if (argv.length == 1);
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">
-  <ShortDescription>Comparaison redondante à null d'une valeur préalablement vérifiée</ShortDescription>
-  <LongDescription>Comparaison redondante à null d'une valeur préalablement vérifiée dans {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Cette méthode contient une comparaison redondante d'une référence à <code>null</code>. Deux types de comparaisons redondantes sont signalés :</p>
-<ul>
-<li>les deux valeurs sont définitivement à <code>null</code></li>
-<li>une valeur est définitivement à <code>null</code> et l'autre ne pourra jamais l'être</li>
-</ul>
-<p>Cette alarme signale généralement qu'une variable connue pour être différente de <code>null</code> est comparée avec <code>null</code>. Bien que le test ne soit pas nécessaire, ce peut-être un simple cas de programmation défensive.</p>
-]]>
-  </Details>
- </BugPattern>
  <BugPattern type="UL_UNRELEASED_LOCK">
   <ShortDescription>La méthode ne libère pas un verrou dans tous les chemins d'exécution</ShortDescription>
   <LongDescription>La méthode {1} ne libère pas un verrou dans tous les chemins d'exécution</LongDescription>
@@ -2650,15 +2618,6 @@ public void foo() {
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true">
-  <ShortDescription>Initialisation paresseuse incorrecte d'un champ d'instance</ShortDescription>
-  <LongDescription>Initialisation paresseuse incorrecte du champ d'instance {2} dans {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Cette méthode contient une initialisation paresseuse non synchronisée d'un champ non <code>volatile</code>. Comme le compilateur ou le processeur peuvent réordonner les instructions, les threads ne sont pas certains de voir un objet complètement initialisé, <em>si la méthode peut-être appelée par de multiples threads</em>. Vous pouvez rendre le champs <code>volatile</code> pour corriger le problème. Pour plus d'informations, cf. <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">site Web sur le modèle mémoire de Java</a>.</p>
-]]>
-  </Details>
- </BugPattern>
  <BugPattern type="LI_LAZY_INIT_STATIC">
   <ShortDescription>Initialisation paresseuse incorrecte d'un champ statique</ShortDescription>
   <LongDescription>Initialisation paresseuse incorrecte du champ statique {2} dans {1}</LongDescription>
@@ -2789,15 +2748,6 @@ String s = buf.toString();
   <Details>
 <![CDATA[
 <p>Cette méthode surcharge une méthode provenant d'une classe mère qui est un <code>Adapter</code> qui implémente un <code>Listener</code> défini dans le paquetage <code>java.awt.event</code> ou <code>javax.swing.event</code>. En conséquence, cette méthode ne sera pas appelée quand l'évènement se produira.</p>
-]]>
-  </Details>
- </BugPattern>
- <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">
-  <ShortDescription>La méthode essaye d'accéder à un champ de ResultSet avec l'index 0</ShortDescription>
-  <LongDescription>La méthode {1} essaye au champ d'index 0 d'un ResultSet</LongDescription>
-  <Details>
-<![CDATA[
-<p>Un appel à la méthode <code>getXXX()</code> ou <code>updateXXX()</code> d'un <code>ResultSet</code> est effectué avec l'index de champ 0. Comme l'index des champs de <code>ResultSet</code> commence à 1 c'est toujours une erreur.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -3137,15 +3087,6 @@ double value2 =  x / (double) y;
   <Details>
 <![CDATA[
 <p>Ce trantypage lancera toujours une exception <code>ClassCastException</code>.</p>
-]]>
-  </Details>
- </BugPattern>
- <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true">
-  <ShortDescription>Une valeur connue pour être à null est vérifiée pour savoir si elle est une instance d'un type</ShortDescription>
-  <LongDescription>Une valeur connue pour être à null est vérifiée pour savoir si elle est une instance d'un type dans {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Ce test <code>instanceof</code> renverra systématiquement <code>false</code>, puisqu'il est garanti que la valeur testée sera à <code>null</code>. Bien que ce test soit sûr, il est probable qu'il indique une incompréhension ou une erreur de logique.</p>
 ]]>
   </Details>
  </BugPattern>

@@ -53,11 +53,6 @@ public abstract class ClassNodeDetector extends ClassNode implements Detector2 {
     }
 
     @Override
-    public String getDetectorClassName() {
-        return this.getClass().getName();
-    }
-
-    @Override
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 
         FBClassReader cr = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);

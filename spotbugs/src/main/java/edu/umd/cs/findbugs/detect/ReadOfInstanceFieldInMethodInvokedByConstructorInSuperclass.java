@@ -53,7 +53,9 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
         this.accumulator = new BugAccumulator(bugReporter);
     }
 
-    Set<XField> initializedFields, nullCheckedFields;
+    Set<XField> initializedFields;
+
+    Set<XField> nullCheckedFields;
 
     @Override
     public void visit(Code obj) {

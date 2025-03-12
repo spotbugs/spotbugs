@@ -73,7 +73,11 @@ public class Filter {
          */
         public static final long MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000L;
 
-        Pattern classPattern, bugPattern, callsPattern;
+        Pattern classPattern;
+
+        Pattern bugPattern;
+
+        Pattern callsPattern;
 
         public boolean notSpecified = false;
 

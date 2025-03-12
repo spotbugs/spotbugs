@@ -746,7 +746,7 @@ classes using singleton design pattern. </p>
   <Detector class="edu.umd.cs.findbugs.detect.ThrowingExceptions">
     <Details>
 <![CDATA[
-<p> This detector looks for methods throwing RuntimeException and methods 
+<p> This detector looks for methods throwing RuntimeException and methods
 that have Exception or Throwable in their throws clause. </p>
 ]]>
     </Details>
@@ -1723,7 +1723,7 @@ factory pattern to create these objects.</p>
                cause of the error than a "false is not true" message which would
                result from asserting the result of the instanceof operator.
             </p>
-			<p>It is a fast detector</p>
+            <p>It is a fast detector</p>
             ]]>
     </Details>
   </Detector>
@@ -1855,13 +1855,6 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.FindImproperSynchronization">
-    <Details>
-      <![CDATA[
-            <p>Finds bad synchronizations on accessible lock objects and lock objects with accessible backing collections.</p>
-      ]]>
-    </Details>
-  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.SharedVariableAtomicityDetector">
     <Details>
       <![CDATA[
@@ -1882,7 +1875,21 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
-
+  <Detector class="edu.umd.cs.findbugs.detect.UselessSuppressionDetector">
+    <Details>
+      <![CDATA[
+            <p> Looks for unnecessary uses of the edu.umd.cs.findbugs.annotations.NoteSuppressWarnings annotation.</p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindImproperSynchronization">
+    <Details>
+      <![CDATA[
+            <p>Finds bad synchronizations on accessible lock objects and lock objects with accessible backing collections.
+            </p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -3893,22 +3900,6 @@ Language Specification</a> for details.
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true"> <!-- never generated -->
-    <ShortDescription>Notify with two locks held</ShortDescription>
-    <LongDescription>notify() or notifyAll*() with two locks held in {1}</LongDescription>
-    <Details>
-<![CDATA[
-  <p> The code calls notify() or notifyAll() while two locks
-  are held. If this notification is intended to wake up a wait()
-  that is holding the same locks, it may deadlock, since the wait
-  will only give up one lock and the notify will be unable to get both locks,
-  and thus the notify will not succeed.
-   &nbsp; If there is also a warning about a two lock wait, the
-   probability of a bug is quite high.
-</p>
-]]>
-    </Details>
-  </BugPattern>
   <BugPattern type="UW_UNCOND_WAIT">
     <ShortDescription>Unconditional wait</ShortDescription>
     <LongDescription>Unconditional wait in {1}</LongDescription>
@@ -5861,26 +5852,6 @@ known to be null.</p>
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true"> <!-- deprecated in favor of two separate RCN_ patterns -->
-    <ShortDescription>Redundant comparison to null of previously checked value</ShortDescription>
-    <LongDescription>Redundant comparison to null of previously checked {2} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p> This method contains a redundant comparison of a reference value
-to null. Two types of redundant comparison are reported:
-</p>
-<ul>
-<li> Both values compared are definitely null</li>
-<li> One value is definitely null and the other is definitely not null</li>
-</ul>
-
-<p> This particular warning generally indicates that a
-value known not to be null was checked against null.
-While the check is not necessary, it may simply be a case
-of defensive programming.</p>
-]]>
-    </Details>
-  </BugPattern>
   <BugPattern type="UL_UNRELEASED_LOCK">
     <ShortDescription>Method does not release lock on all paths</ShortDescription>
     <LongDescription>{1} does not release lock on all paths</LongDescription>
@@ -6513,22 +6484,6 @@ which is parsed like <code>((e &amp; A) | B) == C</code> while <code>(e &amp; (A
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true"> <!-- never generated? -->
-    <ShortDescription>Incorrect lazy initialization of instance field</ShortDescription>
-    <LongDescription>Incorrect lazy initialization of instance field {2} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p> This method contains an unsynchronized lazy initialization of a non-volatile field.
-Because the compiler or processor may reorder instructions,
-threads are not guaranteed to see a completely initialized object,
-<em>if the method can be called by multiple threads</em>.
-You can make the field volatile to correct the problem.
-For more information, see the
-<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a>.
-</p>
-]]>
-    </Details>
-  </BugPattern>
   <BugPattern type="LI_LAZY_INIT_STATIC">
     <ShortDescription>Incorrect lazy initialization of static field</ShortDescription>
     <LongDescription>Incorrect lazy initialization of static field {2} in {1}</LongDescription>
@@ -6862,16 +6817,6 @@ or
 <p> This method overrides a method found in a parent class, where that class is an Adapter that implements
 a listener defined in the java.awt.event or javax.swing.event package. As a result, this method will not
 get called when the event occurs.</p>
-]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true"> <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
-    <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
-    <LongDescription>{1} attempts to access a result set field with index 0</LongDescription>
-    <Details>
-<![CDATA[
-<p> A call to getXXX or updateXXX methods of a result set was made where the
-field index is 0. As ResultSet fields start at index 1, this is always a mistake.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7544,9 +7489,9 @@ If the object is, indeed, non-serializable, an error will result.
 <p>
 This format string includes a newline character (\n). In format strings, it is generally
  preferable to use %n, which will produce the platform-specific line separator.
- 
+
  When using text blocks introduced in Java 15, use the <code>\</code> escape sequence:
-	 
+
 <code>String value = """
                 first line%n\
                 second line%n\
@@ -7700,19 +7645,6 @@ such cases, but may miss some.
     </Details>
   </BugPattern>
   <BugPattern type="NP_NULL_INSTANCEOF">
-    <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
-    <LongDescription>A known null value is checked to see if it is an instance of {2} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-This instanceof test will always return false, since the value being checked is guaranteed to be null.
-Although this is safe, make sure it isn't
-an indication of some misunderstanding or some other logic error.
-</p>
-]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true"> <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
     <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
     <LongDescription>A known null value is checked to see if it is an instance of {2} in {1}</LongDescription>
     <Details>
@@ -8872,7 +8804,7 @@ object explicitly.</p>
 
   <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR">
     <ShortDescription>An overridable method is called from a constructor</ShortDescription>
-    <LongDescription>Overridable method {2} is called from constructor {1}.</LongDescription>
+    <LongDescription>Overridable method {2.nameAndSignature} is called from constructor {1}.</LongDescription>
     <Details>
       <![CDATA[<p>
       Calling an overridable method during in a constructor may result in the use of uninitialized data. It may also
@@ -8886,7 +8818,7 @@ object explicitly.</p>
 
   <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_CLONE">
     <ShortDescription>An overridable method is called from the clone() method.</ShortDescription>
-    <LongDescription>Overridable method {2} is called from method clone() in class {0}.</LongDescription>
+    <LongDescription>Overridable method {2.nameAndSignature} is called from method clone() in class {0}.</LongDescription>
     <Details>
       <![CDATA[<p>
       Calling overridable methods from the clone() method is insecure because a subclass could override the method,
@@ -8900,7 +8832,7 @@ object explicitly.</p>
   </BugPattern>
   <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT">
     <ShortDescription>An overridable method is called from the readObject method.</ShortDescription>
-    <LongDescription>Overridable method {2} is called from readObject.</LongDescription>
+    <LongDescription>Overridable method {2.nameAndSignature} is called from readObject.</LongDescription>
     <Details>
       <![CDATA[<p>
       The readObject() method must not call any overridable methods. Invoking overridable methods from the readObject()
@@ -8946,7 +8878,7 @@ object explicitly.</p>
     <Details>
       <![CDATA[
         <p>
-        This class is using singleton design pattern and does not implement the Cloneable interface, but implements the clone() method without being an unconditional CloneNotSupportedException-thrower. 
+        This class is using singleton design pattern and does not implement the Cloneable interface, but implements the clone() method without being an unconditional CloneNotSupportedException-thrower.
         With that, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
         Therefore, implementing the clone method should be avoided, otherwise the solution would be overriding the clone method to unconditionally throw CloneNotSupportedException.<br><br>
 
@@ -8986,9 +8918,9 @@ object explicitly.</p>
     <Details>
       <![CDATA[
         <p>
-        Instance-getter method of class using singleton design pattern is not synchronized. When this method is invoked by two or more threads simultaneously, 
+        Instance-getter method of class using singleton design pattern is not synchronized. When this method is invoked by two or more threads simultaneously,
         multiple instantiation of a singleton class becomes possible.<br><br>
-        
+
         <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
         </p>]]>
     </Details>
@@ -9027,13 +8959,13 @@ Using floating-point variables should not be used as loop counters, as they are 
       <![CDATA[
         <p>
         Method intentionally throws RuntimeException.<br>
-        
-        According to the <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable">SEI CERT ERR07-J rule</a>, 
+
+        According to the <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable">SEI CERT ERR07-J rule</a>,
         throwing a RuntimeException may cause errors, like the caller not being able to examine the exception and therefore cannot properly recover from it.<br>
 
-        Moreover, throwing a RuntimeException would force the caller to catch RuntimeException and therefore violate the 
+        Moreover, throwing a RuntimeException would force the caller to catch RuntimeException and therefore violate the
         <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors">SEI CERT ERR08-J rule</a>.<br>
-        
+
         Please note that you can derive from Exception or RuntimeException and may throw a new instance of that exception.
         </p>]]>
     </Details>
@@ -9048,9 +8980,9 @@ Using floating-point variables should not be used as loop counters, as they are 
 
 
         When declaring a method, the types of exceptions in the throws clause should be the most specific.
-        Therefore, using Exception in the throws clause would force the caller to either use it in its own throws clause, or use it in a try-catch block (when it does not necessarily 
+        Therefore, using Exception in the throws clause would force the caller to either use it in its own throws clause, or use it in a try-catch block (when it does not necessarily
         contain any meaningful information about the thrown exception).<br><br>
-        
+
         For more information, see the <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable">SEI CERT ERR07-J rule</a>.
         </p>]]>
     </Details>
@@ -9064,11 +8996,11 @@ Using floating-point variables should not be used as loop counters, as they are 
         Method lists Throwable in its throws clause.<br>
 
         When declaring a method, the types of exceptions in the throws clause should be the most specific.
-        Therefore, using Throwable in the throws clause would force the caller to either use it in its own throws clause, or use it in a try-catch block (when it does not necessarily 
+        Therefore, using Throwable in the throws clause would force the caller to either use it in its own throws clause, or use it in a try-catch block (when it does not necessarily
         contain any meaningful information about the thrown exception).<br>
-        
+
         Furthermore, using Throwable like that is semantically a bad practice, considered that Throwables include Errors as well, but by definition they occur in unrecoverable scenarios.<br><br>
-        
+
         For more information, see the <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable">SEI CERT ERR07-J rule</a>.
         </p>]]>
     </Details>
@@ -9393,171 +9325,6 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
-  <BugPattern type="US_UNSAFE_METHOD_SYNCHRONIZATION">
-    <ShortDescription>Instead of synchronized methods, use private final lock objects with block synchronization</ShortDescription>
-    <LongDescription>Method {1} uses intrinsic lock of class {0} for synchronization, that is exposed by {2}.</LongDescription>
-    <Details>
-      <![CDATA[<p>
-        Synchronized methods use the class object as a monitor (that is, its intrinsic lock), thus an attacker, if it has access to the object,
-        can exploit the system by indefinitely locking the object, leading to a Denial of Service (DoS) scenario.
-
-        This can be resolved in two ways: either by using a private final lock object with block synchronization or by restricting access to the class.
-        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
-
-        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION">
-    <ShortDescription>Instead of static synchronized methods, use private final lock objects with block synchronization</ShortDescription>
-    <LongDescription>Static synchronized method {1} uses intrinsic lock of class {0} for synchronization, exposing the class to untrusted code.</LongDescription>
-    <Details>
-      <![CDATA[<p>
-        Static synchronized methods use the class object as a monitor (that is, its intrinsic lock), thus an attacker,
-        if it has access to an instance of the class or the subclass, can gain access to the class object using <code>getClass()</code> and
-        indefinitely lock the object, leading to a Denial of Service (DoS) scenario.
-
-        This can be resolved in two ways: either by using a private static final lock object with block synchronization or by restricting access to the class.
-        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
-
-        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="US_UNSAFE_OBJECT_SYNCHRONIZATION">
-    <ShortDescription>Use private final lock objects in synchronization blocks</ShortDescription>
-    <LongDescription>The lock object {2} used in method {1} is visible outside the class, thus exposing class {0}.</LongDescription>
-    <Details>
-      <![CDATA[<p>
-        Synchronizing on a non-private lock object can lead to security vulnerabilities.
-        Untrusted code can gain access to the lock object, and can exploit the system to execute unsafe operations.
-
-        In scenarios where a thread synchronizes on the lock and enters the synchronized block, untrusted code can manipulate the lock object,
-        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
-        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
-
-        A public lock object can be accessed directly by untrusted code, while protected lock objects expose the lock object to subclasses. Then subclasses can use the lock object for synchronizing with unrelated operations.
-        Generally a package-private lock object can be useful inside a sealed package if used with care, but it is still exposed to all classes in the package.
-
-        This can be resolved by declaring the lock object as private final, which restricts access to the lock object, providing granularity and enhanced security.
-
-        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION">
-    <ShortDescription>Use private final lock objects in synchronization blocks when the lock is accessible</ShortDescription>
-    <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, through updating or returning its value from {3}.</LongDescription>
-    <Details>
-      <![CDATA[<p>
-        Synchronizing on a lock object that is made accessible to outside classes by returning it from a method or updating it through a method can lead to security vulnerabilities.
-        Untrusted code can gain access to the lock or modify its value and exploit the system.
-
-        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
-        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
-        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
-
-        This can be resolved in two ways: either by using another object as a private final lock object, or by removing or restricting the visibility of the functions, which update or return the lock object.
-        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
-
-        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION">
-    <ShortDescription>Use private final lock objects in synchronization blocks, when class can be extended</ShortDescription>
-    <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, because the class is open for extension.</LongDescription>
-    <Details>
-      <![CDATA[<p>
-        Declaring a lock object that is visible to outside classes or subclasses might lead to security vulnerabilities.
-        Untrusted code can access the lock object, and it can exploit the system to execute unsafe operations.
-
-        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
-        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
-        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
-
-        Generally it is not a problem to use a protected or package-private lock object if it is used with great care and thought, but it still might cause problems.
-        A protected lock object declared in a non-final class can be accessed by subclasses, which can use the lock object for synchronizing with unrelated operations.
-        Similar the case with a package-private lock object, which is exposed to all classes in the package.
-
-        This can be resolved by declaring the lock object as private final, which restricts access to the lock object, providing granularity and enhanced security.
-
-        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION">
-    <ShortDescription>Do not expose inherited lock objects through methods by updating or returning them</ShortDescription>
-    <LongDescription>The lock object {2} - used in method {1} from super class - is exposed to untrusted in class {0}, through updating or returning it in {3}.</LongDescription>
-    <Details>
-      <![CDATA[<p>
-        Synchronizing on a lock that is made accessible in the class hierarchy can lead to security vulnerabilities.
-        Untrusted code can access the lock object, and it can exploit the system to execute unsafe operations.
-
-        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
-        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
-        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
-
-        This can be resolved in two ways: either by restricting access to the current lock object or using another private final object as lock object.
-        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
-
-        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION">
-    <ShortDescription>Do not synchronize on a collection view when the backing collection is accessible</ShortDescription>
-    <LongDescription>The collection lock object {2}, used in method {1} at line {4}, that has {3} as a visible backing collection outside of class {0}.</LongDescription>
-    <Details>
-      <![CDATA[<p>
-         Synchronizing a collection view when its backing collection is accessible can lead to nondeterministic behavior.
-
-         The <a href="https://docs.oracle.com/javase/tutorial/collections/implementations/wrapper.html">Java Wrapper implementations</a> warns about the consequences
-         of synchronizing on the collection view rather than the backing collection itself.
-         Failing to comply with this can end up using two distinct locking strategies and violates thread safety.
-
-         To solve this issue, synchronize on the backing collection object instead of the collection view.
-
-         See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible">LCK04-J. Do not synchronize on a collection view if the backing collection is accessible</a>.
-      </p>]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION">
-    <ShortDescription>Do not synchronize on a collection view, when the backing collection is accessible through methods</ShortDescription>
-    <LongDescription>The collection lock object {2}, used in method {1} at line {4}, has {3} as a backing collection that is made accessible from outside class {0}, by method(s) {5}.</LongDescription>
-    <Details>
-      <![CDATA[<p>
-         Synchronizing a collection view when its backing collection is made accessible through a method, that updates
-          its value or returns it, can lead to nondeterministic behavior.
-
-         The <a href="https://docs.oracle.com/javase/tutorial/collections/implementations/wrapper.html">Java Wrapper implementations</a> warns about the consequences
-         of synchronizing on the collection view rather than the backing collection itself.
-         Failing to comply with this can end up using two distinct locking strategies and violates thread safety.
-
-         To solve this issue, synchronize on the backing collection object instead of the collection view.
-
-         See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible">LCK04-J. Do not synchronize on a collection view if the backing collection is accessible</a>.
-      </p>]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION">
-    <ShortDescription>Do not synchronize on a collection view, when the backing collection is made accessible through class extension</ShortDescription>
-    <LongDescription>The collection lock object {2}, used in method {1} at line {4}, has {3} as a backing collection, that is exposed to untrusted code outside of class {0}, because the class is open for extension.</LongDescription>
-    <Details>
-      <![CDATA[<p>
-         Synchronizing a collection view with a backing collection that is visible outside classes or subclass,
-         might lead to nondeterministic behavior.
-
-         The <a href="https://docs.oracle.com/javase/tutorial/collections/implementations/wrapper.html">Java Wrapper implementations</a> warns about the consequences
-         of synchronizing on the collection view rather than the backing collection itself.
-         Failing to comply with this can end up using two distinct locking strategies and violates thread safety.
-
-         To solve this issue, synchronize on the backing collection object instead of the collection view.
-
-         See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible">LCK04-J. Do not synchronize on a collection view if the backing collection is accessible</a>.
-      </p>]]>
-    </Details>
-  </BugPattern>
   <BugPattern type="AT_NONATOMIC_64BIT_PRIMITIVE">
     <ShortDescription>This write of this 64-bit primitive variable may not atomic</ShortDescription>
     <LongDescription>This write of the 64-bit primitive variable "{2.name}" may not atomic</LongDescription>
@@ -9571,7 +9338,7 @@ Using floating-point variables should not be used as loop counters, as they are 
           This bug can be ignored in platforms which guarantee that 64-bit long and double type read and write operations are atomic.
         </p>
         <p>
-          To fix it, declare the variable volatile, change the type of the field to the corresponding atomic type from <code>java.lang.concurrent.atomic<\code> or correctly synchronize the code.
+          To fix it, declare the variable volatile, change the type of the field to the corresponding atomic type from <code>java.lang.concurrent.atomic</code> or correctly synchronize the code.
           Declaring the variable volatile may not be enough in some cases: e.g. when the variable is assigned a value which depends on the current value or on the result of nonatomic compound operations.
         </p>
      ]]>
@@ -9588,7 +9355,7 @@ Using floating-point variables should not be used as loop counters, as they are 
           Consequently, the thread may observe a stale value of the shared variable.
         </p>
         <p>
-          To fix it, declare the variable volatile, change the type of the field to the corresponding atomic type from <code>java.lang.concurrent.atomic<\code> or correctly synchronize the code.
+          To fix it, declare the variable volatile, change the type of the field to the corresponding atomic type from <code>java.lang.concurrent.atomic</code> or correctly synchronize the code.
           Declaring the variable volatile may not be enough in some cases: e.g. when the variable is assigned a value which depends on the current value or on the result of nonatomic compound operations.
           This guarantees that 64-bit primitive long and double variables are accessed atomically.
         </p>
@@ -9615,6 +9382,233 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
 
+  <BugPattern type="US_USELESS_SUPPRESSION_ON_CLASS">
+    <ShortDescription>Useless suppression on a class</ShortDescription>
+    <LongDescription>Suppressing annotation on the class {0} is unnecessary</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
+      Leaving them may result in accidental warnings suppression.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="US_USELESS_SUPPRESSION_ON_FIELD">
+    <ShortDescription>Useless suppression on a field</ShortDescription>
+    <LongDescription>Suppressing annotation on the field {1} is unnecessary</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
+      Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="US_USELESS_SUPPRESSION_ON_METHOD">
+    <ShortDescription>Useless suppression on a method</ShortDescription>
+    <LongDescription>Suppressing annotation on the method {1} is unnecessary</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
+      Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER">
+    <ShortDescription>Useless suppression on a method parameter</ShortDescription>
+    <LongDescription>Suppressing annotation on the parameter {2} of the method {1} is unnecessary</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
+      Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="US_USELESS_SUPPRESSION_ON_PACKAGE">
+    <ShortDescription>Useless suppression on a package</ShortDescription>
+    <LongDescription>Suppressing annotation on the package {0} is unnecessary</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Suppressing annotation <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
+      Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
+      </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="US_UNSAFE_METHOD_SYNCHRONIZATION">
+    <ShortDescription>Instead of synchronized methods, use private final lock objects with block synchronization</ShortDescription>
+    <LongDescription>Method {1} uses intrinsic lock of class {0} for synchronization, that is exposed by {2}.</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Synchronized methods use the class object as a monitor (that is, its intrinsic lock), thus an attacker, if it has access to the object,
+      can exploit the system by indefinitely locking the object, leading to a Denial of Service (DoS) scenario.
+
+      This can be resolved in two ways: either by using a private final lock object with block synchronization or by restricting access to the class.
+      Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
+
+      <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.
+      </p>]]>
+      </Details>
+  </BugPattern>
+  <BugPattern type="US_UNSAFE_STATIC_METHOD_SYNCHRONIZATION">
+        <ShortDescription>Instead of static synchronized methods, use private final lock objects with block synchronization</ShortDescription>
+        <LongDescription>Static synchronized method {1} uses intrinsic lock of class {0} for synchronization, exposing the class to untrusted code.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+        Static synchronized methods use the class object as a monitor (that is, its intrinsic lock), thus an attacker,
+        if it has access to an instance of the class or the subclass, can gain access to the class object using <code>getClass()</code> and
+        indefinitely lock the object, leading to a Denial of Service (DoS) scenario.
+
+        This can be resolved in two ways: either by using a private static final lock object with block synchronization or by restricting access to the class.
+        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+        </Details>
+    </BugPattern>
+    <BugPattern type="US_UNSAFE_OBJECT_SYNCHRONIZATION">
+        <ShortDescription>Use private final lock objects in synchronization blocks</ShortDescription>
+        <LongDescription>The lock object {2} used in method {1} is visible outside the class, thus exposing class {0}.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+        Synchronizing on a non-private lock object can lead to security vulnerabilities.
+        Untrusted code can gain access to the lock object, and can exploit the system to execute unsafe operations.
+
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, untrusted code can manipulate the lock object,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
+        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
+
+        A public lock object can be accessed directly by untrusted code, while protected lock objects expose the lock object to subclasses. Then subclasses can use the lock object for synchronizing with unrelated operations.
+        Generally a package-private lock object can be useful inside a sealed package if used with care, but it is still exposed to all classes in the package.
+
+        This can be resolved by declaring the lock object as private final, which restricts access to the lock object, providing granularity and enhanced security.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+        </Details>
+    </BugPattern>
+    <BugPattern type="US_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION">
+        <ShortDescription>Use private final lock objects in synchronization blocks when the lock is accessible</ShortDescription>
+        <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, through updating or returning its value from {3}.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+        Synchronizing on a lock object that is made accessible to outside classes by returning it from a method or updating it through a method can lead to security vulnerabilities.
+        Untrusted code can gain access to the lock or modify its value and exploit the system.
+
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
+        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
+
+        This can be resolved in two ways: either by using another object as a private final lock object, or by removing or restricting the visibility of the functions, which update or return the lock object.
+        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+        </Details>
+    </BugPattern>
+    <BugPattern type="US_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION">
+        <ShortDescription>Use private final lock objects in synchronization blocks, when class can be extended</ShortDescription>
+        <LongDescription>The lock object {2} used in method {1} is exposed to untrusted code outside of class {0}, because the class is open for extension.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+        Declaring a lock object that is visible to outside classes or subclasses might lead to security vulnerabilities.
+        Untrusted code can access the lock object, and it can exploit the system to execute unsafe operations.
+
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
+        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
+
+        Generally it is not a problem to use a protected or package-private lock object if it is used with great care and thought, but it still might cause problems.
+        A protected lock object declared in a non-final class can be accessed by subclasses, which can use the lock object for synchronizing with unrelated operations.
+        Similar the case with a package-private lock object, which is exposed to all classes in the package.
+
+        This can be resolved by declaring the lock object as private final, which restricts access to the lock object, providing granularity and enhanced security.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+        </Details>
+    </BugPattern>
+    <BugPattern type="US_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION">
+        <ShortDescription>Do not expose inherited lock objects through methods by updating or returning them</ShortDescription>
+        <LongDescription>The lock object {2} - used in method {1} from super class - is exposed to untrusted in class {0}, through updating or returning it in {3}.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+        Synchronizing on a lock that is made accessible in the class hierarchy can lead to security vulnerabilities.
+        Untrusted code can access the lock object, and it can exploit the system to execute unsafe operations.
+
+        In scenarios where a thread synchronizes on the lock and enters the synchronized block, an attacker can access the lock object or update its value,
+        allowing another thread to synchronize on the new value and concurrently enter the synchronized block.
+        Alternatively, an attacker can indefinitely hold the lock object, resulting in a Denial of Service (DoS) scenario.
+
+        This can be resolved in two ways: either by restricting access to the current lock object or using another private final object as lock object.
+        Using a private final lock object is generally preferred, as it offers enhanced security and granularity of control.
+
+        <p>For more details read SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">LCK00-J. Use private final lock objects to synchronize classes that may interact with untrusted code</a>.</p>
+      ]]>
+        </Details>
+    </BugPattern>
+    <BugPattern type="USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION">
+        <ShortDescription>Do not synchronize on a collection view when the backing collection is accessible</ShortDescription>
+        <LongDescription>The collection lock object {2}, used in method {1} at line {4}, that has {3} as a visible backing collection outside of class {0}.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+         Synchronizing a collection view when its backing collection is accessible can lead to nondeterministic behavior.
+
+         The <a href="https://docs.oracle.com/javase/tutorial/collections/implementations/wrapper.html">Java Wrapper implementations</a> warns about the consequences
+         of synchronizing on the collection view rather than the backing collection itself.
+         Failing to comply with this can end up using two distinct locking strategies and violates thread safety.
+
+         To solve this issue, synchronize on the backing collection object instead of the collection view.
+
+         See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible">LCK04-J. Do not synchronize on a collection view if the backing collection is accessible</a>.
+      </p>]]>
+        </Details>
+    </BugPattern>
+    <BugPattern type="USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION">
+        <ShortDescription>Do not synchronize on a collection view, when the backing collection is accessible through methods</ShortDescription>
+        <LongDescription>The collection lock object {2}, used in method {1} at line {4}, has {3} as a backing collection that is made accessible from outside class {0}, by method(s) {5}.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+         Synchronizing a collection view when its backing collection is made accessible through a method, that updates
+          its value or returns it, can lead to nondeterministic behavior.
+
+         The <a href="https://docs.oracle.com/javase/tutorial/collections/implementations/wrapper.html">Java Wrapper implementations</a> warns about the consequences
+         of synchronizing on the collection view rather than the backing collection itself.
+         Failing to comply with this can end up using two distinct locking strategies and violates thread safety.
+
+         To solve this issue, synchronize on the backing collection object instead of the collection view.
+
+         See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible">LCK04-J. Do not synchronize on a collection view if the backing collection is accessible</a>.
+      </p>]]>
+        </Details>
+    </BugPattern>
+    <BugPattern type="USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION">
+        <ShortDescription>Do not synchronize on a collection view, when the backing collection is made accessible through class extension</ShortDescription>
+        <LongDescription>The collection lock object {2}, used in method {1} at line {4}, has {3} as a backing collection, that is exposed to untrusted code outside of class {0}, because the class is open for extension.</LongDescription>
+        <Details>
+            <![CDATA[<p>
+         Synchronizing a collection view with a backing collection that is visible outside classes or subclass,
+         might lead to nondeterministic behavior.
+
+         The <a href="https://docs.oracle.com/javase/tutorial/collections/implementations/wrapper.html">Java Wrapper implementations</a> warns about the consequences
+         of synchronizing on the collection view rather than the backing collection itself.
+         Failing to comply with this can end up using two distinct locking strategies and violates thread safety.
+
+         To solve this issue, synchronize on the backing collection object instead of the collection view.
+
+         See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible">LCK04-J. Do not synchronize on a collection view if the backing collection is accessible</a>.
+      </p>]]>
+        </Details>
+    </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -9776,8 +9770,9 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
+  <BugCode abbrev="HSM">Avoid method hiding</BugCode>
+  <BugCode abbrev="US">Useless suppression</BugCode>
   <BugCode abbrev="US">Use private final lock objects for synchronization</BugCode>
   <BugCode abbrev="USBC">Synchronization on a view when backing collection is accessible</BugCode>
-  <BugCode abbrev="HSM">Avoid method hiding</BugCode>
 </MessageCollection>
 

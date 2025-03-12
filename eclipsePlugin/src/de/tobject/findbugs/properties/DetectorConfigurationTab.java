@@ -102,7 +102,8 @@ public class DetectorConfigurationTab extends Composite {
         @Override
         public int compare(DetectorFactory factory1, DetectorFactory factory2) {
             int result = 0;
-            String s1, s2;
+            String s1;
+            String s2;
             switch (getSortColumnId()) {
             case BUG_CODES:
                 s1 = tab.getBugsAbbreviation(factory1);

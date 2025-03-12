@@ -56,8 +56,6 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     private static final String EQUALS_SIGNATURE = "(Ljava/lang/Object;)Z";
 
-    private static final String STATIC_EQUALS_SIGNATURE = "(Ljava/lang/Object;Ljava/lang/Object;)Z";
-
     Map<ClassDescriptor, Set<ClassDescriptor>> classesWithGetClassBasedEquals = new HashMap<>();
 
     Map<ClassDescriptor, Set<ClassDescriptor>> classesWithInstanceOfBasedEquals = new HashMap<>();
@@ -169,7 +167,11 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
         bugAccumulator.reportAccumulatedBugs();
     }
 
-    boolean sawInstanceOf, sawInstanceOfSupertype, sawCheckedCast;
+    boolean sawInstanceOf;
+
+    boolean sawInstanceOfSupertype;
+
+    boolean sawCheckedCast;
 
     boolean sawGetClass;
 
@@ -183,11 +185,15 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     boolean sawInitialIdentityCheck;
 
-    boolean alwaysTrue, alwaysFalse;
+    boolean alwaysTrue;
+
+    boolean alwaysFalse;
 
     int equalsCalls;
 
-    boolean sawGoodEqualsClass, sawBadEqualsClass;
+    boolean sawGoodEqualsClass;
+
+    boolean sawBadEqualsClass;
 
     boolean sawCompare;
 
