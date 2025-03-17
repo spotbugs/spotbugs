@@ -7,15 +7,15 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 
+### Changed
+- Add relevant CWE ids to bugs and refer the CWEs in the bug messages ([#3354](https://github.com/spotbugs/spotbugs/pull/3354)).
+
 ## 4.9.3 - 2025-03-14
 ### Added
 - Introduced `UselessSuppressionDetector` to report the useless annotations instead of `NoteSuppressedWarnings` ([#3348](https://github.com/spotbugs/spotbugs/issues/3348))
 
 ### Fixed
 - Do not report `US_USELESS_SUPPRESSION_ON_METHOD` on synthetic methods ([#3351](https://github.com/spotbugs/spotbugs/issues/3351))
-
-### Changed
-- Add relevant CWE ids to bugs and refer the CWEs in the bug messages ([#3354](https://github.com/spotbugs/spotbugs/pull/3354)).
 
 ## 4.9.2 - 2025-03-01
 ### Added
