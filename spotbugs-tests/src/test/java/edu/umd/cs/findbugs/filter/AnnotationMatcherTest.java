@@ -18,6 +18,7 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -146,6 +147,23 @@ class AnnotationMatcherTest {
                 .count();
 
         assertEquals(4, numberOfMatchedBugs);
+    }
+
+    @Test
+    void testFilteringWithAnnotationOnClassMembers(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/GeneratedOnClassMembers.class"));
+
+        assertEquals(2, bugCollection.getCollection().size());
+        assertEquals(
+                List.of("NP_TOSTRING_COULD_RETURN_NULL", "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"),
+                bugCollection.getCollection().stream().map(BugInstance::getType).sorted().toList());
+        AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher(annotationName);
+        long numberOfMatchedBugs = bugCollection.getCollection().stream()
+                .filter(bugInstanceMatcher::match)
+                .count();
+
+        assertEquals(2, numberOfMatchedBugs);
     }
 
     private String writeXMLAndGetStringOutput(AnnotationMatcher matcher, boolean disabled) throws IOException {
