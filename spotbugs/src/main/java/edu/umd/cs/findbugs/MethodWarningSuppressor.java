@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.annotations.SuppressMatchType;
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.detect.UselessSuppressionDetector;
 
 public class MethodWarningSuppressor extends ClassWarningSuppressor {
@@ -8,6 +9,11 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
     private static final String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_METHOD";
 
     private final MethodAnnotation method;
+    
+    /**
+     * Indicates whether this method was "user generated" as defined in {@link MemberUtils#isUserGenerated(org.apache.bcel.classfile.FieldOrMethod)}
+     * When a method is not user generated we are not interested in reporting warnings, in particular we do not want to report US_USELESS_SUPPRESSION_ON_METHOD
+     */
     private final boolean userGeneratedMethod;
 
     public MethodWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, MethodAnnotation method,
