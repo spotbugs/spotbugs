@@ -6,6 +6,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Changed
+- `AnnotationMatcher` can now ignore bugs if annotation is also applied on methods or fields. Previously only annotations on classes were considered.
 
 ## 4.9.3 - 2025-03-14
 ### Added
