@@ -1,0 +1,1 @@
+Built with `lombok.extern.findbugs.addSuppressFBWarnings = true` in `lombok.config`
