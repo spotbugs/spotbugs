@@ -500,7 +500,8 @@ def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
     '-artifactRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse"
+    '-source', "${buildDir}/site/eclipse",
+    '-vm', "${System.getProperty('java.home')}/bin" // TODO : May not work on Windows
 }
 
 def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', Exec) {
@@ -516,7 +517,8 @@ def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', 
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
     '-artifactRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse-candidate"
+    '-source', "${buildDir}/site/eclipse-candidate",
+    '-vm', "${System.getProperty('java.home')}/bin" // TODO : May not work on Windows
 }
 
 def generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
@@ -532,7 +534,8 @@ def generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
     '-artifactRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse-daily"
+    '-source', "${buildDir}/site/eclipse-daily",
+    '-vm', "${System.getProperty('java.home')}/bin" // TODO : May not work on Windows
 }
 
 def generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLatest', Exec) {
@@ -548,7 +551,8 @@ def generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLat
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-stable-latest", // TODO : May not work on Windows
     '-artifactRepository', "file:${buildDir}/site/eclipse-stable-latest", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse-stable-latest"
+    '-source', "${buildDir}/site/eclipse-stable-latest",
+    '-vm', "${System.getProperty('java.home')}/bin" // TODO : May not work on Windows
 }
 
 def eclipseSite = tasks.register('eclipseSite') {
