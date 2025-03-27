@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -85,8 +86,7 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
             @DottedClassName
             String classOfConstructedClass = getDottedClassConstantOperand();
             if (Subtypes2.instanceOf(classOfConstructedClass, "java.lang.ClassLoader")
-                    && !("main".equals(getMethodName()) && "([Ljava/lang/String;)V".equals(getMethodSig()) && getMethod()
-                            .isStatic())) {
+                    && !MemberUtils.isMainMethod(getMethod())) {
                 bugAccumulator.accumulateBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED", NORMAL_PRIORITY)
                         .addClassAndMethod(this).addClass(classOfConstructedClass), this);
             }

@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -315,8 +316,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
         private void reportWarning(Obligation obligation, State state, StateSet factAtExit) {
             String className = obligation.getClassName();
 
-            if (methodDescriptor.isStatic() && "main".equals(methodDescriptor.getName())
-                    && "([Ljava/lang/String;)V".equals(methodDescriptor.getSignature())
+            if (MemberUtils.isMainMethod(xmethod)
                     && (className.contains("InputStream") || className.contains("Reader") || factAtExit.isOnExceptionPath())) {
                 // Don't report unclosed input streams and readers in main()
                 // methods

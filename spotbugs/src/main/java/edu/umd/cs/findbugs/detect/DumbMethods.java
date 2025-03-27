@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.math.BigDecimal;
 import java.util.Iterator;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
@@ -632,8 +633,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
 
         // System.out.println(getFullyQualifiedMethodName());
-        isPublicStaticVoidMain = method.isPublic() && method.isStatic() && "main".equals(getMethodName())
-                || cName.toLowerCase().indexOf("benchmark") >= 0;
+        isPublicStaticVoidMain = MemberUtils.isMainMethod(method) || cName.toLowerCase().indexOf("benchmark") >= 0;
         prevOpcodeWasReadLine = false;
         Code code = method.getCode();
         if (code != null) {
