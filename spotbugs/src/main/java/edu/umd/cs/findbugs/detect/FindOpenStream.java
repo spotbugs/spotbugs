@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantPool;
@@ -366,10 +367,6 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         return new StreamResourceTracker(streamFactoryList, bugReporter);
     }
 
-    public static boolean isMainMethod(Method method) {
-        return method.isStatic() && "main".equals(method.getName()) && "([Ljava/lang/String;)V".equals(method.getSignature());
-    }
-
     @Override
     public void analyzeMethod(ClassContext classContext, Method method, StreamResourceTracker resourceTracker,
             ResourceCollection<Stream> resourceCollection) throws CFGBuilderException, DataflowAnalysisException {
@@ -481,7 +478,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 
             String sourceFile = javaClass.getSourceFileName();
             String leakClass = stream.getStreamBase();
-            if (isMainMethod(method) && (leakClass.contains("InputStream") || leakClass.contains("Reader"))) {
+            if (MemberUtils.isMainMethod(method) && (leakClass.contains("InputStream") || leakClass.contains("Reader"))) {
                 return;
             }
 

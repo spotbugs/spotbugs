@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.List;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
@@ -116,7 +117,7 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
             if ("java/util/logging/Logger".equals(getClassConstantOperand())
                     && namesOfSetterMethods.contains(getNameConstantOperand())) {
                 int priority = HIGH_PRIORITY;
-                if (getMethod().isStatic() && "main".equals(getMethodName()) && "([Ljava/lang/String;)V".equals(getMethodSig())) {
+                if (MemberUtils.isMainMethod(getMethod())) {
                     priority = NORMAL_PRIORITY;
                 }
 
