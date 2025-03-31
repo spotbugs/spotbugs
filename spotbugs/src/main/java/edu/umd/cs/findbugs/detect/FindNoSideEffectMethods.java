@@ -567,11 +567,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         case Const.INVOKESPECIAL:
         case Const.INVOKEINTERFACE:
         case Const.INVOKEVIRTUAL: {
-            XMethod xMethodOperand = getXMethodOperand();
-            MethodDescriptor methodDescriptorOperand = xMethodOperand == null ? getMethodDescriptorOperand()
-                    : xMethodOperand
-                            .getMethodDescriptor();
-            if (changesOnlyNewObjects(getMethodDescriptorOperand())) {
+            MethodDescriptor methodDescriptorOperand = getMethodDescriptorOperand();
+            if (changesOnlyNewObjects(methodDescriptorOperand)) {
                 break;
             }
             MethodCall methodCall = getMethodCall(methodDescriptorOperand);
