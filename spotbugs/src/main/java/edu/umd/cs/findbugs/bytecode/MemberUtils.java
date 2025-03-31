@@ -177,4 +177,30 @@ public final class MemberUtils {
     public static boolean isUserGenerated(final FieldGenOrMethodGen m) {
         return (!internalIsSynthetic(m) || (m instanceof MethodGen && couldBeLambda((MethodGen) m))) && !isGeneratedMethod(m);
     }
+
+    /**
+     * Checks if the given method is a main method. It takes into account the changes introduced in JEP 445.
+     * A main method has non-private access, is named "main", returns void, and has a single string array argument or has no arguments.
+     * @see <a href="https://openjdk.org/jeps/445">JEP 445: Unnamed Classes and Instance Main Methods</a>
+     *
+     * @param method The method to check
+     * @return true if the method is a main method, false otherwise
+     */
+    public static boolean isMainMethod(final Method method) {
+        return !method.isPrivate() && "main".equals(method.getName())
+                && ("([Ljava/lang/String;)V".equals(method.getSignature()) || "()V".equals(method.getSignature()));
+    }
+
+    /**
+     * Checks if the given method is a main method. It takes into account the changes introduced in JEP 445.
+     * A main method has non-private access, is named "main", returns void, and has a single string array argument or has no arguments.
+     * @see <a href="https://openjdk.org/jeps/445">JEP 445: Unnamed Classes and Instance Main Methods</a>
+     *
+     * @param method The method to check
+     * @return true if the method is a main method, false otherwise
+     */
+    public static boolean isMainMethod(final XMethod method) {
+        return !method.isPrivate() && "main".equals(method.getName())
+                && ("([Ljava/lang/String;)V".equals(method.getSignature()) || "()V".equals(method.getSignature()));
+    }
 }
