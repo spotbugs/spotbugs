@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.math.BigDecimal;
 import java.util.Iterator;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
@@ -84,7 +85,8 @@ public class DumbMethods extends OpcodeStackDetector {
     }
 
     private final class InvalidMinMaxSubDetector extends SubDetector {
-        Number lowerBound, upperBound;
+        Number lowerBound;
+        Number upperBound;
 
         @Override
         public void initMethod(Method method) {
@@ -631,8 +633,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
 
         // System.out.println(getFullyQualifiedMethodName());
-        isPublicStaticVoidMain = method.isPublic() && method.isStatic() && "main".equals(getMethodName())
-                || cName.toLowerCase().indexOf("benchmark") >= 0;
+        isPublicStaticVoidMain = MemberUtils.isMainMethod(method) || cName.toLowerCase().indexOf("benchmark") >= 0;
         prevOpcodeWasReadLine = false;
         Code code = method.getCode();
         if (code != null) {
@@ -1084,7 +1085,8 @@ public class DumbMethods extends OpcodeStackDetector {
                 if (stack.getStackDepth() > 0 && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.NON_NEGATIVE) {
                     OpcodeStack.Item top = stack.getStackItem(0);
                     if (top.getRegisterNumber() != -1 && getMaxPC() > getNextPC() + 6) {
-                        int jump1, jump2;
+                        int jump1;
+                        int jump2;
                         if (seen == Const.IFGE) {
                             jump1 = Const.IF_ICMPLT;
                             jump2 = Const.IF_ICMPLE;

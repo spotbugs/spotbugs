@@ -407,10 +407,4 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         }
 
     }
-
-    @Override
-    public String getDetectorClassName() {
-        return CheckExpectedWarnings.class.getName();
-    }
-
 }
