@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))
 - Do not report `US_USELESS_SUPPRESSION_ON_METHOD` on generated methods ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))
+- Rewrite some member in `ResourceValueFrame.java` to Enum ([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
 
 ## 4.9.3 - 2025-03-14
 ### Added
@@ -52,7 +53,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed a stack overflow in `MultipleInstantiationsOfSingletons` when a singleton initializer makes recursive calls ([#3280](https://github.com/spotbugs/spotbugs/issues/3280))
 - Fixed NPE in `FindReturnRef` on inner class fields ([#3283](https://github.com/spotbugs/spotbugs/issues/3283))
 - Fixed NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE false positive when add edu.umd.cs.findbugs.annotations.Nullable ([#3243](https://github.com/spotbugs/spotbugs/issues/3243))
-- Rewrite some member in `ResourceValueFrame.java` to Enum([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
 
 ## 4.9.0 - 2025-01-15
 ### Added
