@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))
+- Do not report `US_USELESS_SUPPRESSION_ON_METHOD` on generated methods ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))
 - Fix IllegalArgumentException thrown from `FindNoSideEffectMethods` detector ([#3320](https://github.com/spotbugs/spotbugs/issues/3320))
 
 ## 4.9.3 - 2025-03-14
