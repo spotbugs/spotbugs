@@ -78,14 +78,4 @@ public class DetectorToDetector2Adapter implements Detector2 {
             profiler.end(detector.getClass());
         }
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
-     */
-    @Override
-    public String getDetectorClassName() {
-        return detector.getClass().getName();
-    }
 }

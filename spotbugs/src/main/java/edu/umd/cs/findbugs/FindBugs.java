@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -189,15 +188,7 @@ public abstract class FindBugs {
      * are assumed to be files.
      */
     @StaticConstant
-    public static final Set<String> knownURLProtocolSet;
-    static {
-        Set<String> protocols = new HashSet<>();
-        protocols.add("file");
-        protocols.add("http");
-        protocols.add("https");
-        protocols.add("jar");
-        knownURLProtocolSet = Collections.unmodifiableSet(protocols);
-    }
+    public static final Set<String> knownURLProtocolSet = Set.of("file", "http", "https", "jar");
 
     /**
      * Set the FindBugs home directory.

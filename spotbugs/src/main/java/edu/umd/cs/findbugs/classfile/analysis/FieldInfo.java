@@ -56,7 +56,11 @@ public class FieldInfo extends FieldDescriptor implements XField {
     public static class Builder {
         final int accessFlags;
 
-        final String className, fieldName, fieldSignature;
+        final String className;
+
+        final String fieldName;
+
+        final String fieldSignature;
 
         String fieldSourceSignature;
 

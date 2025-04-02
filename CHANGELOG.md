@@ -6,17 +6,51 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+
+### Fixed
+- Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))
+- Do not report `US_USELESS_SUPPRESSION_ON_METHOD` on generated methods ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))
+
+## 4.9.3 - 2025-03-14
+### Added
+
+- Introduced `UselessSuppressionDetector` to report the useless annotations instead of `NoteSuppressedWarnings` ([#3348](https://github.com/spotbugs/spotbugs/issues/3348))
+
+### Fixed
+- Do not report `US_USELESS_SUPPRESSION_ON_METHOD` on synthetic methods ([#3351](https://github.com/spotbugs/spotbugs/issues/3351))
+
+## 4.9.2 - 2025-03-01
+### Added
+
+- Reporting useless `@SuppressFBWarnings` annotations ([#641](https://github.com/spotbugs/spotbugs/issues/641))
+
+### Fixed
+- Fixed html bug descriptions for AT_STALE_THREAD_WRITE_OF_PRIMITIVE and AT_NONATOMIC_64BIT_PRIMITIVE ([#3303](https://github.com/spotbugs/spotbugs/issues/3303))
+- Fixed an `HSM_HIDING_METHOD` false positive when ECJ generates a synthetic method for an enum switch ([#3305](https://github.com/spotbugs/spotbugs/issues/3305))
+- Fix `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` false negatives, detector depending on method order.
+- Fix `THROWS_METHOD_THROWS_CLAUSE_THROWABLE` reported in a method calling `MethodHandle.invokeExact` due to its polymorphic signature ([#3309](https://github.com/spotbugs/spotbugs/issues/3309))
+- Fix `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` false positive in inner class ([#3310](https://github.com/spotbugs/spotbugs/issues/3310)).
+- Fix `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` false positive for ECJ compiled enum switches ([#3316](https://github.com/spotbugs/spotbugs/issues/3316))
+- Fix `RC_REF_COMPARISON` false positive with Lombok With annotation ([#3319](https://github.com/spotbugs/spotbugs/pull/3319))
+- Avoid calling File.getCanonicalPath twice to improve performance ([#3325](https://github.com/spotbugs/spotbugs/pull/3325))
+- Fix `MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR` and `MC_OVERRIDABLE_METHOD_CALL_IN_CLONE` false positive when the overridable method is outside the class ([#3328](https://github.com/spotbugs/spotbugs/issues/3328)).
+- Fix NullPointerException thrown from `ThrowingExceptions` detector ([#3337](https://github.com/spotbugs/spotbugs/pull/3337)).
+
+### Removed
+- Removed the `TLW_TWO_LOCK_NOTIFY`, `LI_LAZY_INIT_INSTANCE`, `BRSA_BAD_RESULTSET_ACCESS`, `BC_NULL_INSTANCEOF`, `NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` and `RCN_REDUNDANT_CHECKED_NULL_COMPARISON` deprecated bug patterns.
+
+## 4.9.1 - 2025-02-02
 ### Added
 - New detector `SharedVariableAtomicityDetector` for new bug types `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE`, `AT_NONATOMIC_64BIT_PRIMITIVE` and `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` (See SEI CERT rules [VNA00-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA00-J.+Ensure+visibility+when+accessing+shared+primitive+variables), [VNA02-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic) and [VNA05-J](https://wiki.sei.cmu.edu/confluence/display/java/VNA05-J.+Ensure+atomicity+when+reading+and+writing+64-bit+values)).
-- New detector `FindHiddenMethod` for bug type `HSM_HIDING_METHOD`. This bug is reported whenever a subclass method hides the static method of super class. (See [SEI CERT MET07-J] (https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface)).
+- New detector `FindHiddenMethod` for bug type `HSM_HIDING_METHOD`. This bug is reported whenever a subclass method hides the static method of super class. (See [SEI CERT MET07-J](https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface)).
 
 ### Fixed
 - Fixed the parsing of generics methods in `ThrowingExceptions` ([#3267](https://github.com/spotbugs/spotbugs/issues/3267))
 - Accept the 1st parameter of `java.util.concurrent.CompletableFuture`'s `completeOnTimeout()`, `getNow()` and `obtrudeValue()` functions as nullable ([#1001](https://github.com/spotbugs/spotbugs/issues/1001)).
-- Fixed the an analysis error when `FindReturnRef` was checking instructions corresponding to a CFG branch that was optimized away ([#3266](https://github.com/spotbugs/spotbugs/issues/3266))
+- Fixed the analysis error when `FindReturnRef` was checking instructions corresponding to a CFG branch that was optimized away ([#3266](https://github.com/spotbugs/spotbugs/issues/3266))
 - Added execute file permission to files in the distribution archive ([#3274](https://github.com/spotbugs/spotbugs/issues/3274))
-- Fixed a stack overflow in  `MultipleInstantiationsOfSingletons` when a singleton initializer makes recursive calls ([#3280](https://github.com/spotbugs/spotbugs/issues/3280))
-- Fixed NPE in  `FindReturnRef` on inner class fields ([#3283](https://github.com/spotbugs/spotbugs/issues/3283))
+- Fixed a stack overflow in `MultipleInstantiationsOfSingletons` when a singleton initializer makes recursive calls ([#3280](https://github.com/spotbugs/spotbugs/issues/3280))
+- Fixed NPE in `FindReturnRef` on inner class fields ([#3283](https://github.com/spotbugs/spotbugs/issues/3283))
 - Fixed NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE false positive when add edu.umd.cs.findbugs.annotations.Nullable ([#3243](https://github.com/spotbugs/spotbugs/issues/3243))
 - Rewrite some member in `ResourceValueFrame.java` to Enum([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
 
@@ -112,7 +146,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE false positives due to source code formatting ([#2874](https://github.com/spotbugs/spotbugs/pull/2874))
 - Added more nullability annotations in TypeQualifierResolver ([#2558](https://github.com/spotbugs/spotbugs/issues/2558) [#2694](https://github.com/spotbugs/spotbugs/pull/2694))
 - Improved the bug description for VA_FORMAT_STRING_USES_NEWLINE when using text blocks, check the usage of String.formatted() ([#2881](https://github.com/spotbugs/spotbugs/pull/2881))
-- Fixed crash in ValueRangeAnalysisFactory when looking for redundant conditions used in assertions [#2887](https://github.com/spotbugs/spotbugs/pull/2887))
+- Fixed crash in ValueRangeAnalysisFactory when looking for redundant conditions used in assertions ([#2887](https://github.com/spotbugs/spotbugs/pull/2887))
 - Revert again commons-text from 1.11.0 to 1.10.0 to resolve a version conflict ([#2686](https://github.com/spotbugs/spotbugs/issues/2686))
 - Fixed false positive MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR when referencing but not calling an overridable method ([#2837](https://github.com/spotbugs/spotbugs/pull/2837))
 - Update the filter XSD namespace and location for the upcoming 4.8.4 release ([#2909](https://github.com/spotbugs/spotbugs/issues/2909))
@@ -271,7 +305,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed detector `UncallableMethodOfAnonymousClass` to not report unused methods of method-local enumerations and records ([#2120](https://github.com/spotbugs/spotbugs/issues/2120))
 - Fixed detector `FindSqlInjection` to detect bug `SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE SQL` with high priority in case of unsafe appends also in Java 11 and above ([#2183](https://github.com/spotbugs/spotbugs/issues/2183))
 - Fixed detector `StringConcatenation` to detect bug `SBSC_USE_STRINGBUFFER_CONCATENATION` also in Java 11 and above ([#2182](https://github.com/spotbugs/spotbugs/issues/2182))
-- Fixed `OpcodeStackDetector` to to handle propagation of taints properly in case of string concatenation in Java 9 and above ([#2195](https://github.com/spotbugs/spotbugs/issues/2195))
+- Fixed `OpcodeStackDetector` to handle propagation of taints properly in case of string concatenation in Java 9 and above ([#2195](https://github.com/spotbugs/spotbugs/issues/2195))
 - Bump up log4j2 binding to `2.19.0`
 - Bump ObjectWeb ASM from 9.3 to 9.4 supporting JDK 20 ([#2200](https://github.com/spotbugs/spotbugs/pull/2200))
 - Bump up commons-text to 1.10.0 ([#2197](https://github.com/spotbugs/spotbugs/pull/2197))

@@ -62,7 +62,9 @@ public class Churn {
     }
 
     static class Data {
-        int persist, fixed;
+        int persist;
+
+        int fixed;
 
         int maxRemovedAtOnce() {
             int count = 0;

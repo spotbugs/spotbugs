@@ -68,7 +68,8 @@ public class StandardTypeMerger implements TypeMerger, ExtendedTypes {
         if (b == null) {
             return a;
         }
-        byte aType = a.getType(), bType = b.getType();
+        byte aType = a.getType();
+        byte bType = b.getType();
 
         if (aType == T_TOP) {
             return b;

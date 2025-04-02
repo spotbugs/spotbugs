@@ -75,7 +75,8 @@ import edu.umd.cs.findbugs.classfile.engine.bcel.FinallyDuplicatesInfoFactory.Fi
  */
 public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRangeAnalysisFactory.ValueRangeAnalysis> {
     private static class TypeLongRange {
-        long min, max;
+        long min;
+        long max;
         String signature;
 
         public TypeLongRange(long min, long max, String signature) {
@@ -96,17 +97,13 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
     }
 
-    private static final Map<String, TypeLongRange> typeRanges;
-
-    static {
-        typeRanges = new HashMap<>();
-        typeRanges.put("Z", new TypeLongRange(0, 1, "Z"));
-        typeRanges.put("B", new TypeLongRange(Byte.MIN_VALUE, Byte.MAX_VALUE, "B"));
-        typeRanges.put("S", new TypeLongRange(Short.MIN_VALUE, Short.MAX_VALUE, "S"));
-        typeRanges.put("I", new TypeLongRange(Integer.MIN_VALUE, Integer.MAX_VALUE, "I"));
-        typeRanges.put("J", new TypeLongRange(Long.MIN_VALUE, Long.MAX_VALUE, "J"));
-        typeRanges.put("C", new TypeLongRange(Character.MIN_VALUE, Character.MAX_VALUE, "C"));
-    }
+    private static final Map<String, TypeLongRange> typeRanges = Map.of(
+            "Z", new TypeLongRange(0, 1, "Z"),
+            "B", new TypeLongRange(Byte.MIN_VALUE, Byte.MAX_VALUE, "B"),
+            "S", new TypeLongRange(Short.MIN_VALUE, Short.MAX_VALUE, "S"),
+            "I", new TypeLongRange(Integer.MIN_VALUE, Integer.MAX_VALUE, "I"),
+            "J", new TypeLongRange(Long.MIN_VALUE, Long.MAX_VALUE, "J"),
+            "C", new TypeLongRange(Character.MIN_VALUE, Character.MAX_VALUE, "C"));
 
     public static class LongRangeSet implements Iterable<LongRangeSet> {
         private final SortedMap<Long, Long> map = new TreeMap<>();
@@ -321,8 +318,10 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
 
     private static class Branch {
         final LongRangeSet trueSet;
-        final LongRangeSet trueReachedSet, falseReachedSet;
-        final String trueCondition, falseCondition;
+        final LongRangeSet trueReachedSet;
+        final LongRangeSet falseReachedSet;
+        final String trueCondition;
+        final String falseCondition;
         final Number number;
         final Set<Long> numbers = new HashSet<>();
         final String varName;
@@ -477,7 +476,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             if (inst instanceof LoadInstruction) {
                 int index = ((LoadInstruction) inst).getIndex();
                 LocalVariable lv = lvTable == null ? null : lvTable.getLocalVariable(index, ih.getPosition());
-                String name, signature;
+                String name;
+                String signature;
                 if (lv == null) {
                     name = "local$" + index;
                     if (types.containsKey(index)) {
@@ -746,7 +746,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                     BasicBlock trueTarget = edge.getTarget();
                     BasicBlock falseTarget = cfg.getSuccessorWithEdgeType(edge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
                     String condition;
-                    BasicBlock deadTarget, aliveTarget;
+                    BasicBlock deadTarget;
+                    BasicBlock aliveTarget;
                     if (branch.trueReachedSet.isEmpty()) {
                         condition = branch.varName + " " + branch.falseCondition;
                         deadTarget = trueTarget;

@@ -164,7 +164,8 @@ public class SourceInfoMap {
      * A range of source lines.
      */
     public static class SourceLineRange {
-        private final Integer start, end;
+        private final Integer start;
+        private final Integer end;
 
         /**
          * Constructor for a single line.

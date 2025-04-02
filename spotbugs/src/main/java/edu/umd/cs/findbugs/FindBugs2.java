@@ -291,7 +291,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
                 if (executionPlan.isActive(NoteSuppressedWarnings.class)) {
                     SuppressionMatcher m = AnalysisContext.currentAnalysisContext().getSuppressionMatcher();
-                    bugReporter = new FilterBugReporter(bugReporter, m, false);
+                    bugReporter = new SuppressionMatcherBugReporter(bugReporter, m);
                 }
 
                 if (appClassList.isEmpty()) {
