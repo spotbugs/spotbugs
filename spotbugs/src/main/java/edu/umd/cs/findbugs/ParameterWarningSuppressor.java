@@ -1,8 +1,11 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.annotations.SuppressMatchType;
+import edu.umd.cs.findbugs.detect.UselessSuppressionDetector;
 
 public class ParameterWarningSuppressor extends ClassWarningSuppressor {
+
+    private static final String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER";
 
     final MethodAnnotation method;
 
@@ -33,5 +36,13 @@ public class ParameterWarningSuppressor extends ClassWarningSuppressor {
             System.out.println("Suppressing " + bugInstance);
         }
         return true;
+    }
+
+    @Override
+    public BugInstance buildUselessSuppressionBugInstance(UselessSuppressionDetector detector) {
+        return new BugInstance(detector, BUG_TYPE, PRIORITY)
+                .addClass(clazz.getClassDescriptor())
+                .addMethod(method)
+                .addParameterAnnotation(register, LocalVariableAnnotation.PARAMETER_ROLE);
     }
 }

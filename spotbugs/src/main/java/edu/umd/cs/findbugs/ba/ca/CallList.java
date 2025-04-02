@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class CallList {
-    private boolean isTop, isBottom;
+    private boolean isTop;
+
+    private boolean isBottom;
 
     private final ArrayList<Call> callList;
 

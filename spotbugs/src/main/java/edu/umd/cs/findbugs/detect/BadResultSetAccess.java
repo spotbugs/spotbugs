@@ -21,7 +21,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Const;
@@ -37,35 +36,9 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class BadResultSetAccess extends OpcodeStackDetector {
 
     @StaticConstant
-    private static final Set<String> dbFieldTypesSet = new HashSet<String>() {
-        static final long serialVersionUID = -3510636899394546735L;
-        {
-            add("Array");
-            add("AsciiStream");
-            add("BigDecimal");
-            add("BinaryStream");
-            add("Blob");
-            add("Boolean");
-            add("Byte");
-            add("Bytes");
-            add("CharacterStream");
-            add("Clob");
-            add("Date");
-            add("Double");
-            add("Float");
-            add("Int");
-            add("Long");
-            add("Object");
-            add("Ref");
-            add("RowId");
-            add("Short");
-            add("String");
-            add("Time");
-            add("Timestamp");
-            add("UnicodeStream");
-            add("URL");
-        }
-    };
+    private static final Set<String> dbFieldTypesSet = Set.of("Array", "AsciiStream", "BigDecimal", "BinaryStream", "Blob", "Boolean", "Byte",
+            "Bytes", "CharacterStream", "Clob", "Date", "Double", "Float", "Int", "Long", "Object", "Ref", "RowId", "Short", "String", "Time",
+            "Timestamp", "UnicodeStream", "URL");
 
     private final BugReporter bugReporter;
 

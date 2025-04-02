@@ -1307,7 +1307,8 @@ public class OpcodeStack {
     public void sawOpcode(DismantleBytecode dbc, int seen) {
         int register;
         String signature;
-        Item it, it2;
+        Item it;
+        Item it2;
         Constant cons;
 
         // System.out.printf("%3d %12s%s%n", dbc.getPC(), Const.getOpcodeName(seen),
@@ -2373,7 +2374,8 @@ public class OpcodeStack {
     }
 
     private void handleDup2() {
-        Item it, it2;
+        Item it;
+        Item it2;
         it = pop();
         if (it.getSize() == 2) {
             push(it);

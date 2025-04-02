@@ -68,7 +68,9 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     boolean sawSerialVersionUID;
 
-    boolean isSerializable, implementsSerializableDirectly;
+    boolean isSerializable;
+
+    boolean implementsSerializableDirectly;
 
     boolean isExternalizable;
 

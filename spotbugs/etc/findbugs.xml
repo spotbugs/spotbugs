@@ -299,6 +299,9 @@
                     reports="" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" speed="fast"
                     reports="" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.UselessSuppressionDetector" speed="fast"
+                    reports="US_USELESS_SUPPRESSION_ON_CLASS,US_USELESS_SUPPRESSION_ON_FIELD,US_USELESS_SUPPRESSION_ON_METHOD,US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER,US_USELESS_SUPPRESSION_ON_PACKAGE"
+                    hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" speed="fast"
                     reports="" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers"
@@ -933,9 +936,6 @@
           <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="STYLE"/>
           <BugPattern abbrev="NS" type="NS_DANGEROUS_NON_SHORT_CIRCUIT" category="STYLE"/>
           <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_WAIT" category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_NOTIFY" category="MT_CORRECTNESS"
-                    deprecated="true" experimental="true"/>
-          <!-- has never been generated -->
           <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS"/>
           <BugPattern abbrev="UR" type="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR"
@@ -1126,9 +1126,6 @@
           <BugPattern abbrev="SA" type="SA_LOCAL_SELF_COMPUTATION" category="CORRECTNESS"/>
           <BugPattern abbrev="SA" type="SA_FIELD_SELF_COMPARISON" category="CORRECTNESS"/>
           <BugPattern abbrev="SA" type="SA_LOCAL_SELF_COMPARISON" category="CORRECTNESS"/>
-          <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS"
-                    deprecated="true" experimental="true"/>
-          <!-- has never been generated? -->
           <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" cweid="543"/>
           <BugPattern abbrev="LI" type="LI_LAZY_INIT_UPDATE_STATIC" category="MT_CORRECTNESS"
                     cweid="543"/>
@@ -1167,9 +1164,6 @@
           <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS"/>
           <BugPattern abbrev="IJU" type="IJU_NO_TESTS" category="CORRECTNESS"/>
           <BugPattern abbrev="BOA" type="BOA_BADLY_OVERRIDDEN_ADAPTER" category="CORRECTNESS"/>
-          <BugPattern abbrev="SQL" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
-                    deprecated="true" experimental="true"/>
-          <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
           <BugPattern abbrev="SQL" type="SQL_BAD_RESULTSET_ACCESS" category="CORRECTNESS"/>
           <BugPattern abbrev="SQL" type="SQL_BAD_PREPARED_STATEMENT_ACCESS" category="CORRECTNESS"/>
           <BugPattern abbrev="SIO" type="SIO_SUPERFLUOUS_INSTANCEOF" category="CORRECTNESS"/>
@@ -1209,9 +1203,6 @@
           <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="NP" type="NP_NULL_INSTANCEOF" category="CORRECTNESS"/>
-          <BugPattern abbrev="NP" type="BC_NULL_INSTANCEOF" category="CORRECTNESS" deprecated="true"
-                    experimental="true"/>
-          <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
           <BugPattern abbrev="DMI" type="DMI_RANDOM_USED_ONLY_ONCE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="DMI" type="DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT"
                     category="CORRECTNESS"/>
@@ -1347,4 +1338,9 @@
           <BugPattern abbrev="AT" type="AT_STALE_THREAD_WRITE_OF_PRIMITIVE" category="MT_CORRECTNESS" />
           <BugPattern abbrev="AT" type="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="HSM" type="HSM_HIDING_METHOD" category="CORRECTNESS"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_FIELD" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_CLASS" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_PACKAGE" category="STYLE"/>
 </FindbugsPlugin>

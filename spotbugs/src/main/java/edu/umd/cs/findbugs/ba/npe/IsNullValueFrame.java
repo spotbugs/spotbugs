@@ -39,7 +39,9 @@ import edu.umd.cs.findbugs.util.Util;
 public class IsNullValueFrame extends Frame<IsNullValue> {
 
     static class PointerEqualityInfo {
-        final ValueNumber addr1, addr2;
+        final ValueNumber addr1;
+
+        final ValueNumber addr2;
 
         final boolean areEqual;
 

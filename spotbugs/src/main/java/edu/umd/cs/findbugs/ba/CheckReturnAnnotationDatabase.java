@@ -64,7 +64,8 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
     private static final String JAVA_UTIL_CONCURRENT_LOCKS_CONDITION = "java.util.concurrent.locks.Condition";
     private static final String JAVA_IO_FILE = "java.io.File";
 
-    private JavaClass throwableClass, threadClass;
+    private JavaClass throwableClass;
+    private JavaClass threadClass;
 
     public CheckReturnAnnotationDatabase() {
         setAddClassOnly(true);

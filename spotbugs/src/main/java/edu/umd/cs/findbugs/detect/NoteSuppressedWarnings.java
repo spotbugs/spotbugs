@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
@@ -139,8 +140,9 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
         if (className.endsWith(".package-info")) {
             suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, matchType, ClassName.toDottedClassName(getPackageName())));
         } else if (visitingMethod()) {
-            suppressionMatcher
-                    .addSuppressor(new MethodWarningSuppressor(pattern, matchType, clazz, MethodAnnotation.fromVisitedMethod(this)));
+            MethodWarningSuppressor suppressor = new MethodWarningSuppressor(pattern, matchType, clazz, MethodAnnotation.fromVisitedMethod(this),
+                    MemberUtils.isUserGenerated(getMethod()));
+            suppressionMatcher.addSuppressor(suppressor);
         } else if (visitingField()) {
             suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, matchType, clazz, FieldAnnotation.fromVisitedField(this)));
         } else {

@@ -82,7 +82,11 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
     private static class ExceptionCaught {
         public String exceptionClass;
 
-        public int startOffset, endOffset, sourcePC;
+        public int startOffset;
+
+        public int endOffset;
+
+        public int sourcePC;
 
         public boolean seen = false;
 

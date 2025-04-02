@@ -2038,14 +2038,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         xmlOutput.closeTag(ELEMENT_NAME);
     }
 
-    private int ageInDays(BugCollection bugCollection, long firstSeen) {
-        long age = bugCollection.getAnalysisTimestamp() - firstSeen;
-        if (age < 0) {
-            age = 0;
-        }
-        return (int) (age / 1000 / 3600 / 24);
-    }
-
     /*
      * ----------------------------------------------------------------------
      * Implementation

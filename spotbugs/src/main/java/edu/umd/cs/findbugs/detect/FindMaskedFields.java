@@ -59,7 +59,8 @@ public class FindMaskedFields extends BytecodeScanningDetector {
     static class RememberedBug {
         BugInstance bug;
 
-        XField maskingField, maskedField;
+        XField maskingField;
+        XField maskedField;
 
         RememberedBug(BugInstance bug, FieldAnnotation maskingField, FieldAnnotation maskedField) {
             this.bug = bug;
