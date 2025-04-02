@@ -6,6 +6,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Added
+- Make TypeQualifierResolver recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3156](https://github.com/spotbugs/spotbugs/pull/3156))
 
 ### Fixed
 - Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))
@@ -57,7 +59,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 - Updated the `SuppressFBWarnings` annotation to support finer grained bug suppressions ([#3102](https://github.com/spotbugs/spotbugs/pull/3102))
 - SimpleDateFormat, DateTimeFormatter, FastDateFormat string check for bad combinations of flag formatting ([#637](https://github.com/spotbugs/spotbugs/issues/637))
-- Make TypeQualifierResolver recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3156](https://github.com/spotbugs/spotbugs/pull/3156))
 - New detector `ResourceInMultipleThreadsDetector` and introduced new bug type:
   - `AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD` is reported in case of unsafe resource access in multiple threads.
 
