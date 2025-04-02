@@ -107,7 +107,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
                     .addClassAndMethod(this).addCalledMethod(this).addString(message).describe(StringAnnotation.ERROR_MSG_ROLE)
                     .addString(regex).describe(StringAnnotation.REGEX_ROLE);
             String options = getOptions(flags);
-            if (options.length() > 0) {
+            if (!options.isEmpty()) {
                 bug.addString("Regex flags: " + options).describe(StringAnnotation.STRING_MESSAGE);
             }
             bug.addSourceLine(this);
@@ -148,11 +148,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             sawRegExPattern(1);
             singleDotPatternWouldBeSilly(1, false);
         } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
-                && "matches".equals(getNameConstantOperand())) {
-            sawRegExPattern(0);
-            singleDotPatternWouldBeSilly(0, false);
-        } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
-                && "split".equals(getNameConstantOperand())) {
+                && ("matches".equals(getNameConstantOperand()) || "split".equals(getNameConstantOperand()))) {
             sawRegExPattern(0);
             singleDotPatternWouldBeSilly(0, false);
         }

@@ -66,7 +66,9 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
 
     private boolean opcodeIsWide;
 
-    private int PC, nextPC;
+    private int PC;
+
+    private int nextPC;
 
     private int branchOffset;
 
@@ -200,14 +202,13 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
 
     public boolean isMethodCall() {
         switch (opcode) {
-        default:
-            return false;
         case Const.INVOKEINTERFACE:
         case Const.INVOKESPECIAL:
         case Const.INVOKEVIRTUAL:
         case Const.INVOKESTATIC:
             return true;
-
+        default:
+            return false;
         }
     }
 
@@ -287,10 +288,10 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
             throw new IllegalStateException("getRefConstantOperand called but value not available");
         }
         if (refConstantOperand == null) {
-            String dottedClassConstantOperand = getDottedClassConstantOperand();
-            StringBuilder ref = new StringBuilder(dottedClassConstantOperand.length() + nameConstantOperand.length()
+            String dottedClassOperand = getDottedClassConstantOperand();
+            StringBuilder ref = new StringBuilder(dottedClassOperand.length() + nameConstantOperand.length()
                     + sigConstantOperand.length() + 5);
-            ref.append(dottedClassConstantOperand).append(".").append(nameConstantOperand).append(" : ")
+            ref.append(dottedClassOperand).append(".").append(nameConstantOperand).append(" : ")
                     .append(replaceSlashesWithDots(sigConstantOperand));
             refConstantOperand = ref.toString();
         }

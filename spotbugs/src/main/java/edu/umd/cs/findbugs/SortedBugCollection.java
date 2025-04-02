@@ -106,7 +106,8 @@ public class SortedBugCollection implements BugCollection {
 
     private boolean applySuppressions;
 
-    long timeStartedLoading, timeFinishedLoading;
+    long timeStartedLoading;
+    long timeFinishedLoading;
 
     String dataSource = "";
 
@@ -333,10 +334,7 @@ public class SortedBugCollection implements BugCollection {
             checkInputStream(in);
             Reader reader = Util.getReader(in);
             doReadXML(reader, base);
-        } catch (RuntimeException e) {
-            in.close();
-            throw e;
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             in.close();
             throw e;
         }
@@ -533,7 +531,7 @@ public class SortedBugCollection implements BugCollection {
                     }
 
                 }
-                if (commonBase != null && commonBase.length() > 0) {
+                if (commonBase != null && !commonBase.isEmpty()) {
                     if (commonBase.indexOf("/./") > 0) {
                         commonBase = commonBase.substring(0, commonBase.indexOf("/."));
                     }
@@ -955,10 +953,11 @@ public class SortedBugCollection implements BugCollection {
         }
 
         invalidateHashes();
-        if (!bugInstance.isDead()) {
+        boolean added = bugSet.add(bugInstance);
+        if (added && !bugInstance.isDead()) {
             projectStats.addBug(bugInstance);
         }
-        return bugSet.add(bugInstance);
+        return added;
     }
 
     private void invalidateHashes() {
@@ -1010,7 +1009,7 @@ public class SortedBugCollection implements BugCollection {
 
     @Override
     public void addMissingClass(String className) {
-        if (className == null || className.length() == 0) {
+        if (className == null || className.isEmpty()) {
             return;
         }
         if (className.startsWith("[")) {

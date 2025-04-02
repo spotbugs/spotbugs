@@ -369,10 +369,7 @@ public class FindInconsistentSync2 implements Detector {
             lockedMethodSet.retainAll(findLockedMethods(classContext, selfCalls, obviouslyLockedSites));
             // publicReachableMethods = findPublicReachableMethods(classContext,
             // selfCalls);
-        } catch (CFGBuilderException e) {
-            bugReporter.logError("Error finding locked call sites", e);
-            return;
-        } catch (DataflowAnalysisException e) {
+        } catch (CFGBuilderException | DataflowAnalysisException e) {
             bugReporter.logError("Error finding locked call sites", e);
             return;
         }
@@ -409,9 +406,7 @@ public class FindInconsistentSync2 implements Detector {
 
             try {
                 analyzeMethod(classContext, method, lockedMethodSet);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Error analyzing method", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("Error analyzing method", e);
             }
         }
@@ -544,7 +539,8 @@ public class FindInconsistentSync2 implements Detector {
                 propertySet.addProperty(InconsistentSyncWarningProperty.NO_LOCAL_LOCKS);
             }
 
-            int freq, printFreq;
+            int freq;
+            int printFreq;
             if (locked + unlocked > 0) {
                 freq = (100 * locked) / (locked + unlocked);
                 printFreq = (100 * locked) / (locked + unlocked + numNullCheckUnlocked);

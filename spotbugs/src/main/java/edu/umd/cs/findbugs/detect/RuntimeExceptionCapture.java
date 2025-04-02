@@ -82,7 +82,11 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
     private static class ExceptionCaught {
         public String exceptionClass;
 
-        public int startOffset, endOffset, sourcePC;
+        public int startOffset;
+
+        public int endOffset;
+
+        public int sourcePC;
 
         public boolean seen = false;
 
@@ -208,9 +212,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             Method m = getMethod();
             bugReporter.reportSkippedAnalysis(DescriptorFactory.instance().getMethodDescriptor(getClassName(), getMethodName(),
                     getMethodSig(), m.isStatic()));
-        } catch (DataflowAnalysisException e) {
-            bugReporter.logError("Error checking for dead exception store", e);
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             bugReporter.logError("Error checking for dead exception store", e);
         }
     }
@@ -222,7 +224,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 String signature = item.getSignature();
-                if (signature != null && signature.length() > 0) {
+                if (signature != null && !signature.isEmpty()) {
                     if (signature.startsWith("L")) {
                         signature = SignatureConverter.convert(signature);
                     } else {

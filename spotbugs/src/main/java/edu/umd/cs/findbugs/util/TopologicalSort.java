@@ -161,13 +161,15 @@ public class TopologicalSort {
 
         Set<E> consider = new HashSet<>();
 
-        MultiMap<E, E> iEdges, oEdges;
+        MultiMap<E, E> iEdges;
+
+        MultiMap<E, E> oEdges;
 
         private void removeVertex(E e) {
-            Collection<E> outEdges = oEdges.get(e);
+            Collection<E> outedges = oEdges.get(e);
 
             Collection<E> inEdges = iEdges.get(e);
-            for (E e2 : outEdges) {
+            for (E e2 : outedges) {
                 iEdges.remove(e2, e);
             }
             for (E e2 : inEdges) {

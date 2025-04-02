@@ -62,7 +62,9 @@ public class Churn {
     }
 
     static class Data {
-        int persist, fixed;
+        int persist;
+
+        int fixed;
 
         int maxRemovedAtOnce() {
             int count = 0;
@@ -149,14 +151,14 @@ public class Churn {
             }
         }
         System.out.printf("%7s %3s %5s %5s %5s  %s%n", "chi", "%", "const", "fix", "max", "kind");
-        double fixRate;
+        double fixrate;
         if (this.fixRate == -1) {
-            fixRate = ((double) all.fixed) / (all.fixed + all.persist);
+            fixrate = ((double) all.fixed) / (all.fixed + all.persist);
         } else {
-            fixRate = this.fixRate / 100.0;
+            fixrate = this.fixRate / 100.0;
         }
-        double highFixRate = fixRate + 0.05;
-        double lowFixRate = fixRate - 0.05;
+        double highFixRate = fixrate + 0.05;
+        double lowFixRate = fixrate - 0.05;
         for (Map.Entry<String, Data> e : data.entrySet()) {
             Data d = e.getValue();
             int total = d.persist + d.fixed;

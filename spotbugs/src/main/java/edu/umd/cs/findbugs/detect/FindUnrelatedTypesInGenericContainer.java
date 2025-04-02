@@ -19,12 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -263,11 +261,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 analyzeMethod(classContext, method);
             } catch (MethodUnprofitableException e) {
                 assert true; // move along; nothing to see
-            } catch (CFGBuilderException e) {
-                String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
-                        + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
-                bugReporter.logError(msg, e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
                         + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
                 bugReporter.logError(msg, e);
@@ -304,12 +298,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     }
 
     @StaticConstant
-    static final Set<String> baseGenericTypes = new LinkedHashSet<>();
-    static {
-        baseGenericTypes.addAll(Arrays.asList(new String[] { "java.util.Map", "java.util.Collection", "java.lang.Iterable",
+    static final Set<String> baseGenericTypes = Set.of("java.util.Map", "java.util.Collection", "java.lang.Iterable",
             "java.util.Iterator", "com.google.common.collect.Multimap", "com.google.common.collect.Multiset",
-            "com.google.common.collect.Table" }));
-    }
+            "com.google.common.collect.Table");
 
     private boolean isGenericCollection(ClassDescriptor operandClass) {
         String dottedClassName = operandClass.getDottedClassName();

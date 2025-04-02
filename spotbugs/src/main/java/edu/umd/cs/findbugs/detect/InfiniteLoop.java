@@ -75,7 +75,8 @@ public class InfiniteLoop extends OpcodeStackDetector {
     }
 
     static class Jump {
-        final int from, to;
+        final int from;
+        final int to;
 
         Jump(int from, int to) {
             this.from = from;
@@ -136,7 +137,8 @@ public class InfiniteLoop extends OpcodeStackDetector {
     }
 
     static class ForwardConditionalBranch extends Jump {
-        final OpcodeStack.Item item0, item1;
+        final OpcodeStack.Item item0;
+        final OpcodeStack.Item item1;
 
         ForwardConditionalBranch(OpcodeStack.Item item0, OpcodeStack.Item item1, int from, int to) {
             super(from, to);

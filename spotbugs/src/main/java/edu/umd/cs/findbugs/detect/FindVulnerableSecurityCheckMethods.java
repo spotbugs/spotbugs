@@ -28,7 +28,6 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /***
@@ -39,51 +38,44 @@ import java.util.Set;
  */
 public class FindVulnerableSecurityCheckMethods extends OpcodeStackDetector {
     private final BugReporter bugReporter;
-    private static final Set<String> badMethodNames;
+
+    private static final Set<String> badMethodNames = Set.of(
+            "checkAccept",
+            "checkAccess",
+            "checkAwtEventQueueAccess",
+            "checkConnect",
+            "checkCreateClassLoader",
+            "checkDelete",
+            "checkExec",
+            "checkExit",
+            "checkLink",
+            "checkListen",
+            "checkMemberAccess",
+            "checkMulticast",
+            "checkPackageAccess",
+            "checkPackageDefinition",
+            "checkPermission",
+            "checkPrintJobAccess",
+            "checkPropertiesAccess",
+            "checkRead",
+            "checkSecurityAccess",
+            "checkSetFactory",
+            "checkSystemClipboardAccess",
+            "checkTopLevelWindow",
+            "checkWrite",
+
+            //Deprecated Method Call Support
+            "classDepth",
+            "classLoaderDepth",
+            "currentClassLoader",
+            "currentLoadedClass",
+
+            "getInCheck",
+            "inClass",
+            "inClassLoader");
 
     public FindVulnerableSecurityCheckMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-
-    }
-
-    static {
-        badMethodNames = new HashSet<String>() {
-            {
-                add("checkAccept");
-                add("checkAccess");
-                add("checkAwtEventQueueAccess");
-                add("checkConnect");
-                add("checkCreateClassLoader");
-                add("checkDelete");
-                add("checkExec");
-                add("checkExit");
-                add("checkLink");
-                add("checkListen");
-                add("checkMemberAccess");
-                add("checkMulticast");
-                add("checkPackageAccess");
-                add("checkPackageDefinition");
-                add("checkPermission");
-                add("checkPrintJobAccess");
-                add("checkPropertiesAccess");
-                add("checkRead");
-                add("checkSecurityAccess");
-                add("checkSetFactory");
-                add("checkSystemClipboardAccess");
-                add("checkTopLevelWindow");
-                add("checkWrite");
-
-                //Deprecated Method Call Support
-                add("classDepth");
-                add("classLoaderDepth");
-                add("currentClassLoader");
-                add("currentLoadedClass");
-
-                add("getInCheck");
-                add("inClass");
-                add("inClassLoader");
-            }
-        };
     }
 
     /**

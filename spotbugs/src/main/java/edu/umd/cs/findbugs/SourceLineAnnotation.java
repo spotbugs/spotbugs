@@ -343,7 +343,7 @@ public class SourceLineAnnotation implements BugAnnotation {
                 }
                 if (firstLine < Integer.MAX_VALUE) {
 
-                    result = new SourceLineAnnotation(methodDescriptor.getClassDescriptor().toDottedClassName(), sourceFile,
+                    result = new SourceLineAnnotation(methodDescriptor.getClassDescriptor().getDottedClassName(), sourceFile,
                             firstLine, firstLine, bytecode, bytecode);
                 }
             }
@@ -352,7 +352,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
 
         if (result == null) {
-            result = createUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
+            result = createUnknown(methodDescriptor.getClassDescriptor().getDottedClassName());
         }
         return result;
     }
@@ -439,7 +439,7 @@ public class SourceLineAnnotation implements BugAnnotation {
             Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
             return fromVisitedInstruction(jclass, method, position);
         } catch (CheckedAnalysisException e) {
-            return createReallyUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
+            return createReallyUnknown(methodDescriptor.getClassDescriptor().getDottedClassName());
         }
     }
 

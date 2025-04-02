@@ -102,7 +102,8 @@ public class DetectorConfigurationTab extends Composite {
         @Override
         public int compare(DetectorFactory factory1, DetectorFactory factory2) {
             int result = 0;
-            String s1, s2;
+            String s1;
+            String s2;
             switch (getSortColumnId()) {
             case BUG_CODES:
                 s1 = tab.getBugsAbbreviation(factory1);
@@ -414,13 +415,13 @@ public class DetectorConfigurationTab extends Composite {
         StringBuilder sb = new StringBuilder();
         sb.append("\n\nPlugin: ").append(plugin.getPluginId());
         String version = plugin.getVersion();
-        if (version.length() > 0) {
+        if (!version.isEmpty()) {
             sb.append("\nVersion: ").append(version);
         }
 
         sb.append("\nProvider: ").append(plugin.getProvider());
         String website = plugin.getWebsite();
-        if (website != null && website.length() > 0) {
+        if (website != null && !website.isEmpty()) {
             sb.append(" (").append(website).append(")");
         }
         return sb.toString();

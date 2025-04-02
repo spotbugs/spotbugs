@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -164,7 +165,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
      * along paths where an obligation appears to be leaked.
      */
     private static class PossibleObligationTransfer {
-        Obligation consumed, produced;
+        Obligation consumed;
+        Obligation produced;
 
         public PossibleObligationTransfer(@Nonnull Obligation consumed, @Nonnull Obligation produced) {
             this.consumed = consumed;
@@ -314,8 +316,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
         private void reportWarning(Obligation obligation, State state, StateSet factAtExit) {
             String className = obligation.getClassName();
 
-            if (methodDescriptor.isStatic() && "main".equals(methodDescriptor.getName())
-                    && "([Ljava/lang/String;)V".equals(methodDescriptor.getSignature())
+            if (MemberUtils.isMainMethod(xmethod)
                     && (className.contains("InputStream") || className.contains("Reader") || factAtExit.isOnExceptionPath())) {
                 // Don't report unclosed input streams and readers in main()
                 // methods
@@ -401,13 +402,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             @Override
             public void visitBasicBlock(BasicBlock basicBlock) {
                 curBlock = basicBlock;
-
-                if (COMPUTE_TRANSFERS && basicBlock == cfg.getExit()) {
-                    // We're at the CFG exit.
-
-                    if (adjustedLeakCount == 1) {
-                        applyPossibleObligationTransfers();
-                    }
+                // We're at the CFG exit.
+                if (COMPUTE_TRANSFERS && basicBlock == cfg.getExit() && adjustedLeakCount == 1) {
+                    applyPossibleObligationTransfers();
                 }
             }
 

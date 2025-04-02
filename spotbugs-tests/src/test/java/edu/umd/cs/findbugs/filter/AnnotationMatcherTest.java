@@ -128,7 +128,7 @@ class AnnotationMatcherTest {
     }
 
     @Test
-    void testPerformAnalysis(SpotBugsRunner spotbugs) throws Exception {
+    void testPerformAnalysis(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),

@@ -576,8 +576,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     }
 
     @StaticConstant
-    public static final Set<String> catchTypesForNull = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-            "java/lang/NullPointerException", Values.SLASHED_JAVA_LANG_RUNTIMEEXCEPTION, Values.SLASHED_JAVA_LANG_EXCEPTION)));
+    public static final Set<String> catchTypesForNull = Set.of("java/lang/NullPointerException", Values.SLASHED_JAVA_LANG_RUNTIMEEXCEPTION,
+            Values.SLASHED_JAVA_LANG_EXCEPTION);
 
     public static boolean catchesNull(ConstantPool constantPool, Code code, Location location) {
         int position = location.getHandle().getPosition();
@@ -914,6 +914,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
      *             {@link #foundNullDeref(Location,ValueNumber,IsNullValue,ValueNumberFrame,boolean)}
      *             instead
      */
+    @Deprecated
     @Override
     public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
         foundNullDeref(location, valueNumber, refValue, vnaFrame, true);

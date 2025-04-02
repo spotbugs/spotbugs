@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -40,10 +41,12 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
-    boolean isDoPrivileged = false;
+    private boolean isDoPrivileged = false;
+    private boolean isDoPrivilegedDeprecated = false;
 
     @Override
     public void visit(JavaClass obj) {
+        isDoPrivilegedDeprecated = obj.getMajor() >= Const.MAJOR_17;
 
         isDoPrivileged = Subtypes2.instanceOf(getDottedClassName(), "java.security.PrivilegedAction")
                 || Subtypes2.instanceOf(getDottedClassName(), "java.security.PrivilegedExceptionAction");
@@ -51,6 +54,9 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
 
     @Override
     public void visit(Code obj) {
+        if (isDoPrivilegedDeprecated) {
+            return;
+        }
         if (isDoPrivileged && "run".equals(getMethodName())) {
             return;
         }
@@ -80,8 +86,7 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
             @DottedClassName
             String classOfConstructedClass = getDottedClassConstantOperand();
             if (Subtypes2.instanceOf(classOfConstructedClass, "java.lang.ClassLoader")
-                    && !("main".equals(getMethodName()) && "([Ljava/lang/String;)V".equals(getMethodSig()) && getMethod()
-                            .isStatic())) {
+                    && !MemberUtils.isMainMethod(getMethod())) {
                 bugAccumulator.accumulateBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED", NORMAL_PRIORITY)
                         .addClassAndMethod(this).addClass(classOfConstructedClass), this);
             }

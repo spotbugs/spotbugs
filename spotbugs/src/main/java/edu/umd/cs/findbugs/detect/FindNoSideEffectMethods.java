@@ -77,23 +77,23 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     private static final FieldDescriptor TARGET_NEW = new FieldDescriptor("java/lang/Stub", "new", "V", false);
     private static final FieldDescriptor TARGET_OTHER = new FieldDescriptor("java/lang/Stub", "other", "V", false);
 
-    private static final Set<String> NUMBER_CLASSES = new HashSet<>(Arrays.asList("java/lang/Integer", "java/lang/Long",
+    private static final Set<String> NUMBER_CLASSES = Set.of("java/lang/Integer", "java/lang/Long",
             "java/lang/Double", "java/lang/Float", "java/lang/Byte", "java/lang/Short", "java/math/BigInteger",
-            "java/math/BigDecimal"));
+            "java/math/BigDecimal");
 
-    private static final Set<String> ALLOWED_EXCEPTIONS = new HashSet<>(Arrays.asList("java.lang.InternalError",
+    private static final Set<String> ALLOWED_EXCEPTIONS = Set.of("java.lang.InternalError",
             "java.lang.ArrayIndexOutOfBoundsException", "java.lang.StringIndexOutOfBoundsException",
-            "java.lang.IndexOutOfBoundsException"));
+            "java.lang.IndexOutOfBoundsException");
 
-    private static final Set<String> NO_SIDE_EFFECT_COLLECTION_METHODS = new HashSet<>(Arrays.asList("contains", "containsKey",
+    private static final Set<String> NO_SIDE_EFFECT_COLLECTION_METHODS = Set.of("contains", "containsKey",
             "containsValue", "get", "indexOf", "lastIndexOf", "iterator", "listIterator", "isEmpty", "size", "getOrDefault",
             "subList", "keys", "elements", "keySet", "entrySet", "values", "stream", "firstKey", "lastKey", "headMap", "tailMap",
-            "subMap", "peek", "mappingCount"));
+            "subMap", "peek", "mappingCount");
 
-    private static final Set<String> OBJECT_ONLY_CLASSES = new HashSet<>(Arrays.asList("java/lang/StringBuffer",
+    private static final Set<String> OBJECT_ONLY_CLASSES = Set.of("java/lang/StringBuffer",
             "java/lang/StringBuilder", "java/util/regex/Matcher", "java/io/ByteArrayOutputStream",
             "java/util/concurrent/atomic/AtomicBoolean", "java/util/concurrent/atomic/AtomicInteger",
-            "java/util/concurrent/atomic/AtomicLong", "java/awt/Point"));
+            "java/util/concurrent/atomic/AtomicLong", "java/awt/Point");
 
     // Usual implementation of stub methods which are expected to be more complex in derived classes
     private static final byte[][] STUB_METHODS = new byte[][] {
@@ -112,16 +112,16 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     /**
      * Known methods which change only this object
      */
-    private static final Set<MethodDescriptor> OBJECT_ONLY_METHODS = new HashSet<>(Arrays.asList(
+    private static final Set<MethodDescriptor> OBJECT_ONLY_METHODS = Set.of(
             ARRAY_STORE_STUB_METHOD, FIELD_STORE_STUB_METHOD,
             new MethodDescriptor("java/util/Iterator", "next", "()Ljava/lang/Object;"),
             new MethodDescriptor("java/util/Enumeration", "nextElement", "()Ljava/lang/Object;"),
-            new MethodDescriptor("java/lang/Throwable", "fillInStackTrace", "()Ljava/lang/Throwable;")));
+            new MethodDescriptor("java/lang/Throwable", "fillInStackTrace", "()Ljava/lang/Throwable;"));
 
     /**
      * Known methods which have no side-effect
      */
-    private static final Set<MethodDescriptor> NO_SIDE_EFFECT_METHODS = new HashSet<>(Arrays.asList(
+    private static final Set<MethodDescriptor> NO_SIDE_EFFECT_METHODS = Set.of(
             GET_CLASS, CLASS_GET_NAME, HASH_CODE,
             new MethodDescriptor("java/lang/reflect/Array", "newInstance", "(Ljava/lang/Class;I)Ljava/lang/Object;"),
             new MethodDescriptor("java/lang/Class", "getResource", "(Ljava/lang/String;)Ljava/net/URL;"),
@@ -138,13 +138,13 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             new MethodDescriptor("java/util/Iterator", "hasNext", "()Z"),
             new MethodDescriptor("java/util/Comparator", "compare", "(Ljava/lang/Object;Ljava/lang/Object;)I"),
             new MethodDescriptor("java/util/logging/LogManager", "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;", true),
-            new MethodDescriptor("org/apache/log4j/LogManager", "getLogger", "(Ljava/lang/String;)Lorg/apache/log4j/Logger;", true)));
+            new MethodDescriptor("org/apache/log4j/LogManager", "getLogger", "(Ljava/lang/String;)Lorg/apache/log4j/Logger;", true));
 
-    private static final Set<MethodDescriptor> NEW_OBJECT_RETURNING_METHODS = new HashSet<>(Arrays.asList(
+    private static final Set<MethodDescriptor> NEW_OBJECT_RETURNING_METHODS = Set.of(
             new MethodDescriptor("java/util/Vector", "elements", "()Ljava/util/Enumeration;"),
             new MethodDescriptor("java/util/Hashtable", "elements", "()Ljava/util/Enumeration;"),
             new MethodDescriptor("java/util/Hashtable", "keys", "()Ljava/util/Enumeration;"),
-            new MethodDescriptor("java/lang/reflect/Array", "newInstance", "(Ljava/lang/Class;I)Ljava/lang/Object;")));
+            new MethodDescriptor("java/lang/reflect/Array", "newInstance", "(Ljava/lang/Class;I)Ljava/lang/Object;"));
 
     private static enum SideEffectStatus {
         SIDE_EFFECT, UNSURE_OBJECT_ONLY, OBJECT_ONLY, UNSURE, NO_SIDE_EFFECT;
@@ -359,6 +359,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         if (method.isAbstract() || method.isInterface()) {
             if (!sawImplementation
                     || getClassName().endsWith("Visitor") || getClassName().endsWith("Listener")
+                    || getClassName().endsWith("Builder")
                     || getClassName().startsWith("java/sql/")
                     || (getClassName().equals("java/util/concurrent/Future") && !method.getName().startsWith("is"))
                     || (getClassName().equals("java/lang/Process") && method.getName().equals("exitValue"))) {
@@ -496,12 +497,10 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     public void sawOpcode(int seen) {
         if (!allowedFields.isEmpty() && seen == Const.PUTFIELD) {
             Item objItem = getStack().getStackItem(1);
-            if (objItem.getRegisterNumber() == 0) {
-                if (allowedFields.contains(getFieldDescriptorOperand())) {
-                    Item valueItem = getStack().getStackItem(0);
-                    if (!isNew(valueItem) && !valueItem.isNull()) {
-                        allowedFields.remove(getFieldDescriptorOperand());
-                    }
+            if (objItem.getRegisterNumber() == 0 && allowedFields.contains(getFieldDescriptorOperand())) {
+                Item valueItem = getStack().getStackItem(0);
+                if (!isNew(valueItem) && !valueItem.isNull()) {
+                    allowedFields.remove(getFieldDescriptorOperand());
                 }
             }
         }
@@ -538,10 +537,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             break;
         }
         case Const.PUTSTATIC:
-            if (classInit) {
-                if (getClassConstantOperand().equals(getClassName())) {
-                    break;
-                }
+            if (classInit && getClassConstantOperand().equals(getClassName())) {
+                break;
             }
             status = SideEffectStatus.SIDE_EFFECT;
             break;
@@ -898,14 +895,12 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                          */
                         continue;
                     }
-                    if (m.isStatic() || m.getName().equals(Const.CONSTRUCTOR_NAME)) {
-                        if (sideEffectClinit.contains(m.getSlashedClassName())) {
-                            /* Skip static methods and constructors for classes which have
-                             * side-effect class initializer
-                             */
-                            noSideEffectMethods.add(m, MethodSideEffectStatus.SE_CLINIT);
-                            continue;
-                        }
+                    if ((m.isStatic() || m.getName().equals(Const.CONSTRUCTOR_NAME)) && sideEffectClinit.contains(m.getSlashedClassName())) {
+                        /* Skip static methods and constructors for classes which have
+                         * side-effect class initializer
+                         */
+                        noSideEffectMethods.add(m, MethodSideEffectStatus.SE_CLINIT);
+                        continue;
                     }
                     if (m.equals(CLASS_GET_NAME) // used sometimes to trigger class loading
                             || m.equals(HASH_CODE) // found intended hashCode call several times in different projects, need further research
@@ -960,10 +955,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             try {
                 XClass xClass = subtype.getXClass();
                 XMethod subMethod = xClass.findMatchingMethod(xMethod.getMethodDescriptor());
-                if (subMethod != null) {
-                    if (!subMethod.isAbstract()) {
-                        return true;
-                    }
+                if (subMethod != null && !subMethod.isAbstract()) {
+                    return true;
                 }
             } catch (CheckedAnalysisException e) {
                 // ignore

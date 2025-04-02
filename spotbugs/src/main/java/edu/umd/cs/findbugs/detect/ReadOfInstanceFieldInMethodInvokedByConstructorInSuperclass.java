@@ -53,7 +53,9 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
         this.accumulator = new BugAccumulator(bugReporter);
     }
 
-    Set<XField> initializedFields, nullCheckedFields;
+    Set<XField> initializedFields;
+
+    Set<XField> nullCheckedFields;
 
     @Override
     public void visit(Code obj) {
@@ -169,10 +171,8 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 
         XMethod lookfor = "()V".equals(superConstructor.getSignature()) ? null : superConstructor;
         for (XMethod m : getXClass().getXMethods()) {
-            if (Const.CONSTRUCTOR_NAME.equals(m.getName())) {
-                if (fieldSummary.getSuperCall(m) == lookfor) {
-                    return m;
-                }
+            if (Const.CONSTRUCTOR_NAME.equals(m.getName()) && fieldSummary.getSuperCall(m) == lookfor) {
+                return m;
             }
         }
         return null;
