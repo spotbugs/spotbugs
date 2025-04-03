@@ -20,61 +20,74 @@
 package edu.umd.cs.findbugs.ba;
 
 public class ResourceValueFrame extends Frame<ResourceValue> {
-    /**
-     * The resource escapes the method.
-     */
-    public static final int ESCAPED = 0;
 
-    /**
-     * The resource is open (or locked, etc) on paths that include only normal
-     * control flow.
-     */
-    public static final int OPEN = 1;
+    public enum State {
+        /**
+         * The resource escapes the method.
+         */
+        ESCAPED(0),
 
-    /**
-     * The resource is open (or locked, etc) on paths that include exception
-     * control flow.
-     */
-    public static final int OPEN_ON_EXCEPTION_PATH = 2;
+        /**
+         * The resource is open (or locked, etc) on paths that include only normal
+         * control flow.
+         */
+        OPEN(1),
 
-    /**
-     * The resource is closed without being opened in the first place.
-     */
-    public static final int CLOSED_WITHOUT_OPENED = 3;
+        /**
+         * The resource is open (or locked, etc) on paths that include exception
+         * control flow.
+         */
+        OPEN_ON_EXCEPTION_PATH(2),
 
-    /**
-     * The resource is closed (or unlocked, etc).
-     */
-    public static final int CLOSED = 4;
+        /**
+         * The resource is closed without being opened in the first place.
+         */
+        CLOSED_WITHOUT_OPENED(3),
 
-    /**
-     * The resource has been created, but is not open.
-     */
-    public static final int CREATED = 5;
+        /**
+         * The resource is closed (or unlocked, etc).
+         */
+        CLOSED(4),
 
-    /**
-     * The resource doesn't exist.
-     */
-    public static final int NONEXISTENT = 6;
+        /**
+         * The resource has been created, but is not open.
+         */
+        CREATED(5),
 
-    /**
-     * The resource is NOT open (or locked, etc) on paths that include exception
-     * control flow.
-     */
-    public static final int NOT_OPEN_ON_EXCEPTION_PATH = 7;
+        /**
+         * The resource doesn't exist.
+         */
+        NONEXISTENT(6),
 
-    private int status;
+        /**
+         * The resource is NOT open (or locked, etc) on paths that include exception
+         * control flow.
+         */
+        NOT_OPEN_ON_EXCEPTION_PATH(7);
+
+        State(int type) {
+            this.type = type;
+        }
+
+        private final int type;
+
+        public int getType() {
+            return type;
+        }
+    }
+
+    private State status;
 
     public ResourceValueFrame(int numSlots) {
         super(numSlots);
-        this.status = NONEXISTENT;
+        this.status = State.NONEXISTENT;
     }
 
-    public int getStatus() {
+    public State getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(State status) {
         this.status = status;
     }
 
@@ -100,7 +113,7 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 
     @Override
     public String toString() {
-        return super.toString() + statusList[status];
+        return super.toString() + statusList[status.getType()];
     }
 
 }

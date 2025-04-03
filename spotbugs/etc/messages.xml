@@ -9038,6 +9038,7 @@ Using floating-point variables should not be used as loop counters, as they are 
       ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="ASE_ASSERTION_WITH_SIDE_EFFECT">
     <ShortDescription>Expression in assertion may produce a side effect</ShortDescription>
     <LongDescription>The expression used in assertion at {1} may produce a side effect. If assertions are disabled, the expression won't get executed and the result of the method might change.</LongDescription>
