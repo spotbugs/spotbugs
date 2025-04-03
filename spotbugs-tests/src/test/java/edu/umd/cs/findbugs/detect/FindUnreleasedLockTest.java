@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class FindUnreleasedLockTest extends AbstractIntegrationTest {
 
     @Test
-    void doesNotFindSSDBug_ifLockIsClosedInAProperWay() {
+    void doesNotFindSSDBugIfLockIsClosedInAProperWay() {
         performAnalysis("unreleasedLock/ProperlyClosedLock.class");
         assertNoBugType("UL_UNRELEASED_LOCK");
         assertNoBugType("UL_UNRELEASED_LOCK_EXCEPTION_PATH");
@@ -14,17 +14,19 @@ class FindUnreleasedLockTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void findPossibleUnlockCall_withoutLockCall() {
+    void findPossibleUnlockCallWithoutLockCall() {
         performAnalysis("unreleasedLock/ThrowExceptionAndUnlockBeforeLock.class");
-
+        assertNoBugType("UL_UNRELEASED_LOCK");
+        assertNoBugType("UL_UNRELEASED_LOCK_EXCEPTION_PATH");
         assertBugTypeCount("CWO_CLOSED_WITHOUT_OPENED", 1);
         assertBugInMethod("CWO_CLOSED_WITHOUT_OPENED", "ThrowExceptionAndUnlockBeforeLock", "doSomething");
     }
 
     @Test
-    void findUnresolvedLock_onExceptionalCondition() {
+    void findUnresolvedLockOnExceptionalCondition() {
         performAnalysis("unreleasedLock/UnreleasedLock.class");
-
+        assertNoBugType("UL_UNRELEASED_LOCK");
+        assertNoBugType("CWO_CLOSED_WITHOUT_OPENED");
         assertBugTypeCount("UL_UNRELEASED_LOCK_EXCEPTION_PATH", 1);
         assertBugInMethod("UL_UNRELEASED_LOCK_EXCEPTION_PATH", "UnreleasedLock", "doSomething");
     }
