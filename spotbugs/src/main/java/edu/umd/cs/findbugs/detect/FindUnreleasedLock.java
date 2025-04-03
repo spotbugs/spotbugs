@@ -91,15 +91,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
         private final ValueNumberDataflow vnaDataflow;
 
-        // private IsNullValueDataflow isNullDataflow;
-
         public LockFrameModelingVisitor(ConstantPoolGen cpg, LockResourceTracker resourceTracker, Lock lock,
-                ValueNumberDataflow vnaDataflow, IsNullValueDataflow isNullDataflow) {
+                ValueNumberDataflow vnaDataflow) {
             super(cpg);
             this.resourceTracker = resourceTracker;
             this.lock = lock;
             this.vnaDataflow = vnaDataflow;
-            // this.isNullDataflow = isNullDataflow;
         }
 
         @Override
@@ -234,7 +231,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
                     ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
                     ValueNumber lockValue = frame.getTopValue();
                     if (DEBUG) {
-                        System.out.println("Lock value is " + lockValue.getNumber() + ", frame=" + frame.toString());
+                        System.out.println("Lock value is " + lockValue.getNumber() + ", frame=" + frame);
                         ++numAcquires;
                     }
                     return new Lock(location, className, lockValue);
@@ -282,7 +279,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
         @Override
         public ResourceValueFrameModelingVisitor createVisitor(Lock resource, ConstantPoolGen cpg) {
-            return new LockFrameModelingVisitor(cpg, this, resource, vnaDataflow, isNullDataflow);
+            return new LockFrameModelingVisitor(cpg, this, resource, vnaDataflow);
         }
 
         @Override
@@ -394,8 +391,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
         for (Constant c : jclass.getConstantPool().getConstantPool()) {
             if (c instanceof ConstantMethodref) {
                 ConstantMethodref m = (ConstantMethodref) c;
-                ConstantClass cl = (ConstantClass) jclass.getConstantPool().getConstant(m.getClassIndex());
-                ConstantUtf8 name = (ConstantUtf8) jclass.getConstantPool().getConstant(cl.getNameIndex());
+                ConstantClass cl = jclass.getConstantPool().getConstant(m.getClassIndex());
+                ConstantUtf8 name = jclass.getConstantPool().getConstant(cl.getNameIndex());
                 String nameAsString = name.getBytes();
                 if (nameAsString.startsWith("java/util/concurrent/locks")) {
                     sawUtilConcurrentLocks = true;
