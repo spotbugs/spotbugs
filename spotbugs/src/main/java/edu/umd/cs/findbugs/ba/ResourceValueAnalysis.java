@@ -196,7 +196,6 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
                         if (topValue.isInstance()
                                 && ((isNullCheck && edgeType == IFCMP_EDGE) || (isNonNullCheck && edgeType == FALL_THROUGH_EDGE))) {
-                            // System.out.println("**** making resource nonexistent on edge "+edge.getId());
                             tmpFact = modifyFrame(fact, tmpFact);
                             tmpFact.setStatus(ResourceValueFrame.State.NONEXISTENT);
                         }
@@ -222,8 +221,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
     }
 
     @Override
-    protected void mergeValues(ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot)
-            throws DataflowAnalysisException {
+    protected void mergeValues(ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot) {
         ResourceValue value = ResourceValue.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
         resultFrame.setValue(slot, value);
     }
