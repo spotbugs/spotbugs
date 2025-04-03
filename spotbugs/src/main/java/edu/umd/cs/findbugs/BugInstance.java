@@ -38,6 +38,7 @@ import javax.annotation.meta.When;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -2068,16 +2069,40 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             ClassDescriptor classDescriptor = pma.getClassDescriptor();
             ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
             JavaClass javaClass = classContext.getJavaClass();
-            AnnotationEntry[] annotationEntries = javaClass.getAnnotationEntries();
-            // map annotation entry type to dotted class name, for example
-            // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
-            List<String> javaAnnotationNames = Arrays.asList(annotationEntries).stream()
-                    .map((AnnotationEntry ae) -> ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType()))
-                    .collect(Collectors.toList());
-            pma.setJavaAnnotationNames(javaAnnotationNames);
+            if (annotation instanceof ClassAnnotation) {
+                AnnotationEntry[] annotationEntries = javaClass.getAnnotationEntries();
+                addAnnotationNames(pma, annotationEntries);
+            } else if (annotation instanceof MethodAnnotation) {
+                MethodAnnotation ma = (MethodAnnotation) annotation;
+                for (Method method : javaClass.getMethods()) {
+                    if (method.getName().equals(ma.getMethodName()) && method.getSignature().equals(ma.getMethodSignature())) {
+                        AnnotationEntry[] annotationEntries = method.getAnnotationEntries();
+                        addAnnotationNames(pma, annotationEntries);
+                        break;
+                    }
+                }
+            } else if (annotation instanceof FieldAnnotation) {
+                FieldAnnotation fa = (FieldAnnotation) annotation;
+                for (Field field : javaClass.getFields()) {
+                    if (field.getName().equals(fa.getFieldName())) {
+                        AnnotationEntry[] annotationEntries = field.getAnnotationEntries();
+                        addAnnotationNames(pma, annotationEntries);
+                        break;
+                    }
+                }
+            }
         } catch (Exception e) {
             LOG.debug(e.getMessage(), e);
         }
+    }
+
+    private static void addAnnotationNames(PackageMemberAnnotation pma, AnnotationEntry[] annotationEntries) {
+        // map annotation entry type to dotted class name, for example
+        // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
+        List<String> javaAnnotationNames = Arrays.stream(annotationEntries)
+                .map((AnnotationEntry ae) -> ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType()))
+                .collect(Collectors.toList());
+        pma.setJavaAnnotationNames(javaAnnotationNames);
     }
 
     public BugInstance add(@Nonnull BugAnnotation annotation) {
