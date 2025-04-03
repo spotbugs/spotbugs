@@ -1,59 +1,31 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.jupiter.api.Test;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 class FindUnreleasedLockTest extends AbstractIntegrationTest {
 
     @Test
     void doesNotFindSSDBug_ifLockIsClosedInAProperWay() {
         performAnalysis("unreleasedLock/ProperlyClosedLock.class");
-
-        assertAnalyzedClassHasNoBugs();
+        assertNoBugType("UL_UNRELEASED_LOCK");
+        assertNoBugType("UL_UNRELEASED_LOCK_EXCEPTION_PATH");
+        assertNoBugType("CWO_CLOSED_WITHOUT_OPENED");
     }
 
     @Test
     void findPossibleUnlockCall_withoutLockCall() {
         performAnalysis("unreleasedLock/ThrowExceptionAndUnlockBeforeLock.class");
 
-        assertAnalyzedClassHasBug("CWO_CLOSED_WITHOUT_OPENED", 1);
-        assertExactPlaceOfBug("ThrowExceptionAndUnlockBeforeLock", "doSomething", "CWO_CLOSED_WITHOUT_OPENED");
+        assertBugTypeCount("CWO_CLOSED_WITHOUT_OPENED", 1);
+        assertBugInMethod("CWO_CLOSED_WITHOUT_OPENED", "ThrowExceptionAndUnlockBeforeLock", "doSomething");
     }
 
     @Test
     void findUnresolvedLock_onExceptionalCondition() {
         performAnalysis("unreleasedLock/UnreleasedLock.class");
 
-        assertAnalyzedClassHasBug("UL_UNRELEASED_LOCK_EXCEPTION_PATH", 1);
-        assertExactPlaceOfBug("UnreleasedLock", "doSomething", "UL_UNRELEASED_LOCK_EXCEPTION_PATH");
+        assertBugTypeCount("UL_UNRELEASED_LOCK_EXCEPTION_PATH", 1);
+        assertBugInMethod("UL_UNRELEASED_LOCK_EXCEPTION_PATH", "UnreleasedLock", "doSomething");
     }
-
-    private void assertAnalyzedClassHasNoBugs() {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
-    }
-
-    private void assertAnalyzedClassHasBug(String bugType, int numberOfBugs) {
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .build();
-        assertThat(getBugCollection(), containsExactly(numberOfBugs, bugTypeMatcher));
-    }
-
-    private void assertExactPlaceOfBug(String className, String methodName, String bugType) {
-        final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType(bugType)
-                .inClass(className)
-                .inMethod(methodName)
-                .build();
-        assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
-    }
-
 }
