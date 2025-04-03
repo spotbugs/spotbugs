@@ -5267,8 +5267,8 @@ Probably something else was meant or the condition can be removed.</p>
     <Details>
 <![CDATA[
 <p>Our analysis shows that this object is useless.
-It's created and modified, but its value never go outside of the method or produce any side-effect.
-Either there is a mistake and object was intended to be used or it can be removed.</p>
+It's created and modified, but its value never go outside the method or produce any side effect.
+Either there is a mistake and object was intended to be used, or it can be removed.</p>
 <p>This analysis rarely produces false-positives. Common false-positive cases include:</p>
 <p>- This object used to implicitly throw some obscure exception.</p>
 <p>- This object used as a stub to generalize the code.</p>
@@ -5281,7 +5281,7 @@ Either there is a mistake and object was intended to be used or it can be remove
     <LongDescription>Useless object created in method {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>This object is created just to perform some modifications which don't have any side-effect.
+<p>This object is created just to perform some modifications which don't have any side effect.
 Probably something else was meant or the object can be removed.</p>
 ]]>
     </Details>
@@ -5358,8 +5358,7 @@ return value of <code>String.toLowerCase()</code>).
 </p>
 <p>We are guessing that ignoring the return value might be a bad idea just from
 a simple analysis of the body of the method. You can use a @CheckReturnValue annotation
-to instruct SpotBugs as to whether ignoring the return value of this method
-is important or acceptable.
+to instruct SpotBugs that ignoring the return value of this method is acceptable.
 </p>
 <p>Please investigate this closely to decide whether it is OK to ignore the return value.
 </p>
@@ -5800,7 +5799,7 @@ body of an <code>if</code> statement, e.g.:</p>
 be null because it was previously dereferenced and if it were null a null pointer
 exception would have occurred at the earlier dereference.
 Essentially, this code and the previous dereference
-disagree as to whether this value is allowed to be null. Either the check is redundant
+disagree whether this value is allowed to be null. Either the check is redundant
 or the previous dereference is erroneous.</p>
 ]]>
     </Details>
@@ -6658,7 +6657,7 @@ String s = buf.toString();
 <![CDATA[
 <p> The method calls Connection.prepareStatement inside the loop passing the constant arguments.
 If the PreparedStatement should be executed several times there's no reason to recreate it for each loop iteration.
-Move this call outside of the loop.</p>
+Move this call outside the loop.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6681,7 +6680,7 @@ Consider storing the length to the variable before the loop.
 <![CDATA[
 <p> The method calls Pattern.compile inside the loop passing the constant arguments.
 If the Pattern should be used several times there's no reason to compile it for each loop iteration.
-Move this call outside of the loop or even into static final field.</p>
+Move this call outside the loop or even into static final field.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6691,7 +6690,7 @@ Move this call outside of the loop or even into static final field.</p>
     <Details>
 <![CDATA[
 <p> The method creates the same regular expression inside the loop, so it will be compiled every iteration.
-It would be more optimal to precompile this regular expression using Pattern.compile outside of the loop.</p>
+It would be more optimal to precompile this regular expression using Pattern.compile outside the loop.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6725,7 +6724,7 @@ f. e. call <code>myString.lastIndexOf('.')</code> instead of <code>myString.last
 <p> This method uses the toArray() method of a collection derived class, and passes
 in a zero-length prototype array argument.  It is more efficient to use
 <code>myCollection.toArray(new Foo[myCollection.size()])</code>
-If the array passed in is big enough to store all of the
+If the array passed in is big enough to store all the
 elements of the collection, then it is populated and returned
 directly. This avoids the need to create a second array
 (by reflection) to return as the result.</p>
@@ -7298,7 +7297,7 @@ just use the constant. Methods detected are:
     This class extends from a Struts Action class, and uses an instance member variable. Since only
     one instance of a struts Action class is created by the Struts framework, and used in a
     multithreaded way, this paradigm is highly discouraged and most likely problematic. Consider
-    only using method local variables. Only instance fields that are written outside of a monitor
+    only using method local variables. Only instance fields that are written outside a monitor
     are reported.
     </p>
     ]]>
@@ -7451,8 +7450,8 @@ double value2 = x / (double) y;
     </Details>
   </BugPattern>
   <BugPattern type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION">
-    <ShortDescription>Store of non serializable object into HttpSession</ShortDescription>
-    <LongDescription>Store of non serializable {2} into HttpSession in {1}</LongDescription>
+    <ShortDescription>Store of non-serializable object into HttpSession</ShortDescription>
+    <LongDescription>Store of non-serializable {2} into HttpSession in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7463,8 +7462,8 @@ If this session is passivated or migrated, an error will result.
     </Details>
   </BugPattern>
   <BugPattern type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN">
-    <ShortDescription>Non serializable object written to ObjectOutput</ShortDescription>
-    <LongDescription>Non serializable {2} written to ObjectOutput in {1}</LongDescription>
+    <ShortDescription>Non-serializable object written to ObjectOutput</ShortDescription>
+    <LongDescription>Non-serializable {2} written to ObjectOutput in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8181,7 +8180,7 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
      idea was used in several Map implementations, but introduces the possibility
      of nasty coding mistakes. If a map <code>m</code> returns
      such an iterator for an entrySet, then
-     <code>c.addAll(m.entrySet())</code> will go badly wrong. All of
+     <code>c.addAll(m.entrySet())</code> will go badly wrong. All
      the Map implementations in OpenJDK 7 have been rewritten to avoid this,
      you should too.
     </p>
@@ -9486,7 +9485,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="SC">Constructor invokes Thread.start()</BugCode>
   <BugCode abbrev="MS">Mutable static field</BugCode>
   <BugCode abbrev="ME">Mutable enum field</BugCode>
-  <BugCode abbrev="EI">Method returning array may expose internal representation</BugCode>
+  <BugCode abbrev="EI">Method may expose internal representation</BugCode>
   <BugCode abbrev="Nm">Confusing method name</BugCode>
   <BugCode abbrev="SS">Unread field should be static</BugCode>
   <BugCode abbrev="UuF">Unused field</BugCode>
@@ -9524,7 +9523,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="NS">Suspicious use of non-short-circuit boolean operator</BugCode>
   <BugCode abbrev="ODR">Database resource not closed on all paths</BugCode>
   <BugCode abbrev="SBSC">String concatenation in loop using + operator</BugCode>
-  <BugCode abbrev="IIL">Inefficient code which can be moved outside of the loop</BugCode>
+  <BugCode abbrev="IIL">Inefficient code which can be moved outside the loop</BugCode>
   <BugCode abbrev="IIO">Inefficient use of String.indexOf(String) or String.lastIndexOf(String)</BugCode>
   <BugCode abbrev="ITA">Inefficient use of collection.toArray(new Foo[0])</BugCode>
   <BugCode abbrev="SW">Swing coding rules</BugCode>
