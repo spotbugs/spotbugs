@@ -1,0 +1,69 @@
+name: check-projects-comment
+
+on:
+  workflow_run:
+    workflows: ['check-projects']
+    types:
+      - completed
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    if: >
+      ${{ github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: 'Download artifact'
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const fs = require('fs')
+            const artifactsQueryResult = await github.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: ${{ github.event.workflow_run.id }},
+            })
+            const artifacts = artifactsQueryResult.data.artifacts
+            for (const artifact of artifacts) {
+              const name = artifact.name
+              const download = await github.actions.downloadArtifact({
+                 owner: context.repo.owner,
+                 repo: context.repo.repo,
+                 artifact_id: artifact.id,
+                 archive_format: 'zip',
+              })
+              fs.writeFileSync(`${{github.workspace}}/${name}.zip`, Buffer.from(download.data))
+            }
+
+      - run: |
+          for archive in *.zip; do
+            unzip "${archive}" -d "${archive%.*}" && rm "${archive}"
+          done
+
+      - name: 'Comment on PR'
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs')
+
+            for (const projectDir of fs.readdirSync('${{github.workspace}}')) {
+              const projectName = projectDir
+              const issueNumber = Number(fs.readFileSync(`${projectDir}/prnum`))
+              const baselineTime = Number(fs.readFileSync(`${projectDir}/baseline_time`))
+              const newTime = Number(fs.readFileSync(`${projectDir}/new_time`))
+              const resultDiff = fs.readFileSync(`${projectDir}/result_diff`)
+
+              const body =
+              `${projectName}
+                 baseline time: ${baselineTime}s
+                 new time: ${newTime}s
+                 results diff: ${resultDiff ? '\n```' + resultDiff + '```' : '-'}
+              `
+              await github.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: body,
+              })
+            }
