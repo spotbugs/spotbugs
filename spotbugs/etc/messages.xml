@@ -5267,7 +5267,7 @@ Probably something else was meant or the condition can be removed.</p>
     <Details>
 <![CDATA[
 <p>Our analysis shows that this object is useless.
-It's created and modified, but its value never go outside the method or produce any side effect.
+It's created and modified, but its value never goes outside the method or produces any side effect.
 Either there is a mistake and object was intended to be used, or it can be removed.</p>
 <p>This analysis rarely produces false-positives. Common false-positive cases include:</p>
 <p>- This object used to implicitly throw some obscure exception.</p>
