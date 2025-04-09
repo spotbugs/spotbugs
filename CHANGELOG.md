@@ -6,6 +6,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Added
+- Make TypeQualifierResolver recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3156](https://github.com/spotbugs/spotbugs/pull/3156))
 
 ### Fixed
 - Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))
