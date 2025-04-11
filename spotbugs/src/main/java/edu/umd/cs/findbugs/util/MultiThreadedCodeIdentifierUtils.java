@@ -18,19 +18,19 @@
 
 package edu.umd.cs.findbugs.util;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.ClassContext;
-
 import java.util.Collection;
 import java.util.stream.Stream;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -57,6 +57,9 @@ public class MultiThreadedCodeIdentifierUtils {
 
     public static boolean isPartOfMultiThreadedCode(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
+        if (notThreadSafe(javaClass.getAnnotationEntries())) {
+            return false;
+        }
         if (Subtypes2.instanceOf(javaClass, JAVA_LANG_RUNNABLE) ||
                 Stream.of(javaClass.getFields()).anyMatch(MultiThreadedCodeIdentifierUtils::isFieldIndicatingMultiThreadedContainer)) {
             return true;
@@ -148,6 +151,15 @@ public class MultiThreadedCodeIdentifierUtils {
             }
         } catch (DataflowAnalysisException e) {
             AnalysisContext.logError(String.format("Synchronization check caught an error when analyzing %s method.", currentMethod.getName()), e);
+        }
+        return false;
+    }
+
+    private static boolean notThreadSafe(AnnotationEntry[] annotationEntries) {
+        for (AnnotationEntry annotationEntry : annotationEntries) {
+            if (annotationEntry.getAnnotationType().endsWith("/NotThreadSafe;")) {
+                return true;
+            }
         }
         return false;
     }
