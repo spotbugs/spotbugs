@@ -139,6 +139,8 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
      * @return {@code true} if given string matches any bad combination.
      */
     private boolean runDateFormatRuleVerify(String dateFormat) {
+        String interpretedDateFormat = removeNonInterpretedText(dateFormat);
+
         return Stream.of(
                 // when "h" or "K" flags found, make sure that it ALSO CONTAINS "a" or "B"
                 new Rule(Arrays.asList("a", "B"), null, true, Arrays.asList("h", "K")),
@@ -168,6 +170,25 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
 
                 // year and year-of-era cannot be used together
                 new Rule(Collections.singletonList("u"), null, false, Collections.singletonList("y")),
-                new Rule(Collections.singletonList("y"), null, false, Collections.singletonList("u"))).anyMatch(rule -> rule.verify(dateFormat));
+                new Rule(Collections.singletonList("y"), null, false, Collections.singletonList("u"))).anyMatch(rule -> rule.verify(
+                        interpretedDateFormat));
+    }
+
+    protected String removeNonInterpretedText(String dateFormat) {
+        int length = dateFormat.length();
+        boolean inQuote = false;
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            char c = dateFormat.charAt(i);
+
+            if (c == '\'') {
+                inQuote = !inQuote;
+            } else if (!inQuote) {
+                builder.append(c);
+            }
+        }
+
+        return builder.toString();
     }
 }
