@@ -12,6 +12,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not report `US_USELESS_SUPPRESSION_ON_METHOD` on generated methods ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))
 - Rewrite some member in `ResourceValueFrame.java` to Enum ([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
 
+### Added
+
+- Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
+
 ## 4.9.3 - 2025-03-14
 ### Added
 

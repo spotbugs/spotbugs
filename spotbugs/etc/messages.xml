@@ -9376,7 +9376,7 @@ Using floating-point variables should not be used as loop counters, as they are 
 
   <BugPattern type="US_USELESS_SUPPRESSION_ON_CLASS">
     <ShortDescription>Useless suppression on a class</ShortDescription>
-    <LongDescription>Suppressing annotation on the class {0} is unnecessary</LongDescription>
+    <LongDescription>Suppressing annotation {1} on the class {0} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
       Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
@@ -9387,7 +9387,7 @@ Using floating-point variables should not be used as loop counters, as they are 
 
   <BugPattern type="US_USELESS_SUPPRESSION_ON_FIELD">
     <ShortDescription>Useless suppression on a field</ShortDescription>
-    <LongDescription>Suppressing annotation on the field {1} is unnecessary</LongDescription>
+    <LongDescription>Suppressing annotation {2} on the field {1} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
       Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
@@ -9400,7 +9400,7 @@ Using floating-point variables should not be used as loop counters, as they are 
 
   <BugPattern type="US_USELESS_SUPPRESSION_ON_METHOD">
     <ShortDescription>Useless suppression on a method</ShortDescription>
-    <LongDescription>Suppressing annotation on the method {1} is unnecessary</LongDescription>
+    <LongDescription>Suppressing annotation {2} on the method {1} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
       Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
@@ -9413,7 +9413,7 @@ Using floating-point variables should not be used as loop counters, as they are 
 
   <BugPattern type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER">
     <ShortDescription>Useless suppression on a method parameter</ShortDescription>
-    <LongDescription>Suppressing annotation on the parameter {2} of the method {1} is unnecessary</LongDescription>
+    <LongDescription>Suppressing annotation {3} on the parameter {2} of the method {1} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
       Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
@@ -9426,7 +9426,7 @@ Using floating-point variables should not be used as loop counters, as they are 
 
   <BugPattern type="US_USELESS_SUPPRESSION_ON_PACKAGE">
     <ShortDescription>Useless suppression on a package</ShortDescription>
-    <LongDescription>Suppressing annotation on the package {0} is unnecessary</LongDescription>
+    <LongDescription>Suppressing annotation {1} on the package {0} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
       Suppressing annotation <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
