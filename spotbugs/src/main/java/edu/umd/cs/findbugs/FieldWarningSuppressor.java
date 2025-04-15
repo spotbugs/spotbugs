@@ -41,6 +41,7 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
     public BugInstance buildUselessSuppressionBugInstance(UselessSuppressionDetector detector) {
         return new BugInstance(detector, BUG_TYPE, PRIORITY)
                 .addClass(clazz.getClassDescriptor())
-                .addField(field);
+                .addField(field)
+                .addString(bugPattern);
     }
 }
