@@ -6,18 +6,25 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
-### Added
-- New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See [SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions)) ([#2055](https://github.com/spotbugs/spotbugs/pull/2055))
-  - Breaking change: changed values and new items in `ResourceValueFrame`.
+### Changed
+- `AnnotationMatcher` can now ignore bugs if annotation is also applied on methods or fields. Previously only annotations on classes were considered.
+- Add relevant CWE ids to bugs and refer the CWEs in the bug messages ([#3354](https://github.com/spotbugs/spotbugs/pull/3354)).
 
 ### Fixed
 - Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))
 - Do not report `US_USELESS_SUPPRESSION_ON_METHOD` on generated methods ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))
 - Rewrite some member in `ResourceValueFrame.java` to Enum ([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
+- Ignore non-interpreted text when looking for `FS_BAD_DATE_FORMAT_FLAG_COMBO` ([#3387](https://github.com/spotbugs/spotbugs/issues/3387))
+- Fix IllegalArgumentException thrown from `FindNoSideEffectMethods` detector ([#3320](https://github.com/spotbugs/spotbugs/issues/3320))
+
+### Added
+
+- Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
+- New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See [SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions)) ([#2055](https://github.com/spotbugs/spotbugs/pull/2055))
+  - Breaking change: changed values and new items in `ResourceValueFrame`.
 
 ## 4.9.3 - 2025-03-14
 ### Added
-
 - Introduced `UselessSuppressionDetector` to report the useless annotations instead of `NoteSuppressedWarnings` ([#3348](https://github.com/spotbugs/spotbugs/issues/3348))
 
 ### Fixed
@@ -25,7 +32,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## 4.9.2 - 2025-03-01
 ### Added
-
 - Reporting useless `@SuppressFBWarnings` annotations ([#641](https://github.com/spotbugs/spotbugs/issues/641))
 
 ### Fixed
