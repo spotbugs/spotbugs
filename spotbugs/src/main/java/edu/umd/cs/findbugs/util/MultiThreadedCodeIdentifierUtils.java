@@ -57,9 +57,6 @@ public class MultiThreadedCodeIdentifierUtils {
 
     public static boolean isPartOfMultiThreadedCode(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
-        if (notThreadSafe(javaClass.getAnnotationEntries())) {
-            return false;
-        }
         if (Subtypes2.instanceOf(javaClass, JAVA_LANG_RUNNABLE) ||
                 Stream.of(javaClass.getFields()).anyMatch(MultiThreadedCodeIdentifierUtils::isFieldIndicatingMultiThreadedContainer)) {
             return true;
@@ -155,8 +152,13 @@ public class MultiThreadedCodeIdentifierUtils {
         return false;
     }
 
-    private static boolean notThreadSafe(AnnotationEntry[] annotationEntries) {
-        for (AnnotationEntry annotationEntry : annotationEntries) {
+    /**
+     * @return <code>true</code> if the class is explicitely annotated with <code>NotThreadSafe</code> to document that it is not thread sage
+     */
+    public static boolean isNotThreadSafe(ClassContext classContext) {
+        JavaClass javaClass = classContext.getJavaClass();
+
+        for (AnnotationEntry annotationEntry : javaClass.getAnnotationEntries()) {
             if (annotationEntry.getAnnotationType().endsWith("/NotThreadSafe;")) {
                 return true;
             }
