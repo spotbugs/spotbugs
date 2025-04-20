@@ -18,7 +18,6 @@
 package edu.umd.cs.findbugs.bytecode;
 
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.FieldOrMethod;
@@ -36,9 +35,11 @@ import edu.umd.cs.findbugs.ba.XMethod;
  */
 public final class MemberUtils {
 
-    private static final String LOMBOK_GENERATED_TYPE = "Llombok/Generated;";
-    @SlashedClassName
-    private static final String LOMBOK_GENERATED_NAME = "lombok/Generated";
+    /**
+     * This will capture annotations such as <code>javax.annotation.Generated</code>, <code>javax.annotation.processing.Generated</code>, <code>lombok.Generated</code>
+     */
+    private static final String GENERATED_TYPE_SUFFIX = "/Generated;";
+    private static final String GENERATED_NAME_SUFFIX = "/Generated";
 
     private MemberUtils() {
         throw new AssertionError("Utility classes can't be instantiated");
@@ -75,7 +76,7 @@ public final class MemberUtils {
     private static boolean isGeneratedMethod(final FieldOrMethod m) {
         for (AnnotationEntry a : m.getAnnotationEntries()) {
             String typeName = a.getAnnotationType();
-            if (LOMBOK_GENERATED_TYPE.equals(typeName)) {
+            if (typeName.endsWith(GENERATED_TYPE_SUFFIX)) {
                 return true;
             }
         }
@@ -86,7 +87,7 @@ public final class MemberUtils {
     private static boolean isGeneratedMethod(final FieldGenOrMethodGen m) {
         for (AnnotationEntryGen a : m.getAnnotationEntries()) {
             String typeName = a.getAnnotation().getAnnotationType();
-            if (LOMBOK_GENERATED_TYPE.equals(typeName)) {
+            if (typeName.endsWith(GENERATED_NAME_SUFFIX)) {
                 return true;
             }
         }
@@ -97,7 +98,7 @@ public final class MemberUtils {
     private static boolean isGeneratedMethod(final XMethod m) {
         for (AnnotationValue a : m.getAnnotations()) {
             String typeName = a.getAnnotationClass().getClassName();
-            if (LOMBOK_GENERATED_NAME.equals(typeName)) {
+            if (typeName.endsWith(GENERATED_TYPE_SUFFIX)) {
                 return true;
             }
         }
