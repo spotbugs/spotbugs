@@ -9,6 +9,6 @@ class Issue3396Test extends AbstractIntegrationTest {
     void testSuppression() {
         performAnalysis("ghIssues/Issue3396.class");
 
-        assertBugInClassCount("HE_EQUALS_USE_HASHCODE", "ghIssues.Issue3396", 0);
+        assertBugInClassCount("US_USELESS_SUPPRESSION_ON_METHOD", "ghIssues.Issue3396", 0);
     }
 }

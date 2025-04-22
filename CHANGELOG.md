@@ -16,6 +16,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Rewrite some member in `ResourceValueFrame.java` to Enum ([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
 - Ignore non-interpreted text when looking for `FS_BAD_DATE_FORMAT_FLAG_COMBO` ([#3387](https://github.com/spotbugs/spotbugs/issues/3387))
 - Fix IllegalArgumentException thrown from `FindNoSideEffectMethods` detector ([#3320](https://github.com/spotbugs/spotbugs/issues/3320))
+- Do not report `US_USELESS_SUPPRESSION_ON_*` on code annotated with `*.Generated` ([#3396](https://github.com/spotbugs/spotbugs/issues/3396))
 
 ### Added
 

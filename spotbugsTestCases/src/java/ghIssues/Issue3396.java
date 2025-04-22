@@ -1,19 +1,15 @@
 package ghIssues;
 
-import javax.annotation.Generated;
+import org.immutables.value.Generated;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+@Generated
 public class Issue3396 {
     
-    @Generated("test")
-    @SuppressFBWarnings
-    public boolean equals(Object x) {
-    	if (x.toString().equals("")) {
-    		return false;
-    	}
-    	
+	@SuppressFBWarnings("XYZ")
+    public boolean test(Object x) {
     	return x == this; 
 	}
 }
