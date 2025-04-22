@@ -153,7 +153,7 @@ public class MultiThreadedCodeIdentifierUtils {
     }
 
     /**
-     * @return <code>true</code> if the class is explicitely annotated with <code>NotThreadSafe</code> to document that it is not thread sage
+     * @return <code>true</code> if the class is explicitly annotated with <code>NotThreadSafe</code> to document that it is not thread safe
      */
     public static boolean isNotThreadSafe(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
