@@ -18,7 +18,9 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -65,6 +67,14 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         INVOKE_OPCODE_SET.set(Const.INVOKESTATIC);
         INVOKE_OPCODE_SET.set(Const.INVOKEVIRTUAL);
     }
+
+    private static final List<String> MOCKITO_VOID_STUBBING_METHODS = Arrays.asList(
+            "doAnswer",
+            "doCallRealMethod",
+            "doNothing",
+            "doReturn",
+            "doThrow",
+            "verify");
 
     boolean previousOpcodeWasNEW;
 
@@ -237,11 +247,9 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     }
 
     private boolean isCallMockitoInvocation(XMethod method) {
-        String methodName = method.getName();
-
         return method.isStatic()
                 && "org.mockito.Mockito".equals(method.getClassName())
-                && ("verify".equals(methodName) || "doAnswer".equals(methodName) || "doReturn".equals(methodName));
+                && MOCKITO_VOID_STUBBING_METHODS.contains(method.getName());
     }
 
     /**

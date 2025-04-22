@@ -49,8 +49,8 @@ public class Issue872 {
 	void doAnswerMockito() {
 		Value spy = Mockito.spy(Value.class);
 		Mockito.doAnswer(invocation -> {
-		      return "foo";
-		    }
+				return "foo";
+			}
 		).when(spy).checkMe();
 	}
 	
@@ -58,6 +58,24 @@ public class Issue872 {
 	void doReturnMockito() {
 		Value receiver = Mockito.mock(Value.class);
 		Mockito.doReturn("foo").when(receiver).checkMe();
+	}
+	
+	// compliant
+	void doCallRealMethodMockito() {
+		Value receiver = Mockito.mock(Value.class);
+		Mockito.doCallRealMethod().when(receiver).checkMe();
+	}
+	
+	// compliant
+	void doNothingMockito() {
+		Value receiver = Mockito.mock(Value.class);
+		Mockito.doNothing().when(receiver).checkMe();
+	}
+	
+	// compliant
+	void doThrowMockito() {
+		Value receiver = Mockito.mock(Value.class);
+		Mockito.doThrow(Exception.class).when(receiver).checkMe();
 	}
 	
 	public static class Value {
