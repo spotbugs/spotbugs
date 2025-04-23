@@ -18,9 +18,8 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.List;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -68,7 +67,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         INVOKE_OPCODE_SET.set(Const.INVOKEVIRTUAL);
     }
 
-    private static final List<String> MOCKITO_VOID_STUBBING_METHODS = Arrays.asList(
+    private static final Set<String> MOCKITO_VOID_STUBBING_METHODS = Set.of(
             "doAnswer",
             "doCallRealMethod",
             "doNothing",
