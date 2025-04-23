@@ -37,6 +37,8 @@ public class PackageWarningSuppressor extends WarningSuppressor {
 
     @Override
     public BugInstance buildUselessSuppressionBugInstance(UselessSuppressionDetector detector) {
-        return new BugInstance(detector, BUG_TYPE, PRIORITY).addClass(packageName);
+        return new BugInstance(detector, BUG_TYPE, PRIORITY)
+                .addClass(packageName)
+                .addString(bugPattern);
     }
 }

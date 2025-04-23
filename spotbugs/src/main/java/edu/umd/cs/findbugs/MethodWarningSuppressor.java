@@ -44,7 +44,8 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
     public BugInstance buildUselessSuppressionBugInstance(UselessSuppressionDetector detector) {
         return new BugInstance(detector, BUG_TYPE, PRIORITY)
                 .addClass(clazz.getClassDescriptor())
-                .addMethod(method);
+                .addMethod(method)
+                .addString(bugPattern);
     }
 
     @Override

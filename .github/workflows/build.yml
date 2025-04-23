@@ -4,6 +4,10 @@ on: [push, pull_request]
 permissions:
   contents: read # to fetch code (actions/checkout)
 
+env:
+  eclipse-version: 4.24
+  eclipse-date: 202206070700
+
 jobs:
   build:
     strategy:
@@ -25,25 +29,33 @@ jobs:
           distribution: 'temurin'
           cache: gradle
       - uses: gradle/actions/wrapper-validation@v4
+      - name: Cache Eclipse
+        id: cache-eclipse
+        uses: actions/cache@v4
+        with:
+          path: eclipse-sdk
+          key: eclipse-sdk-${{ matrix.os }}-${{ env.eclipse-version }}-${{ env.eclipse-date }}
+
       - name: Download Eclipse on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: |
-          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz
-          tar xzf eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz eclipse
+          curl --continue-at - --create-dirs -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-sdk/eclipse.tar.gz
+          tar xzf eclipse-sdk/eclipse.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Download Eclipse on Windows
         if: matrix.os == 'windows-latest'
         run: |
-          curl 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-win32-x86_64.zip&mirror_id=1' -o eclipse-SDK-4.24-win32-x86_64.zip
-          Expand-Archive "eclipse-SDK-4.24-win32-x86_64.zip" -DestinationPath "." -Force
+          Remove-item alias:curl
+          curl --continue-at - --create-dirs -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-win32-x86_64.zip&mirror_id=1' -o eclipse-sdk/eclipse.zip 
+          Expand-Archive "eclipse-sdk/eclipse.zip" -DestinationPath "." -Force
           $escapedPwd = $pwd.Path -replace '\\', '\\'
           [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
         shell: powershell
       - name: Download Eclipse on Mac
         if: matrix.os == 'macos-latest'
         run: |
-          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-macosx-cocoa-aarch64.dmg&mirror_id=1' --output eclipse-SDK-4.24-macosx-cocoa-aarch64.dmg
-          hdiutil attach eclipse-SDK-4.24-macosx-cocoa-aarch64.dmg
+          curl --continue-at - --create-dirs -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-macosx-cocoa-aarch64.dmg&mirror_id=1' --output eclipse-sdk/eclipse.dmg
+          hdiutil attach eclipse-sdk/eclipse.dmg
           cp -r /Volumes/Eclipse/Eclipse.app /Applications/
           hdiutil detach /Volumes/Eclipse
           echo "eclipseRoot.dir=/Applications/Eclipse.app" | tee eclipsePlugin/local.properties
