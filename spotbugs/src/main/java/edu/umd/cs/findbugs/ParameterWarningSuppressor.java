@@ -43,6 +43,7 @@ public class ParameterWarningSuppressor extends ClassWarningSuppressor {
         return new BugInstance(detector, BUG_TYPE, PRIORITY)
                 .addClass(clazz.getClassDescriptor())
                 .addMethod(method)
-                .addParameterAnnotation(register, LocalVariableAnnotation.PARAMETER_ROLE);
+                .addParameterAnnotation(register, LocalVariableAnnotation.PARAMETER_ROLE)
+                .addString(bugPattern);
     }
 }

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile.analysis;
 
 import java.lang.annotation.ElementType;
+import java.lang.invoke.MethodHandle;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -81,6 +82,13 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     AnnotatedObject containingScope;
 
     private boolean containingScopeCached;
+
+    /**
+     * The class' polymorphic methods, indexed by name and signature.
+     * See {@link MethodHandle} which is a special case where a method has multiple signatures.
+     * The methods are assumed to be non-static.
+     */
+    private final Map<String, Map<String, MethodInfo>> polymorphicMethods;
 
     public static class Builder extends ClassNameAndSuperclassInfo.Builder {
         private List<FieldInfo> fieldInfoList = new LinkedList<>();
@@ -172,7 +180,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             return new ClassInfo(classDescriptor, classSourceSignature, superclassDescriptor, interfaceDescriptorList,
                     codeBaseEntry, accessFlags, source, majorVersion, minorVersion, referencedClassDescriptorList,
                     calledClassDescriptors, classAnnotations, fields, methods, immediateEnclosingClass, usesConcurrency,
-                    hasStubs);
+                    hasStubs, new HashMap<>());
         }
 
         public void setSource(String source) {
@@ -278,7 +286,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             int majorVersion, int minorVersion, Collection<ClassDescriptor> referencedClassDescriptorList,
             Set<ClassDescriptor> calledClassDescriptors, Map<ClassDescriptor, AnnotationValue> classAnnotations,
             FieldInfo[] fieldDescriptorList, MethodInfo[] methodInfoList, ClassDescriptor immediateEnclosingClass,
-            boolean usesConcurrency, boolean hasStubs) {
+            boolean usesConcurrency, boolean hasStubs, Map<String, Map<String, MethodInfo>> polymorphicMethods) {
         super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags,
                 referencedClassDescriptorList, calledClassDescriptors, majorVersion, minorVersion);
         this.source = source;
@@ -293,15 +301,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         this.usesConcurrency = usesConcurrency;
         this.hasStubs = hasStubs;
         this.methodsInCallOrder = computeMethodsInCallOrder();
-        /*
-        if (false) {
-            System.out.println("Methods in call order for " + classDescriptor);
-            for (MethodInfo m : methodsInCallOrder) {
-                System.out.println("  " + m);
-            }
-            System.out.println();
-        }
-         */
+        this.polymorphicMethods = polymorphicMethods;
     }
 
     @Override
@@ -322,10 +322,13 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     public XMethod findMethod(String methodName, String methodSig, boolean isStatic) {
         int hash = FieldOrMethodDescriptor.getNameSigHashCode(methodName, methodSig);
         for (MethodInfo mInfo : xMethods) {
-            if (mInfo.getName().equals(methodName)
-                    && mInfo.isStatic() == isStatic
-                    && ((mInfo.getNameSigHashCode() == hash && mInfo.getSignature().equals(methodSig)) || mInfo.hasPolymorphicSignature())) {
-                return mInfo;
+            if (mInfo.getName().equals(methodName) && mInfo.isStatic() == isStatic) {
+                if (mInfo.getNameSigHashCode() == hash && mInfo.getSignature().equals(methodSig)) {
+                    return mInfo;
+                } else if (mInfo.hasPolymorphicSignature()) {
+                    Map<String, MethodInfo> methods = polymorphicMethods.computeIfAbsent(methodName, n -> new HashMap<>());
+                    return methods.computeIfAbsent(methodSig, s -> mInfo.withSignature(s));
+                }
             }
         }
         return null;
