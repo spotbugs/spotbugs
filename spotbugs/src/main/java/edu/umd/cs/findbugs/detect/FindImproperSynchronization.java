@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
+import edu.umd.cs.findbugs.util.Values;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -76,8 +77,8 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     static {
         String juCollections = ClassName.toSlashedClassName(java.util.Collections.class);
-        String juMaps = ClassName.toSlashedClassName(Map.class);
-        String juLists = ClassName.toSlashedClassName(java.util.List.class);
+        String juMaps = Values.SLASHED_JAVA_UTIL_MAP;
+        String juLists = Values.SLASHED_JAVA_UTIL_LIST;
 
         //synchronized collections
         WRAPPER_IMPLEMENTATIONS.put(new MethodDescriptor(juCollections, "synchronizedCollection",
@@ -171,6 +172,10 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
+        if (obj.isSynthetic()) {
+            return;
+        }
+
         try {
             analyzeAssignments(obj, getClassContext());
         } catch (CFGBuilderException e) {
@@ -202,7 +207,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
         GenericSignatureParser signature = new GenericSignatureParser(xMethod.getSignature());
         String returnType = signature.getReturnTypeSignature();
-        String javaStyleClassType = "L" + getClassName() + ";";
+        String javaStyleClassType = ClassName.toSignature(getClassName());
         if (returnType.equals(javaStyleClassType)) {
             if ("clone".equals(obj.getName())) {
                 return;
@@ -310,7 +315,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
             }
         }
 
-        if (seen == Const.ARETURN) {
+        if (seen == Const.ARETURN && stack.getStackDepth() > 0) {
             OpcodeStack.Item returnValue = stack.getStackItem(0);
             XField returnedField = returnValue.getXField();
 
