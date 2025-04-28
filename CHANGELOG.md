@@ -16,10 +16,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Rewrite some member in `ResourceValueFrame.java` to Enum ([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
 - Ignore non-interpreted text when looking for `FS_BAD_DATE_FORMAT_FLAG_COMBO` ([#3387](https://github.com/spotbugs/spotbugs/issues/3387))
 - Fix IllegalArgumentException thrown from `FindNoSideEffectMethods` detector ([#3320](https://github.com/spotbugs/spotbugs/issues/3320))
+- Do not report `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` when part of a Mockito `doAnswer()`, `doCallRealMethod()`, `doNothing()`, `doThrow()` or `doReturn()` call ([#3334](https://github.com/spotbugs/spotbugs/issues/3334))
 
 ### Added
-
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
+- Multi-threaded code checks can be skipped with `@NotThreadSafe` ([#3390](https://github.com/spotbugs/spotbugs/issues/3390))
 - New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See [SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions)) ([#2055](https://github.com/spotbugs/spotbugs/pull/2055))
   - Breaking change: changed values and new items in `ResourceValueFrame`.
 

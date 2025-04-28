@@ -37,7 +37,7 @@ allprojects {
 }
 
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
-task jacocoRootReport(type: JacocoReport) {
+tasks.register("jacocoRootReport", JacocoReport.class) {
   description = 'Merge all coverage reports before submit to SonarQube'
   def reportTasks = project.getTasksByName("jacocoTestReport", true).minus(rootProject.jacocoTestReport)
   dependsOn reportTasks

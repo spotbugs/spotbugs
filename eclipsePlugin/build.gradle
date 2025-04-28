@@ -115,8 +115,10 @@ def copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
     into "lib"
 }
 
+def resolvedBuildDir = project.layout.buildDirectory.asFile.get()
+
 def distSrcZip = tasks.register('distSrcZip', Exec) {
-  def out = "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip"
+  def out = "${resolvedBuildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip"
   outputs.file out
   commandLine 'git', 'archive', '-o', out, 'HEAD'
 }
@@ -248,7 +250,7 @@ def distZip = tasks.register('distZip', Zip) {
 }
 
 def testPluginJar = tasks.register('testPluginJar') {
-  def jarFile = "$buildDir/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar"
+  def jarFile = "${resolvedBuildDir}/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar"
   inputs.file jarFile
   doLast {
     def spotbugsJar = zipTree(jarFile)
@@ -498,9 +500,9 @@ def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
   dependsOn confirmEclipse, pluginJar, featureJar, siteXml, siteHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse",
-    '-artifactRepository', "file:${buildDir}/site/eclipse",
-    '-source', "${buildDir}/site/eclipse",
+    '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse",
+    '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse",
+    '-source', "${resolvedBuildDir}/site/eclipse",
     '-vm', "${System.getProperty('java.home')}/bin"
 }
 
@@ -515,9 +517,9 @@ def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', 
   dependsOn confirmEclipse, pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse-candidate",
-    '-artifactRepository', "file:${buildDir}/site/eclipse-candidate",
-    '-source', "${buildDir}/site/eclipse-candidate",
+    '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-candidate",
+    '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-candidate",
+    '-source', "${resolvedBuildDir}/site/eclipse-candidate",
     '-vm', "${System.getProperty('java.home')}/bin"
 }
 
@@ -532,9 +534,9 @@ def generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
   dependsOn confirmEclipse, pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse-daily",
-    '-artifactRepository', "file:${buildDir}/site/eclipse-daily",
-    '-source', "${buildDir}/site/eclipse-daily",
+    '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-daily",
+    '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-daily",
+    '-source', "${resolvedBuildDir}/site/eclipse-daily",
     '-vm', "${System.getProperty('java.home')}/bin"
 }
 
@@ -549,9 +551,9 @@ def generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLat
   dependsOn confirmEclipse, pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse-stable-latest",
-    '-artifactRepository', "file:${buildDir}/site/eclipse-stable-latest",
-    '-source', "${buildDir}/site/eclipse-stable-latest",
+    '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-stable-latest",
+    '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-stable-latest",
+    '-source', "${resolvedBuildDir}/site/eclipse-stable-latest",
     '-vm', "${System.getProperty('java.home')}/bin"
 }
 
