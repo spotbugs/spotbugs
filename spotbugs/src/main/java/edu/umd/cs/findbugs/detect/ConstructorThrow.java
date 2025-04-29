@@ -327,9 +327,9 @@ public class ConstructorThrow extends OpcodeStackDetector {
 
     private void addToExHandlesToMethodCallsByMethodsMap(String containerMethod, String calledMethod, Collection<String> caughtExes) {
         exHandlesToMethodCallsByMethodsMap
-            .computeIfAbsent(containerMethod, k -> new HashMap<>())
-            .computeIfAbsent(calledMethod, k -> new HashSet<>())
-            .addAll(caughtExes);
+                .computeIfAbsent(containerMethod, k -> new HashMap<>())
+                .computeIfAbsent(calledMethod, k -> new HashSet<>())
+                .addAll(caughtExes);
     }
 
     private void addToThrownExsByMethodMap(String containingMethod, JavaClass thrownExClass) {
