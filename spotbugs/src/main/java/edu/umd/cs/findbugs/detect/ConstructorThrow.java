@@ -121,7 +121,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
         if (isFirstPass) {
             collectExceptionsByMethods(seen);
-        } else if (isConstructor()) {
+        } else if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
             reportConstructorThrow(seen);
         }
     }
@@ -154,7 +154,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
                     AnalysisContext.reportMissingClass(e);
                 }
             }
-        } else if (isMethodCall(seen)) {
+        } else if (isMethodCall()) {
             if (Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
                 hadObjectConstructor = true;
             }
@@ -289,7 +289,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
                     AnalysisContext.reportMissingClass(e);
                 }
             }
-        } else if (isMethodCall(seen)) {
+        } else if (isMethodCall()) {
             String calledMethodName = getNameConstantOperand();
             String calledMethodFullName = getCalledMethodFQN();
             // not interested in call of the constructor or recursion
@@ -321,34 +321,20 @@ public class ConstructorThrow extends OpcodeStackDetector {
     }
 
     private void addToExHandlesToMethodCallsByMethodsMap(String containerMethod, String calledMethod, Collection<String> caughtExes) {
-        if (exHandlesToMethodCallsByMethodsMap.containsKey(containerMethod)) {
-            Map<String, Set<String>> map = exHandlesToMethodCallsByMethodsMap.get(containerMethod);
-            if (!map.containsKey(calledMethod)) {
-                map.put(calledMethod, new HashSet<>(caughtExes));
-            } else {
-                map.get(calledMethod).addAll(caughtExes);
-            }
-        } else {
-            exHandlesToMethodCallsByMethodsMap.put(containerMethod,
-                    new HashMap<String, Set<String>>() {
-                        {
-                            put(calledMethod, new HashSet<>(caughtExes));
-                        }
-                    });
-        }
+        exHandlesToMethodCallsByMethodsMap
+            .computeIfAbsent(containerMethod, k -> new HashMap<>())
+            .computeIfAbsent(calledMethod, k -> new HashSet<>())
+            .addAll(caughtExes);
     }
 
     private void addToThrownExsByMethodMap(String containingMethod, JavaClass thrownExClass) {
-        if (thrownExsByMethodMap.containsKey(containingMethod)) {
-            thrownExsByMethodMap.get(containingMethod).add(thrownExClass);
-        } else {
-            thrownExsByMethodMap.put(containingMethod, new HashSet<>(Collections.singletonList(thrownExClass)));
-        }
+        thrownExsByMethodMap.computeIfAbsent(containingMethod, k -> new HashSet<>()).add(thrownExClass);
     }
 
     /**
      * Gives back the fully qualified name (DottedClassName) of the called method complete with the signature.
      * Needs to be called from method call opcode.
+     * This is in sync with {@link edu.umd.cs.findbugs.visitclass.PreorderVisitor#getFullyQualifiedMethodName} function.
      *
      * @return the fully qualified name of the method (dotted) with the signature.
      */
@@ -370,16 +356,5 @@ public class ConstructorThrow extends OpcodeStackDetector {
                 .addClassAndMethod(this)
                 .addSourceLine(this, getPC());
         bugAccumulator.accumulateBug(bug, this);
-    }
-
-    private boolean isMethodCall(int seen) {
-        return seen == Const.INVOKESTATIC
-                || seen == Const.INVOKEVIRTUAL
-                || seen == Const.INVOKEINTERFACE
-                || seen == Const.INVOKESPECIAL;
-    }
-
-    private boolean isConstructor() {
-        return Const.CONSTRUCTOR_NAME.equals(getMethodName());
     }
 }
