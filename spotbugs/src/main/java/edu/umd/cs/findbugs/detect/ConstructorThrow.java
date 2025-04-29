@@ -86,7 +86,6 @@ public class ConstructorThrow extends OpcodeStackDetector {
         }
 
         for (Method m : obj.getMethods()) {
-            hadObjectConstructor = false;
             doVisitMethod(m);
         }
         isFirstPass = false;
@@ -97,6 +96,12 @@ public class ConstructorThrow extends OpcodeStackDetector {
         // Signature of the finalizer is also needed to be checked
         return Arrays.stream(jc.getMethods())
                 .anyMatch(m -> "finalize".equals(m.getName()) && "()V".equals(m.getSignature()) && m.isFinal());
+    }
+
+    @Override
+    public void visit(Method obj) {
+        hadObjectConstructor = false;
+        super.visit(obj);
     }
 
     @Override
