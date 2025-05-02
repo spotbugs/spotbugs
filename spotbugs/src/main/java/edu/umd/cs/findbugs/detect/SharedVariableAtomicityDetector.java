@@ -87,7 +87,8 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if (MultiThreadedCodeIdentifierUtils.isPartOfMultiThreadedCode(classContext)) {
+        if (MultiThreadedCodeIdentifierUtils.isPartOfMultiThreadedCode(classContext)
+                && !MultiThreadedCodeIdentifierUtils.isNotThreadSafe(classContext)) {
             currentMethod = null;
             currentCFG = null;
             currentLockDataFlow = null;

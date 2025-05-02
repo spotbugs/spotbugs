@@ -2,7 +2,6 @@ package ghIssues;
 
 import org.immutables.value.Generated;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @Generated

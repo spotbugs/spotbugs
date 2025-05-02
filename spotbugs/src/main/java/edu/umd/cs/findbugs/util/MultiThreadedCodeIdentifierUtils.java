@@ -18,19 +18,19 @@
 
 package edu.umd.cs.findbugs.util;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.ClassContext;
-
 import java.util.Collection;
 import java.util.stream.Stream;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -148,6 +148,20 @@ public class MultiThreadedCodeIdentifierUtils {
             }
         } catch (DataflowAnalysisException e) {
             AnalysisContext.logError(String.format("Synchronization check caught an error when analyzing %s method.", currentMethod.getName()), e);
+        }
+        return false;
+    }
+
+    /**
+     * @return <code>true</code> if the class is explicitly annotated with <code>NotThreadSafe</code> to document that it is not thread safe
+     */
+    public static boolean isNotThreadSafe(ClassContext classContext) {
+        JavaClass javaClass = classContext.getJavaClass();
+
+        for (AnnotationEntry annotationEntry : javaClass.getAnnotationEntries()) {
+            if (annotationEntry.getAnnotationType().endsWith("/NotThreadSafe;")) {
+                return true;
+            }
         }
         return false;
     }
