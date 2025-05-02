@@ -38,7 +38,8 @@ import edu.umd.cs.findbugs.ba.XMethod;
 public final class MemberUtils {
 
     /**
-     * This will capture annotations such as <code>javax.annotation.Generated</code>, <code>javax.annotation.processing.Generated</code>, <code>lombok.Generated</code>
+     * This will capture annotations such as <code>org.immutables.value.Generated</code> or <code>lombok.Generated</code>.
+     * Note that <code>javax.annotation.Generated</code>, <code>javax.annotation.processing.Generated</code> only have source retention and are not visible to SpotBugs.
      */
     private static final String GENERATED_TYPE_SUFFIX = "/Generated;";
     private static final String GENERATED_NAME_SUFFIX = "/Generated";
@@ -184,7 +185,7 @@ public final class MemberUtils {
     /**
      * Checks if the given class was user-generated, classes annotated with annotations such as Immutables' Generated are not considered user-generated.
      *
-     * @param m The field or method to check.
+     * @param c The class to check.
      * @return True if the given class is user generated, false otherwise.
      */
     public static boolean isUserGenerated(final XClass c) {
