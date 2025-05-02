@@ -17,6 +17,7 @@
  */
 package edu.umd.cs.findbugs.bytecode;
 
+import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
@@ -28,6 +29,7 @@ import org.apache.bcel.generic.FieldGenOrMethodGen;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.ClassMember;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
@@ -95,10 +97,10 @@ public final class MemberUtils {
         return false;
     }
 
-    private static boolean isGeneratedMethod(final XMethod m) {
-        for (AnnotationValue a : m.getAnnotations()) {
+    private static boolean isGenerated(final AnnotatedObject o) {
+        for (AnnotationValue a : o.getAnnotations()) {
             String typeName = a.getAnnotationClass().getClassName();
-            if (typeName.endsWith(GENERATED_TYPE_SUFFIX)) {
+            if (typeName.endsWith(GENERATED_NAME_SUFFIX)) {
                 return true;
             }
         }
@@ -162,7 +164,7 @@ public final class MemberUtils {
      * @return True if the given member is user generated, false otherwise.
      */
     public static boolean isUserGenerated(final ClassMember m) {
-        return (!m.isSynthetic() || (m instanceof XMethod && couldBeLambda((XMethod) m))) && (!(m instanceof XMethod) || !isGeneratedMethod(
+        return (!m.isSynthetic() || (m instanceof XMethod && couldBeLambda((XMethod) m))) && (!(m instanceof XMethod) || !isGenerated(
                 (XMethod) m));
     }
 
@@ -177,6 +179,16 @@ public final class MemberUtils {
      */
     public static boolean isUserGenerated(final FieldGenOrMethodGen m) {
         return (!internalIsSynthetic(m) || (m instanceof MethodGen && couldBeLambda((MethodGen) m))) && !isGeneratedMethod(m);
+    }
+
+    /**
+     * Checks if the given class was user-generated, classes annotated with annotations such as Immutables' Generated are not considered user-generated.
+     *
+     * @param m The field or method to check.
+     * @return True if the given class is user generated, false otherwise.
+     */
+    public static boolean isUserGenerated(final XClass c) {
+        return !isGenerated(c);
     }
 
     /**

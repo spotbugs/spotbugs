@@ -140,8 +140,13 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
         if (className.endsWith(".package-info")) {
             suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, matchType, ClassName.toDottedClassName(getPackageName())));
         } else if (visitingMethod()) {
-            MethodWarningSuppressor suppressor = new MethodWarningSuppressor(pattern, matchType, clazz, MethodAnnotation.fromVisitedMethod(this),
-                    MemberUtils.isUserGenerated(getMethod()));
+            MethodWarningSuppressor suppressor = new MethodWarningSuppressor(
+                    pattern,
+                    matchType,
+                    clazz,
+                    MethodAnnotation.fromVisitedMethod(this),
+                    MemberUtils.isUserGenerated(getMethod()) && MemberUtils.isUserGenerated(getXClass()));
+
             suppressionMatcher.addSuppressor(suppressor);
         } else if (visitingField()) {
             suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, matchType, clazz, FieldAnnotation.fromVisitedField(this)));
