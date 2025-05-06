@@ -12,7 +12,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))
-- Do not report `US_USELESS_SUPPRESSION_ON_METHOD` on methods or classes with an `*.Generated` annotation with retention >= class ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))([#3409](https://github.com/spotbugs/spotbugs/pull/3409))
+- Do not report `US_USELESS_SUPPRESSION_ON_*` on methods, fields, parameters, packages or classes with an `*.Generated` annotation with retention >= class ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))([#3409](https://github.com/spotbugs/spotbugs/pull/3409))
 - Rewrite some member in `ResourceValueFrame.java` to Enum ([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
 - Ignore non-interpreted text when looking for `FS_BAD_DATE_FORMAT_FLAG_COMBO` ([#3387](https://github.com/spotbugs/spotbugs/issues/3387))
 - Fix IllegalArgumentException thrown from `FindNoSideEffectMethods` detector ([#3320](https://github.com/spotbugs/spotbugs/issues/3320))
