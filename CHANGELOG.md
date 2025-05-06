@@ -17,6 +17,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Ignore non-interpreted text when looking for `FS_BAD_DATE_FORMAT_FLAG_COMBO` ([#3387](https://github.com/spotbugs/spotbugs/issues/3387))
 - Fix IllegalArgumentException thrown from `FindNoSideEffectMethods` detector ([#3320](https://github.com/spotbugs/spotbugs/issues/3320))
 - Do not report `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` when part of a Mockito `doAnswer()`, `doCallRealMethod()`, `doNothing()`, `doThrow()` or `doReturn()` call ([#3334](https://github.com/spotbugs/spotbugs/issues/3334))
+- Fix `CT_CONSTRUCTOR_THROW` false positive with public and private constructors in specific order of methods ([#3417](https://github.com/spotbugs/spotbugs/issues/3417))
 
 ### Added
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
