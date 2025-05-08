@@ -60,8 +60,8 @@ def findEclipseExecutable() {
   localProps.load(new FileInputStream("$projectDir/local.properties"))
   def eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
   // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
-  OperatingSystem os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem;
-  def eclipseExecutable;
+  OperatingSystem os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem
+  def eclipseExecutable
   if(os.isMacOsX()){
     eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
     if (!eclipseExecutable.exists()) {
@@ -167,12 +167,12 @@ tasks.named('compileJava').configure { dependsOn ':spotbugs:jar' }
 tasks.named('eclipse').configure { dependsOn copyLibsForEclipse, updateManifest }
 
 class FileRef implements org.gradle.plugins.ide.eclipse.model.FileReference {
-    def file;
+    def file
     def FileRef(File file){
         this.file = file
     }
     def File getFile(){
-        return file;
+        return file
     }
     def String getJarURL(){
         return "jar:" + file
@@ -257,7 +257,7 @@ def testPluginJar = tasks.register('testPluginJar') {
             .matching { include 'lib/spotbugs.jar' }
             .singleFile
     if (!spotbugsJar.exists()) {
-      throw new TaskInstantiationException('Eclipse plugin does not contain spotbugs.jar');
+      throw new TaskInstantiationException('Eclipse plugin does not contain spotbugs.jar')
     } else {
       println 'Eclipse plugin contains spotbugs.jar'
     }
@@ -459,7 +459,7 @@ def siteStableLatestXml = tasks.register('siteStableLatestXml', Copy) {
 
 // sign all .jar file under specified dir
 ext.signJar = { File dir ->
-  def keystorepass = project.hasProperty('keystorepass') ? keystorepass : '';
+  def keystorepass = project.hasProperty('keystorepass') ? keystorepass : ''
   if (keystorepass.isEmpty()) {
     print 'to sign eclipse plugins, set "keystorepass" project property'
     return
