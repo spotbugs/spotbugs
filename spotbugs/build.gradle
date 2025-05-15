@@ -82,7 +82,7 @@ dependencies {
   api 'org.apache.commons:commons-lang3:3.17.0'
   api 'org.apache.commons:commons-text:1.13.1'
   api 'org.slf4j:slf4j-api:2.0.17'
-  implementation 'net.sf.saxon:Saxon-HE:12.5'
+  implementation 'net.sf.saxon:Saxon-HE:12.6'
   implementation libs.log4j.core
   logBinding (libs.log4j.slf4j2.impl) {
     exclude group: 'org.slf4j'
@@ -92,7 +92,7 @@ dependencies {
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   api project(':spotbugs-annotations')
 
-  api "com.google.code.gson:gson:2.13.0"
+  api "com.google.code.gson:gson:2.13.1"
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
@@ -298,8 +298,10 @@ tasks.named('jar') {
   dependsOn tasks.named('updateManifest')
 }
 
+def resolvedBuildDir = project.layout.buildDirectory.asFile.get()
+
 def distSrcZip = tasks.register('distSrcZip', Exec) {
-  def out = "${buildDir}/distributions/spotbugs-${project.version}-source.zip"
+  def out = "${resolvedBuildDir}/distributions/spotbugs-${project.version}-source.zip"
   outputs.file out
   commandLine 'git', 'archive', '-o', out,
     '--prefix', "spotbugs-${project.version}/", 'HEAD'
@@ -318,7 +320,7 @@ tasks.named('assemble') {
 def unzipDist = tasks.register('unzipDist', Copy) {
   dependsOn distZip
   from distZip.map { zipTree(it.outputs.files.singleFile) }
-  into file("$buildDir/smoketest/")
+  into file("${resolvedBuildDir}/smoketest/")
   // Remove prefix
   eachFile { details ->
     details.path = details.path - "spotbugs-${project.version}"
@@ -330,13 +332,13 @@ def smokeTest = tasks.register('smokeTest') {
   dependsOn unzipDist, project(':spotbugs-ant').tasks.named('jar')
   doLast {
     ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:project(':spotbugs-ant').jar.outputs.files.asPath)
-    ant.spotbugs(home:"$buildDir/smoketest/", output:'xml:withMessages',
+    ant.spotbugs(home:"${resolvedBuildDir}/smoketest/", output:'xml:withMessages',
               jvmargs:'-ea -Xmx1200m',
               excludeFilter:'findbugsExclude.xml',
               projectName:'spotbugs',
               maxRank:'20',
               timeout:'1800000',
-              outputFile:"${buildDir}/smoketest/findbugscheckAll.xml") {
+              outputFile:"${resolvedBuildDir}/smoketest/findbugscheckAll.xml") {
       sourcePath(path:'src/main/java:src/gui/main:src/tools')
       'class'(location:project.tasks['compileJava'].destinationDirectory.get().asFile)
       configurations.compileClasspath.each { File file -> auxClasspath(path:file.path) }
