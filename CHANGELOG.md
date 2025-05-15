@@ -22,6 +22,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
 - Multi-threaded code checks can be skipped with `@NotThreadSafe` ([#3390](https://github.com/spotbugs/spotbugs/issues/3390))
+- Make TypeQualifierResolver recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3156](https://github.com/spotbugs/spotbugs/pull/3156))
 
 ## 4.9.3 - 2025-03-14
 ### Added
