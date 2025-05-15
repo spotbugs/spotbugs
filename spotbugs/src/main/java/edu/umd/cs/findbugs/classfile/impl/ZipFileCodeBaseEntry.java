@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -81,7 +83,13 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
      */
     @Override
     public String getRealResourceName() {
-        return zipEntry.getName();
+        String entryName = zipEntry.getName();
+        Path entryPath = Paths.get(entryName).normalize();
+        Path zipRootPath = Paths.get("").toAbsolutePath().normalize();
+        if (!entryPath.startsWith(zipRootPath) || entryName.contains("..")) {
+            throw new IllegalArgumentException("Invalid zip entry name: " + entryName);
+        }
+        return entryPath.toString();
     }
 
     /*
