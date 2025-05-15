@@ -1,16 +1,16 @@
 package ghIssues.issue543;
 
 import java.io.File;
-import org.example.Generated;
+import org.example.GeneratedCode;
 
 @SuppressWarnings("all")
 public class GeneratedOnClassMembers {
   /** URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD */
-  @Generated
+  @GeneratedCode
   public int a = 1;
 
   /** NP_TOSTRING_COULD_RETURN_NULL */
-  @Generated
+  @GeneratedCode
   public String toString() {
     return null;
   }
@@ -22,7 +22,7 @@ public class GeneratedOnClassMembers {
   }
 
   /** ES_COMPARING_PARAMETER_STRING_WITH_EQ */
-  @Generated
+  @GeneratedCode
   public boolean test(String s) {
     return s == "test";
   }

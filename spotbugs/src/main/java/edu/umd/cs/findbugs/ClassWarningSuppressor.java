@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.annotations.SuppressMatchType;
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.detect.UselessSuppressionDetector;
 
 public class ClassWarningSuppressor extends WarningSuppressor {
@@ -9,9 +10,20 @@ public class ClassWarningSuppressor extends WarningSuppressor {
 
     ClassAnnotation clazz;
 
-    public ClassWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz) {
+    /**
+     * Indicates whether this class was "user generated" as defined in {@link MemberUtils#isUserGenerated(edu.umd.cs.findbugs.ba.XClass)}
+     * When a class is not user generated we are not interested in reporting warnings, in particular we do not want to report US_USELESS_SUPPRESSION_ON_CLASS
+     */
+    private final boolean userGeneratedClass;
+
+    /**
+     * @param userGeneratedClass
+     */
+    public ClassWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, boolean userGeneratedClass) {
         super(bugPattern, matchType);
         this.clazz = clazz;
+        this.userGeneratedClass = userGeneratedClass;
+
         if (DEBUG) {
             System.out.println("Suppressing " + bugPattern + " in " + clazz);
         }
@@ -42,5 +54,10 @@ public class ClassWarningSuppressor extends WarningSuppressor {
 
         return clazz.contains(primaryClassAnnotation);
 
+    }
+
+    @Override
+    public boolean isUselessSuppressionReportable() {
+        return userGeneratedClass;
     }
 }

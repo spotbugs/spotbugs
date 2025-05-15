@@ -159,7 +159,7 @@ class AnnotationMatcherTest {
     @Test
     void testFilteringWithAnnotationOnClassMembers(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/org/example/Generated.class"),
+                Paths.get("../spotbugsTestCases/build/classes/java/main/org/example/GeneratedCode.class"),
                 Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/GeneratedOnClassMembers.class"));
 
         BugInstanceMatcher[] bugsWithGeneratedAnnotation = {
@@ -187,7 +187,7 @@ class AnnotationMatcherTest {
 
         assertThat(bugCollection, hasItem(bugWithoutGeneratedAnnotation));
         assertThat(bugCollection, hasItems(bugsWithGeneratedAnnotation));
-        AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher("org.example.Generated");
+        AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher("org.example.GeneratedCode");
         List<BugInstance> unmatchedBugs = bugCollection.getCollection().stream()
                 .filter(b -> !bugInstanceMatcher.match(b))
                 .collect(Collectors.toUnmodifiableList());

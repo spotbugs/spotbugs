@@ -11,8 +11,9 @@ public class ParameterWarningSuppressor extends ClassWarningSuppressor {
 
     final int register;
 
-    public ParameterWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, MethodAnnotation method, int register) {
-        super(bugPattern, matchType, clazz);
+    public ParameterWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, MethodAnnotation method, int register,
+            boolean userGeneratedClass) {
+        super(bugPattern, matchType, clazz, userGeneratedClass);
         this.method = method;
         this.register = register;
     }
