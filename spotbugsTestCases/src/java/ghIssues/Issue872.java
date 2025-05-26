@@ -2,6 +2,7 @@ package ghIssues;
 
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 public class Issue872 {
@@ -76,6 +77,12 @@ public class Issue872 {
 	void doThrowMockito() {
 		Value receiver = Mockito.mock(Value.class);
 		Mockito.doThrow(Exception.class).when(receiver).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoThen() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.then(receiver).should(Mockito.times(1)).checkMe();
 	}
 	
 	public static class Value {
