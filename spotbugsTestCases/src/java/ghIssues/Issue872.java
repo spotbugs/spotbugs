@@ -85,6 +85,12 @@ public class Issue872 {
 		BDDMockito.then(receiver).should(Mockito.times(1)).checkMe();
 	}
 	
+	// compliant
+	void bddMockitoGiven() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.given(receiver.checkMe()).willCallRealMethod();
+	}
+	
 	public static class Value {
 		@CheckReturnValue
 		public String checkMe() {
