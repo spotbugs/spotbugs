@@ -216,7 +216,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             callPC = getPC();
             callSeen = XFactory.createReferencedXMethod(this);
             state = State.SAW_INVOKE;
-            sawMockitoInvoke |= isCallMockitoInvocation(callSeen);
+            sawMockitoInvoke |= (isCallMockitoInvocation(callSeen) || isCallBDDMockitoInvocation(callSeen));
             if (DEBUG) {
                 System.out.println("  invoking " + callSeen);
             }
@@ -249,6 +249,12 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         return method.isStatic()
                 && "org.mockito.Mockito".equals(method.getClassName())
                 && MOCKITO_VOID_STUBBING_METHODS.contains(method.getName());
+    }
+
+    private boolean isCallBDDMockitoInvocation(XMethod method) {
+        return method.isStatic()
+                && "org.mockito.BDDMockito".equals(method.getClassName())
+                && "then".equals(method.getName());
     }
 
     /**
