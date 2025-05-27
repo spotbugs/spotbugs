@@ -204,7 +204,8 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
                     && hasNonSyncedNonPrivateCallToMethod(method, new HashSet<>())) {
                 boolean fieldReadInOtherMethod = mapContainsFieldWithOtherMethod(field, method, readFieldsByMethods);
                 if (fieldReadInOtherMethod) {
-                    if (hadOperation && !relevantFields.isEmpty() && relevantFields.contains(field) && isPrimitiveOrItsBoxingType(field.getSignature())) {
+                    if (hadOperation && !relevantFields.isEmpty() && relevantFields.contains(field)
+                            && isPrimitiveOrItsBoxingType(field.getSignature())) {
                         bugAccumulator.accumulateBug(
                                 new BugInstance(this, "AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE", NORMAL_PRIORITY)
                                         .addClass(this)
