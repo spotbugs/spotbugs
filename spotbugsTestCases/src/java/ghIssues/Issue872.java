@@ -91,6 +91,36 @@ public class Issue872 {
 		BDDMockito.given(receiver.checkMe()).willCallRealMethod();
 	}
 	
+	// compliant
+	void bddMockitoWillThrow() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.willThrow(new RuntimeException("boo")).given(receiver).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoWillReturn() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.willReturn("whatever").given(receiver).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoWillDoNothing() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.willDoNothing().given(receiver).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoWillCallRealMethod() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.willCallRealMethod().given(receiver).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoWillAnswer() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.willAnswer(i -> "test").given(receiver).checkMe();
+	}
+	
 	public static class Value {
 		@CheckReturnValue
 		public String checkMe() {

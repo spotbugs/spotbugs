@@ -75,6 +75,14 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             "doThrow",
             "verify");
 
+    private static final Set<String> BDD_MOCKITO_VOID_STUBBING_METHODS = Set.of(
+            "then",
+            "willThrow",
+            "willReturn",
+            "willDoNothing",
+            "willCallRealMethod",
+            "willAnswer");
+
     boolean previousOpcodeWasNEW;
 
     private final BugAccumulator bugAccumulator;
@@ -254,7 +262,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     private boolean isCallBDDMockitoInvocation(XMethod method) {
         return method.isStatic()
                 && "org.mockito.BDDMockito".equals(method.getClassName())
-                && "then".equals(method.getName());
+                && BDD_MOCKITO_VOID_STUBBING_METHODS.contains(method.getName());
     }
 
     /**
