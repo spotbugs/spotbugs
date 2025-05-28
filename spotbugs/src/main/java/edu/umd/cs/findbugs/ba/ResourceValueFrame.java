@@ -40,19 +40,30 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
         OPEN_ON_EXCEPTION_PATH(2),
 
         /**
+         * The resource is closed without being opened in the first place.
+         */
+        CLOSED_WITHOUT_OPENED(3),
+
+        /**
          * The resource is closed (or unlocked, etc).
          */
-        CLOSED(3),
+        CLOSED(4),
 
         /**
          * The resource has been created, but is not open.
          */
-        CREATED(4),
+        CREATED(5),
 
         /**
          * The resource doesn't exist.
          */
-        NONEXISTENT(5);
+        NONEXISTENT(6),
+
+        /**
+         * The resource is NOT open (or locked, etc) on paths that include exception
+         * control flow.
+         */
+        NOT_OPEN_ON_EXCEPTION_PATH(7);
 
         State(int type) {
             this.type = type;
@@ -97,8 +108,8 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
         this.status = other.status;
     }
 
-    private static final String[] statusList = { "(escaped)", "(open)", "(open_exception)", "(closed)", "(created)",
-        "(nonexistent)" };
+    private static final String[] statusList = { "(escaped)", "(open)", "(open_exception)", "(closed_without_opened)", "(closed)", "(created)",
+        "(nonexistent)", "(not_open_exception)" };
 
     @Override
     public String toString() {
