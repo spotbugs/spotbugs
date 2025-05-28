@@ -2,6 +2,7 @@ package ghIssues;
 
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 public class Issue872 {
@@ -76,6 +77,48 @@ public class Issue872 {
 	void doThrowMockito() {
 		Value receiver = Mockito.mock(Value.class);
 		Mockito.doThrow(Exception.class).when(receiver).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoThen() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.then(receiver).should(Mockito.times(1)).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoGiven() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.given(receiver.checkMe()).willCallRealMethod();
+	}
+	
+	// compliant
+	void bddMockitoWillThrow() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.willThrow(new RuntimeException("boo")).given(receiver).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoWillReturn() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.willReturn("whatever").given(receiver).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoWillDoNothing() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.willDoNothing().given(receiver).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoWillCallRealMethod() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.willCallRealMethod().given(receiver).checkMe();
+	}
+	
+	// compliant
+	void bddMockitoWillAnswer() {
+		Value receiver = Mockito.mock(Value.class);
+		BDDMockito.willAnswer(i -> "test").given(receiver).checkMe();
 	}
 	
 	public static class Value {
